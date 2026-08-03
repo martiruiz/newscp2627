@@ -45,6 +45,30 @@ const DEFAULT_FILTERS: SelectedFilters = {
   order: "latest",
 };
 
+const BATCH_SIZE = 9;
+
+function getActiveChips(filters: SelectedFilters) {
+  const chips: { label: string; key: string; filterKey: string; value: string }[] = [];
+  const entityDisplayName: Record<string, string> = {
+    brands: "Brand", clubs: "Club", competitions: "Competition",
+    "content-creators": "Creator", media: "Media", players: "Athlete",
+  };
+  for (const v of filters.sport) chips.push({ label: v, key: `s-${v}`, filterKey: "sport", value: v });
+  for (const v of filters.entityType) chips.push({ label: entityDisplayName[v] || v, key: `et-${v}`, filterKey: "entityType", value: v });
+  for (const v of filters.entityName) chips.push({ label: v, key: `en-${v}`, filterKey: "entityName", value: v });
+  for (const v of filters.format) chips.push({ label: v, key: `f-${v}`, filterKey: "format", value: v });
+  for (const v of filters.platform) chips.push({ label: v, key: `p-${v}`, filterKey: "platform", value: v });
+  for (const v of filters.classification) chips.push({ label: v, key: `c-${v}`, filterKey: "classification", value: v });
+  if (filters.saved) chips.push({ label: "Saved", key: "saved", filterKey: "saved", value: "" });
+  if (filters.dateFrom || filters.dateTo) {
+    const label = filters.dateFrom && filters.dateTo
+      ? `${filters.dateFrom} – ${filters.dateTo}`
+      : filters.dateFrom ? `From ${filters.dateFrom}` : `Until ${filters.dateTo}`;
+    chips.push({ label, key: "date", filterKey: "dateRange", value: "" });
+  }
+  return chips;
+}
+
 export default function FeedPage() {
   const [publications, setPublications] = useState<Publication[]>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);
@@ -53,10 +77,22 @@ export default function FeedPage() {
   const [filters, setFilters] = useState<SelectedFilters>(DEFAULT_FILTERS);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [animatedCount, setAnimatedCount] = useState(0);
+
+  const [readyUpTo, setReadyUpTo] = useState(0);
+  const loadedSetRef = useRef(new Set<string>());
+  const currentBatchRef = useRef<{ start: number; size: number }>({ start: 0, size: 0 });
+
   const abortRef = useRef<AbortController | null>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const pageRef = useRef(1);
+
+  const handleEmbedLoaded = useCallback((pubKey: string) => {
+    loadedSetRef.current.add(pubKey);
+    const { start, size } = currentBatchRef.current;
+    if (loadedSetRef.current.size >= size) {
+      setReadyUpTo(start + size);
+    }
+  }, []);
 
   const fetchPublications = useCallback(
     async (page: number, append = false) => {
@@ -66,7 +102,7 @@ export default function FeedPage() {
 
       const params = new URLSearchParams();
       params.set("page", String(page));
-      params.set("limit", "9");
+      params.set("limit", String(BATCH_SIZE));
 
       for (const [key, value] of Object.entries(filters)) {
         if (Array.isArray(value)) {
@@ -84,13 +120,20 @@ export default function FeedPage() {
           signal: controller.signal,
         });
         const data = await res.json();
+        const newPubs: Publication[] = data.publications;
 
         if (append) {
-          setAnimatedCount(publications.length);
-          setPublications((prev) => [...prev, ...data.publications]);
+          setPublications((prev) => {
+            const prevLen = prev.length;
+            loadedSetRef.current = new Set();
+            currentBatchRef.current = { start: prevLen, size: newPubs.length };
+            return [...prev, ...newPubs];
+          });
         } else {
-          setAnimatedCount(0);
-          setPublications(data.publications);
+          loadedSetRef.current = new Set();
+          currentBatchRef.current = { start: 0, size: newPubs.length };
+          setReadyUpTo(0);
+          setPublications(newPubs);
         }
         setPagination(data.pagination);
         pageRef.current = page;
@@ -153,10 +196,11 @@ export default function FeedPage() {
           onClose={() => setSidebarOpen(false)}
           collapsed={sidebarCollapsed}
           onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+          resultCount={pagination?.total}
         />
 
         <main className="flex-1 min-w-0 p-4">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setSidebarOpen(true)}
@@ -170,30 +214,82 @@ export default function FeedPage() {
                 {activeFilterCount > 0 && (
                   <span
                     className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
-                    style={{ background: "var(--accent-blue)", color: "#fff" }}
+                    style={{ background: "#c89028", color: "#fff" }}
                   >
                     {activeFilterCount}
                   </span>
                 )}
               </button>
-              <button
-                className="px-3 py-1.5 rounded-full text-xs font-medium"
-                style={{ background: "var(--accent-blue)", color: "#fff" }}
-              >
-                All posts
-              </button>
               {pagination && (
-                <span className="text-xs" style={{ color: "var(--text-muted)" }}>
-                  {pagination.total.toLocaleString()} publications
+                <span className="text-sm font-medium" style={{ color: "var(--text-muted)" }}>
+                  {pagination.total.toLocaleString()} ideas
                 </span>
               )}
             </div>
+            <div className="relative">
+              <select
+                value={filters.order}
+                onChange={(e) => setFilters({ ...filters, order: e.target.value })}
+                className="appearance-none text-xs font-medium pl-3 pr-7 py-1.5 rounded-lg cursor-pointer"
+                style={{
+                  background: "var(--bg-input)",
+                  color: "var(--text-primary)",
+                  border: "1px solid var(--border-color)",
+                }}
+              >
+                <option value="latest">Latest</option>
+                <option value="random">Random</option>
+              </select>
+              <svg
+                width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2"
+                className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none"
+              >
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </div>
           </div>
+
+          {activeFilterCount > 0 && (
+            <div className="flex flex-wrap items-center gap-1.5 mb-3">
+              {getActiveChips(filters).map((chip) => (
+                <span
+                  key={chip.key}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium"
+                  style={{ background: "rgba(200,144,40,0.15)", color: "#c89028", border: "1px solid rgba(200,144,40,0.3)" }}
+                >
+                  {chip.label}
+                  <button
+                    onClick={() => {
+                      if (chip.filterKey === "saved") {
+                        setFilters({ ...filters, saved: "" });
+                      } else if (chip.filterKey === "dateRange") {
+                        setFilters({ ...filters, dateFrom: "", dateTo: "" });
+                      } else {
+                        const arr = filters[chip.filterKey as keyof SelectedFilters] as string[];
+                        setFilters({ ...filters, [chip.filterKey]: arr.filter((v) => v !== chip.value) });
+                      }
+                    }}
+                    className="ml-0.5 hover:opacity-70"
+                    style={{ color: "#c89028" }}
+                  >
+                    &times;
+                  </button>
+                </span>
+              ))}
+              <button
+                onClick={() => setFilters(DEFAULT_FILTERS)}
+                className="text-xs px-2 py-1 rounded-md"
+                style={{ color: "var(--text-muted)" }}
+              >
+                Clear all
+              </button>
+            </div>
+          )}
 
           {loading && publications.length === 0 ? (
             <MasonryGrid>
-              {Array.from({ length: 6 }).map((_, i) => (
-                <SkeletonCard key={i} />
+              {Array.from({ length: BATCH_SIZE }).map((_, i) => (
+                <SkeletonCard key={`sk-init-${i}`} index={i} />
               ))}
             </MasonryGrid>
           ) : publications.length === 0 ? (
@@ -210,31 +306,47 @@ export default function FeedPage() {
             </div>
           ) : (
             <MasonryGrid>
-              {publications.map((pub, i) => (
-                <PublicationCard
-                  key={`${pub.platform}-${pub.externalPostId}`}
-                  publication={pub}
-                  animationDelay={i >= animatedCount ? (i - animatedCount) * 80 : 0}
-                  shouldAnimate={i >= animatedCount}
-                />
-              ))}
+              {publications.map((pub, i) => {
+                const isReady = i < readyUpTo;
+                const batchIndex = i % BATCH_SIZE;
+                const pubKey = `${pub.platform}-${pub.externalPostId}`;
+                return (
+                  <CardSlot key={pubKey}>
+                    {!isReady && <SkeletonCard index={batchIndex} />}
+                    <div style={{
+                      position: isReady ? "relative" : "absolute",
+                      left: isReady ? undefined : "-9999px",
+                      width: isReady ? undefined : "400px",
+                    }}>
+                      <PublicationCard
+                        publication={pub}
+                        animationDelay={batchIndex * 80}
+                        shouldAnimate={isReady}
+                        onLoaded={() => handleEmbedLoaded(pubKey)}
+                        eager={!isReady}
+                      />
+                    </div>
+                  </CardSlot>
+                );
+              })}
             </MasonryGrid>
           )}
 
-          <div ref={sentinelRef} className="h-4" />
-
-          {loadingMore && (
-            <div className="flex justify-center py-6">
-              <div
-                className="w-8 h-8 border-2 rounded-full animate-spin"
-                style={{ borderColor: "var(--border-color)", borderTopColor: "var(--accent-blue)" }}
-              />
+          {publications.length > 0 && !loading && readyUpTo >= publications.length && !pagination?.hasMore && (
+            <div className="text-center py-8">
+              <span className="text-xs" style={{ color: "var(--text-muted)" }}>No more publications</span>
             </div>
           )}
+
+          <div ref={sentinelRef} className="h-4" />
         </main>
       </div>
     </div>
   );
+}
+
+function CardSlot({ children }: { children: React.ReactNode }) {
+  return <div className="relative">{children}</div>;
 }
 
 function MasonryGrid({ children }: { children: React.ReactNode }) {
@@ -245,7 +357,7 @@ function MasonryGrid({ children }: { children: React.ReactNode }) {
   });
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-start mb-4">
       {cols.map((col, ci) => (
         <div key={ci} className="flex flex-col gap-4">
           {col}
@@ -255,29 +367,78 @@ function MasonryGrid({ children }: { children: React.ReactNode }) {
   );
 }
 
-function SkeletonCard() {
+function SkeletonCard({ index }: { index: number }) {
   return (
     <div
-      className="rounded-xl overflow-hidden flex flex-col items-center justify-center"
-      style={{ background: "var(--bg-card)", height: "380px", border: "1px solid var(--border-color)" }}
+      className="rounded-xl overflow-hidden"
+      style={{
+        background: "var(--bg-card)",
+        border: "1px solid var(--border-color)",
+        animation: `skeletonFadeIn 0.3s ease-out ${index * 60}ms both`,
+      }}
     >
-      <div className="animate-pulse flex flex-col items-center gap-3">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" opacity="0.3">
-          <defs>
-            <radialGradient id="sk-ig" cx="30%" cy="107%" r="150%">
-              <stop offset="0%" stopColor="#fdf497" />
-              <stop offset="5%" stopColor="#fdf497" />
-              <stop offset="45%" stopColor="#fd5949" />
-              <stop offset="60%" stopColor="#dc2743" />
-              <stop offset="90%" stopColor="#285AEB" />
-            </radialGradient>
-          </defs>
-          <rect x="2" y="2" width="20" height="20" rx="5" stroke="url(#sk-ig)" strokeWidth="1.5" fill="none" />
-          <circle cx="12" cy="12" r="5" stroke="url(#sk-ig)" strokeWidth="1.5" fill="none" />
-          <circle cx="17.5" cy="6.5" r="1.2" fill="url(#sk-ig)" />
-        </svg>
-        <div className="h-2 w-20 rounded" style={{ background: "var(--bg-input)" }} />
+      {/* Header: avatar + username + bookmark */}
+      <div className="flex items-center justify-between px-3 pt-3 pb-2">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-full skeleton-shimmer" style={{ background: "var(--bg-input)" }} />
+          <div className="flex flex-col gap-1.5">
+            <div className="h-3 rounded-md skeleton-shimmer" style={{ background: "var(--bg-input)", width: "90px" }} />
+            <div className="h-2 rounded-md skeleton-shimmer" style={{ background: "var(--bg-input)", width: "55px" }} />
+          </div>
+        </div>
+        <div className="w-5 h-5 rounded skeleton-shimmer" style={{ background: "var(--bg-input)" }} />
       </div>
+
+      {/* Image area */}
+      <div className="px-1">
+        <div className="rounded-md skeleton-shimmer" style={{ background: "var(--bg-input)", paddingBottom: "100%" }} />
+      </div>
+
+      {/* Action bar */}
+      <div className="flex items-center gap-4 px-3 py-2.5">
+        <div className="flex items-center gap-3">
+          <div className="w-6 h-6 rounded-full skeleton-shimmer" style={{ background: "var(--bg-input)" }} />
+          <div className="w-6 h-6 rounded-full skeleton-shimmer" style={{ background: "var(--bg-input)" }} />
+          <div className="w-6 h-6 rounded-full skeleton-shimmer" style={{ background: "var(--bg-input)" }} />
+        </div>
+      </div>
+
+      {/* Likes + caption */}
+      <div className="px-3 pb-1">
+        <div className="h-3 rounded-md skeleton-shimmer" style={{ background: "var(--bg-input)", width: "70px" }} />
+      </div>
+      <div className="px-3 pb-3">
+        <div className="h-2.5 rounded-md skeleton-shimmer mt-2" style={{ background: "var(--bg-input)", width: "60%" }} />
+      </div>
+
+      <style jsx>{`
+        @keyframes skeletonFadeIn {
+          from { opacity: 0; transform: translateY(12px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .skeleton-shimmer {
+          position: relative;
+          overflow: hidden;
+        }
+        .skeleton-shimmer::after {
+          content: "";
+          position: absolute;
+          top: 0; left: 0; right: 0; bottom: 0;
+          background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255,255,255,0.04) 40%,
+            rgba(255,255,255,0.08) 50%,
+            rgba(255,255,255,0.04) 60%,
+            transparent 100%
+          );
+          animation: shimmer 1.8s infinite;
+        }
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+      `}</style>
     </div>
   );
 }

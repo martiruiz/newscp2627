@@ -58,32 +58,65 @@ interface InstagramEmbedProps {
   shortcode: string;
   canonicalUrl: string;
   platform?: string;
+  onLoaded?: () => void;
+  eager?: boolean;
 }
 
-export default function InstagramEmbed({ shortcode, canonicalUrl, platform = "Instagram" }: InstagramEmbedProps) {
+export default function InstagramEmbed({ shortcode, canonicalUrl, platform = "Instagram", onLoaded, eager = false }: InstagramEmbedProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [status, setStatus] = useState<"loading" | "rendered" | "error">("loading");
   const processedRef = useRef(false);
+  const notifiedRef = useRef(false);
 
   const Logo = getPlatformLogo(platform);
+
+  const notifyLoaded = useCallback(() => {
+    if (!notifiedRef.current && onLoaded) {
+      notifiedRef.current = true;
+      onLoaded();
+    }
+  }, [onLoaded]);
 
   const processEmbed = useCallback(async () => {
     if (processedRef.current) return;
     try {
       await loadInstagramScript();
       processedRef.current = true;
+
       setTimeout(() => {
         window.instgrm?.Embeds?.process();
+
+        if (!containerRef.current) return;
+
+        const checkRendered = () => {
+          const iframe = containerRef.current?.querySelector("iframe");
+          if (iframe) {
+            setStatus("rendered");
+            notifyLoaded();
+          } else {
+            setTimeout(checkRendered, 300);
+          }
+        };
+
+        setTimeout(checkRendered, 500);
+
         setTimeout(() => {
           setStatus("rendered");
-        }, 2000);
+          notifyLoaded();
+        }, 6000);
       }, 100);
     } catch {
       setStatus("error");
+      notifyLoaded();
     }
-  }, []);
+  }, [notifyLoaded]);
 
   useEffect(() => {
+    if (eager) {
+      processEmbed();
+      return;
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
@@ -99,7 +132,7 @@ export default function InstagramEmbed({ shortcode, canonicalUrl, platform = "In
     }
 
     return () => observer.disconnect();
-  }, [processEmbed]);
+  }, [processEmbed, eager]);
 
   if (status === "error") {
     return (

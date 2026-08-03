@@ -24,6 +24,8 @@ interface PublicationCardProps {
   publication: Publication;
   animationDelay?: number;
   shouldAnimate?: boolean;
+  onLoaded?: () => void;
+  eager?: boolean;
 }
 
 const BADGE_COLORS: Record<string, string> = {
@@ -32,7 +34,7 @@ const BADGE_COLORS: Record<string, string> = {
   "Overperforming": "var(--badge-overperforming)",
 };
 
-export default function PublicationCard({ publication, animationDelay = 0, shouldAnimate = false }: PublicationCardProps) {
+export default function PublicationCard({ publication, animationDelay = 0, shouldAnimate = false, onLoaded, eager = false }: PublicationCardProps) {
   const [visible, setVisible] = useState(!shouldAnimate);
   const [isSaved, setIsSaved] = useState(publication.isSaved);
   const [saving, setSaving] = useState(false);
@@ -128,6 +130,8 @@ export default function PublicationCard({ publication, animationDelay = 0, shoul
           shortcode={publication.externalPostId}
           canonicalUrl={publication.canonicalUrl}
           platform={publication.platform}
+          onLoaded={onLoaded}
+          eager={eager}
         />
       </div>
     </div>
