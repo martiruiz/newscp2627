@@ -10,7 +10,7 @@ function slugArray(value: string | null): string[] {
 function buildWhere(params: Record<string, string[]>): any {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const where: any = {};
-  const { sport, entityType, format, platform, classification } = params;
+  const { sport, entityType, format, platform, classification, contentCategory } = params;
 
   if (sport?.length) {
     where.sport = sport.length === 1 ? { slug: sport[0] } : { slug: { in: sport } };
@@ -27,6 +27,9 @@ function buildWhere(params: Record<string, string[]>): any {
   if (classification?.length) {
     where.classifications = { some: { classification: classification.length === 1 ? { slug: classification[0] } : { slug: { in: classification } } } };
   }
+  if (contentCategory?.length) {
+    where.contentCategories = { some: { contentCategory: contentCategory.length === 1 ? { slug: contentCategory[0] } : { slug: { in: contentCategory } } } };
+  }
   return where;
 }
 
@@ -39,17 +42,19 @@ export async function GET(request: NextRequest) {
     format: slugArray(searchParams.get("format")),
     platform: slugArray(searchParams.get("platform")),
     classification: slugArray(searchParams.get("classification")),
+    contentCategory: slugArray(searchParams.get("contentCategory")),
   };
 
   const hasFilters = Object.values(allParams).some((v) => v.length > 0);
 
   if (!hasFilters) {
-    const [sports, entityTypes, formats, platforms, classifications] = await Promise.all([
+    const [sports, entityTypes, formats, platforms, classifications, contentCategories] = await Promise.all([
       prisma.sport.findMany({ orderBy: { name: "asc" }, include: { _count: { select: { publications: true } } } }),
       prisma.entityType.findMany({ orderBy: { name: "asc" }, include: { _count: { select: { publications: true } } } }),
       prisma.contentFormat.findMany({ orderBy: { name: "asc" }, include: { _count: { select: { publications: true } } } }),
       prisma.platform.findMany({ orderBy: { name: "asc" }, include: { _count: { select: { publications: true } } } }),
       prisma.classification.findMany({ orderBy: { name: "asc" }, include: { _count: { select: { publications: true } } } }),
+      prisma.contentCategory.findMany({ orderBy: { name: "asc" }, include: { _count: { select: { publications: true } } } }),
     ]);
 
     const entityNames = await prisma.publication.groupBy({
@@ -65,6 +70,7 @@ export async function GET(request: NextRequest) {
       formats: formats.map((f) => ({ name: f.name, slug: f.slug, count: f._count.publications })),
       platforms: platforms.map((p) => ({ name: p.name, slug: p.slug, count: p._count.publications })),
       classifications: classifications.map((c) => ({ name: c.name, slug: c.slug, count: c._count.publications })),
+      contentCategories: contentCategories.map((c) => ({ name: c.name, slug: c.slug, count: c._count.publications })),
       entityNames: entityNames.filter((e) => e.entityName).map((e) => ({ name: e.entityName!, count: e._count })),
     });
   }
@@ -75,14 +81,16 @@ export async function GET(request: NextRequest) {
   const withoutFormat = buildWhere({ ...allParams, format: [] });
   const withoutPlatform = buildWhere({ ...allParams, platform: [] });
   const withoutClassification = buildWhere({ ...allParams, classification: [] });
+  const withoutContentCategory = buildWhere({ ...allParams, contentCategory: [] });
   const fullWhere = buildWhere(allParams);
 
-  const [allSports, allEntityTypes, allFormats, allPlatforms, allClassifications] = await Promise.all([
+  const [allSports, allEntityTypes, allFormats, allPlatforms, allClassifications, allContentCategories] = await Promise.all([
     prisma.sport.findMany({ orderBy: { name: "asc" }, select: { name: true, slug: true } }),
     prisma.entityType.findMany({ orderBy: { name: "asc" }, select: { name: true, slug: true } }),
     prisma.contentFormat.findMany({ orderBy: { name: "asc" }, select: { name: true, slug: true } }),
     prisma.platform.findMany({ orderBy: { name: "asc" }, select: { name: true, slug: true } }),
     prisma.classification.findMany({ orderBy: { name: "asc" }, select: { name: true, slug: true } }),
+    prisma.contentCategory.findMany({ orderBy: { name: "asc" }, select: { name: true, slug: true } }),
   ]);
 
   const [sportCounts, entityTypeCounts, formatCounts, platformCounts, classificationCounts, entityNames] = await Promise.all([
@@ -147,12 +155,24 @@ export async function GET(request: NextRequest) {
     }
   }
 
+  const contentCatCounts = await prisma.publication.findMany({
+    where: withoutContentCategory,
+    select: { contentCategories: { select: { contentCategory: { select: { slug: true } } } } },
+  });
+  const catCountMap = new Map<string, number>();
+  for (const pub of contentCatCounts) {
+    for (const c of pub.contentCategories) {
+      catCountMap.set(c.contentCategory.slug, (catCountMap.get(c.contentCategory.slug) || 0) + 1);
+    }
+  }
+
   return NextResponse.json({
     sports: allSports.map((s) => ({ name: s.name, slug: s.slug, count: sportCountMap.get(s.slug) || 0 })),
     entityTypes: allEntityTypes.map((e) => ({ name: e.name, slug: e.slug, count: entityTypeCountMap.get(e.slug) || 0 })),
     formats: allFormats.map((f) => ({ name: f.name, slug: f.slug, count: formatCountMap.get(f.slug) || 0 })),
     platforms: allPlatforms.map((p) => ({ name: p.name, slug: p.slug, count: platformCountMap.get(p.slug) || 0 })),
     classifications: allClassifications.map((c) => ({ name: c.name, slug: c.slug, count: classCountMap.get(c.slug) || 0 })),
+    contentCategories: allContentCategories.map((c) => ({ name: c.name, slug: c.slug, count: catCountMap.get(c.slug) || 0 })),
     entityNames: entityNames.filter((e) => e.entityName).map((e) => ({ name: e.entityName!, count: e._count })),
   });
 }

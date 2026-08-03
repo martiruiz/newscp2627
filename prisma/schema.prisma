@@ -65,6 +65,14 @@ model Classification {
   createdAt    DateTime      @default(now())
 }
 
+model ContentCategory {
+  id           String        @id @default(uuid())
+  name         String        @unique
+  slug         String        @unique
+  publications PublicationContentCategory[]
+  createdAt    DateTime      @default(now())
+}
+
 model Publication {
   id                String   @id @default(uuid())
   platformId        String
@@ -86,6 +94,7 @@ model Publication {
   entityName        String?
   competitions      PublicationCompetition[]
   classifications   PublicationClassification[]
+  contentCategories PublicationContentCategory[]
   savedBy           SavedPost[]
   importBatchId     String?
   importBatch       ImportBatch? @relation(fields: [importBatchId], references: [id])
@@ -116,6 +125,16 @@ model PublicationClassification {
   classification   Classification @relation(fields: [classificationId], references: [id], onDelete: Cascade)
 
   @@unique([publicationId, classificationId])
+}
+
+model PublicationContentCategory {
+  id                String          @id @default(uuid())
+  publicationId     String
+  publication       Publication     @relation(fields: [publicationId], references: [id], onDelete: Cascade)
+  contentCategoryId String
+  contentCategory   ContentCategory @relation(fields: [contentCategoryId], references: [id], onDelete: Cascade)
+
+  @@unique([publicationId, contentCategoryId])
 }
 
 model SavedPost {

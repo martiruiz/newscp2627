@@ -19,6 +19,7 @@ interface Filters {
   formats: FilterOption[];
   platforms: FilterOption[];
   classifications: FilterOption[];
+  contentCategories: FilterOption[];
   entityNames: EntityNameOption[];
 }
 
@@ -30,6 +31,7 @@ export interface SelectedFilters {
   format: string[];
   platform: string[];
   classification: string[];
+  contentCategory: string[];
   saved: string;
   dateFrom: string;
   dateTo: string;
@@ -50,7 +52,7 @@ interface FilterSidebarProps {
 interface SearchResult {
   label: string;
   category: string;
-  filterKey: "sport" | "competition" | "entityType" | "entityName" | "format" | "platform" | "classification";
+  filterKey: "sport" | "competition" | "entityType" | "entityName" | "format" | "platform" | "classification" | "contentCategory";
   value: string;
 }
 
@@ -84,7 +86,7 @@ const ENTITY_PLURAL: Record<string, string> = {
   players: "athletes",
 };
 
-type SectionId = "date" | "smart" | "sport" | "published" | "account" | null;
+type SectionId = "date" | "sport" | "published" | "account" | "contentCategory" | null;
 
 export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClose, collapsed, onToggleCollapse, resultCount }: FilterSidebarProps) {
   const [filterData, setFilterData] = useState<Filters | null>(null);
@@ -107,6 +109,7 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
     if (filters.format.length > 0) params.set("format", filters.format.join(","));
     if (filters.platform.length > 0) params.set("platform", filters.platform.join(","));
     if (filters.classification.length > 0) params.set("classification", filters.classification.join(","));
+    if (filters.contentCategory.length > 0) params.set("contentCategory", filters.contentCategory.join(","));
     const qs = params.toString();
     fetch(`/api/filters${qs ? `?${qs}` : ""}`)
       .then((res) => res.json())
@@ -115,10 +118,10 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
         setFilteredAccounts(data.entityNames || []);
       })
       .catch(() => {});
-  }, [filters.sport, filters.entityType, filters.format, filters.platform, filters.classification]);
+  }, [filters.sport, filters.entityType, filters.format, filters.platform, filters.classification, filters.contentCategory]);
 
   const toggleArrayFilter = useCallback(
-    (key: "sport" | "competition" | "entityType" | "entityName" | "format" | "platform" | "classification", value: string) => {
+    (key: "sport" | "competition" | "entityType" | "entityName" | "format" | "platform" | "classification" | "contentCategory", value: string) => {
       const current = filters[key];
       const updated = current.includes(value)
         ? current.filter((v) => v !== value)
@@ -137,6 +140,7 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
       format: [],
       platform: [],
       classification: [],
+      contentCategory: [],
       saved: "",
       dateFrom: "",
       dateTo: "",
@@ -153,6 +157,7 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
     filters.format.length > 0 ||
     filters.platform.length > 0 ||
     filters.classification.length > 0 ||
+    filters.contentCategory.length > 0 ||
     filters.saved ||
     filters.dateFrom ||
     filters.dateTo;
@@ -165,6 +170,7 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
     filters.format.length +
     filters.platform.length +
     filters.classification.length +
+    filters.contentCategory.length +
     (filters.saved ? 1 : 0) +
     (filters.dateFrom || filters.dateTo ? 1 : 0);
 
@@ -206,6 +212,9 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
     }
     for (const f of filterData.formats) {
       if (f.name.toLowerCase().includes(q)) topics.push({ label: f.name, category: "Format", filterKey: "format", value: f.slug });
+    }
+    for (const cc of filterData.contentCategories) {
+      if (cc.name.toLowerCase().includes(q)) topics.push({ label: cc.name, category: "Category", filterKey: "contentCategory", value: cc.slug });
     }
     if (topics.length > 0) groups.push({ title: "Topics", results: topics.slice(0, 8) });
 
@@ -400,6 +409,80 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
             )}
           </div>
 
+          {/* Quick filter chips */}
+          {filterData && (
+            <div className="flex flex-wrap gap-1.5 mb-3">
+              {filterData.classifications.map((opt) => {
+                const colors: Record<string, string> = {
+                  "top-picks": "var(--badge-top)",
+                  "replicable-ideas": "var(--badge-replicable)",
+                  overperforming: "var(--badge-overperforming)",
+                };
+                const isSelected = filters.classification.includes(opt.slug);
+                return (
+                  <button
+                    key={opt.slug}
+                    onClick={() => toggleArrayFilter("classification", opt.slug)}
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-medium transition-all"
+                    style={{
+                      background: isSelected ? colors[opt.slug] || "#c89028" : "var(--bg-input)",
+                      color: isSelected ? "#fff" : "var(--text-secondary)",
+                      border: `1.5px solid ${isSelected ? "rgba(255,255,255,0.3)" : "var(--border-color)"}`,
+                    }}
+                  >
+                    {isSelected && (
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3">
+                        <path d="M20 6L9 17l-5-5" />
+                      </svg>
+                    )}
+                    {opt.name}
+                  </button>
+                );
+              })}
+              {(() => {
+                const ccSlug = "content-creators";
+                const isSelected = filters.entityType.includes(ccSlug);
+                return (
+                  <button
+                    onClick={() => toggleArrayFilter("entityType", ccSlug)}
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-medium transition-all"
+                    style={{
+                      background: isSelected ? "#c89028" : "var(--bg-input)",
+                      color: isSelected ? "#fff" : "var(--text-secondary)",
+                      border: `1.5px solid ${isSelected ? "#e0a832" : "var(--border-color)"}`,
+                    }}
+                  >
+                    {isSelected && (
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3">
+                        <path d="M20 6L9 17l-5-5" />
+                      </svg>
+                    )}
+                    Content Creators
+                  </button>
+                );
+              })()}
+              <button
+                onClick={() => onFiltersChange({ ...filters, saved: filters.saved === "true" ? "" : "true" })}
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-medium transition-all"
+                style={{
+                  background: filters.saved === "true" ? "#c89028" : "var(--bg-input)",
+                  color: filters.saved === "true" ? "#fff" : "var(--text-secondary)",
+                  border: `1.5px solid ${filters.saved === "true" ? "#e0a832" : "var(--border-color)"}`,
+                }}
+              >
+                {filters.saved === "true" && (
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3">
+                    <path d="M20 6L9 17l-5-5" />
+                  </svg>
+                )}
+                <svg width="11" height="11" viewBox="0 0 24 24" fill={filters.saved === "true" ? "#fff" : "none"} stroke={filters.saved === "true" ? "#fff" : "var(--text-secondary)"} strokeWidth="2">
+                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                </svg>
+                Saved
+              </button>
+            </div>
+          )}
+
           {/* Date range — accordion */}
           <AccordionSection
             id="date"
@@ -412,48 +495,6 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
           >
             <DateRangePresets filters={filters} onFiltersChange={onFiltersChange} />
           </AccordionSection>
-
-          {/* Smart Filters */}
-          {filterData?.classifications && filterData.classifications.length > 0 && (
-            <AccordionSection
-              id="smart"
-              title="Smart Filters"
-              icon="sparkles"
-              open={openSection === "smart"}
-              onToggle={() => toggleSection("smart")}
-              badge={filters.classification.length}
-            >
-              <div className="flex flex-wrap gap-1.5">
-                {filterData.classifications.map((opt) => {
-                  const colors: Record<string, string> = {
-                    "top-picks": "var(--badge-top)",
-                    "replicable-ideas": "var(--badge-replicable)",
-                    overperforming: "var(--badge-overperforming)",
-                  };
-                  const isSelected = filters.classification.includes(opt.slug);
-                  return (
-                    <button
-                      key={opt.slug}
-                      onClick={() => toggleArrayFilter("classification", opt.slug)}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition-all"
-                      style={{
-                        background: isSelected ? colors[opt.slug] || "#c89028" : "var(--bg-input)",
-                        color: isSelected ? "#fff" : "var(--text-secondary)",
-                        border: `1.5px solid ${isSelected ? "rgba(255,255,255,0.3)" : "var(--border-color)"}`,
-                      }}
-                    >
-                      {isSelected && (
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3">
-                          <path d="M20 6L9 17l-5-5" />
-                        </svg>
-                      )}
-                      {opt.name}
-                    </button>
-                  );
-                })}
-              </div>
-            </AccordionSection>
-          )}
 
           {/* Sport — accordion */}
           {filterData?.sports && (
@@ -538,26 +579,37 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
               badge={filters.entityType.length}
               summary={publishedSummary}
             >
-              <div className="flex flex-wrap gap-1.5">
+              <div className="space-y-0.5">
                 {filterData.entityTypes.filter((opt) => !HIDDEN_ENTITY_SLUGS.has(opt.slug)).map((opt) => {
                   const isSelected = filters.entityType.includes(opt.slug);
                   return (
                     <button
                       key={opt.slug}
                       onClick={() => toggleArrayFilter("entityType", opt.slug)}
-                      className="flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-medium transition-all"
+                      className="flex items-center justify-between w-full text-left px-2.5 py-1.5 rounded-md text-xs transition-all"
                       style={{
-                        background: isSelected ? "#c89028" : "var(--bg-input)",
-                        color: isSelected ? "#fff" : "var(--text-secondary)",
-                        border: `1.5px solid ${isSelected ? "#e0a832" : "var(--border-color)"}`,
+                        background: isSelected ? "#c89028" : "transparent",
+                        color: isSelected ? "#fff" : "var(--text-primary)",
+                        border: isSelected ? "1px solid #e0a832" : "1px solid transparent",
                       }}
                     >
-                      {isSelected && (
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3">
-                          <path d="M20 6L9 17l-5-5" />
-                        </svg>
-                      )}
-                      {ENTITY_DISPLAY[opt.name] || opt.name}
+                      <span className="flex items-center gap-1.5">
+                        {isSelected && (
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3">
+                            <path d="M20 6L9 17l-5-5" />
+                          </svg>
+                        )}
+                        {ENTITY_DISPLAY[opt.name] || opt.name}
+                      </span>
+                      <span
+                        className="text-[10px] px-1.5 py-0.5 rounded-full font-medium"
+                        style={{
+                          background: isSelected ? "rgba(255,255,255,0.2)" : "var(--bg-input)",
+                          color: isSelected ? "rgba(255,255,255,0.9)" : "var(--text-secondary)",
+                        }}
+                      >
+                        {opt.count >= 1000 ? `${(opt.count / 1000).toFixed(1).replace(/\.0$/, "")}K` : opt.count}
+                      </span>
                     </button>
                   );
                 })}
@@ -651,6 +703,61 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
             );
           })()}
 
+          {/* Content category — accordion */}
+          {filterData?.contentCategories && filterData.contentCategories.length > 0 && (
+            <AccordionSection
+              id="contentCategory"
+              title="Content category"
+              icon="category"
+              open={openSection === "contentCategory"}
+              onToggle={() => toggleSection("contentCategory")}
+              badge={filters.contentCategory.length}
+              summary={filters.contentCategory.length > 0
+                ? filterData.contentCategories
+                    .filter((c) => filters.contentCategory.includes(c.slug))
+                    .map((c) => c.name)
+                    .join(", ")
+                : undefined
+              }
+            >
+              <div className="space-y-0.5">
+                {filterData.contentCategories.map((opt) => {
+                  const isSelected = filters.contentCategory.includes(opt.slug);
+                  return (
+                    <button
+                      key={opt.slug}
+                      onClick={() => toggleArrayFilter("contentCategory", opt.slug)}
+                      className="flex items-center justify-between w-full text-left px-2.5 py-1.5 rounded-md text-xs transition-all"
+                      style={{
+                        background: isSelected ? "#c89028" : "transparent",
+                        color: isSelected ? "#fff" : "var(--text-primary)",
+                        border: isSelected ? "1px solid #e0a832" : "1px solid transparent",
+                      }}
+                    >
+                      <span className="flex items-center gap-1.5">
+                        {isSelected && (
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3">
+                            <path d="M20 6L9 17l-5-5" />
+                          </svg>
+                        )}
+                        {opt.name}
+                      </span>
+                      <span
+                        className="text-[10px] px-1.5 py-0.5 rounded-full font-medium"
+                        style={{
+                          background: isSelected ? "rgba(255,255,255,0.2)" : "var(--bg-input)",
+                          color: isSelected ? "rgba(255,255,255,0.9)" : "var(--text-secondary)",
+                        }}
+                      >
+                        {opt.count >= 1000 ? `${(opt.count / 1000).toFixed(1).replace(/\.0$/, "")}K` : opt.count}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </AccordionSection>
+          )}
+
           {/* Format */}
           {filterData?.formats && (
             <div className="mb-3">
@@ -704,30 +811,6 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
             </div>
           )}
 
-          {/* Saved toggle */}
-          <div className="mt-3 mb-2">
-            <button
-              onClick={() => onFiltersChange({ ...filters, saved: filters.saved === "true" ? "" : "true" })}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all"
-              style={{ background: "var(--bg-input)", border: "1px solid var(--border-color)" }}
-            >
-              <div
-                className="relative shrink-0 rounded-full transition-all"
-                style={{ width: "36px", height: "20px", background: filters.saved === "true" ? "#c89028" : "var(--border-color)" }}
-              >
-                <div
-                  className="absolute top-[2px] rounded-full bg-white transition-all"
-                  style={{ width: "16px", height: "16px", left: filters.saved === "true" ? "18px" : "2px" }}
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill={filters.saved === "true" ? "#c89028" : "none"} stroke={filters.saved === "true" ? "#c89028" : "var(--text-secondary)"} strokeWidth="2">
-                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-                </svg>
-                <span style={{ color: "var(--text-primary)" }}>Saved content only</span>
-              </div>
-            </button>
-          </div>
         </div>
 
         {/* Fixed footer */}
@@ -793,6 +876,8 @@ function AccordionSection({
         return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8L12 2z" /></svg>;
       case "calendar":
         return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg>;
+      case "category":
+        return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg>;
       default:
         return null;
     }

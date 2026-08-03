@@ -38,6 +38,7 @@ const DEFAULT_FILTERS: SelectedFilters = {
   format: [],
   platform: [],
   classification: [],
+  contentCategory: [],
   saved: "",
   dateFrom: "",
   dateTo: "",
@@ -59,6 +60,7 @@ function getActiveChips(filters: SelectedFilters) {
   for (const v of filters.format) chips.push({ label: v, key: `f-${v}`, filterKey: "format", value: v });
   for (const v of filters.platform) chips.push({ label: v, key: `p-${v}`, filterKey: "platform", value: v });
   for (const v of filters.classification) chips.push({ label: v, key: `c-${v}`, filterKey: "classification", value: v });
+  for (const v of filters.contentCategory) chips.push({ label: v, key: `cc-${v}`, filterKey: "contentCategory", value: v });
   if (filters.saved) chips.push({ label: "Saved", key: "saved", filterKey: "saved", value: "" });
   if (filters.dateFrom || filters.dateTo) {
     const label = filters.dateFrom && filters.dateTo
@@ -182,6 +184,7 @@ export default function FeedPage() {
     filters.format.length +
     filters.platform.length +
     filters.classification.length +
+    filters.contentCategory.length +
     (filters.saved ? 1 : 0);
 
   return (
@@ -294,15 +297,31 @@ export default function FeedPage() {
             </MasonryGrid>
           ) : publications.length === 0 ? (
             <div className="text-center py-20">
-              <p className="text-lg" style={{ color: "var(--text-muted)" }}>
-                No publications found
+              <div
+                className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4"
+                style={{ background: "var(--bg-input)" }}
+              >
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5">
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="M21 21l-4.35-4.35" />
+                  <path d="M8 11h6" />
+                </svg>
+              </div>
+              <p className="text-lg font-medium" style={{ color: "var(--text-primary)" }}>
+                No results
               </p>
-              <p className="text-sm mt-2" style={{ color: "var(--text-muted)" }}>
-                Try adjusting your filters or{" "}
-                <a href="/admin/import" style={{ color: "var(--accent-blue)" }}>
-                  import some content
-                </a>
-              </p>
+              {activeFilterCount > 0 ? (
+                <p className="text-sm mt-2" style={{ color: "var(--text-muted)" }}>
+                  Remove one or more filters to see content.
+                </p>
+              ) : (
+                <p className="text-sm mt-2" style={{ color: "var(--text-muted)" }}>
+                  <a href="/admin/import" style={{ color: "var(--accent-blue)" }}>
+                    Import some content
+                  </a>{" "}
+                  to get started.
+                </p>
+              )}
             </div>
           ) : (
             <MasonryGrid>

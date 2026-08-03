@@ -14,6 +14,7 @@ export async function GET(request: NextRequest) {
   const platform = searchParams.get("platform");
   const saved = searchParams.get("saved");
   const classification = searchParams.get("classification");
+  const contentCategory = searchParams.get("contentCategory");
   const dateFrom = searchParams.get("dateFrom");
   const dateTo = searchParams.get("dateTo");
   const search = searchParams.get("search");
@@ -85,6 +86,15 @@ export async function GET(request: NextRequest) {
       where.classifications = { some: { classification: { slug: slugs[0] } } };
     } else if (slugs.length > 1) {
       where.classifications = { some: { classification: { slug: { in: slugs } } } };
+    }
+  }
+
+  if (contentCategory) {
+    const slugs = contentCategory.split(",").filter(Boolean);
+    if (slugs.length === 1) {
+      where.contentCategories = { some: { contentCategory: { slug: slugs[0] } } };
+    } else if (slugs.length > 1) {
+      where.contentCategories = { some: { contentCategory: { slug: { in: slugs } } } };
     }
   }
 
