@@ -1,0 +1,158 @@
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+
+function slugArray(value: string | null): string[] {
+  if (!value) return [];
+  return value.split(",").filter(Boolean);
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function buildWhere(params: Record<string, string[]>): any {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const where: any = {};
+  const { sport, entityType, format, platform, classification } = params;
+
+  if (sport?.length) {
+    where.sport = sport.length === 1 ? { slug: sport[0] } : { slug: { in: sport } };
+  }
+  if (entityType?.length) {
+    where.entityType = entityType.length === 1 ? { slug: entityType[0] } : { slug: { in: entityType } };
+  }
+  if (format?.length) {
+    where.contentFormat = format.length === 1 ? { slug: format[0] } : { slug: { in: format } };
+  }
+  if (platform?.length) {
+    where.platform = platform.length === 1 ? { slug: platform[0] } : { slug: { in: platform } };
+  }
+  if (classification?.length) {
+    where.classifications = { some: { classification: classification.length === 1 ? { slug: classification[0] } : { slug: { in: classification } } } };
+  }
+  return where;
+}
+
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+
+  const allParams = {
+    sport: slugArray(searchParams.get("sport")),
+    entityType: slugArray(searchParams.get("entityType")),
+    format: slugArray(searchParams.get("format")),
+    platform: slugArray(searchParams.get("platform")),
+    classification: slugArray(searchParams.get("classification")),
+  };
+
+  const hasFilters = Object.values(allParams).some((v) => v.length > 0);
+
+  if (!hasFilters) {
+    const [sports, entityTypes, formats, platforms, classifications] = await Promise.all([
+      prisma.sport.findMany({ orderBy: { name: "asc" }, include: { _count: { select: { publications: true } } } }),
+      prisma.entityType.findMany({ orderBy: { name: "asc" }, include: { _count: { select: { publications: true } } } }),
+      prisma.contentFormat.findMany({ orderBy: { name: "asc" }, include: { _count: { select: { publications: true } } } }),
+      prisma.platform.findMany({ orderBy: { name: "asc" }, include: { _count: { select: { publications: true } } } }),
+      prisma.classification.findMany({ orderBy: { name: "asc" }, include: { _count: { select: { publications: true } } } }),
+    ]);
+
+    const entityNames = await prisma.publication.groupBy({
+      by: ["entityName"],
+      where: { entityName: { not: null } },
+      _count: true,
+      orderBy: { _count: { entityName: "desc" } },
+    });
+
+    return NextResponse.json({
+      sports: sports.map((s) => ({ name: s.name, slug: s.slug, count: s._count.publications })),
+      entityTypes: entityTypes.map((e) => ({ name: e.name, slug: e.slug, count: e._count.publications })),
+      formats: formats.map((f) => ({ name: f.name, slug: f.slug, count: f._count.publications })),
+      platforms: platforms.map((p) => ({ name: p.name, slug: p.slug, count: p._count.publications })),
+      classifications: classifications.map((c) => ({ name: c.name, slug: c.slug, count: c._count.publications })),
+      entityNames: entityNames.filter((e) => e.entityName).map((e) => ({ name: e.entityName!, count: e._count })),
+    });
+  }
+
+  // Contextual counts: for each facet, count with all OTHER filters applied (exclude own dimension)
+  const withoutSport = buildWhere({ ...allParams, sport: [] });
+  const withoutEntityType = buildWhere({ ...allParams, entityType: [] });
+  const withoutFormat = buildWhere({ ...allParams, format: [] });
+  const withoutPlatform = buildWhere({ ...allParams, platform: [] });
+  const withoutClassification = buildWhere({ ...allParams, classification: [] });
+  const fullWhere = buildWhere(allParams);
+
+  const [allSports, allEntityTypes, allFormats, allPlatforms, allClassifications] = await Promise.all([
+    prisma.sport.findMany({ orderBy: { name: "asc" }, select: { name: true, slug: true } }),
+    prisma.entityType.findMany({ orderBy: { name: "asc" }, select: { name: true, slug: true } }),
+    prisma.contentFormat.findMany({ orderBy: { name: "asc" }, select: { name: true, slug: true } }),
+    prisma.platform.findMany({ orderBy: { name: "asc" }, select: { name: true, slug: true } }),
+    prisma.classification.findMany({ orderBy: { name: "asc" }, select: { name: true, slug: true } }),
+  ]);
+
+  const [sportCounts, entityTypeCounts, formatCounts, platformCounts, classificationCounts, entityNames] = await Promise.all([
+    prisma.publication.groupBy({
+      by: ["sportId"],
+      where: withoutSport,
+      _count: true,
+    }),
+    prisma.publication.groupBy({
+      by: ["entityTypeId"],
+      where: withoutEntityType,
+      _count: true,
+    }),
+    prisma.publication.groupBy({
+      by: ["contentFormatId"],
+      where: withoutFormat,
+      _count: true,
+    }),
+    prisma.publication.groupBy({
+      by: ["platformId"],
+      where: withoutPlatform,
+      _count: true,
+    }),
+    prisma.publication.findMany({
+      where: withoutClassification,
+      select: { classifications: { select: { classification: { select: { slug: true } } } } },
+    }),
+    prisma.publication.groupBy({
+      by: ["entityName"],
+      where: { ...fullWhere, entityName: { not: null } },
+      _count: true,
+      orderBy: { _count: { entityName: "desc" } },
+    }),
+  ]);
+
+  const sportIdMap = await prisma.sport.findMany({ select: { id: true, slug: true } });
+  const entityTypeIdMap = await prisma.entityType.findMany({ select: { id: true, slug: true } });
+  const formatIdMap = await prisma.contentFormat.findMany({ select: { id: true, slug: true } });
+  const platformIdMap = await prisma.platform.findMany({ select: { id: true, slug: true } });
+
+  const sportCountMap = new Map(sportCounts.map((s) => {
+    const match = sportIdMap.find((m) => m.id === s.sportId);
+    return [match?.slug, s._count] as const;
+  }));
+  const entityTypeCountMap = new Map(entityTypeCounts.map((e) => {
+    const match = entityTypeIdMap.find((m) => m.id === e.entityTypeId);
+    return [match?.slug, e._count] as const;
+  }));
+  const formatCountMap = new Map(formatCounts.map((f) => {
+    const match = formatIdMap.find((m) => m.id === f.contentFormatId);
+    return [match?.slug, f._count] as const;
+  }));
+  const platformCountMap = new Map(platformCounts.map((p) => {
+    const match = platformIdMap.find((m) => m.id === p.platformId);
+    return [match?.slug, p._count] as const;
+  }));
+
+  const classCountMap = new Map<string, number>();
+  for (const pub of classificationCounts) {
+    for (const c of pub.classifications) {
+      classCountMap.set(c.classification.slug, (classCountMap.get(c.classification.slug) || 0) + 1);
+    }
+  }
+
+  return NextResponse.json({
+    sports: allSports.map((s) => ({ name: s.name, slug: s.slug, count: sportCountMap.get(s.slug) || 0 })),
+    entityTypes: allEntityTypes.map((e) => ({ name: e.name, slug: e.slug, count: entityTypeCountMap.get(e.slug) || 0 })),
+    formats: allFormats.map((f) => ({ name: f.name, slug: f.slug, count: formatCountMap.get(f.slug) || 0 })),
+    platforms: allPlatforms.map((p) => ({ name: p.name, slug: p.slug, count: platformCountMap.get(p.slug) || 0 })),
+    classifications: allClassifications.map((c) => ({ name: c.name, slug: c.slug, count: classCountMap.get(c.slug) || 0 })),
+    entityNames: entityNames.filter((e) => e.entityName).map((e) => ({ name: e.entityName!, count: e._count })),
+  });
+}

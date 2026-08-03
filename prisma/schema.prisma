@@ -1,0 +1,160 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id        String      @id @default(uuid())
+  email     String      @unique
+  name      String?
+  password  String
+  savedPosts SavedPost[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+model Platform {
+  id           String        @id @default(uuid())
+  name         String        @unique
+  slug         String        @unique
+  publications Publication[]
+  createdAt    DateTime      @default(now())
+}
+
+model Sport {
+  id           String        @id @default(uuid())
+  name         String        @unique
+  slug         String        @unique
+  publications Publication[]
+  createdAt    DateTime      @default(now())
+}
+
+model Competition {
+  id           String                      @id @default(uuid())
+  name         String                      @unique
+  slug         String                      @unique
+  publications PublicationCompetition[]
+  createdAt    DateTime                    @default(now())
+}
+
+model EntityType {
+  id           String        @id @default(uuid())
+  name         String        @unique
+  slug         String        @unique
+  publications Publication[]
+  createdAt    DateTime      @default(now())
+}
+
+model ContentFormat {
+  id           String        @id @default(uuid())
+  name         String        @unique
+  slug         String        @unique
+  publications Publication[]
+  createdAt    DateTime      @default(now())
+}
+
+model Classification {
+  id           String        @id @default(uuid())
+  name         String        @unique
+  slug         String        @unique
+  publications PublicationClassification[]
+  createdAt    DateTime      @default(now())
+}
+
+model Publication {
+  id                String   @id @default(uuid())
+  platformId        String
+  platform          Platform @relation(fields: [platformId], references: [id])
+  externalPostId    String
+  originalUrl       String?
+  canonicalUrl      String
+  embedUrl          String
+  instagramPostType String?
+  accountUsername   String?
+  rawTitle          String?
+  publishedAt       DateTime?
+  contentFormatId   String?
+  contentFormat     ContentFormat? @relation(fields: [contentFormatId], references: [id])
+  sportId           String?
+  sport             Sport?   @relation(fields: [sportId], references: [id])
+  entityTypeId      String?
+  entityType        EntityType? @relation(fields: [entityTypeId], references: [id])
+  entityName        String?
+  competitions      PublicationCompetition[]
+  classifications   PublicationClassification[]
+  savedBy           SavedPost[]
+  importBatchId     String?
+  importBatch       ImportBatch? @relation(fields: [importBatchId], references: [id])
+  rawImportData     String?
+  importStatus      String?
+  importError       String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([platformId, externalPostId])
+}
+
+model PublicationCompetition {
+  id            String      @id @default(uuid())
+  publicationId String
+  publication   Publication @relation(fields: [publicationId], references: [id], onDelete: Cascade)
+  competitionId String
+  competition   Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+
+  @@unique([publicationId, competitionId])
+}
+
+model PublicationClassification {
+  id               String         @id @default(uuid())
+  publicationId    String
+  publication      Publication    @relation(fields: [publicationId], references: [id], onDelete: Cascade)
+  classificationId String
+  classification   Classification @relation(fields: [classificationId], references: [id], onDelete: Cascade)
+
+  @@unique([publicationId, classificationId])
+}
+
+model SavedPost {
+  id            String      @id @default(uuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  publicationId String
+  publication   Publication @relation(fields: [publicationId], references: [id], onDelete: Cascade)
+  folderId      String?
+  folder        SavedFolder? @relation(fields: [folderId], references: [id])
+  createdAt     DateTime    @default(now())
+
+  @@unique([userId, publicationId])
+}
+
+model SavedFolder {
+  id        String      @id @default(uuid())
+  name      String
+  userId    String
+  posts     SavedPost[]
+  createdAt DateTime    @default(now())
+
+  @@unique([userId, name])
+}
+
+model ImportBatch {
+  id             String        @id @default(uuid())
+  filename       String
+  totalRows      Int
+  validRows      Int           @default(0)
+  importedRows   Int           @default(0)
+  updatedRows    Int           @default(0)
+  skippedRows    Int           @default(0)
+  invalidRows    Int           @default(0)
+  failedRows     Int           @default(0)
+  status         String        @default("pending")
+  errorLog       String?
+  processingTime Int?
+  publications   Publication[]
+  createdAt      DateTime      @default(now())
+  completedAt    DateTime?
+}
