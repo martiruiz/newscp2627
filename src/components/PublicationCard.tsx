@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import InstagramEmbed from "./InstagramEmbed";
 
 interface Publication {
@@ -20,15 +20,28 @@ interface Publication {
   isSaved: boolean;
 }
 
+interface PublicationCardProps {
+  publication: Publication;
+  animationDelay?: number;
+  shouldAnimate?: boolean;
+}
+
 const BADGE_COLORS: Record<string, string> = {
   "Top Picks": "var(--badge-top)",
   "Replicable Ideas": "var(--badge-replicable)",
   "Overperforming": "var(--badge-overperforming)",
 };
 
-export default function PublicationCard({ publication }: { publication: Publication }) {
+export default function PublicationCard({ publication, animationDelay = 0, shouldAnimate = false }: PublicationCardProps) {
+  const [visible, setVisible] = useState(!shouldAnimate);
   const [isSaved, setIsSaved] = useState(publication.isSaved);
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!shouldAnimate) return;
+    const timer = setTimeout(() => setVisible(true), animationDelay);
+    return () => clearTimeout(timer);
+  }, [shouldAnimate, animationDelay]);
 
   const handleSave = useCallback(async () => {
     if (saving) return;
@@ -48,8 +61,14 @@ export default function PublicationCard({ publication }: { publication: Publicat
 
   return (
     <div
-      className="rounded-xl overflow-hidden break-inside-avoid mb-4"
-      style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}
+      className="rounded-xl overflow-hidden"
+      style={{
+        background: "var(--bg-card)",
+        border: "1px solid var(--border-color)",
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(16px)",
+        transition: "opacity 0.4s ease-out, transform 0.4s ease-out",
+      }}
     >
       {publication.classifications.length > 0 && (
         <div className="flex gap-2 px-3 pt-3">

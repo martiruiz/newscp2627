@@ -1,4 +1,5 @@
 import { parse } from "csv-parse/sync";
+import { parse as parseStream } from "csv-parse";
 
 export interface CSVRow {
   external_id: string;
@@ -22,8 +23,6 @@ const COLUMN_ALIASES: Record<string, string> = {
   trend: "trend",
   campaign: "campaign",
 };
-
-const REQUIRED_FIELDS = ["embed", "sport", "platform"];
 
 export function parseCSV(content: string): { rows: CSVRow[]; headers: string[]; error?: string } {
   const cleaned = content.replace(/^﻿/, "");
@@ -49,32 +48,137 @@ export function parseCSV(content: string): { rows: CSVRow[]; headers: string[]; 
       return { rows: [], headers: rawHeaders, error: "Missing required column: embed" };
     }
 
-    const rows: CSVRow[] = records.map((record) => {
-      const normalized: Record<string, string> = {};
-      for (const [key, value] of Object.entries(record)) {
-        const normKey = COLUMN_ALIASES[key.trim().toLowerCase()] || key.trim().toLowerCase();
-        normalized[normKey] = (value || "").trim();
-      }
-      return {
-        external_id: normalized.external_id || normalized.id || "",
-        published_at: normalized.published_at || normalized.date || "",
-        embed: normalized.embed || "",
-        url: normalized.url || "",
-        format: normalized.format || "",
-        title: normalized.title || "",
-        sport: normalized.sport || "",
-        competition: normalized.competition || "",
-        club: normalized.club || "",
-        platform: normalized.platform || "",
-        entity: normalized.entity || "",
-        trend: normalized.trend || "",
-        campaign: normalized.campaign || "",
-      };
-    });
-
+    const rows: CSVRow[] = records.map((record) => normalizeRecord(record));
     return { rows, headers: rawHeaders };
   } catch (e) {
     return { rows: [], headers: [], error: `CSV parsing error: ${(e as Error).message}` };
+  }
+}
+
+function normalizeRecord(record: Record<string, string>): CSVRow {
+  const normalized: Record<string, string> = {};
+  for (const [key, value] of Object.entries(record)) {
+    const normKey = COLUMN_ALIASES[key.trim().toLowerCase()] || key.trim().toLowerCase();
+    normalized[normKey] = (value || "").trim();
+  }
+  return {
+    external_id: normalized.external_id || normalized.id || "",
+    published_at: normalized.published_at || normalized.date || "",
+    embed: normalized.embed || "",
+    url: normalized.url || "",
+    format: normalized.format || "",
+    title: normalized.title || "",
+    sport: normalized.sport || "",
+    competition: normalized.competition || "",
+    club: normalized.club || "",
+    platform: normalized.platform || "",
+    entity: normalized.entity || "",
+    trend: normalized.trend || "",
+    campaign: normalized.campaign || "",
+  };
+}
+
+export async function parseCSVStream(
+  text: string,
+  onChunk: (rows: CSVRow[]) => Promise<void>,
+  chunkSize = 500,
+): Promise<{ totalRows: number; headers: string[]; error?: string }> {
+  const cleaned = text.replace(/^﻿/, "");
+
+  return new Promise((resolve) => {
+    const parser = parseStream({
+      columns: true,
+      skip_empty_lines: true,
+      trim: true,
+      relax_column_count: true,
+    });
+
+    let headers: string[] = [];
+    let totalRows = 0;
+    let chunk: CSVRow[] = [];
+    let headersSet = false;
+    let processingPromise = Promise.resolve();
+
+    parser.on("readable", () => {
+      let record: Record<string, string> | null;
+      while ((record = parser.read()) !== null) {
+        if (!headersSet) {
+          headers = Object.keys(record).map((h) => h.trim().toLowerCase());
+          const normalizedHeaders = headers.map((h) => COLUMN_ALIASES[h] || h);
+          if (!normalizedHeaders.includes("embed") && !headers.includes("embed")) {
+            parser.destroy(new Error("Missing required column: embed"));
+            return;
+          }
+          headersSet = true;
+        }
+
+        chunk.push(normalizeRecord(record));
+        totalRows++;
+
+        if (chunk.length >= chunkSize) {
+          const batch = chunk;
+          chunk = [];
+          processingPromise = processingPromise.then(() => onChunk(batch));
+        }
+      }
+    });
+
+    parser.on("error", (err) => {
+      resolve({ totalRows, headers, error: `CSV parsing error: ${err.message}` });
+    });
+
+    parser.on("end", async () => {
+      if (chunk.length > 0) {
+        processingPromise = processingPromise.then(() => onChunk(chunk));
+      }
+      await processingPromise;
+      resolve({ totalRows, headers });
+    });
+
+    parser.write(cleaned);
+    parser.end();
+  });
+}
+
+export function countCSVRows(text: string): number {
+  let count = 0;
+  let inQuote = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text.charCodeAt(i);
+    if (ch === 34) inQuote = !inQuote;
+    else if (ch === 10 && !inQuote) count++;
+  }
+  return Math.max(0, count - 1);
+}
+
+export function parseCSVPreview(content: string, maxRows = 5000): { rows: CSVRow[]; headers: string[]; totalRows: number; error?: string } {
+  const cleaned = content.replace(/^﻿/, "");
+  const totalRows = countCSVRows(cleaned);
+
+  try {
+    const records = parse(cleaned, {
+      columns: true,
+      skip_empty_lines: true,
+      trim: true,
+      relax_column_count: true,
+      to: maxRows,
+    }) as Record<string, string>[];
+
+    if (records.length === 0) {
+      return { rows: [], headers: [], totalRows: 0, error: "CSV file is empty" };
+    }
+
+    const rawHeaders = Object.keys(records[0]).map((h) => h.trim().toLowerCase());
+    const normalizedHeaders = rawHeaders.map((h) => COLUMN_ALIASES[h] || h);
+
+    if (!normalizedHeaders.includes("embed") && !rawHeaders.includes("embed")) {
+      return { rows: [], headers: rawHeaders, totalRows: 0, error: "Missing required column: embed" };
+    }
+
+    const rows = records.map((record) => normalizeRecord(record));
+    return { rows, headers: rawHeaders, totalRows };
+  } catch (e) {
+    return { rows: [], headers: [], totalRows: 0, error: `CSV parsing error: ${(e as Error).message}` };
   }
 }
 

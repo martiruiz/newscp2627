@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import Navbar from "@/components/Navbar";
 import FilterSidebar, { type SelectedFilters } from "@/components/FilterSidebar";
 import PublicationCard from "@/components/PublicationCard";
@@ -53,6 +53,7 @@ export default function FeedPage() {
   const [filters, setFilters] = useState<SelectedFilters>(DEFAULT_FILTERS);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [animatedCount, setAnimatedCount] = useState(0);
   const abortRef = useRef<AbortController | null>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const pageRef = useRef(1);
@@ -85,8 +86,10 @@ export default function FeedPage() {
         const data = await res.json();
 
         if (append) {
+          setAnimatedCount(publications.length);
           setPublications((prev) => [...prev, ...data.publications]);
         } else {
+          setAnimatedCount(0);
           setPublications(data.publications);
         }
         setPagination(data.pagination);
@@ -188,11 +191,11 @@ export default function FeedPage() {
           </div>
 
           {loading && publications.length === 0 ? (
-            <div className="columns-1 md:columns-2 lg:columns-3 gap-4">
+            <MasonryGrid>
               {Array.from({ length: 6 }).map((_, i) => (
                 <SkeletonCard key={i} />
               ))}
-            </div>
+            </MasonryGrid>
           ) : publications.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-lg" style={{ color: "var(--text-muted)" }}>
@@ -206,11 +209,16 @@ export default function FeedPage() {
               </p>
             </div>
           ) : (
-            <div className="columns-1 md:columns-2 lg:columns-3 gap-4">
-              {publications.map((pub) => (
-                <PublicationCard key={`${pub.platform}-${pub.externalPostId}`} publication={pub} />
+            <MasonryGrid>
+              {publications.map((pub, i) => (
+                <PublicationCard
+                  key={`${pub.platform}-${pub.externalPostId}`}
+                  publication={pub}
+                  animationDelay={i >= animatedCount ? (i - animatedCount) * 80 : 0}
+                  shouldAnimate={i >= animatedCount}
+                />
               ))}
-            </div>
+            </MasonryGrid>
           )}
 
           <div ref={sentinelRef} className="h-4" />
@@ -229,10 +237,28 @@ export default function FeedPage() {
   );
 }
 
+function MasonryGrid({ children }: { children: React.ReactNode }) {
+  const items = React.Children.toArray(children);
+  const cols: React.ReactNode[][] = [[], [], []];
+  items.forEach((item, i) => {
+    cols[i % 3].push(item);
+  });
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
+      {cols.map((col, ci) => (
+        <div key={ci} className="flex flex-col gap-4">
+          {col}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function SkeletonCard() {
   return (
     <div
-      className="break-inside-avoid mb-4 rounded-xl overflow-hidden flex flex-col items-center justify-center"
+      className="rounded-xl overflow-hidden flex flex-col items-center justify-center"
       style={{ background: "var(--bg-card)", height: "380px", border: "1px solid var(--border-color)" }}
     >
       <div className="animate-pulse flex flex-col items-center gap-3">

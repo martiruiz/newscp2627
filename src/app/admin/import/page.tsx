@@ -21,6 +21,8 @@ interface ImportBatch {
 interface PreviewData {
   filename: string;
   totalRows: number;
+  sampledRows?: number;
+  sampled?: boolean;
   headers: string[];
   validRows: number;
   invalidRows: number;
@@ -354,10 +356,15 @@ export default function ImportPage() {
                 <div>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
                     <StatBox label="Total rows" value={preview.totalRows} />
-                    <StatBox label="Valid" value={preview.validRows} color="var(--accent-green)" />
-                    <StatBox label="Invalid" value={preview.invalidRows} color="var(--accent-red)" />
+                    <StatBox label={preview.sampled ? "Valid (est.)" : "Valid"} value={preview.validRows} color="var(--accent-green)" />
+                    <StatBox label={preview.sampled ? "Invalid (est.)" : "Invalid"} value={preview.invalidRows} color="var(--accent-red)" />
                     <StatBox label="Existing" value={preview.existingPublications} color="var(--accent-orange)" />
                   </div>
+                  {preview.sampled && (
+                    <p className="text-xs mb-3" style={{ color: "var(--text-muted)" }}>
+                      Estimated from a sample of {preview.sampledRows?.toLocaleString()} rows
+                    </p>
+                  )}
 
                   <div className="mb-4">
                     <h4 className="text-xs font-medium mb-2" style={{ color: "var(--text-secondary)" }}>Taxonomy</h4>

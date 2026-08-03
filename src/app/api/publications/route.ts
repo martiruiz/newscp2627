@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
   const dateFrom = searchParams.get("dateFrom");
   const dateTo = searchParams.get("dateTo");
   const search = searchParams.get("search");
-  const order = searchParams.get("order") || "random";
+  const order = searchParams.get("order") || "latest";
 
   const userId = await getCurrentUserId();
   const skip = (page - 1) * limit;
