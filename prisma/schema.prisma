@@ -12,6 +12,7 @@ model User {
   email     String      @unique
   name      String?
   password  String
+  role      String      @default("ROLE_ADMIN")
   savedPosts SavedPost[]
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
@@ -147,7 +148,7 @@ model SavedPost {
   folder        SavedFolder? @relation(fields: [folderId], references: [id])
   createdAt     DateTime    @default(now())
 
-  @@unique([userId, publicationId])
+  @@unique([userId, publicationId, folderId])
 }
 
 model SavedFolder {
@@ -158,6 +159,18 @@ model SavedFolder {
   createdAt DateTime    @default(now())
 
   @@unique([userId, name])
+}
+
+model NewsArticle {
+  id          String    @id @default(uuid())
+  url         String    @unique
+  title       String
+  excerpt     String?
+  imageUrl    String?
+  platform    String?
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model ImportBatch {

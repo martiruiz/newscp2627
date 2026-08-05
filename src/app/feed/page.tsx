@@ -217,7 +217,7 @@ export default function FeedPage() {
                 {activeFilterCount > 0 && (
                   <span
                     className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
-                    style={{ background: "#c89028", color: "#fff" }}
+                    style={{ background: "#F5C542", color: "#fff" }}
                   >
                     {activeFilterCount}
                   </span>
@@ -229,26 +229,31 @@ export default function FeedPage() {
                 </span>
               )}
             </div>
-            <div className="relative">
-              <select
-                value={filters.order}
-                onChange={(e) => setFilters({ ...filters, order: e.target.value })}
-                className="appearance-none text-xs font-medium pl-3 pr-7 py-1.5 rounded-lg cursor-pointer"
-                style={{
-                  background: "var(--bg-input)",
-                  color: "var(--text-primary)",
-                  border: "1px solid var(--border-color)",
-                }}
-              >
-                <option value="latest">Latest</option>
-                <option value="random">Random</option>
-              </select>
-              <svg
-                width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2"
-                className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none"
-              >
-                <path d="M6 9l6 6 6-6" />
-              </svg>
+            <div
+              className="flex rounded-lg overflow-hidden"
+              style={{ border: "1px solid var(--border-color)" }}
+            >
+              {[
+                { value: "latest", label: "Latest", icon: <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> },
+                { value: "random", label: "Random", icon: <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg> },
+              ].map((opt, i) => {
+                const active = filters.order === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    onClick={() => setFilters({ ...filters, order: opt.value })}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold transition-all"
+                    style={{
+                      background: active ? "#F5C542" : "var(--bg-input)",
+                      color: active ? "#000" : "var(--text-muted)",
+                      borderRight: i === 0 ? "1px solid var(--border-color)" : "none",
+                    }}
+                  >
+                    {opt.icon}
+                    {opt.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -258,7 +263,7 @@ export default function FeedPage() {
                 <span
                   key={chip.key}
                   className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium"
-                  style={{ background: "rgba(200,144,40,0.15)", color: "#c89028", border: "1px solid rgba(200,144,40,0.3)" }}
+                  style={{ background: "rgba(200,144,40,0.15)", color: "#F5C542", border: "1px solid rgba(200,144,40,0.3)" }}
                 >
                   {chip.label}
                   <button
@@ -273,7 +278,7 @@ export default function FeedPage() {
                       }
                     }}
                     className="ml-0.5 hover:opacity-70"
-                    style={{ color: "#c89028" }}
+                    style={{ color: "#F5C542" }}
                   >
                     &times;
                   </button>

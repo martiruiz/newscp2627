@@ -13,7 +13,31 @@ import {
   type CSVRow,
 } from "@/lib/csv-parser";
 
-export const maxDuration = 300;
+export const maxDuration = 600;
+
+// Only these values are accepted — anything else is silently discarded
+const VALID_PLATFORMS = new Set(["Instagram", "TikTok", "YouTube", "Twitter", "X", "Facebook", "LinkedIn"]);
+const VALID_FORMATS   = new Set(["Image", "Video", "Reel", "Carousel", "Story"]);
+
+function decodeCSV(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer);
+  // UTF-16 LE (FF FE BOM)
+  if (bytes[0] === 0xff && bytes[1] === 0xfe) return new TextDecoder("utf-16le").decode(buffer);
+  // UTF-16 BE (FE FF BOM)
+  if (bytes[0] === 0xfe && bytes[1] === 0xff) return new TextDecoder("utf-16be").decode(buffer);
+  // Strip UTF-8 BOM (EF BB BF) at buffer level before decoding, so Latin-1 fallback
+  // doesn't render it as the 3-char sequence ï»¿ and break column detection.
+  const content = (bytes[0] === 0xef && bytes[1] === 0xbb && bytes[2] === 0xbf)
+    ? buffer.slice(3)
+    : buffer;
+  // Try strict UTF-8 first
+  try {
+    return new TextDecoder("utf-8", { fatal: true }).decode(content);
+  } catch {
+    // Fall back to Latin-1 for files with non-UTF-8 bytes (common Excel export)
+    return new TextDecoder("latin1").decode(content);
+  }
+}
 
 export async function POST(request: NextRequest) {
   const formData = await request.formData();
@@ -24,7 +48,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
   }
 
-  const text = await file.text();
+  const text = decodeCSV(await file.arrayBuffer());
 
   if (action === "preview") {
     return handlePreview(text, file.name);
@@ -87,8 +111,8 @@ async function handlePreview(text: string, filename: string) {
       });
     }
     if (row.entity) entities.add(normalizeEntityType(row.entity));
-    if (row.format) formats.add(normalizeFormat(row.format));
-    if (row.platform) platforms.add(normalizePlatform(row.platform));
+    if (row.format) { const f = normalizeFormat(row.format); if (VALID_FORMATS.has(f)) formats.add(f); }
+    if (row.platform) { const p = normalizePlatform(row.platform); if (VALID_PLATFORMS.has(p)) platforms.add(p); }
   }
 
   const sampled = rows.length < totalRows;
@@ -141,6 +165,20 @@ function handleImport(text: string, filename: string) {
       const entityTypeCache = new Map<string, string>();
       const formatCache = new Map<string, string>();
 
+      // Pre-warm taxonomy caches with all existing records to avoid per-row DB calls
+      const [existingPlatforms, existingSports, existingEntities, existingFormats, existingCompetitions] = await Promise.all([
+        prisma.platform.findMany({ select: { id: true, name: true } }),
+        prisma.sport.findMany({ select: { id: true, name: true } }),
+        prisma.entityType.findMany({ select: { id: true, name: true } }),
+        prisma.contentFormat.findMany({ select: { id: true, name: true } }),
+        prisma.competition.findMany({ select: { id: true, name: true } }),
+      ]);
+      for (const r of existingPlatforms) platformCache.set(normalizePlatform(r.name), r.id);
+      for (const r of existingSports) sportCache.set(normalizeSport(r.name), r.id);
+      for (const r of existingEntities) entityTypeCache.set(normalizeEntityType(r.name), r.id);
+      for (const r of existingFormats) formatCache.set(normalizeFormat(r.name), r.id);
+      for (const r of existingCompetitions) competitionCache.set(r.name.trim(), r.id);
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       async function getOrCreate(cache: Map<string, string>, name: string, normalize: (s: string) => string, model: any): Promise<string> {
         const normalized = normalize(name);
@@ -187,8 +225,15 @@ function handleImport(text: string, filename: string) {
         const rowsByKey = new Map<string, typeof validRows[number]>();
 
         for (const item of validRows) {
-          const platformName = normalizePlatform(item.row.platform || "Instagram");
-          const platformId = await getOrCreate(platformCache, item.row.platform || "Instagram", normalizePlatform, prisma.platform);
+          const rawPlatform = item.row.platform || "Instagram";
+          const platformName = normalizePlatform(rawPlatform);
+          if (!VALID_PLATFORMS.has(platformName)) {
+            invalid++;
+            errorLog.push({ row: item.rowIndex, externalId: item.validation.postId, url: item.row.url || "", errorCode: "INVALID_PLATFORM", explanation: `Platform "${rawPlatform}" is not supported. Accepted: Instagram, TikTok, YouTube, Twitter/X, Facebook, LinkedIn.` });
+            processed++;
+            continue;
+          }
+          const platformId = await getOrCreate(platformCache, rawPlatform, normalizePlatform, prisma.platform);
           const key = `${platformId}:${item.validation.postId}`;
           postIdToPlatform.set(key, platformId);
           rowsByKey.set(key, item);
@@ -209,6 +254,7 @@ function handleImport(text: string, filename: string) {
         }
 
         // Process: batch updates + batch creates
+        const toUpdate: Array<{ id: string; data: Record<string, unknown> }> = [];
         const toCreate: Array<{
           platformId: string;
           externalPostId: string;
@@ -241,7 +287,7 @@ function handleImport(text: string, filename: string) {
               if (!existing.entityName && item.row.club) { updateData.entityName = item.row.club.trim(); needsUpdate = true; }
 
               if (needsUpdate) {
-                await prisma.publication.update({ where: { id: existing.id }, data: updateData });
+                toUpdate.push({ id: existing.id, data: updateData });
                 updated++;
               } else {
                 skipped++;
@@ -257,7 +303,10 @@ function handleImport(text: string, filename: string) {
 
             const sportId = item.row.sport ? await getOrCreate(sportCache, item.row.sport, normalizeSport, prisma.sport) : null;
             const entityTypeId = item.row.entity ? await getOrCreate(entityTypeCache, item.row.entity, normalizeEntityType, prisma.entityType) : null;
-            const contentFormatId = item.row.format ? await getOrCreate(formatCache, item.row.format, normalizeFormat, prisma.contentFormat) : null;
+            const formatName = item.row.format ? normalizeFormat(item.row.format) : null;
+            const contentFormatId = (formatName && VALID_FORMATS.has(formatName))
+              ? await getOrCreate(formatCache, item.row.format!, normalizeFormat, prisma.contentFormat)
+              : null;
 
             const competitionNames = item.row.competition
               ? item.row.competition.split(",").map((c) => c.trim()).filter(Boolean).filter((v, idx, arr) => arr.indexOf(v) === idx)
@@ -297,9 +346,16 @@ function handleImport(text: string, filename: string) {
           }
         }
 
+        // Batch all updates in a single transaction
+        if (toUpdate.length > 0) {
+          await prisma.$transaction(
+            toUpdate.map(({ id, data }) => prisma.publication.update({ where: { id }, data }))
+          );
+        }
+
         // Batch insert new publications
         if (toCreate.length > 0) {
-          await prisma.publication.createMany({ data: toCreate, skipDuplicates: true });
+          await prisma.publication.createMany({ data: toCreate });
 
           // Link competitions for newly created publications
           if (competitionsToCreate.length > 0) {
@@ -322,7 +378,7 @@ function handleImport(text: string, filename: string) {
               }
             }
             if (compLinks.length > 0) {
-              await prisma.publicationCompetition.createMany({ data: compLinks, skipDuplicates: true });
+              await prisma.publicationCompetition.createMany({ data: compLinks });
             }
           }
         }
@@ -345,7 +401,7 @@ function handleImport(text: string, filename: string) {
           elapsedMs: elapsed,
           etaMs: remaining,
         });
-      }, 500);
+      }, 2000);
 
       const processingTime = Date.now() - startTime;
 

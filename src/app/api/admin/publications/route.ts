@@ -1,0 +1,281 @@
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+
+  // Distinct usernames for autocomplete
+  if (searchParams.has("distinctUsernames")) {
+    const rows = await prisma.publication.findMany({
+      where: { accountUsername: { not: null } },
+      select: { accountUsername: true },
+      distinct: ["accountUsername"],
+      orderBy: { accountUsername: "asc" },
+    });
+    return NextResponse.json({
+      usernames: rows.map((r) => r.accountUsername).filter(Boolean),
+    });
+  }
+
+  // Single item fetch
+  const singleId = searchParams.get("id");
+  if (singleId && !searchParams.has("page")) {
+    const pub = await prisma.publication.findUnique({
+      where: { id: singleId },
+      include: {
+        platform: { select: { id: true, name: true } },
+        sport: { select: { id: true, name: true } },
+        contentFormat: { select: { id: true, name: true } },
+        entityType: { select: { id: true, name: true } },
+        competitions: { include: { competition: { select: { id: true, name: true } } } },
+        classifications: { include: { classification: { select: { id: true, name: true } } } },
+        contentCategories: { include: { contentCategory: { select: { id: true, name: true } } } },
+      },
+    });
+    if (!pub) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    return NextResponse.json({
+      id: pub.id,
+      externalPostId: pub.externalPostId,
+      rawTitle: pub.rawTitle,
+      publishedAt: pub.publishedAt,
+      embedUrl: pub.embedUrl,
+      canonicalUrl: pub.canonicalUrl,
+      originalUrl: pub.originalUrl,
+      accountUsername: pub.accountUsername,
+      platformId: pub.platformId,
+      platform: pub.platform.name,
+      sportId: pub.sportId,
+      sport: pub.sport?.name ?? null,
+      entityTypeId: pub.entityTypeId,
+      entity: pub.entityType?.name ?? null,
+      entityName: pub.entityName,
+      contentFormatId: pub.contentFormatId,
+      format: pub.contentFormat?.name ?? null,
+      competitions: pub.competitions.map((c) => ({ id: c.competition.id, name: c.competition.name })),
+      classifications: pub.classifications.map((c) => ({ id: c.classification.id, name: c.classification.name })),
+      contentCategories: pub.contentCategories.map((c) => ({ id: c.contentCategory.id, name: c.contentCategory.name })),
+    });
+  }
+
+  const page = parseInt(searchParams.get("page") || "1");
+  const limit = parseInt(searchParams.get("limit") || "50");
+  const sport = searchParams.get("sport");
+  const entity = searchParams.get("entity");
+  const competition = searchParams.get("competition");
+  const club = searchParams.get("club");
+  const format = searchParams.get("format");
+  const platform = searchParams.get("platform");
+  const search = searchParams.get("search");
+  const externalId = searchParams.get("externalId");
+  const dateFrom = searchParams.get("dateFrom");
+  const dateTo = searchParams.get("dateTo");
+  const skip = (page - 1) * limit;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const where: any = {};
+
+  function multiSlug(raw: string) {
+    return raw.split(",").map((s) => s.trim()).filter(Boolean);
+  }
+  if (sport) {
+    const slugs = multiSlug(sport);
+    where.sport = slugs.length === 1 ? { slug: slugs[0] } : { slug: { in: slugs } };
+  }
+  if (entity) {
+    const slugs = multiSlug(entity);
+    where.entityType = slugs.length === 1 ? { slug: slugs[0] } : { slug: { in: slugs } };
+  }
+  if (competition) {
+    const slugs = multiSlug(competition);
+    where.competitions = slugs.length === 1
+      ? { some: { competition: { slug: slugs[0] } } }
+      : { some: { competition: { slug: { in: slugs } } } };
+  }
+  if (club) {
+    const clubs = club.split(",").map((s) => s.trim()).filter(Boolean);
+    where.entityName = clubs.length === 1 ? clubs[0] : { in: clubs };
+  }
+  if (format) {
+    const slugs = multiSlug(format);
+    where.contentFormat = slugs.length === 1 ? { slug: slugs[0] } : { slug: { in: slugs } };
+  }
+  if (platform) {
+    const slugs = multiSlug(platform);
+    where.platform = slugs.length === 1 ? { slug: slugs[0] } : { slug: { in: slugs } };
+  }
+  if (externalId) where.externalPostId = { contains: externalId };
+
+  if (search) {
+    where.OR = [
+      { rawTitle: { contains: search } },
+      { accountUsername: { contains: search } },
+      { entityName: { contains: search } },
+    ];
+  }
+
+  if (dateFrom || dateTo) {
+    where.publishedAt = {};
+    if (dateFrom) where.publishedAt.gte = new Date(dateFrom);
+    if (dateTo) where.publishedAt.lte = new Date(dateTo + "T23:59:59Z");
+  }
+
+  const [publications, total] = await Promise.all([
+    prisma.publication.findMany({
+      where,
+      include: {
+        platform: { select: { name: true } },
+        sport: { select: { name: true } },
+        contentFormat: { select: { name: true } },
+        entityType: { select: { name: true } },
+        competitions: { include: { competition: { select: { name: true } } } },
+      },
+      orderBy: { publishedAt: "desc" },
+      skip,
+      take: limit,
+    }),
+    prisma.publication.count({ where }),
+  ]);
+
+  return NextResponse.json({
+    publications: publications.map((p) => ({
+      id: p.id,
+      externalPostId: p.externalPostId,
+      rawTitle: p.rawTitle,
+      publishedAt: p.publishedAt,
+      platform: p.platform.name,
+      sport: p.sport?.name ?? null,
+      entity: p.entityType?.name ?? null,
+      entityName: p.entityName,
+      format: p.contentFormat?.name ?? null,
+      competitions: p.competitions.map((c) => c.competition.name),
+      canonicalUrl: p.canonicalUrl,
+      embedUrl: p.embedUrl,
+      originalUrl: p.originalUrl,
+    })),
+    total,
+    page,
+    totalPages: Math.ceil(total / limit),
+  });
+}
+
+export async function POST(request: NextRequest) {
+  const body = await request.json();
+  const {
+    externalPostId, canonicalUrl, embedUrl, originalUrl,
+    platformId, sportId, entityTypeId, contentFormatId,
+    entityName, accountUsername, rawTitle, publishedAt,
+    competitionIds = [], classificationIds = [], contentCategoryIds = [],
+  } = body;
+
+  if (!externalPostId || !canonicalUrl || !platformId) {
+    return NextResponse.json({ error: "Missing required fields: externalPostId, canonicalUrl, platformId" }, { status: 400 });
+  }
+
+  const pub = await prisma.publication.create({
+    data: {
+      externalPostId: String(externalPostId),
+      canonicalUrl,
+      embedUrl: embedUrl || canonicalUrl,
+      originalUrl: originalUrl || null,
+      platformId,
+      sportId: sportId || null,
+      entityTypeId: entityTypeId || null,
+      contentFormatId: contentFormatId || null,
+      entityName: entityName?.trim() || null,
+      accountUsername: accountUsername?.trim() || null,
+      rawTitle: rawTitle?.trim() || null,
+      publishedAt: publishedAt ? new Date(publishedAt) : null,
+    },
+  });
+
+  if (competitionIds.length > 0) {
+    await prisma.publicationCompetition.createMany({
+      data: competitionIds.map((cId: string) => ({ publicationId: pub.id, competitionId: cId })),
+    });
+  }
+  if (classificationIds.length > 0) {
+    await prisma.publicationClassification.createMany({
+      data: classificationIds.map((cId: string) => ({ publicationId: pub.id, classificationId: cId })),
+    });
+  }
+  if (contentCategoryIds.length > 0) {
+    await prisma.publicationContentCategory.createMany({
+      data: contentCategoryIds.map((cId: string) => ({ publicationId: pub.id, contentCategoryId: cId })),
+    });
+  }
+
+  return NextResponse.json({ id: pub.id });
+}
+
+export async function PATCH(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get("id");
+  const body = await request.json();
+
+  // Bulk update
+  if (searchParams.get("bulk") === "true") {
+    const { ids, entityName } = body;
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return NextResponse.json({ error: "Missing ids" }, { status: 400 });
+    }
+    await prisma.publication.updateMany({
+      where: { id: { in: ids } },
+      data: { entityName: typeof entityName === "string" ? (entityName.trim() || null) : undefined },
+    });
+    return NextResponse.json({ ok: true, updated: ids.length });
+  }
+
+  if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
+  const { sportId, entityTypeId, contentFormatId, platformId, entityName, rawTitle, publishedAt, competitionIds, classificationIds, contentCategoryIds, accountUsername } = body;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const data: any = {};
+  if ("sportId" in body) data.sportId = sportId || null;
+  if ("entityTypeId" in body) data.entityTypeId = entityTypeId || null;
+  if ("contentFormatId" in body) data.contentFormatId = contentFormatId || null;
+  if ("platformId" in body) data.platformId = platformId;
+  if ("entityName" in body) data.entityName = entityName?.trim() || null;
+  if ("rawTitle" in body) data.rawTitle = rawTitle?.trim() || null;
+  if ("publishedAt" in body) data.publishedAt = publishedAt ? new Date(publishedAt) : null;
+  if ("accountUsername" in body) data.accountUsername = accountUsername?.trim() || null;
+
+  await prisma.publication.update({ where: { id }, data });
+
+  if (Array.isArray(competitionIds)) {
+    await prisma.publicationCompetition.deleteMany({ where: { publicationId: id } });
+    if (competitionIds.length > 0) {
+      await prisma.publicationCompetition.createMany({
+        data: competitionIds.map((cId: string) => ({ publicationId: id, competitionId: cId })),
+      });
+    }
+  }
+
+  if (Array.isArray(classificationIds)) {
+    await prisma.publicationClassification.deleteMany({ where: { publicationId: id } });
+    if (classificationIds.length > 0) {
+      await prisma.publicationClassification.createMany({
+        data: classificationIds.map((cId: string) => ({ publicationId: id, classificationId: cId })),
+      });
+    }
+  }
+
+  if (Array.isArray(contentCategoryIds)) {
+    await prisma.publicationContentCategory.deleteMany({ where: { publicationId: id } });
+    if (contentCategoryIds.length > 0) {
+      await prisma.publicationContentCategory.createMany({
+        data: contentCategoryIds.map((cId: string) => ({ publicationId: id, contentCategoryId: cId })),
+      });
+    }
+  }
+
+  return NextResponse.json({ ok: true });
+}
+
+export async function DELETE(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get("id");
+  if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
+
+  await prisma.publication.delete({ where: { id } });
+  return NextResponse.json({ ok: true });
+}

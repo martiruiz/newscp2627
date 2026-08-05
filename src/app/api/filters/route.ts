@@ -10,10 +10,19 @@ function slugArray(value: string | null): string[] {
 function buildWhere(params: Record<string, string[]>): any {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const where: any = {};
-  const { sport, entityType, format, platform, classification, contentCategory } = params;
+  const { sport, competition, entityType, format, platform, classification, contentCategory } = params;
 
   if (sport?.length) {
     where.sport = sport.length === 1 ? { slug: sport[0] } : { slug: { in: sport } };
+  }
+  if (competition?.length) {
+    where.competitions = {
+      some: {
+        competition: competition.length === 1
+          ? { slug: competition[0] }
+          : { slug: { in: competition } },
+      },
+    };
   }
   if (entityType?.length) {
     where.entityType = entityType.length === 1 ? { slug: entityType[0] } : { slug: { in: entityType } };
@@ -38,6 +47,7 @@ export async function GET(request: NextRequest) {
 
   const allParams = {
     sport: slugArray(searchParams.get("sport")),
+    competition: slugArray(searchParams.get("competition")),
     entityType: slugArray(searchParams.get("entityType")),
     format: slugArray(searchParams.get("format")),
     platform: slugArray(searchParams.get("platform")),
@@ -47,14 +57,23 @@ export async function GET(request: NextRequest) {
 
   const hasFilters = Object.values(allParams).some((v) => v.length > 0);
 
+  const HAS_PUBS = { publications: { some: {} } } as const;
+
   if (!hasFilters) {
-    const [sports, entityTypes, formats, platforms, classifications, contentCategories] = await Promise.all([
-      prisma.sport.findMany({ orderBy: { name: "asc" }, include: { _count: { select: { publications: true } } } }),
-      prisma.entityType.findMany({ orderBy: { name: "asc" }, include: { _count: { select: { publications: true } } } }),
-      prisma.contentFormat.findMany({ orderBy: { name: "asc" }, include: { _count: { select: { publications: true } } } }),
-      prisma.platform.findMany({ orderBy: { name: "asc" }, include: { _count: { select: { publications: true } } } }),
-      prisma.classification.findMany({ orderBy: { name: "asc" }, include: { _count: { select: { publications: true } } } }),
-      prisma.contentCategory.findMany({ orderBy: { name: "asc" }, include: { _count: { select: { publications: true } } } }),
+    const [sports, entityTypes, formats, platforms, classifications, contentCategories, competitions, rawClubs] = await Promise.all([
+      prisma.sport.findMany({ where: HAS_PUBS, orderBy: { name: "asc" }, include: { _count: { select: { publications: true } } } }),
+      prisma.entityType.findMany({ where: HAS_PUBS, orderBy: { name: "asc" }, include: { _count: { select: { publications: true } } } }),
+      prisma.contentFormat.findMany({ where: HAS_PUBS, orderBy: { name: "asc" }, include: { _count: { select: { publications: true } } } }),
+      prisma.platform.findMany({ where: HAS_PUBS, orderBy: { name: "asc" }, include: { _count: { select: { publications: true } } } }),
+      prisma.classification.findMany({ where: { publications: { some: {} } }, orderBy: { name: "asc" }, include: { _count: { select: { publications: true } } } }),
+      prisma.contentCategory.findMany({ where: { publications: { some: {} } }, orderBy: { name: "asc" }, include: { _count: { select: { publications: true } } } }),
+      prisma.competition.findMany({ where: { publications: { some: {} } }, orderBy: { name: "asc" }, include: { _count: { select: { publications: true } } } }),
+      prisma.publication.groupBy({
+        by: ["entityName"],
+        where: { entityType: { slug: "clubs" }, entityName: { not: null } },
+        _count: true,
+        orderBy: { _count: { entityName: "desc" } },
+      }),
     ]);
 
     const entityNames = await prisma.publication.groupBy({
@@ -71,12 +90,15 @@ export async function GET(request: NextRequest) {
       platforms: platforms.map((p) => ({ name: p.name, slug: p.slug, count: p._count.publications })),
       classifications: classifications.map((c) => ({ name: c.name, slug: c.slug, count: c._count.publications })),
       contentCategories: contentCategories.map((c) => ({ name: c.name, slug: c.slug, count: c._count.publications })),
+      competitions: competitions.map((c) => ({ name: c.name, slug: c.slug, count: c._count.publications })),
+      clubs: rawClubs.filter((c) => c.entityName).map((c) => ({ name: c.entityName!, count: c._count })),
       entityNames: entityNames.filter((e) => e.entityName).map((e) => ({ name: e.entityName!, count: e._count })),
     });
   }
 
   // Contextual counts: for each facet, count with all OTHER filters applied (exclude own dimension)
   const withoutSport = buildWhere({ ...allParams, sport: [] });
+  const withoutCompetition = buildWhere({ ...allParams, competition: [] });
   const withoutEntityType = buildWhere({ ...allParams, entityType: [] });
   const withoutFormat = buildWhere({ ...allParams, format: [] });
   const withoutPlatform = buildWhere({ ...allParams, platform: [] });
@@ -84,36 +106,21 @@ export async function GET(request: NextRequest) {
   const withoutContentCategory = buildWhere({ ...allParams, contentCategory: [] });
   const fullWhere = buildWhere(allParams);
 
-  const [allSports, allEntityTypes, allFormats, allPlatforms, allClassifications, allContentCategories] = await Promise.all([
-    prisma.sport.findMany({ orderBy: { name: "asc" }, select: { name: true, slug: true } }),
-    prisma.entityType.findMany({ orderBy: { name: "asc" }, select: { name: true, slug: true } }),
-    prisma.contentFormat.findMany({ orderBy: { name: "asc" }, select: { name: true, slug: true } }),
-    prisma.platform.findMany({ orderBy: { name: "asc" }, select: { name: true, slug: true } }),
-    prisma.classification.findMany({ orderBy: { name: "asc" }, select: { name: true, slug: true } }),
-    prisma.contentCategory.findMany({ orderBy: { name: "asc" }, select: { name: true, slug: true } }),
+  const [allSports, allEntityTypes, allFormats, allPlatforms, allClassifications, allContentCategories, allCompetitions] = await Promise.all([
+    prisma.sport.findMany({ where: HAS_PUBS, orderBy: { name: "asc" }, select: { name: true, slug: true } }),
+    prisma.entityType.findMany({ where: HAS_PUBS, orderBy: { name: "asc" }, select: { name: true, slug: true } }),
+    prisma.contentFormat.findMany({ where: HAS_PUBS, orderBy: { name: "asc" }, select: { name: true, slug: true } }),
+    prisma.platform.findMany({ where: HAS_PUBS, orderBy: { name: "asc" }, select: { name: true, slug: true } }),
+    prisma.classification.findMany({ where: { publications: { some: {} } }, orderBy: { name: "asc" }, select: { name: true, slug: true } }),
+    prisma.contentCategory.findMany({ where: { publications: { some: {} } }, orderBy: { name: "asc" }, select: { name: true, slug: true } }),
+    prisma.competition.findMany({ where: { publications: { some: {} } }, orderBy: { name: "asc" }, select: { name: true, slug: true } }),
   ]);
 
   const [sportCounts, entityTypeCounts, formatCounts, platformCounts, classificationCounts, entityNames] = await Promise.all([
-    prisma.publication.groupBy({
-      by: ["sportId"],
-      where: withoutSport,
-      _count: true,
-    }),
-    prisma.publication.groupBy({
-      by: ["entityTypeId"],
-      where: withoutEntityType,
-      _count: true,
-    }),
-    prisma.publication.groupBy({
-      by: ["contentFormatId"],
-      where: withoutFormat,
-      _count: true,
-    }),
-    prisma.publication.groupBy({
-      by: ["platformId"],
-      where: withoutPlatform,
-      _count: true,
-    }),
+    prisma.publication.groupBy({ by: ["sportId"], where: withoutSport, _count: true }),
+    prisma.publication.groupBy({ by: ["entityTypeId"], where: withoutEntityType, _count: true }),
+    prisma.publication.groupBy({ by: ["contentFormatId"], where: withoutFormat, _count: true }),
+    prisma.publication.groupBy({ by: ["platformId"], where: withoutPlatform, _count: true }),
     prisma.publication.findMany({
       where: withoutClassification,
       select: { classifications: { select: { classification: { select: { slug: true } } } } },
@@ -125,6 +132,27 @@ export async function GET(request: NextRequest) {
       orderBy: { _count: { entityName: "desc" } },
     }),
   ]);
+
+  // Competition contextual counts (based on all filters except competition itself)
+  const pubsForCompetitions = await prisma.publication.findMany({
+    where: withoutCompetition,
+    select: { competitions: { select: { competition: { select: { slug: true } } } } },
+  });
+  const competitionCountMap = new Map<string, number>();
+  for (const pub of pubsForCompetitions) {
+    for (const pc of pub.competitions) {
+      competitionCountMap.set(pc.competition.slug, (competitionCountMap.get(pc.competition.slug) || 0) + 1);
+    }
+  }
+
+  // Clubs contextual counts (based on all filters, restricted to clubs entityType)
+  const baseForClubs = buildWhere({ ...allParams, entityType: [] });
+  const clubCounts = await prisma.publication.groupBy({
+    by: ["entityName"],
+    where: { ...baseForClubs, entityType: { slug: "clubs" }, entityName: { not: null } },
+    _count: true,
+    orderBy: { _count: { entityName: "desc" } },
+  });
 
   const sportIdMap = await prisma.sport.findMany({ select: { id: true, slug: true } });
   const entityTypeIdMap = await prisma.entityType.findMany({ select: { id: true, slug: true } });
@@ -156,7 +184,7 @@ export async function GET(request: NextRequest) {
   }
 
   const contentCatCounts = await prisma.publication.findMany({
-    where: withoutContentCategory,
+    where: buildWhere({ ...allParams, contentCategory: [] }),
     select: { contentCategories: { select: { contentCategory: { select: { slug: true } } } } },
   });
   const catCountMap = new Map<string, number>();
@@ -173,6 +201,8 @@ export async function GET(request: NextRequest) {
     platforms: allPlatforms.map((p) => ({ name: p.name, slug: p.slug, count: platformCountMap.get(p.slug) || 0 })),
     classifications: allClassifications.map((c) => ({ name: c.name, slug: c.slug, count: classCountMap.get(c.slug) || 0 })),
     contentCategories: allContentCategories.map((c) => ({ name: c.name, slug: c.slug, count: catCountMap.get(c.slug) || 0 })),
+    competitions: allCompetitions.map((c) => ({ name: c.name, slug: c.slug, count: competitionCountMap.get(c.slug) || 0 })),
+    clubs: clubCounts.filter((c) => c.entityName).map((c) => ({ name: c.entityName!, count: c._count })),
     entityNames: entityNames.filter((e) => e.entityName).map((e) => ({ name: e.entityName!, count: e._count })),
   });
 }

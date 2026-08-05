@@ -284,7 +284,7 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
           {hasActiveFilters && (
             <div
               className="mt-2 text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full"
-              style={{ background: "#c89028", color: "#fff" }}
+              style={{ background: "#F5C542", color: "#fff" }}
             >
               {activeFilterCount}
             </div>
@@ -318,7 +318,7 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
                 <button
                   onClick={clearAll}
                   className="text-[11px] px-2 py-0.5 rounded"
-                  style={{ color: "#c89028", background: "rgba(200,144,40,0.1)" }}
+                  style={{ color: "#F5C542", background: "rgba(200,144,40,0.1)" }}
                 >
                   Clear all
                 </button>
@@ -425,7 +425,7 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
                     onClick={() => toggleArrayFilter("classification", opt.slug)}
                     className="flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-medium transition-all"
                     style={{
-                      background: isSelected ? colors[opt.slug] || "#c89028" : "var(--bg-input)",
+                      background: isSelected ? colors[opt.slug] || "#F5C542" : "var(--bg-input)",
                       color: isSelected ? "#fff" : "var(--text-secondary)",
                       border: `1.5px solid ${isSelected ? "rgba(255,255,255,0.3)" : "var(--border-color)"}`,
                     }}
@@ -447,9 +447,9 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
                     onClick={() => toggleArrayFilter("entityType", ccSlug)}
                     className="flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-medium transition-all"
                     style={{
-                      background: isSelected ? "#c89028" : "var(--bg-input)",
+                      background: isSelected ? "#F5C542" : "var(--bg-input)",
                       color: isSelected ? "#fff" : "var(--text-secondary)",
-                      border: `1.5px solid ${isSelected ? "#e0a832" : "var(--border-color)"}`,
+                      border: `1.5px solid ${isSelected ? "#F5C542" : "var(--border-color)"}`,
                     }}
                   >
                     {isSelected && (
@@ -465,9 +465,9 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
                 onClick={() => onFiltersChange({ ...filters, saved: filters.saved === "true" ? "" : "true" })}
                 className="flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-medium transition-all"
                 style={{
-                  background: filters.saved === "true" ? "#c89028" : "var(--bg-input)",
+                  background: filters.saved === "true" ? "#F5C542" : "var(--bg-input)",
                   color: filters.saved === "true" ? "#fff" : "var(--text-secondary)",
-                  border: `1.5px solid ${filters.saved === "true" ? "#e0a832" : "var(--border-color)"}`,
+                  border: `1.5px solid ${filters.saved === "true" ? "#F5C542" : "var(--border-color)"}`,
                 }}
               >
                 {filters.saved === "true" && (
@@ -530,9 +530,9 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
                       onClick={() => toggleArrayFilter("sport", opt.slug)}
                       className="flex items-center justify-between w-full text-left px-2.5 py-1.5 rounded-md text-xs transition-all"
                       style={{
-                        background: isSelected ? "#c89028" : "transparent",
+                        background: isSelected ? "#F5C542" : "transparent",
                         color: isSelected ? "#fff" : "var(--text-primary)",
-                        border: isSelected ? "1px solid #e0a832" : "1px solid transparent",
+                        border: isSelected ? "1px solid #F5C542" : "1px solid transparent",
                       }}
                     >
                       <span className="flex items-center gap-1.5">
@@ -560,7 +560,7 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
                 <button
                   onClick={() => setShowAllSports(true)}
                   className="w-full text-center text-xs mt-2 py-1.5 rounded-md transition-colors"
-                  style={{ color: "#c89028", background: "rgba(200,144,40,0.08)" }}
+                  style={{ color: "#F5C542", background: "rgba(200,144,40,0.08)" }}
                 >
                   Show all sports
                 </button>
@@ -588,9 +588,9 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
                       onClick={() => toggleArrayFilter("entityType", opt.slug)}
                       className="flex items-center justify-between w-full text-left px-2.5 py-1.5 rounded-md text-xs transition-all"
                       style={{
-                        background: isSelected ? "#c89028" : "transparent",
+                        background: isSelected ? "#F5C542" : "transparent",
                         color: isSelected ? "#fff" : "var(--text-primary)",
-                        border: isSelected ? "1px solid #e0a832" : "1px solid transparent",
+                        border: isSelected ? "1px solid #F5C542" : "1px solid transparent",
                       }}
                     >
                       <span className="flex items-center gap-1.5">
@@ -656,7 +656,7 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
                 {contextLabel && (
                   <div
                     className="flex items-center gap-1.5 text-[10px] mb-2 px-2 py-1.5 rounded-md"
-                    style={{ background: "rgba(200,144,40,0.08)", color: "#c89028" }}
+                    style={{ background: "rgba(200,144,40,0.08)", color: "#F5C542" }}
                   >
                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="shrink-0">
                       <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="M22 4L12 14.01l-3-3" />
@@ -681,7 +681,7 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
                         onClick={() => toggleArrayFilter("entityName", e.name)}
                         className="flex items-center justify-between w-full text-left px-2.5 py-1.5 rounded-md text-xs transition-all"
                         style={{
-                          background: isSelected ? "#c89028" : "transparent",
+                          background: isSelected ? "#F5C542" : "transparent",
                           color: isSelected ? "#fff" : "var(--text-primary)",
                         }}
                       >
@@ -729,9 +729,9 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
                       onClick={() => toggleArrayFilter("contentCategory", opt.slug)}
                       className="flex items-center justify-between w-full text-left px-2.5 py-1.5 rounded-md text-xs transition-all"
                       style={{
-                        background: isSelected ? "#c89028" : "transparent",
+                        background: isSelected ? "#F5C542" : "transparent",
                         color: isSelected ? "#fff" : "var(--text-primary)",
-                        border: isSelected ? "1px solid #e0a832" : "1px solid transparent",
+                        border: isSelected ? "1px solid #F5C542" : "1px solid transparent",
                       }}
                     >
                       <span className="flex items-center gap-1.5">
@@ -772,11 +772,11 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
                       className="flex flex-col items-center gap-1.5 p-2.5 rounded-xl transition-all"
                       style={{
                         background: isSelected ? "var(--bg-hover)" : "var(--bg-card)",
-                        border: `1.5px solid ${isSelected ? "#c89028" : "var(--border-color)"}`,
+                        border: `1.5px solid ${isSelected ? "#F5C542" : "var(--border-color)"}`,
                       }}
                     >
                       <FormatIcon slug={f.slug} selected={isSelected} />
-                      <span className="text-[10px] font-medium" style={{ color: isSelected ? "#c89028" : "var(--text-muted)" }}>
+                      <span className="text-[10px] font-medium" style={{ color: isSelected ? "#F5C542" : "var(--text-muted)" }}>
                         {f.name}
                       </span>
                     </button>
@@ -800,7 +800,7 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
                       className="flex flex-col items-center justify-center p-2.5 rounded-xl transition-all aspect-square"
                       style={{
                         background: isSelected ? "var(--bg-hover)" : "var(--bg-card)",
-                        border: `1.5px solid ${isSelected ? "#c89028" : "var(--border-color)"}`,
+                        border: `1.5px solid ${isSelected ? "#F5C542" : "var(--border-color)"}`,
                       }}
                     >
                       <PlatformIcon slug={p.slug} selected={isSelected} />
@@ -832,7 +832,7 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
           <button
             onClick={onClose}
             className="text-xs font-semibold px-4 py-1.5 rounded-md lg:pointer-events-none lg:cursor-default"
-            style={{ background: "#c89028", color: "#fff" }}
+            style={{ background: "#F5C542", color: "#fff" }}
           >
             Show {resultCount !== undefined ? resultCount.toLocaleString() : "..."} ideas
           </button>
@@ -894,7 +894,7 @@ function AccordionSection({
           {iconSvg && <span className="shrink-0" style={{ color: "var(--text-muted)" }}>{iconSvg}</span>}
           <span className="text-xs font-semibold shrink-0" style={{ color: "var(--text-primary)" }}>{title}</span>
           {badge !== undefined && badge > 0 && (
-            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full shrink-0" style={{ background: "#c89028", color: "#fff" }}>
+            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full shrink-0" style={{ background: "#F5C542", color: "#fff" }}>
               {badge}
             </span>
           )}
@@ -904,14 +904,14 @@ function AccordionSection({
                 <span
                   key={tag.label}
                   className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium shrink-0"
-                  style={{ background: "rgba(200,144,40,0.15)", color: "#c89028" }}
+                  style={{ background: "rgba(200,144,40,0.15)", color: "#F5C542" }}
                 >
                   {tag.label}
                   <span
                     role="button"
                     onClick={(e) => { e.stopPropagation(); tag.onRemove(); }}
                     className="hover:opacity-70 ml-0.5 cursor-pointer"
-                    style={{ color: "#c89028" }}
+                    style={{ color: "#F5C542" }}
                   >
                     &times;
                   </span>
@@ -945,7 +945,7 @@ function AccordionSection({
 /* ─── Format Icons ─── */
 
 function FormatIcon({ slug, selected }: { slug: string; selected: boolean }) {
-  const color = selected ? "#c89028" : "var(--text-muted)";
+  const color = selected ? "#F5C542" : "var(--text-muted)";
   const size = 28;
   switch (slug) {
     case "carousel":
@@ -1068,14 +1068,14 @@ function DateRangePresets({ filters, onFiltersChange }: { filters: SelectedFilte
               }}
               className="relative px-2 py-1.5 rounded-md text-[11px] font-medium transition-all text-center"
               style={{
-                background: isActive ? "#c89028" : "var(--bg-input)",
+                background: isActive ? "#F5C542" : "var(--bg-input)",
                 color: isActive ? "#fff" : "var(--text-primary)",
-                border: `1px solid ${isActive ? "#e0a832" : "var(--border-color)"}`,
+                border: `1px solid ${isActive ? "#F5C542" : "var(--border-color)"}`,
               }}
             >
               {preset.label}
               {preset.recommended && !isActive && (
-                <span className="absolute -top-1.5 -right-1 text-[8px] px-1 rounded-full" style={{ background: "rgba(200,144,40,0.2)", color: "#c89028" }}>
+                <span className="absolute -top-1.5 -right-1 text-[8px] px-1 rounded-full" style={{ background: "rgba(200,144,40,0.2)", color: "#F5C542" }}>
                   rec
                 </span>
               )}
@@ -1086,9 +1086,9 @@ function DateRangePresets({ filters, onFiltersChange }: { filters: SelectedFilte
           onClick={() => setShowCustom(!showCustom)}
           className="px-2 py-1.5 rounded-md text-[11px] font-medium transition-all text-center"
           style={{
-            background: isCustom ? "#c89028" : "var(--bg-input)",
+            background: isCustom ? "#F5C542" : "var(--bg-input)",
             color: isCustom ? "#fff" : "var(--text-primary)",
-            border: `1px solid ${isCustom ? "#e0a832" : "var(--border-color)"}`,
+            border: `1px solid ${isCustom ? "#F5C542" : "var(--border-color)"}`,
           }}
         >
           Custom

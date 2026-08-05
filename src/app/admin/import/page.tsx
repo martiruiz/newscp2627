@@ -1,7 +1,57 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import Navbar from "@/components/Navbar";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+
+// ── Validation ────────────────────────────────────────────────────────────────
+
+const KNOWN_PLATFORMS = new Set(["instagram", "tiktok", "youtube", "twitter", "x", "facebook", "linkedin"]);
+const KNOWN_FORMATS   = new Set(["image", "images", "video", "videos", "reel", "reels", "carousel", "story", "stories", "short"]);
+const EXPECTED_COLS   = new Set(["external_id", "id", "url", "embed", "platform", "format", "sport", "competition", "club", "entity", "title", "published_at", "date", "trend", "campaign"]);
+
+interface ValidationIssue {
+  level: "error" | "warning";
+  field: string;
+  message: string;
+}
+
+function validatePreview(preview: PreviewData): ValidationIssue[] {
+  const issues: ValidationIssue[] = [];
+  const headers = preview.headers.map((h) => h.toLowerCase().trim());
+
+  // 1. Check recognized column headers
+  const recognizedCols = headers.filter((h) => EXPECTED_COLS.has(h));
+  const unrecognizedCols = headers.filter((h) => !EXPECTED_COLS.has(h));
+  if (recognizedCols.length === 0) {
+    issues.push({ level: "error", field: "Columns", message: `No recognized columns found. Headers detected: ${headers.join(", ")}. Expected names like: url, platform, format, sport, competition, club, entity.` });
+  } else if (unrecognizedCols.length > 0) {
+    issues.push({ level: "warning", field: "Columns", message: `Unrecognized columns (will be ignored): ${unrecognizedCols.join(", ")}.` });
+  }
+
+  // 2. Platform values
+  const badPlatforms = preview.taxonomy.platforms.filter((p) => !KNOWN_PLATFORMS.has(p.toLowerCase()));
+  if (preview.taxonomy.platforms.length > 8) {
+    issues.push({ level: "error", field: "Platform", message: `${preview.taxonomy.platforms.length} unique platform values detected — this is too many. The "platform" column may be mapped to wrong data (e.g. club names or titles).` });
+  } else if (badPlatforms.length > 0) {
+    issues.push({ level: "error", field: "Platform", message: `Unknown platform values: ${badPlatforms.join(", ")}. Expected: Instagram, TikTok, YouTube, Twitter/X, Facebook, LinkedIn.` });
+  }
+
+  // 3. Format values
+  const badFormats = preview.taxonomy.formats.filter((f) => !KNOWN_FORMATS.has(f.toLowerCase()));
+  if (preview.taxonomy.formats.length > 12) {
+    issues.push({ level: "error", field: "Format", message: `${preview.taxonomy.formats.length} unique format values detected — this is too many. The "format" column may contain wrong data (e.g. ${badFormats.slice(0, 3).join(", ")}...).` });
+  } else if (badFormats.length > 3) {
+    issues.push({ level: "error", field: "Format", message: `Unusual format values: ${badFormats.slice(0, 5).join(", ")}${badFormats.length > 5 ? ` +${badFormats.length - 5} more` : ""}. Expected: Image, Video, Reel, Carousel, Story.` });
+  } else if (badFormats.length > 0) {
+    issues.push({ level: "warning", field: "Format", message: `Unusual format values: ${badFormats.join(", ")}. Expected: Image, Video, Reel, Carousel, Story.` });
+  }
+
+  // 4. Zero valid rows
+  if (preview.totalRows > 0 && preview.validRows === 0) {
+    issues.push({ level: "error", field: "Rows", message: "No valid rows found. Check that the CSV has a url, embed or external_id column with valid content." });
+  }
+
+  return issues;
+}
 
 interface ImportBatch {
   id: string;
@@ -58,6 +108,96 @@ interface ImportResult {
 }
 
 export default function ImportPage() {
+  const [activeTab, setActiveTab] = useState<"csv" | "news">("csv");
+
+  // ── News tab state ──────────────────────────────────────────────────────────
+  const [newsArticles, setNewsArticles] = useState<{
+    id: string; url: string; title: string; excerpt: string | null;
+    imageUrl: string | null; platform: string | null; publishedAt: string | null; createdAt: string;
+  }[]>([]);
+  const [newsUrl, setNewsUrl] = useState("");
+  const [newsScraping, setNewsScraping] = useState(false);
+  const [newsSaving, setNewsSaving] = useState(false);
+  const [newsError, setNewsError] = useState<string | null>(null);
+  const [newsPreview, setNewsPreview] = useState<{
+    title: string; excerpt: string | null; imageUrl: string | null;
+    platform: string | null; publishedAt: string;
+  } | null>(null);
+  const newsReqId = useRef(0);
+
+  const fetchNews = useCallback(() => {
+    fetch("/api/news").then((r) => r.json()).then((d) => setNewsArticles(d.articles || [])).catch(() => {});
+  }, []);
+
+  useEffect(() => { if (activeTab === "news") fetchNews(); }, [activeTab, fetchNews]);
+
+  const handleNewsScrape = useCallback(async () => {
+    if (!newsUrl.trim()) return;
+    const id = ++newsReqId.current;
+    setNewsScraping(true);
+    setNewsError(null);
+    setNewsPreview(null);
+    try {
+      const res = await fetch("/api/news/scrape", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: newsUrl.trim() }),
+      });
+      if (id !== newsReqId.current) return;
+      const data = await res.json();
+      if (!res.ok) { setNewsError(data.error ?? "Could not extract the article."); return; }
+      setNewsPreview({
+        title: data.title,
+        excerpt: data.excerpt,
+        imageUrl: data.imageUrl,
+        platform: data.platform,
+        publishedAt: data.publishedAt
+          ? new Date(data.publishedAt).toISOString().slice(0, 10)
+          : new Date().toISOString().slice(0, 10),
+      });
+    } catch {
+      if (id !== newsReqId.current) return;
+      setNewsError("Could not reach the article. Check the URL and try again.");
+    } finally {
+      if (id === newsReqId.current) setNewsScraping(false);
+    }
+  }, [newsUrl]);
+
+  const handleNewsSave = useCallback(async () => {
+    if (!newsPreview) return;
+    setNewsSaving(true);
+    setNewsError(null);
+    try {
+      const res = await fetch("/api/news", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          url: newsUrl.trim(),
+          title: newsPreview.title,
+          excerpt: newsPreview.excerpt,
+          imageUrl: newsPreview.imageUrl,
+          platform: newsPreview.platform,
+          publishedAt: newsPreview.publishedAt ? new Date(newsPreview.publishedAt).toISOString() : null,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setNewsError(data.error ?? "Could not save. Try again."); return; }
+      setNewsUrl("");
+      setNewsPreview(null);
+      fetchNews();
+    } catch {
+      setNewsError("Could not save the article. Check your connection.");
+    } finally {
+      setNewsSaving(false);
+    }
+  }, [newsUrl, newsPreview, fetchNews]);
+
+  const handleNewsDelete = useCallback(async (id: string) => {
+    await fetch(`/api/news?id=${id}`, { method: "DELETE" });
+    setNewsArticles((prev) => prev.filter((a) => a.id !== id));
+  }, []);
+
+  const NEWS_PLATFORMS = ["Instagram", "TikTok", "X", "YouTube", "Facebook", "LinkedIn", "Snapchat", "WhatsApp", "Pinterest", "Threads", "Reddit"] as const;
+
+  // ── CSV tab state ───────────────────────────────────────────────────────────
   const [batches, setBatches] = useState<ImportBatch[]>([]);
   const [showNewImport, setShowNewImport] = useState(false);
   const [file, setFile] = useState<File | null>(null);
@@ -67,6 +207,10 @@ export default function ImportPage() {
   const [error, setError] = useState<string | null>(null);
   const [step, setStep] = useState<"upload" | "preview" | "importing" | "done">("upload");
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [warningsConfirmed, setWarningsConfirmed] = useState(false);
+  const validationIssues = useMemo(() => preview ? validatePreview(preview) : [], [preview]);
+  const hasErrors = validationIssues.some((i) => i.level === "error");
+  const canImport = !hasErrors || warningsConfirmed;
   const [progress, setProgress] = useState<{
     percent: number;
     processed: number;
@@ -186,6 +330,7 @@ export default function ImportPage() {
     setResult(null);
     setError(null);
     setStep("upload");
+    setWarningsConfirmed(false);
   }, []);
 
   const formatDate = (d: string) => {
@@ -195,28 +340,235 @@ export default function ImportPage() {
 
   return (
     <div className="min-h-screen" style={{ background: "var(--bg-primary)" }}>
-      <Navbar />
       <div className="max-w-6xl mx-auto p-6">
-        <div className="flex items-start justify-between mb-6">
+        {/* Header + tabs */}
+        <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
-              Import
-            </h1>
-            <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>
-              Import history
-            </p>
+            <h1 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>Import</h1>
+            <div className="flex items-center gap-1 mt-3">
+              {(["csv", "news"] as const).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className="px-4 py-1.5 rounded-lg text-sm font-semibold transition-all"
+                  style={{
+                    background: activeTab === tab ? "#F5C542" : "var(--bg-input)",
+                    color: activeTab === tab ? "#000" : "var(--text-muted)",
+                    border: activeTab === tab ? "none" : "1px solid var(--border-color)",
+                  }}
+                >
+                  {tab === "csv" ? "CSV Import" : "News"}
+                </button>
+              ))}
+            </div>
           </div>
-          <button
-            onClick={() => setShowNewImport(true)}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-colors"
-            style={{ background: "#c89028", color: "#000" }}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
-            </svg>
-            New Import
-          </button>
+          {activeTab === "csv" && (
+            <button
+              onClick={() => setShowNewImport(true)}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-colors"
+              style={{ background: "#F5C542", color: "#000" }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+              </svg>
+              New Import
+            </button>
+          )}
         </div>
+
+        {/* ── News tab ──────────────────────────────────────────────────────── */}
+        {activeTab === "news" && (
+          <div className="space-y-6">
+            {/* Add article form */}
+            <div className="rounded-2xl p-6" style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}>
+              <h2 className="font-bold text-sm mb-4" style={{ color: "var(--text-primary)" }}>Add news article</h2>
+
+              {/* URL row */}
+              <div className="flex gap-2 mb-4">
+                <input
+                  value={newsUrl}
+                  onChange={(e) => { setNewsUrl(e.target.value); setNewsPreview(null); setNewsError(null); }}
+                  onKeyDown={(e) => { if (e.key === "Enter") handleNewsScrape(); }}
+                  placeholder="https://sportspro.com/article/..."
+                  className="flex-1 px-3.5 py-2.5 rounded-xl text-sm outline-none"
+                  style={{ background: "var(--bg-input)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}
+                />
+                <button
+                  onClick={handleNewsScrape}
+                  disabled={!newsUrl.trim() || newsScraping}
+                  className="px-4 py-2.5 rounded-xl text-xs font-bold transition-all hover:opacity-90 shrink-0 disabled:opacity-50"
+                  style={{ background: "#F5C542", color: "#fff" }}
+                >
+                  {newsScraping ? "Extracting…" : "Extract"}
+                </button>
+              </div>
+
+              {/* Error */}
+              {newsError && (
+                <div className="flex items-start gap-3 px-4 py-3 rounded-xl text-xs mb-4"
+                  style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.25)", color: "#ef4444" }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0 mt-0.5">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                  </svg>
+                  <span className="flex-1 leading-relaxed">{newsError}</span>
+                  <button onClick={() => setNewsError(null)} className="shrink-0 hover:opacity-70">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                  </button>
+                </div>
+              )}
+
+              {/* Preview form */}
+              {newsPreview && (
+                <div className="space-y-4">
+                  {/* Image preview */}
+                  {newsPreview.imageUrl && (
+                    <div className="rounded-xl overflow-hidden" style={{ border: "1px solid var(--border-color)" }}>
+                      <img src={newsPreview.imageUrl} alt="" className="w-full object-cover" style={{ maxHeight: 160 }}
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                    </div>
+                  )}
+
+                  {/* Title + Excerpt */}
+                  <div className="grid grid-cols-1 gap-3">
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase tracking-wide mb-1" style={{ color: "var(--text-muted)" }}>Title</label>
+                      <input
+                        value={newsPreview.title}
+                        onChange={(e) => setNewsPreview((p) => p ? { ...p, title: e.target.value } : p)}
+                        className="w-full px-3.5 py-2.5 rounded-xl text-sm font-semibold outline-none"
+                        style={{ background: "var(--bg-input)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase tracking-wide mb-1" style={{ color: "var(--text-muted)" }}>Excerpt</label>
+                      <textarea
+                        value={newsPreview.excerpt ?? ""}
+                        onChange={(e) => setNewsPreview((p) => p ? { ...p, excerpt: e.target.value } : p)}
+                        rows={3}
+                        placeholder="Short description…"
+                        className="w-full px-3.5 py-2.5 rounded-xl text-sm outline-none resize-none"
+                        style={{ background: "var(--bg-input)", border: "1px solid var(--border-color)", color: "var(--text-muted)" }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Platform + Date */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase tracking-wide mb-2" style={{ color: "var(--text-muted)" }}>Platform</label>
+                      <div className="flex flex-wrap gap-1.5">
+                        {NEWS_PLATFORMS.map((pl) => {
+                          const active = newsPreview.platform === pl;
+                          return (
+                            <button key={pl}
+                              onClick={() => setNewsPreview((p) => p ? { ...p, platform: active ? null : pl } : p)}
+                              className="px-2.5 py-1 rounded-full text-[10px] font-bold transition-all"
+                              style={{
+                                background: active ? "#F5C542" : "var(--bg-input)",
+                                color: active ? "#fff" : "var(--text-muted)",
+                                border: active ? "none" : "1px solid var(--border-color)",
+                              }}
+                            >{pl}</button>
+                          );
+                        })}
+                        <button
+                          onClick={() => setNewsPreview((p) => p ? { ...p, platform: null } : p)}
+                          className="px-2.5 py-1 rounded-full text-[10px] font-bold transition-all"
+                          style={{
+                            background: !newsPreview.platform ? "#F5C542" : "var(--bg-input)",
+                            color: !newsPreview.platform ? "#fff" : "var(--text-muted)",
+                            border: !newsPreview.platform ? "none" : "1px solid var(--border-color)",
+                          }}
+                        >None</button>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase tracking-wide mb-2" style={{ color: "var(--text-muted)" }}>
+                        Publication date <span style={{ color: "var(--text-muted)", fontWeight: 400 }}>(used for date filters)</span>
+                      </label>
+                      <input
+                        type="date"
+                        value={newsPreview.publishedAt}
+                        onChange={(e) => setNewsPreview((p) => p ? { ...p, publishedAt: e.target.value } : p)}
+                        className="w-full px-3.5 py-2.5 rounded-xl text-sm outline-none"
+                        style={{ background: "var(--bg-input)", border: "1px solid var(--border-color)", color: "var(--text-primary)", colorScheme: "dark" }}
+                      />
+                      <p className="text-[10px] mt-1" style={{ color: "var(--text-muted)" }}>Default: today&apos;s date</p>
+                    </div>
+                  </div>
+
+                  {/* Save button */}
+                  <div className="flex justify-end">
+                    <button
+                      onClick={handleNewsSave}
+                      disabled={!newsPreview.title.trim() || newsSaving}
+                      className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all hover:opacity-90 disabled:opacity-40"
+                      style={{ background: "#F5C542", color: "#fff" }}
+                    >
+                      {newsSaving ? "Publishing…" : "Publish article"}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Articles list */}
+            {newsArticles.length > 0 && (
+              <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid var(--border-color)" }}>
+                <div className="px-6 py-3 flex items-center justify-between"
+                  style={{ background: "var(--bg-card)", borderBottom: "1px solid var(--border-color)" }}>
+                  <span className="text-xs font-bold" style={{ color: "var(--text-primary)" }}>
+                    {newsArticles.length} article{newsArticles.length !== 1 ? "s" : ""}
+                  </span>
+                </div>
+                <div style={{ background: "var(--bg-card)" }}>
+                  {newsArticles.map((art, i) => (
+                    <div key={art.id} className="flex items-center gap-4 px-6 py-3"
+                      style={{ borderBottom: i < newsArticles.length - 1 ? "1px solid var(--border-color)" : "none" }}>
+                      {art.imageUrl && (
+                        <img src={art.imageUrl} alt="" className="rounded-lg object-cover shrink-0"
+                          style={{ width: 48, height: 36 }}
+                          onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold truncate" style={{ color: "var(--text-primary)" }}>{art.title}</p>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          {art.platform && (
+                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+                              style={{ background: "rgba(200,144,40,0.12)", color: "#F5C542" }}>
+                              {art.platform}
+                            </span>
+                          )}
+                          <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>
+                            {new Date(art.publishedAt ?? art.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+                          </span>
+                        </div>
+                      </div>
+                      <a href={art.url} target="_blank" rel="noopener noreferrer"
+                        className="text-[10px] font-semibold hover:underline shrink-0"
+                        style={{ color: "var(--text-muted)" }}>
+                        View ↗
+                      </a>
+                      <button onClick={() => handleNewsDelete(art.id)}
+                        className="flex items-center justify-center rounded-lg transition-all hover:opacity-70 shrink-0"
+                        style={{ width: 28, height: 28, background: "var(--bg-input)", border: "1px solid var(--border-color)", color: "#ef4444" }}>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/>
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── CSV tab ───────────────────────────────────────────────────────── */}
+        {activeTab === "csv" && (
+        <div className="csv-tab-content">
 
         {/* Import history table */}
         {batches.length === 0 ? (
@@ -297,9 +649,11 @@ export default function ImportPage() {
           </div>
         )}
 
-        {/* New Import modal */}
+        </div>
+        )}
+
         {showNewImport && (
-          <>
+          <div>
             <div className="fixed inset-0 bg-black/60 z-40" onClick={closeNewImport} />
             <div
               className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl max-h-[80vh] overflow-y-auto z-50 rounded-2xl p-6"
@@ -354,6 +708,20 @@ export default function ImportPage() {
 
               {preview && step === "preview" && (
                 <div>
+                  <div className="mb-3 p-3 rounded-lg" style={{ background: "var(--bg-input)", border: "1px solid var(--border-color)" }}>
+                    <p className="text-xs font-medium mb-1.5" style={{ color: "var(--text-muted)" }}>Columns detected in your CSV</p>
+                    <div className="flex flex-wrap gap-1">
+                      {preview.headers.map((h) => {
+                        const isKnown = EXPECTED_COLS.has(h.toLowerCase().trim());
+                        return (
+                          <span key={h} className="text-xs px-1.5 py-0.5 rounded font-mono"
+                            style={{ background: isKnown ? "rgba(34,197,94,0.15)" : "rgba(239,68,68,0.12)", color: isKnown ? "var(--accent-green)" : "var(--accent-red)", border: `1px solid ${isKnown ? "rgba(34,197,94,0.3)" : "rgba(239,68,68,0.3)"}` }}>
+                            {h}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
                     <StatBox label="Total rows" value={preview.totalRows} />
                     <StatBox label={preview.sampled ? "Valid (est.)" : "Valid"} value={preview.validRows} color="var(--accent-green)" />
@@ -365,35 +733,67 @@ export default function ImportPage() {
                       Estimated from a sample of {preview.sampledRows?.toLocaleString()} rows
                     </p>
                   )}
-
                   <div className="mb-4">
                     <h4 className="text-xs font-medium mb-2" style={{ color: "var(--text-secondary)" }}>Taxonomy</h4>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                      {Object.entries(preview.taxonomy).map(([key, values]) =>
-                        values.length > 0 ? (
+                      {Object.entries(preview.taxonomy).map(([key, values]) => {
+                        const fieldIssue = validationIssues.find((i) => i.field.toLowerCase() === key.toLowerCase());
+                        return values.length > 0 ? (
                           <div key={key}>
-                            <span className="text-xs font-medium capitalize" style={{ color: "var(--text-muted)" }}>{key}:</span>
+                            <span className="text-xs font-medium capitalize" style={{ color: fieldIssue ? (fieldIssue.level === "error" ? "var(--accent-red)" : "#f59e0b") : "var(--text-muted)" }}>{key}:</span>
                             <div className="flex flex-wrap gap-1 mt-1">
-                              {values.slice(0, 10).map((v: string) => (
-                                <span key={v} className="text-xs px-1.5 py-0.5 rounded" style={{ background: "var(--bg-hover)", color: "var(--text-primary)" }}>
-                                  {v}
-                                </span>
-                              ))}
+                              {values.slice(0, 10).map((v: string) => {
+                                const isOdd = (key === "platforms" && !KNOWN_PLATFORMS.has(v.toLowerCase())) ||
+                                             (key === "formats" && !KNOWN_FORMATS.has(v.toLowerCase()));
+                                return (
+                                  <span key={v} className="text-xs px-1.5 py-0.5 rounded"
+                                    style={{ background: isOdd ? "rgba(239,68,68,0.12)" : "var(--bg-hover)", color: isOdd ? "var(--accent-red)" : "var(--text-primary)", border: isOdd ? "1px solid rgba(239,68,68,0.3)" : "none" }}>
+                                    {v}
+                                  </span>
+                                );
+                              })}
                               {values.length > 10 && (
                                 <span className="text-xs" style={{ color: "var(--text-muted)" }}>+{values.length - 10} more</span>
                               )}
                             </div>
                           </div>
-                        ) : null
-                      )}
+                        ) : null;
+                      })}
                     </div>
                   </div>
-
+                  {validationIssues.length > 0 && (
+                    <div className="mb-4 rounded-xl overflow-hidden" style={{ border: `1px solid ${hasErrors ? "rgba(239,68,68,0.4)" : "rgba(245,158,11,0.4)"}` }}>
+                      <div className="flex items-center gap-2 px-3 py-2" style={{ background: hasErrors ? "rgba(239,68,68,0.15)" : "rgba(245,158,11,0.12)" }}>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={hasErrors ? "var(--accent-red)" : "#f59e0b"} strokeWidth="2">
+                          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                        <span className="text-xs font-semibold" style={{ color: hasErrors ? "var(--accent-red)" : "#f59e0b" }}>
+                          {hasErrors ? "Possible mapping errors detected" : "Warnings"}
+                        </span>
+                      </div>
+                      <div className="px-3 py-2 flex flex-col gap-1.5">
+                        {validationIssues.map((issue, i) => (
+                          <div key={i} className="flex gap-2 text-xs" style={{ color: "var(--text-secondary)" }}>
+                            <span className="font-semibold shrink-0" style={{ color: issue.level === "error" ? "var(--accent-red)" : "#f59e0b" }}>
+                              [{issue.field}]
+                            </span>
+                            <span>{issue.message}</span>
+                          </div>
+                        ))}
+                      </div>
+                      {hasErrors && (
+                        <label className="flex items-center gap-2.5 px-3 py-2.5 cursor-pointer" style={{ background: "rgba(0,0,0,0.15)", borderTop: "1px solid rgba(239,68,68,0.2)" }}>
+                          <input type="checkbox" checked={warningsConfirmed} onChange={(e) => setWarningsConfirmed(e.target.checked)} className="w-4 h-4 rounded" />
+                          <span className="text-xs" style={{ color: "var(--text-secondary)" }}>I understand the risks and want to import anyway</span>
+                        </label>
+                      )}
+                    </div>
+                  )}
                   <button
                     onClick={handleImport}
-                    disabled={importing}
-                    className="w-full py-2.5 rounded-lg text-sm font-semibold"
-                    style={{ background: "var(--accent-green)", color: "#fff" }}
+                    disabled={importing || !canImport}
+                    className="w-full py-2.5 rounded-lg text-sm font-semibold transition-opacity"
+                    style={{ background: canImport ? "var(--accent-green)" : "var(--bg-hover)", color: canImport ? "#fff" : "var(--text-muted)", cursor: canImport ? "pointer" : "not-allowed" }}
                   >
                     Import {preview.validRows.toLocaleString()} valid rows
                   </button>
@@ -404,54 +804,33 @@ export default function ImportPage() {
                 <div className="py-8">
                   <div className="mb-4">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
-                        Importing...
-                      </span>
-                      <span className="text-sm font-bold" style={{ color: "var(--accent-blue)" }}>
-                        {progress ? `${progress.percent}%` : "0%"}
-                      </span>
+                      <span className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>Importing...</span>
+                      <span className="text-sm font-bold" style={{ color: "var(--accent-blue)" }}>{progress ? `${progress.percent}%` : "0%"}</span>
                     </div>
-                    <div
-                      className="w-full h-3 rounded-full overflow-hidden"
-                      style={{ background: "var(--bg-input)" }}
-                    >
-                      <div
-                        className="h-full rounded-full transition-all duration-300"
-                        style={{
-                          width: `${progress?.percent || 0}%`,
-                          background: "linear-gradient(90deg, var(--accent-blue), var(--accent-green))",
-                        }}
-                      />
+                    <div className="w-full h-3 rounded-full overflow-hidden" style={{ background: "var(--bg-input)" }}>
+                      <div className="h-full rounded-full transition-all duration-300" style={{ width: `${progress?.percent || 0}%`, background: "linear-gradient(90deg, var(--accent-blue), var(--accent-green))" }} />
                     </div>
                   </div>
                   {progress && (
                     <div className="grid grid-cols-3 gap-3 mb-3">
                       <div className="text-center">
-                        <div className="text-lg font-bold" style={{ color: "var(--accent-green)" }}>
-                          {progress.imported.toLocaleString()}
-                        </div>
+                        <div className="text-lg font-bold" style={{ color: "var(--accent-green)" }}>{progress.imported.toLocaleString()}</div>
                         <div className="text-[10px]" style={{ color: "var(--text-muted)" }}>Created</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>
-                          {progress.processed.toLocaleString()} / {progress.totalRows.toLocaleString()}
-                        </div>
+                        <div className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>{progress.processed.toLocaleString()} / {progress.totalRows.toLocaleString()}</div>
                         <div className="text-[10px]" style={{ color: "var(--text-muted)" }}>Processed</div>
                       </div>
                       <div className="text-center">
                         <div className="text-lg font-bold" style={{ color: "var(--text-secondary)" }}>
-                          {progress.etaMs > 60000
-                            ? `${Math.ceil(progress.etaMs / 60000)} min`
-                            : `${Math.ceil(progress.etaMs / 1000)}s`}
+                          {progress.etaMs > 60000 ? `${Math.ceil(progress.etaMs / 60000)} min` : `${Math.ceil(progress.etaMs / 1000)}s`}
                         </div>
                         <div className="text-[10px]" style={{ color: "var(--text-muted)" }}>Remaining</div>
                       </div>
                     </div>
                   )}
                   {!progress && (
-                    <p className="text-xs text-center" style={{ color: "var(--text-muted)" }}>
-                      Starting...
-                    </p>
+                    <p className="text-xs text-center" style={{ color: "var(--text-muted)" }}>Starting...</p>
                   )}
                 </div>
               )}
@@ -464,25 +843,17 @@ export default function ImportPage() {
                     <StatBox label="Skipped" value={result.skipped} />
                   </div>
                   <div className="flex gap-3">
-                    <button
-                      onClick={closeNewImport}
-                      className="flex-1 py-2.5 rounded-lg text-sm font-medium"
-                      style={{ background: "var(--bg-input)", color: "var(--text-primary)", border: "1px solid var(--border-color)" }}
-                    >
+                    <button onClick={closeNewImport} className="flex-1 py-2.5 rounded-lg text-sm font-medium" style={{ background: "var(--bg-input)", color: "var(--text-primary)", border: "1px solid var(--border-color)" }}>
                       Close
                     </button>
-                    <a
-                      href="/feed"
-                      className="flex-1 py-2.5 rounded-lg text-sm font-medium text-center"
-                      style={{ background: "var(--accent-blue)", color: "#fff" }}
-                    >
+                    <a href="/feed" className="flex-1 py-2.5 rounded-lg text-sm font-medium text-center" style={{ background: "var(--accent-blue)", color: "#fff" }}>
                       View Feed
                     </a>
                   </div>
                 </div>
               )}
             </div>
-          </>
+          </div>
         )}
       </div>
     </div>

@@ -112,16 +112,41 @@ export async function GET(request: NextRequest) {
     where.OR = [
       { accountUsername: { contains: search } },
       { entityName: { contains: search } },
-      { externalPostId: { contains: search } },
+      { competitions: { some: { competition: { name: { contains: search } } } } },
+      { entityType: { name: { contains: search } } },
     ];
   }
 
-  const orderBy = order === "latest"
-    ? { publishedAt: "desc" as const }
-    : { createdAt: "desc" as const };
+  const total = await prisma.publication.count({ where });
 
-  const [publications, total] = await Promise.all([
-    prisma.publication.findMany({
+  let publications;
+  if (order === "random") {
+    // Fetch all matching IDs, shuffle JS-side, then paginate
+    const allIds = await prisma.publication.findMany({ where, select: { id: true } });
+    // Deterministic daily shuffle so pagination is consistent within a session
+    const seed = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
+    const shuffled = allIds
+      .map((r, i) => ({ id: r.id, sort: Math.sin(seed + i) }))
+      .sort((a, b) => a.sort - b.sort)
+      .map((r) => r.id);
+    const pageIds = shuffled.slice(skip, skip + limit);
+    publications = await prisma.publication.findMany({
+      where: { id: { in: pageIds } },
+      include: {
+        platform: true,
+        sport: true,
+        contentFormat: true,
+        entityType: true,
+        competitions: { include: { competition: true } },
+        classifications: { include: { classification: true } },
+        savedBy: { where: { userId }, select: { id: true } },
+      },
+    });
+    // Restore shuffled order
+    const idxMap = new Map(pageIds.map((id, i) => [id, i]));
+    publications.sort((a, b) => (idxMap.get(a.id) ?? 0) - (idxMap.get(b.id) ?? 0));
+  } else {
+    publications = await prisma.publication.findMany({
       where,
       include: {
         platform: true,
@@ -130,23 +155,20 @@ export async function GET(request: NextRequest) {
         entityType: true,
         competitions: { include: { competition: true } },
         classifications: { include: { classification: true } },
-        savedBy: {
-          where: { userId },
-          select: { id: true },
-        },
+        savedBy: { where: { userId }, select: { id: true } },
       },
-      orderBy,
+      orderBy: { publishedAt: "desc" },
       skip,
       take: limit,
-    }),
-    prisma.publication.count({ where }),
-  ]);
+    });
+  }
 
   const formatted = publications.map((pub) => ({
     id: pub.id,
     externalPostId: pub.externalPostId,
     canonicalUrl: pub.canonicalUrl,
     embedUrl: pub.embedUrl,
+    originalUrl: pub.originalUrl,
     accountUsername: pub.accountUsername,
     publishedAt: pub.publishedAt,
     platform: pub.platform.name,
