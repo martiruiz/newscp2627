@@ -97,9 +97,27 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
   const [sportSearch, setSportSearch] = useState("");
   const [showAllSports, setShowAllSports] = useState(false);
   const [openSection, setOpenSection] = useState<SectionId>(null);
+  const [hoveredPlatform, setHoveredPlatform] = useState<string | null>(null);
 
   const toggleSection = useCallback((id: SectionId) => {
     setOpenSection((prev) => (prev === id ? null : id));
+  }, []);
+
+  useEffect(() => {
+    const SELECTOR_TO_SECTION: Record<string, SectionId> = {
+      '[data-tutorial="filter-date"]': "date",
+      '[data-tutorial="filter-sport"]': "sport",
+      '[data-tutorial="filter-published"]': "published",
+      '[data-tutorial="filter-account"]': "account",
+      '[data-tutorial="filter-contentCategory"]': "contentCategory",
+    };
+    function onTutorialStep(e: Event) {
+      const selector = (e as CustomEvent<{ selector: string | null }>).detail.selector;
+      const section = selector ? SELECTOR_TO_SECTION[selector] : null;
+      setOpenSection(section ?? null);
+    }
+    window.addEventListener("tutorial-step", onTutorialStep);
+    return () => window.removeEventListener("tutorial-step", onTutorialStep);
   }, []);
 
   useEffect(() => {
@@ -255,6 +273,37 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
         .join(", ")
     : undefined;
 
+  const FIXED_PLATFORMS = [
+    { slug: "instagram",      name: "Instagram" },
+    { slug: "tiktok",         name: "TikTok" },
+    { slug: "youtube",        name: "YouTube" },
+    { slug: "youtube-shorts", name: "YT Shorts" },
+    { slug: "x",              name: "X" },
+    { slug: "facebook",       name: "Facebook" },
+    { slug: "pinterest",      name: "Pinterest" },
+    { slug: "linkedin",       name: "LinkedIn" },
+  ];
+  const apiPlatformCounts = new Map((filterData?.platforms ?? []).map((p) => [p.slug, p.count]));
+  const allPlatforms = FIXED_PLATFORMS.map((p) => ({ ...p, count: apiPlatformCounts.get(p.slug) ?? 0 }));
+
+  // Content Creators chip
+  const ccSlug = "content-creators";
+  const ccIsSelected = filters.entityType.includes(ccSlug);
+
+  // Account accordion context
+  const typePlurals = filters.entityType.map((slug) => ENTITY_PLURAL[slug]).filter(Boolean);
+  const accountSearchPlaceholder = typePlurals.length > 0 ? `Search ${typePlurals.join(", ")}...` : "Search accounts...";
+  const contextParts: string[] = [];
+  if (filters.sport.length > 0) {
+    const sportNames = filterData?.sports?.filter((s) => filters.sport.includes(s.slug)).map((s) => s.name) || [];
+    if (sportNames.length > 0) contextParts.push(sportNames.join(", "));
+  }
+  if (filters.entityType.length > 0) {
+    const typeNames = filters.entityType.map((slug) => ENTITY_PLURAL[slug]).filter(Boolean);
+    if (typeNames.length > 0) contextParts.push(typeNames.join(", "));
+  }
+  const accountContextLabel = contextParts.length > 0 ? `Showing ${contextParts.join(" · ")}` : undefined;
+
   return (
     <>
       {isOpen && (
@@ -284,7 +333,7 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
           {hasActiveFilters && (
             <div
               className="mt-2 text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full"
-              style={{ background: "#F5C542", color: "#fff" }}
+              style={{ background: "var(--selected-bg)", color: "var(--selected-text)" }}
             >
               {activeFilterCount}
             </div>
@@ -293,6 +342,7 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
       )}
 
       <aside
+        data-tutorial="filter-sidebar"
         className={`fixed lg:sticky top-0 left-0 h-screen flex flex-col z-50 lg:z-auto transition-all ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } ${collapsed ? "lg:hidden" : "lg:translate-x-0"}`}
@@ -318,7 +368,7 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
                 <button
                   onClick={clearAll}
                   className="text-[11px] px-2 py-0.5 rounded"
-                  style={{ color: "#F5C542", background: "rgba(200,144,40,0.1)" }}
+                  style={{ color: "var(--color-charcoal)", background: "rgba(31,41,55,0.1)" }}
                 >
                   Clear all
                 </button>
@@ -344,7 +394,7 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
           </div>
 
           {/* Global search */}
-          <div className="mb-4 relative">
+          <div data-tutorial="filter-search" className="mb-4 relative">
             <div
               className="flex items-center gap-2 rounded-lg px-3 py-2"
               style={{ background: "var(--bg-input)", border: "1px solid var(--border-color)" }}
@@ -355,7 +405,7 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
               </svg>
               <input
                 type="text"
-                placeholder="Search accounts, topics or ideas..."
+                placeholder="Search clubs, creators or competitions..."
                 value={globalSearch}
                 onChange={(e) => setGlobalSearch(e.target.value)}
                 onFocus={() => setGlobalSearchFocused(true)}
@@ -391,7 +441,7 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
                           onClick={() => selectSearchResult(r)}
                           className="flex items-center justify-between w-full px-3 py-2 text-xs transition-colors hover:brightness-110"
                           style={{
-                            background: isActive ? "rgba(200,144,40,0.15)" : "transparent",
+                            background: isActive ? "rgba(31,41,55,0.15)" : "transparent",
                             color: "var(--text-primary)",
                             borderBottom: "1px solid var(--border-color)",
                           }}
@@ -409,83 +459,61 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
             )}
           </div>
 
-          {/* Quick filter chips */}
+          {/* Quick filter chips — accordion style */}
           {filterData && (
-            <div className="flex flex-wrap gap-1.5 mb-3">
-              {filterData.classifications.map((opt) => {
-                const colors: Record<string, string> = {
-                  "top-picks": "var(--badge-top)",
-                  "replicable-ideas": "var(--badge-replicable)",
-                  overperforming: "var(--badge-overperforming)",
+            <div data-tutorial="filter-classification" className="flex flex-col gap-1 mb-3">
+              {(["top-picks", "replicable-ideas"] as const).map((slug) => {
+                const opt = filterData.classifications.find((c) => c.slug === slug);
+                if (!opt) return null;
+                const chipConfig: Record<string, { gradient: string; icon: React.ReactNode }> = {
+                  "top-picks": {
+                    gradient: "linear-gradient(135deg, #E8567A 0%, #A82346 100%)",
+                    icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
+                  },
+                  "replicable-ideas": {
+                    gradient: "linear-gradient(135deg, #52D68A 0%, #1B8A4E 100%)",
+                    icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>,
+                  },
                 };
-                const isSelected = filters.classification.includes(opt.slug);
+                const { gradient, icon } = chipConfig[slug];
                 return (
-                  <button
+                  <QuickFilterButton
                     key={opt.slug}
+                    label={opt.name}
+                    icon={icon}
+                    isSelected={filters.classification.includes(opt.slug)}
+                    gradient={gradient}
                     onClick={() => toggleArrayFilter("classification", opt.slug)}
-                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-medium transition-all"
-                    style={{
-                      background: isSelected ? colors[opt.slug] || "#F5C542" : "var(--bg-input)",
-                      color: isSelected ? "#fff" : "var(--text-secondary)",
-                      border: `1.5px solid ${isSelected ? "rgba(255,255,255,0.3)" : "var(--border-color)"}`,
-                    }}
-                  >
-                    {isSelected && (
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3">
-                        <path d="M20 6L9 17l-5-5" />
-                      </svg>
-                    )}
-                    {opt.name}
-                  </button>
+                  />
                 );
               })}
+              <QuickFilterButton
+                label="Content Creators"
+                icon={<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>}
+                isSelected={ccIsSelected}
+                gradient="linear-gradient(135deg, #D4A420 0%, #7B4D0B 100%)"
+                onClick={() => toggleArrayFilter("entityType", ccSlug)}
+              />
               {(() => {
-                const ccSlug = "content-creators";
-                const isSelected = filters.entityType.includes(ccSlug);
+                const opt = filterData.classifications.find((c) => c.slug === "overperforming");
+                if (!opt) return null;
                 return (
-                  <button
-                    onClick={() => toggleArrayFilter("entityType", ccSlug)}
-                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-medium transition-all"
-                    style={{
-                      background: isSelected ? "#F5C542" : "var(--bg-input)",
-                      color: isSelected ? "#fff" : "var(--text-secondary)",
-                      border: `1.5px solid ${isSelected ? "#F5C542" : "var(--border-color)"}`,
-                    }}
-                  >
-                    {isSelected && (
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3">
-                        <path d="M20 6L9 17l-5-5" />
-                      </svg>
-                    )}
-                    Content Creators
-                  </button>
+                  <QuickFilterButton
+                    label="Overperforming"
+                    icon={<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>}
+                    isSelected={filters.classification.includes("overperforming")}
+                    gradient="linear-gradient(135deg, #3B82F6 0%, #1E3A8A 100%)"
+                    onClick={() => toggleArrayFilter("classification", "overperforming")}
+                  />
                 );
               })()}
-              <button
-                onClick={() => onFiltersChange({ ...filters, saved: filters.saved === "true" ? "" : "true" })}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-medium transition-all"
-                style={{
-                  background: filters.saved === "true" ? "#F5C542" : "var(--bg-input)",
-                  color: filters.saved === "true" ? "#fff" : "var(--text-secondary)",
-                  border: `1.5px solid ${filters.saved === "true" ? "#F5C542" : "var(--border-color)"}`,
-                }}
-              >
-                {filters.saved === "true" && (
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3">
-                    <path d="M20 6L9 17l-5-5" />
-                  </svg>
-                )}
-                <svg width="11" height="11" viewBox="0 0 24 24" fill={filters.saved === "true" ? "#fff" : "none"} stroke={filters.saved === "true" ? "#fff" : "var(--text-secondary)"} strokeWidth="2">
-                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-                </svg>
-                Saved
-              </button>
             </div>
           )}
 
           {/* Date range — accordion */}
           <AccordionSection
             id="date"
+            tutorialId="filter-date"
             title="Date range"
             icon="calendar"
             open={openSection === "date"}
@@ -500,6 +528,7 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
           {filterData?.sports && (
             <AccordionSection
               id="sport"
+              tutorialId="filter-sport"
               title="Sport"
               icon="sport"
               open={openSection === "sport"}
@@ -530,9 +559,9 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
                       onClick={() => toggleArrayFilter("sport", opt.slug)}
                       className="flex items-center justify-between w-full text-left px-2.5 py-1.5 rounded-md text-xs transition-all"
                       style={{
-                        background: isSelected ? "#F5C542" : "transparent",
-                        color: isSelected ? "#fff" : "var(--text-primary)",
-                        border: isSelected ? "1px solid #F5C542" : "1px solid transparent",
+                        background: isSelected ? "var(--selected-bg)" : "transparent",
+                        color: isSelected ? "var(--selected-text)" : "var(--text-primary)",
+                        border: isSelected ? `1px solid var(--selected-bg)` : "1px solid transparent",
                       }}
                     >
                       <span className="flex items-center gap-1.5">
@@ -560,7 +589,7 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
                 <button
                   onClick={() => setShowAllSports(true)}
                   className="w-full text-center text-xs mt-2 py-1.5 rounded-md transition-colors"
-                  style={{ color: "#F5C542", background: "rgba(200,144,40,0.08)" }}
+                  style={{ color: "var(--color-charcoal)", background: "rgba(31,41,55,0.08)" }}
                 >
                   Show all sports
                 </button>
@@ -572,6 +601,7 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
           {filterData?.entityTypes && (
             <AccordionSection
               id="published"
+              tutorialId="filter-published"
               title="Publisher type"
               icon="entity"
               open={openSection === "published"}
@@ -588,9 +618,9 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
                       onClick={() => toggleArrayFilter("entityType", opt.slug)}
                       className="flex items-center justify-between w-full text-left px-2.5 py-1.5 rounded-md text-xs transition-all"
                       style={{
-                        background: isSelected ? "#F5C542" : "transparent",
-                        color: isSelected ? "#fff" : "var(--text-primary)",
-                        border: isSelected ? "1px solid #F5C542" : "1px solid transparent",
+                        background: isSelected ? "var(--selected-bg)" : "transparent",
+                        color: isSelected ? "var(--selected-text)" : "var(--text-primary)",
+                        border: isSelected ? `1px solid var(--selected-bg)` : "1px solid transparent",
                       }}
                     >
                       <span className="flex items-center gap-1.5">
@@ -618,56 +648,31 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
           )}
 
           {/* Account — accordion (contextual to sport + publisher type) */}
-          {(() => {
-            const typePlurals = filters.entityType
-              .map((slug) => ENTITY_PLURAL[slug])
-              .filter(Boolean);
-            const searchPlaceholder = typePlurals.length > 0
-              ? `Search ${typePlurals.join(", ")}...`
-              : "Search accounts...";
-
-            const contextParts: string[] = [];
-            if (filters.sport.length > 0) {
-              const sportNames = filterData?.sports
-                ?.filter((s) => filters.sport.includes(s.slug))
-                .map((s) => s.name) || [];
-              if (sportNames.length > 0) contextParts.push(sportNames.join(", "));
-            }
-            if (filters.entityType.length > 0) {
-              const typeNames = filters.entityType
-                .map((slug) => ENTITY_PLURAL[slug])
-                .filter(Boolean);
-              if (typeNames.length > 0) contextParts.push(typeNames.join(", "));
-            }
-            const contextLabel = contextParts.length > 0
-              ? `Showing ${contextParts.join(" · ")}`
-              : undefined;
-
-            return (
-              <AccordionSection
-                id="account"
-                title="Account"
-                icon="search"
-                open={openSection === "account"}
-                onToggle={() => toggleSection("account")}
-                badge={filters.entityName.length}
-                summary={filters.entityName.length > 0 ? filters.entityName.join(", ") : undefined}
+          <AccordionSection
+            id="account"
+            tutorialId="filter-account"
+            title="Account"
+            icon="search"
+            open={openSection === "account"}
+            onToggle={() => toggleSection("account")}
+            badge={filters.entityName.length}
+            summary={filters.entityName.length > 0 ? filters.entityName.join(", ") : undefined}
+          >
+            {accountContextLabel && (
+              <div
+                className="flex items-center gap-1.5 text-[10px] mb-2 px-2 py-1.5 rounded-md"
+                style={{ background: "rgba(31,41,55,0.08)", color: "var(--color-charcoal)" }}
               >
-                {contextLabel && (
-                  <div
-                    className="flex items-center gap-1.5 text-[10px] mb-2 px-2 py-1.5 rounded-md"
-                    style={{ background: "rgba(200,144,40,0.08)", color: "#F5C542" }}
-                  >
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="shrink-0">
-                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="M22 4L12 14.01l-3-3" />
-                    </svg>
-                    {contextLabel}
-                  </div>
-                )}
-                <input
-                  type="text"
-                  placeholder={searchPlaceholder}
-                  value={entitySearch}
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="shrink-0">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="M22 4L12 14.01l-3-3" />
+                </svg>
+                {accountContextLabel}
+              </div>
+            )}
+            <input
+              type="text"
+              placeholder={accountSearchPlaceholder}
+              value={entitySearch}
                   onChange={(e) => setEntitySearch(e.target.value)}
                   className="w-full rounded-md px-2.5 py-1.5 text-xs mb-2"
                   style={{ background: "var(--bg-input)", color: "var(--text-primary)", border: "1px solid var(--border-color)" }}
@@ -681,8 +686,8 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
                         onClick={() => toggleArrayFilter("entityName", e.name)}
                         className="flex items-center justify-between w-full text-left px-2.5 py-1.5 rounded-md text-xs transition-all"
                         style={{
-                          background: isSelected ? "#F5C542" : "transparent",
-                          color: isSelected ? "#fff" : "var(--text-primary)",
+                          background: isSelected ? "var(--selected-bg)" : "transparent",
+                          color: isSelected ? "var(--selected-text)" : "var(--text-primary)",
                         }}
                       >
                         <span className="truncate">{e.name}</span>
@@ -699,13 +704,12 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
                     );
                   })}
                 </div>
-              </AccordionSection>
-            );
-          })()}
+          </AccordionSection>
 
           {/* Content category — accordion */}
           {filterData?.contentCategories && filterData.contentCategories.length > 0 && (
             <AccordionSection
+              tutorialId="filter-contentCategory"
               id="contentCategory"
               title="Content category"
               icon="category"
@@ -729,9 +733,9 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
                       onClick={() => toggleArrayFilter("contentCategory", opt.slug)}
                       className="flex items-center justify-between w-full text-left px-2.5 py-1.5 rounded-md text-xs transition-all"
                       style={{
-                        background: isSelected ? "#F5C542" : "transparent",
-                        color: isSelected ? "#fff" : "var(--text-primary)",
-                        border: isSelected ? "1px solid #F5C542" : "1px solid transparent",
+                        background: isSelected ? "var(--selected-bg)" : "transparent",
+                        color: isSelected ? "var(--selected-text)" : "var(--text-primary)",
+                        border: isSelected ? `1px solid var(--selected-bg)` : "1px solid transparent",
                       }}
                     >
                       <span className="flex items-center gap-1.5">
@@ -760,7 +764,7 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
 
           {/* Format */}
           {filterData?.formats && (
-            <div className="mb-3">
+            <div data-tutorial="filter-format" className="mb-3">
               <h3 className="text-xs font-semibold mb-2" style={{ color: "var(--text-primary)" }}>Format</h3>
               <div className="grid grid-cols-4 gap-2">
                 {filterData.formats.map((f) => {
@@ -769,14 +773,29 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
                     <button
                       key={f.slug}
                       onClick={() => toggleArrayFilter("format", f.slug)}
-                      className="flex flex-col items-center gap-1.5 p-2.5 rounded-xl transition-all"
+                      className="flex flex-col items-center gap-1.5 p-2.5 rounded-xl"
                       style={{
-                        background: isSelected ? "var(--bg-hover)" : "var(--bg-card)",
-                        border: `1.5px solid ${isSelected ? "#F5C542" : "var(--border-color)"}`,
+                        background: isSelected ? "rgba(31,41,55,0.08)" : "var(--bg-card)",
+                        border: `1.5px solid ${isSelected ? "var(--selected-bg)" : "var(--border-color)"}`,
+                        transition: "background 0.15s, border-color 0.15s, transform 0.12s, box-shadow 0.15s",
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!isSelected) {
+                          e.currentTarget.style.background = "rgba(31,41,55,0.06)";
+                          e.currentTarget.style.borderColor = "rgba(31,41,55,0.4)";
+                        }
+                        e.currentTarget.style.transform = "translateY(-1px)";
+                        e.currentTarget.style.boxShadow = "0 4px 12px rgba(31,41,55,0.15)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = isSelected ? "rgba(31,41,55,0.08)" : "var(--bg-card)";
+                        e.currentTarget.style.borderColor = isSelected ? "var(--selected-bg)" : "var(--border-color)";
+                        e.currentTarget.style.transform = "translateY(0)";
+                        e.currentTarget.style.boxShadow = "none";
                       }}
                     >
                       <FormatIcon slug={f.slug} selected={isSelected} />
-                      <span className="text-[10px] font-medium" style={{ color: isSelected ? "#F5C542" : "var(--text-muted)" }}>
+                      <span className="text-[10px] font-medium" style={{ color: isSelected ? "var(--selected-bg)" : "var(--text-muted)" }}>
                         {f.name}
                       </span>
                     </button>
@@ -787,29 +806,66 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
           )}
 
           {/* Platform */}
-          {filterData?.platforms && (
-            <div className="mb-3">
-              <h3 className="text-xs font-semibold mb-2" style={{ color: "var(--text-primary)" }}>Platform</h3>
-              <div className="grid grid-cols-4 gap-2">
-                {filterData.platforms.map((p) => {
+          <div data-tutorial="platform-filter" className="mb-3">
+            <h3 className="text-xs font-semibold mb-2" style={{ color: "var(--text-primary)" }}>Platform</h3>
+            <div className="grid grid-cols-4 gap-2">
+              {allPlatforms.map((p) => {
                   const isSelected = filters.platform.includes(p.slug);
+                  const brandColor = PLATFORM_BRAND_COLORS[p.slug] ?? "#1F2937";
                   return (
                     <button
                       key={p.slug}
                       onClick={() => toggleArrayFilter("platform", p.slug)}
-                      className="flex flex-col items-center justify-center p-2.5 rounded-xl transition-all aspect-square"
+                      className="flex flex-col items-center justify-center p-2.5 rounded-xl aspect-square"
                       style={{
-                        background: isSelected ? "var(--bg-hover)" : "var(--bg-card)",
-                        border: `1.5px solid ${isSelected ? "#F5C542" : "var(--border-color)"}`,
+                        background: isSelected ? `${brandColor}18` : "var(--bg-card)",
+                        border: `1.5px solid ${isSelected ? brandColor : "var(--border-color)"}`,
+                        transition: "background 0.15s, border-color 0.15s, transform 0.12s, box-shadow 0.15s",
+                      }}
+                      onMouseEnter={(e) => {
+                        setHoveredPlatform(p.slug);
+                        e.currentTarget.style.background = `${brandColor}18`;
+                        e.currentTarget.style.borderColor = brandColor;
+                        e.currentTarget.style.transform = "translateY(-1px)";
+                        e.currentTarget.style.boxShadow = `0 4px 14px ${brandColor}40`;
+                      }}
+                      onMouseLeave={(e) => {
+                        setHoveredPlatform(null);
+                        e.currentTarget.style.background = isSelected ? `${brandColor}18` : "var(--bg-card)";
+                        e.currentTarget.style.borderColor = isSelected ? brandColor : "var(--border-color)";
+                        e.currentTarget.style.transform = "translateY(0)";
+                        e.currentTarget.style.boxShadow = "none";
                       }}
                     >
-                      <PlatformIcon slug={p.slug} selected={isSelected} />
-                    </button>
-                  );
-                })}
-              </div>
+                    <PlatformIcon slug={p.slug} selected={isSelected} isHovered={hoveredPlatform === p.slug} />
+                  </button>
+                );
+              })}
             </div>
-          )}
+          </div>
+
+          {/* Saved — below platform icons */}
+          <div className="mt-2">
+            <button
+              onClick={() => onFiltersChange({ ...filters, saved: filters.saved === "true" ? "" : "true" })}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium transition-all w-full justify-center"
+              style={{
+                background: filters.saved === "true" ? "var(--selected-bg)" : "var(--bg-card)",
+                color: filters.saved === "true" ? "var(--selected-text)" : "var(--text-secondary)",
+                border: `1.5px solid ${filters.saved === "true" ? "var(--selected-bg)" : "var(--border-color)"}`,
+              }}
+            >
+              {filters.saved === "true" && (
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3">
+                  <path d="M20 6L9 17l-5-5" />
+                </svg>
+              )}
+              <svg width="12" height="12" viewBox="0 0 24 24" fill={filters.saved === "true" ? "#fff" : "none"} stroke={filters.saved === "true" ? "#fff" : "var(--text-secondary)"} strokeWidth="2">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+              </svg>
+              Saved
+            </button>
+          </div>
 
         </div>
 
@@ -832,13 +888,56 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
           <button
             onClick={onClose}
             className="text-xs font-semibold px-4 py-1.5 rounded-md lg:pointer-events-none lg:cursor-default"
-            style={{ background: "#F5C542", color: "#fff" }}
+            style={{ background: "var(--selected-bg)", color: "var(--selected-text)" }}
           >
             Show {resultCount !== undefined ? resultCount.toLocaleString() : "..."} ideas
           </button>
         </div>
       </aside>
     </>
+  );
+}
+
+/* ─── Quick Filter Button ─── */
+
+function QuickFilterButton({ label, icon, isSelected, gradient, onClick }: {
+  label: string;
+  icon: React.ReactNode;
+  isSelected: boolean;
+  gradient: string;
+  onClick: () => void;
+}) {
+  const [hovered, setHovered] = useState(false);
+  const showGradient = isSelected || hovered;
+
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className="flex items-center justify-between w-full px-3 py-2.5 rounded-lg text-left transition-all"
+      style={{
+        background: showGradient ? gradient : "var(--bg-secondary)",
+        color: showGradient ? "#fff" : "var(--text-primary)",
+        border: `1px solid ${showGradient ? "transparent" : "var(--border-color)"}`,
+      }}
+    >
+      <div className="flex items-center gap-2">
+        <span style={{ color: showGradient ? "rgba(255,255,255,0.85)" : "var(--text-muted)" }}>
+          {icon}
+        </span>
+        <span className="text-xs font-semibold">{label}</span>
+      </div>
+      {isSelected ? (
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="3">
+          <path d="M20 6L9 17l-5-5" />
+        </svg>
+      ) : (
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={hovered ? "rgba(255,255,255,0.7)" : "var(--text-muted)"} strokeWidth="2">
+          <path d="M6 9l6 6 6-6" />
+        </svg>
+      )}
+    </button>
   );
 }
 
@@ -853,8 +952,10 @@ function AccordionSection({
   open,
   onToggle,
   children,
+  tutorialId,
 }: {
   id: string;
+  tutorialId?: string;
   title: string;
   icon?: string;
   badge?: number;
@@ -884,7 +985,11 @@ function AccordionSection({
   })();
 
   return (
-    <div className="mb-1 rounded-lg overflow-hidden" style={{ border: "1px solid var(--border-color)" }}>
+    <div
+      className="mb-1 rounded-lg overflow-hidden"
+      style={{ border: "1px solid var(--border-color)" }}
+      {...(tutorialId ? { "data-tutorial": tutorialId } : {})}
+    >
       <button
         onClick={onToggle}
         className="flex items-center justify-between w-full px-3 py-2.5 text-left transition-colors"
@@ -894,7 +999,7 @@ function AccordionSection({
           {iconSvg && <span className="shrink-0" style={{ color: "var(--text-muted)" }}>{iconSvg}</span>}
           <span className="text-xs font-semibold shrink-0" style={{ color: "var(--text-primary)" }}>{title}</span>
           {badge !== undefined && badge > 0 && (
-            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full shrink-0" style={{ background: "#F5C542", color: "#fff" }}>
+            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full shrink-0" style={{ background: "var(--selected-bg)", color: "var(--selected-text)" }}>
               {badge}
             </span>
           )}
@@ -904,14 +1009,14 @@ function AccordionSection({
                 <span
                   key={tag.label}
                   className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium shrink-0"
-                  style={{ background: "rgba(200,144,40,0.15)", color: "#F5C542" }}
+                  style={{ background: "rgba(31,41,55,0.15)", color: "var(--color-charcoal)" }}
                 >
                   {tag.label}
                   <span
                     role="button"
                     onClick={(e) => { e.stopPropagation(); tag.onRemove(); }}
                     className="hover:opacity-70 ml-0.5 cursor-pointer"
-                    style={{ color: "#F5C542" }}
+                    style={{ color: "var(--color-charcoal)" }}
                   >
                     &times;
                   </span>
@@ -945,7 +1050,7 @@ function AccordionSection({
 /* ─── Format Icons ─── */
 
 function FormatIcon({ slug, selected }: { slug: string; selected: boolean }) {
-  const color = selected ? "#F5C542" : "var(--text-muted)";
+  const color = selected ? "var(--color-charcoal)" : "var(--text-muted)";
   const size = 28;
   switch (slug) {
     case "carousel":
@@ -963,16 +1068,34 @@ function FormatIcon({ slug, selected }: { slug: string; selected: boolean }) {
   }
 }
 
+/* ─── Platform brand colors ─── */
+
+const PLATFORM_BRAND_COLORS: Record<string, string> = {
+  instagram:      "#E1306C",
+  tiktok:         "#010101",
+  facebook:       "#1877F2",
+  twitter:        "#000000",
+  x:              "#000000",
+  linkedin:       "#0A66C2",
+  youtube:        "#FF0000",
+  "youtube-shorts": "#FF0000",
+  snapchat:       "#FFFC00",
+  reddit:         "#FF4500",
+  threads:        "#000000",
+  pinterest:      "#E60023",
+};
+
 /* ─── Platform Icons ─── */
 
-function PlatformIcon({ slug, selected }: { slug: string; selected: boolean }) {
+function PlatformIcon({ slug, selected, isHovered }: { slug: string; selected: boolean; isHovered?: boolean }) {
   const muted = "var(--text-muted)";
+  const active = selected || isHovered;
   switch (slug) {
     case "instagram":
       return (
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
           <defs>
-            <radialGradient id={`ig-g-${selected}`} cx="30%" cy="107%" r="150%">
+            <radialGradient id={`ig-g-${active}`} cx="30%" cy="107%" r="150%">
               <stop offset="0%" stopColor="#fdf497" />
               <stop offset="5%" stopColor="#fdf497" />
               <stop offset="45%" stopColor="#fd5949" />
@@ -980,15 +1103,15 @@ function PlatformIcon({ slug, selected }: { slug: string; selected: boolean }) {
               <stop offset="90%" stopColor="#285AEB" />
             </radialGradient>
           </defs>
-          <rect x="2" y="2" width="20" height="20" rx="6" stroke={selected ? `url(#ig-g-${selected})` : muted} strokeWidth="2" fill="none" />
-          <circle cx="12" cy="12" r="4.5" stroke={selected ? `url(#ig-g-${selected})` : muted} strokeWidth="2" fill="none" />
-          <circle cx="18" cy="6" r="1.2" fill={selected ? `url(#ig-g-${selected})` : muted} />
+          <rect x="2" y="2" width="20" height="20" rx="6" stroke={active ? `url(#ig-g-${active})` : muted} strokeWidth="2" fill="none" />
+          <circle cx="12" cy="12" r="4.5" stroke={active ? `url(#ig-g-${active})` : muted} strokeWidth="2" fill="none" />
+          <circle cx="18" cy="6" r="1.2" fill={active ? `url(#ig-g-${active})` : muted} />
         </svg>
       );
     case "tiktok":
       return (
         <svg width="24" height="24" viewBox="0 0 32 32" fill="none">
-          {selected ? (
+          {active ? (
             <>
               <path d="M18.6 4h-3.4v17.5a3.5 3.5 0 1 1-3.5-3.5c.4 0 .8.05 1.1.15V14.5a7.2 7.2 0 0 0-1.1-.08 7.08 7.08 0 1 0 7.08 7.08V13.7A10.3 10.3 0 0 0 25 15.7v-3.64a6.67 6.67 0 0 1-6.4-8.06z" fill="#25F4EE" />
               <path d="M19.8 5.2h-3.4V22.7a3.5 3.5 0 1 1-3.5-3.5c.4 0 .8.05 1.1.15V15.7a7.2 7.2 0 0 0-1.1-.08A7.08 7.08 0 1 0 20 22.7V14.9a10.3 10.3 0 0 0 6.2 2v-3.64a6.67 6.67 0 0 1-6.4-8.06z" fill="#FE2C55" />
@@ -1002,37 +1125,202 @@ function PlatformIcon({ slug, selected }: { slug: string; selected: boolean }) {
     case "facebook":
       return (
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-          <path d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.989C18.343 21.129 22 16.99 22 12c0-5.523-4.477-10-10-10z" fill={selected ? "#1877F2" : muted} />
+          <path d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.989C18.343 21.129 22 16.99 22 12c0-5.523-4.477-10-10-10z" fill={active ? "#1877F2" : muted} />
         </svg>
       );
     case "twitter":
     case "x":
       return (
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill={selected ? "var(--text-primary)" : muted} />
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill={active ? "var(--text-primary)" : muted} />
         </svg>
       );
     case "linkedin":
       return (
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452z" fill={selected ? "#0A66C2" : muted} />
+          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452z" fill={active ? "#0A66C2" : muted} />
         </svg>
       );
     case "youtube":
       return (
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-          <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z" fill={selected ? "#FF0000" : muted} />
-          <path d="M9.545 15.568V8.432L15.818 12z" fill={selected ? "#fff" : "var(--bg-card)"} />
+          <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z" fill={active ? "#FF0000" : muted} />
+          <path d="M9.545 15.568V8.432L15.818 12z" fill={active ? "#fff" : "var(--bg-card)"} />
+        </svg>
+      );
+    case "youtube-shorts": {
+      const c = active ? "#FF0000" : muted;
+      const pw = active ? "white" : "var(--bg-card)";
+      return (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <rect x="2" y="3" width="20" height="8.5" rx="4.25" fill={c} transform="rotate(-26 12 7.25)" />
+          <rect x="2" y="12.5" width="20" height="8.5" rx="4.25" fill={c} transform="rotate(26 12 16.75)" />
+          <polygon points="9.5,9.5 9.5,14.5 16,12" fill={pw} />
+        </svg>
+      );
+    }
+    case "pinterest":
+      return (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path
+            fill={active ? "#E60023" : muted}
+            fillRule="evenodd"
+            d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.372 12-12S18.627 0 12 0z"
+          />
         </svg>
       );
     default:
       return (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={selected ? "var(--text-primary)" : muted} strokeWidth="1.5">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={active ? "var(--text-primary)" : muted} strokeWidth="1.5">
           <circle cx="12" cy="12" r="10" />
           <path d="M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20M2 12h20" />
         </svg>
       );
   }
+}
+
+/* ─── Custom Calendar ─── */
+
+const WEEKDAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+function toISO(d: Date): string {
+  return d.toISOString().slice(0, 10);
+}
+
+function CustomCalendar({ dateFrom, dateTo, onChange }: {
+  dateFrom: string; dateTo: string;
+  onChange: (from: string, to: string) => void;
+}) {
+  const [viewDate, setViewDate] = useState(() => {
+    const ref = dateFrom || dateTo;
+    return ref ? new Date(ref + "T00:00:00") : new Date();
+  });
+  const [selectingEnd, setSelectingEnd] = useState(false);
+  const [hovered, setHovered] = useState<string | null>(null);
+
+  const year = viewDate.getFullYear();
+  const month = viewDate.getMonth();
+
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  // Monday-start: 0=Mon … 6=Sun
+  const startOffset = (firstDay.getDay() + 6) % 7;
+  const todayStr = toISO(new Date());
+
+  const days: Array<{ iso: string; day: number } | null> = [];
+  for (let i = 0; i < startOffset; i++) days.push(null);
+  for (let d = 1; d <= lastDay.getDate(); d++) {
+    days.push({ iso: toISO(new Date(year, month, d)), day: d });
+  }
+  while (days.length % 7 !== 0) days.push(null);
+
+  function handleDayClick(iso: string) {
+    if (!dateFrom || (dateFrom && dateTo) || iso < dateFrom) {
+      onChange(iso, "");
+      setSelectingEnd(true);
+    } else {
+      onChange(dateFrom, iso);
+      setSelectingEnd(false);
+    }
+  }
+
+  function inRange(iso: string) {
+    const end = selectingEnd && hovered ? hovered : dateTo;
+    if (!dateFrom || !end) return false;
+    const lo = dateFrom < end ? dateFrom : end;
+    const hi = dateFrom < end ? end : dateFrom;
+    return iso > lo && iso < hi;
+  }
+
+  const prevMonth = () => setViewDate(new Date(year, month - 1, 1));
+  const nextMonth = () => setViewDate(new Date(year, month + 1, 1));
+
+  const displayTo = selectingEnd && hovered ? hovered : dateTo;
+
+  return (
+    <div style={{ userSelect: "none" }}>
+      {/* Selected range display */}
+      {(dateFrom || dateTo) && (
+        <div className="flex items-center gap-2 mb-3">
+          <div className="flex-1 rounded-lg px-2.5 py-1.5 text-center text-[11px] font-semibold"
+            style={{ background: dateFrom ? "var(--selected-bg)" : "var(--bg-input)", color: dateFrom ? "var(--selected-text)" : "var(--text-muted)", border: `1px solid ${dateFrom ? "var(--selected-bg)" : "var(--border-color)"}` }}>
+            {dateFrom ? dateFrom.split("-").reverse().join("/") : "From"}
+          </div>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          <div className="flex-1 rounded-lg px-2.5 py-1.5 text-center text-[11px] font-semibold"
+            style={{ background: displayTo ? "var(--selected-bg)" : "var(--bg-input)", color: displayTo ? "var(--selected-text)" : "var(--text-muted)", border: `1px solid ${displayTo ? "var(--selected-bg)" : "var(--border-color)"}` }}>
+            {displayTo ? displayTo.split("-").reverse().join("/") : "To"}
+          </div>
+        </div>
+      )}
+
+      {/* Month navigation */}
+      <div className="flex items-center justify-between mb-2">
+        <button onClick={prevMonth} className="flex items-center justify-center rounded-lg transition-all hover:opacity-70"
+          style={{ width: 26, height: 26, background: "var(--bg-input)", border: "1px solid var(--border-color)", color: "var(--text-secondary)" }}>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <span className="text-xs font-bold" style={{ color: "var(--text-primary)" }}>
+          {MONTHS[month]} {year}
+        </span>
+        <button onClick={nextMonth} className="flex items-center justify-center rounded-lg transition-all hover:opacity-70"
+          style={{ width: 26, height: 26, background: "var(--bg-input)", border: "1px solid var(--border-color)", color: "var(--text-secondary)" }}>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
+
+      {/* Weekday headers */}
+      <div className="grid grid-cols-7 mb-1">
+        {WEEKDAYS.map((d) => (
+          <div key={d} className="text-center text-[9px] font-bold uppercase" style={{ color: "var(--text-muted)", padding: "2px 0" }}>{d}</div>
+        ))}
+      </div>
+
+      {/* Days grid */}
+      <div className="grid grid-cols-7 gap-y-0.5">
+        {days.map((d, i) => {
+          if (!d) return <div key={`e-${i}`} />;
+          const isFrom = d.iso === dateFrom;
+          const isTo = d.iso === displayTo;
+          const isToday = d.iso === todayStr;
+          const isInRange = inRange(d.iso);
+          const isSelected = isFrom || isTo;
+          return (
+            <button
+              key={d.iso}
+              onClick={() => handleDayClick(d.iso)}
+              onMouseEnter={() => selectingEnd && setHovered(d.iso)}
+              onMouseLeave={() => selectingEnd && setHovered(null)}
+              className="flex items-center justify-center text-[11px] font-medium transition-all"
+              style={{
+                height: 28,
+                borderRadius: isSelected ? 8 : isInRange ? 0 : 8,
+                background: isSelected ? "var(--selected-bg)" : isInRange ? "rgba(31,41,55,0.1)" : "transparent",
+                color: isSelected ? "var(--selected-text)" : isToday ? "var(--color-charcoal)" : "var(--text-primary)",
+                fontWeight: isSelected || isToday ? 700 : 500,
+                outline: isToday && !isSelected ? "1.5px solid var(--selected-bg)" : "none",
+                outlineOffset: -1,
+              }}
+            >
+              {d.day}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Clear */}
+      {(dateFrom || dateTo) && (
+        <button
+          onClick={() => { onChange("", ""); setSelectingEnd(false); setHovered(null); }}
+          className="w-full mt-3 py-1.5 rounded-lg text-[11px] font-medium transition-all hover:opacity-80"
+          style={{ background: "var(--bg-input)", border: "1px solid var(--border-color)", color: "var(--text-muted)" }}
+        >
+          Clear dates
+        </button>
+      )}
+    </div>
+  );
 }
 
 /* ─── Date Range Presets (compact 2-col grid) ─── */
@@ -1056,7 +1344,7 @@ function DateRangePresets({ filters, onFiltersChange }: { filters: SelectedFilte
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-1.5 mb-2">
+      <div className="grid grid-cols-2 gap-1.5 mb-3">
         {presets.map((preset) => {
           const isActive = filters.dateFrom === preset.from && filters.dateTo === preset.to;
           return (
@@ -1068,14 +1356,14 @@ function DateRangePresets({ filters, onFiltersChange }: { filters: SelectedFilte
               }}
               className="relative px-2 py-1.5 rounded-md text-[11px] font-medium transition-all text-center"
               style={{
-                background: isActive ? "#F5C542" : "var(--bg-input)",
-                color: isActive ? "#fff" : "var(--text-primary)",
-                border: `1px solid ${isActive ? "#F5C542" : "var(--border-color)"}`,
+                background: isActive ? "var(--selected-bg)" : "var(--bg-input)",
+                color: isActive ? "var(--selected-text)" : "var(--text-primary)",
+                border: `1px solid ${isActive ? "var(--selected-bg)" : "var(--border-color)"}`,
               }}
             >
               {preset.label}
               {preset.recommended && !isActive && (
-                <span className="absolute -top-1.5 -right-1 text-[8px] px-1 rounded-full" style={{ background: "rgba(200,144,40,0.2)", color: "#F5C542" }}>
+                <span className="absolute -top-1.5 -right-1 text-[8px] px-1 rounded-full" style={{ background: "rgba(31,41,55,0.2)", color: "var(--color-charcoal)" }}>
                   rec
                 </span>
               )}
@@ -1086,36 +1374,21 @@ function DateRangePresets({ filters, onFiltersChange }: { filters: SelectedFilte
           onClick={() => setShowCustom(!showCustom)}
           className="px-2 py-1.5 rounded-md text-[11px] font-medium transition-all text-center"
           style={{
-            background: isCustom ? "#F5C542" : "var(--bg-input)",
-            color: isCustom ? "#fff" : "var(--text-primary)",
-            border: `1px solid ${isCustom ? "#F5C542" : "var(--border-color)"}`,
+            background: isCustom || showCustom ? "var(--selected-bg)" : "var(--bg-input)",
+            color: isCustom || showCustom ? "var(--selected-text)" : "var(--text-primary)",
+            border: `1px solid ${isCustom || showCustom ? "var(--selected-bg)" : "var(--border-color)"}`,
           }}
         >
           Custom
         </button>
       </div>
       {(showCustom || isCustom) && (
-        <div className="space-y-2">
-          <div>
-            <label className="block text-[10px] mb-1" style={{ color: "var(--text-muted)" }}>From</label>
-            <input
-              type="date"
-              value={filters.dateFrom}
-              onChange={(e) => onFiltersChange({ ...filters, dateFrom: e.target.value })}
-              className="w-full rounded-md px-2.5 py-2 text-xs"
-              style={{ background: "var(--bg-input)", color: "var(--text-primary)", border: "1px solid var(--border-color)" }}
-            />
-          </div>
-          <div>
-            <label className="block text-[10px] mb-1" style={{ color: "var(--text-muted)" }}>To</label>
-            <input
-              type="date"
-              value={filters.dateTo}
-              onChange={(e) => onFiltersChange({ ...filters, dateTo: e.target.value })}
-              className="w-full rounded-md px-2.5 py-2 text-xs"
-              style={{ background: "var(--bg-input)", color: "var(--text-primary)", border: "1px solid var(--border-color)" }}
-            />
-          </div>
+        <div className="rounded-xl p-3" style={{ background: "var(--bg-input)", border: "1px solid var(--border-color)" }}>
+          <CustomCalendar
+            dateFrom={filters.dateFrom}
+            dateTo={filters.dateTo}
+            onChange={(from, to) => onFiltersChange({ ...filters, dateFrom: from, dateTo: to })}
+          />
         </div>
       )}
     </>

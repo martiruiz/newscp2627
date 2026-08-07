@@ -1,7 +1,111 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useState, useEffect } from "react";
+import DashboardUserProfile from "./DashboardUserProfile";
+
+const ANNUAL_BANNER_DISMISSED_KEY = "scp-annual-banner-dismissed";
+const ANNUAL_BANNER_START_KEY = "scp-annual-banner-start";
+const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
+
+function formatCountdown(ms: number): string {
+  if (ms <= 0) return "00:00:00";
+  const totalSec = Math.floor(ms / 1000);
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+  return [h, m, s].map((n) => String(n).padStart(2, "0")).join(":");
+}
+
+function AnnualBanner() {
+  const { t } = useLanguage();
+  const [visible, setVisible] = useState(false);
+  const [remaining, setRemaining] = useState(TWENTY_FOUR_HOURS);
+
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem(ANNUAL_BANNER_DISMISSED_KEY)) return;
+
+      let start = Number(sessionStorage.getItem(ANNUAL_BANNER_START_KEY));
+      if (!start) {
+        start = Date.now();
+        sessionStorage.setItem(ANNUAL_BANNER_START_KEY, String(start));
+      }
+
+      const left = start + TWENTY_FOUR_HOURS - Date.now();
+      if (left <= 0) return; // expired this session
+
+      setRemaining(left);
+      setVisible(true);
+
+      const timer = setInterval(() => {
+        const r = start + TWENTY_FOUR_HOURS - Date.now();
+        if (r <= 0) {
+          setVisible(false);
+          clearInterval(timer);
+        } else {
+          setRemaining(r);
+        }
+      }, 1000);
+
+      return () => clearInterval(timer);
+    } catch {}
+  }, []);
+
+  function dismiss() {
+    try { sessionStorage.setItem(ANNUAL_BANNER_DISMISSED_KEY, "1"); } catch {}
+    setVisible(false);
+  }
+
+  if (!visible) return null;
+
+  return (
+    <div
+      className="mx-2 mt-2 rounded-xl px-3 py-2.5"
+      style={{
+        background: "linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%)",
+        border: "1px solid #f9a8d4",
+      }}
+    >
+      <p className="text-[11px] leading-snug mb-2" style={{ color: "#9d174d" }}>
+        {t("banner.annualText").split("10€").map((part, i, arr) =>
+          i < arr.length - 1
+            ? <span key={i}>{part}<strong>10€</strong></span>
+            : <span key={i}>{part}</span>
+        )}
+      </p>
+      <div
+        className="flex items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 mb-2"
+        style={{ background: "rgba(190,24,93,0.1)", border: "1px solid rgba(190,24,93,0.2)" }}
+      >
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#be185d" strokeWidth="2.5">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+        <span className="text-[11px] font-bold font-mono" style={{ color: "#be185d" }}>
+          {t("banner.expires")} {formatCountdown(remaining)}
+        </span>
+      </div>
+      <div className="flex items-center gap-1.5">
+        <Link
+          href="/account?tab=subscription"
+          className="px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all hover:opacity-90"
+          style={{ background: "#be185d", color: "#fff" }}
+        >
+          {t("banner.saveNow")}
+        </Link>
+        <button
+          onClick={dismiss}
+          className="px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all hover:opacity-80"
+          style={{ color: "#be185d", background: "transparent" }}
+        >
+          {t("banner.dismiss")}
+        </button>
+      </div>
+    </div>
+  );
+}
 
 interface NavItem {
   label: string;
@@ -10,20 +114,19 @@ interface NavItem {
   external?: boolean;
 }
 
-const TOP_NAV: NavItem[] = [
-  { label: "Dashboard", href: "/dashboard", icon: "dashboard" },
-  { label: "Content Library", href: "/feed", icon: "library" },
-  { label: "Blog", href: "#blog", icon: "blog" },
-  { label: "News", href: "/news", icon: "news" },
-  { label: "Pricing", href: "#pricing", icon: "pricing" },
-  { label: "Contact", href: "#contact", icon: "contact" },
-];
-
-const BOTTOM_NAV: NavItem[] = [
-  { label: "Saved", href: "/saved", icon: "saved" },
-  { label: "Account", href: "/account", icon: "account" },
-  { label: "Cerrar sesión", href: "#signout", icon: "signout" },
-];
+function useNavItems() {
+  const { t } = useLanguage();
+  const TOP_NAV: NavItem[] = [
+    { label: t("nav.dashboard"), href: "/dashboard", icon: "dashboard" },
+    { label: t("nav.contentLibrary"), href: "/feed", icon: "library" },
+    { label: t("nav.socialMediaNews"), href: "/news", icon: "news" },
+    { label: t("nav.support"), href: "/support", icon: "contact" },
+  ];
+  const BOTTOM_NAV: NavItem[] = [
+    { label: t("nav.saved"), href: "/saved", icon: "saved" },
+  ];
+  return { TOP_NAV, BOTTOM_NAV };
+}
 
 function NavIcon({ name, size = 18 }: { name: string; size?: number }) {
   const s = size;
@@ -77,50 +180,66 @@ function ScpLogo({ compact = false }: { compact?: boolean }) {
 }
 
 function NavItemRow({ item, active }: { item: NavItem; active: boolean }) {
-  const isHash = item.href.startsWith("#");
-  const Tag = isHash ? "button" : Link;
-  const props = isHash ? { onClick: () => {} } : { href: item.href };
-
-  return (
-    <Tag
-      {...(props as Record<string, unknown>)}
-      className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm transition-all text-left"
-      style={{
-        background: active ? "rgba(200,144,40,0.12)" : "transparent",
-        color: active ? "#F5C542" : "var(--text-secondary)",
-      }}
-    >
-      <span style={{ color: active ? "#F5C542" : "var(--text-muted)" }}>
-        <NavIcon name={item.icon} size={16} />
-      </span>
-      <span className="font-medium truncate">{item.label}</span>
-    </Tag>
+  const cls = "flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm transition-all text-left";
+  const style = { background: active ? "var(--color-charcoal-subtle)" : "transparent", color: active ? "var(--color-charcoal)" : "var(--text-secondary)" };
+  const inner = (
+    <>
+      <span style={{ color: active ? "var(--color-charcoal)" : "var(--text-muted)" }}><NavIcon name={item.icon} size={16} /></span>
+      <span className="font-medium" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.label}</span>
+    </>
   );
+  if (item.href.startsWith("#")) return <button onClick={() => {}} className={cls} style={style}>{inner}</button>;
+  return <Link href={item.href} className={cls} style={style}>{inner}</Link>;
 }
 
 function NavIconButton({ item, active, title }: { item: NavItem; active: boolean; title: string }) {
-  const isHash = item.href.startsWith("#");
-  const Tag = isHash ? "button" : Link;
-  const props = isHash ? { onClick: () => {} } : { href: item.href };
+  const cls = "flex items-center justify-center rounded-lg transition-all";
+  const style = { width: 34, height: 34, background: active ? "var(--color-charcoal-subtle)" : "transparent", color: active ? "var(--color-charcoal)" : "var(--text-muted)" };
+  const inner = <NavIcon name={item.icon} size={16} />;
+  if (item.href.startsWith("#")) return <button onClick={() => {}} className={cls} style={style} title={title}>{inner}</button>;
+  return <Link href={item.href} className={cls} style={style} title={title}>{inner}</Link>;
+}
+
+function SupportButton() {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  function startTutorial() {
+    if (pathname === "/feed") {
+      try { localStorage.removeItem("scp-library-tutorial-done"); } catch {}
+      router.push("/feed?tutorial=library");
+    } else {
+      try { localStorage.removeItem("scp-tutorial-done"); } catch {}
+      router.push("/dashboard?tutorial=1");
+    }
+  }
 
   return (
-    <Tag
-      {...(props as Record<string, unknown>)}
-      className="flex items-center justify-center rounded-lg transition-all"
-      style={{
-        width: 34,
-        height: 34,
-        background: active ? "rgba(200,144,40,0.15)" : "transparent",
-        color: active ? "#F5C542" : "var(--text-muted)",
-      }}
-      title={title}
-    >
-      <NavIcon name={item.icon} size={16} />
-    </Tag>
+    <div className="p-3 shrink-0">
+      <button
+        onClick={startTutorial}
+        className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all hover:opacity-80 text-left"
+        style={{
+          background: "var(--bg-input)",
+          border: "1px solid var(--border-color)",
+          color: "var(--text-secondary)",
+        }}
+      >
+        <span style={{ color: "var(--text-muted)" }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </span>
+        <span>Tutorial</span>
+      </button>
+    </div>
   );
 }
 
 function ExpandedSidebar({ onToggle, pathname }: { onToggle: () => void; pathname: string }) {
+  const { TOP_NAV, BOTTOM_NAV } = useNavItems();
   return (
     <aside
       className="sticky top-0 h-screen flex flex-col shrink-0 overflow-hidden"
@@ -154,34 +273,23 @@ function ExpandedSidebar({ onToggle, pathname }: { onToggle: () => void; pathnam
             <NavItemRow key={item.label} item={item} active={false} />
           ))}
         </div>
+
+        <AnnualBanner />
       </nav>
 
-      {/* Upgrade CTA */}
-      <div className="p-3 shrink-0">
-        <div
-          className="rounded-xl p-3"
-          style={{ background: "rgba(200,144,40,0.08)", border: "1px solid rgba(200,144,40,0.2)" }}
-        >
-          <div className="flex items-center gap-2 mb-1.5">
-            <div className="text-lg">🚀</div>
-            <span className="text-xs font-bold" style={{ color: "var(--text-primary)" }}>Upgrade to Pro</span>
-          </div>
-          <p className="text-[11px] mb-2.5 leading-relaxed" style={{ color: "var(--text-muted)" }}>
-            Unlock advanced tools, insights and premium content for creators.
-          </p>
-          <button
-            className="w-full py-1.5 rounded-lg text-xs font-bold transition-all hover:opacity-90"
-            style={{ background: "#F5C542", color: "#fff" }}
-          >
-            See Plans
-          </button>
-        </div>
+      {/* User profile card */}
+      <div className="px-3 pb-2 shrink-0">
+        <DashboardUserProfile />
       </div>
+
+      {/* Support / Tutorial button */}
+      <SupportButton />
     </aside>
   );
 }
 
 function CollapsedTopBar({ onToggle, pathname }: { onToggle: () => void; pathname: string }) {
+  const { TOP_NAV, BOTTOM_NAV } = useNavItems();
   const allNav = [...TOP_NAV, ...BOTTOM_NAV];
   return (
     <header

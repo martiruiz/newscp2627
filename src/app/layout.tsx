@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
 import LayoutShell from "@/components/LayoutShell";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -34,8 +35,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${montserrat.variable} h-full antialiased`}>
+      <head>
+        {/* Apply stored theme before paint to avoid flash */}
+        <script dangerouslySetInnerHTML={{ __html: `
+          try {
+            var t = localStorage.getItem('scp-theme');
+            if (t) document.documentElement.setAttribute('data-theme', t);
+          } catch(e) {}
+        `}} />
+      </head>
       <body className="min-h-full">
-        <LayoutShell>{children}</LayoutShell>
+        <LanguageProvider>
+          <LayoutShell>{children}</LayoutShell>
+        </LanguageProvider>
       </body>
     </html>
   );

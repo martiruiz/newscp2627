@@ -6,14 +6,42 @@ function slugArray(value: string | null): string[] {
   return value.split(",").filter(Boolean);
 }
 
+// Split comma-separated entityNames, trim, deduplicate case-insensitively, sort by count desc
+function normalizeEntityNames(
+  rows: { entityName: string | null; _count: number }[]
+): { name: string; count: number }[] {
+  const map = new Map<string, { name: string; count: number }>();
+  for (const row of rows) {
+    if (!row.entityName) continue;
+    const parts = row.entityName.split(",").map((p) => p.trim()).filter(Boolean);
+    for (const part of parts) {
+      const key = part.toLowerCase();
+      const existing = map.get(key);
+      if (existing) {
+        existing.count += row._count;
+      } else {
+        map.set(key, { name: part, count: row._count });
+      }
+    }
+  }
+  return Array.from(map.values()).sort((a, b) => b.count - a.count);
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
+const SHORTS_URL_CONDITION: any = {
+  OR: [
+    { canonicalUrl: { contains: "/shorts/" } },
+    { embedUrl: { contains: "/shorts/" } },
+  ],
+};
+
 function buildWhere(params: Record<string, string[]>): any {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const where: any = {};
   const { sport, competition, entityType, format, platform, classification, contentCategory } = params;
 
   if (sport?.length) {
-    where.sport = sport.length === 1 ? { slug: sport[0] } : { slug: { in: sport } };
+    where.sports = { some: { sport: sport.length === 1 ? { slug: sport[0] } : { slug: { in: sport } } } };
   }
   if (competition?.length) {
     where.competitions = {
@@ -25,13 +53,37 @@ function buildWhere(params: Record<string, string[]>): any {
     };
   }
   if (entityType?.length) {
-    where.entityType = entityType.length === 1 ? { slug: entityType[0] } : { slug: { in: entityType } };
+    where.entityTypes = { some: { entityType: entityType.length === 1 ? { slug: entityType[0] } : { slug: { in: entityType } } } };
   }
   if (format?.length) {
     where.contentFormat = format.length === 1 ? { slug: format[0] } : { slug: { in: format } };
   }
   if (platform?.length) {
-    where.platform = platform.length === 1 ? { slug: platform[0] } : { slug: { in: platform } };
+    const hasShorts = platform.includes("youtube-shorts");
+    const hasYoutube = platform.includes("youtube");
+    const realSlugs = hasShorts
+      ? [...new Set([...platform.filter((s) => s !== "youtube-shorts"), "youtube"])]
+      : platform;
+    if (realSlugs.length > 0) {
+      if (!hasShorts || hasYoutube) {
+        where.platform = realSlugs.length === 1 ? { slug: realSlugs[0] } : { slug: { in: realSlugs } };
+      } else {
+        const nonYoutube = realSlugs.filter((s) => s !== "youtube");
+        if (nonYoutube.length === 0) {
+          where.platform = { slug: "youtube" };
+          if (!where.AND) where.AND = [];
+          where.AND.push(SHORTS_URL_CONDITION);
+        } else {
+          if (!where.AND) where.AND = [];
+          where.AND.push({
+            OR: [
+              { platform: { slug: { in: nonYoutube } } },
+              { AND: [{ platform: { slug: "youtube" } }, SHORTS_URL_CONDITION] },
+            ],
+          });
+        }
+      }
+    }
   }
   if (classification?.length) {
     where.classifications = { some: { classification: classification.length === 1 ? { slug: classification[0] } : { slug: { in: classification } } } };
@@ -60,19 +112,22 @@ export async function GET(request: NextRequest) {
   const HAS_PUBS = { publications: { some: {} } } as const;
 
   if (!hasFilters) {
-    const [sports, entityTypes, formats, platforms, classifications, contentCategories, competitions, rawClubs] = await Promise.all([
+    const [sports, entityTypes, formats, platforms, classifications, contentCategories, competitions, rawClubs, shortsCount] = await Promise.all([
       prisma.sport.findMany({ where: HAS_PUBS, orderBy: { name: "asc" }, include: { _count: { select: { publications: true } } } }),
       prisma.entityType.findMany({ where: HAS_PUBS, orderBy: { name: "asc" }, include: { _count: { select: { publications: true } } } }),
       prisma.contentFormat.findMany({ where: HAS_PUBS, orderBy: { name: "asc" }, include: { _count: { select: { publications: true } } } }),
       prisma.platform.findMany({ where: HAS_PUBS, orderBy: { name: "asc" }, include: { _count: { select: { publications: true } } } }),
-      prisma.classification.findMany({ where: { publications: { some: {} } }, orderBy: { name: "asc" }, include: { _count: { select: { publications: true } } } }),
+      prisma.classification.findMany({ orderBy: { name: "asc" }, include: { _count: { select: { publications: true } } } }),
       prisma.contentCategory.findMany({ where: { publications: { some: {} } }, orderBy: { name: "asc" }, include: { _count: { select: { publications: true } } } }),
       prisma.competition.findMany({ where: { publications: { some: {} } }, orderBy: { name: "asc" }, include: { _count: { select: { publications: true } } } }),
       prisma.publication.groupBy({
         by: ["entityName"],
-        where: { entityType: { slug: "clubs" }, entityName: { not: null } },
+        where: { entityTypes: { some: { entityType: { slug: "clubs" } } }, entityName: { not: null } },
         _count: true,
         orderBy: { _count: { entityName: "desc" } },
+      }),
+      prisma.publication.count({
+        where: { platform: { slug: "youtube" }, ...SHORTS_URL_CONDITION },
       }),
     ]);
 
@@ -87,12 +142,15 @@ export async function GET(request: NextRequest) {
       sports: sports.map((s) => ({ name: s.name, slug: s.slug, count: s._count.publications })),
       entityTypes: entityTypes.map((e) => ({ name: e.name, slug: e.slug, count: e._count.publications })),
       formats: formats.map((f) => ({ name: f.name, slug: f.slug, count: f._count.publications })),
-      platforms: platforms.map((p) => ({ name: p.name, slug: p.slug, count: p._count.publications })),
+      platforms: [
+        ...platforms.map((p) => ({ name: p.name, slug: p.slug, count: p._count.publications })),
+        { name: "YouTube Shorts", slug: "youtube-shorts", count: shortsCount },
+      ],
       classifications: classifications.map((c) => ({ name: c.name, slug: c.slug, count: c._count.publications })),
       contentCategories: contentCategories.map((c) => ({ name: c.name, slug: c.slug, count: c._count.publications })),
       competitions: competitions.map((c) => ({ name: c.name, slug: c.slug, count: c._count.publications })),
-      clubs: rawClubs.filter((c) => c.entityName).map((c) => ({ name: c.entityName!, count: c._count })),
-      entityNames: entityNames.filter((e) => e.entityName).map((e) => ({ name: e.entityName!, count: e._count })),
+      clubs: normalizeEntityNames(rawClubs.map((c) => ({ entityName: c.entityName, _count: c._count }))),
+      entityNames: normalizeEntityNames(entityNames.map((e) => ({ entityName: e.entityName, _count: e._count }))),
     });
   }
 
@@ -111,14 +169,20 @@ export async function GET(request: NextRequest) {
     prisma.entityType.findMany({ where: HAS_PUBS, orderBy: { name: "asc" }, select: { name: true, slug: true } }),
     prisma.contentFormat.findMany({ where: HAS_PUBS, orderBy: { name: "asc" }, select: { name: true, slug: true } }),
     prisma.platform.findMany({ where: HAS_PUBS, orderBy: { name: "asc" }, select: { name: true, slug: true } }),
-    prisma.classification.findMany({ where: { publications: { some: {} } }, orderBy: { name: "asc" }, select: { name: true, slug: true } }),
+    prisma.classification.findMany({ orderBy: { name: "asc" }, select: { name: true, slug: true } }),
     prisma.contentCategory.findMany({ where: { publications: { some: {} } }, orderBy: { name: "asc" }, select: { name: true, slug: true } }),
     prisma.competition.findMany({ where: { publications: { some: {} } }, orderBy: { name: "asc" }, select: { name: true, slug: true } }),
   ]);
 
-  const [sportCounts, entityTypeCounts, formatCounts, platformCounts, classificationCounts, entityNames] = await Promise.all([
-    prisma.publication.groupBy({ by: ["sportId"], where: withoutSport, _count: true }),
-    prisma.publication.groupBy({ by: ["entityTypeId"], where: withoutEntityType, _count: true }),
+  const [pubsForSports, pubsForEntityTypes, formatCounts, platformCounts, classificationCounts, entityNames, contextualShortsCount] = await Promise.all([
+    prisma.publication.findMany({
+      where: withoutSport,
+      select: { sports: { select: { sport: { select: { slug: true } } } } },
+    }),
+    prisma.publication.findMany({
+      where: withoutEntityType,
+      select: { entityTypes: { select: { entityType: { select: { slug: true } } } } },
+    }),
     prisma.publication.groupBy({ by: ["contentFormatId"], where: withoutFormat, _count: true }),
     prisma.publication.groupBy({ by: ["platformId"], where: withoutPlatform, _count: true }),
     prisma.publication.findMany({
@@ -130,6 +194,9 @@ export async function GET(request: NextRequest) {
       where: { ...fullWhere, entityName: { not: null } },
       _count: true,
       orderBy: { _count: { entityName: "desc" } },
+    }),
+    prisma.publication.count({
+      where: { ...withoutPlatform, platform: { slug: "youtube" }, ...SHORTS_URL_CONDITION },
     }),
   ]);
 
@@ -149,24 +216,28 @@ export async function GET(request: NextRequest) {
   const baseForClubs = buildWhere({ ...allParams, entityType: [] });
   const clubCounts = await prisma.publication.groupBy({
     by: ["entityName"],
-    where: { ...baseForClubs, entityType: { slug: "clubs" }, entityName: { not: null } },
+    where: { ...baseForClubs, entityTypes: { some: { entityType: { slug: "clubs" } } }, entityName: { not: null } },
     _count: true,
     orderBy: { _count: { entityName: "desc" } },
   });
 
-  const sportIdMap = await prisma.sport.findMany({ select: { id: true, slug: true } });
-  const entityTypeIdMap = await prisma.entityType.findMany({ select: { id: true, slug: true } });
+  const sportCountMap = new Map<string, number>();
+  for (const pub of pubsForSports) {
+    for (const ps of pub.sports) {
+      sportCountMap.set(ps.sport.slug, (sportCountMap.get(ps.sport.slug) || 0) + 1);
+    }
+  }
+
+  const entityTypeCountMap = new Map<string, number>();
+  for (const pub of pubsForEntityTypes) {
+    for (const pe of pub.entityTypes) {
+      entityTypeCountMap.set(pe.entityType.slug, (entityTypeCountMap.get(pe.entityType.slug) || 0) + 1);
+    }
+  }
+
   const formatIdMap = await prisma.contentFormat.findMany({ select: { id: true, slug: true } });
   const platformIdMap = await prisma.platform.findMany({ select: { id: true, slug: true } });
 
-  const sportCountMap = new Map(sportCounts.map((s) => {
-    const match = sportIdMap.find((m) => m.id === s.sportId);
-    return [match?.slug, s._count] as const;
-  }));
-  const entityTypeCountMap = new Map(entityTypeCounts.map((e) => {
-    const match = entityTypeIdMap.find((m) => m.id === e.entityTypeId);
-    return [match?.slug, e._count] as const;
-  }));
   const formatCountMap = new Map(formatCounts.map((f) => {
     const match = formatIdMap.find((m) => m.id === f.contentFormatId);
     return [match?.slug, f._count] as const;
@@ -198,11 +269,14 @@ export async function GET(request: NextRequest) {
     sports: allSports.map((s) => ({ name: s.name, slug: s.slug, count: sportCountMap.get(s.slug) || 0 })),
     entityTypes: allEntityTypes.map((e) => ({ name: e.name, slug: e.slug, count: entityTypeCountMap.get(e.slug) || 0 })),
     formats: allFormats.map((f) => ({ name: f.name, slug: f.slug, count: formatCountMap.get(f.slug) || 0 })),
-    platforms: allPlatforms.map((p) => ({ name: p.name, slug: p.slug, count: platformCountMap.get(p.slug) || 0 })),
+    platforms: [
+      ...allPlatforms.map((p) => ({ name: p.name, slug: p.slug, count: platformCountMap.get(p.slug) || 0 })),
+      { name: "YouTube Shorts", slug: "youtube-shorts", count: contextualShortsCount },
+    ],
     classifications: allClassifications.map((c) => ({ name: c.name, slug: c.slug, count: classCountMap.get(c.slug) || 0 })),
     contentCategories: allContentCategories.map((c) => ({ name: c.name, slug: c.slug, count: catCountMap.get(c.slug) || 0 })),
     competitions: allCompetitions.map((c) => ({ name: c.name, slug: c.slug, count: competitionCountMap.get(c.slug) || 0 })),
-    clubs: clubCounts.filter((c) => c.entityName).map((c) => ({ name: c.entityName!, count: c._count })),
-    entityNames: entityNames.filter((e) => e.entityName).map((e) => ({ name: e.entityName!, count: e._count })),
+    clubs: normalizeEntityNames(clubCounts.map((c) => ({ entityName: c.entityName, _count: c._count }))),
+    entityNames: normalizeEntityNames(entityNames.map((e) => ({ entityName: e.entityName, _count: e._count }))),
   });
 }

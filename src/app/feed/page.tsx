@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useRef } from "react";
-import Navbar from "@/components/Navbar";
+import React, { useState, useEffect, useCallback, useRef, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import FilterSidebar, { type SelectedFilters } from "@/components/FilterSidebar";
 import PublicationCard from "@/components/PublicationCard";
+import LibraryTutorialOverlay from "@/components/LibraryTutorialOverlay";
 
 interface Publication {
   id: string;
@@ -13,8 +14,9 @@ interface Publication {
   accountUsername: string | null;
   publishedAt: string | null;
   platform: string;
-  sport: string | null;
-  entityType: string | null;
+  originalUrl: string | null;
+  sports: string[];
+  entityTypes: string[];
   entityName: string | null;
   contentFormat: string | null;
   competitions: string[];
@@ -71,12 +73,229 @@ function getActiveChips(filters: SelectedFilters) {
   return chips;
 }
 
+const SMART_CHIPS = [
+  {
+    label: "Top Picks",
+    filterKey: "classification" as const,
+    value: "top-picks",
+    gradient: "linear-gradient(135deg, #E8567A 0%, #A82346 100%)",
+    description: "Trending content handpicked by the SCP team.",
+    icon: <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
+  },
+  {
+    label: "Overperforming",
+    filterKey: "classification" as const,
+    value: "overperforming",
+    gradient: "linear-gradient(135deg, #3B82F6 0%, #1E3A8A 100%)",
+    description: "Posts performing above the profile's average.",
+    icon: <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>,
+  },
+  {
+    label: "Content Creators",
+    filterKey: "entityType" as const,
+    value: "content-creators",
+    gradient: "linear-gradient(135deg, #D4A420 0%, #7B4D0B 100%)",
+    description: "Content published by individual content creators.",
+    icon: <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
+  },
+  {
+    label: "Replicable Ideas",
+    filterKey: "classification" as const,
+    value: "replicable-ideas",
+    gradient: "linear-gradient(135deg, #52D68A 0%, #1B8A4E 100%)",
+    description: "Low-budget ideas that are easy to adapt and apply to your club, brand, or project.",
+    icon: <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>,
+  },
+];
+
+function SmartFilters({
+  filters,
+  setFilters,
+}: {
+  filters: SelectedFilters;
+  setFilters: React.Dispatch<React.SetStateAction<SelectedFilters>>;
+}) {
+  const [infoOpen, setInfoOpen] = useState(false);
+  const infoRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!infoOpen) return;
+    function onClickOutside(e: MouseEvent) {
+      if (infoRef.current && !infoRef.current.contains(e.target as Node)) {
+        setInfoOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
+  }, [infoOpen]);
+
+  return (
+    <div className="mb-3">
+      {/* Section header */}
+      <div className="flex items-center gap-2 mb-2">
+        <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>
+          Smart filters
+        </span>
+        {/* Info button */}
+        <div className="relative" ref={infoRef}>
+          <button
+            onClick={() => setInfoOpen((o) => !o)}
+            className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold transition-all"
+            style={{
+              background: infoOpen ? "var(--selected-bg)" : "var(--bg-card)",
+              color: infoOpen ? "var(--selected-text)" : "var(--text-muted)",
+              border: `1px solid ${infoOpen ? "transparent" : "var(--border-color)"}`,
+            }}
+          >
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="8.01"/>
+              <line x1="12" y1="12" x2="12" y2="16"/>
+            </svg>
+            Selection criteria
+          </button>
+
+          {/* Dropdown */}
+          {infoOpen && (
+            <div
+              className="absolute left-0 top-full mt-2 z-50 rounded-2xl p-5"
+              style={{
+                background: "var(--bg-card)",
+                border: "1px solid var(--border-color)",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.18)",
+                width: "min(288px, calc(100vw - 2rem))",
+              }}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>
+                  Selection criteria
+                </h3>
+                <button onClick={() => setInfoOpen(false)} style={{ color: "var(--text-muted)" }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+              </div>
+              <div className="space-y-4">
+                {SMART_CHIPS.map((chip) => (
+                  <div key={chip.value} className="flex gap-3">
+                    <div
+                      className="flex items-center justify-center w-7 h-7 rounded-lg shrink-0 mt-0.5"
+                      style={{ background: chip.gradient }}
+                    >
+                      <span style={{ color: "#fff" }}>{chip.icon}</span>
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold mb-0.5" style={{ color: "var(--text-primary)" }}>{chip.label}</p>
+                      <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>{chip.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Mobile: 2×2 grid / Desktop: pill row */}
+      <div className="grid grid-cols-2 gap-2 sm:hidden">
+        {SMART_CHIPS.map((chip) => {
+          const isSelected = (filters[chip.filterKey] as string[]).includes(chip.value);
+          return (
+            <button
+              key={chip.value}
+              onClick={() => {
+                const arr = filters[chip.filterKey] as string[];
+                const updated = arr.includes(chip.value)
+                  ? arr.filter((v) => v !== chip.value)
+                  : [...arr, chip.value];
+                setFilters((f) => ({ ...f, [chip.filterKey]: updated }));
+              }}
+              className="flex flex-col items-start gap-2 px-3 pt-3 pb-2.5 rounded-2xl text-left transition-all active:scale-95"
+              style={{
+                background: isSelected ? chip.gradient : "var(--bg-card)",
+                border: `1.5px solid ${isSelected ? "transparent" : "var(--border-color)"}`,
+                minHeight: 72,
+              }}
+            >
+              <div
+                className="flex items-center justify-center w-7 h-7 rounded-xl"
+                style={{
+                  background: isSelected ? "rgba(255,255,255,0.22)" : chip.gradient,
+                }}
+              >
+                <span style={{ color: "#fff" }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                    {chip.value === "top-picks" && <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>}
+                    {chip.value === "overperforming" && <><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></>}
+                    {chip.value === "content-creators" && <><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></>}
+                    {chip.value === "replicable-ideas" && <><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></>}
+                  </svg>
+                </span>
+              </div>
+              <div className="flex items-center justify-between w-full">
+                <span
+                  className="text-xs font-bold leading-tight"
+                  style={{ color: isSelected ? "#fff" : "var(--text-primary)" }}
+                >
+                  {chip.label}
+                </span>
+                {isSelected && (
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="3">
+                    <path d="M20 6L9 17l-5-5"/>
+                  </svg>
+                )}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Desktop: pill row */}
+      <div className="hidden sm:flex flex-wrap items-center gap-1.5">
+        {SMART_CHIPS.map((chip) => {
+          const isSelected = (filters[chip.filterKey] as string[]).includes(chip.value);
+          return (
+            <button
+              key={chip.value}
+              onClick={() => {
+                const arr = filters[chip.filterKey] as string[];
+                const updated = arr.includes(chip.value)
+                  ? arr.filter((v) => v !== chip.value)
+                  : [...arr, chip.value];
+                setFilters((f) => ({ ...f, [chip.filterKey]: updated }));
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all"
+              style={{
+                background: isSelected ? chip.gradient : "var(--bg-card)",
+                color: isSelected ? "#fff" : "var(--text-secondary)",
+                border: `1.5px solid ${isSelected ? "transparent" : "var(--border-color)"}`,
+              }}
+            >
+              <span style={{ color: isSelected ? "rgba(255,255,255,0.85)" : "var(--text-muted)" }}>{chip.icon}</span>
+              {chip.label}
+              {isSelected && (
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="3">
+                  <path d="M20 6L9 17l-5-5"/>
+                </svg>
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default function FeedPage() {
+  const searchParams = useSearchParams();
+  const initialOrder = searchParams.get("order") === "random" ? "random" : "latest";
+
   const [publications, setPublications] = useState<Publication[]>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [filters, setFilters] = useState<SelectedFilters>(DEFAULT_FILTERS);
+  const [filters, setFilters] = useState<SelectedFilters>({ ...DEFAULT_FILTERS, order: initialOrder });
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
@@ -87,6 +306,15 @@ export default function FeedPage() {
   const abortRef = useRef<AbortController | null>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const pageRef = useRef(1);
+
+  // Sync URL ?order=random param into filter state (handles Discover tab clicks while already on /feed)
+  useEffect(() => {
+    const urlOrder = searchParams.get("order") === "random" ? "random" : "latest";
+    setFilters((f) => {
+      if (f.order === urlOrder) return f;
+      return { ...f, order: urlOrder };
+    });
+  }, [searchParams]);
 
   const handleEmbedLoaded = useCallback((pubKey: string) => {
     loadedSetRef.current.add(pubKey);
@@ -142,10 +370,14 @@ export default function FeedPage() {
       } catch (e) {
         if ((e as Error).name !== "AbortError") {
           console.error("Failed to fetch publications:", e);
+          setLoading(false);
+          setLoadingMore(false);
         }
       } finally {
-        setLoading(false);
-        setLoadingMore(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+          setLoadingMore(false);
+        }
       }
     },
     [filters]
@@ -153,10 +385,8 @@ export default function FeedPage() {
 
   useEffect(() => {
     pageRef.current = 1;
-    const timeout = setTimeout(() => {
-      fetchPublications(1);
-    }, 200);
-    return () => clearTimeout(timeout);
+    setPublications([]);
+    fetchPublications(1);
   }, [fetchPublications]);
 
   useEffect(() => {
@@ -189,8 +419,9 @@ export default function FeedPage() {
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "var(--bg-primary)" }}>
-      <Navbar />
-
+      <Suspense>
+        <LibraryTutorialOverlay />
+      </Suspense>
       <div className="flex-1 flex">
         <FilterSidebar
           filters={filters}
@@ -217,7 +448,7 @@ export default function FeedPage() {
                 {activeFilterCount > 0 && (
                   <span
                     className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
-                    style={{ background: "#F5C542", color: "#fff" }}
+                    style={{ background: "var(--selected-bg)", color: "#fff" }}
                   >
                     {activeFilterCount}
                   </span>
@@ -225,7 +456,8 @@ export default function FeedPage() {
               </button>
               {pagination && (
                 <span className="text-sm font-medium" style={{ color: "var(--text-muted)" }}>
-                  {pagination.total.toLocaleString()} ideas
+                  <span className="sm:hidden">{pagination.total >= 1000 ? `${(pagination.total / 1000).toFixed(0)} K` : pagination.total} ideas</span>
+                  <span className="hidden sm:inline">{pagination.total.toLocaleString()} ideas</span>
                 </span>
               )}
             </div>
@@ -234,28 +466,31 @@ export default function FeedPage() {
               style={{ border: "1px solid var(--border-color)" }}
             >
               {[
-                { value: "latest", label: "Latest", icon: <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> },
-                { value: "random", label: "Random", icon: <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg> },
+                { value: "latest", label: "Latest", icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> },
+                { value: "random", label: "Random", icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><polyline points="16 3 21 3 21 8"/><polyline points="16 21 21 21 21 16"/><line x1="4" y1="4" x2="21" y2="21"/><line x1="21" y1="4" x2="4" y2="21"/></svg> },
               ].map((opt, i) => {
                 const active = filters.order === opt.value;
                 return (
                   <button
                     key={opt.value}
                     onClick={() => setFilters({ ...filters, order: opt.value })}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold transition-all"
+                    className="flex items-center gap-1.5 px-2.5 sm:px-4 py-2 text-xs font-semibold transition-all"
                     style={{
-                      background: active ? "#F5C542" : "var(--bg-input)",
-                      color: active ? "#000" : "var(--text-muted)",
+                      background: active ? "var(--selected-bg)" : "var(--bg-input)",
+                      color: active ? "#fff" : "var(--text-muted)",
                       borderRight: i === 0 ? "1px solid var(--border-color)" : "none",
                     }}
                   >
                     {opt.icon}
-                    {opt.label}
+                    <span className="hidden sm:inline">{opt.label}</span>
                   </button>
                 );
               })}
             </div>
           </div>
+
+          {/* Smart filters */}
+          <SmartFilters filters={filters} setFilters={setFilters} />
 
           {activeFilterCount > 0 && (
             <div className="flex flex-wrap items-center gap-1.5 mb-3">
@@ -263,7 +498,7 @@ export default function FeedPage() {
                 <span
                   key={chip.key}
                   className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium"
-                  style={{ background: "rgba(200,144,40,0.15)", color: "#F5C542", border: "1px solid rgba(200,144,40,0.3)" }}
+                  style={{ background: "var(--color-charcoal-subtle)", color: "var(--selected-bg)", border: "1px solid rgba(31,41,55,0.3)" }}
                 >
                   {chip.label}
                   <button
@@ -278,7 +513,7 @@ export default function FeedPage() {
                       }
                     }}
                     className="ml-0.5 hover:opacity-70"
-                    style={{ color: "#F5C542" }}
+                    style={{ color: "var(--selected-bg)" }}
                   >
                     &times;
                   </button>
@@ -294,41 +529,105 @@ export default function FeedPage() {
             </div>
           )}
 
-          {loading && publications.length === 0 ? (
+          {loading ? (
             <MasonryGrid>
               {Array.from({ length: BATCH_SIZE }).map((_, i) => (
                 <SkeletonCard key={`sk-init-${i}`} index={i} />
               ))}
             </MasonryGrid>
           ) : publications.length === 0 ? (
-            <div className="text-center py-20">
-              <div
-                className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4"
-                style={{ background: "var(--bg-input)" }}
-              >
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5">
-                  <circle cx="11" cy="11" r="8" />
-                  <path d="M21 21l-4.35-4.35" />
-                  <path d="M8 11h6" />
-                </svg>
+            <div className="text-center py-16 flex flex-col items-center">
+              <style>{`
+                @keyframes floatA { 0%,100%{transform:translateY(0) rotate(-6deg)} 50%{transform:translateY(-10px) rotate(-6deg)} }
+                @keyframes floatB { 0%,100%{transform:translateY(0) rotate(0deg)}  50%{transform:translateY(-12px) rotate(0deg)} }
+                @keyframes floatC { 0%,100%{transform:translateY(0) rotate(5deg)}  50%{transform:translateY(-8px) rotate(5deg)} }
+                @keyframes fadeSlideUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+              `}</style>
+
+              {/* Floating cards illustration */}
+              <div style={{ position: "relative", width: 220, height: 155, marginBottom: 28 }}>
+                {/* Back-left card */}
+                <div style={{
+                  position: "absolute", left: 0, top: 28, width: 110, height: 120,
+                  borderRadius: 14, background: "var(--bg-card)",
+                  border: "1.5px solid var(--border-color)",
+                  boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
+                  animation: "floatA 3.4s ease-in-out infinite", animationDelay: "0.6s",
+                }}>
+                  <div style={{ padding: "10px 10px 0" }}>
+                    <div style={{ height: 55, borderRadius: 8, background: "var(--bg-input)", marginBottom: 8 }} />
+                    <div style={{ height: 7, borderRadius: 4, background: "var(--bg-input)", width: "70%", marginBottom: 5 }} />
+                    <div style={{ height: 7, borderRadius: 4, background: "var(--bg-input)", width: "45%" }} />
+                  </div>
+                </div>
+
+                {/* Center card (main, no rotation) */}
+                <div style={{
+                  position: "absolute", left: 55, top: 0, width: 110, height: 135,
+                  borderRadius: 14, background: "var(--bg-card)",
+                  border: "1.5px solid var(--border-color)",
+                  boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
+                  zIndex: 2,
+                  animation: "floatB 2.9s ease-in-out infinite",
+                }}>
+                  <div style={{ padding: "10px 10px 0" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+                      <div style={{ width: 22, height: 22, borderRadius: "50%", background: "var(--bg-input)" }} />
+                      <div style={{ height: 7, borderRadius: 4, background: "var(--bg-input)", flex: 1 }} />
+                    </div>
+                    <div style={{ height: 62, borderRadius: 8, background: "var(--bg-input)", marginBottom: 8 }} />
+                    <div style={{ height: 7, borderRadius: 4, background: "var(--bg-input)", width: "80%", marginBottom: 5 }} />
+                    <div style={{ height: 7, borderRadius: 4, background: "var(--bg-input)", width: "55%" }} />
+                  </div>
+                </div>
+
+                {/* Front-right card */}
+                <div style={{
+                  position: "absolute", right: 0, top: 32, width: 110, height: 115,
+                  borderRadius: 14, background: "var(--bg-card)",
+                  border: "1.5px solid var(--border-color)",
+                  boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
+                  animation: "floatC 3.8s ease-in-out infinite", animationDelay: "1.1s",
+                }}>
+                  <div style={{ padding: "10px 10px 0" }}>
+                    <div style={{ height: 50, borderRadius: 8, background: "var(--bg-input)", marginBottom: 8 }} />
+                    <div style={{ height: 7, borderRadius: 4, background: "var(--bg-input)", width: "60%", marginBottom: 5 }} />
+                    <div style={{ height: 7, borderRadius: 4, background: "var(--bg-input)", width: "35%" }} />
+                  </div>
+                </div>
+
+                {/* Search badge */}
+                <div style={{
+                  position: "absolute", right: 14, bottom: -8, zIndex: 3,
+                  width: 36, height: 36, borderRadius: "50%",
+                  background: "var(--bg-card)", border: "1.5px solid var(--border-color)",
+                  boxShadow: "0 2px 12px rgba(0,0,0,0.12)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}>
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.2" strokeLinecap="round">
+                    <circle cx="11" cy="11" r="7.5"/>
+                    <line x1="16.5" y1="16.5" x2="21" y2="21"/>
+                    <line x1="8.5" y1="11" x2="13.5" y2="11"/>
+                  </svg>
+                </div>
               </div>
-              <p className="text-lg font-medium" style={{ color: "var(--text-primary)" }}>
-                No results
+
+              <p className="text-base font-semibold mb-1" style={{ color: "var(--text-primary)", animation: "fadeSlideUp 0.4s ease both", animationDelay: "0.1s" }}>
+                Sense resultats
               </p>
               {activeFilterCount > 0 ? (
-                <p className="text-sm mt-2" style={{ color: "var(--text-muted)" }}>
-                  Remove one or more filters to see content.
+                <p className="text-sm" style={{ color: "var(--text-muted)", animation: "fadeSlideUp 0.4s ease both", animationDelay: "0.2s" }}>
+                  Prova a eliminar algun filtre per veure contingut.
                 </p>
               ) : (
-                <p className="text-sm mt-2" style={{ color: "var(--text-muted)" }}>
-                  <a href="/admin/import" style={{ color: "var(--accent-blue)" }}>
-                    Import some content
-                  </a>{" "}
-                  to get started.
+                <p className="text-sm" style={{ color: "var(--text-muted)", animation: "fadeSlideUp 0.4s ease both", animationDelay: "0.2s" }}>
+                  <a href="/admin/import" style={{ color: "var(--accent-blue)" }}>Importa contingut</a>{" "}
+                  per començar.
                 </p>
               )}
             </div>
           ) : (
+            <div data-tutorial="feed-content">
             <MasonryGrid>
               {publications.map((pub, i) => {
                 const isReady = i < readyUpTo;
@@ -353,7 +652,11 @@ export default function FeedPage() {
                   </CardSlot>
                 );
               })}
+              {loadingMore && Array.from({ length: BATCH_SIZE }).map((_, i) => (
+                <SkeletonCard key={`sk-more-${i}`} index={i} />
+              ))}
             </MasonryGrid>
+            </div>
           )}
 
           {publications.length > 0 && !loading && readyUpTo >= publications.length && !pagination?.hasMore && (

@@ -144,11 +144,11 @@ export default function FolderPickerModal({ publicationId, isSaved, onClose, onS
                 onMouseEnter={(e) => (e.currentTarget.style.background = "var(--bg-input)")}
                 onMouseLeave={(e) => (e.currentTarget.style.background = "none")}
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="rgba(200,144,40,0.15)" stroke="#F5C542" strokeWidth="1.8">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="rgba(31,41,55,0.15)" stroke="#1F2937" strokeWidth="1.8">
                   <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
                 </svg>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, truncate: "ellipsis" }}>{folder.name}</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{folder.name}</div>
                   <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{folder.count} items</div>
                 </div>
                 {savingId === folder.id && (
@@ -180,7 +180,7 @@ export default function FolderPickerModal({ publicationId, isSaved, onClose, onS
               />
               <button
                 onClick={createFolder}
-                style={{ padding: "7px 14px", borderRadius: 8, fontSize: 13, fontWeight: 600, background: "#F5C542", color: "#fff", border: "none", cursor: "pointer" }}
+                style={{ padding: "7px 14px", borderRadius: 8, fontSize: 13, fontWeight: 600, background: "#1F2937", color: "#fff", border: "none", cursor: "pointer" }}
               >
                 Create
               </button>
@@ -197,8 +197,8 @@ export default function FolderPickerModal({ publicationId, isSaved, onClose, onS
                 onClick={() => setCreating(true)}
                 style={{
                   flex: 1, display: "flex", alignItems: "center", gap: 8, padding: "8px 12px",
-                  borderRadius: 8, fontSize: 13, fontWeight: 600, background: "rgba(200,144,40,0.1)",
-                  border: "1px solid rgba(200,144,40,0.3)", color: "#F5C542", cursor: "pointer",
+                  borderRadius: 8, fontSize: 13, fontWeight: 600, background: "rgba(31,41,55,0.1)",
+                  border: "1px solid rgba(31,41,55,0.3)", color: "#1F2937", cursor: "pointer",
                 }}
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12h14"/></svg>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import AppSidebar from "./AppSidebar";
 
@@ -58,8 +58,14 @@ const RIGHT_NAV = [
 ];
 
 function MobileBottomNav({ pathname }: { pathname: string }) {
-  const isActive = (match: string) =>
-    pathname === match || pathname?.startsWith(match + "/");
+  const searchParams = useSearchParams();
+  const isDiscover = pathname === "/feed" && searchParams.get("order") === "random";
+
+  const isActive = (item: { match: string; href: string }) => {
+    if (item.href.includes("order=random")) return isDiscover;
+    if (item.match === "/feed") return pathname === "/feed" && !isDiscover;
+    return pathname === item.match || pathname?.startsWith(item.match + "/");
+  };
 
   return (
     <nav
@@ -77,10 +83,10 @@ function MobileBottomNav({ pathname }: { pathname: string }) {
           href={item.href}
           className="flex-1 flex flex-col items-center justify-center py-3 gap-0.5 transition-all active:scale-95"
         >
-          <span style={{ color: isActive(item.match) ? "#F5C542" : "var(--text-muted)" }}>
+          <span style={{ color: isActive(item) ? "var(--text-primary)" : "var(--text-muted)" }}>
             {item.icon}
           </span>
-          <span className="text-[9px] font-bold" style={{ color: isActive(item.match) ? "#F5C542" : "var(--text-muted)" }}>
+          <span className="text-[9px] font-bold" style={{ color: isActive(item) ? "var(--text-primary)" : "var(--text-muted)" }}>
             {item.label}
           </span>
         </Link>
@@ -94,9 +100,9 @@ function MobileBottomNav({ pathname }: { pathname: string }) {
           style={{
             width: 52,
             height: 52,
-            background: "linear-gradient(135deg, #F5C542, #F5C542)",
-            boxShadow: "0 4px 16px rgba(200,144,40,0.5)",
-            color: "#fff",
+            background: "var(--selected-bg)",
+            boxShadow: "0 4px 16px rgba(0,0,0,0.3)",
+            color: "var(--selected-text)",
             marginBottom: 2,
           }}
         >
@@ -112,10 +118,10 @@ function MobileBottomNav({ pathname }: { pathname: string }) {
           href={item.href}
           className="flex-1 flex flex-col items-center justify-center py-3 gap-0.5 transition-all active:scale-95"
         >
-          <span style={{ color: isActive(item.match) ? "#F5C542" : "var(--text-muted)" }}>
+          <span style={{ color: isActive(item) ? "var(--text-primary)" : "var(--text-muted)" }}>
             {item.icon}
           </span>
-          <span className="text-[9px] font-bold" style={{ color: isActive(item.match) ? "#F5C542" : "var(--text-muted)" }}>
+          <span className="text-[9px] font-bold" style={{ color: isActive(item) ? "var(--text-primary)" : "var(--text-muted)" }}>
             {item.label}
           </span>
         </Link>
@@ -124,9 +130,23 @@ function MobileBottomNav({ pathname }: { pathname: string }) {
   );
 }
 
+function MobileTopHeader() {
+  return (
+    <div
+      className="flex items-center px-5 pt-5 pb-3 md:hidden"
+      style={{ background: "var(--bg-primary)" }}
+    >
+      <Link href="/dashboard" className="flex items-center gap-2.5">
+        <img src="/logo.svg" alt="Sports Content Playbook" style={{ height: 28, width: "auto", maxWidth: 180, objectFit: "contain" }} />
+      </Link>
+    </div>
+  );
+}
+
 export default function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAdmin = pathname?.startsWith("/admin");
+  const isDashboard = pathname === "/dashboard";
   const [collapsed, setCollapsed] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -167,6 +187,7 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
 
       {/* Main content */}
       <div className="flex-1 min-w-0 pb-24 md:pb-0">
+        {!isDashboard && <MobileTopHeader />}
         {children}
       </div>
 

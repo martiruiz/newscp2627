@@ -24,9 +24,9 @@ export async function GET(request: NextRequest) {
       where: { id: singleId },
       include: {
         platform: { select: { id: true, name: true } },
-        sport: { select: { id: true, name: true } },
+        sports: { include: { sport: { select: { id: true, name: true } } } },
         contentFormat: { select: { id: true, name: true } },
-        entityType: { select: { id: true, name: true } },
+        entityTypes: { include: { entityType: { select: { id: true, name: true } } } },
         competitions: { include: { competition: { select: { id: true, name: true } } } },
         classifications: { include: { classification: { select: { id: true, name: true } } } },
         contentCategories: { include: { contentCategory: { select: { id: true, name: true } } } },
@@ -44,10 +44,10 @@ export async function GET(request: NextRequest) {
       accountUsername: pub.accountUsername,
       platformId: pub.platformId,
       platform: pub.platform.name,
-      sportId: pub.sportId,
-      sport: pub.sport?.name ?? null,
-      entityTypeId: pub.entityTypeId,
-      entity: pub.entityType?.name ?? null,
+      sportIds: pub.sports.map((s) => s.sport.id),
+      sports: pub.sports.map((s) => s.sport.name),
+      entityTypeIds: pub.entityTypes.map((e) => e.entityType.id),
+      entityTypes: pub.entityTypes.map((e) => e.entityType.name),
       entityName: pub.entityName,
       contentFormatId: pub.contentFormatId,
       format: pub.contentFormat?.name ?? null,
@@ -79,11 +79,11 @@ export async function GET(request: NextRequest) {
   }
   if (sport) {
     const slugs = multiSlug(sport);
-    where.sport = slugs.length === 1 ? { slug: slugs[0] } : { slug: { in: slugs } };
+    where.sports = { some: { sport: slugs.length === 1 ? { slug: slugs[0] } : { slug: { in: slugs } } } };
   }
   if (entity) {
     const slugs = multiSlug(entity);
-    where.entityType = slugs.length === 1 ? { slug: slugs[0] } : { slug: { in: slugs } };
+    where.entityTypes = { some: { entityType: slugs.length === 1 ? { slug: slugs[0] } : { slug: { in: slugs } } } };
   }
   if (competition) {
     const slugs = multiSlug(competition);
@@ -124,10 +124,11 @@ export async function GET(request: NextRequest) {
       where,
       include: {
         platform: { select: { name: true } },
-        sport: { select: { name: true } },
+        sports: { include: { sport: { select: { name: true } } } },
         contentFormat: { select: { name: true } },
-        entityType: { select: { name: true } },
+        entityTypes: { include: { entityType: { select: { name: true } } } },
         competitions: { include: { competition: { select: { name: true } } } },
+        classifications: { include: { classification: { select: { id: true, name: true, slug: true } } } },
       },
       orderBy: { publishedAt: "desc" },
       skip,
@@ -143,14 +144,16 @@ export async function GET(request: NextRequest) {
       rawTitle: p.rawTitle,
       publishedAt: p.publishedAt,
       platform: p.platform.name,
-      sport: p.sport?.name ?? null,
-      entity: p.entityType?.name ?? null,
+      sports: p.sports.map((s) => s.sport.name),
+      entityTypes: p.entityTypes.map((e) => e.entityType.name),
       entityName: p.entityName,
       format: p.contentFormat?.name ?? null,
       competitions: p.competitions.map((c) => c.competition.name),
       canonicalUrl: p.canonicalUrl,
       embedUrl: p.embedUrl,
       originalUrl: p.originalUrl,
+      classificationIds: p.classifications.map((c) => c.classification.id),
+      classificationSlugs: p.classifications.map((c) => c.classification.slug),
     })),
     total,
     page,
@@ -162,7 +165,7 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
   const {
     externalPostId, canonicalUrl, embedUrl, originalUrl,
-    platformId, sportId, entityTypeId, contentFormatId,
+    platformId, sportIds = [], entityTypeIds = [], contentFormatId,
     entityName, accountUsername, rawTitle, publishedAt,
     competitionIds = [], classificationIds = [], contentCategoryIds = [],
   } = body;
@@ -178,8 +181,6 @@ export async function POST(request: NextRequest) {
       embedUrl: embedUrl || canonicalUrl,
       originalUrl: originalUrl || null,
       platformId,
-      sportId: sportId || null,
-      entityTypeId: entityTypeId || null,
       contentFormatId: contentFormatId || null,
       entityName: entityName?.trim() || null,
       accountUsername: accountUsername?.trim() || null,
@@ -188,6 +189,16 @@ export async function POST(request: NextRequest) {
     },
   });
 
+  if (sportIds.length > 0) {
+    await prisma.publicationSport.createMany({
+      data: sportIds.map((sId: string) => ({ publicationId: pub.id, sportId: sId })),
+    });
+  }
+  if (entityTypeIds.length > 0) {
+    await prisma.publicationEntityType.createMany({
+      data: entityTypeIds.map((eId: string) => ({ publicationId: pub.id, entityTypeId: eId })),
+    });
+  }
   if (competitionIds.length > 0) {
     await prisma.publicationCompetition.createMany({
       data: competitionIds.map((cId: string) => ({ publicationId: pub.id, competitionId: cId })),
@@ -226,12 +237,10 @@ export async function PATCH(request: NextRequest) {
   }
 
   if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
-  const { sportId, entityTypeId, contentFormatId, platformId, entityName, rawTitle, publishedAt, competitionIds, classificationIds, contentCategoryIds, accountUsername } = body;
+  const { sportIds, entityTypeIds, contentFormatId, platformId, entityName, rawTitle, publishedAt, competitionIds, classificationIds, contentCategoryIds, accountUsername } = body;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const data: any = {};
-  if ("sportId" in body) data.sportId = sportId || null;
-  if ("entityTypeId" in body) data.entityTypeId = entityTypeId || null;
   if ("contentFormatId" in body) data.contentFormatId = contentFormatId || null;
   if ("platformId" in body) data.platformId = platformId;
   if ("entityName" in body) data.entityName = entityName?.trim() || null;
@@ -240,6 +249,24 @@ export async function PATCH(request: NextRequest) {
   if ("accountUsername" in body) data.accountUsername = accountUsername?.trim() || null;
 
   await prisma.publication.update({ where: { id }, data });
+
+  if (Array.isArray(sportIds)) {
+    await prisma.publicationSport.deleteMany({ where: { publicationId: id } });
+    if (sportIds.length > 0) {
+      await prisma.publicationSport.createMany({
+        data: sportIds.map((sId: string) => ({ publicationId: id, sportId: sId })),
+      });
+    }
+  }
+
+  if (Array.isArray(entityTypeIds)) {
+    await prisma.publicationEntityType.deleteMany({ where: { publicationId: id } });
+    if (entityTypeIds.length > 0) {
+      await prisma.publicationEntityType.createMany({
+        data: entityTypeIds.map((eId: string) => ({ publicationId: id, entityTypeId: eId })),
+      });
+    }
+  }
 
   if (Array.isArray(competitionIds)) {
     await prisma.publicationCompetition.deleteMany({ where: { publicationId: id } });

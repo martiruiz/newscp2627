@@ -126,16 +126,16 @@ export default function FiltersPage() {
               onClick={() => setSelected(cat.key)}
               className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-left transition-all"
               style={{
-                background: selected === cat.key ? "rgba(200,144,40,0.12)" : "transparent",
-                color: selected === cat.key ? "#F5C542" : "var(--text-secondary)",
+                background: selected === cat.key ? "var(--color-charcoal-subtle)" : "transparent",
+                color: selected === cat.key ? "var(--color-charcoal)" : "var(--text-secondary)",
               }}
             >
               {cat.label}
               <span
                 className="text-[11px] px-1.5 py-0.5 rounded"
                 style={{
-                  background: selected === cat.key ? "rgba(200,144,40,0.2)" : "var(--bg-input)",
-                  color: selected === cat.key ? "#F5C542" : "var(--text-muted)",
+                  background: selected === cat.key ? "var(--color-charcoal-subtle)" : "var(--bg-input)",
+                  color: selected === cat.key ? "var(--color-charcoal)" : "var(--text-muted)",
                 }}
               >
                 {cat.count}
@@ -213,7 +213,7 @@ export default function FiltersPage() {
                 onClick={handleAdd}
                 disabled={adding || !newName.trim()}
                 className="px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-50"
-                style={{ background: "#F5C542", color: "#000" }}
+                style={{ background: "var(--selected-bg)", color: "var(--selected-text)" }}
               >
                 {adding ? "Adding..." : "Add"}
               </button>
@@ -245,13 +245,13 @@ export default function FiltersPage() {
                         onChange={(e) => setEditingName(e.target.value)}
                         onKeyDown={(e) => { if (e.key === "Enter") handleSaveEdit(val.id); if (e.key === "Escape") cancelEdit(); }}
                         className="flex-1 px-2.5 py-1.5 rounded-lg text-sm outline-none"
-                        style={{ background: "var(--bg-input)", border: "1px solid #F5C542", color: "var(--text-primary)" }}
+                        style={{ background: "var(--bg-input)", border: "1px solid var(--color-charcoal)", color: "var(--text-primary)" }}
                       />
                       <button
                         onClick={() => handleSaveEdit(val.id)}
                         disabled={savingId === val.id || !editingName.trim()}
                         className="px-3 py-1.5 rounded-lg text-xs font-semibold disabled:opacity-50"
-                        style={{ background: "#F5C542", color: "#000" }}
+                        style={{ background: "var(--selected-bg)", color: "var(--selected-text)" }}
                       >
                         {savingId === val.id ? "…" : "Save"}
                       </button>

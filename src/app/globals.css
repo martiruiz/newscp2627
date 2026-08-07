@@ -1,40 +1,73 @@
 @import "tailwindcss";
 
 :root {
-  /* Core palette */
-  --color-darkest: #0D1421;
-  --color-navy: #1E2A44;
-  --color-gold: #F5C542;
-  --color-light: #E5E7EB;
-  --color-white: #FFFFFF;
+  /* Modulix palette */
+  --color-bg:      #FAFAFA;
+  --color-surface: #FFFFFF;
+  --color-border:  #E6E7E9;
+  --color-subtle:  #F1F2F4;
+  --color-muted:   #9CA3AF;
+  --color-charcoal:#222428;
+  --color-gold:    #1F2937;
 
-  /* Backgrounds — gradient-based */
-  --bg-primary: #0D1421;
-  --bg-secondary: #1E2A44;
-  --bg-card: #192238;
-  --bg-input: #1E2A44;
-  --bg-hover: #243252;
+  /* Backgrounds */
+  --bg-primary:   #FAFAFA;
+  --bg-secondary: #FFFFFF;
+  --bg-card:      #FFFFFF;
+  --bg-input:     #F1F2F4;
+  --bg-hover:     #F1F2F4;
 
   /* Text */
-  --text-primary: #FFFFFF;
-  --text-secondary: #E5E7EB;
-  --text-muted: #8a9ab8;
+  --text-primary:   #222428;
+  --text-secondary: #374151;
+  --text-muted:     #9CA3AF;
 
   /* Accents */
-  --accent-gold: #F5C542;
-  --accent-blue: #3b82f6;
-  --accent-green: #22c55e;
+  --accent-gold:   #1F2937;
+  --accent-blue:   #3b82f6;
+  --accent-green:  #22C55E;
   --accent-purple: #a855f7;
   --accent-orange: #f97316;
-  --accent-red: #ef4444;
+  --accent-red:    #EF4444;
 
   /* Borders */
-  --border-color: rgba(255,255,255,0.08);
+  --border-color: #E6E7E9;
+
+  /* Action / charcoal — adapts per theme */
+  --color-charcoal:        #1F2937;
+  --color-charcoal-subtle: rgba(31,41,55,0.1);
+  --selected-bg:           #1F2937;
+  --selected-text:         #ffffff;
 
   /* Badges */
-  --badge-top: #22c55e;
-  --badge-replicable: #f97316;
-  --badge-overperforming: #a855f7;
+  --badge-top:           #D03B63;
+  --badge-replicable:    #3DBE7A;
+  --badge-overperforming:#a855f7;
+}
+
+/* Night theme */
+[data-theme="blue"] {
+  --bg-primary:   #0D1421;
+  --bg-secondary: #1A2744;
+  --bg-card:      #1E2A44;
+  --bg-input:     #263350;
+  --bg-hover:     #2d3d5e;
+  --text-primary:   #FFFFFF;
+  --text-secondary: #E5E7EB;
+  --text-muted:     #9CA3AF;
+  --accent-gold:   #F5C542;
+  --accent-blue:   #F5C542;
+  --border-color: #2d3d5e;
+
+  /* Action colors — readable on dark backgrounds */
+  --color-charcoal:        #F5C542;
+  --color-charcoal-subtle: rgba(245,197,66,0.12);
+  --selected-bg:           #F5C542;
+  --selected-text:         #0D1421;
+
+  /* Keep badges readable */
+  --badge-top:           #E8567A;
+  --badge-replicable:    #3DBE7A;
 }
 
 @theme inline {
@@ -47,12 +80,15 @@
 }
 
 body {
-  background: linear-gradient(160deg, #0D1421 0%, #0f1b30 50%, #0D1421 100%);
-  background-attachment: fixed;
+  background: var(--bg-primary);
   color: var(--text-primary);
   font-family: var(--font-montserrat), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   margin: 0;
   min-height: 100vh;
+}
+
+[data-theme="blue"] body {
+  background: linear-gradient(160deg, #0D1421 0%, #112040 50%, #1E2A44 100%) fixed;
 }
 
 ::-webkit-scrollbar {
@@ -60,11 +96,11 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
+  background: var(--bg-input);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border-color);
+  background: var(--color-muted);
   border-radius: 3px;
 }
 
@@ -79,4 +115,10 @@ body {
 .instagram-media iframe {
   width: 100% !important;
   max-width: 100% !important;
+}
+
+[contenteditable][data-placeholder]:empty:before {
+  content: attr(data-placeholder);
+  color: var(--color-muted);
+  pointer-events: none;
 }

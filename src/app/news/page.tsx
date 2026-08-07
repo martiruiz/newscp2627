@@ -1,6 +1,10 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "next/navigation";
+import BlogEmbeds from "@/components/BlogEmbeds";
+
+// ── Types ────────────────────────────────────────────────────────────────────
 
 interface NewsArticle {
   id: string;
@@ -13,7 +17,25 @@ interface NewsArticle {
   createdAt: string;
 }
 
+interface BlogPost {
+  id: string;
+  title: string;
+  subtitle: string | null;
+  category: string | null;
+  publishedAt: string | null;
+  content: string;
+  imageUrl: string | null;
+  imageAlt: string | null;
+  embed1: string | null;
+  embed2: string | null;
+  embed3: string | null;
+  embed4: string | null;
+  embed5: string | null;
+  createdAt: string;
+}
+
 type DateFilter = "7" | "14" | "30" | "all";
+type Tab = "news" | "blog";
 
 const PLATFORMS = ["Instagram", "TikTok", "X", "YouTube", "Facebook", "LinkedIn", "Snapchat", "WhatsApp", "Pinterest", "Threads", "Reddit"] as const;
 type Platform = (typeof PLATFORMS)[number];
@@ -109,6 +131,16 @@ const PLATFORM_STYLES: Record<Platform, { gradient: string; icon: React.ReactNod
   },
 };
 
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+}
+
+const SUPERADMIN_EMAILS = ["guinewagency@gmail.com", "marti@agenciaguinew.com"];
+
+// ── Platform filter cards ─────────────────────────────────────────────────────
+
 function AllCard({ active, onClick }: { active: boolean; onClick: () => void }) {
   const [hovered, setHovered] = useState(false);
   const lit = active || hovered;
@@ -119,10 +151,10 @@ function AllCard({ active, onClick }: { active: boolean; onClick: () => void }) 
       onMouseLeave={() => setHovered(false)}
       className="flex flex-col items-center justify-center gap-1.5 rounded-2xl transition-all w-[82px] h-[82px] md:w-[112px] md:h-[112px]"
       style={{
-        background: lit ? "linear-gradient(135deg, #F5C542 0%, #F5C542 100%)" : "var(--bg-card)",
+        background: lit ? "linear-gradient(135deg, #1F2937 0%, #1F2937 100%)" : "var(--bg-card)",
         border: active ? "none" : "1px solid var(--border-color)",
         color: lit ? "#fff" : "var(--text-muted)",
-        boxShadow: lit ? "0 8px 24px rgba(245,197,66,0.35)" : "none",
+        boxShadow: lit ? "0 8px 24px rgba(31,41,55,0.35)" : "none",
         transform: lit ? "translateY(-2px)" : "none",
       }}
     >
@@ -135,19 +167,10 @@ function AllCard({ active, onClick }: { active: boolean; onClick: () => void }) 
   );
 }
 
-function PlatformCard({
-  name,
-  active,
-  onClick,
-}: {
-  name: Platform;
-  active: boolean;
-  onClick: () => void;
-}) {
+function PlatformCard({ name, active, onClick }: { name: Platform; active: boolean; onClick: () => void }) {
   const [hovered, setHovered] = useState(false);
   const style = PLATFORM_STYLES[name];
   const lit = active || hovered;
-
   return (
     <button
       onClick={onClick}
@@ -168,13 +191,7 @@ function PlatformCard({
   );
 }
 
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
+// ── AddNewsModal ──────────────────────────────────────────────────────────────
 
 function AddNewsModal({ onClose, onSaved }: { onClose: () => void; onSaved: () => void }) {
   const [url, setUrl] = useState("");
@@ -182,359 +199,240 @@ function AddNewsModal({ onClose, onSaved }: { onClose: () => void; onSaved: () =
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [preview, setPreview] = useState<{
-    title: string;
-    excerpt: string | null;
-    imageUrl: string | null;
-    platform: string | null;
-    publishedAt: string | null;
+    title: string; excerpt: string | null; imageUrl: string | null;
+    platform: string | null; publishedAt: string | null;
   } | null>(null);
-
   const reqId = useRef(0);
 
   async function handleScrape() {
     if (!url.trim()) return;
     const id = ++reqId.current;
-    setScraping(true);
-    setError(null);
-    setPreview(null);
+    setScraping(true); setError(null); setPreview(null);
     try {
-      const res = await fetch("/api/news/scrape", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: url.trim() }),
-      });
+      const res = await fetch("/api/news/scrape", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ url: url.trim() }) });
       if (id !== reqId.current) return;
       const data = await res.json();
-      if (!res.ok) {
-        setError(data.error ?? "Could not extract the article. The website may be blocking automated requests — try a different URL.");
-        return;
-      }
+      if (!res.ok) { setError(data.error ?? "Could not extract the article."); return; }
       setPreview(data);
-    } catch {
-      if (id !== reqId.current) return;
-      setError("Could not reach the article. Check the URL and try again.");
-    } finally {
-      if (id === reqId.current) setScraping(false);
-    }
+    } catch { if (id !== reqId.current) return; setError("Could not reach the article."); }
+    finally { if (id === reqId.current) setScraping(false); }
   }
 
   async function handleSave() {
     if (!preview) return;
-    setSaving(true);
-    setError(null);
+    setSaving(true); setError(null);
     try {
-      const res = await fetch("/api/news", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: url.trim(), ...preview }),
-      });
+      const res = await fetch("/api/news", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ url: url.trim(), ...preview }) });
       const data = await res.json();
-      if (!res.ok) { setError(data.error || "Could not save the article. Try again."); return; }
-      onSaved();
-      onClose();
-    } catch {
-      setError("Could not save the article. Check your connection and try again.");
-    } finally {
-      setSaving(false);
-    }
+      if (!res.ok) { setError(data.error || "Could not save."); return; }
+      onSaved(); onClose();
+    } catch { setError("Could not save the article."); }
+    finally { setSaving(false); }
   }
 
   return (
     <>
       <div className="fixed inset-0 z-40" style={{ background: "rgba(0,0,0,0.7)" }} onClick={onClose} />
-      <div
-        className="fixed z-50 rounded-2xl overflow-hidden flex flex-col"
-        style={{
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "min(600px, 94vw)",
-          maxHeight: "85vh",
-          background: "var(--bg-card)",
-          border: "1px solid var(--border-color)",
-          boxShadow: "0 24px 64px rgba(0,0,0,0.6)",
-        }}
-      >
-        {/* Header */}
-        <div
-          className="flex items-center justify-between px-6 py-4 shrink-0"
-          style={{ borderBottom: "1px solid var(--border-color)" }}
-        >
+      <div className="fixed z-50 rounded-2xl overflow-hidden flex flex-col"
+        style={{ top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: "min(600px, 94vw)", maxHeight: "85vh", background: "var(--bg-card)", border: "1px solid var(--border-color)", boxShadow: "0 24px 64px rgba(0,0,0,0.6)" }}>
+        <div className="flex items-center justify-between px-6 py-4 shrink-0" style={{ borderBottom: "1px solid var(--border-color)" }}>
           <div>
-            <h2 className="font-bold text-sm" style={{ color: "var(--text-primary)" }}>
-              Add news article
-            </h2>
-            <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
-              Paste the article URL and we'll extract the details automatically
-            </p>
+            <h2 className="font-bold text-sm" style={{ color: "var(--text-primary)" }}>Add news article</h2>
+            <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>Paste the article URL and we'll extract the details automatically</p>
           </div>
-          <button
-            onClick={onClose}
-            className="flex items-center justify-center rounded-lg transition-all hover:opacity-70"
-            style={{ width: 28, height: 28, color: "var(--text-muted)", background: "var(--bg-input)" }}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
+          <button onClick={onClose} className="flex items-center justify-center rounded-lg transition-all hover:opacity-70" style={{ width: 28, height: 28, color: "var(--text-muted)", background: "var(--bg-input)" }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
-
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
-          {/* URL input */}
           <div className="flex gap-2">
-            <input
-              value={url}
-              onChange={(e) => { setUrl(e.target.value); setPreview(null); setError(null); }}
-              onKeyDown={(e) => { if (e.key === "Enter") handleScrape(); }}
-              placeholder="https://sportspro.com/article/..."
-              className="flex-1 px-3.5 py-2.5 rounded-xl text-sm outline-none"
-              style={{
-                background: "var(--bg-input)",
-                border: "1px solid var(--border-color)",
-                color: "var(--text-primary)",
-              }}
-            />
-            <button
-              onClick={handleScrape}
-              disabled={!url.trim() || scraping}
-              className="px-4 py-2.5 rounded-xl text-xs font-bold transition-all hover:opacity-90 shrink-0 disabled:opacity-50"
-              style={{ background: "#F5C542", color: "#fff" }}
-            >
-              {scraping ? "Extracting…" : "Extract"}
-            </button>
+            <input value={url} onChange={(e) => { setUrl(e.target.value); setPreview(null); setError(null); }} onKeyDown={(e) => { if (e.key === "Enter") handleScrape(); }} placeholder="https://sportspro.com/article/..." className="flex-1 px-3.5 py-2.5 rounded-xl text-sm outline-none" style={{ background: "var(--bg-input)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
+            <button onClick={handleScrape} disabled={!url.trim() || scraping} className="px-4 py-2.5 rounded-xl text-xs font-bold transition-all hover:opacity-90 shrink-0 disabled:opacity-50" style={{ background: "var(--selected-bg)", color: "#fff" }}>{scraping ? "Extracting…" : "Extract"}</button>
           </div>
-
           {error && (
-            <div
-              className="flex items-start gap-3 px-4 py-3 rounded-xl text-xs"
-              style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.25)", color: "#ef4444" }}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0 mt-0.5">
-                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-              </svg>
+            <div className="flex items-start gap-3 px-4 py-3 rounded-xl text-xs" style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.25)", color: "#ef4444" }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0 mt-0.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
               <span className="flex-1 leading-relaxed">{error}</span>
-              <button onClick={() => setError(null)} className="shrink-0 hover:opacity-70 transition-opacity">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
-              </button>
+              <button onClick={() => setError(null)} className="shrink-0 hover:opacity-70"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
             </div>
           )}
-
-          {/* Preview */}
           {preview && (
             <div className="space-y-3">
-              {/* Image */}
               {preview.imageUrl && (
                 <div className="rounded-xl overflow-hidden" style={{ border: "1px solid var(--border-color)" }}>
-                  <img
-                    src={preview.imageUrl}
-                    alt=""
-                    className="w-full object-cover"
-                    style={{ maxHeight: 180 }}
-                    onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-                  />
+                  <img src={preview.imageUrl} alt="" className="w-full object-cover" style={{ maxHeight: 180 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                 </div>
               )}
-
-              {/* Title + Excerpt */}
               <div className="rounded-xl p-4 space-y-2" style={{ background: "var(--bg-input)", border: "1px solid var(--border-color)" }}>
                 <label className="text-[10px] font-bold uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>Title</label>
-                <input
-                  value={preview.title}
-                  onChange={(e) => setPreview((p) => p ? { ...p, title: e.target.value } : p)}
-                  className="w-full text-sm font-bold outline-none rounded-lg px-2 py-1.5"
-                  style={{ background: "var(--bg-card)", color: "var(--text-primary)", border: "1px solid var(--border-color)" }}
-                />
+                <input value={preview.title} onChange={(e) => setPreview((p) => p ? { ...p, title: e.target.value } : p)} className="w-full text-sm font-bold outline-none rounded-lg px-2 py-1.5" style={{ background: "var(--bg-card)", color: "var(--text-primary)", border: "1px solid var(--border-color)" }} />
                 <label className="text-[10px] font-bold uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>Excerpt</label>
-                <textarea
-                  value={preview.excerpt ?? ""}
-                  onChange={(e) => setPreview((p) => p ? { ...p, excerpt: e.target.value } : p)}
-                  rows={3}
-                  placeholder="Short description of the article…"
-                  className="w-full text-xs outline-none rounded-lg px-2 py-1.5 resize-none"
-                  style={{ background: "var(--bg-card)", color: "var(--text-muted)", border: "1px solid var(--border-color)" }}
-                />
+                <textarea value={preview.excerpt ?? ""} onChange={(e) => setPreview((p) => p ? { ...p, excerpt: e.target.value } : p)} rows={3} className="w-full text-xs outline-none rounded-lg px-2 py-1.5 resize-none" style={{ background: "var(--bg-card)", color: "var(--text-muted)", border: "1px solid var(--border-color)" }} />
               </div>
-
-              {/* Platform + Date row */}
               <div className="grid grid-cols-2 gap-3">
-                {/* Platform */}
                 <div className="rounded-xl p-3 space-y-2" style={{ background: "var(--bg-input)", border: "1px solid var(--border-color)" }}>
                   <label className="text-[10px] font-bold uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>Platform</label>
                   <div className="flex flex-wrap gap-1.5">
                     {(["Instagram","TikTok","X","YouTube","Facebook","LinkedIn","Snapchat","WhatsApp","Pinterest","Threads","Reddit"] as const).map((pl) => {
                       const active = preview.platform === pl;
                       return (
-                        <button
-                          key={pl}
-                          onClick={() => setPreview((p) => p ? { ...p, platform: active ? null : pl } : p)}
-                          className="px-2.5 py-1 rounded-full text-[10px] font-bold transition-all"
-                          style={{
-                            background: active ? "#F5C542" : "var(--bg-card)",
-                            color: active ? "#fff" : "var(--text-muted)",
-                            border: active ? "none" : "1px solid var(--border-color)",
-                          }}
-                        >
-                          {pl}
-                        </button>
+                        <button key={pl} onClick={() => setPreview((p) => p ? { ...p, platform: active ? null : pl } : p)} className="px-2.5 py-1 rounded-full text-[10px] font-bold transition-all" style={{ background: active ? "var(--selected-bg)" : "var(--bg-card)", color: active ? "#fff" : "var(--text-muted)", border: active ? "none" : "1px solid var(--border-color)" }}>{pl}</button>
                       );
                     })}
-                    <button
-                      onClick={() => setPreview((p) => p ? { ...p, platform: null } : p)}
-                      className="px-2.5 py-1 rounded-full text-[10px] font-bold transition-all"
-                      style={{
-                        background: !preview.platform ? "#F5C542" : "var(--bg-card)",
-                        color: !preview.platform ? "#fff" : "var(--text-muted)",
-                        border: !preview.platform ? "none" : "1px solid var(--border-color)",
-                      }}
-                    >
-                      None
-                    </button>
+                    <button onClick={() => setPreview((p) => p ? { ...p, platform: null } : p)} className="px-2.5 py-1 rounded-full text-[10px] font-bold transition-all" style={{ background: !preview.platform ? "var(--selected-bg)" : "var(--bg-card)", color: !preview.platform ? "#fff" : "var(--text-muted)", border: !preview.platform ? "none" : "1px solid var(--border-color)" }}>None</button>
                   </div>
                 </div>
-
-                {/* Published date */}
                 <div className="rounded-xl p-3 space-y-2" style={{ background: "var(--bg-input)", border: "1px solid var(--border-color)" }}>
                   <label className="text-[10px] font-bold uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>Publication date</label>
-                  <input
-                    type="date"
-                    value={preview.publishedAt ? preview.publishedAt.slice(0, 10) : ""}
-                    onChange={(e) => setPreview((p) => p ? { ...p, publishedAt: e.target.value ? new Date(e.target.value).toISOString() : null } : p)}
-                    className="w-full px-2.5 py-1.5 rounded-lg text-xs outline-none"
-                    style={{
-                      background: "var(--bg-card)",
-                      border: "1px solid var(--border-color)",
-                      color: "var(--text-primary)",
-                      colorScheme: "dark",
-                    }}
-                  />
-                  <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>
-                    Used to filter by Last 7/14/30 days
-                  </p>
+                  <input type="date" value={preview.publishedAt ? preview.publishedAt.slice(0, 10) : ""} onChange={(e) => setPreview((p) => p ? { ...p, publishedAt: e.target.value ? new Date(e.target.value).toISOString() : null } : p)} className="w-full px-2.5 py-1.5 rounded-lg text-xs outline-none" style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", color: "var(--text-primary)", colorScheme: "dark" }} />
                 </div>
               </div>
             </div>
           )}
         </div>
-
-        {/* Footer */}
-        <div
-          className="flex items-center justify-end gap-3 px-6 py-4 shrink-0"
-          style={{ borderTop: "1px solid var(--border-color)" }}
-        >
-          <button
-            onClick={onClose}
-            className="px-4 py-2 rounded-xl text-xs font-semibold transition-all hover:opacity-80"
-            style={{ background: "var(--bg-input)", border: "1px solid var(--border-color)", color: "var(--text-secondary)" }}
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleSave}
-            disabled={!preview || saving}
-            className="px-4 py-2 rounded-xl text-xs font-bold transition-all hover:opacity-90 disabled:opacity-40"
-            style={{ background: "#F5C542", color: "#fff" }}
-          >
-            {saving ? "Saving…" : "Publish article"}
-          </button>
+        <div className="flex items-center justify-end gap-3 px-6 py-4 shrink-0" style={{ borderTop: "1px solid var(--border-color)" }}>
+          <button onClick={onClose} className="px-4 py-2 rounded-xl text-xs font-semibold transition-all hover:opacity-80" style={{ background: "var(--bg-input)", border: "1px solid var(--border-color)", color: "var(--text-secondary)" }}>Cancel</button>
+          <button onClick={handleSave} disabled={!preview || saving} className="px-4 py-2 rounded-xl text-xs font-bold transition-all hover:opacity-90 disabled:opacity-40" style={{ background: "var(--selected-bg)", color: "#fff" }}>{saving ? "Saving…" : "Publish article"}</button>
         </div>
       </div>
     </>
   );
 }
 
+// ── BlogPostEditModal ─────────────────────────────────────────────────────────
+
+function BlogPostEditModal({ post, onClose, onSaved }: { post: BlogPost; onClose: () => void; onSaved: (updated: BlogPost) => void }) {
+  const [title, setTitle] = useState(post.title);
+  const [subtitle, setSubtitle] = useState(post.subtitle ?? "");
+  const [category, setCategory] = useState(post.category ?? "");
+  const [imageUrl, setImageUrl] = useState(post.imageUrl ?? "");
+  const [publishedAt, setPublishedAt] = useState(post.publishedAt ? post.publishedAt.slice(0, 10) : "");
+  const [content, setContent] = useState(post.content);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSave() {
+    if (!title.trim()) { setError("Title is required."); return; }
+    setSaving(true); setError(null);
+    try {
+      const res = await fetch("/api/blog", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: post.id,
+          title: title.trim(),
+          subtitle: subtitle.trim() || null,
+          category: category.trim() || null,
+          imageUrl: imageUrl.trim() || null,
+          publishedAt: publishedAt ? new Date(publishedAt).toISOString() : null,
+          content: content.trim(),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setError(data.error || "Could not save."); return; }
+      onSaved(data);
+      onClose();
+    } catch { setError("Could not save the post."); }
+    finally { setSaving(false); }
+  }
+
+  return (
+    <>
+      <div className="fixed inset-0 z-40" style={{ background: "rgba(0,0,0,0.75)" }} onClick={onClose} />
+      <div className="fixed z-50 rounded-2xl overflow-hidden flex flex-col"
+        style={{ top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: "min(680px, 96vw)", maxHeight: "90vh", background: "var(--bg-card)", border: "1px solid var(--border-color)", boxShadow: "0 24px 64px rgba(0,0,0,0.6)" }}>
+        <div className="flex items-center justify-between px-6 py-4 shrink-0" style={{ borderBottom: "1px solid var(--border-color)" }}>
+          <h2 className="font-bold text-sm" style={{ color: "var(--text-primary)" }}>Edit blog post</h2>
+          <button onClick={onClose} className="flex items-center justify-center rounded-lg hover:opacity-70 transition-opacity" style={{ width: 28, height: 28, color: "var(--text-muted)", background: "var(--bg-input)" }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
+          {error && (
+            <div className="flex items-center gap-2 px-4 py-3 rounded-xl text-xs" style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.25)", color: "#ef4444" }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              {error}
+            </div>
+          )}
+          <div className="space-y-1">
+            <label className="text-[10px] font-bold uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>Title *</label>
+            <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full px-3 py-2 rounded-lg text-sm font-bold outline-none" style={{ background: "var(--bg-input)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
+          </div>
+          <div className="space-y-1">
+            <label className="text-[10px] font-bold uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>Subtitle</label>
+            <input value={subtitle} onChange={(e) => setSubtitle(e.target.value)} className="w-full px-3 py-2 rounded-lg text-sm outline-none" style={{ background: "var(--bg-input)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>Category</label>
+              <input value={category} onChange={(e) => setCategory(e.target.value)} placeholder="e.g. Marketing" className="w-full px-3 py-2 rounded-lg text-sm outline-none" style={{ background: "var(--bg-input)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>Published at</label>
+              <input type="date" value={publishedAt} onChange={(e) => setPublishedAt(e.target.value)} className="w-full px-3 py-2 rounded-lg text-sm outline-none" style={{ background: "var(--bg-input)", border: "1px solid var(--border-color)", color: "var(--text-primary)", colorScheme: "dark" }} />
+            </div>
+          </div>
+          <div className="space-y-1">
+            <label className="text-[10px] font-bold uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>Cover image URL</label>
+            <input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="https://..." className="w-full px-3 py-2 rounded-lg text-sm outline-none" style={{ background: "var(--bg-input)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
+            {imageUrl && (
+              <img src={imageUrl} alt="" className="mt-2 rounded-lg object-cover" style={{ maxHeight: 100, maxWidth: "100%" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+            )}
+          </div>
+          <div className="space-y-1">
+            <label className="text-[10px] font-bold uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>Content (HTML)</label>
+            <textarea
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              rows={10}
+              className="w-full px-3 py-2 rounded-lg text-xs font-mono outline-none resize-y"
+              style={{ background: "var(--bg-input)", border: "1px solid var(--border-color)", color: "var(--text-primary)", minHeight: 200 }}
+            />
+          </div>
+        </div>
+        <div className="flex items-center justify-end gap-3 px-6 py-4 shrink-0" style={{ borderTop: "1px solid var(--border-color)" }}>
+          <button onClick={onClose} className="px-4 py-2 rounded-xl text-xs font-semibold hover:opacity-80 transition-opacity" style={{ background: "var(--bg-input)", border: "1px solid var(--border-color)", color: "var(--text-secondary)" }}>Cancel</button>
+          <button onClick={handleSave} disabled={saving} className="px-5 py-2 rounded-xl text-xs font-bold hover:opacity-90 transition-opacity disabled:opacity-40" style={{ background: "var(--selected-bg)", color: "#fff" }}>{saving ? "Saving…" : "Save changes"}</button>
+        </div>
+      </div>
+    </>
+  );
+}
+
+// ── ArticleCard ───────────────────────────────────────────────────────────────
+
 function ArticleCard({ article, onDelete }: { article: NewsArticle; onDelete: (id: string) => void }) {
   const [imgError, setImgError] = useState(false);
   const [zoomed, setZoomed] = useState(false);
-
   return (
-    <article
-      className="rounded-2xl overflow-hidden flex gap-0 transition-all hover:shadow-lg"
-      style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}
-    >
+    <article className="rounded-2xl overflow-hidden flex gap-0 transition-all hover:shadow-lg" style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}>
       <div className="flex-1 p-4 md:p-6 flex flex-col">
-        {/* Meta row */}
         <div className="flex items-center gap-2 mb-3">
           {article.platform && (
-            <span
-              className="text-[10px] font-bold px-2.5 py-1 rounded-full"
-              style={{ background: "rgba(245,197,66,0.12)", color: "#F5C542" }}
-            >
-              {article.platform}
-            </span>
+            <span className="text-[10px] font-bold px-2.5 py-1 rounded-full" style={{ background: "var(--color-charcoal-subtle)", color: "var(--selected-bg)" }}>{article.platform}</span>
           )}
-          <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>
-            {formatDate(article.publishedAt ?? article.createdAt)}
-          </span>
-
-          {/* Delete */}
-          <button
-            onClick={() => onDelete(article.id)}
-            className="ml-auto flex items-center justify-center rounded-lg opacity-0 group-hover:opacity-100 transition-all hover:opacity-70"
-            style={{ width: 24, height: 24, color: "var(--text-muted)" }}
-            title="Remove"
-          >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14H6L5 6" /><path d="M10 11v6" /><path d="M14 11v6" />
-            </svg>
+          <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{formatDate(article.publishedAt ?? article.createdAt)}</span>
+          <button onClick={() => onDelete(article.id)} className="ml-auto flex items-center justify-center rounded-lg opacity-0 group-hover:opacity-100 transition-all hover:opacity-70" style={{ width: 24, height: 24, color: "var(--text-muted)" }} title="Remove">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
           </button>
         </div>
-
         <a href={article.url} target="_blank" rel="noopener noreferrer" className="group flex-1 flex flex-col">
-          <h2
-            className="font-bold text-base leading-snug mb-2 group-hover:underline"
-            style={{ color: "var(--text-primary)" }}
-          >
-            {article.title}
-          </h2>
-          {article.excerpt && (
-            <p
-              className="text-sm leading-relaxed line-clamp-3"
-              style={{ color: "var(--text-muted)" }}
-            >
-              {article.excerpt}
-            </p>
-          )}
+          <h2 className="font-bold text-base leading-snug mb-2 group-hover:underline" style={{ color: "var(--text-primary)" }}>{article.title}</h2>
+          {article.excerpt && <p className="text-sm leading-relaxed line-clamp-3" style={{ color: "var(--text-muted)" }}>{article.excerpt}</p>}
         </a>
-
         <div className="mt-4">
-          <a
-            href={article.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold hover:underline"
-            style={{ color: "#F5C542" }}
-          >
+          <a href={article.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs font-semibold hover:underline" style={{ color: "var(--selected-bg)" }}>
             Read full article
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 0 1-1h6" />
-              <polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" />
-            </svg>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 0 1-1h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
           </a>
         </div>
       </div>
-
-      {/* Image */}
       {article.imageUrl && !imgError && (
         <div className="relative shrink-0 overflow-hidden hidden md:block" style={{ width: 240 }}>
-          <img
-            src={article.imageUrl}
-            alt={article.title}
-            className="w-full h-full object-cover"
-            onError={() => setImgError(true)}
-          />
-          <button
-            onClick={() => setZoomed(true)}
-            className="absolute bottom-3 right-3 flex items-center justify-center rounded-full transition-all hover:opacity-90"
-            style={{ width: 32, height: 32, background: "rgba(0,0,0,0.6)", color: "#fff" }}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-              <line x1="11" y1="8" x2="11" y2="14" /><line x1="8" y1="11" x2="14" y2="11" />
-            </svg>
+          <img src={article.imageUrl} alt={article.title} className="w-full h-full object-cover" onError={() => setImgError(true)} />
+          <button onClick={() => setZoomed(true)} className="absolute bottom-3 right-3 flex items-center justify-center rounded-full transition-all hover:opacity-90" style={{ width: 32, height: 32, background: "rgba(0,0,0,0.6)", color: "#fff" }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
           </button>
-
           {zoomed && (
             <>
               <div className="fixed inset-0 z-50" style={{ background: "rgba(0,0,0,0.85)" }} onClick={() => setZoomed(false)} />
@@ -549,17 +447,177 @@ function ArticleCard({ article, onDelete }: { article: NewsArticle; onDelete: (i
   );
 }
 
-const SUPERADMIN_EMAILS = ["guinewagency@gmail.com", "marti@agenciaguinew.com"];
+// ── Category gradient palette ─────────────────────────────────────────────────
+
+const CATEGORY_GRADIENTS: Record<string, string> = {
+  travel: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+  adventure: "linear-gradient(135deg, #11998e 0%, #38ef7d 100%)",
+  gear: "linear-gradient(135deg, #f7971e 0%, #ffd200 100%)",
+  technology: "linear-gradient(135deg, #4776e6 0%, #8e54e9 100%)",
+  sports: "linear-gradient(135deg, #f85032 0%, #e73827 100%)",
+  fitness: "linear-gradient(135deg, #43c6ac 0%, #191654 100%)",
+  health: "linear-gradient(135deg, #56ab2f 0%, #a8e063 100%)",
+  business: "linear-gradient(135deg, #373b44 0%, #4286f4 100%)",
+  marketing: "linear-gradient(135deg, #f953c6 0%, #b91d73 100%)",
+  social: "linear-gradient(135deg, #2980b9 0%, #6dd5fa 100%)",
+  design: "linear-gradient(135deg, #ee0979 0%, #ff6a00 100%)",
+};
+
+function getCategoryGradient(category: string): string {
+  const key = category.toLowerCase().trim();
+  return CATEGORY_GRADIENTS[key] ?? "linear-gradient(135deg, #1F2937 0%, #374151 100%)";
+}
+
+// ── BlogCategoryCard ──────────────────────────────────────────────────────────
+
+function BlogCategoryCard({ category, count, active, onClick }: { category: string; count: number; active: boolean; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="relative rounded-2xl overflow-hidden transition-all hover:shadow-xl hover:-translate-y-1 text-left"
+      style={{
+        background: getCategoryGradient(category),
+        minHeight: 140,
+        outline: active ? "3px solid #fff" : "none",
+        outlineOffset: 2,
+      }}
+    >
+      <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.25)" }} />
+      <div className="relative p-5 flex flex-col justify-between h-full" style={{ minHeight: 140 }}>
+        <div className="flex items-start justify-between">
+          <span className="text-[10px] font-black uppercase tracking-widest text-white/70">{count} article{count !== 1 ? "s" : ""}</span>
+          {active && (
+            <span className="flex items-center justify-center w-5 h-5 rounded-full bg-white/20">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+          )}
+        </div>
+        <h3 className="text-white font-black text-xl leading-tight mt-auto">{category}</h3>
+      </div>
+    </button>
+  );
+}
+
+// ── BlogPostRow ────────────────────────────────────────────────────────────────
+
+function BlogPostRow({ post, expanded, onDelete, onEdit, isSuperAdmin, onClick }: {
+  post: BlogPost; expanded: boolean;
+  onDelete: (id: string) => void; onEdit: (post: BlogPost) => void; isSuperAdmin: boolean; onClick: () => void;
+}) {
+  return (
+    <div style={{ borderBottom: "1px solid var(--border-color)" }}>
+      <div
+        className="flex items-start gap-4 py-5 cursor-pointer group"
+        onClick={onClick}
+      >
+        {post.imageUrl && (
+          <div className="shrink-0 rounded-xl overflow-hidden" style={{ width: 52, aspectRatio: "4/5" }}>
+            <img src={post.imageUrl} alt={post.imageAlt ?? post.title} className="w-full h-full object-cover" />
+          </div>
+        )}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1.5">
+            {post.category && (
+              <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>{post.category}</span>
+            )}
+            <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>·</span>
+            <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>{formatDate(post.publishedAt ?? post.createdAt)}</span>
+          </div>
+          <h3 className="font-bold text-sm leading-snug group-hover:underline" style={{ color: "var(--text-primary)" }}>{post.title}</h3>
+          {post.subtitle && <p className="text-xs mt-1 leading-relaxed line-clamp-2" style={{ color: "var(--text-muted)" }}>{post.subtitle}</p>}
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0 mt-0.5">
+          {isSuperAdmin && (
+            <>
+              <button
+                onClick={(e) => { e.stopPropagation(); onEdit(post); }}
+                className="flex items-center justify-center rounded-lg transition-all hover:opacity-70"
+                style={{ width: 28, height: 28, color: "var(--text-muted)" }}
+                title="Edit"
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); onDelete(post.id); }}
+                className="flex items-center justify-center rounded-lg transition-all hover:opacity-70"
+                style={{ width: 28, height: 28, color: "var(--text-muted)" }}
+                title="Remove"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+              </button>
+            </>
+          )}
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2"
+            style={{ transition: "transform 0.2s", transform: expanded ? "rotate(180deg)" : "rotate(0deg)" }}>
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </div>
+      </div>
+
+      {/* Inline expanded content */}
+      {expanded && (
+        <div className="pb-8 pt-2">
+          {post.imageUrl && (
+            <div className="mb-6 rounded-2xl overflow-hidden mx-auto"
+              style={{ maxWidth: 320, aspectRatio: "4/5" }}>
+              <img src={post.imageUrl} alt={post.imageAlt ?? post.title} className="w-full h-full object-cover" />
+            </div>
+          )}
+          <h2 className="font-black text-xl leading-tight mb-2" style={{ color: "var(--text-primary)" }}>{post.title}</h2>
+          {post.subtitle && <p className="text-sm font-medium mb-5 leading-relaxed" style={{ color: "var(--text-muted)" }}>{post.subtitle}</p>}
+          <div className="text-sm leading-relaxed prose-sm" style={{ color: "var(--text-primary)" }}
+            dangerouslySetInnerHTML={{ __html: post.content }} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function NewsPage() {
+  const searchParams = useSearchParams();
+  const [tab, setTab] = useState<Tab>(() => (searchParams.get("tab") === "blog" ? "blog" : "news"));
+  const highlightArticleId = searchParams.get("article");
+  const [highlightedId, setHighlightedId] = useState<string | null>(highlightArticleId);
+
+  // Scroll to highlighted article once articles load
+  useEffect(() => {
+    if (!highlightArticleId) return;
+    const tryScroll = () => {
+      const el = document.getElementById(`news-article-${highlightArticleId}`);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        setTimeout(() => setHighlightedId(null), 3000);
+      } else {
+        setTimeout(tryScroll, 300);
+      }
+    };
+    setTimeout(tryScroll, 400);
+  }, [highlightArticleId]);
+
+  // News state
   const [articles, setArticles] = useState<NewsArticle[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [newsLoading, setNewsLoading] = useState(true);
   const [activePlatforms, setActivePlatforms] = useState<Set<Platform>>(new Set());
   const [dateFilter, setDateFilter] = useState<DateFilter>("all");
-  const [search, setSearch] = useState("");
+  const [newsSearch, setNewsSearch] = useState("");
   const [showAdd, setShowAdd] = useState(false);
+
+  // Blog state
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [blogLoading, setBlogLoading] = useState(true);
+  const [blogSearch, setBlogSearch] = useState("");
+  const [blogCategory, setBlogCategory] = useState("");
+  const [blogDateFilter, setBlogDateFilter] = useState<DateFilter>("all");
+  const [blogCategories, setBlogCategories] = useState<string[]>([]);
+  const [expandedPostId, setExpandedPostId] = useState<string | null>(null); // row accordion
+  const [carouselPostId, setCarouselPostId] = useState<string | null>(null); // carousel panel
+  const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
+
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const searchRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const blogSearchRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     try {
@@ -575,24 +633,43 @@ export default function NewsPage() {
   }, []);
 
   async function fetchArticles() {
-    setLoading(true);
+    setNewsLoading(true);
     const params = new URLSearchParams();
     if (activePlatforms.size > 0) params.set("platform", [...activePlatforms].join(","));
     if (dateFilter !== "all") params.set("days", dateFilter);
-    if (search.trim()) params.set("search", search.trim());
-
+    if (newsSearch.trim()) params.set("search", newsSearch.trim());
     const res = await fetch(`/api/news?${params}`);
     const data = await res.json();
     setArticles(data.articles || []);
-    setLoading(false);
+    setNewsLoading(false);
+  }
+
+  async function fetchPosts() {
+    setBlogLoading(true);
+    const params = new URLSearchParams();
+    if (blogSearch.trim()) params.set("search", blogSearch.trim());
+    if (blogCategory) params.set("category", blogCategory);
+    if (blogDateFilter !== "all") params.set("days", blogDateFilter);
+    const res = await fetch(`/api/blog?${params}`);
+    const data = await res.json();
+    setPosts(data.posts || []);
+    setBlogCategories(data.categories || []);
+    setBlogLoading(false);
   }
 
   useEffect(() => {
     if (searchRef.current) clearTimeout(searchRef.current);
-    searchRef.current = setTimeout(fetchArticles, search ? 300 : 0);
+    searchRef.current = setTimeout(fetchArticles, newsSearch ? 300 : 0);
     return () => { if (searchRef.current) clearTimeout(searchRef.current); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activePlatforms, dateFilter, search]);
+  }, [activePlatforms, dateFilter, newsSearch]);
+
+  useEffect(() => {
+    if (blogSearchRef.current) clearTimeout(blogSearchRef.current);
+    blogSearchRef.current = setTimeout(fetchPosts, blogSearch ? 300 : 0);
+    return () => { if (blogSearchRef.current) clearTimeout(blogSearchRef.current); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [blogSearch, blogCategory, blogDateFilter]);
 
   function togglePlatform(p: Platform) {
     setActivePlatforms((prev) => {
@@ -602,9 +679,14 @@ export default function NewsPage() {
     });
   }
 
-  async function handleDelete(id: string) {
+  async function handleDeleteNews(id: string) {
     await fetch(`/api/news?id=${id}`, { method: "DELETE" });
     setArticles((prev) => prev.filter((a) => a.id !== id));
+  }
+
+  async function handleDeletePost(id: string) {
+    await fetch(`/api/blog?id=${id}`, { method: "DELETE" });
+    setPosts((prev) => prev.filter((p) => p.id !== id));
   }
 
   const DATE_OPTS: { id: DateFilter; label: string }[] = [
@@ -617,157 +699,284 @@ export default function NewsPage() {
   return (
     <div className="min-h-screen" style={{ background: "var(--bg-primary)", color: "var(--text-primary)" }}>
       {/* Hero */}
-      <div
-        className="text-center px-6 py-8 md:py-16"
-        style={{
-          background: "linear-gradient(180deg, rgba(245,197,66,0.06) 0%, transparent 100%)",
-          borderBottom: "1px solid var(--border-color)",
-        }}
-      >
-        <p
-          className="text-[10px] font-black uppercase tracking-[0.2em] mb-4"
-          style={{ color: "#F5C542" }}
-        >
-          Real-time news
+      <div className="text-center px-6 py-8 md:py-16" style={{ background: "linear-gradient(180deg, rgba(31,41,55,0.06) 0%, transparent 100%)", borderBottom: "1px solid var(--border-color)" }}>
+        <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-4" style={{ color: "var(--selected-bg)" }}>
+          Social Media News
         </p>
         <h1 className="font-black text-2xl md:text-4xl leading-tight mb-4" style={{ color: "var(--text-primary)" }}>
           Everything happening on social,{" "}
-          <span style={{ color: "#F5C542" }}>in one place</span>
+          <span style={{ color: "var(--selected-bg)" }}>in one place</span>
         </h1>
-        <p className="text-sm max-w-lg mx-auto leading-relaxed" style={{ color: "var(--text-muted)" }}>
+        <p className="text-sm max-w-lg mx-auto leading-relaxed mb-8" style={{ color: "var(--text-muted)" }}>
           We collect and organize the latest updates from every platform so you don&apos;t have to.
-          Changes, trends and features—always up to date.
         </p>
+
+        {/* Tab toggle */}
+        <div className="inline-flex items-center gap-1 p-1 rounded-2xl" style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}>
+          <button
+            onClick={() => setTab("news")}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+            style={{
+              background: tab === "news" ? "var(--selected-bg)" : "transparent",
+              color: tab === "news" ? "#fff" : "var(--text-muted)",
+            }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 0-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/>
+              <path d="M18 14h-8M15 18h-5M10 6h8v4h-8V6z"/>
+            </svg>
+            News
+          </button>
+          <button
+            onClick={() => setTab("blog")}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+            style={{
+              background: tab === "blog" ? "var(--selected-bg)" : "transparent",
+              color: tab === "blog" ? "#fff" : "var(--text-muted)",
+            }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+              <polyline points="10 9 9 9 8 9"/>
+            </svg>
+            Blog
+          </button>
+        </div>
       </div>
 
       <div className="max-w-4xl mx-auto px-6 py-10">
-        {/* Platform filter */}
-        <div className="mb-8">
-          <p className="text-[10px] font-black uppercase tracking-[0.15em] mb-4" style={{ color: "var(--text-muted)" }}>
-            Filter by platform
-          </p>
-          <div className="flex flex-wrap justify-center gap-3">
-            <AllCard active={activePlatforms.size === 0} onClick={() => setActivePlatforms(new Set())} />
-            {PLATFORMS.map((p) => (
-              <PlatformCard
-                key={p}
-                name={p}
-                active={activePlatforms.has(p)}
-                onClick={() => togglePlatform(p)}
-              />
-            ))}
-          </div>
-        </div>
 
-        {/* Date + Search */}
-        <div className="flex flex-col md:flex-row md:flex-wrap md:items-center gap-5 md:gap-6 mb-8">
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.15em] mb-3" style={{ color: "var(--text-muted)" }}>
-              Filter by date
-            </p>
-            <div className="flex items-center gap-1.5 flex-wrap">
-              {DATE_OPTS.map((opt) => (
-                <button
-                  key={opt.id}
-                  onClick={() => setDateFilter(opt.id)}
-                  className="px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all"
-                  style={{
-                    background: dateFilter === opt.id ? "#F5C542" : "var(--bg-card)",
-                    color: dateFilter === opt.id ? "#fff" : "var(--text-muted)",
-                    border: dateFilter === opt.id ? "none" : "1px solid var(--border-color)",
-                  }}
+        {/* ── NEWS TAB ─────────────────────────────────────────────────────── */}
+        {tab === "news" && (
+          <>
+            {/* Platform filter */}
+            <div className="mb-8">
+              <p className="text-[10px] font-black uppercase tracking-[0.15em] mb-4" style={{ color: "var(--text-muted)" }}>Filter by platform</p>
+              <div className="flex flex-wrap justify-center gap-3">
+                <AllCard active={activePlatforms.size === 0} onClick={() => setActivePlatforms(new Set())} />
+                {PLATFORMS.map((p) => (
+                  <PlatformCard key={p} name={p} active={activePlatforms.has(p)} onClick={() => togglePlatform(p)} />
+                ))}
+              </div>
+            </div>
+
+            {/* Date + Search */}
+            <div className="flex flex-col md:flex-row md:flex-wrap md:items-center gap-5 md:gap-6 mb-8">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.15em] mb-3" style={{ color: "var(--text-muted)" }}>Filter by date</p>
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  {DATE_OPTS.map((opt) => (
+                    <button key={opt.id} onClick={() => setDateFilter(opt.id)} className="px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all" style={{ background: dateFilter === opt.id ? "var(--selected-bg)" : "var(--bg-card)", color: dateFilter === opt.id ? "#fff" : "var(--text-muted)", border: dateFilter === opt.id ? "none" : "1px solid var(--border-color)" }}>{opt.label}</button>
+                  ))}
+                </div>
+              </div>
+              <div className="flex-1 min-w-0 md:min-w-56">
+                <p className="text-[10px] font-black uppercase tracking-[0.15em] mb-3" style={{ color: "var(--text-muted)" }}>Search all news</p>
+                <div className="relative">
+                  <svg className="absolute" style={{ left: 12, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                  <input value={newsSearch} onChange={(e) => setNewsSearch(e.target.value)} placeholder="Search…" className="w-full pl-9 pr-4 py-2 rounded-full text-sm outline-none" style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
+                </div>
+              </div>
+              {isSuperAdmin && (
+                <div className="ml-auto mt-5">
+                  <button onClick={() => setShowAdd(true)} className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all hover:opacity-90" style={{ background: "var(--selected-bg)", color: "#fff" }}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Add article
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Articles list */}
+            {newsLoading ? (
+              <div className="space-y-4">{[0,1,2].map((i) => <div key={i} className="rounded-2xl animate-pulse" style={{ height: 180, background: "var(--bg-card)", border: "1px solid var(--border-color)" }} />)}</div>
+            ) : articles.length === 0 ? (
+              <div className="rounded-2xl py-20 text-center" style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}>
+                <p className="font-bold mb-2" style={{ color: "var(--text-primary)" }}>No articles yet</p>
+                <p className="text-sm mb-5" style={{ color: "var(--text-muted)" }}>
+                  {activePlatforms.size > 0 || dateFilter !== "all" || newsSearch ? "No articles match your current filters." : "Be the first to add a news article."}
+                </p>
+                {activePlatforms.size === 0 && dateFilter === "all" && !newsSearch && isSuperAdmin && (
+                  <button onClick={() => setShowAdd(true)} className="px-5 py-2.5 rounded-full text-sm font-bold transition-all hover:opacity-90" style={{ background: "var(--selected-bg)", color: "#fff" }}>Add first article</button>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-4">{articles.map((a) => (
+                <div
+                  key={a.id}
+                  id={`news-article-${a.id}`}
+                  className="transition-all duration-700"
+                  style={highlightedId === a.id ? { borderRadius: 16, outline: "2px solid #1F2937", outlineOffset: 3 } : {}}
                 >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex-1 min-w-0 md:min-w-56">
-            <p className="text-[10px] font-black uppercase tracking-[0.15em] mb-3" style={{ color: "var(--text-muted)" }}>
-              Search all news
-            </p>
-            <div className="relative">
-              <svg
-                className="absolute"
-                style={{ left: 12, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }}
-                width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-              >
-                <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search…"
-                className="w-full pl-9 pr-4 py-2 rounded-full text-sm outline-none"
-                style={{
-                  background: "var(--bg-card)",
-                  border: "1px solid var(--border-color)",
-                  color: "var(--text-primary)",
-                }}
-              />
-            </div>
-          </div>
-
-          {isSuperAdmin && (
-            <div className="ml-auto mt-5">
-              <button
-                onClick={() => setShowAdd(true)}
-                className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all hover:opacity-90"
-                style={{ background: "#F5C542", color: "#fff" }}
-              >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-                </svg>
-                Add article
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Articles */}
-        {loading ? (
-          <div className="space-y-4">
-            {[0, 1, 2].map((i) => (
-              <div
-                key={i}
-                className="rounded-2xl animate-pulse"
-                style={{ height: 180, background: "var(--bg-card)", border: "1px solid var(--border-color)" }}
-              />
-            ))}
-          </div>
-        ) : articles.length === 0 ? (
-          <div
-            className="rounded-2xl py-20 text-center"
-            style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}
-          >
-            <p className="font-bold mb-2" style={{ color: "var(--text-primary)" }}>No articles yet</p>
-            <p className="text-sm mb-5" style={{ color: "var(--text-muted)" }}>
-              {activePlatforms.size > 0 || dateFilter !== "all" || search
-                ? "No articles match your current filters."
-                : "Be the first to add a news article."}
-            </p>
-            {activePlatforms.size === 0 && dateFilter === "all" && !search && isSuperAdmin && (
-              <button
-                onClick={() => setShowAdd(true)}
-                className="px-5 py-2.5 rounded-full text-sm font-bold transition-all hover:opacity-90"
-                style={{ background: "#F5C542", color: "#fff" }}
-              >
-                Add first article
-              </button>
+                  <ArticleCard article={a} onDelete={handleDeleteNews} />
+                </div>
+              ))}</div>
             )}
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {articles.map((article) => (
-              <ArticleCard key={article.id} article={article} onDelete={handleDelete} />
-            ))}
-          </div>
+          </>
+        )}
+
+        {/* ── BLOG TAB ─────────────────────────────────────────────────────── */}
+        {tab === "blog" && (
+          <>
+            {/* ── LinkedIn follow banner ── */}
+            <div className="flex items-center justify-between gap-4 rounded-2xl px-5 py-4 mb-4"
+              style={{ background: "linear-gradient(135deg, #0A66C2 0%, #084d8f 100%)" }}>
+              <div className="flex items-center gap-3">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="white" className="shrink-0">
+                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                </svg>
+                <div>
+                  <p className="text-white font-black text-sm leading-tight">Follow us on LinkedIn</p>
+                  <p className="text-white/70 text-xs mt-0.5">Stay up to date with our latest content and insights</p>
+                </div>
+              </div>
+              <a
+                href="https://www.linkedin.com/company/guinewagency"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black transition-all hover:opacity-90"
+                style={{ background: "#fff", color: "#0A66C2" }}
+              >
+                Follow
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 0 1-1h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </a>
+            </div>
+
+            {/* ── Search + filters ── */}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-8">
+              <div className="relative flex-1">
+                <svg className="absolute" style={{ left: 12, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input value={blogSearch} onChange={(e) => setBlogSearch(e.target.value)} placeholder="Search articles…" className="w-full pl-9 pr-4 py-2.5 rounded-full text-sm outline-none" style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
+              </div>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                {blogCategories.length > 0 && (
+                  <>
+                    <button onClick={() => setBlogCategory("")} className="px-3.5 py-2 rounded-full text-xs font-semibold transition-all" style={{ background: !blogCategory ? "var(--selected-bg)" : "var(--bg-card)", color: !blogCategory ? "#fff" : "var(--text-muted)", border: !blogCategory ? "none" : "1px solid var(--border-color)" }}>All</button>
+                    {blogCategories.map((cat) => (
+                      <button key={cat} onClick={() => setBlogCategory(blogCategory === cat ? "" : cat)} className="px-3.5 py-2 rounded-full text-xs font-semibold transition-all whitespace-nowrap" style={{ background: blogCategory === cat ? "var(--selected-bg)" : "var(--bg-card)", color: blogCategory === cat ? "#fff" : "var(--text-muted)", border: blogCategory === cat ? "none" : "1px solid var(--border-color)" }}>{cat}</button>
+                    ))}
+                  </>
+                )}
+              </div>
+            </div>
+
+            {blogLoading ? (
+              <div className="space-y-4">{[0,1,2].map((i) => <div key={i} className="rounded-2xl animate-pulse" style={{ height: 200, background: "var(--bg-card)", border: "1px solid var(--border-color)" }} />)}</div>
+            ) : posts.length === 0 && !blogSearch && !blogCategory ? (
+              <div className="rounded-2xl py-20 text-center" style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}>
+                <p className="font-bold mb-2" style={{ color: "var(--text-primary)" }}>No blog posts yet</p>
+                <p className="text-sm" style={{ color: "var(--text-muted)" }}>Blog posts published from the admin panel will appear here.</p>
+              </div>
+            ) : (
+              <>
+                {/* ── Carousel ── */}
+                {posts.length > 0 && (
+                  <div className="mb-6 -mx-6">
+                    <div
+                      className="flex gap-3 overflow-x-auto px-6 pb-3"
+                      style={{ scrollSnapType: "x mandatory", scrollbarWidth: "none", msOverflowStyle: "none" }}
+                    >
+                      {posts.slice(0, 10).map((p) => {
+                        const isExp = carouselPostId === p.id;
+                        return (
+                        <button
+                          key={p.id}
+                          onClick={() => setCarouselPostId(p.id)}
+                          className="relative shrink-0 rounded-2xl overflow-hidden text-left transition-all"
+                          style={{
+                            width: "clamp(160px, 42vw, 220px)",
+                            aspectRatio: "4/5",
+                            scrollSnapAlign: "start",
+                            background: getCategoryGradient(p.category ?? ""),
+                            outline: isExp ? "2.5px solid var(--text-primary)" : "none",
+                            outlineOffset: 2,
+                            transform: isExp ? "scale(0.97)" : "scale(1)",
+                          }}
+                        >
+                          {p.imageUrl && (
+                            <img src={p.imageUrl} alt={p.imageAlt ?? p.title} className="absolute inset-0 w-full h-full object-cover" />
+                          )}
+                          <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.78) 100%)" }} />
+                          <div className="absolute inset-0 flex flex-col justify-end p-4">
+                            {p.category && (
+                              <span className="text-[9px] font-black uppercase tracking-widest text-white/70 mb-1">{p.category}</span>
+                            )}
+                            <h3 className="text-white font-black text-sm leading-snug line-clamp-3">{p.title}</h3>
+                          </div>
+                        </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* ── Inline expanded article (carousel) ── */}
+                {carouselPostId && (() => {
+                  const post = posts.find((p) => p.id === carouselPostId);
+                  if (!post) return null;
+                  return (
+                    <div className="rounded-2xl overflow-hidden mb-8"
+                      style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}>
+                      {post.imageUrl && (
+                        <div className="w-full overflow-hidden" style={{ maxHeight: 340 }}>
+                          <img src={post.imageUrl} alt={post.imageAlt ?? post.title} className="w-full object-cover" />
+                        </div>
+                      )}
+                      <div className="p-6 sm:p-8">
+                        <div className="flex items-start justify-between gap-3 mb-4">
+                          <div className="flex items-center gap-2">
+                            {post.category && (
+                              <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>{post.category}</span>
+                            )}
+                            <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>·</span>
+                            <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>{formatDate(post.publishedAt ?? post.createdAt)}</span>
+                          </div>
+                          <button onClick={() => setCarouselPostId(null)}
+                            className="shrink-0 flex items-center justify-center rounded-lg hover:opacity-70 transition-opacity"
+                            style={{ width: 28, height: 28, background: "var(--bg-input)", color: "var(--text-muted)" }}>
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                          </button>
+                        </div>
+                        <h2 className="font-black text-2xl leading-tight mb-3" style={{ color: "var(--text-primary)" }}>{post.title}</h2>
+                        {post.subtitle && <p className="text-base font-medium mb-6 leading-relaxed" style={{ color: "var(--text-muted)" }}>{post.subtitle}</p>}
+                        {/* ── Embeds ── */}
+                        <BlogEmbeds embeds={[post.embed1, post.embed2, post.embed3, post.embed4, post.embed5]} />
+                        <div className="text-sm leading-relaxed" style={{ color: "var(--text-primary)" }}
+                          dangerouslySetInnerHTML={{ __html: post.content }} />
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* ── No results message ── */}
+                {posts.filter((p) => {
+                  const matchCat = !blogCategory || p.category === blogCategory;
+                  const matchSearch = !blogSearch || p.title.toLowerCase().includes(blogSearch.toLowerCase()) || (p.subtitle ?? "").toLowerCase().includes(blogSearch.toLowerCase());
+                  return matchCat && matchSearch;
+                }).length === 0 && (blogSearch || blogCategory) && (
+                  <div className="rounded-2xl py-16 text-center" style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}>
+                    <p className="font-bold mb-1" style={{ color: "var(--text-primary)" }}>No articles found</p>
+                    <p className="text-sm" style={{ color: "var(--text-muted)" }}>Try a different search or filter.</p>
+                  </div>
+                )}
+              </>
+            )}
+          </>
         )}
       </div>
 
-      {showAdd && (
-        <AddNewsModal onClose={() => setShowAdd(false)} onSaved={fetchArticles} />
+      {showAdd && <AddNewsModal onClose={() => setShowAdd(false)} onSaved={fetchArticles} />}
+      {editingPost && (
+        <BlogPostEditModal
+          post={editingPost}
+          onClose={() => setEditingPost(null)}
+          onSaved={(updated) => {
+            setPosts((prev) => prev.map((p) => p.id === updated.id ? updated : p));
+            setEditingPost(null);
+          }}
+        />
       )}
     </div>
   );

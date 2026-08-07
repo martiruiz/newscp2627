@@ -65,6 +65,8 @@ interface Publication {
   canonicalUrl: string;
   embedUrl: string;
   originalUrl: string | null;
+  classificationIds: string[];
+  classificationSlugs: string[];
 }
 
 interface PublicationDetail {
@@ -164,14 +166,14 @@ function FilterSelect({
         className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm outline-none text-left"
         style={{
           background: "var(--bg-input)",
-          border: `1px solid ${hasValue ? "#F5C542" : open ? "rgba(200,144,40,0.5)" : "var(--border-color)"}`,
+          border: `1px solid ${hasValue ? "var(--color-charcoal)" : open ? "rgba(var(--color-charcoal-rgb, 31,41,55), 0.5)" : "var(--border-color)"}`,
           color: hasValue ? "var(--text-primary)" : "var(--text-muted)",
         }}
       >
         <span className="truncate flex items-center gap-2">
           {triggerLabel()}
           {multi && selectedSlugs.length > 1 && (
-            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "#F5C542", color: "#000" }}>
+            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "var(--selected-bg)", color: "var(--selected-text)" }}>
               {selectedSlugs.length}
             </span>
           )}
@@ -193,7 +195,7 @@ function FilterSelect({
           <div className="p-2">
             <div
               className="flex items-center gap-2 px-2.5 py-1.5 rounded-md"
-              style={{ background: "var(--bg-input)", border: `1px solid ${search ? "#F5C542" : "var(--border-color)"}` }}
+              style={{ background: "var(--bg-input)", border: `1px solid ${search ? "var(--color-charcoal)" : "var(--border-color)"}` }}
             >
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: "var(--text-muted)", flexShrink: 0 }}>
                 <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
@@ -220,7 +222,7 @@ function FilterSelect({
           {multi && hasValue && (
             <div className="flex items-center justify-between px-3 py-1.5" style={{ borderBottom: "1px solid var(--border-color)" }}>
               <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{selectedSlugs.length} selected</span>
-              <button onClick={() => onChange("")} className="text-[11px] font-medium" style={{ color: "#F5C542" }}>Clear</button>
+              <button onClick={() => onChange("")} className="text-[11px] font-medium" style={{ color: "var(--color-charcoal)" }}>Clear</button>
             </div>
           )}
 
@@ -232,7 +234,7 @@ function FilterSelect({
                 type="button"
                 onClick={() => { onChange(""); setOpen(false); }}
                 className="w-full flex items-center px-3 py-2 text-xs text-left"
-                style={{ color: !value ? "#F5C542" : "var(--text-muted)", borderBottom: "1px solid var(--border-color)" }}
+                style={{ color: !value ? "var(--color-charcoal)" : "var(--text-muted)", borderBottom: "1px solid var(--border-color)" }}
                 onMouseEnter={(e) => { if (value) (e.currentTarget as HTMLButtonElement).style.background = "var(--bg-hover)"; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
               >
@@ -255,17 +257,17 @@ function FilterSelect({
                   type="button"
                   onClick={() => multi ? toggleMulti(o.slug) : (onChange(o.slug), setOpen(false))}
                   className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-left"
-                  style={{ background: isSel ? "rgba(200,144,40,0.08)" : "transparent", color: isSel ? "#F5C542" : "var(--text-primary)" }}
+                  style={{ background: isSel ? "var(--color-charcoal-subtle)" : "transparent", color: isSel ? "var(--color-charcoal)" : "var(--text-primary)" }}
                   onMouseEnter={(e) => { if (!isSel) (e.currentTarget as HTMLButtonElement).style.background = "var(--bg-hover)"; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = isSel ? "rgba(200,144,40,0.08)" : "transparent"; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = isSel ? "var(--color-charcoal-subtle)" : "transparent"; }}
                 >
                   {multi && (
                     <span
                       className="w-3.5 h-3.5 rounded flex items-center justify-center shrink-0"
                       style={{
-                        background: isSel ? "#F5C542" : "transparent",
-                        border: `1.5px solid ${isSel ? "#F5C542" : "var(--text-muted)"}`,
-                        color: "#fff",
+                        background: isSel ? "var(--selected-bg)" : "transparent",
+                        border: `1.5px solid ${isSel ? "var(--selected-bg)" : "var(--text-muted)"}`,
+                        color: isSel ? "var(--selected-text)" : "transparent",
                       }}
                     >
                       {isSel && (
@@ -297,7 +299,7 @@ function FilterSelect({
               <button
                 onClick={() => setOpen(false)}
                 className="text-xs font-semibold px-3 py-1.5 rounded-lg"
-                style={{ background: "#F5C542", color: "#000" }}
+                style={{ background: "var(--selected-bg)", color: "var(--selected-text)" }}
               >
                 Done
               </button>
@@ -497,7 +499,7 @@ function EmbedPreview({ pub }: { pub: PublicationDetail }) {
         target="_blank"
         rel="noopener noreferrer"
         className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold"
-        style={{ background: "#F5C542", color: "#000" }}
+        style={{ background: "var(--selected-bg)", color: "var(--selected-text)" }}
       >
         View on {pub.platform}
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -720,7 +722,7 @@ function DetailDrawer({
                 onClick={handleSave}
                 disabled={saving}
                 className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-bold disabled:opacity-50 transition-all"
-                style={{ background: saved ? "#22c55e" : "#F5C542", color: "#000" }}
+                style={{ background: saved ? "#22c55e" : "var(--selected-bg)", color: saved ? "#fff" : "var(--selected-text)" }}
               >
                 {saving ? "Saving…" : saved ? "✓ Saved" : "Save changes"}
               </button>
@@ -987,9 +989,9 @@ function ChipsField({
                   onClick={() => onToggle(o.id)}
                   className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium transition-all"
                   style={{
-                    background: "rgba(200,144,40,0.2)",
-                    color: "#F5C542",
-                    border: "1px solid rgba(200,144,40,0.5)",
+                    background: "var(--color-charcoal-subtle)",
+                    color: "var(--color-charcoal)",
+                    border: "1px solid rgba(var(--color-charcoal-rgb, 31,41,55), 0.5)",
                   }}
                 >
                   {o.name}
@@ -1020,7 +1022,7 @@ function ChipsField({
               className="w-full pl-7 pr-3 py-1.5 rounded-lg text-xs outline-none"
               style={{
                 background: "var(--bg-input)",
-                border: `1px solid ${focused ? "#F5C542" : "var(--border-color)"}`,
+                border: `1px solid ${focused ? "var(--color-charcoal)" : "var(--border-color)"}`,
                 color: "var(--text-primary)",
               }}
             />
@@ -1044,7 +1046,7 @@ function ChipsField({
                       onMouseDown={(e) => e.preventDefault()}
                       onClick={() => { onToggle(o.id); if (!alwaysShowDropdown) setQuery(""); }}
                       className="w-full flex items-center justify-between px-3 py-1.5 text-xs text-left hover:bg-white/5 transition-colors"
-                      style={{ color: active ? "#F5C542" : "var(--text-primary)" }}
+                      style={{ color: active ? "var(--color-charcoal)" : "var(--text-primary)" }}
                     >
                       <span>{o.name}</span>
                       {active && (
@@ -1114,18 +1116,50 @@ function AdminCardEmbed({ pub }: { pub: Publication }) {
   return null;
 }
 
-function AdminCard({ pub, onOpen }: { pub: Publication; onOpen: () => void }) {
+const QUICK_CLASSIFICATIONS = [
+  { slug: "top-picks",        label: "Top Picks",        gradient: "linear-gradient(135deg, #E8567A 0%, #A82346 100%)" },
+  { slug: "replicable-ideas", label: "Replicable Ideas", gradient: "linear-gradient(135deg, #52D68A 0%, #1B8A4E 100%)" },
+  { slug: "overperforming",   label: "Overperforming",   gradient: "linear-gradient(135deg, #3B82F6 0%, #1E3A8A 100%)" },
+];
+
+function AdminCard({ pub, onOpen, classOptions }: {
+  pub: Publication;
+  onOpen: () => void;
+  classOptions: TaxOption[];
+}) {
   const platformColor = PLATFORM_COLORS[pub.platform.toLowerCase()] ?? "#555";
+  const [classIds, setClassIds] = useState<string[]>(pub.classificationIds ?? []);
+  const [classSlugs, setClassSlugs] = useState<string[]>(pub.classificationSlugs ?? []);
+  const [toggling, setToggling] = useState<string | null>(null);
+
+  async function toggleClassification(slug: string) {
+    const opt = classOptions.find((o) => o.slug === slug);
+    if (!opt) return;
+    setToggling(slug);
+    const isActive = classSlugs.includes(slug);
+    const newIds = isActive ? classIds.filter((id) => id !== opt.id) : [...classIds, opt.id];
+    const newSlugs = isActive ? classSlugs.filter((s) => s !== slug) : [...classSlugs, slug];
+    try {
+      const res = await fetch(`/api/admin/publications?id=${pub.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ classificationIds: newIds }),
+      });
+      if (res.ok) { setClassIds(newIds); setClassSlugs(newSlugs); }
+    } finally {
+      setToggling(null);
+    }
+  }
 
   return (
     <div
-      className="rounded-xl overflow-hidden cursor-pointer transition-all hover:shadow-lg"
+      className="rounded-xl overflow-hidden transition-all hover:shadow-lg"
       style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}
     >
       {/* Platform color bar + icon */}
       <div
         onClick={onOpen}
-        className="flex items-center justify-between px-3 py-2"
+        className="flex items-center justify-between px-3 py-2 cursor-pointer"
         style={{ background: platformColor + "22", borderBottom: "1px solid var(--border-color)" }}
       >
         <div className="flex items-center gap-2">
@@ -1146,12 +1180,12 @@ function AdminCard({ pub, onOpen }: { pub: Publication; onOpen: () => void }) {
       </div>
 
       {/* Embed */}
-      <div style={{ background: "var(--bg-input)" }}>
+      <div onClick={onOpen} className="cursor-pointer" style={{ background: "var(--bg-input)" }}>
         <AdminCardEmbed pub={pub} />
       </div>
 
       {/* Title + tags */}
-      <div onClick={onOpen} className="px-3 pt-2 pb-2.5">
+      <div onClick={onOpen} className="px-3 pt-2 pb-2 cursor-pointer">
         <p
           className="text-xs font-medium leading-snug mb-2"
           style={{
@@ -1166,7 +1200,7 @@ function AdminCard({ pub, onOpen }: { pub: Publication; onOpen: () => void }) {
         </p>
         <div className="flex flex-wrap gap-1">
           {pub.sport && (
-            <span className="px-1.5 py-0.5 rounded text-[10px]" style={{ background: "rgba(200,144,40,0.12)", color: "#F5C542" }}>
+            <span className="px-1.5 py-0.5 rounded text-[10px]" style={{ background: "var(--color-charcoal-subtle)", color: "var(--color-charcoal)" }}>
               {pub.sport}
             </span>
           )}
@@ -1180,7 +1214,52 @@ function AdminCard({ pub, onOpen }: { pub: Publication; onOpen: () => void }) {
               {pub.format}
             </span>
           )}
+          {/* Active classification badges */}
+          {QUICK_CLASSIFICATIONS.filter((qc) => classSlugs.includes(qc.slug)).map((qc) => (
+            <span
+              key={qc.slug}
+              className="px-1.5 py-0.5 rounded text-[10px] font-semibold"
+              style={{ background: qc.gradient, color: "#fff" }}
+            >
+              {qc.label}
+            </span>
+          ))}
+          {/* Other classifications not in the quick set */}
+          {classSlugs
+            .filter((s) => !QUICK_CLASSIFICATIONS.some((qc) => qc.slug === s))
+            .map((s) => {
+              const opt = classOptions.find((o) => o.slug === s);
+              return (
+                <span key={s} className="px-1.5 py-0.5 rounded text-[10px] font-semibold" style={{ background: "var(--color-charcoal-subtle)", color: "var(--color-charcoal)" }}>
+                  {opt?.name ?? s}
+                </span>
+              );
+            })}
         </div>
+      </div>
+
+      {/* Quick classification toggle buttons */}
+      <div className="flex gap-1.5 px-3 pb-3" onClick={(e) => e.stopPropagation()}>
+        {QUICK_CLASSIFICATIONS.map((qc) => {
+          const active = classSlugs.includes(qc.slug);
+          const busy = toggling === qc.slug;
+          return (
+            <button
+              key={qc.slug}
+              disabled={busy}
+              onClick={() => toggleClassification(qc.slug)}
+              title={active ? `Remove "${qc.label}"` : `Add "${qc.label}"`}
+              className="flex-1 py-1.5 rounded-lg text-[10px] font-bold transition-all disabled:opacity-50"
+              style={{
+                background: active ? qc.gradient : "var(--bg-input)",
+                color: active ? "#fff" : "var(--text-muted)",
+                border: `1px solid ${active ? "transparent" : "var(--border-color)"}`,
+              }}
+            >
+              {busy ? "···" : active ? "✓ " + qc.label : "+ " + qc.label}
+            </button>
+          );
+        })}
       </div>
     </div>
   );
@@ -1243,7 +1322,7 @@ function CompetitionsPicker({
           {selectedOptions.map((o) => (
             <button key={o.id} type="button" onClick={() => toggle(o.id)}
               className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium"
-              style={{ background: "rgba(200,144,40,0.2)", color: "#F5C542", border: "1px solid rgba(200,144,40,0.5)" }}>
+              style={{ background: "var(--color-charcoal-subtle)", color: "var(--color-charcoal)", border: "1px solid rgba(var(--color-charcoal-rgb, 31,41,55), 0.5)" }}>
               {o.name}
               <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
@@ -1263,7 +1342,7 @@ function CompetitionsPicker({
           onBlur={() => setTimeout(() => setOpen(false), 150)}
           placeholder="Search or create competition…"
           className="w-full pl-8 pr-3 py-2 rounded-lg text-sm outline-none"
-          style={{ background: "var(--bg-input)", border: `1px solid ${open ? "#F5C542" : "var(--border-color)"}`, color: "var(--text-primary)" }}
+          style={{ background: "var(--bg-input)", border: `1px solid ${open ? "var(--color-charcoal)" : "var(--border-color)"}`, color: "var(--text-primary)" }}
         />
         {open && (visible.length > 0 || canCreate) && (
           <div className="absolute z-20 top-full left-0 right-0 mt-1 rounded-lg overflow-hidden overflow-y-auto"
@@ -1275,7 +1354,7 @@ function CompetitionsPicker({
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => { toggle(o.id); setQuery(""); }}
                   className="w-full flex items-center justify-between px-3 py-2 text-sm text-left hover:bg-white/5"
-                  style={{ color: active ? "#F5C542" : "var(--text-primary)" }}>
+                  style={{ color: active ? "var(--color-charcoal)" : "var(--text-primary)" }}>
                   {o.name}
                   {active && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>}
                 </button>
@@ -1284,7 +1363,7 @@ function CompetitionsPicker({
             {canCreate && (
               <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={handleCreate} disabled={creating}
                 className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-white/5 disabled:opacity-50"
-                style={{ borderTop: visible.length > 0 ? "1px solid var(--border-color)" : "none", color: "#F5C542" }}>
+                style={{ borderTop: visible.length > 0 ? "1px solid var(--border-color)" : "none", color: "var(--color-charcoal)" }}>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
                 </svg>
@@ -1326,7 +1405,7 @@ function UsernameAutocomplete({
         onBlur={() => setTimeout(() => setOpen(false), 150)}
         placeholder="@username"
         className="w-full px-3 py-2 rounded-lg text-sm outline-none"
-        style={{ background: "var(--bg-input)", border: `1px solid ${open ? "#F5C542" : "var(--border-color)"}`, color: "var(--text-primary)" }}
+        style={{ background: "var(--bg-input)", border: `1px solid ${open ? "var(--color-charcoal)" : "var(--border-color)"}`, color: "var(--text-primary)" }}
       />
       {open && suggestions.length > 0 && (
         <div className="absolute z-20 top-full left-0 right-0 mt-1 rounded-lg overflow-hidden overflow-y-auto"
@@ -1336,7 +1415,7 @@ function UsernameAutocomplete({
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => { onChange(u); setOpen(false); }}
               className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-white/5"
-              style={{ color: value === u ? "#F5C542" : "var(--text-primary)" }}>
+              style={{ color: value === u ? "var(--color-charcoal)" : "var(--text-primary)" }}>
               <span style={{ color: "var(--text-muted)" }}>@</span>{u}
             </button>
           ))}
@@ -1412,7 +1491,7 @@ function TaxCombobox({
         className="w-full px-3 py-2 rounded-lg text-sm outline-none"
         style={{
           background: "var(--bg-input)",
-          border: `1px solid ${required && !value ? "#ef4444" : open ? "#F5C542" : "var(--border-color)"}`,
+          border: `1px solid ${required && !value ? "#ef4444" : open ? "var(--color-charcoal)" : "var(--border-color)"}`,
           color: "var(--text-primary)",
           paddingRight: value && !open ? "2rem" : undefined,
         }}
@@ -1434,7 +1513,7 @@ function TaxCombobox({
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => { onChange(o.id); setQuery(""); setOpen(false); }}
               className="w-full flex items-center justify-between px-3 py-2 text-sm text-left hover:bg-white/5"
-              style={{ color: o.id === value ? "#F5C542" : "var(--text-primary)" }}>
+              style={{ color: o.id === value ? "var(--color-charcoal)" : "var(--text-primary)" }}>
               <span>{o.name}</span>
               {o.id === value && (
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -1446,7 +1525,7 @@ function TaxCombobox({
           {canCreate && (
             <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={handleCreate} disabled={creating}
               className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-white/5 disabled:opacity-50"
-              style={{ borderTop: filtered.length > 0 ? "1px solid var(--border-color)" : "none", color: "#F5C542" }}>
+              style={{ borderTop: filtered.length > 0 ? "1px solid var(--border-color)" : "none", color: "var(--color-charcoal)" }}>
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
               </svg>
@@ -1490,7 +1569,7 @@ function EntityNameCombobox({
         className="w-full px-3 py-2 rounded-lg text-sm outline-none"
         style={{
           background: "var(--bg-input)",
-          border: `1px solid ${open && suggestions.length > 0 ? "#F5C542" : "var(--border-color)"}`,
+          border: `1px solid ${open && suggestions.length > 0 ? "var(--color-charcoal)" : "var(--border-color)"}`,
           color: "var(--text-primary)",
         }}
       />
@@ -1502,7 +1581,7 @@ function EntityNameCombobox({
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => { onChange(name); setOpen(false); }}
               className="w-full text-left px-3 py-2 text-sm hover:bg-white/5"
-              style={{ color: name === value ? "#F5C542" : "var(--text-primary)" }}>
+              style={{ color: name === value ? "var(--color-charcoal)" : "var(--text-primary)" }}>
               {name}
             </button>
           ))}
@@ -1658,7 +1737,7 @@ function AddByUrlModal({
                   onClick={handleExtract}
                   disabled={extracting || !url.trim()}
                   className="px-4 py-2.5 rounded-lg text-sm font-semibold disabled:opacity-50 shrink-0"
-                  style={{ background: "#F5C542", color: "#000" }}
+                  style={{ background: "var(--selected-bg)", color: "var(--selected-text)" }}
                 >
                   {extracting ? "Extracting…" : "Extract"}
                 </button>
@@ -1749,7 +1828,7 @@ function AddByUrlModal({
                   </button>
                   <button onClick={handleSave} disabled={saving || !platformId}
                     className="px-5 py-2 rounded-lg text-sm font-bold disabled:opacity-50"
-                    style={{ background: "#F5C542", color: "#000" }}>
+                    style={{ background: "var(--selected-bg)", color: "var(--selected-text)" }}>
                     {saving ? "Saving…" : "Save content"}
                   </button>
                 </div>
@@ -1772,7 +1851,7 @@ export default function ContentIdeasPage() {
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [detailId, setDetailId] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<"list" | "grid">("list");
+  const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
   const [showAddByUrl, setShowAddByUrl] = useState(false);
   const [showBulkRename, setShowBulkRename] = useState(false);
   const [bulkRenameValue, setBulkRenameValue] = useState("");
@@ -1818,7 +1897,14 @@ export default function ContentIdeasPage() {
         else if (cat.key === "platform") { setPlatformOpts(opts); drawerOpts.platforms = opts; }
         else if (cat.key === "format") { setFormatOpts(opts); drawerOpts.formats = opts; }
         else if (cat.key === "club") setClubOpts(opts);
-        else if (cat.key === "classification") drawerOpts.classifications = opts;
+        else if (cat.key === "classification") {
+          // Fetch ALL classifications (not just those with publications) so quick-toggle buttons work
+          const rAll = await fetch("/api/admin/filters?category=classification&all=true");
+          const dAll = await rAll.json();
+          drawerOpts.classifications = (dAll.values ?? []).map((v: { id: string; name: string; slug: string }) => ({
+            id: v.id, name: v.name, slug: v.slug,
+          }));
+        }
         else if (cat.key === "contentCategory") drawerOpts.contentCategories = opts;
       }
       setTaxForDrawer(drawerOpts);
@@ -1992,7 +2078,7 @@ export default function ContentIdeasPage() {
                 onClick={() => setViewMode("list")}
                 title="List view"
                 className="flex items-center justify-center px-2.5 py-2 transition-all"
-                style={{ background: viewMode === "list" ? "#F5C542" : "var(--bg-input)", color: viewMode === "list" ? "#000" : "var(--text-muted)", borderRight: "1px solid var(--border-color)" }}
+                style={{ background: viewMode === "list" ? "var(--color-charcoal)" : "var(--bg-input)", color: viewMode === "list" ? "#fff" : "var(--text-muted)", borderRight: "1px solid var(--border-color)" }}
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/>
@@ -2003,7 +2089,7 @@ export default function ContentIdeasPage() {
                 onClick={() => setViewMode("grid")}
                 title="Grid view"
                 className="flex items-center justify-center px-2.5 py-2 transition-all"
-                style={{ background: viewMode === "grid" ? "#F5C542" : "var(--bg-input)", color: viewMode === "grid" ? "#000" : "var(--text-muted)" }}
+                style={{ background: viewMode === "grid" ? "var(--color-charcoal)" : "var(--bg-input)", color: viewMode === "grid" ? "#fff" : "var(--text-muted)" }}
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
@@ -2014,7 +2100,7 @@ export default function ContentIdeasPage() {
             <button
               onClick={() => setShowAddByUrl(true)}
               className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold"
-              style={{ background: "#F5C542", color: "#000" }}
+              style={{ background: "var(--selected-bg)", color: "var(--selected-text)" }}
             >
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               Add by URL
@@ -2057,7 +2143,7 @@ export default function ContentIdeasPage() {
               onChange={(e) => onSearchInput(e.target.value)}
               placeholder="Search by title..."
               className="w-full px-3 py-2 rounded-lg text-sm outline-none"
-              style={{ background: "var(--bg-input)", border: `1px solid ${pending.search ? "#F5C542" : "var(--border-color)"}`, color: "var(--text-primary)" }}
+              style={{ background: "var(--bg-input)", border: `1px solid ${pending.search ? "var(--color-charcoal)" : "var(--border-color)"}`, color: "var(--text-primary)" }}
             />
           </div>
           <div>
@@ -2069,7 +2155,7 @@ export default function ContentIdeasPage() {
               onKeyDown={(e) => { if (e.key === "Enter") applyFilters(); }}
               placeholder="Filter by ID..."
               className="w-full px-3 py-2 rounded-lg text-sm outline-none"
-              style={{ background: "var(--bg-input)", border: `1px solid ${pending.externalId ? "#F5C542" : "var(--border-color)"}`, color: "var(--text-primary)" }}
+              style={{ background: "var(--bg-input)", border: `1px solid ${pending.externalId ? "var(--color-charcoal)" : "var(--border-color)"}`, color: "var(--text-primary)" }}
             />
           </div>
         </div>
@@ -2081,7 +2167,7 @@ export default function ContentIdeasPage() {
               value={pending.dateFrom}
               onChange={(e) => setPendingField("dateFrom", e.target.value)}
               className="w-full px-3 py-2 rounded-lg text-sm outline-none"
-              style={{ background: "var(--bg-input)", border: `1px solid ${pending.dateFrom ? "#F5C542" : "var(--border-color)"}`, color: pending.dateFrom ? "var(--text-primary)" : "var(--text-muted)" }}
+              style={{ background: "var(--bg-input)", border: `1px solid ${pending.dateFrom ? "var(--color-charcoal)" : "var(--border-color)"}`, color: pending.dateFrom ? "var(--text-primary)" : "var(--text-muted)" }}
             />
           </div>
           <div>
@@ -2091,7 +2177,7 @@ export default function ContentIdeasPage() {
               value={pending.dateTo}
               onChange={(e) => setPendingField("dateTo", e.target.value)}
               className="w-full px-3 py-2 rounded-lg text-sm outline-none"
-              style={{ background: "var(--bg-input)", border: `1px solid ${pending.dateTo ? "#F5C542" : "var(--border-color)"}`, color: pending.dateTo ? "var(--text-primary)" : "var(--text-muted)" }}
+              style={{ background: "var(--bg-input)", border: `1px solid ${pending.dateTo ? "var(--color-charcoal)" : "var(--border-color)"}`, color: pending.dateTo ? "var(--text-primary)" : "var(--text-muted)" }}
             />
           </div>
         </div>
@@ -2123,9 +2209,9 @@ export default function ContentIdeasPage() {
               </tr>
               {selected.size > 0 && selected.size === pubs.length && pubs.length < total && !allMatchingSelected && (
                 <tr>
-                  <td colSpan={8} className="py-2 text-center text-xs" style={{ background: "rgba(200,144,40,0.1)", color: "var(--text-primary)" }}>
+                  <td colSpan={8} className="py-2 text-center text-xs" style={{ background: "var(--color-charcoal-subtle)", color: "var(--text-primary)" }}>
                     {pubs.length} items d&apos;aquesta pàgina seleccionats.{" "}
-                    <button onClick={selectAllMatching} className="font-semibold underline" style={{ color: "#F5C542" }}>
+                    <button onClick={selectAllMatching} className="font-semibold underline" style={{ color: "var(--color-charcoal)" }}>
                       Seleccionar els {total.toLocaleString()} resultats
                     </button>
                   </td>
@@ -2133,9 +2219,9 @@ export default function ContentIdeasPage() {
               )}
               {allMatchingSelected && (
                 <tr>
-                  <td colSpan={8} className="py-2 text-center text-xs" style={{ background: "rgba(200,144,40,0.1)", color: "var(--text-primary)" }}>
+                  <td colSpan={8} className="py-2 text-center text-xs" style={{ background: "var(--color-charcoal-subtle)", color: "var(--text-primary)" }}>
                     Tots els {selected.size.toLocaleString()} resultats seleccionats.{" "}
-                    <button onClick={() => { setSelected(new Set()); setAllMatchingSelected(false); }} className="font-semibold underline" style={{ color: "#F5C542" }}>
+                    <button onClick={() => { setSelected(new Set()); setAllMatchingSelected(false); }} className="font-semibold underline" style={{ color: "var(--color-charcoal)" }}>
                       Desseleccionar tot
                     </button>
                   </td>
@@ -2200,7 +2286,7 @@ export default function ContentIdeasPage() {
           ) : (
             <div className="grid gap-4 pt-2" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))" }}>
               {pubs.map((pub) => (
-                <AdminCard key={pub.id} pub={pub} onOpen={() => setDetailId(pub.id)} />
+                <AdminCard key={pub.id} pub={pub} onOpen={() => setDetailId(pub.id)} classOptions={taxForDrawer.classifications} />
               ))}
             </div>
           )
@@ -2241,7 +2327,7 @@ export default function ContentIdeasPage() {
       {selected.size > 0 && (
         <div
           className="fixed bottom-0 left-0 right-0 z-30 flex items-center justify-between px-8 py-3"
-          style={{ background: "var(--bg-card)", borderTop: "2px solid #F5C542", boxShadow: "0 -4px 24px rgba(0,0,0,0.5)" }}
+          style={{ background: "var(--bg-card)", borderTop: "2px solid var(--color-charcoal)", boxShadow: "0 -4px 24px rgba(0,0,0,0.5)" }}
         >
           <div className="flex items-center gap-3">
             <span className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
@@ -2259,7 +2345,7 @@ export default function ContentIdeasPage() {
             <button
               onClick={() => { setBulkRenameValue(""); setShowBulkRename(true); }}
               className="flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-lg"
-              style={{ background: "#F5C542", color: "#000" }}
+              style={{ background: "var(--selected-bg)", color: "var(--selected-text)" }}
             >
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -2294,7 +2380,7 @@ export default function ContentIdeasPage() {
                   list="bulk-club-datalist"
                   placeholder="ex: Juventus FC"
                   className="w-full px-3 py-2.5 rounded-lg text-sm outline-none"
-                  style={{ background: "var(--bg-input)", border: "1px solid #F5C542", color: "var(--text-primary)" }}
+                  style={{ background: "var(--bg-input)", border: "1px solid var(--color-charcoal)", color: "var(--text-primary)" }}
                 />
                 <datalist id="bulk-club-datalist">
                   {clubOpts.map((o) => <option key={o.slug} value={o.name} />)}
@@ -2312,7 +2398,7 @@ export default function ContentIdeasPage() {
                   disabled={!bulkRenameValue.trim() || bulkRenaming}
                   onClick={handleBulkRename}
                   className="px-5 py-2 rounded-lg text-xs font-semibold disabled:opacity-50"
-                  style={{ background: "#F5C542", color: "#000" }}
+                  style={{ background: "var(--selected-bg)", color: "var(--selected-text)" }}
                 >
                   {bulkRenaming ? "Aplicant…" : "Aplicar"}
                 </button>

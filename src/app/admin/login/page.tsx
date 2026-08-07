@@ -14,6 +14,7 @@ export default function AdminLoginPage() {
       ? "Access denied. Super administrator account required."
       : ""
   );
+  const [remember, setRemember] = useState(true);
   const [loading, setLoading] = useState(false);
   const [isSetup, setIsSetup] = useState<boolean | null>(null);
 
@@ -22,6 +23,11 @@ export default function AdminLoginPage() {
       .then((r) => r.json())
       .then((d) => setIsSetup(d.needsSetup === true))
       .catch(() => setIsSetup(false));
+
+    try {
+      const saved = localStorage.getItem("scp-admin-email");
+      if (saved) setEmail(saved);
+    } catch {}
   }, []);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -32,10 +38,14 @@ export default function AdminLoginPage() {
       const res = await fetch("/api/admin/auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, action: isSetup ? "setup" : "login" }),
+        body: JSON.stringify({ email, password, remember, action: isSetup ? "setup" : "login" }),
       });
       const data = await res.json();
       if (!res.ok) { setError(data.error || "Login failed"); return; }
+      try {
+        if (remember) localStorage.setItem("scp-admin-email", email.trim().toLowerCase());
+        else localStorage.removeItem("scp-admin-email");
+      } catch {}
       router.push("/admin/content-ideas");
       router.refresh();
     } finally {
@@ -133,6 +143,29 @@ export default function AdminLoginPage() {
               </div>
             </div>
 
+            {!isSetup && (
+              <label className="flex items-center gap-2.5 cursor-pointer select-none">
+                <div
+                  onClick={() => setRemember((v) => !v)}
+                  className="flex items-center justify-center rounded transition-all shrink-0"
+                  style={{
+                    width: 16, height: 16,
+                    background: remember ? "var(--color-charcoal)" : "var(--bg-input)",
+                    border: remember ? "1px solid var(--color-charcoal)" : "1px solid var(--border-color)",
+                  }}
+                >
+                  {remember && (
+                    <svg width="9" height="9" viewBox="0 0 10 10" fill="none">
+                      <polyline points="1.5,5 4,7.5 8.5,2.5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  )}
+                </div>
+                <span className="text-xs" style={{ color: "var(--text-secondary)" }}>
+                  Remember me for 15 days
+                </span>
+              </label>
+            )}
+
             {error && (
               <div className="text-xs rounded-lg px-3 py-2.5" style={{ background: "rgba(239,68,68,0.12)", color: "#ef4444", border: "1px solid rgba(239,68,68,0.2)" }}>
                 {error}
@@ -143,7 +176,7 @@ export default function AdminLoginPage() {
               type="submit"
               disabled={loading}
               className="w-full py-2.5 rounded-lg text-sm font-bold transition-all hover:opacity-90 disabled:opacity-60 mt-2"
-              style={{ background: "#F5C542", color: "#000" }}
+              style={{ background: "var(--selected-bg)", color: "var(--selected-text)" }}
             >
               {loading ? (isSetup ? "Creating..." : "Signing in...") : (isSetup ? "Create account & sign in" : "Sign in")}
             </button>

@@ -84,8 +84,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ values: rows.map((r) => ({ id: r.id, name: r.name, slug: r.slug, count: r._count.publications })) });
   }
   if (category === "classification") {
+    const allClassifications = searchParams.get("all") === "true";
     const rows = await prisma.classification.findMany({
-      where: { publications: { some: {} } }, orderBy: { name: "asc" },
+      where: allClassifications ? undefined : { publications: { some: {} } },
+      orderBy: { name: "asc" },
       include: { _count: { select: { publications: true } } },
     });
     return NextResponse.json({ values: rows.map((r) => ({ id: r.id, name: r.name, slug: r.slug, count: r._count.publications })) });
