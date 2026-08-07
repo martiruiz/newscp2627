@@ -3,6 +3,7 @@ import { Montserrat } from "next/font/google";
 import "./globals.css";
 import LayoutShell from "@/components/LayoutShell";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import RegisterSW from "@/components/RegisterSW";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -19,6 +20,19 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: "SCP Nova",
   },
+  icons: {
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+    icon: [
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-capable": "yes",
+  },
 };
 
 export const viewport: Viewport = {
@@ -34,7 +48,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${montserrat.variable} h-full antialiased`}>
+    <html lang="en" className={`${montserrat.variable} h-full antialiased`} suppressHydrationWarning>
       <head>
         {/* Apply stored theme before paint to avoid flash */}
         <script dangerouslySetInnerHTML={{ __html: `
@@ -48,6 +62,7 @@ export default function RootLayout({
         <LanguageProvider>
           <LayoutShell>{children}</LayoutShell>
         </LanguageProvider>
+        <RegisterSW />
       </body>
     </html>
   );

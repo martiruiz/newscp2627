@@ -595,9 +595,11 @@ interface Filters {
 function FilterSidebarPanel({
   filters,
   onChange,
+  fullWidth = false,
 }: {
   filters: Filters;
   onChange: (f: Filters) => void;
+  fullWidth?: boolean;
 }) {
   function update(patch: Partial<Filters>) {
     onChange({ ...filters, ...patch });
@@ -623,22 +625,31 @@ function FilterSidebarPanel({
   return (
     <aside
       className="shrink-0 flex flex-col overflow-y-auto"
-      style={{ width: 240, borderRight: "1px solid var(--border-color)", background: "var(--bg-secondary)" }}
+      style={{
+        width: fullWidth ? "100%" : 240,
+        borderRight: fullWidth ? "none" : "1px solid var(--border-color)",
+        background: "var(--bg-secondary)",
+      }}
     >
       <div className="p-4 space-y-5">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>Filtros</span>
-          {active && (
-            <button
-              onClick={reset}
-              className="text-xs hover:underline"
-              style={{ color: "var(--accent-blue)" }}
-            >
-              Limpiar
+        {/* Header — only shown in desktop sidebar, not in mobile sheet (sheet has its own header) */}
+        {!fullWidth && (
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>Filtros</span>
+            {active && (
+              <button onClick={reset} className="text-xs hover:underline" style={{ color: "var(--accent-blue)" }}>
+                Limpiar
+              </button>
+            )}
+          </div>
+        )}
+        {fullWidth && active && (
+          <div className="flex justify-end">
+            <button onClick={reset} className="text-xs hover:underline" style={{ color: "var(--accent-blue)" }}>
+              Limpiar filtres
             </button>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Search */}
         <div>
@@ -754,10 +765,12 @@ function ProfileRow({
   profile,
   selected,
   onClick,
+  isMobile = false,
 }: {
   profile: Profile;
   selected: boolean;
   onClick: () => void;
+  isMobile?: boolean;
 }) {
   return (
     <div
@@ -785,56 +798,100 @@ function ProfileRow({
         }
       }}
     >
-      {/* Single row: avatar + name + stats + arrow */}
-      <div className="flex items-center px-5 py-3.5">
-        {/* Avatar */}
-        <Avatar profile={profile} size={40} />
-
-        {/* Name + handle */}
-        <div className="min-w-0 ml-3.5 mr-5" style={{ width: 160, flexShrink: 0 }}>
-          <div className="flex items-center gap-1">
-            <span className="font-bold text-sm leading-tight truncate" style={{ color: "var(--text-primary)" }}>
-              {profile.fullname}
-            </span>
-            {profile.followers >= 100000 && (
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="#3B82F6" className="shrink-0">
-                <path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
-              </svg>
-            )}
-          </div>
-          <div className="text-xs mt-0.5 truncate" style={{ color: "var(--text-muted)" }}>
-            @{profile.username}
-            {profile.country && <span className="ml-1.5" style={{ opacity: 0.7 }}>· {profile.country}</span>}
-          </div>
-        </div>
-
-        {/* Stats columns */}
-        <div className="flex items-center flex-1" style={{ borderLeft: "1px solid var(--border-color)" }}>
-          {[
-            { label: "Seguidores", value: fmtNum(profile.followers) },
-            { label: "ER%", value: fmtPct(profile.er) },
-            { label: "Avg Likes", value: fmtNum(profile.avgLikes) },
-            { label: "Avg Vídeos", value: profile.avgViews > 0 ? fmtNum(profile.avgViews) : "—" },
-          ].map((stat, i) => (
-            <div key={stat.label} className="flex-1 text-center py-0.5"
-              style={{ borderLeft: i > 0 ? "1px solid var(--border-color)" : "none" }}>
-              <div className="text-[9px] uppercase tracking-wide font-medium" style={{ color: "var(--text-muted)" }}>
-                {stat.label}
+      {isMobile ? (
+        /* ── Mobile: 2-row card ── */
+        <>
+          {/* Top row: avatar + name + chevron */}
+          <div className="flex items-center gap-3 px-4 pt-3.5 pb-2.5">
+            <Avatar profile={profile} size={40} />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1 flex-wrap">
+                <span className="font-bold text-sm leading-tight" style={{ color: "var(--text-primary)" }}>
+                  {profile.fullname}
+                </span>
+                {profile.followers >= 100000 && (
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="#3B82F6" className="shrink-0">
+                    <path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                  </svg>
+                )}
               </div>
-              <div className="text-sm font-bold mt-0.5" style={{ color: "var(--text-primary)" }}>
-                {stat.value}
+              <div className="text-xs mt-0.5 truncate" style={{ color: "var(--text-muted)" }}>
+                @{profile.username}
+                {profile.country && <span className="ml-1.5" style={{ opacity: 0.7 }}>· {profile.country}</span>}
               </div>
             </div>
-          ))}
-        </div>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" strokeWidth="2" className="shrink-0"
+              style={{ color: "var(--text-muted)", opacity: 0.5 }}>
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </div>
 
-        {/* Arrow */}
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" strokeWidth="2" className="shrink-0 ml-3"
-          style={{ color: "var(--text-muted)", opacity: 0.5 }}>
-          <path d="M9 18l6-6-6-6"/>
-        </svg>
-      </div>
+          {/* Stats row */}
+          <div className="flex" style={{ borderTop: "1px solid var(--border-color)" }}>
+            {[
+              { label: "Seguidores", value: fmtNum(profile.followers) },
+              { label: "ER%", value: fmtPct(profile.er) },
+              { label: "Avg Likes", value: fmtNum(profile.avgLikes) },
+              { label: "Avg Vídeos", value: profile.avgViews > 0 ? fmtNum(profile.avgViews) : "—" },
+            ].map((stat, i) => (
+              <div key={stat.label} className="flex-1 text-center py-2.5"
+                style={{ borderLeft: i > 0 ? "1px solid var(--border-color)" : "none" }}>
+                <div className="text-[8px] uppercase tracking-wide font-medium" style={{ color: "var(--text-muted)" }}>
+                  {stat.label}
+                </div>
+                <div className="text-xs font-bold mt-0.5" style={{ color: "var(--text-primary)" }}>
+                  {stat.value}
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      ) : (
+        /* ── Desktop: single-row card ── */
+        <div className="flex items-center px-5 py-3.5">
+          <Avatar profile={profile} size={40} />
+          <div className="min-w-0 ml-3.5 mr-4" style={{ width: 160, flexShrink: 0 }}>
+            <div className="flex items-center gap-1">
+              <span className="font-bold text-sm leading-tight truncate" style={{ color: "var(--text-primary)" }}>
+                {profile.fullname}
+              </span>
+              {profile.followers >= 100000 && (
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="#3B82F6" className="shrink-0">
+                  <path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                </svg>
+              )}
+            </div>
+            <div className="text-xs mt-0.5 truncate" style={{ color: "var(--text-muted)" }}>
+              @{profile.username}
+              {profile.country && <span className="ml-1.5" style={{ opacity: 0.7 }}>· {profile.country}</span>}
+            </div>
+          </div>
+          <div className="flex items-center flex-1" style={{ borderLeft: "1px solid var(--border-color)" }}>
+            {[
+              { label: "Seguidores", value: fmtNum(profile.followers) },
+              { label: "ER%", value: fmtPct(profile.er) },
+              { label: "Avg Likes", value: fmtNum(profile.avgLikes) },
+              { label: "Avg Vídeos", value: profile.avgViews > 0 ? fmtNum(profile.avgViews) : "—" },
+            ].map((stat, i) => (
+              <div key={stat.label} className="flex-1 text-center py-0.5"
+                style={{ borderLeft: i > 0 ? "1px solid var(--border-color)" : "none" }}>
+                <div className="text-[9px] uppercase tracking-wide font-medium" style={{ color: "var(--text-muted)" }}>
+                  {stat.label}
+                </div>
+                <div className="text-sm font-bold mt-0.5" style={{ color: "var(--text-primary)" }}>
+                  {stat.value}
+                </div>
+              </div>
+            ))}
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="2" className="shrink-0 ml-3"
+            style={{ color: "var(--text-muted)", opacity: 0.5 }}>
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </div>
+      )}
     </div>
   );
 }
@@ -856,6 +913,16 @@ export default function ProfilesPage() {
   const [sortKey, setSortKey] = useState<SortKey>("followers");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    setIsMobile(mq.matches);
+    const h = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener("change", h);
+    return () => mq.removeEventListener("change", h);
+  }, []);
 
   function toggleSort(key: SortKey) {
     if (sortKey === key) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
@@ -909,25 +976,58 @@ export default function ProfilesPage() {
     );
   }
 
+  const activeFiltersCount =
+    (filters.search ? 1 : 0) +
+    (filters.gender !== "all" ? 1 : 0) +
+    filters.countries.size +
+    (filters.minFollowers || filters.maxFollowers ? 1 : 0) +
+    (filters.minER || filters.maxER ? 1 : 0);
+
   return (
     <div className="flex" style={{ height: "calc(100vh - 0px)", overflow: "hidden" }}>
-      {/* Filter sidebar */}
-      <FilterSidebarPanel filters={filters} onChange={setFilters} />
+      {/* Desktop filter sidebar */}
+      {!isMobile && <FilterSidebarPanel filters={filters} onChange={setFilters} />}
 
-      {/* List */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      {/* List — hidden on mobile when detail panel is open */}
+      <div
+        className="flex-1 flex flex-col min-w-0 overflow-hidden"
+        style={{ display: isMobile && selectedProfile ? "none" : "flex" }}
+      >
         {/* List header */}
         <div
-          className="flex items-center gap-4 px-4 py-2.5 shrink-0"
+          className="flex items-center gap-3 px-4 py-2.5 shrink-0"
           style={{ borderBottom: "1px solid var(--border-color)", background: "var(--bg-secondary)" }}
         >
           <span className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
             {filtered.length} perfil{filtered.length !== 1 ? "es" : ""}
           </span>
-          <div className="flex items-center gap-4 ml-auto">
+          <div className="flex items-center gap-3 ml-auto">
             <SortBtn col="followers" label="Seguidores" />
-            <SortBtn col="er" label="ER%" />
-            <SortBtn col="avgLikes" label="Engagement" />
+            {!isMobile && <SortBtn col="er" label="ER%" />}
+            {!isMobile && <SortBtn col="avgLikes" label="Engagement" />}
+            {/* Mobile filter button */}
+            {isMobile && (
+              <button
+                onClick={() => setFilterOpen(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold relative"
+                style={{
+                  background: activeFiltersCount > 0 ? "var(--accent-blue)" : "var(--bg-input)",
+                  color: activeFiltersCount > 0 ? "#fff" : "var(--text-primary)",
+                  border: "1px solid var(--border-color)",
+                }}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/>
+                </svg>
+                Filtres
+                {activeFiltersCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 flex items-center justify-center rounded-full text-[9px] font-bold"
+                    style={{ width: 16, height: 16, background: "#fff", color: "var(--accent-blue)" }}>
+                    {activeFiltersCount}
+                  </span>
+                )}
+              </button>
+            )}
           </div>
         </div>
 
@@ -939,13 +1039,14 @@ export default function ProfilesPage() {
               <span className="text-sm">No se encontraron perfiles</span>
             </div>
           ) : (
-            <div className="p-4 space-y-3">
+            <div className="p-3 space-y-2">
               {filtered.map((p) => (
                 <ProfileRow
                   key={p.id}
                   profile={p}
                   selected={selectedId === p.id}
                   onClick={() => handleSelect(p.id)}
+                  isMobile={isMobile}
                 />
               ))}
             </div>
@@ -953,9 +1054,41 @@ export default function ProfilesPage() {
         </div>
       </div>
 
-      {/* Detail panel */}
-      {selectedProfile && (
+      {/* Desktop detail panel */}
+      {selectedProfile && !isMobile && (
         <DetailPanel profile={selectedProfile} onClose={() => setSelectedId(null)} />
+      )}
+
+      {/* Mobile detail panel — full screen overlay */}
+      {selectedProfile && isMobile && (
+        <div className="fixed inset-0 z-50 flex flex-col overflow-hidden"
+          style={{ background: "var(--bg-secondary)" }}>
+          <DetailPanel profile={selectedProfile} onClose={() => setSelectedId(null)} />
+        </div>
+      )}
+
+      {/* Mobile filter bottom sheet */}
+      {filterOpen && isMobile && (
+        <div className="fixed inset-0 z-50 flex flex-col justify-end"
+          style={{ background: "rgba(0,0,0,0.5)" }}
+          onClick={(e) => { if (e.target === e.currentTarget) setFilterOpen(false); }}>
+          <div className="flex flex-col rounded-t-2xl overflow-hidden"
+            style={{ background: "var(--bg-secondary)", maxHeight: "85vh" }}>
+            {/* Sheet header */}
+            <div className="flex items-center justify-between px-4 py-3 shrink-0"
+              style={{ borderBottom: "1px solid var(--border-color)" }}>
+              <span className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>Filtres</span>
+              <button onClick={() => setFilterOpen(false)}
+                className="flex items-center justify-center rounded-lg"
+                style={{ width: 28, height: 28, background: "var(--bg-input)", color: "var(--text-muted)" }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+            <FilterSidebarPanel filters={filters} onChange={setFilters} fullWidth />
+          </div>
+        </div>
       )}
     </div>
   );
