@@ -254,10 +254,36 @@ function PlatformEmbed({
   );
 }
 
-const BADGE_COLORS: Record<string, string> = {
-  "Top Picks": "var(--badge-top)",
-  "Replicable Ideas": "var(--badge-replicable)",
-  "Overperforming": "var(--badge-overperforming)",
+const CLASSIFICATION_META: Record<string, { gradient: string; icon: React.ReactNode; title: string }> = {
+  "Top Picks": {
+    gradient: "linear-gradient(135deg, #E8567A 0%, #A82346 100%)",
+    title: "Top Picks",
+    icon: (
+      <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+      </svg>
+    ),
+  },
+  "Overperforming": {
+    gradient: "linear-gradient(135deg, #3B82F6 0%, #1E3A8A 100%)",
+    title: "Overperforming",
+    icon: (
+      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+        <polyline points="17 6 23 6 23 12"/>
+      </svg>
+    ),
+  },
+  "Replicable Ideas": {
+    gradient: "linear-gradient(135deg, #52D68A 0%, #1B8A4E 100%)",
+    title: "Replicable Ideas",
+    icon: (
+      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="9" y="9" width="13" height="13" rx="2"/>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+      </svg>
+    ),
+  },
 };
 
 export default function PublicationCard({ publication, animationDelay = 0, shouldAnimate = false, onLoaded, eager = false }: PublicationCardProps) {
@@ -301,20 +327,6 @@ export default function PublicationCard({ publication, animationDelay = 0, shoul
         el.style.transition = "transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease";
       }}
     >
-      {publication.classifications.length > 0 && (
-        <div className="flex gap-2 px-3 pt-3">
-          {publication.classifications.map((cls) => (
-            <span
-              key={cls}
-              className="text-xs font-semibold px-2.5 py-1 rounded-full text-white"
-              style={{ background: BADGE_COLORS[cls] || "var(--accent-blue)" }}
-            >
-              {cls}
-            </span>
-          ))}
-        </div>
-      )}
-
       <div data-tutorial="card-save-area" className="flex items-center justify-between px-3 pt-2 pb-1">
         <div className="flex items-center gap-2 min-w-0">
           {publication.accountUsername && (
@@ -334,7 +346,27 @@ export default function PublicationCard({ publication, animationDelay = 0, shoul
             </span>
           )}
         </div>
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-1.5 shrink-0">
+          {publication.classifications.map((cls) => {
+            const meta = CLASSIFICATION_META[cls];
+            if (!meta) return null;
+            return (
+              <span
+                key={cls}
+                title={meta.title}
+                className="flex items-center justify-center rounded-full"
+                style={{
+                  width: 20,
+                  height: 20,
+                  background: meta.gradient,
+                  color: "#fff",
+                  flexShrink: 0,
+                }}
+              >
+                {meta.icon}
+              </span>
+            );
+          })}
           <button
             onClick={handleSave}
             className="p-1.5 rounded-md transition-colors hover:opacity-80"

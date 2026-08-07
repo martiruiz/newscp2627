@@ -48,7 +48,7 @@ const DEFAULT_FILTERS: SelectedFilters = {
   order: "latest",
 };
 
-const BATCH_SIZE = 9;
+const BATCH_SIZE = 9; // cards per page
 
 function getActiveChips(filters: SelectedFilters) {
   const chips: { label: string; key: string; filterKey: string; value: string }[] = [];
@@ -299,9 +299,7 @@ export default function FeedPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
-  const [readyUpTo, setReadyUpTo] = useState(0);
-  const loadedSetRef = useRef(new Set<string>());
-  const currentBatchRef = useRef<{ start: number; size: number }>({ start: 0, size: 0 });
+  const [readyPubs, setReadyPubs] = useState(new Set<string>());
 
   const abortRef = useRef<AbortController | null>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -317,11 +315,12 @@ export default function FeedPage() {
   }, [searchParams]);
 
   const handleEmbedLoaded = useCallback((pubKey: string) => {
-    loadedSetRef.current.add(pubKey);
-    const { start, size } = currentBatchRef.current;
-    if (loadedSetRef.current.size >= size) {
-      setReadyUpTo(start + size);
-    }
+    setReadyPubs((prev) => {
+      if (prev.has(pubKey)) return prev;
+      const next = new Set(prev);
+      next.add(pubKey);
+      return next;
+    });
   }, []);
 
   const fetchPublications = useCallback(
@@ -353,16 +352,9 @@ export default function FeedPage() {
         const newPubs: Publication[] = data.publications;
 
         if (append) {
-          setPublications((prev) => {
-            const prevLen = prev.length;
-            loadedSetRef.current = new Set();
-            currentBatchRef.current = { start: prevLen, size: newPubs.length };
-            return [...prev, ...newPubs];
-          });
+          setPublications((prev) => [...prev, ...newPubs]);
         } else {
-          loadedSetRef.current = new Set();
-          currentBatchRef.current = { start: 0, size: newPubs.length };
-          setReadyUpTo(0);
+          setReadyPubs(new Set());
           setPublications(newPubs);
         }
         setPagination(data.pagination);
@@ -630,12 +622,11 @@ export default function FeedPage() {
             <div data-tutorial="feed-content">
             <MasonryGrid>
               {publications.map((pub, i) => {
-                const isReady = i < readyUpTo;
-                const batchIndex = i % BATCH_SIZE;
                 const pubKey = `${pub.platform}-${pub.externalPostId}`;
+                const isReady = readyPubs.has(pubKey);
                 return (
                   <CardSlot key={pubKey}>
-                    {!isReady && <SkeletonCard index={batchIndex} />}
+                    {!isReady && <SkeletonCard index={i % BATCH_SIZE} />}
                     <div style={{
                       position: isReady ? "relative" : "absolute",
                       left: isReady ? undefined : "-9999px",
@@ -643,10 +634,10 @@ export default function FeedPage() {
                     }}>
                       <PublicationCard
                         publication={pub}
-                        animationDelay={batchIndex * 80}
+                        animationDelay={0}
                         shouldAnimate={isReady}
                         onLoaded={() => handleEmbedLoaded(pubKey)}
-                        eager={!isReady}
+                        eager={true}
                       />
                     </div>
                   </CardSlot>
@@ -659,7 +650,7 @@ export default function FeedPage() {
             </div>
           )}
 
-          {publications.length > 0 && !loading && readyUpTo >= publications.length && !pagination?.hasMore && (
+          {publications.length > 0 && !loading && !pagination?.hasMore && (
             <div className="text-center py-8">
               <span className="text-xs" style={{ color: "var(--text-muted)" }}>No more publications</span>
             </div>

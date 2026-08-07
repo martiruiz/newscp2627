@@ -65,74 +65,79 @@ interface InstagramEmbedProps {
 export default function InstagramEmbed({ shortcode, canonicalUrl, platform = "Instagram", onLoaded, eager = false }: InstagramEmbedProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [status, setStatus] = useState<"loading" | "rendered" | "error">("loading");
-  const processedRef = useRef(false);
+  const startedRef = useRef(false);
   const notifiedRef = useRef(false);
+  const cleanupRef = useRef<(() => void) | null>(null);
 
   const Logo = getPlatformLogo(platform);
 
   const notifyLoaded = useCallback(() => {
-    if (!notifiedRef.current && onLoaded) {
-      notifiedRef.current = true;
-      onLoaded();
-    }
+    if (notifiedRef.current) return;
+    notifiedRef.current = true;
+    setStatus("rendered");
+    onLoaded?.();
   }, [onLoaded]);
 
-  const processEmbed = useCallback(async () => {
-    if (processedRef.current) return;
-    try {
-      await loadInstagramScript();
-      processedRef.current = true;
+  const startProcessing = useCallback(() => {
+    if (startedRef.current) return;
+    startedRef.current = true;
 
-      setTimeout(() => {
+    loadInstagramScript()
+      .then(() => {
         window.instgrm?.Embeds?.process();
 
-        if (!containerRef.current) return;
+        const container = containerRef.current;
+        if (!container) { notifyLoaded(); return; }
 
-        const checkRendered = () => {
-          const iframe = containerRef.current?.querySelector("iframe");
-          if (iframe) {
-            setStatus("rendered");
+        // Check immediately — sometimes the iframe is already there
+        if (container.querySelector("iframe")) { notifyLoaded(); return; }
+
+        // MutationObserver fires the instant Instagram injects the iframe
+        const mo = new MutationObserver(() => {
+          if (container.querySelector("iframe")) {
+            doCleanup();
             notifyLoaded();
-          } else {
-            setTimeout(checkRendered, 300);
           }
-        };
+        });
+        mo.observe(container, { childList: true, subtree: true, attributes: true });
 
-        setTimeout(checkRendered, 500);
+        const timer = setTimeout(() => { doCleanup(); notifyLoaded(); }, 7000);
 
-        setTimeout(() => {
-          setStatus("rendered");
-          notifyLoaded();
-        }, 6000);
-      }, 100);
-    } catch {
-      setStatus("error");
-      notifyLoaded();
-    }
+        function doCleanup() {
+          mo.disconnect();
+          clearTimeout(timer);
+          cleanupRef.current = null;
+        }
+        cleanupRef.current = doCleanup;
+      })
+      .catch(() => {
+        setStatus("error");
+        notifyLoaded();
+      });
   }, [notifyLoaded]);
+
+  // Cleanup MutationObserver / safety timer on unmount
+  useEffect(() => () => { cleanupRef.current?.(); }, []);
 
   useEffect(() => {
     if (eager) {
-      processEmbed();
+      startProcessing();
       return;
     }
 
-    const observer = new IntersectionObserver(
+    const io = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
-          processEmbed();
-          observer.disconnect();
+          io.disconnect();
+          startProcessing();
         }
       },
       { rootMargin: "200px" }
     );
 
-    if (containerRef.current) {
-      observer.observe(containerRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, [processEmbed, eager]);
+    if (containerRef.current) io.observe(containerRef.current);
+    return () => io.disconnect();
+  }, [eager, startProcessing]);
 
   if (status === "error") {
     return (
