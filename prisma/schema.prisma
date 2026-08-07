@@ -13,6 +13,7 @@ model User {
   name      String?
   password  String
   role      String      @default("ROLE_ADMIN")
+  plan      String      @default("free")
   savedPosts SavedPost[]
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
@@ -27,11 +28,11 @@ model Platform {
 }
 
 model Sport {
-  id           String        @id @default(uuid())
-  name         String        @unique
-  slug         String        @unique
-  publications Publication[]
-  createdAt    DateTime      @default(now())
+  id           String               @id @default(uuid())
+  name         String               @unique
+  slug         String               @unique
+  publications PublicationSport[]
+  createdAt    DateTime             @default(now())
 }
 
 model Competition {
@@ -43,11 +44,11 @@ model Competition {
 }
 
 model EntityType {
-  id           String        @id @default(uuid())
-  name         String        @unique
-  slug         String        @unique
-  publications Publication[]
-  createdAt    DateTime      @default(now())
+  id           String                  @id @default(uuid())
+  name         String                  @unique
+  slug         String                  @unique
+  publications PublicationEntityType[]
+  createdAt    DateTime                @default(now())
 }
 
 model ContentFormat {
@@ -88,11 +89,9 @@ model Publication {
   publishedAt       DateTime?
   contentFormatId   String?
   contentFormat     ContentFormat? @relation(fields: [contentFormatId], references: [id])
-  sportId           String?
-  sport             Sport?   @relation(fields: [sportId], references: [id])
-  entityTypeId      String?
-  entityType        EntityType? @relation(fields: [entityTypeId], references: [id])
   entityName        String?
+  sports            PublicationSport[]
+  entityTypes       PublicationEntityType[]
   competitions      PublicationCompetition[]
   classifications   PublicationClassification[]
   contentCategories PublicationContentCategory[]
@@ -106,6 +105,13 @@ model Publication {
   updatedAt         DateTime @updatedAt
 
   @@unique([platformId, externalPostId])
+  @@index([platformId])
+  @@index([contentFormatId])
+  @@index([publishedAt(sort: Desc)])
+  @@index([entityName])
+  @@index([accountUsername])
+  @@index([platformId, publishedAt(sort: Desc)])
+  @@index([contentFormatId, publishedAt(sort: Desc)])
 }
 
 model PublicationCompetition {
@@ -116,6 +122,32 @@ model PublicationCompetition {
   competition   Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
 
   @@unique([publicationId, competitionId])
+  @@index([competitionId])
+  @@index([publicationId])
+}
+
+model PublicationSport {
+  id            String      @id @default(uuid())
+  publicationId String
+  publication   Publication @relation(fields: [publicationId], references: [id], onDelete: Cascade)
+  sportId       String
+  sport         Sport       @relation(fields: [sportId], references: [id], onDelete: Cascade)
+
+  @@unique([publicationId, sportId])
+  @@index([sportId])
+  @@index([publicationId])
+}
+
+model PublicationEntityType {
+  id            String      @id @default(uuid())
+  publicationId String
+  publication   Publication @relation(fields: [publicationId], references: [id], onDelete: Cascade)
+  entityTypeId  String
+  entityType    EntityType  @relation(fields: [entityTypeId], references: [id], onDelete: Cascade)
+
+  @@unique([publicationId, entityTypeId])
+  @@index([entityTypeId])
+  @@index([publicationId])
 }
 
 model PublicationClassification {
@@ -171,6 +203,42 @@ model NewsArticle {
   publishedAt DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+}
+
+model BlogPost {
+  id          String    @id @default(uuid())
+  title       String
+  subtitle    String?
+  category    String?
+  publishedAt DateTime?
+  content     String
+  imageUrl    String?
+  imageAlt    String?
+  keywords    String?
+  embed1      String?
+  embed2      String?
+  embed3      String?
+  embed4      String?
+  embed5      String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  title     String
+  message   String
+  type      String   @default("content")
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model PushSubscription {
+  id        String   @id @default(uuid())
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
 }
 
 model ImportBatch {

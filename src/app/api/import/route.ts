@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { createNotification } from "@/lib/notify";
 import {
   parseCSVPreview,
   parseCSVStream,
+  parseCSVFromStream,
   countCSVRows,
   validateRow,
   normalizeEntityType,
@@ -16,7 +18,7 @@ import {
 export const maxDuration = 600;
 
 // Only these values are accepted — anything else is silently discarded
-const VALID_PLATFORMS = new Set(["Instagram", "TikTok", "YouTube", "Twitter", "X", "Facebook", "LinkedIn"]);
+const VALID_PLATFORMS = new Set(["Instagram", "TikTok", "YouTube", "Twitter", "X", "Facebook", "LinkedIn", "Pinterest"]);
 const VALID_FORMATS   = new Set(["Image", "Video", "Reel", "Carousel", "Story"]);
 
 function decodeCSV(buffer: ArrayBuffer): string {
@@ -48,22 +50,30 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
   }
 
-  const text = decodeCSV(await file.arrayBuffer());
-
   if (action === "preview") {
-    return handlePreview(text, file.name);
+    // Only read first 500 KB for preview — enough to detect columns and sample rows
+    const sliceSize = 500 * 1024;
+    const sliceBuffer = await file.slice(0, sliceSize).arrayBuffer();
+    const text = decodeCSV(sliceBuffer);
+    return handlePreview(text, file.name, file.size);
   }
 
   if (action === "import") {
-    return handleImport(text, file.name);
+    return handleImport(file, file.name);
   }
 
   return NextResponse.json({ error: "Invalid action" }, { status: 400 });
 }
 
-async function handlePreview(text: string, filename: string) {
+async function handlePreview(text: string, filename: string, actualFileSize?: number) {
   const SAMPLE_SIZE = 5000;
-  const { rows, headers, totalRows, error } = parseCSVPreview(text, SAMPLE_SIZE);
+  const SLICE_SIZE = 500 * 1024;
+  const { rows, headers, totalRows: sliceTotalRows, error } = parseCSVPreview(text, SAMPLE_SIZE);
+  // If we only sent a 500 KB slice, estimate total rows by scaling
+  const isSliced = !!actualFileSize && actualFileSize > SLICE_SIZE;
+  const totalRows = isSliced && sliceTotalRows > 0
+    ? Math.round(sliceTotalRows * (actualFileSize! / SLICE_SIZE))
+    : sliceTotalRows;
 
   if (error) {
     return NextResponse.json({ error }, { status: 400 });
@@ -143,9 +153,10 @@ async function handlePreview(text: string, filename: string) {
   });
 }
 
-function handleImport(text: string, filename: string) {
+function handleImport(file: File, filename: string) {
   const encoder = new TextEncoder();
-  const totalRows = countCSVRows(text);
+  // Estimate row count from file size: avg ~300 bytes/row in these CSVs
+  const estimatedRows = Math.max(1, Math.round(file.size / 300));
 
   const stream = new ReadableStream({
     async start(controller) {
@@ -156,7 +167,7 @@ function handleImport(text: string, filename: string) {
       const startTime = Date.now();
 
       const batch = await prisma.importBatch.create({
-        data: { filename, totalRows, status: "processing" },
+        data: { filename, totalRows: estimatedRows, status: "processing" },
       });
 
       const platformCache = new Map<string, string>();
@@ -201,9 +212,10 @@ function handleImport(text: string, filename: string) {
       let processed = 0;
       const errorLog: Array<{ row: number; externalId: string; url: string; errorCode: string; explanation: string }> = [];
 
+      let totalRows = estimatedRows;
       send({ type: "start", totalRows });
 
-      await parseCSVStream(text, async (chunk: CSVRow[]) => {
+      await parseCSVFromStream(file.stream(), async (chunk: CSVRow[]) => {
         const validRows: Array<{ row: CSVRow; validation: ReturnType<typeof validateRow>; rowIndex: number }> = [];
 
         for (let i = 0; i < chunk.length; i++) {
@@ -229,7 +241,7 @@ function handleImport(text: string, filename: string) {
           const platformName = normalizePlatform(rawPlatform);
           if (!VALID_PLATFORMS.has(platformName)) {
             invalid++;
-            errorLog.push({ row: item.rowIndex, externalId: item.validation.postId, url: item.row.url || "", errorCode: "INVALID_PLATFORM", explanation: `Platform "${rawPlatform}" is not supported. Accepted: Instagram, TikTok, YouTube, Twitter/X, Facebook, LinkedIn.` });
+            errorLog.push({ row: item.rowIndex, externalId: item.validation.postId, url: item.row.url || "", errorCode: "INVALID_PLATFORM", explanation: `Platform "${rawPlatform}" is not supported. Accepted: Instagram, TikTok, YouTube, Twitter/X, Facebook, LinkedIn, Pinterest.` });
             processed++;
             continue;
           }
@@ -244,7 +256,11 @@ function handleImport(text: string, filename: string) {
         const existingPubs = postIds.length > 0
           ? await prisma.publication.findMany({
               where: { externalPostId: { in: postIds } },
-              select: { id: true, platformId: true, externalPostId: true, accountUsername: true, sportId: true, entityTypeId: true, entityName: true },
+              select: {
+                id: true, platformId: true, externalPostId: true, accountUsername: true, entityName: true,
+                sports: { select: { sportId: true } },
+                entityTypes: { select: { entityTypeId: true } },
+              },
             })
           : [];
 
@@ -252,6 +268,10 @@ function handleImport(text: string, filename: string) {
         for (const pub of existingPubs) {
           existingByKey.set(`${pub.platformId}:${pub.externalPostId}`, pub);
         }
+
+        // Collect sport/entityType links to add to existing pubs
+        const sportLinksToAdd: Array<{ publicationId: string; sportId: string }> = [];
+        const entityTypeLinksToAdd: Array<{ publicationId: string; entityTypeId: string }> = [];
 
         // Process: batch updates + batch creates
         const toUpdate: Array<{ id: string; data: Record<string, unknown> }> = [];
@@ -265,12 +285,12 @@ function handleImport(text: string, filename: string) {
           rawTitle: string | null;
           publishedAt: Date | null;
           contentFormatId: string | null;
-          sportId: string | null;
-          entityTypeId: string | null;
           entityName: string | null;
           importBatchId: string;
           importStatus: string;
         }> = [];
+        const sportsToCreate: Array<{ postId: string; sportIds: string[] }> = [];
+        const entityTypesToCreate: Array<{ postId: string; entityTypeIds: string[] }> = [];
         const competitionsToCreate: Array<{ postId: string; competitionIds: string[] }> = [];
 
         for (const [key, item] of rowsByKey) {
@@ -282,9 +302,24 @@ function handleImport(text: string, filename: string) {
               let needsUpdate = false;
               const updateData: Record<string, unknown> = {};
               if (!existing.accountUsername && item.validation.accountUsername) { updateData.accountUsername = item.validation.accountUsername; needsUpdate = true; }
-              if (!existing.sportId && item.row.sport) { updateData.sportId = await getOrCreate(sportCache, item.row.sport, normalizeSport, prisma.sport); needsUpdate = true; }
-              if (!existing.entityTypeId && item.row.entity) { updateData.entityTypeId = await getOrCreate(entityTypeCache, item.row.entity, normalizeEntityType, prisma.entityType); needsUpdate = true; }
               if (!existing.entityName && item.row.club) { updateData.entityName = item.row.club.trim(); needsUpdate = true; }
+
+              // Add sports if not yet linked
+              if (existing.sports.length === 0 && item.row.sport) {
+                const names = item.row.sport.split(",").map((s) => s.trim()).filter(Boolean);
+                for (const name of names) {
+                  const id = await getOrCreate(sportCache, name, normalizeSport, prisma.sport);
+                  sportLinksToAdd.push({ publicationId: existing.id, sportId: id });
+                }
+              }
+              // Add entity types if not yet linked
+              if (existing.entityTypes.length === 0 && item.row.entity) {
+                const names = item.row.entity.split(",").map((e) => e.trim()).filter(Boolean);
+                for (const name of names) {
+                  const id = await getOrCreate(entityTypeCache, name, normalizeEntityType, prisma.entityType);
+                  entityTypeLinksToAdd.push({ publicationId: existing.id, entityTypeId: id });
+                }
+              }
 
               if (needsUpdate) {
                 toUpdate.push({ id: existing.id, data: updateData });
@@ -301,8 +336,20 @@ function handleImport(text: string, filename: string) {
               if (isNaN(publishedAt.getTime())) publishedAt = null;
             }
 
-            const sportId = item.row.sport ? await getOrCreate(sportCache, item.row.sport, normalizeSport, prisma.sport) : null;
-            const entityTypeId = item.row.entity ? await getOrCreate(entityTypeCache, item.row.entity, normalizeEntityType, prisma.entityType) : null;
+            // Sports — split comma-separated values
+            const sportNames = item.row.sport ? item.row.sport.split(",").map((s) => s.trim()).filter(Boolean) : [];
+            const sportIds: string[] = [];
+            for (const name of sportNames) {
+              sportIds.push(await getOrCreate(sportCache, name, normalizeSport, prisma.sport));
+            }
+
+            // Entity types — split comma-separated values
+            const entityTypeNames = item.row.entity ? item.row.entity.split(",").map((e) => e.trim()).filter(Boolean) : [];
+            const entityTypeIds: string[] = [];
+            for (const name of entityTypeNames) {
+              entityTypeIds.push(await getOrCreate(entityTypeCache, name, normalizeEntityType, prisma.entityType));
+            }
+
             const formatName = item.row.format ? normalizeFormat(item.row.format) : null;
             const contentFormatId = (formatName && VALID_FORMATS.has(formatName))
               ? await getOrCreate(formatCache, item.row.format!, normalizeFormat, prisma.contentFormat)
@@ -326,16 +373,14 @@ function handleImport(text: string, filename: string) {
               rawTitle: item.row.title || null,
               publishedAt,
               contentFormatId,
-              sportId,
-              entityTypeId,
               entityName: item.row.club?.trim() || null,
               importBatchId: batch.id,
               importStatus: "imported",
             });
 
-            if (competitionIds.length > 0) {
-              competitionsToCreate.push({ postId: item.validation.postId, competitionIds });
-            }
+            if (sportIds.length > 0) sportsToCreate.push({ postId: item.validation.postId, sportIds });
+            if (entityTypeIds.length > 0) entityTypesToCreate.push({ postId: item.validation.postId, entityTypeIds });
+            if (competitionIds.length > 0) competitionsToCreate.push({ postId: item.validation.postId, competitionIds });
 
             imported++;
           } catch (e) {
@@ -346,44 +391,64 @@ function handleImport(text: string, filename: string) {
           }
         }
 
-        // Batch all updates in a single transaction
+        // Batch all scalar updates in a single transaction
         if (toUpdate.length > 0) {
           await prisma.$transaction(
             toUpdate.map(({ id, data }) => prisma.publication.update({ where: { id }, data }))
           );
         }
 
-        // Batch insert new publications
+        // Add sport/entityType links for existing pubs that had none
+        if (sportLinksToAdd.length > 0) {
+          await prisma.publicationSport.createMany({ data: sportLinksToAdd });
+        }
+        if (entityTypeLinksToAdd.length > 0) {
+          await prisma.publicationEntityType.createMany({ data: entityTypeLinksToAdd });
+        }
+
+        // Batch insert new publications and link all relations
         if (toCreate.length > 0) {
           await prisma.publication.createMany({ data: toCreate });
 
-          // Link competitions for newly created publications
-          if (competitionsToCreate.length > 0) {
+          const needsLinks = sportsToCreate.length > 0 || entityTypesToCreate.length > 0 || competitionsToCreate.length > 0;
+          if (needsLinks) {
+            const allPostIds = [...new Set([
+              ...sportsToCreate.map((s) => s.postId),
+              ...entityTypesToCreate.map((e) => e.postId),
+              ...competitionsToCreate.map((c) => c.postId),
+            ])];
             const createdPubs = await prisma.publication.findMany({
-              where: {
-                importBatchId: batch.id,
-                externalPostId: { in: competitionsToCreate.map((c) => c.postId) },
-              },
+              where: { importBatchId: batch.id, externalPostId: { in: allPostIds } },
               select: { id: true, externalPostId: true },
             });
             const pubIdMap = new Map(createdPubs.map((p) => [p.externalPostId, p.id]));
 
+            const sportLinks: Array<{ publicationId: string; sportId: string }> = [];
+            for (const { postId, sportIds } of sportsToCreate) {
+              const pubId = pubIdMap.get(postId);
+              if (pubId) for (const sId of sportIds) sportLinks.push({ publicationId: pubId, sportId: sId });
+            }
+            if (sportLinks.length > 0) await prisma.publicationSport.createMany({ data: sportLinks });
+
+            const entityTypeLinks: Array<{ publicationId: string; entityTypeId: string }> = [];
+            for (const { postId, entityTypeIds } of entityTypesToCreate) {
+              const pubId = pubIdMap.get(postId);
+              if (pubId) for (const eId of entityTypeIds) entityTypeLinks.push({ publicationId: pubId, entityTypeId: eId });
+            }
+            if (entityTypeLinks.length > 0) await prisma.publicationEntityType.createMany({ data: entityTypeLinks });
+
             const compLinks: Array<{ publicationId: string; competitionId: string }> = [];
             for (const { postId, competitionIds } of competitionsToCreate) {
               const pubId = pubIdMap.get(postId);
-              if (pubId) {
-                for (const cId of competitionIds) {
-                  compLinks.push({ publicationId: pubId, competitionId: cId });
-                }
-              }
+              if (pubId) for (const cId of competitionIds) compLinks.push({ publicationId: pubId, competitionId: cId });
             }
-            if (compLinks.length > 0) {
-              await prisma.publicationCompetition.createMany({ data: compLinks });
-            }
+            if (compLinks.length > 0) await prisma.publicationCompetition.createMany({ data: compLinks });
           }
         }
 
         processed += chunk.length;
+        // Update totalRows estimate as we process (the initial estimate may be off)
+        if (processed > totalRows) totalRows = Math.round(processed * 1.05);
         const elapsed = Date.now() - startTime;
         const rate = processed / elapsed;
         const remaining = Math.round((totalRows - processed) / rate);
@@ -392,7 +457,7 @@ function handleImport(text: string, filename: string) {
           type: "progress",
           processed,
           totalRows,
-          percent: Math.round((processed / totalRows) * 100),
+          percent: Math.min(99, Math.round((processed / totalRows) * 100)),
           imported,
           updated,
           skipped,
@@ -404,10 +469,13 @@ function handleImport(text: string, filename: string) {
       }, 2000);
 
       const processingTime = Date.now() - startTime;
+      // Use actual processed count as final totalRows
+      totalRows = processed;
 
       await prisma.importBatch.update({
         where: { id: batch.id },
         data: {
+          totalRows: processed,
           validRows: imported + updated + skipped,
           importedRows: imported,
           updatedRows: updated,
@@ -420,6 +488,15 @@ function handleImport(text: string, filename: string) {
           completedAt: new Date(),
         },
       });
+
+      // Notify when new content was imported
+      if (imported > 0 || updated > 0) {
+        createNotification(
+          "Nou contingut disponible",
+          `${imported + updated} publicació${imported + updated !== 1 ? "ns" : ""} afegida${imported + updated !== 1 ? "es" : ""} a la Content Library.`,
+          "content"
+        ).catch(() => {});
+      }
 
       send({
         type: "done",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 
 declare global {
   interface Window {
@@ -59,8 +59,9 @@ export default function TwitterEmbed({
   onLoaded?: () => void;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [loading, setLoading] = useState(true);
 
-  const notify = useCallback(() => onLoaded?.(), [onLoaded]);
+  const notify = useCallback(() => { setLoading(false); onLoaded?.(); }, [onLoaded]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -112,9 +113,23 @@ export default function TwitterEmbed({
   }, [tweetId, canonicalUrl, notify]);
 
   return (
-    <div
-      ref={containerRef}
-      style={{ minHeight: 160, display: "flex", alignItems: "center", justifyContent: "center" }}
-    />
+    <div style={{ position: "relative" }}>
+      {loading && (
+        <div className="flex flex-col items-center justify-center gap-3 rounded-lg"
+          style={{ background: "var(--bg-input)", minHeight: 200 }}>
+          <div className="relative">
+            <div className="absolute inset-0 rounded-full animate-ping opacity-20"
+              style={{ background: "#1D9BF0" }} />
+            <div className="relative animate-pulse">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="#1D9BF0">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.74l7.73-8.835L1.254 2.25H8.08l4.213 5.567zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
+            </div>
+          </div>
+          <span className="text-xs animate-pulse" style={{ color: "var(--text-muted)" }}>Loading...</span>
+        </div>
+      )}
+      <div ref={containerRef} style={{ display: loading ? "none" : "block" }} />
+    </div>
   );
 }

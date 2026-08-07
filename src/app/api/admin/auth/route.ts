@@ -13,12 +13,14 @@ function parseSession(value: string) {
   return { userId, role };
 }
 
-const COOKIE_OPTS = {
-  httpOnly: true,
-  sameSite: "lax" as const,
-  path: "/",
-  maxAge: 60 * 60 * 24 * 7, // 7 days
-};
+function cookieOpts(remember: boolean) {
+  return {
+    httpOnly: true,
+    sameSite: "lax" as const,
+    path: "/",
+    maxAge: remember ? 60 * 60 * 24 * 15 : 60 * 60 * 24,
+  };
+}
 
 export async function GET() {
   const cookieStore = await cookies();
@@ -36,7 +38,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const { email, password, action } = body;
+  const { email, password, action, remember = false } = body;
   if (!email || !password) return NextResponse.json({ error: "Missing fields" }, { status: 400 });
 
   // Setup first superadmin: only allowed if no real users exist
@@ -50,7 +52,7 @@ export async function POST(request: NextRequest) {
       update: { password, role: "ROLE_SUPERADMIN" },
     });
     const res = NextResponse.json({ ok: true });
-    res.cookies.set(COOKIE, sessionToken(user.id, user.role), COOKIE_OPTS);
+    res.cookies.set(COOKIE, sessionToken(user.id, user.role), cookieOpts(remember));
     return res;
   }
 
@@ -65,7 +67,7 @@ export async function POST(request: NextRequest) {
   }
 
   const res = NextResponse.json({ ok: true, user: { id: user.id, email: user.email, role: user.role } });
-  res.cookies.set(COOKIE, sessionToken(user.id, user.role), COOKIE_OPTS);
+  res.cookies.set(COOKIE, sessionToken(user.id, user.role), cookieOpts(remember));
   return res;
 }
 

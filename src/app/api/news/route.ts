@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { createNotification } from "@/lib/notify";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -63,6 +64,11 @@ export async function POST(request: NextRequest) {
     },
   });
 
+  createNotification(
+    "Nova notícia afegida",
+    `"${article.title}" ja és visible a Social Media News.`,
+    "news"
+  ).catch(() => {});
   return NextResponse.json(article);
 }
 

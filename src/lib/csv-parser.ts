@@ -22,6 +22,12 @@ const COLUMN_ALIASES: Record<string, string> = {
   date: "published_at",
   trend: "trend",
   campaign: "campaign",
+  competitions: "competition",  // accept both singular and plural
+  sports: "sport",
+  entities: "entity",
+  formats: "format",
+  platforms: "platform",
+  clubs: "club",
 };
 
 // Strip bare \r (carriage returns not followed by \n) that appear inside
@@ -65,7 +71,7 @@ const BASE_PARSE_OPTS = {
   relax_column_count: true,
   // Only treat \r\n and \n as row delimiters — bare \r inside quoted fields
   // (e.g. Instagram captions) is stripped by stripBareCR before this runs.
-  record_delimiter: ["\r\n", "\n"],
+  record_delimiter: ["\r\n", "\n"] as string[],
   // Skip rows with malformed quotes (e.g. scraped titles that contain an
   // unescaped " character) rather than falling back to quote:false which
   // would break all properly-quoted fields across the entire file.
@@ -195,7 +201,8 @@ export async function parseCSVStream(
 
   // Determine which content/opts to use by doing a quick sync test-parse of the first 10 rows
   let content = cleaned;
-  let opts: Parameters<typeof parseStream>[0] = BASE_PARSE_OPTS;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let opts: any = BASE_PARSE_OPTS;
 
   try {
     parse(cleaned, { ...BASE_PARSE_OPTS, to: 10 });
@@ -210,6 +217,94 @@ export async function parseCSVStream(
   }
 
   return runStreamParser(content, opts, onChunk, chunkSize);
+}
+
+// Streaming variant that reads directly from a ReadableStream<Uint8Array>,
+// avoiding loading the entire file into RAM. Used for large CSV imports.
+export async function parseCSVFromStream(
+  stream: ReadableStream<Uint8Array>,
+  onChunk: (rows: CSVRow[]) => Promise<void>,
+  chunkSize = 2000,
+): Promise<{ totalRows: number; headers: string[]; error?: string }> {
+  const reader = stream.getReader();
+
+  // Read first chunk to detect BOM / encoding
+  const firstRead = await reader.read();
+  if (firstRead.done || !firstRead.value || firstRead.value.length === 0) {
+    return { totalRows: 0, headers: [], error: "Empty file" };
+  }
+  const firstBytes = firstRead.value;
+
+  let encoding = "utf-8";
+  let bomSkip = 0;
+  if (firstBytes[0] === 0xff && firstBytes[1] === 0xfe) { encoding = "utf-16le"; bomSkip = 2; }
+  else if (firstBytes[0] === 0xfe && firstBytes[1] === 0xff) { encoding = "utf-16be"; bomSkip = 2; }
+  else if (firstBytes[0] === 0xef && firstBytes[1] === 0xbb && firstBytes[2] === 0xbf) { bomSkip = 3; }
+
+  const decoder = new TextDecoder(encoding);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const opts: any = { ...BASE_PARSE_OPTS, skip_records_with_error: true };
+
+  return new Promise<{ totalRows: number; headers: string[]; error?: string }>((resolve) => {
+    const parser = parseStream(opts);
+    let headers: string[] = [];
+    let totalRows = 0;
+    let accumChunk: CSVRow[] = [];
+    let headersSet = false;
+    let processingPromise = Promise.resolve();
+
+    parser.on("readable", () => {
+      let record: Record<string, string> | null;
+      while ((record = parser.read()) !== null) {
+        if (!headersSet) {
+          headers = Object.keys(record).map((h) => h.trim().toLowerCase());
+          const normalizedHeaders = headers.map((h) => COLUMN_ALIASES[h] || h);
+          const hasId = normalizedHeaders.includes("external_id") || normalizedHeaders.includes("embed") || normalizedHeaders.includes("url");
+          if (!hasId) {
+            parser.destroy(new Error("Missing required column: external_id, url or embed"));
+            return;
+          }
+          headersSet = true;
+        }
+        accumChunk.push(normalizeRecord(record));
+        totalRows++;
+        if (accumChunk.length >= chunkSize) {
+          const batch = accumChunk;
+          accumChunk = [];
+          processingPromise = processingPromise.then(() => onChunk(batch));
+        }
+      }
+    });
+
+    parser.on("error", (err) => resolve({ totalRows, headers, error: err.message }));
+
+    parser.on("end", async () => {
+      if (accumChunk.length > 0) processingPromise = processingPromise.then(() => onChunk(accumChunk));
+      await processingPromise;
+      resolve({ totalRows, headers });
+    });
+
+    async function feedStream() {
+      // Feed first chunk (skip BOM bytes)
+      const slice = bomSkip > 0 ? firstBytes.slice(bomSkip) : firstBytes;
+      parser.write(decoder.decode(slice, { stream: true }));
+
+      // Feed remaining chunks
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        if (value && value.length > 0) {
+          parser.write(decoder.decode(value, { stream: true }));
+        }
+      }
+      // Flush decoder
+      const tail = decoder.decode();
+      if (tail) parser.write(tail);
+      parser.end();
+    }
+
+    feedStream().catch((err) => resolve({ totalRows, headers, error: (err as Error).message }));
+  });
 }
 
 export function countCSVRows(text: string): number {
@@ -265,8 +360,19 @@ export function extractPostId(embed: string, platform: string): string | null {
     return extractInstagramShortcode(embed);
   }
   if (platformLower === "youtube") {
-    const match = embed.match(/youtube\.com\/embed\/([A-Za-z0-9_-]+)/);
-    return match ? match[1] : null;
+    // Shorts URL: youtube.com/shorts/VIDEO_ID
+    const shortsMatch = embed.match(/youtube\.com\/shorts\/([A-Za-z0-9_-]+)/);
+    if (shortsMatch) return shortsMatch[1];
+    // Embed URL: youtube.com/embed/VIDEO_ID
+    const embedMatch = embed.match(/youtube\.com\/embed\/([A-Za-z0-9_-]+)/);
+    if (embedMatch) return embedMatch[1];
+    // Watch URL: youtube.com/watch?v=VIDEO_ID
+    const watchMatch = embed.match(/[?&]v=([A-Za-z0-9_-]+)/);
+    if (watchMatch) return watchMatch[1];
+    // youtu.be/VIDEO_ID
+    const shortMatch = embed.match(/youtu\.be\/([A-Za-z0-9_-]+)/);
+    if (shortMatch) return shortMatch[1];
+    return null;
   }
   if (platformLower === "tiktok") {
     const match = embed.match(/tiktok\.com\/embed\/v2\/(\d+)/) || embed.match(/tiktok\.com\/.*?\/video\/(\d+)/);
@@ -287,6 +393,14 @@ export function extractPostId(embed: string, platform: string): string | null {
   if (platformLower === "linkedin") {
     const match = embed.match(/linkedin\.com\/embed\/feed\/update\/([^?"]+)/);
     return match ? match[1] : null;
+  }
+  if (platformLower === "pinterest") {
+    // pinterest.com/pin/123456789/ or pin URL
+    const match = embed.match(/pinterest\.com\/pin\/(\d+)/);
+    if (match) return match[1];
+    // fallback: bare numeric ID
+    const numeric = embed.trim().match(/^(\d+)$/);
+    return numeric ? numeric[1] : null;
   }
 
   return null;
@@ -332,6 +446,8 @@ export function buildCanonicalUrl(postId: string, platform: string): string {
       return postId.startsWith("http") ? postId : `https://www.facebook.com/${postId}`;
     case "linkedin":
       return `https://www.linkedin.com/feed/update/${postId}`;
+    case "pinterest":
+      return `https://www.pinterest.com/pin/${postId}/`;
     default:
       return postId;
   }
@@ -427,6 +543,7 @@ export function normalizePlatform(platform: string): string {
     facebook: "Facebook",
     youtube: "YouTube",
     linkedin: "LinkedIn",
+    pinterest: "Pinterest",
   };
   return map[platform.toLowerCase().trim()] || platform.trim();
 }
@@ -466,6 +583,10 @@ export function validateRow(row: CSVRow): ValidationResult {
 
   let postId = row.external_id?.trim() || "";
 
+  // Check for YouTube Shorts before extracting post ID
+  const rawSource = (row.url || row.embed || "").trim();
+  const isYouTubeShort = platform === "YouTube" && rawSource.includes("/shorts/");
+
   if (!postId && row.embed) {
     const extracted = extractPostId(row.embed, platform);
     if (extracted) postId = extracted;
@@ -482,8 +603,14 @@ export function validateRow(row: CSVRow): ValidationResult {
   }
 
   result.postId = postId;
-  result.canonicalUrl = buildCanonicalUrl(postId, platform);
-  result.embedUrl = buildEmbedUrl(postId, platform);
+  if (isYouTubeShort) {
+    // Preserve Shorts URL so the YouTube Shorts filter can detect it
+    result.canonicalUrl = `https://www.youtube.com/shorts/${postId}`;
+    result.embedUrl = `https://www.youtube.com/embed/${postId}`;
+  } else {
+    result.canonicalUrl = buildCanonicalUrl(postId, platform);
+    result.embedUrl = buildEmbedUrl(postId, platform);
+  }
   result.valid = true;
 
   if (row.title) {
