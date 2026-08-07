@@ -89,26 +89,51 @@ export default function InstagramEmbed({ shortcode, canonicalUrl, platform = "In
         const container = containerRef.current;
         if (!container) { notifyLoaded(); return; }
 
-        // Check immediately — sometimes the iframe is already there
-        if (container.querySelector("iframe")) { notifyLoaded(); return; }
+        function watchIframe(iframe: HTMLIFrameElement) {
+          // Wait for iframe document to load, then 300 ms for Instagram's
+          // resize postMessage to be processed before showing the card.
+          let resizeTimer: ReturnType<typeof setTimeout> | null = null;
 
-        // MutationObserver fires the instant Instagram injects the iframe
-        const mo = new MutationObserver(() => {
-          if (container.querySelector("iframe")) {
-            doCleanup();
+          const done = () => {
+            if (resizeTimer) clearTimeout(resizeTimer);
+            if (globalFallback) clearTimeout(globalFallback);
+            cleanupRef.current = null;
             notifyLoaded();
+          };
+
+          const onIframeLoad = () => {
+            resizeTimer = setTimeout(done, 300);
+            cleanupRef.current = () => { if (resizeTimer) clearTimeout(resizeTimer); };
+          };
+
+          // Safety: show after 8 s even if load never fires
+          const globalFallback = setTimeout(done, 8000);
+
+          iframe.addEventListener("load", onIframeLoad, { once: true });
+          cleanupRef.current = () => {
+            iframe.removeEventListener("load", onIframeLoad);
+            clearTimeout(globalFallback);
+            if (resizeTimer) clearTimeout(resizeTimer);
+          };
+        }
+
+        // Instagram may have already injected the iframe synchronously
+        const existing = container.querySelector("iframe");
+        if (existing) { watchIframe(existing); return; }
+
+        // Otherwise watch for it
+        let globalFallback: ReturnType<typeof setTimeout>;
+        const mo = new MutationObserver(() => {
+          const iframe = container.querySelector("iframe");
+          if (iframe) {
+            mo.disconnect();
+            clearTimeout(globalFallback);
+            watchIframe(iframe);
           }
         });
-        mo.observe(container, { childList: true, subtree: true, attributes: true });
-
-        const timer = setTimeout(() => { doCleanup(); notifyLoaded(); }, 7000);
-
-        function doCleanup() {
-          mo.disconnect();
-          clearTimeout(timer);
-          cleanupRef.current = null;
-        }
-        cleanupRef.current = doCleanup;
+        mo.observe(container, { childList: true, subtree: true });
+        globalFallback = setTimeout(() => { mo.disconnect(); notifyLoaded(); }, 9000);
+        cleanupRef.current = () => { mo.disconnect(); clearTimeout(globalFallback); };
       })
       .catch(() => {
         setStatus("error");
