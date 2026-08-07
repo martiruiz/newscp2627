@@ -119,6 +119,7 @@ function useNavItems() {
   const TOP_NAV: NavItem[] = [
     { label: t("nav.dashboard"), href: "/dashboard", icon: "dashboard" },
     { label: t("nav.contentLibrary"), href: "/feed", icon: "library" },
+    { label: "Profiles", href: "/profiles", icon: "profiles" },
     { label: t("nav.socialMediaNews"), href: "/news", icon: "news" },
     { label: t("nav.support"), href: "/support", icon: "contact" },
   ];
@@ -147,6 +148,8 @@ function NavIcon({ name, size = 18 }: { name: string; size?: number }) {
       return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>;
     case "account":
       return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>;
+    case "profiles":
+      return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>;
     case "signout":
       return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>;
     case "import":
