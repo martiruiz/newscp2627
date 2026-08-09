@@ -564,6 +564,8 @@ function DetailDrawer({
   const [deleting, setDeleting] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteInput, setDeleteInput] = useState("");
 
   const [editSportId, setEditSportId] = useState("");
   const [editEntityTypeId, setEditEntityTypeId] = useState("");
@@ -627,10 +629,15 @@ function DetailDrawer({
   }
 
   async function handleDelete() {
-    if (!confirm("Delete this content?")) return;
     setDeleting(true);
-    await fetch(`/api/admin/publications?id=${pubId}`, { method: "DELETE" });
-    onDeleted();
+    try {
+      const res = await fetch(`/api/admin/publications?id=${pubId}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Failed");
+      setDeleteOpen(false);
+      onDeleted();
+    } catch {
+      setDeleting(false);
+    }
   }
 
   function toggleId(list: string[], setList: (v: string[]) => void, id: string) {
@@ -638,10 +645,15 @@ function DetailDrawer({
   }
 
   useEffect(() => {
-    function onKey(e: KeyboardEvent) { if (e.key === "Escape") onClose(); }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        if (deleteOpen) { setDeleteOpen(false); return; }
+        onClose();
+      }
+    }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
+  }, [onClose, deleteOpen]);
 
   return (
     <>
@@ -708,7 +720,7 @@ function DetailDrawer({
                 </a>
               )}
               <button
-                onClick={handleDelete}
+                onClick={() => { setDeleteInput(""); setDeleteOpen(true); }}
                 disabled={deleting}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold disabled:opacity-50"
                 style={{ background: "rgba(239,68,68,0.12)", color: "#ef4444", border: "1px solid rgba(239,68,68,0.2)" }}
@@ -945,6 +957,78 @@ function DetailDrawer({
           )}
         </div>
       </div>
+
+      {/* Delete confirmation modal */}
+      {deleteOpen && (
+        <>
+          <div
+            className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm"
+            onClick={() => !deleting && setDeleteOpen(false)}
+          />
+          <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 pointer-events-none">
+            <div
+              className="pointer-events-auto w-full max-w-sm rounded-2xl p-6"
+              style={{ background: "var(--bg-secondary)", border: "1px solid var(--border-color)", boxShadow: "0 24px 80px rgba(0,0,0,0.5)" }}
+            >
+              {/* Icon */}
+              <div
+                className="flex items-center justify-center w-12 h-12 rounded-xl mb-4"
+                style={{ background: "rgba(239,68,68,0.12)" }}
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                </svg>
+              </div>
+
+              <h2 className="text-base font-bold mb-1" style={{ color: "var(--text-primary)" }}>
+                Eliminar contingut
+              </h2>
+              <p className="text-sm mb-4" style={{ color: "var(--text-muted)" }}>
+                Aquesta acció és irreversible. Escriu{" "}
+                <span className="font-mono font-bold" style={{ color: "#ef4444" }}>DELETE</span>{" "}
+                per confirmar.
+              </p>
+
+              <input
+                type="text"
+                value={deleteInput}
+                onChange={(e) => setDeleteInput(e.target.value)}
+                placeholder="Escriu DELETE"
+                autoFocus
+                className="w-full px-3 py-2.5 rounded-lg text-sm font-mono outline-none mb-4"
+                style={{
+                  background: "var(--bg-input)",
+                  border: `1px solid ${deleteInput === "DELETE" ? "#ef4444" : "var(--border-color)"}`,
+                  color: "var(--text-primary)",
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && deleteInput === "DELETE") handleDelete();
+                }}
+              />
+
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setDeleteOpen(false)}
+                  disabled={deleting}
+                  className="flex-1 py-2 rounded-lg text-sm font-semibold transition-all"
+                  style={{ background: "var(--bg-input)", border: "1px solid var(--border-color)", color: "var(--text-secondary)" }}
+                >
+                  Cancel·lar
+                </button>
+                <button
+                  onClick={handleDelete}
+                  disabled={deleteInput !== "DELETE" || deleting}
+                  className="flex-1 py-2 rounded-lg text-sm font-bold transition-all disabled:opacity-40"
+                  style={{ background: "#ef4444", color: "#fff" }}
+                >
+                  {deleting ? "Eliminant…" : "Eliminar"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </>
   );
 }

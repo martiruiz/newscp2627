@@ -1,6 +1,6 @@
 // ── Cache names ──────────────────────────────────────────────────────────────
-const STATIC_CACHE = "scp-static-v2";
-const DYNAMIC_CACHE = "scp-dynamic-v2";
+const STATIC_CACHE = "scp-static-v3";
+const DYNAMIC_CACHE = "scp-dynamic-v3";
 const ALL_CACHES = [STATIC_CACHE, DYNAMIC_CACHE];
 
 // Pages and assets to pre-cache on install
@@ -54,19 +54,32 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Next.js hashed static assets (_next/static) — cache-first (immutable)
+  // Next.js static assets — network-first in dev (no content hashes), cache-first in prod
   if (url.pathname.startsWith("/_next/static/")) {
-    event.respondWith(
-      caches.match(request).then(
-        (cached) =>
-          cached ||
-          fetch(request).then((response) => {
+    const isDev = self.location.hostname === "localhost" || self.location.hostname === "127.0.0.1";
+    if (isDev) {
+      event.respondWith(
+        fetch(request)
+          .then((response) => {
             const clone = response.clone();
             caches.open(STATIC_CACHE).then((c) => c.put(request, clone));
             return response;
           })
-      )
-    );
+          .catch(() => caches.match(request).then((cached) => cached || new Response(null, { status: 503 })))
+      );
+    } else {
+      event.respondWith(
+        caches.match(request).then(
+          (cached) =>
+            cached ||
+            fetch(request).then((response) => {
+              const clone = response.clone();
+              caches.open(STATIC_CACHE).then((c) => c.put(request, clone));
+              return response;
+            })
+        )
+      );
+    }
     return;
   }
 

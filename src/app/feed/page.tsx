@@ -48,7 +48,7 @@ const DEFAULT_FILTERS: SelectedFilters = {
   order: "latest",
 };
 
-const BATCH_SIZE = 9; // cards per page
+const PAGE_SIZE = 100;
 
 function getActiveChips(filters: SelectedFilters) {
   const chips: { label: string; key: string; filterKey: string; value: string }[] = [];
@@ -290,11 +290,12 @@ function SmartFilters({
 export default function FeedPage() {
   const searchParams = useSearchParams();
   const initialOrder = searchParams.get("order") === "random" ? "random" : "latest";
+  const initialPage = parseInt(searchParams.get("p") || "1", 10) || 1;
 
   const [publications, setPublications] = useState<Publication[]>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
+  const [currentPage, setCurrentPage] = useState(initialPage);
   const [filters, setFilters] = useState<SelectedFilters>({ ...DEFAULT_FILTERS, order: initialOrder });
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -302,10 +303,9 @@ export default function FeedPage() {
   const [readyPubs, setReadyPubs] = useState(new Set<string>());
 
   const abortRef = useRef<AbortController | null>(null);
-  const sentinelRef = useRef<HTMLDivElement>(null);
-  const pageRef = useRef(1);
+  const mainRef = useRef<HTMLDivElement>(null);
 
-  // Sync URL ?order=random param into filter state (handles Discover tab clicks while already on /feed)
+  // Sync URL ?order=random param into filter state
   useEffect(() => {
     const urlOrder = searchParams.get("order") === "random" ? "random" : "latest";
     setFilters((f) => {
@@ -324,14 +324,14 @@ export default function FeedPage() {
   }, []);
 
   const fetchPublications = useCallback(
-    async (page: number, append = false) => {
+    async (page: number) => {
       if (abortRef.current) abortRef.current.abort();
       const controller = new AbortController();
       abortRef.current = controller;
 
       const params = new URLSearchParams();
       params.set("page", String(page));
-      params.set("limit", String(BATCH_SIZE));
+      params.set("limit", String(PAGE_SIZE));
 
       for (const [key, value] of Object.entries(filters)) {
         if (Array.isArray(value)) {
@@ -342,61 +342,42 @@ export default function FeedPage() {
       }
 
       try {
-        if (!append) setLoading(true);
-        else setLoadingMore(true);
-
+        setLoading(true);
         const res = await fetch(`/api/publications?${params}`, {
           signal: controller.signal,
         });
         const data = await res.json();
-        const newPubs: Publication[] = data.publications;
-
-        if (append) {
-          setPublications((prev) => [...prev, ...newPubs]);
-        } else {
-          setReadyPubs(new Set());
-          setPublications(newPubs);
-        }
+        setReadyPubs(new Set());
+        setPublications(data.publications);
         setPagination(data.pagination);
-        pageRef.current = page;
       } catch (e) {
         if ((e as Error).name !== "AbortError") {
           console.error("Failed to fetch publications:", e);
           setLoading(false);
-          setLoadingMore(false);
         }
       } finally {
         if (!controller.signal.aborted) {
           setLoading(false);
-          setLoadingMore(false);
         }
       }
     },
     [filters]
   );
 
+  // Reset to page 1 when filters change
   useEffect(() => {
-    pageRef.current = 1;
-    setPublications([]);
-    fetchPublications(1);
-  }, [fetchPublications]);
+    setCurrentPage(1);
+  }, [filters]);
 
   useEffect(() => {
-    const sentinel = sentinelRef.current;
-    if (!sentinel) return;
+    fetchPublications(currentPage);
+  }, [fetchPublications, currentPage]);
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && pagination?.hasMore && !loadingMore && !loading) {
-          fetchPublications(pageRef.current + 1, true);
-        }
-      },
-      { rootMargin: "400px" }
-    );
-
-    observer.observe(sentinel);
-    return () => observer.disconnect();
-  }, [pagination, loadingMore, loading, fetchPublications]);
+  function goToPage(page: number) {
+    setCurrentPage(page);
+    mainRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 
   const activeFilterCount =
     filters.sport.length +
@@ -425,7 +406,7 @@ export default function FeedPage() {
           resultCount={pagination?.total}
         />
 
-        <main className="flex-1 min-w-0 p-4">
+        <main ref={mainRef} className="flex-1 min-w-0 p-4">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
               <button
@@ -523,7 +504,7 @@ export default function FeedPage() {
 
           {loading ? (
             <MasonryGrid>
-              {Array.from({ length: BATCH_SIZE }).map((_, i) => (
+              {Array.from({ length: 9 }).map((_, i) => (
                 <SkeletonCard key={`sk-init-${i}`} index={i} />
               ))}
             </MasonryGrid>
@@ -626,7 +607,7 @@ export default function FeedPage() {
                 const isReady = readyPubs.has(pubKey);
                 return (
                   <CardSlot key={pubKey}>
-                    {!isReady && <SkeletonCard index={i % BATCH_SIZE} />}
+                    {!isReady && <SkeletonCard index={i % 9} />}
                     <div style={{
                       position: isReady ? "relative" : "absolute",
                       left: isReady ? undefined : "-9999px",
@@ -643,22 +624,89 @@ export default function FeedPage() {
                   </CardSlot>
                 );
               })}
-              {loadingMore && Array.from({ length: BATCH_SIZE }).map((_, i) => (
-                <SkeletonCard key={`sk-more-${i}`} index={i} />
-              ))}
             </MasonryGrid>
             </div>
           )}
 
-          {publications.length > 0 && !loading && !pagination?.hasMore && (
-            <div className="text-center py-8">
-              <span className="text-xs" style={{ color: "var(--text-muted)" }}>No more publications</span>
-            </div>
+          {/* Pagination controls */}
+          {!loading && pagination && pagination.totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={pagination.totalPages}
+              onPageChange={goToPage}
+            />
           )}
-
-          <div ref={sentinelRef} className="h-4" />
         </main>
       </div>
+    </div>
+  );
+}
+
+function Pagination({
+  currentPage,
+  totalPages,
+  onPageChange,
+}: {
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+}) {
+  function getPages(): (number | "…")[] {
+    if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
+    const pages: (number | "…")[] = [1];
+    if (currentPage > 3) pages.push("…");
+    const start = Math.max(2, currentPage - 1);
+    const end = Math.min(totalPages - 1, currentPage + 1);
+    for (let i = start; i <= end; i++) pages.push(i);
+    if (currentPage < totalPages - 2) pages.push("…");
+    pages.push(totalPages);
+    return pages;
+  }
+
+  return (
+    <div className="flex items-center justify-center gap-1.5 py-8">
+      <button
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="flex items-center justify-center h-10 px-3 rounded-lg text-sm transition-all disabled:opacity-30"
+        style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", color: "var(--text-secondary)" }}
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+
+      {getPages().map((p, i) =>
+        p === "…" ? (
+          <span key={`ellipsis-${i}`} className="h-10 px-2 flex items-center justify-center text-sm" style={{ color: "var(--text-muted)" }}>
+            …
+          </span>
+        ) : (
+          <button
+            key={p}
+            onClick={() => onPageChange(p as number)}
+            className="h-10 px-3 min-w-[2.5rem] rounded-lg text-sm font-semibold transition-all"
+            style={{
+              background: currentPage === p ? "var(--selected-bg)" : "var(--bg-card)",
+              color: currentPage === p ? "#fff" : "var(--text-secondary)",
+              border: currentPage === p ? "none" : "1px solid var(--border-color)",
+            }}
+          >
+            {p}
+          </button>
+        )
+      )}
+
+      <button
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className="flex items-center justify-center h-10 px-3 rounded-lg text-sm transition-all disabled:opacity-30"
+        style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", color: "var(--text-secondary)" }}
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </button>
     </div>
   );
 }

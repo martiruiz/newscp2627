@@ -38,8 +38,31 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const { email, password, action, remember = false } = body;
+  const { email, password, name, action, remember = false } = body;
   if (!email || !password) return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+
+  // Register new admin account (requires at least one existing superadmin to have invited them,
+  // or the system is open during initial setup)
+  if (action === "register") {
+    if (password.length < 8) return NextResponse.json({ error: "La contrasenya ha de tenir almenys 8 caràcters" }, { status: 400 });
+    const existing = await prisma.user.findUnique({ where: { email: email.trim().toLowerCase() } });
+    if (existing) return NextResponse.json({ error: "Aquest correu ja està registrat" }, { status: 409 });
+    try {
+      const user = await prisma.user.create({
+        data: {
+          email: email.trim().toLowerCase(),
+          name: name?.trim() || null,
+          password,
+          role: "ROLE_SUPERADMIN",
+        },
+      });
+      const res = NextResponse.json({ ok: true });
+      res.cookies.set(COOKIE, sessionToken(user.id, user.role), cookieOpts(remember));
+      return res;
+    } catch {
+      return NextResponse.json({ error: "Error en crear el compte" }, { status: 500 });
+    }
+  }
 
   // Setup first superadmin: only allowed if no real users exist
   if (action === "setup") {
