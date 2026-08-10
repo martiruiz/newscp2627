@@ -101,6 +101,10 @@ model Publication {
   rawImportData     String?
   importStatus      String?
   importError       String?
+  reviewStatus      String?   // null=legacy | "pending" | "approved" | "rejected"
+  reviewedAt        DateTime?
+  reviewedBy        String?
+  archivedAt        DateTime? // set = archived, null = active
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
@@ -112,6 +116,8 @@ model Publication {
   @@index([accountUsername])
   @@index([platformId, publishedAt(sort: Desc)])
   @@index([contentFormatId, publishedAt(sort: Desc)])
+  @@index([reviewStatus])
+  @@index([createdAt(sort: Desc)])
 }
 
 model PublicationCompetition {

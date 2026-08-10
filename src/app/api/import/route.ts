@@ -376,6 +376,7 @@ function handleImport(file: File, filename: string) {
               entityName: item.row.club?.trim() || null,
               importBatchId: batch.id,
               importStatus: "imported",
+              reviewStatus: "pending",
             });
 
             if (sportIds.length > 0) sportsToCreate.push({ postId: item.validation.postId, sportIds });

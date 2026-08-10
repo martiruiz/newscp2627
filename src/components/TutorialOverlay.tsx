@@ -140,22 +140,27 @@ function InfoPanel({
         border: `1px solid ${C}40`,
         boxShadow: `0 24px 64px rgba(0,0,0,0.6), 0 0 0 1px ${C}20`,
         overflow: "hidden",
+        display: "flex", flexDirection: "column",
         transition: "top 0.4s cubic-bezier(0.4,0,0.2,1), left 0.4s cubic-bezier(0.4,0,0.2,1)",
-        maxHeight: isMobile ? "55vh" : "none",
+        maxHeight: isMobile ? "60vh" : "none",
         ...posStyle,
       }}
     >
-      <div style={{ padding: "10px 16px 0" }}>
-        <span style={{
-          fontSize: 9, fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase",
-          color: C, background: `${C}18`, padding: "3px 8px", borderRadius: 99,
-        }}>
-          {t.badge}
-        </span>
+      {/* Header: badge + gradient bar */}
+      <div style={{ flexShrink: 0 }}>
+        <div style={{ padding: "10px 16px 0" }}>
+          <span style={{
+            fontSize: 9, fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase",
+            color: C, background: `${C}18`, padding: "3px 8px", borderRadius: 99,
+          }}>
+            {t.badge}
+          </span>
+        </div>
+        <div style={{ height: 2, background: `linear-gradient(90deg, ${C}, ${C}80)`, marginTop: 10 }} />
       </div>
-      <div style={{ height: 2, background: `linear-gradient(90deg, ${C}, ${C}80)`, marginTop: 10 }} />
 
-      <div style={{ padding }}>
+      {/* Scrollable content */}
+      <div style={{ padding, overflowY: "auto", flex: 1 }}>
         <div style={{ display: "flex", gap: 4, marginBottom: isMobile ? 10 : 14 }}>
           {Array.from({ length: total }).map((_, i) => (
             <div key={i} style={{
@@ -182,37 +187,43 @@ function InfoPanel({
           </div>
         </div>
 
-        <p style={{ color: "rgba(255,255,255,0.65)", fontSize: isMobile ? 11 : 12, lineHeight: 1.6, marginBottom: isMobile ? 12 : 16 }}>
+        <p style={{ color: "rgba(255,255,255,0.65)", fontSize: isMobile ? 11 : 12, lineHeight: 1.6, marginBottom: 0 }}>
           {description}
         </p>
+      </div>
 
-        <div style={{ display: "flex", gap: 8 }}>
-          {stepIdx > 0 && (
-            <button
-              onClick={onPrev}
-              onMouseDown={(e) => { (e.currentTarget as HTMLButtonElement).style.background = C; (e.currentTarget as HTMLButtonElement).style.color = "#fff"; }}
-              onMouseUp={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.08)"; (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.7)"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.08)"; (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.7)"; }}
-              style={{
-                padding: "9px 12px", borderRadius: 12, fontSize: 12, fontWeight: 800,
-                background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.7)",
-                border: "1px solid rgba(255,255,255,0.12)", cursor: "pointer", whiteSpace: "nowrap",
-                transition: "background 0.15s, color 0.15s",
-              }}
-            >
-              {t.prev}
-            </button>
-          )}
+      {/* Buttons — always visible at the bottom */}
+      <div style={{
+        flexShrink: 0, display: "flex", gap: 8,
+        padding: isMobile ? "10px 16px 14px" : "0 20px 16px",
+        borderTop: "1px solid rgba(255,255,255,0.06)",
+        background: "#111827",
+      }}>
+        {stepIdx > 0 && (
           <button
-            onClick={onNext}
+            onClick={onPrev}
+            onMouseDown={(e) => { (e.currentTarget as HTMLButtonElement).style.background = C; (e.currentTarget as HTMLButtonElement).style.color = "#fff"; }}
+            onMouseUp={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.08)"; (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.7)"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.08)"; (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.7)"; }}
             style={{
-              flex: 1, padding: "9px 14px", borderRadius: 12, fontSize: 12, fontWeight: 800,
-              background: C, color: "#fff", border: "none", cursor: "pointer",
+              padding: "9px 12px", borderRadius: 12, fontSize: 12, fontWeight: 800,
+              background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.7)",
+              border: "1px solid rgba(255,255,255,0.12)", cursor: "pointer", whiteSpace: "nowrap",
+              transition: "background 0.15s, color 0.15s",
             }}
           >
-            {isLast ? t.exploreNow : t.next}
+            {t.prev}
           </button>
-        </div>
+        )}
+        <button
+          onClick={onNext}
+          style={{
+            flex: 1, padding: "9px 14px", borderRadius: 12, fontSize: 12, fontWeight: 800,
+            background: C, color: "#fff", border: "none", cursor: "pointer",
+          }}
+        >
+          {isLast ? t.exploreNow : t.next}
+        </button>
       </div>
     </div>
   );

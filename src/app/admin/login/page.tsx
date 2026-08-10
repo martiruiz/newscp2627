@@ -99,10 +99,32 @@ export default function AdminLoginPage() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center px-4"
-      style={{ background: "var(--bg-primary)" }}
+      className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden"
+      style={{ background: "#050d1a" }}
     >
-      <div className="w-full max-w-sm">
+      {/* Background photo */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/login-bg.png"
+        alt=""
+        aria-hidden="true"
+        style={{
+          position: "absolute", inset: 0, width: "100%", height: "100%",
+          objectFit: "cover", objectPosition: "center",
+          opacity: 0.18, pointerEvents: "none", userSelect: "none",
+        }}
+      />
+      {/* Blue gradient overlay */}
+      <div style={{
+        position: "absolute", inset: 0, pointerEvents: "none",
+        background: "linear-gradient(135deg, rgba(2,8,40,0.92) 0%, rgba(15,40,100,0.78) 40%, rgba(37,99,235,0.55) 70%, rgba(59,130,246,0.25) 100%)",
+      }} />
+      {/* Radial glow */}
+      <div style={{
+        position: "absolute", inset: 0, pointerEvents: "none",
+        background: "radial-gradient(ellipse 80% 60% at 50% 50%, rgba(37,99,235,0.12) 0%, transparent 70%)",
+      }} />
+      <div className="w-full max-w-sm" style={{ position: "relative", zIndex: 1 }}>
         {/* Logo */}
         <div className="flex justify-center mb-8">
           {/* eslint-disable-next-line @next/next/no-img-element */}

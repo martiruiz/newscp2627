@@ -32,6 +32,9 @@ export interface TutorialT {
     s10: { title: string; desc: string };
     s11: { title: string; desc: string };
     s12: { title: string; desc: string };
+    s13: { title: string; desc: string };
+    s14: { title: string; desc: string };
+    s15: { title: string; desc: string };
   };
 }
 
@@ -65,6 +68,9 @@ const ca: TutorialT = {
     s10: { title: "Desa publicacions", desc: "Fes clic a la icona de marca de qualsevol publicació per desar-la. Des de la secció Guardats podràs organitzar-les en carpetes per projecte, client o campanya." },
     s11: { title: "Càrrega infinita", desc: "La biblioteca carrega automàticament més contingut en fer scroll cap avall. No hi ha paginació — el contingut flueix de manera contínua mentre explores la col·lecció." },
     s12: { title: "Benvinguts a SCP!", desc: "Ja coneixes tota la biblioteca. Segueix-nos a les nostres xarxes per estar al dia de les últimes actualitzacions, continguts exclusius i novetats de la comunitat." },
+    s13: { title: "Collabs & Partnerships", desc: "Continguts creats en col·laboració amb marques, patrocinadors, clubs, esportistes o creadors. Ideal per aprendre com es gestionen les col·laboracions en el món del contingut esportiu." },
+    s14: { title: "Merchandising", desc: "Continguts relacionats amb equipacions, productes oficials, col·leccions i promocions de venda. Descobreix com les entitats esportives comuniquen les seves línies de producte." },
+    s15: { title: "Transfers", desc: "Continguts sobre fitxatges, renovacions, cessions, presentacions i sortides de jugadors. Analitza com es comuniquen els moviments de plantilla a les xarxes socials." },
   },
 };
 
@@ -98,6 +104,9 @@ const es: TutorialT = {
     s10: { title: "Guardar publicaciones", desc: "Haz clic en el icono de marcador de cualquier publicación para guardarla. Desde la sección Guardados podrás organizarlas en carpetas por proyecto, cliente o campaña." },
     s11: { title: "Carga infinita", desc: "La biblioteca carga automáticamente más contenido al hacer scroll hacia abajo. No hay paginación — el contenido fluye de forma continua mientras exploras la colección." },
     s12: { title: "¡Bienvenidos a SCP!", desc: "Ya conoces toda la biblioteca. Síguenos en nuestras redes para estar al día de las últimas actualizaciones, contenidos exclusivos y novedades de la comunidad." },
+    s13: { title: "Collabs & Partnerships", desc: "Contenidos creados en colaboración con marcas, patrocinadores, clubes, deportistas o creadores. Ideal para aprender cómo se gestionan las colaboraciones en el mundo del contenido deportivo." },
+    s14: { title: "Merchandising", desc: "Contenidos relacionados con equipaciones, productos oficiales, colecciones y promociones de venta. Descubre cómo las entidades deportivas comunican sus líneas de producto." },
+    s15: { title: "Transfers", desc: "Contenidos sobre fichajes, renovaciones, cesiones, presentaciones y salidas de jugadores. Analiza cómo se comunican los movimientos de plantilla en las redes sociales." },
   },
 };
 
@@ -131,6 +140,9 @@ const en: TutorialT = {
     s10: { title: "Save publications", desc: "Click the bookmark icon on any publication to save it. From the Saved section you can organize them in folders by project, client or campaign." },
     s11: { title: "Infinite scroll", desc: "The library automatically loads more content as you scroll down. There's no pagination — content flows continuously as you explore the collection." },
     s12: { title: "Welcome to SCP!", desc: "You now know the whole library. Follow us on our networks to stay up to date with the latest updates, exclusive content and community news." },
+    s13: { title: "Collabs & Partnerships", desc: "Content created in collaboration with brands, sponsors, clubs, athletes or creators. Learn how collaborations are managed in the world of sports content." },
+    s14: { title: "Merchandising", desc: "Content related to kits, official products, collections and sales promotions. Discover how sports entities communicate their product lines." },
+    s15: { title: "Transfers", desc: "Content about signings, renewals, loans, presentations and player departures. Analyse how squad movements are communicated on social media." },
   },
 };
 
@@ -164,6 +176,9 @@ const it: TutorialT = {
     s10: { title: "Salva pubblicazioni", desc: "Fai clic sull'icona segnalibro di qualsiasi pubblicazione per salvarla. Dalla sezione Salvati potrai organizzarle in cartelle per progetto, cliente o campagna." },
     s11: { title: "Caricamento infinito", desc: "La biblioteca carica automaticamente altri contenuti mentre scorri verso il basso. Non c'è paginazione — il contenuto scorre continuamente mentre esplori la raccolta." },
     s12: { title: "Benvenuti a SCP!", desc: "Ora conosci tutta la biblioteca. Seguici sui nostri social per restare aggiornato sugli ultimi aggiornamenti, contenuti esclusivi e novità della community." },
+    s13: { title: "Collabs & Partnerships", desc: "Contenuti creati in collaborazione con brand, sponsor, club, atleti o creator. Scopri come vengono gestite le collaborazioni nel mondo dei contenuti sportivi." },
+    s14: { title: "Merchandising", desc: "Contenuti relativi a kit, prodotti ufficiali, collezioni e promozioni di vendita. Scopri come le entità sportive comunicano le proprie linee di prodotto." },
+    s15: { title: "Transfers", desc: "Contenuti su acquisti, rinnovi, prestiti, presentazioni e cessioni di giocatori. Analizza come i movimenti di mercato vengono comunicati sui social media." },
   },
 };
 
@@ -197,6 +212,9 @@ const zh: TutorialT = {
     s10: { title: "保存出版物", desc: "单击任何出版物的书签图标将其保存。在已保存区域，您可以按项目、客户或活动将其整理到文件夹中。" },
     s11: { title: "无限滚动", desc: "向下滚动时，图书馆会自动加载更多内容。没有分页——当您浏览收藏时，内容会持续流动。" },
     s12: { title: "欢迎来到SCP！", desc: "您现在了解了整个图书馆。在我们的社交网络上关注我们，以了解最新更新、专属内容和社区新闻。" },
+    s13: { title: "Collabs & Partnerships", desc: "与品牌、赞助商、俱乐部、运动员或创作者合作创作的内容。了解体育内容世界中合作关系的管理方式。" },
+    s14: { title: "Merchandising", desc: "与球衣、官方产品、系列和促销活动相关的内容。发现体育机构如何推广其产品线。" },
+    s15: { title: "Transfers", desc: "关于签约、续约、租借、发布会和球员离队的内容。分析球队变动如何在社交媒体上进行传播。" },
   },
 };
 
@@ -230,6 +248,9 @@ const fr: TutorialT = {
     s10: { title: "Sauvegarder des publications", desc: "Cliquez sur l'icône marque-page de n'importe quelle publication pour la sauvegarder. Depuis la section Sauvegardés, vous pourrez les organiser en dossiers par projet, client ou campagne." },
     s11: { title: "Défilement infini", desc: "La bibliothèque charge automatiquement plus de contenu en défilant vers le bas. Il n'y a pas de pagination — le contenu s'écoule continuellement pendant que vous explorez la collection." },
     s12: { title: "Bienvenue chez SCP !", desc: "Vous connaissez maintenant toute la bibliothèque. Suivez-nous sur nos réseaux pour rester à jour des dernières mises à jour, contenus exclusifs et nouveautés de la communauté." },
+    s13: { title: "Collabs & Partnerships", desc: "Contenus créés en collaboration avec des marques, sponsors, clubs, sportifs ou créateurs. Découvrez comment les collaborations sont gérées dans le monde du contenu sportif." },
+    s14: { title: "Merchandising", desc: "Contenus liés aux équipements, produits officiels, collections et promotions de vente. Découvrez comment les entités sportives communiquent leurs lignes de produits." },
+    s15: { title: "Transfers", desc: "Contenus sur les transferts, prolongations, prêts, présentations et départs de joueurs. Analysez comment les mouvements d'effectif sont communiqués sur les réseaux sociaux." },
   },
 };
 

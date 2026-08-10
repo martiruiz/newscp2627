@@ -1,6 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import BulkActionBar from "@/components/BulkActionBar";
+import ReviewPanel from "@/components/ReviewPanel";
 
 /* ── Twitter widget singleton ── */
 declare global { interface Window { twttr?: { widgets: { createTweet: (id: string, el: HTMLElement, opts?: Record<string, unknown>) => Promise<HTMLElement | undefined>; load: (el?: HTMLElement) => void; }; }; } }
@@ -60,6 +63,7 @@ interface Publication {
   sport: string | null;
   entity: string | null;
   entityName: string | null;
+  accountUsername: string | null;
   format: string | null;
   competitions: string[];
   canonicalUrl: string;
@@ -67,6 +71,8 @@ interface Publication {
   originalUrl: string | null;
   classificationIds: string[];
   classificationSlugs: string[];
+  reviewStatus?: string | null;
+  importStatus?: string | null;
 }
 
 interface PublicationDetail {
@@ -99,12 +105,16 @@ interface Filters {
   sport: string; entity: string; competition: string; club: string;
   format: string; platform: string; search: string; externalId: string;
   dateFrom: string; dateTo: string;
+  incompleteOnly: boolean;
+  createdAfter: string;
 }
 
 const EMPTY: Filters = {
   sport: "", entity: "", competition: "", club: "",
   format: "", platform: "", search: "", externalId: "",
   dateFrom: "", dateTo: "",
+  incompleteOnly: false,
+  createdAfter: "",
 };
 
 function FilterSelect({
@@ -535,6 +545,175 @@ function PlatformIcon({ platform, size = 20 }: { platform: string; size?: number
       <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
       <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
     </svg>
+  );
+}
+
+/* ── Custom date range picker ── */
+const MONTHS_CA = ["Gener","Febrer","Març","Abril","Maig","Juny","Juliol","Agost","Setembre","Octubre","Novembre","Desembre"];
+const WEEKDAYS_CA = ["Dl","Dt","Dc","Dj","Dv","Ds","Dg"];
+
+function toISODate(d: Date): string { return d.toISOString().slice(0, 10); }
+
+function AdminDateRangePicker({ from, to, onChange }: {
+  from: string; to: string; onChange: (from: string, to: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [viewDate, setViewDate] = useState(() => {
+    const ref = from || to;
+    return ref ? new Date(ref + "T00:00:00") : new Date();
+  });
+  const [selectingEnd, setSelectingEnd] = useState(false);
+  const [hovered, setHovered] = useState<string | null>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function onMouseDown(e: MouseEvent) {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", onMouseDown);
+    return () => document.removeEventListener("mousedown", onMouseDown);
+  }, []);
+
+  const year = viewDate.getFullYear();
+  const month = viewDate.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const startOffset = (firstDay.getDay() + 6) % 7;
+  const todayStr = toISODate(new Date());
+
+  const days: Array<{ iso: string; day: number } | null> = [];
+  for (let i = 0; i < startOffset; i++) days.push(null);
+  for (let d = 1; d <= lastDay.getDate(); d++) days.push({ iso: toISODate(new Date(year, month, d)), day: d });
+  while (days.length % 7 !== 0) days.push(null);
+
+  function handleDayClick(iso: string) {
+    if (!from || (from && to) || iso < from) {
+      onChange(iso, ""); setSelectingEnd(true);
+    } else {
+      onChange(from, iso); setSelectingEnd(false); setOpen(false);
+    }
+  }
+
+  function inRange(iso: string) {
+    const end = selectingEnd && hovered ? hovered : to;
+    if (!from || !end) return false;
+    const lo = from < end ? from : end;
+    const hi = from < end ? end : from;
+    return iso > lo && iso < hi;
+  }
+
+  const displayTo = selectingEnd && hovered ? hovered : to;
+
+  function fmt(iso: string) { return iso ? iso.split("-").reverse().join("/") : null; }
+
+  return (
+    <div ref={wrapRef} style={{ position: "relative" }}>
+      <div className="text-[10px] font-semibold uppercase tracking-wide mb-1.5" style={{ color: "var(--text-muted)" }}>Data</div>
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs outline-none text-left"
+        style={{ background: "var(--bg-input)", border: `1px solid ${(from || to) ? "var(--color-charcoal)" : "var(--border-color)"}`, color: (from || to) ? "var(--text-primary)" : "var(--text-muted)" }}
+      >
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ flexShrink: 0 }}><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        {from || to ? (
+          <span>{fmt(from) ?? "—"} → {fmt(to) ?? "…"}</span>
+        ) : <span>Filtra per data</span>}
+        {(from || to) && (
+          <span
+            role="button"
+            onClick={e => { e.stopPropagation(); onChange("", ""); setSelectingEnd(false); }}
+            className="ml-auto hover:opacity-70 text-base leading-none"
+            style={{ color: "var(--text-muted)" }}
+          >×</span>
+        )}
+      </button>
+
+      {open && (
+        <div
+          className="absolute left-0 top-full mt-1 rounded-xl p-3 z-50"
+          style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", boxShadow: "0 16px 48px rgba(0,0,0,0.4)", width: 240 }}
+        >
+          {/* Range chips */}
+          {(from || to) && (
+            <div className="flex items-center gap-2 mb-3">
+              <div className="flex-1 rounded-lg px-2 py-1 text-center text-[11px] font-semibold"
+                style={{ background: from ? "var(--selected-bg)" : "var(--bg-input)", color: from ? "var(--selected-text)" : "var(--text-muted)", border: `1px solid ${from ? "var(--selected-bg)" : "var(--border-color)"}` }}>
+                {fmt(from) ?? "Inici"}
+              </div>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              <div className="flex-1 rounded-lg px-2 py-1 text-center text-[11px] font-semibold"
+                style={{ background: displayTo ? "var(--selected-bg)" : "var(--bg-input)", color: displayTo ? "var(--selected-text)" : "var(--text-muted)", border: `1px solid ${displayTo ? "var(--selected-bg)" : "var(--border-color)"}` }}>
+                {fmt(displayTo) ?? "Fi"}
+              </div>
+            </div>
+          )}
+
+          {/* Month nav */}
+          <div className="flex items-center justify-between mb-2">
+            <button onClick={() => setViewDate(new Date(year, month - 1, 1))}
+              className="flex items-center justify-center rounded-lg hover:opacity-70 transition-all"
+              style={{ width: 24, height: 24, background: "var(--bg-input)", border: "1px solid var(--border-color)", color: "var(--text-secondary)" }}>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <span className="text-xs font-bold" style={{ color: "var(--text-primary)" }}>{MONTHS_CA[month]} {year}</span>
+            <button onClick={() => setViewDate(new Date(year, month + 1, 1))}
+              className="flex items-center justify-center rounded-lg hover:opacity-70 transition-all"
+              style={{ width: 24, height: 24, background: "var(--bg-input)", border: "1px solid var(--border-color)", color: "var(--text-secondary)" }}>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+
+          {/* Weekday headers */}
+          <div className="grid grid-cols-7 mb-1">
+            {WEEKDAYS_CA.map(d => (
+              <div key={d} className="text-center text-[9px] font-bold uppercase" style={{ color: "var(--text-muted)", padding: "2px 0" }}>{d}</div>
+            ))}
+          </div>
+
+          {/* Days grid */}
+          <div className="grid grid-cols-7 gap-y-0.5">
+            {days.map((d, i) => {
+              if (!d) return <div key={`e-${i}`} />;
+              const isFrom = d.iso === from;
+              const isTo = d.iso === displayTo;
+              const isToday = d.iso === todayStr;
+              const isInRange = inRange(d.iso);
+              const isSelected = isFrom || isTo;
+              return (
+                <button
+                  key={d.iso}
+                  onClick={() => handleDayClick(d.iso)}
+                  onMouseEnter={() => selectingEnd && setHovered(d.iso)}
+                  onMouseLeave={() => selectingEnd && setHovered(null)}
+                  className="flex items-center justify-center text-[11px] font-medium transition-all"
+                  style={{
+                    height: 28,
+                    borderRadius: isSelected ? 7 : isInRange ? 0 : 7,
+                    background: isSelected ? "var(--selected-bg)" : isInRange ? "rgba(37,99,235,0.15)" : "transparent",
+                    color: isSelected ? "var(--selected-text)" : isToday ? "var(--color-charcoal)" : "var(--text-primary)",
+                    fontWeight: isSelected || isToday ? 700 : 500,
+                    outline: isToday && !isSelected ? "1.5px solid var(--selected-bg)" : "none",
+                    outlineOffset: -1,
+                  }}
+                >
+                  {d.day}
+                </button>
+              );
+            })}
+          </div>
+
+          {(from || to) && (
+            <button
+              onClick={() => { onChange("", ""); setSelectingEnd(false); setHovered(null); }}
+              className="w-full mt-3 py-1.5 rounded-lg text-[11px] font-medium hover:opacity-80 transition-all"
+              style={{ background: "var(--bg-input)", border: "1px solid var(--border-color)", color: "var(--text-muted)" }}
+            >
+              Esborra dates
+            </button>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -1171,45 +1350,83 @@ const PLATFORM_COLORS: Record<string, string> = {
   linkedin: "#0a66c2",
 };
 
+const QUICK_CLASSIFICATIONS = [
+  { slug: "top-picks",        label: "Top Picks",      shortLabel: "Top",       solidColor: "#E8567A", gradient: "linear-gradient(135deg, #E8567A 0%, #A82346 100%)" },
+  { slug: "replicable-ideas", label: "Replicable",     shortLabel: "Replica",   solidColor: "#52D68A", gradient: "linear-gradient(135deg, #52D68A 0%, #1B8A4E 100%)" },
+  { slug: "overperforming",   label: "Overperforming", shortLabel: "Overperf.", solidColor: "#3B82F6", gradient: "linear-gradient(135deg, #3B82F6 0%, #1E3A8A 100%)" },
+];
+
 function AdminCardEmbed({ pub }: { pub: Publication }) {
   const platform = pub.platform.toLowerCase();
-
-  if (platform === "youtube") {
-    return <YouTubeEmbed videoId={pub.externalPostId} embedUrl={pub.embedUrl} />;
-  }
-  if (platform === "tiktok") {
-    return (
-      <div style={{ display: "flex", justifyContent: "center", background: "#000" }}>
-        <TikTokEmbed videoId={pub.externalPostId} canonicalUrl={pub.canonicalUrl} />
-      </div>
-    );
-  }
-  if (platform === "instagram") {
-    const src = pub.canonicalUrl.replace(/\/$/, "") + "/embed";
-    return <iframe src={src} style={{ width: "100%", height: 480, border: "none" }} scrolling="no" allowFullScreen />;
-  }
-  if (platform === "twitter" || platform === "x") {
-    return <AdminTwitterEmbed tweetId={pub.externalPostId} canonicalUrl={pub.canonicalUrl} />;
-  }
-  if (platform === "linkedin") {
-    return <AdminLinkedInEmbed originalUrl={pub.originalUrl || pub.canonicalUrl} canonicalUrl={pub.canonicalUrl} />;
-  }
-  if (platform === "facebook") {
-    return <AdminFacebookEmbed originalUrl={pub.originalUrl || pub.canonicalUrl} canonicalUrl={pub.canonicalUrl} />;
-  }
+  if (platform === "youtube") return <YouTubeEmbed videoId={pub.externalPostId} embedUrl={pub.embedUrl} />;
+  if (platform === "tiktok") return <div style={{ display: "flex", justifyContent: "center", background: "#000" }}><TikTokEmbed videoId={pub.externalPostId} canonicalUrl={pub.canonicalUrl} /></div>;
+  if (platform === "instagram") { const src = pub.canonicalUrl.replace(/\/$/, "") + "/embed"; return <iframe src={src} style={{ width: "100%", height: 480, border: "none" }} scrolling="no" allowFullScreen />; }
+  if (platform === "twitter" || platform === "x") return <AdminTwitterEmbed tweetId={pub.externalPostId} canonicalUrl={pub.canonicalUrl} />;
+  if (platform === "linkedin") return <AdminLinkedInEmbed originalUrl={pub.originalUrl || pub.canonicalUrl} canonicalUrl={pub.canonicalUrl} />;
+  if (platform === "facebook") return <AdminFacebookEmbed originalUrl={pub.originalUrl || pub.canonicalUrl} canonicalUrl={pub.canonicalUrl} />;
   return null;
 }
 
-const QUICK_CLASSIFICATIONS = [
-  { slug: "top-picks",        label: "Top Picks",        gradient: "linear-gradient(135deg, #E8567A 0%, #A82346 100%)" },
-  { slug: "replicable-ideas", label: "Replicable Ideas", gradient: "linear-gradient(135deg, #52D68A 0%, #1B8A4E 100%)" },
-  { slug: "overperforming",   label: "Overperforming",   gradient: "linear-gradient(135deg, #3B82F6 0%, #1E3A8A 100%)" },
-];
+function QuickClassRow({ pub, classOptions }: { pub: Publication; classOptions: TaxOption[] }) {
+  const [classIds, setClassIds] = useState<string[]>(pub.classificationIds ?? []);
+  const [classSlugs, setClassSlugs] = useState<string[]>(pub.classificationSlugs ?? []);
+  const [toggling, setToggling] = useState<string | null>(null);
 
-function AdminCard({ pub, onOpen, classOptions }: {
+  async function toggle(slug: string) {
+    const opt = classOptions.find((o) => o.slug === slug);
+    if (!opt) return;
+    setToggling(slug);
+    const isActive = classSlugs.includes(slug);
+    const newIds = isActive ? classIds.filter((id) => id !== opt.id) : [...classIds, opt.id];
+    const newSlugs = isActive ? classSlugs.filter((s) => s !== slug) : [...classSlugs, slug];
+    try {
+      const res = await fetch(`/api/admin/publications?id=${pub.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ classificationIds: newIds }),
+      });
+      if (res.ok) { setClassIds(newIds); setClassSlugs(newSlugs); }
+    } finally { setToggling(null); }
+  }
+
+  return (
+    <div className="flex items-center gap-1">
+      {QUICK_CLASSIFICATIONS.map((qc) => {
+        const active = classSlugs.includes(qc.slug);
+        const busy = toggling === qc.slug;
+        return (
+          <button
+            key={qc.slug}
+            disabled={busy}
+            onClick={() => toggle(qc.slug)}
+            title={active ? `Treure "${qc.label}"` : `Afegir "${qc.label}"`}
+            className="flex items-center justify-center rounded-md transition-all disabled:opacity-40 active:scale-95"
+            style={{
+              width: 26, height: 22,
+              background: active ? qc.gradient : "transparent",
+              border: `1.5px solid ${active ? "transparent" : qc.solidColor + "55"}`,
+            }}
+          >
+            {busy ? (
+              <span style={{ fontSize: 8, color: qc.solidColor }}>···</span>
+            ) : active ? (
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            ) : (
+              <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke={qc.solidColor} strokeWidth="3" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            )}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function AdminCard({ pub, onOpen, classOptions, isSelected = false, onSelect }: {
   pub: Publication;
   onOpen: () => void;
   classOptions: TaxOption[];
+  isSelected?: boolean;
+  onSelect?: (id: string) => void;
 }) {
   const platformColor = PLATFORM_COLORS[pub.platform.toLowerCase()] ?? "#555";
   const [classIds, setClassIds] = useState<string[]>(pub.classificationIds ?? []);
@@ -1238,7 +1455,11 @@ function AdminCard({ pub, onOpen, classOptions }: {
   return (
     <div
       className="rounded-xl overflow-hidden transition-all hover:shadow-lg"
-      style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}
+      style={{
+        background: "var(--bg-card)",
+        border: `1px solid ${isSelected ? platformColor + "66" : "var(--border-color)"}`,
+        boxShadow: isSelected ? `0 0 0 2px ${platformColor}22` : undefined,
+      }}
     >
       {/* Platform color bar + icon */}
       <div
@@ -1247,6 +1468,16 @@ function AdminCard({ pub, onOpen, classOptions }: {
         style={{ background: platformColor + "22", borderBottom: "1px solid var(--border-color)" }}
       >
         <div className="flex items-center gap-2">
+          {/* Checkbox for bulk selection */}
+          <div onClick={(e) => e.stopPropagation()}>
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={() => onSelect?.(pub.id)}
+              className="rounded cursor-pointer"
+              style={{ width: 13, height: 13, accentColor: platformColor }}
+            />
+          </div>
           <PlatformIcon platform={pub.platform} size={13} />
           <span className="text-xs font-semibold" style={{ color: "var(--text-secondary)" }}>{pub.platform}</span>
         </div>
@@ -1332,15 +1563,27 @@ function AdminCard({ pub, onOpen, classOptions }: {
               key={qc.slug}
               disabled={busy}
               onClick={() => toggleClassification(qc.slug)}
-              title={active ? `Remove "${qc.label}"` : `Add "${qc.label}"`}
-              className="flex-1 py-1.5 rounded-lg text-[10px] font-bold transition-all disabled:opacity-50"
+              title={active ? `Treure "${qc.label}"` : `Afegir "${qc.label}"`}
+              className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-[10px] font-bold transition-all disabled:opacity-40 active:scale-95"
               style={{
-                background: active ? qc.gradient : "var(--bg-input)",
-                color: active ? "#fff" : "var(--text-muted)",
-                border: `1px solid ${active ? "transparent" : "var(--border-color)"}`,
+                background: active ? qc.gradient : "transparent",
+                color: active ? "#fff" : qc.solidColor,
+                border: `1.5px solid ${active ? "transparent" : qc.solidColor + "55"}`,
               }}
             >
-              {busy ? "···" : active ? "✓ " + qc.label : "+ " + qc.label}
+              {busy ? (
+                <span style={{ letterSpacing: 2 }}>···</span>
+              ) : active ? (
+                <>
+                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  {qc.shortLabel}
+                </>
+              ) : (
+                <>
+                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  {qc.shortLabel}
+                </>
+              )}
             </button>
           );
         })}
@@ -1926,20 +2169,54 @@ function AddByUrlModal({
 }
 
 export default function ContentIdeasPage() {
-  const [filters, setFilters] = useState<Filters>(EMPTY);
-  const [pending, setPending] = useState<Filters>(EMPTY);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [filters, setFilters] = useState<Filters>(() => {
+    const f = searchParams.get("filter");
+    if (f === "new") {
+      const yesterday = new Date(Date.now() - 86400000).toISOString();
+      return { ...EMPTY, createdAfter: yesterday };
+    }
+    if (f === "incomplete") return { ...EMPTY, incompleteOnly: true };
+    return EMPTY;
+  });
+  const [pending, setPending] = useState<Filters>(filters);
   const [pubs, setPubs] = useState<Publication[]>([]);
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [page, setPage] = useState(1);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [jumpDate, setJumpDate] = useState("");
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [detailId, setDetailId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
+
+  // URL-synced review panel
+  const reviewId = searchParams.get("review");
+  function openReview(id: string) {
+    try { sessionStorage.setItem("ci-scroll", String(window.scrollY)); } catch {}
+    const p = new URLSearchParams(searchParams.toString());
+    p.set("review", id);
+    router.replace(`?${p.toString()}`, { scroll: false });
+  }
+  function closeReview() {
+    const p = new URLSearchParams(searchParams.toString());
+    p.delete("review");
+    router.replace(`?${p.toString()}`, { scroll: false });
+    try {
+      const y = parseInt(sessionStorage.getItem("ci-scroll") ?? "0");
+      setTimeout(() => window.scrollTo({ top: y, behavior: "instant" as ScrollBehavior }), 50);
+    } catch {}
+  }
+  function navigateReview(id: string) {
+    const p = new URLSearchParams(searchParams.toString());
+    p.set("review", id);
+    router.replace(`?${p.toString()}`, { scroll: false });
+  }
+  const reviewIdx = reviewId ? pubs.findIndex(p => p.id === reviewId) : -1;
+  const prevReviewId = reviewIdx > 0 ? pubs[reviewIdx - 1].id : null;
+  const nextReviewId = reviewIdx >= 0 && reviewIdx < pubs.length - 1 ? pubs[reviewIdx + 1].id : null;
   const [showAddByUrl, setShowAddByUrl] = useState(false);
-  const [showBulkRename, setShowBulkRename] = useState(false);
-  const [bulkRenameValue, setBulkRenameValue] = useState("");
-  const [bulkRenaming, setBulkRenaming] = useState(false);
   const [allMatchingSelected, setAllMatchingSelected] = useState(false);
 
   // Tax options for filters (slug-based)
@@ -1996,9 +2273,10 @@ export default function ContentIdeasPage() {
     loadOpts();
   }, []);
 
-  const fetchPubs = useCallback(async (f: Filters, p: number) => {
-    setLoading(true);
-    const params = new URLSearchParams({ page: String(p), limit: "50" });
+  const fetchPubs = useCallback(async (f: Filters, p: number, mode: "replace" | "append" = "replace") => {
+    if (mode === "replace") setLoading(true);
+    else setLoadingMore(true);
+    const params = new URLSearchParams({ page: String(p), limit: "100" });
     if (f.sport) params.set("sport", f.sport);
     if (f.entity) params.set("entity", f.entity);
     if (f.competition) params.set("competition", f.competition);
@@ -2009,19 +2287,32 @@ export default function ContentIdeasPage() {
     if (f.externalId) params.set("externalId", f.externalId);
     if (f.dateFrom) params.set("dateFrom", f.dateFrom);
     if (f.dateTo) params.set("dateTo", f.dateTo);
+    if (f.incompleteOnly) params.set("incomplete", "1");
+    if (f.createdAfter) params.set("createdAfter", f.createdAfter);
 
     try {
       const res = await fetch(`/api/admin/publications?${params}`);
       const data = await res.json();
-      setPubs(data.publications ?? []);
+      if (mode === "append") {
+        setPubs((prev) => [...prev, ...(data.publications ?? [])]);
+      } else {
+        setPubs(data.publications ?? []);
+      }
       setTotal(data.total ?? 0);
       setTotalPages(data.totalPages ?? 1);
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   }, []);
 
-  useEffect(() => { fetchPubs(filters, page); }, [filters, page, fetchPubs]);
+  useEffect(() => { setPage(1); fetchPubs(filters, 1); }, [filters, fetchPubs]);
+
+  function loadMore() {
+    const nextPage = page + 1;
+    setPage(nextPage);
+    fetchPubs(filters, nextPage, "append");
+  }
 
   function applyFilters() {
     setFilters(pending);
@@ -2086,25 +2377,6 @@ export default function ContentIdeasPage() {
     setAllMatchingSelected(true);
   }
 
-  async function handleBulkRename() {
-    if (!bulkRenameValue.trim()) return;
-    setBulkRenaming(true);
-    await fetch("/api/admin/publications?bulk=true", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ids: [...selected], entityName: bulkRenameValue.trim() }),
-    });
-    setBulkRenaming(false);
-    setShowBulkRename(false);
-    setBulkRenameValue("");
-    setSelected(new Set());
-    setAllMatchingSelected(false);
-    // Reload club options
-    const res = await fetch("/api/admin/filters?category=club");
-    const d = await res.json();
-    setClubOpts((d.values ?? []).map((v: { name: string; count?: number }) => ({ id: v.name, name: v.name, slug: v.name, count: v.count })));
-    fetchPubs(filters, page);
-  }
 
   const hasActiveFilter = Object.values(filters).some(Boolean);
 
@@ -2147,15 +2419,45 @@ export default function ContentIdeasPage() {
   return (
     <div className="flex flex-col h-screen overflow-hidden" style={{ background: "var(--bg-primary)" }}>
       {/* Header */}
-      <div className="px-8 pt-7 pb-4 shrink-0">
-        <div className="flex items-start justify-between mb-1">
+      <div className="px-4 md:px-8 pt-5 md:pt-7 pb-3 md:pb-4 shrink-0">
+        <div className="flex flex-wrap items-start justify-between gap-3 mb-1">
           <div>
             <h1 className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>Content Ideas</h1>
-            <p className="text-sm mt-0.5" style={{ color: "var(--text-muted)" }}>
-              {total.toLocaleString()} items total
-            </p>
+            <div className="flex items-center gap-3 mt-0.5">
+              <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+                ~{total.toLocaleString()} resultats
+              </p>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (jumpDate) {
+                    setPendingField("dateTo", jumpDate);
+                    setFilters((f) => ({ ...f, dateTo: jumpDate }));
+                  }
+                }}
+                className="flex items-center gap-1"
+              >
+                <input
+                  type="date"
+                  value={jumpDate}
+                  onChange={(e) => setJumpDate(e.target.value)}
+                  className="text-xs px-2 py-1 rounded"
+                  style={{ background: "var(--bg-input)", color: "var(--text-primary)", border: "1px solid var(--border-color)" }}
+                  title="Saltar a una data"
+                />
+                {jumpDate && (
+                  <button
+                    type="button"
+                    onClick={() => { setJumpDate(""); setFilters((f) => ({ ...f, dateTo: "" })); setPending((p) => ({ ...p, dateTo: "" })); }}
+                    className="text-xs px-1.5 py-1 rounded"
+                    style={{ color: "var(--text-muted)", border: "1px solid var(--border-color)" }}
+                    title="Treure filtre de data"
+                  >✕</button>
+                )}
+              </form>
+            </div>
           </div>
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2 flex-wrap">
             {/* View mode toggle */}
             <div className="flex rounded-lg overflow-hidden" style={{ border: "1px solid var(--border-color)" }}>
               <button
@@ -2191,7 +2493,7 @@ export default function ContentIdeasPage() {
             </button>
             <button
               onClick={exportCSV}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold"
+              className="hidden md:flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold"
               style={{ background: "var(--bg-input)", color: "var(--text-secondary)", border: "1px solid var(--border-color)" }}
             >
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -2210,13 +2512,13 @@ export default function ContentIdeasPage() {
         </div>
 
         {/* Filter rows */}
-        <div className="grid grid-cols-4 gap-3 mt-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 mt-3 md:mt-4">
           <FilterSelect label="Sport" value={pending.sport} options={sportOpts} onChange={(v) => setPendingField("sport", v)} multi />
           <FilterSelect label="Entity" value={pending.entity} options={entityOpts} onChange={(v) => setPendingField("entity", v)} multi />
           <FilterSelect label="Competition" value={pending.competition} options={compOpts} onChange={(v) => setPendingField("competition", v)} multi />
           <FilterSelect label="Club" value={pending.club} options={clubOpts} onChange={(v) => setPendingField("club", v)} multi />
         </div>
-        <div className="grid grid-cols-4 gap-3 mt-3">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 mt-2 md:mt-3">
           <FilterSelect label="Format" value={pending.format} options={formatOpts} onChange={(v) => setPendingField("format", v)} multi />
           <FilterSelect label="Platform" value={pending.platform} options={platformOpts} onChange={(v) => setPendingField("platform", v)} multi />
           <div>
@@ -2243,34 +2545,20 @@ export default function ContentIdeasPage() {
             />
           </div>
         </div>
-        <div className="grid grid-cols-4 gap-3 mt-3">
-          <div>
-            <div className="text-[10px] font-semibold uppercase tracking-wide mb-1.5" style={{ color: "var(--text-muted)" }}>From</div>
-            <input
-              type="date"
-              value={pending.dateFrom}
-              onChange={(e) => setPendingField("dateFrom", e.target.value)}
-              className="w-full px-3 py-2 rounded-lg text-sm outline-none"
-              style={{ background: "var(--bg-input)", border: `1px solid ${pending.dateFrom ? "var(--color-charcoal)" : "var(--border-color)"}`, color: pending.dateFrom ? "var(--text-primary)" : "var(--text-muted)" }}
-            />
-          </div>
-          <div>
-            <div className="text-[10px] font-semibold uppercase tracking-wide mb-1.5" style={{ color: "var(--text-muted)" }}>To</div>
-            <input
-              type="date"
-              value={pending.dateTo}
-              onChange={(e) => setPendingField("dateTo", e.target.value)}
-              className="w-full px-3 py-2 rounded-lg text-sm outline-none"
-              style={{ background: "var(--bg-input)", border: `1px solid ${pending.dateTo ? "var(--color-charcoal)" : "var(--border-color)"}`, color: pending.dateTo ? "var(--text-primary)" : "var(--text-muted)" }}
-            />
-          </div>
+        <div className="mt-3">
+          <AdminDateRangePicker
+            from={pending.dateFrom}
+            to={pending.dateTo}
+            onChange={(from, to) => { setPendingField("dateFrom", from); setPendingField("dateTo", to); }}
+          />
         </div>
       </div>
 
       {/* Content: List or Grid */}
-      <div className="flex-1 overflow-auto px-8 pb-4">
-        {viewMode === "list" ? (
-          <table className="w-full text-sm border-collapse">
+      <div className="flex-1 overflow-auto px-4 md:px-8 pb-4">
+        {viewMode === "list" && (
+          <div className="overflow-x-auto -mx-1">
+          <table className="w-full text-sm border-collapse" style={{ minWidth: 680 }}>
             <thead className="sticky top-0 z-10" style={{ background: "var(--bg-primary)" }}>
               <tr style={{ borderBottom: "1px solid var(--border-color)" }}>
                 <th className="w-10 py-3 text-left">
@@ -2281,7 +2569,7 @@ export default function ContentIdeasPage() {
                     className="rounded"
                   />
                 </th>
-                {["TITLE", "ID", "PUBLISHED", "SPORT", "ENTITY", "PLATFORM", "ACTIONS"].map((h) => (
+                {["TITLE", "ID", "PUBLISHED", "SPORT", "PLATFORM", "TAGS", "ACTIONS"].map((h) => (
                   <th
                     key={h}
                     className="py-3 text-left text-[11px] font-semibold uppercase tracking-wider pr-4"
@@ -2329,7 +2617,7 @@ export default function ContentIdeasPage() {
                 pubs.map((pub) => (
                   <tr
                     key={pub.id}
-                    onClick={() => setDetailId(pub.id)}
+                    onClick={() => openReview(pub.id)}
                     style={{ borderBottom: "1px solid var(--border-color)", cursor: "pointer" }}
                     className="transition-colors hover:bg-white/5"
                   >
@@ -2337,17 +2625,27 @@ export default function ContentIdeasPage() {
                       <input type="checkbox" checked={selected.has(pub.id)} onChange={() => toggleSelect(pub.id)} />
                     </td>
                     <td className="py-3 pr-4 max-w-xs">
-                      <span className="block truncate text-sm" style={{ color: "var(--text-primary)" }} title={pub.rawTitle ?? pub.entityName ?? ""}>
-                        {pub.rawTitle
-                          ? (pub.rawTitle.length > 60 ? pub.rawTitle.slice(0, 60) + " ..." : pub.rawTitle)
-                          : <span style={{ color: "var(--text-muted)" }}>—</span>}
-                      </span>
+                      <div className="flex items-center gap-1.5">
+                        {(!pub.sport || !pub.accountUsername || !pub.entityName) && (
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2.2" title="Informació incompleta" style={{ flexShrink: 0 }}>
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                            <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                          </svg>
+                        )}
+                        <span className="block truncate text-sm" style={{ color: "var(--text-primary)" }} title={pub.rawTitle ?? pub.entityName ?? ""}>
+                          {pub.rawTitle
+                            ? (pub.rawTitle.length > 60 ? pub.rawTitle.slice(0, 60) + " ..." : pub.rawTitle)
+                            : <span style={{ color: "var(--text-muted)" }}>—</span>}
+                        </span>
+                      </div>
                     </td>
                     <td className="py-3 pr-4 font-mono text-xs" style={{ color: "var(--text-muted)" }}>{pub.externalPostId}</td>
                     <td className="py-3 pr-4 text-xs whitespace-nowrap" style={{ color: "var(--text-secondary)" }}>{formatDate(pub.publishedAt)}</td>
                     <td className="py-3 pr-4 text-xs" style={{ color: "var(--text-secondary)" }}>{pub.sport ?? <span style={{ color: "var(--text-muted)" }}>—</span>}</td>
-                    <td className="py-3 pr-4 text-xs" style={{ color: "var(--text-secondary)" }}>{pub.entity ?? <span style={{ color: "var(--text-muted)" }}>—</span>}</td>
                     <td className="py-3 pr-4 text-xs" style={{ color: "var(--text-secondary)" }}>{pub.platform}</td>
+                    <td className="py-3 pr-4" onClick={(e) => e.stopPropagation()}>
+                      <QuickClassRow pub={pub} classOptions={taxForDrawer.classifications} />
+                    </td>
                     <td className="py-3" onClick={(e) => e.stopPropagation()}>
                       <a href={pub.canonicalUrl} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded transition-all hover:opacity-70 inline-flex" style={{ color: "var(--text-muted)" }}>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -2361,144 +2659,74 @@ export default function ContentIdeasPage() {
               )}
             </tbody>
           </table>
-        ) : (
-          /* Grid view */
+          </div>
+        )}
+        {viewMode !== "list" && (
           loading ? (
             <div className="py-16 text-center text-sm" style={{ color: "var(--text-muted)" }}>Loading...</div>
           ) : pubs.length === 0 ? (
             <div className="py-16 text-center text-sm" style={{ color: "var(--text-muted)" }}>No results</div>
           ) : (
-            <div className="grid gap-4 pt-2" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))" }}>
+            <div className="grid gap-3 pt-2" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))" }}>
               {pubs.map((pub) => (
-                <AdminCard key={pub.id} pub={pub} onOpen={() => setDetailId(pub.id)} classOptions={taxForDrawer.classifications} />
+                <AdminCard
+                  key={pub.id}
+                  pub={pub}
+                  onOpen={() => openReview(pub.id)}
+                  classOptions={taxForDrawer.classifications}
+                  isSelected={selected.has(pub.id)}
+                  onSelect={toggleSelect}
+                />
               ))}
             </div>
           )
         )}
       </div>
 
-      {/* Pagination */}
-      {totalPages > 1 && (
+      {/* Load more */}
+      {page < totalPages && (
         <div
-          className="flex items-center justify-between px-8 py-3 shrink-0 text-sm"
+          className="flex items-center justify-center px-8 py-4 shrink-0"
           style={{ borderTop: "1px solid var(--border-color)", background: "var(--bg-secondary)" }}
         >
-          <span style={{ color: "var(--text-muted)" }}>
-            Page {page} of {totalPages} · {total.toLocaleString()} results
-          </span>
-          <div className="flex items-center gap-2">
-            <button
-              disabled={page <= 1}
-              onClick={() => setPage((p) => p - 1)}
-              className="px-3 py-1.5 rounded text-xs font-medium disabled:opacity-40"
-              style={{ background: "var(--bg-input)", color: "var(--text-primary)", border: "1px solid var(--border-color)" }}
-            >
-              Previous
-            </button>
-            <button
-              disabled={page >= totalPages}
-              onClick={() => setPage((p) => p + 1)}
-              className="px-3 py-1.5 rounded text-xs font-medium disabled:opacity-40"
-              style={{ background: "var(--bg-input)", color: "var(--text-primary)", border: "1px solid var(--border-color)" }}
-            >
-              Next
-            </button>
-          </div>
+          <button
+            onClick={loadMore}
+            disabled={loadingMore}
+            className="flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium disabled:opacity-50"
+            style={{ background: "var(--bg-input)", color: "var(--text-primary)", border: "1px solid var(--border-color)" }}
+          >
+            {loadingMore ? (
+              <>
+                <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                </svg>
+                Carregant…
+              </>
+            ) : (
+              <>Carregar més <span style={{ color: "var(--text-muted)" }}>· {(total - pubs.length).toLocaleString()} restants</span></>
+            )}
+          </button>
         </div>
       )}
 
       {/* Bulk action bar */}
-      {selected.size > 0 && (
-        <div
-          className="fixed bottom-0 left-0 right-0 z-30 flex items-center justify-between px-8 py-3"
-          style={{ background: "var(--bg-card)", borderTop: "2px solid var(--color-charcoal)", boxShadow: "0 -4px 24px rgba(0,0,0,0.5)" }}
-        >
-          <div className="flex items-center gap-3">
-            <span className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-              {selected.size.toLocaleString()} seleccionats
-            </span>
-            <button
-              onClick={() => { setSelected(new Set()); setAllMatchingSelected(false); }}
-              className="text-xs px-3 py-1.5 rounded-lg"
-              style={{ background: "var(--bg-input)", color: "var(--text-muted)", border: "1px solid var(--border-color)" }}
-            >
-              Desseleccionar
-            </button>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => { setBulkRenameValue(""); setShowBulkRename(true); }}
-              className="flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-lg"
-              style={{ background: "var(--selected-bg)", color: "var(--selected-text)" }}
-            >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-              </svg>
-              Reanomenar Club Name
-            </button>
-          </div>
-        </div>
-      )}
+      <BulkActionBar
+        selected={selected}
+        onClear={() => { setSelected(new Set()); setAllMatchingSelected(false); }}
+        onDone={() => { setPage(1); fetchPubs(filters, 1); }}
+        taxOptions={taxForDrawer}
+      />
 
-      {/* Bulk rename modal */}
-      {showBulkRename && (
-        <>
-          <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm" onClick={() => setShowBulkRename(false)} />
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="rounded-2xl p-6 w-full max-w-md" style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", boxShadow: "0 24px 64px rgba(0,0,0,0.6)" }}>
-              <h2 className="text-base font-bold mb-1" style={{ color: "var(--text-primary)" }}>Reanomenar Club Name</h2>
-              <p className="text-xs mb-5" style={{ color: "var(--text-muted)" }}>
-                S&apos;actualitzarà el <strong style={{ color: "var(--text-secondary)" }}>Club Name</strong> dels {selected.size.toLocaleString()} continguts seleccionats.
-              </p>
-              <div className="mb-5">
-                <label className="text-[10px] font-semibold uppercase tracking-wide block mb-1.5" style={{ color: "var(--text-muted)" }}>
-                  Nou Club Name
-                </label>
-                <input
-                  autoFocus
-                  type="text"
-                  value={bulkRenameValue}
-                  onChange={(e) => setBulkRenameValue(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === "Enter" && bulkRenameValue.trim()) handleBulkRename(); }}
-                  list="bulk-club-datalist"
-                  placeholder="ex: Juventus FC"
-                  className="w-full px-3 py-2.5 rounded-lg text-sm outline-none"
-                  style={{ background: "var(--bg-input)", border: "1px solid var(--color-charcoal)", color: "var(--text-primary)" }}
-                />
-                <datalist id="bulk-club-datalist">
-                  {clubOpts.map((o) => <option key={o.slug} value={o.name} />)}
-                </datalist>
-              </div>
-              <div className="flex gap-2 justify-end">
-                <button
-                  onClick={() => setShowBulkRename(false)}
-                  className="px-4 py-2 rounded-lg text-xs font-medium"
-                  style={{ background: "var(--bg-input)", color: "var(--text-muted)", border: "1px solid var(--border-color)" }}
-                >
-                  Cancel·lar
-                </button>
-                <button
-                  disabled={!bulkRenameValue.trim() || bulkRenaming}
-                  onClick={handleBulkRename}
-                  className="px-5 py-2 rounded-lg text-xs font-semibold disabled:opacity-50"
-                  style={{ background: "var(--selected-bg)", color: "var(--selected-text)" }}
-                >
-                  {bulkRenaming ? "Aplicant…" : "Aplicar"}
-                </button>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
-
-      {/* Detail drawer */}
-      {detailId && (
-        <DetailDrawer
-          pubId={detailId}
-          onClose={() => setDetailId(null)}
-          onSaved={() => fetchPubs(filters, page)}
-          onDeleted={() => { setDetailId(null); fetchPubs(filters, page); }}
+      {/* Review panel */}
+      {reviewId && (
+        <ReviewPanel
+          pubId={reviewId}
+          prevId={prevReviewId}
+          nextId={nextReviewId}
+          posLabel={reviewIdx >= 0 ? `${reviewIdx + 1} / ${pubs.length}` : undefined}
+          onClose={closeReview}
+          onSaved={() => { setPage(1); fetchPubs(filters, 1); }}
+          onNavigate={navigateReview}
           taxOptions={taxForDrawer}
         />
       )}
@@ -2507,7 +2735,7 @@ export default function ContentIdeasPage() {
       {showAddByUrl && (
         <AddByUrlModal
           onClose={() => setShowAddByUrl(false)}
-          onSaved={() => { fetchPubs(filters, page); }}
+          onSaved={() => { setPage(1); fetchPubs(filters, 1); }}
           taxOptions={taxForDrawer}
           clubNames={clubOpts.map((o) => o.name)}
         />

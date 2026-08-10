@@ -75,7 +75,7 @@ const ENTITY_DISPLAY: Record<string, string> = {
   Players: "Athlete",
 };
 
-const HIDDEN_ENTITY_SLUGS = new Set(["meme", "clubs-meme"]);
+const HIDDEN_ENTITY_SLUGS = new Set(["meme", "clubs-meme", "content-creators"]);
 
 const ENTITY_PLURAL: Record<string, string> = {
   brands: "brands",
@@ -459,6 +459,9 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
             )}
           </div>
 
+          {/* ── Discover ──────────────────────────────── */}
+          <p className="text-[10px] font-bold uppercase tracking-widest mb-2 mt-1" style={{ color: "var(--text-secondary)", letterSpacing: "0.14em" }}>Discover</p>
+
           {/* Quick filter chips — accordion style */}
           {filterData && (
             <div data-tutorial="filter-classification" className="flex flex-col gap-1 mb-3">
@@ -510,19 +513,66 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
             </div>
           )}
 
-          {/* Date range — accordion */}
-          <AccordionSection
-            id="date"
-            tutorialId="filter-date"
-            title="Date range"
-            icon="calendar"
-            open={openSection === "date"}
-            onToggle={() => toggleSection("date")}
-            summary={dateSummary}
-            badge={filters.dateFrom || filters.dateTo ? 1 : 0}
-          >
-            <DateRangePresets filters={filters} onFiltersChange={onFiltersChange} />
-          </AccordionSection>
+          {/* ── Content Categories ────────────────────── */}
+          <p className="text-[10px] font-bold uppercase tracking-widest mb-2 mt-1" style={{ color: "var(--text-secondary)", letterSpacing: "0.14em" }}>Content Categories</p>
+
+          {filterData && (
+            <div className="flex flex-col gap-1 mb-3">
+              {(["collabs-partnerships", "merchandising", "transfers"] as const).map((slug) => {
+                const opt = filterData.classifications.find((c) => c.slug === slug);
+                if (!opt) return null;
+                const cfg: Record<string, { gradient: string; icon: React.ReactNode; tutorialId: string }> = {
+                  "collabs-partnerships": {
+                    gradient: "linear-gradient(135deg, #A855F7 0%, #6D28D9 100%)",
+                    tutorialId: "filter-collabs",
+                    icon: (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 11l-4-4-4 4M19 7v8"/>
+                      </svg>
+                    ),
+                  },
+                  "merchandising": {
+                    gradient: "linear-gradient(135deg, #F97316 0%, #B45309 100%)",
+                    tutorialId: "filter-merchandising",
+                    icon: (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                        <line x1="3" y1="6" x2="21" y2="6"/>
+                        <path d="M16 10a4 4 0 0 1-8 0"/>
+                      </svg>
+                    ),
+                  },
+                  "transfers": {
+                    gradient: "linear-gradient(135deg, #06B6D4 0%, #0E7490 100%)",
+                    tutorialId: "filter-transfers",
+                    icon: (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M7 16V4m0 0L3 8m4-4 4 4"/>
+                        <path d="M17 8v12m0 0 4-4m-4 4-4-4"/>
+                      </svg>
+                    ),
+                  },
+                };
+                const { gradient, icon, tutorialId } = cfg[slug];
+                return (
+                  <div key={slug} data-tutorial={tutorialId}>
+                    <QuickFilterButton
+                      label={opt.name}
+                      icon={icon}
+                      isSelected={filters.classification.includes(slug)}
+                      gradient={gradient}
+                      onClick={() => toggleArrayFilter("classification", slug)}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* ── Explore By ────────────────────────────── */}
+          <p className="text-[10px] font-bold uppercase tracking-widest mb-2 mt-1" style={{ color: "var(--text-secondary)", letterSpacing: "0.14em" }}>Explore By</p>
 
           {/* Sport — accordion */}
           {filterData?.sports && (
@@ -706,6 +756,20 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
                 </div>
           </AccordionSection>
 
+          {/* Date range — accordion */}
+          <AccordionSection
+            id="date"
+            tutorialId="filter-date"
+            title="Date range"
+            icon="calendar"
+            open={openSection === "date"}
+            onToggle={() => toggleSection("date")}
+            summary={dateSummary}
+            badge={filters.dateFrom || filters.dateTo ? 1 : 0}
+          >
+            <DateRangePresets filters={filters} onFiltersChange={onFiltersChange} />
+          </AccordionSection>
+
           {/* Content category — accordion */}
           {filterData?.contentCategories && filterData.contentCategories.length > 0 && (
             <AccordionSection
@@ -765,7 +829,7 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
           {/* Format */}
           {filterData?.formats && (
             <div data-tutorial="filter-format" className="mb-3">
-              <h3 className="text-xs font-semibold mb-2" style={{ color: "var(--text-primary)" }}>Format</h3>
+              <p className="text-[10px] font-bold uppercase tracking-widest mb-2 mt-1" style={{ color: "var(--text-secondary)", letterSpacing: "0.14em" }}>Format</p>
               <div className="grid grid-cols-4 gap-2">
                 {filterData.formats.map((f) => {
                   const isSelected = filters.format.includes(f.slug);
@@ -807,7 +871,7 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
 
           {/* Platform */}
           <div data-tutorial="platform-filter" className="mb-3">
-            <h3 className="text-xs font-semibold mb-2" style={{ color: "var(--text-primary)" }}>Platform</h3>
+            <p className="text-[10px] font-bold uppercase tracking-widest mb-2 mt-1" style={{ color: "var(--text-secondary)", letterSpacing: "0.14em" }}>Platform</p>
             <div className="grid grid-cols-4 gap-2">
               {allPlatforms.map((p) => {
                   const isSelected = filters.platform.includes(p.slug);

@@ -44,8 +44,10 @@ export async function GET(request: NextRequest) {
       accountUsername: pub.accountUsername,
       platformId: pub.platformId,
       platform: pub.platform.name,
+      sportId: pub.sports[0]?.sport.id ?? null,
       sportIds: pub.sports.map((s) => s.sport.id),
       sports: pub.sports.map((s) => s.sport.name),
+      entityTypeId: pub.entityTypes[0]?.entityType.id ?? null,
       entityTypeIds: pub.entityTypes.map((e) => e.entityType.id),
       entityTypes: pub.entityTypes.map((e) => e.entityType.name),
       entityName: pub.entityName,
@@ -54,6 +56,11 @@ export async function GET(request: NextRequest) {
       competitions: pub.competitions.map((c) => ({ id: c.competition.id, name: c.competition.name })),
       classifications: pub.classifications.map((c) => ({ id: c.classification.id, name: c.classification.name })),
       contentCategories: pub.contentCategories.map((c) => ({ id: c.contentCategory.id, name: c.contentCategory.name })),
+      reviewStatus: pub.reviewStatus,
+      reviewedAt: pub.reviewedAt,
+      importStatus: pub.importStatus,
+      importError: pub.importError,
+      createdAt: pub.createdAt,
     });
   }
 
@@ -69,6 +76,8 @@ export async function GET(request: NextRequest) {
   const externalId = searchParams.get("externalId");
   const dateFrom = searchParams.get("dateFrom");
   const dateTo = searchParams.get("dateTo");
+  const createdAfter = searchParams.get("createdAfter");
+  const incompleteOnly = searchParams.get("incomplete") === "1";
   const skip = (page - 1) * limit;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -119,6 +128,18 @@ export async function GET(request: NextRequest) {
     if (dateTo) where.publishedAt.lte = new Date(dateTo + "T23:59:59Z");
   }
 
+  if (createdAfter) {
+    where.createdAt = { gte: new Date(createdAfter) };
+  }
+
+  if (incompleteOnly) {
+    where.OR = [
+      { sports: { none: {} } },
+      { accountUsername: null },
+      { entityName: null },
+    ];
+  }
+
   const [publications, total] = await Promise.all([
     prisma.publication.findMany({
       where,
@@ -144,9 +165,10 @@ export async function GET(request: NextRequest) {
       rawTitle: p.rawTitle,
       publishedAt: p.publishedAt,
       platform: p.platform.name,
-      sports: p.sports.map((s) => s.sport.name),
-      entityTypes: p.entityTypes.map((e) => e.entityType.name),
+      sport: p.sports[0]?.sport.name ?? null,
+      entity: p.entityTypes[0]?.entityType.name ?? null,
       entityName: p.entityName,
+      accountUsername: p.accountUsername,
       format: p.contentFormat?.name ?? null,
       competitions: p.competitions.map((c) => c.competition.name),
       canonicalUrl: p.canonicalUrl,
@@ -154,6 +176,8 @@ export async function GET(request: NextRequest) {
       originalUrl: p.originalUrl,
       classificationIds: p.classifications.map((c) => c.classification.id),
       classificationSlugs: p.classifications.map((c) => c.classification.slug),
+      reviewStatus: p.reviewStatus,
+      importStatus: p.importStatus,
     })),
     total,
     page,
@@ -223,17 +247,105 @@ export async function PATCH(request: NextRequest) {
   const id = searchParams.get("id");
   const body = await request.json();
 
-  // Bulk update
+  // ── Bulk update ──────────────────────────────────────────────────────────
   if (searchParams.get("bulk") === "true") {
-    const { ids, entityName } = body;
+    const {
+      ids,
+      // scalar fields (only sent if explicitly selected)
+      entityName, accountUsername, contentFormatId, platformId,
+      sportIds,        // string[] | undefined — replaces sports for all selected
+      entityTypeIds,   // string[] | undefined
+      competitionIds,  // string[] | undefined
+      // classification bulk
+      classificationAction,  // "add" | "remove" — never "set" for bulk
+      classificationIds: classIds,
+      // review
+      reviewStatus,
+      // archive
+      archived,
+    } = body;
+
     if (!Array.isArray(ids) || ids.length === 0) {
       return NextResponse.json({ error: "Missing ids" }, { status: 400 });
     }
-    await prisma.publication.updateMany({
-      where: { id: { in: ids } },
-      data: { entityName: typeof entityName === "string" ? (entityName.trim() || null) : undefined },
+
+    // Process in batches of 50 to avoid SQLite lock issues
+    const BATCH = 50;
+    let done = 0;
+    const errors: { id: string; error: string }[] = [];
+
+    for (let i = 0; i < ids.length; i += BATCH) {
+      const batch = ids.slice(i, i + BATCH);
+
+      await prisma.$transaction(async (tx) => {
+        // Scalar fields
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const data: any = {};
+        if ("entityName" in body) data.entityName = typeof entityName === "string" ? (entityName.trim() || null) : null;
+        if ("accountUsername" in body) data.accountUsername = typeof accountUsername === "string" ? (accountUsername.trim() || null) : null;
+        if ("contentFormatId" in body) data.contentFormatId = contentFormatId || null;
+        if ("platformId" in body) data.platformId = platformId || null;
+        if ("reviewStatus" in body) { data.reviewStatus = reviewStatus; data.reviewedAt = new Date(); }
+        if ("archived" in body) data.archivedAt = archived ? new Date() : null;
+
+        if (Object.keys(data).length > 0) {
+          await tx.publication.updateMany({ where: { id: { in: batch } }, data });
+        }
+
+        // Sports (replace)
+        if (Array.isArray(sportIds)) {
+          await tx.publicationSport.deleteMany({ where: { publicationId: { in: batch } } });
+          if (sportIds.length > 0) {
+            await tx.publicationSport.createMany({
+              data: batch.flatMap((pid) => sportIds.map((sid: string) => ({ publicationId: pid, sportId: sid }))),
+              skipDuplicates: true,
+            });
+          }
+        }
+
+        // Entity types (replace)
+        if (Array.isArray(entityTypeIds)) {
+          await tx.publicationEntityType.deleteMany({ where: { publicationId: { in: batch } } });
+          if (entityTypeIds.length > 0) {
+            await tx.publicationEntityType.createMany({
+              data: batch.flatMap((pid) => entityTypeIds.map((eid: string) => ({ publicationId: pid, entityTypeId: eid }))),
+              skipDuplicates: true,
+            });
+          }
+        }
+
+        // Competitions (replace)
+        if (Array.isArray(competitionIds)) {
+          await tx.publicationCompetition.deleteMany({ where: { publicationId: { in: batch } } });
+          if (competitionIds.length > 0) {
+            await tx.publicationCompetition.createMany({
+              data: batch.flatMap((pid) => competitionIds.map((cid: string) => ({ publicationId: pid, competitionId: cid }))),
+              skipDuplicates: true,
+            });
+          }
+        }
+
+        // Classifications — add or remove (never full replace in bulk)
+        if (classificationAction === "add" && Array.isArray(classIds) && classIds.length > 0) {
+          await tx.publicationClassification.createMany({
+            data: batch.flatMap((pid) => classIds.map((cid: string) => ({ publicationId: pid, classificationId: cid }))),
+            skipDuplicates: true,
+          });
+        } else if (classificationAction === "remove" && Array.isArray(classIds) && classIds.length > 0) {
+          await tx.publicationClassification.deleteMany({
+            where: { publicationId: { in: batch }, classificationId: { in: classIds } },
+          });
+        }
+      }).then(() => { done += batch.length; })
+        .catch((e) => { batch.forEach((bid) => errors.push({ id: bid, error: (e as Error).message })); });
+    }
+
+    return NextResponse.json({
+      ok: errors.length === 0,
+      done,
+      total: ids.length,
+      errors: errors.slice(0, 20),
     });
-    return NextResponse.json({ ok: true, updated: ids.length });
   }
 
   if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });

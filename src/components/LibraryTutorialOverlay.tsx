@@ -125,6 +125,38 @@ const STEP_DEFS: StepDef[] = [
     ),
   },
   {
+    selector: '[data-tutorial="filter-collabs"]',
+    padding: 10,
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M23 11l-4-4-4 4M19 7v8"/>
+      </svg>
+    ),
+  },
+  {
+    selector: '[data-tutorial="filter-merchandising"]',
+    padding: 10,
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <path d="M16 10a4 4 0 0 1-8 0"/>
+      </svg>
+    ),
+  },
+  {
+    selector: '[data-tutorial="filter-transfers"]',
+    padding: 10,
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <path d="M7 16V4m0 0L3 8m4-4 4 4"/>
+        <path d="M17 8v12m0 0 4-4m-4 4-4-4"/>
+      </svg>
+    ),
+  },
+  {
     selector: null,
     social: true,
     icon: (
@@ -421,7 +453,8 @@ export default function LibraryTutorialOverlay() {
 
   const STEPS_TEXT = [
     t.lib.s1, t.lib.s2, t.lib.s3, t.lib.s4, t.lib.s5, t.lib.s6,
-    t.lib.s7, t.lib.s8, t.lib.s9, t.lib.s10, t.lib.s11, t.lib.s12,
+    t.lib.s7, t.lib.s8, t.lib.s9, t.lib.s10, t.lib.s11,
+    t.lib.s13, t.lib.s14, t.lib.s15, t.lib.s12,
   ];
 
   useEffect(() => {
