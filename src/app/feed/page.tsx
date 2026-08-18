@@ -705,9 +705,8 @@ function FeedPageInner() {
                 </button>
               )}
               {pagination && (
-                <span className="text-sm font-medium" style={{ color: "var(--text-muted)" }}>
-                  <span className="sm:hidden">{pagination.total >= 1000 ? `${(pagination.total / 1000).toFixed(0)} K` : pagination.total} ideas</span>
-                  <span className="hidden sm:inline">{pagination.total.toLocaleString()} ideas</span>
+                <span className="hidden sm:inline text-sm font-medium" style={{ color: "var(--text-muted)" }}>
+                  {pagination.total.toLocaleString()} ideas
                 </span>
               )}
             </div>
