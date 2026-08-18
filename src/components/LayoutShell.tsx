@@ -82,7 +82,7 @@ function MobileBottomNav({ pathname }: { pathname: string }) {
 
   return (
     <div
-      className="md:hidden"
+      className="md:hidden mobile-bottom-nav"
       style={{
         position: "fixed",
         bottom: 0,

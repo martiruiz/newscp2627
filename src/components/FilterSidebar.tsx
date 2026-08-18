@@ -191,10 +191,15 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
+      document.body.setAttribute("data-filter-open", "true");
     } else {
       document.body.style.overflow = "";
+      document.body.removeAttribute("data-filter-open");
     }
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+      document.body.removeAttribute("data-filter-open");
+    };
   }, [isOpen]);
 
   function guardFree(action: () => void) {

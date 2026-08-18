@@ -220,3 +220,8 @@ html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
+
+/* Hide mobile bottom nav when filter drawer is open */
+[data-filter-open] .mobile-bottom-nav {
+  display: none;
+}
