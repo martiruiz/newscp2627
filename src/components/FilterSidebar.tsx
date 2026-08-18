@@ -436,13 +436,13 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
             <p className="text-sm text-center mb-6" style={{ color: "var(--text-muted)", lineHeight: 1.6 }}>
               Aquesta funció requereix un pla Weekly, Basic o Pro. Accedeix a tots els filtres avançats i molt més.
             </p>
-            <a
-              href="/pricing"
+            <button
+              onClick={() => window.dispatchEvent(new Event("open-pricing-sheet"))}
               className="block w-full py-3 rounded-xl text-sm font-bold text-center transition-opacity hover:opacity-90"
-              style={{ background: "linear-gradient(135deg, #2563EB 0%, #1E3A8A 100%)", color: "#fff" }}
+              style={{ background: "linear-gradient(135deg, #2563EB 0%, #1E3A8A 100%)", color: "#fff", border: "none", cursor: "pointer" }}
             >
               Veure plans
-            </a>
+            </button>
             <button
               onClick={() => setShowUpgradeModal(false)}
               className="block w-full mt-2 py-2.5 rounded-xl text-sm font-medium text-center transition-opacity hover:opacity-70"

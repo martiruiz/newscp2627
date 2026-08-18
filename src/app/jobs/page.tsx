@@ -166,13 +166,13 @@ function Paywall() {
         <p className="text-sm mb-6" style={{ color: "var(--text-muted)" }}>
           Descobreix oportunitats de feina al món de la comunicació esportiva. Disponible a partir del pla Basic.
         </p>
-        <Link
-          href="/pricing"
+        <button
+          onClick={() => window.dispatchEvent(new Event("open-pricing-sheet"))}
           className="inline-block px-6 py-3 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90"
-          style={{ background: "#0d9488" }}
+          style={{ background: "#0d9488", border: "none", cursor: "pointer" }}
         >
           Veure plans
-        </Link>
+        </button>
       </div>
     </div>
   );

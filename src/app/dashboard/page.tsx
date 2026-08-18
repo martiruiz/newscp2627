@@ -179,12 +179,12 @@ export default function DashboardPage() {
             <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 24, lineHeight: 1.6 }}>
               Aquesta funció requereix el pla Weekly o superior.
             </p>
-            <Link
-              href="/pricing"
-              style={{ display: "block", background: "var(--selected-bg)", color: "#fff", borderRadius: 12, padding: "12px 0", fontWeight: 700, fontSize: 14, textDecoration: "none", marginBottom: 10 }}
+            <button
+              onClick={() => window.dispatchEvent(new Event("open-pricing-sheet"))}
+              style={{ display: "block", width: "100%", background: "var(--selected-bg)", color: "#fff", borderRadius: 12, padding: "12px 0", fontWeight: 700, fontSize: 14, border: "none", cursor: "pointer", marginBottom: 10 }}
             >
               Veure plans
-            </Link>
+            </button>
             <button
               onClick={() => setShowUpgradeModal(false)}
               style={{ fontSize: 13, color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer" }}
@@ -603,7 +603,7 @@ export default function DashboardPage() {
             </section>
 
             {/* Saved quick view */}
-            <SavedQuickView isFree={isFree} onUpgradeClick={() => setShowUpgradeModal(true)} />
+            <SavedQuickView isFree={isFree} onUpgradeClick={() => window.dispatchEvent(new Event("open-pricing-sheet"))} />
           </div>
 
           {/* WhatsApp community banner (desktop) */}

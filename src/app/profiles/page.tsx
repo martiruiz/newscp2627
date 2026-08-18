@@ -1027,13 +1027,13 @@ export default function ProfilesPage() {
             <p className="text-sm mb-6 leading-relaxed" style={{ color: "var(--text-muted)" }}>
               Segueix perfils de clubs, creadors de contingut, jugadors i patrocinadors. Disponible a partir del pla Basic.
             </p>
-            <a
-              href="/pricing"
+            <button
+              onClick={() => window.dispatchEvent(new Event("open-pricing-sheet"))}
               className="block w-full py-3 rounded-xl text-sm font-bold text-center transition-opacity hover:opacity-90"
-              style={{ background: "linear-gradient(135deg, #059669 0%, #047857 100%)", color: "#fff" }}
+              style={{ background: "linear-gradient(135deg, #059669 0%, #047857 100%)", color: "#fff", border: "none", cursor: "pointer" }}
             >
               Veure plans
-            </a>
+            </button>
             <a href="/feed" className="block mt-3 text-xs hover:underline" style={{ color: "var(--text-muted)" }}>
               Torna a la biblioteca
             </a>

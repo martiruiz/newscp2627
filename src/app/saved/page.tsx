@@ -458,9 +458,9 @@ export default function SavedPage() {
           <p style={{ fontSize: 14, color: "rgba(255,255,255,0.75)", textAlign: "center", maxWidth: 320, lineHeight: 1.6, margin: 0 }}>
             Guarda i organitza el contingut que t'inspira en carpetes. Disponible a partir del pla Weekly.
           </p>
-          <Link href="/pricing" style={{ background: "var(--selected-bg)", color: "#fff", textDecoration: "none", borderRadius: 14, padding: "13px 32px", fontWeight: 700, fontSize: 15 }}>
+          <button onClick={() => window.dispatchEvent(new Event("open-pricing-sheet"))} style={{ background: "var(--selected-bg)", color: "#fff", border: "none", borderRadius: 14, padding: "13px 32px", fontWeight: 700, fontSize: 15, cursor: "pointer" }}>
             Veure plans
-          </Link>
+          </button>
           <Link href="/feed" style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", textDecoration: "none" }}>
             Torna a la biblioteca
           </Link>

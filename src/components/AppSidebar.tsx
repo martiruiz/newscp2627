@@ -137,6 +137,7 @@ function NavItemRow({ item, active, isFree, isNonBasic, isSuperAdmin }: { item: 
       )}
     </>
   );
+  if (isLocked) return <button onClick={() => window.dispatchEvent(new Event("open-pricing-sheet"))} className={cls} style={style}>{inner}</button>;
   if (item.href.startsWith("#")) return <button onClick={() => {}} className={cls} style={style}>{inner}</button>;
   return <Link href={item.href} className={cls} style={style}>{inner}</Link>;
 }
@@ -280,6 +281,22 @@ function ExpandedSidebar({ onToggle, pathname }: { onToggle: () => void; pathnam
 
       {/* Upgrade CTA for free plan */}
       <UpgradeCta />
+
+      {/* Admin shortcut for superadmins */}
+      {isSuper && (
+        <div className="px-3 pb-1 shrink-0">
+          <Link
+            href="/admin"
+            className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-xs font-semibold transition-all hover:opacity-80"
+            style={{ background: "rgba(37,99,235,0.1)", border: "1px solid rgba(37,99,235,0.2)", color: "#2563EB" }}
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            Admin Panel
+          </Link>
+        </div>
+      )}
 
       {/* User profile card */}
       <div className="px-3 pb-2 shrink-0">

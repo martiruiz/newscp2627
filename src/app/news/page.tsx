@@ -828,13 +828,13 @@ function NewsPageInner() {
             <p className="text-sm mb-6 leading-relaxed" style={{ color: "var(--text-muted)" }}>
               Totes les novetats de cada xarxa social i les últimes tendències del sector, en un sol lloc. Disponible a partir del pla Weekly.
             </p>
-            <a
-              href="/pricing"
+            <button
+              onClick={() => window.dispatchEvent(new Event("open-pricing-sheet"))}
               className="block w-full py-3 rounded-xl text-sm font-bold text-center transition-opacity hover:opacity-90"
-              style={{ background: "linear-gradient(135deg, #2563EB 0%, #1E3A8A 100%)", color: "#fff" }}
+              style={{ background: "linear-gradient(135deg, #2563EB 0%, #1E3A8A 100%)", color: "#fff", border: "none", cursor: "pointer" }}
             >
               Veure plans
-            </a>
+            </button>
             <a href="/feed" className="block mt-3 text-xs hover:underline" style={{ color: "var(--text-muted)" }}>
               Torna a la biblioteca
             </a>
@@ -1141,9 +1141,9 @@ function NewsPageInner() {
                   <p className="text-sm mb-6 leading-relaxed" style={{ color: "var(--text-muted)" }}>
                     Descobreix ofertes de feina al món de la comunicació esportiva. Disponible a partir del pla Basic.
                   </p>
-                  <a href="/pricing" className="inline-block px-6 py-3 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90" style={{ background: "#0d9488" }}>
+                  <button onClick={() => window.dispatchEvent(new Event("open-pricing-sheet"))} className="inline-block px-6 py-3 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90" style={{ background: "#0d9488", border: "none", cursor: "pointer" }}>
                     Veure plans
-                  </a>
+                  </button>
                 </div>
               </div>
             ) : jobsLoading ? (

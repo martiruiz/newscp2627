@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import AppSidebar from "./AppSidebar";
+import PricingBottomSheet from "./PricingBottomSheet";
 
 function HomeIcon() {
   return (
@@ -253,6 +254,9 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
 
       {/* Mobile bottom nav */}
       <MobileBottomNav pathname={pathname || ""} />
+
+      {/* Global pricing bottom sheet */}
+      <PricingBottomSheet />
     </div>
   );
 }

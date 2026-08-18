@@ -510,9 +510,9 @@ function FeedPageInner() {
             <p className="text-sm text-center mb-6" style={{ color: "var(--text-muted)", lineHeight: 1.6 }}>
               Aquesta funció requereix un pla Weekly, Basic o Pro. Accedeix a tots els filtres avançats i molt més.
             </p>
-            <a href="/pricing" className="block w-full py-3 rounded-xl text-sm font-bold text-center hover:opacity-90" style={{ background: "linear-gradient(135deg, #2563EB 0%, #1E3A8A 100%)", color: "#fff" }}>
+            <button onClick={() => window.dispatchEvent(new Event("open-pricing-sheet"))} className="block w-full py-3 rounded-xl text-sm font-bold text-center hover:opacity-90" style={{ background: "linear-gradient(135deg, #2563EB 0%, #1E3A8A 100%)", color: "#fff", border: "none", cursor: "pointer" }}>
               Veure plans
-            </a>
+            </button>
             <button onClick={() => setShowUpgradeModal(false)} className="block w-full mt-2 py-2.5 rounded-xl text-sm font-medium text-center hover:opacity-70" style={{ color: "var(--text-muted)" }}>
               Ara no
             </button>
@@ -541,9 +541,9 @@ function FeedPageInner() {
             <p className="text-xs text-center mb-6" style={{ color: "var(--text-muted)" }}>
               Les cerques es renoven cada dia. O actualitza al pla Weekly per a cerques il·limitades.
             </p>
-            <a href="/pricing" className="block w-full py-3 rounded-xl text-sm font-bold text-center hover:opacity-90" style={{ background: "linear-gradient(135deg, #2563EB 0%, #1E3A8A 100%)", color: "#fff" }}>
+            <button onClick={() => window.dispatchEvent(new Event("open-pricing-sheet"))} className="block w-full py-3 rounded-xl text-sm font-bold text-center hover:opacity-90" style={{ background: "linear-gradient(135deg, #2563EB 0%, #1E3A8A 100%)", color: "#fff", border: "none", cursor: "pointer" }}>
               Veure plans
-            </a>
+            </button>
             <button onClick={() => setShowSearchLimitModal(false)} className="block w-full mt-2 py-2.5 rounded-xl text-sm font-medium text-center hover:opacity-70" style={{ color: "var(--text-muted)" }}>
               Tancar
             </button>
