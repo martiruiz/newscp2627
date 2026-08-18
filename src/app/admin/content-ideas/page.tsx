@@ -2311,6 +2311,18 @@ export function ContentIdeasPage() {
 
   const searchRef = useRef<NodeJS.Timeout | null>(null);
   const scrollLastY = useRef(0);
+  const swipeStart = useRef<{ x: number; y: number } | null>(null);
+
+  useEffect(() => {
+    if (showMobileFilters) {
+      document.body.style.overflow = "hidden";
+      document.body.setAttribute("data-filter-open", "true");
+    } else {
+      document.body.style.overflow = "";
+      document.body.removeAttribute("data-filter-open");
+    }
+    return () => { document.body.style.overflow = ""; document.body.removeAttribute("data-filter-open"); };
+  }, [showMobileFilters]);
 
   useEffect(() => {
     async function loadOpts() {
@@ -2774,8 +2786,8 @@ export function ContentIdeasPage() {
             onClick={() => setShowMobileFilters(false)}
           />
           <div
-            className="md:hidden fixed bottom-0 left-0 right-0 z-50 rounded-t-3xl overflow-hidden flex flex-col"
-            style={{ background: "var(--bg-card)", maxHeight: "85dvh", border: "1px solid var(--border-color)" }}
+            className="md:hidden fixed inset-y-0 left-0 z-50 flex flex-col"
+            style={{ width: "min(320px, 85vw)", background: "var(--bg-card)", borderRight: "1px solid var(--border-color)", boxShadow: "4px 0 32px rgba(0,0,0,0.18)" }}
           >
             {/* Sheet header */}
             <div className="flex items-center justify-between px-5 py-4 shrink-0" style={{ borderBottom: "1px solid var(--border-color)" }}>
@@ -2862,6 +2874,14 @@ export function ContentIdeasPage() {
       {/* Content: List or Grid */}
       <div
         className="flex-1 overflow-auto px-4 md:px-8 pb-4"
+        onTouchStart={(e) => { swipeStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }; }}
+        onTouchEnd={(e) => {
+          if (!swipeStart.current) return;
+          const dx = e.changedTouches[0].clientX - swipeStart.current.x;
+          const dy = Math.abs(e.changedTouches[0].clientY - swipeStart.current.y);
+          swipeStart.current = null;
+          if (dx > 50 && dy < dx * 0.8) setShowMobileFilters(true);
+        }}
         onScroll={(e) => {
           const y = e.currentTarget.scrollTop;
           const delta = y - scrollLastY.current;
