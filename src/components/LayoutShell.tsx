@@ -64,11 +64,10 @@ function NewsIcon() {
 }
 
 const ALL_NAV = [
-  { id: "home",     label: "Home",     href: "/dashboard",               match: "/dashboard", Icon: HomeIcon,        ActiveIcon: null as null | (() => React.JSX.Element) },
-  { id: "library",  label: "Library",  href: "/feed",                    match: "/feed",      Icon: PlansIcon,       ActiveIcon: null },
-  { id: "news",     label: "News",     href: "/news",                    match: "/news",      Icon: NewsIcon,        ActiveIcon: null },
-  { id: "discover", label: "Discover", href: "/feed?order=random&days=7", match: "/feed",     Icon: CompassIcon,     ActiveIcon: null },
-  { id: "profile",  label: "Profile",  href: "/account",                 match: "/account",   Icon: ProfileIcon,     ActiveIcon: null },
+  { id: "home",    label: "Home",    href: "/dashboard", match: "/dashboard", Icon: HomeIcon,    ActiveIcon: null as null | (() => React.JSX.Element) },
+  { id: "library", label: "Library", href: "/feed",      match: "/feed",      Icon: PlansIcon,   ActiveIcon: null },
+  { id: "news",    label: "News",    href: "/news",      match: "/news",      Icon: NewsIcon,    ActiveIcon: null },
+  { id: "profile", label: "Profile", href: "/account",   match: "/account",   Icon: ProfileIcon, ActiveIcon: null },
 ];
 
 function MobileBottomNav({ pathname }: { pathname: string }) {
