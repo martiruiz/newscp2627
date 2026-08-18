@@ -6,6 +6,7 @@ import FilterSidebar, { type SelectedFilters } from "@/components/FilterSidebar"
 import PublicationCard from "@/components/PublicationCard";
 import LibraryTutorialOverlay from "@/components/LibraryTutorialOverlay";
 import { getEffectivePlan, getFreeSearchUsage, incrementFreeSearch, FREE_SEARCH_LIMIT } from "@/lib/plan-utils";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 /* ─── Saved views (localStorage) ─────────────────────────────────────── */
 
@@ -68,20 +69,26 @@ const DEFAULT_FILTERS: SelectedFilters = {
 
 const PAGE_SIZE = 100;
 
-function getActiveChips(filters: SelectedFilters) {
+import type { TranslationKey } from "@/lib/i18n";
+
+function getActiveChips(filters: SelectedFilters, t: (k: TranslationKey) => string) {
   const chips: { label: string; key: string; filterKey: string; value: string }[] = [];
   const entityDisplayName: Record<string, string> = {
     brands: "Brand", clubs: "Club", competitions: "Competition",
     "content-creators": "Creator", media: "Media", players: "Athlete",
+  };
+  const classificationLabel = (v: string) => {
+    const chip = SMART_CHIPS_CONFIG.find((c) => c.value === v);
+    return chip ? t(chip.labelKey) : v;
   };
   for (const v of filters.sport) chips.push({ label: v, key: `s-${v}`, filterKey: "sport", value: v });
   for (const v of filters.entityType) chips.push({ label: entityDisplayName[v] || v, key: `et-${v}`, filterKey: "entityType", value: v });
   for (const v of filters.entityName) chips.push({ label: v, key: `en-${v}`, filterKey: "entityName", value: v });
   for (const v of filters.format) chips.push({ label: v, key: `f-${v}`, filterKey: "format", value: v });
   for (const v of filters.platform) chips.push({ label: v, key: `p-${v}`, filterKey: "platform", value: v });
-  for (const v of filters.classification) chips.push({ label: v, key: `c-${v}`, filterKey: "classification", value: v });
+  for (const v of filters.classification) chips.push({ label: classificationLabel(v), key: `c-${v}`, filterKey: "classification", value: v });
   for (const v of filters.contentCategory) chips.push({ label: v, key: `cc-${v}`, filterKey: "contentCategory", value: v });
-  if (filters.saved) chips.push({ label: "Saved", key: "saved", filterKey: "saved", value: "" });
+  if (filters.saved) chips.push({ label: t("nav.saved"), key: "saved", filterKey: "saved", value: "" });
   if (filters.dateFrom || filters.dateTo) {
     const label = filters.dateFrom && filters.dateTo
       ? `${filters.dateFrom} – ${filters.dateTo}`
@@ -91,37 +98,37 @@ function getActiveChips(filters: SelectedFilters) {
   return chips;
 }
 
-const SMART_CHIPS = [
+const SMART_CHIPS_CONFIG = [
   {
-    label: "Top Picks",
+    labelKey: "feed.topPicks" as const,
+    descKey: "feed.topPicksDesc" as const,
     filterKey: "classification" as const,
     value: "top-picks",
     gradient: "linear-gradient(135deg, #E8567A 0%, #A82346 100%)",
-    description: "Trending content handpicked by the SCP team.",
     icon: <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
   },
   {
-    label: "Overperforming",
+    labelKey: "feed.overperforming" as const,
+    descKey: "feed.overperformingDesc" as const,
     filterKey: "classification" as const,
     value: "overperforming",
     gradient: "linear-gradient(135deg, #3B82F6 0%, #1E3A8A 100%)",
-    description: "Posts performing above the profile's average.",
     icon: <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>,
   },
   {
-    label: "Content Creators",
+    labelKey: "feed.contentCreators" as const,
+    descKey: "feed.contentCreatorsDesc" as const,
     filterKey: "entityType" as const,
     value: "content-creators",
     gradient: "linear-gradient(135deg, #D4A420 0%, #7B4D0B 100%)",
-    description: "Content published by individual content creators.",
     icon: <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
   },
   {
-    label: "Replicable Ideas",
+    labelKey: "feed.replicableIdeas" as const,
+    descKey: "feed.replicableIdeasDesc" as const,
     filterKey: "classification" as const,
     value: "replicable-ideas",
     gradient: "linear-gradient(135deg, #52D68A 0%, #1B8A4E 100%)",
-    description: "Low-budget ideas that are easy to adapt and apply to your club, brand, or project.",
     icon: <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>,
   },
 ];
@@ -137,8 +144,10 @@ function SmartFilters({
   userPlan: string;
   onUpgradeClick: () => void;
 }) {
+  const { t } = useLanguage();
   const isFree = !userPlan || userPlan === "free";
   const [infoOpen, setInfoOpen] = useState(false);
+  const [dropdownPos, setDropdownPos] = useState<{ top: number; left: number; width: number } | null>(null);
   const infoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -152,17 +161,28 @@ function SmartFilters({
     return () => document.removeEventListener("mousedown", onClickOutside);
   }, [infoOpen]);
 
+  function openInfo() {
+    if (!infoRef.current) { setInfoOpen(true); return; }
+    const rect = infoRef.current.getBoundingClientRect();
+    const dropW = Math.min(288, window.innerWidth - 32);
+    let left = rect.left;
+    if (left + dropW > window.innerWidth - 16) left = window.innerWidth - dropW - 16;
+    if (left < 16) left = 16;
+    setDropdownPos({ top: rect.bottom + 8, left, width: dropW });
+    setInfoOpen(true);
+  }
+
   return (
     <div className="mb-3">
       {/* Section header */}
       <div className="flex items-center gap-2 mb-2">
         <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>
-          Smart filters
+          {t("feed.smartFilters")}
         </span>
         {/* Info button */}
-        <div className="relative" ref={infoRef}>
+        <div ref={infoRef}>
           <button
-            onClick={() => setInfoOpen((o) => !o)}
+            onClick={openInfo}
             className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold transition-all"
             style={{
               background: infoOpen ? "var(--selected-bg)" : "var(--bg-card)",
@@ -175,23 +195,27 @@ function SmartFilters({
               <line x1="12" y1="8" x2="12" y2="8.01"/>
               <line x1="12" y1="12" x2="12" y2="16"/>
             </svg>
-            Why these results?
+            {t("feed.whyResults")}
           </button>
 
-          {/* Dropdown */}
-          {infoOpen && (
+          {/* Dropdown — fixed position to avoid viewport overflow */}
+          {infoOpen && dropdownPos && (
             <div
-              className="absolute left-0 top-full mt-2 z-50 rounded-2xl p-5"
+              className="rounded-2xl p-5"
               style={{
+                position: "fixed",
+                top: dropdownPos.top,
+                left: dropdownPos.left,
+                width: dropdownPos.width,
+                zIndex: 300,
                 background: "var(--bg-card)",
                 border: "1px solid var(--border-color)",
                 boxShadow: "0 8px 32px rgba(0,0,0,0.18)",
-                width: "min(288px, calc(100vw - 2rem))",
               }}
             >
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>
-                  Why these results?
+                  {t("feed.whyResults")}
                 </h3>
                 <button onClick={() => setInfoOpen(false)} style={{ color: "var(--text-muted)" }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -200,7 +224,7 @@ function SmartFilters({
                 </button>
               </div>
               <div className="space-y-4">
-                {SMART_CHIPS.map((chip) => (
+                {SMART_CHIPS_CONFIG.map((chip) => (
                   <div key={chip.value} className="flex gap-3">
                     <div
                       className="flex items-center justify-center w-7 h-7 rounded-lg shrink-0 mt-0.5"
@@ -209,8 +233,8 @@ function SmartFilters({
                       <span style={{ color: "#fff" }}>{chip.icon}</span>
                     </div>
                     <div>
-                      <p className="text-xs font-bold mb-0.5" style={{ color: "var(--text-primary)" }}>{chip.label}</p>
-                      <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>{chip.description}</p>
+                      <p className="text-xs font-bold mb-0.5" style={{ color: "var(--text-primary)" }}>{t(chip.labelKey)}</p>
+                      <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>{t(chip.descKey)}</p>
                     </div>
                   </div>
                 ))}
@@ -222,7 +246,7 @@ function SmartFilters({
 
       {/* Mobile: 2×2 grid / Desktop: pill row */}
       <div className="grid grid-cols-2 gap-2 sm:hidden">
-        {SMART_CHIPS.map((chip) => {
+        {SMART_CHIPS_CONFIG.map((chip) => {
           const isSelected = (filters[chip.filterKey] as string[]).includes(chip.value);
           return (
             <button
@@ -263,7 +287,7 @@ function SmartFilters({
                   className="text-xs font-bold leading-tight"
                   style={{ color: isSelected ? "#fff" : "var(--text-primary)" }}
                 >
-                  {chip.label}
+                  {t(chip.labelKey)}
                 </span>
                 {isSelected && (
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="3">
@@ -278,7 +302,7 @@ function SmartFilters({
 
       {/* Desktop: pill row */}
       <div className="hidden sm:flex flex-wrap items-center gap-1.5">
-        {SMART_CHIPS.map((chip) => {
+        {SMART_CHIPS_CONFIG.map((chip) => {
           const isSelected = (filters[chip.filterKey] as string[]).includes(chip.value);
           return (
             <button
@@ -300,7 +324,7 @@ function SmartFilters({
               }}
             >
               <span style={{ color: isSelected ? "rgba(255,255,255,0.85)" : "var(--text-muted)" }}>{chip.icon}</span>
-              {chip.label}
+              {t(chip.labelKey)}
               {isFree ? (
                 <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ opacity: 0.7 }}>
                   <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
@@ -321,6 +345,7 @@ function SmartFilters({
 type FeedMode = "recommended" | "random" | "favs";
 
 function FeedPageInner() {
+  const { t } = useLanguage();
   const searchParams = useSearchParams();
   const rawOrder = searchParams.get("order");
   const initialOrder = rawOrder === "random" ? "random" : "recommended";
@@ -622,9 +647,9 @@ function FeedPageInner() {
         style={{ background: "var(--bg-primary)", borderBottom: "1px solid var(--border-color)", paddingTop: 2 }}
       >
         {([
-          { id: "recommended" as FeedMode, label: "Recommended" },
-          { id: "random"      as FeedMode, label: "Inspire Me" },
-          { id: "favs"        as FeedMode, label: "Favs" },
+          { id: "recommended" as FeedMode, labelKey: "feed.recommended" as const },
+          { id: "random"      as FeedMode, labelKey: "feed.inspireMe" as const },
+          { id: "favs"        as FeedMode, labelKey: "feed.forYou" as const },
         ] as const).map((tab) => {
           const active = feedMode === tab.id;
           return (
@@ -644,7 +669,7 @@ function FeedPageInner() {
                   <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
                 </svg>
               )}
-              {tab.label}
+              {t(tab.labelKey)}
               {active && (
                 <span
                   className="absolute bottom-0 left-1/2"
@@ -737,7 +762,7 @@ function FeedPageInner() {
 
           {activeFilterCount > 0 && (
             <div className="flex flex-wrap items-center gap-1.5 mb-3">
-              {getActiveChips(filters).map((chip) => (
+              {getActiveChips(filters, t).map((chip) => (
                 <span
                   key={chip.key}
                   className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium"

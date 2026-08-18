@@ -262,7 +262,7 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
 
       {/* Main content */}
       <div className="flex-1 min-w-0 main-content-wrapper">
-        {!isDashboard && <MobileTopHeader />}
+        {isDashboard && <MobileTopHeader />}
         {children}
       </div>
 

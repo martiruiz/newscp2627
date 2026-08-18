@@ -41,7 +41,16 @@ export type TranslationKey =
   // Common
   | "common.loading" | "common.error" | "common.close" | "common.search"
   // Annual banner
-  | "banner.annualText" | "banner.saveNow" | "banner.dismiss" | "banner.expires";
+  | "banner.annualText" | "banner.saveNow" | "banner.dismiss" | "banner.expires"
+  // Feed tabs & smart filters
+  | "feed.recommended" | "feed.inspireMe" | "feed.forYou"
+  | "feed.whyResults" | "feed.smartFilters"
+  | "feed.topPicks" | "feed.overperforming" | "feed.contentCreators" | "feed.replicableIdeas"
+  | "feed.topPicksDesc" | "feed.overperformingDesc" | "feed.contentCreatorsDesc" | "feed.replicableIdeasDesc"
+  // News
+  | "news.title" | "news.subtitle"
+  // Saved
+  | "saved.title" | "saved.empty";
 
 type Translations = Record<TranslationKey, string>;
 
@@ -131,6 +140,23 @@ const ca: Translations = {
   "banner.saveNow": "Aprofita ara",
   "banner.dismiss": "Tancar",
   "banner.expires": "Caduca en",
+  "feed.recommended": "Recomanat",
+  "feed.inspireMe": "Inspira'm",
+  "feed.forYou": "Per a tu",
+  "feed.whyResults": "Per què aquests resultats?",
+  "feed.smartFilters": "Filtres intel·ligents",
+  "feed.topPicks": "Top Picks",
+  "feed.overperforming": "Sobrerendiment",
+  "feed.contentCreators": "Creadors de contingut",
+  "feed.replicableIdeas": "Idees replicables",
+  "feed.topPicksDesc": "Contingut tendència seleccionat per l'equip SCP.",
+  "feed.overperformingDesc": "Publicacions amb rendiment superior a la mitjana del perfil.",
+  "feed.contentCreatorsDesc": "Contingut publicat per creadors de contingut individuals.",
+  "feed.replicableIdeasDesc": "Idees de baix pressupost fàcils d'adaptar al teu club, marca o projecte.",
+  "news.title": "Sports Industry Hub",
+  "news.subtitle": "Les últimes notícies del sector esportiu",
+  "saved.title": "Desats",
+  "saved.empty": "Encara no has desat cap contingut.",
 };
 
 const es: Translations = {
@@ -219,6 +245,23 @@ const es: Translations = {
   "banner.saveNow": "Aprovecha ahora",
   "banner.dismiss": "Cerrar",
   "banner.expires": "Caduca en",
+  "feed.recommended": "Recomendado",
+  "feed.inspireMe": "Inspírame",
+  "feed.forYou": "Para ti",
+  "feed.whyResults": "¿Por qué estos resultados?",
+  "feed.smartFilters": "Filtros inteligentes",
+  "feed.topPicks": "Top Picks",
+  "feed.overperforming": "Sobrerendimiento",
+  "feed.contentCreators": "Creadores de contenido",
+  "feed.replicableIdeas": "Ideas replicables",
+  "feed.topPicksDesc": "Contenido tendencia seleccionado por el equipo SCP.",
+  "feed.overperformingDesc": "Publicaciones con rendimiento superior a la media del perfil.",
+  "feed.contentCreatorsDesc": "Contenido publicado por creadores de contenido individuales.",
+  "feed.replicableIdeasDesc": "Ideas de bajo presupuesto fáciles de adaptar a tu club, marca o proyecto.",
+  "news.title": "Sports Industry Hub",
+  "news.subtitle": "Las últimas noticias del sector deportivo",
+  "saved.title": "Guardados",
+  "saved.empty": "Todavía no has guardado ningún contenido.",
 };
 
 const en: Translations = {
@@ -307,6 +350,23 @@ const en: Translations = {
   "banner.saveNow": "Save now",
   "banner.dismiss": "Dismiss",
   "banner.expires": "Expires in",
+  "feed.recommended": "Recommended",
+  "feed.inspireMe": "Inspire Me",
+  "feed.forYou": "For you",
+  "feed.whyResults": "Why these results?",
+  "feed.smartFilters": "Smart filters",
+  "feed.topPicks": "Top Picks",
+  "feed.overperforming": "Overperforming",
+  "feed.contentCreators": "Content Creators",
+  "feed.replicableIdeas": "Replicable Ideas",
+  "feed.topPicksDesc": "Trending content handpicked by the SCP team.",
+  "feed.overperformingDesc": "Posts performing above the profile's average.",
+  "feed.contentCreatorsDesc": "Content published by individual content creators.",
+  "feed.replicableIdeasDesc": "Low-budget ideas that are easy to adapt and apply to your club, brand, or project.",
+  "news.title": "Sports Industry Hub",
+  "news.subtitle": "The latest news from the sports industry",
+  "saved.title": "Saved",
+  "saved.empty": "You haven't saved any content yet.",
 };
 
 const it: Translations = {
@@ -395,6 +455,23 @@ const it: Translations = {
   "banner.saveNow": "Approfitta ora",
   "banner.dismiss": "Chiudi",
   "banner.expires": "Scade tra",
+  "feed.recommended": "Raccomandato",
+  "feed.inspireMe": "Ispirami",
+  "feed.forYou": "Per te",
+  "feed.whyResults": "Perché questi risultati?",
+  "feed.smartFilters": "Filtri intelligenti",
+  "feed.topPicks": "Top Picks",
+  "feed.overperforming": "Sovrapprestante",
+  "feed.contentCreators": "Creatori di contenuti",
+  "feed.replicableIdeas": "Idee replicabili",
+  "feed.topPicksDesc": "Contenuti di tendenza selezionati dal team SCP.",
+  "feed.overperformingDesc": "Post con prestazioni superiori alla media del profilo.",
+  "feed.contentCreatorsDesc": "Contenuti pubblicati da singoli creatori di contenuti.",
+  "feed.replicableIdeasDesc": "Idee a basso budget facili da adattare al tuo club, brand o progetto.",
+  "news.title": "Sports Industry Hub",
+  "news.subtitle": "Le ultime notizie dal settore sportivo",
+  "saved.title": "Salvati",
+  "saved.empty": "Non hai ancora salvato nessun contenuto.",
 };
 
 const zh: Translations = {
@@ -483,6 +560,23 @@ const zh: Translations = {
   "banner.saveNow": "立即享受",
   "banner.dismiss": "关闭",
   "banner.expires": "剩余时间",
+  "feed.recommended": "推荐",
+  "feed.inspireMe": "启发我",
+  "feed.forYou": "为你",
+  "feed.whyResults": "为什么这些结果？",
+  "feed.smartFilters": "智能筛选",
+  "feed.topPicks": "精选",
+  "feed.overperforming": "超额表现",
+  "feed.contentCreators": "内容创作者",
+  "feed.replicableIdeas": "可复制创意",
+  "feed.topPicksDesc": "由SCP团队精选的热门内容。",
+  "feed.overperformingDesc": "表现超过该账号平均水平的帖子。",
+  "feed.contentCreatorsDesc": "由个人内容创作者发布的内容。",
+  "feed.replicableIdeasDesc": "低成本创意，易于适应并应用于你的俱乐部、品牌或项目。",
+  "news.title": "Sports Industry Hub",
+  "news.subtitle": "体育行业最新资讯",
+  "saved.title": "已保存",
+  "saved.empty": "你还没有保存任何内容。",
 };
 
 const fr: Translations = {
@@ -571,6 +665,23 @@ const fr: Translations = {
   "banner.saveNow": "Profitez maintenant",
   "banner.dismiss": "Fermer",
   "banner.expires": "Expire dans",
+  "feed.recommended": "Recommandé",
+  "feed.inspireMe": "Inspire-moi",
+  "feed.forYou": "Pour toi",
+  "feed.whyResults": "Pourquoi ces résultats ?",
+  "feed.smartFilters": "Filtres intelligents",
+  "feed.topPicks": "Top Picks",
+  "feed.overperforming": "Surperformant",
+  "feed.contentCreators": "Créateurs de contenu",
+  "feed.replicableIdeas": "Idées réplicables",
+  "feed.topPicksDesc": "Contenu tendance sélectionné par l'équipe SCP.",
+  "feed.overperformingDesc": "Publications dont les performances sont supérieures à la moyenne du profil.",
+  "feed.contentCreatorsDesc": "Contenu publié par des créateurs de contenu individuels.",
+  "feed.replicableIdeasDesc": "Idées à petit budget faciles à adapter à votre club, marque ou projet.",
+  "news.title": "Sports Industry Hub",
+  "news.subtitle": "Les dernières nouvelles du secteur sportif",
+  "saved.title": "Sauvegardés",
+  "saved.empty": "Vous n'avez encore sauvegardé aucun contenu.",
 };
 
 export const translations: Record<Locale, Translations> = { ca, es, en, it, zh, fr };
