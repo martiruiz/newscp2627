@@ -72,6 +72,25 @@ export async function POST(request: NextRequest) {
   return NextResponse.json(article);
 }
 
+export async function PATCH(request: NextRequest) {
+  const body = await request.json();
+  const { id, title, excerpt, imageUrl, platform, publishedAt } = body;
+  if (!id || !title?.trim()) {
+    return NextResponse.json({ error: "id and title are required" }, { status: 400 });
+  }
+  const article = await prisma.newsArticle.update({
+    where: { id },
+    data: {
+      title: title.trim(),
+      excerpt: excerpt?.trim() || null,
+      imageUrl: imageUrl?.trim() || null,
+      platform: platform || null,
+      publishedAt: publishedAt ? new Date(publishedAt) : null,
+    },
+  });
+  return NextResponse.json(article);
+}
+
 export async function DELETE(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const id = searchParams.get("id");

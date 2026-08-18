@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import PublicationCard from "@/components/PublicationCard";
+import { getEffectivePlan } from "@/lib/plan-utils";
 
 interface Folder {
   id: string;
@@ -329,9 +330,24 @@ export default function SavedPage() {
   const [openFolder, setOpenFolder] = useState<{ id: string; name: string } | null>(null);
   const [folderPubs, setFolderPubs] = useState<Publication[]>([]);
   const [loadingPubs, setLoadingPubs] = useState(false);
+  const [userPlan, setUserPlan] = useState<string | null>(null);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const newNameRef = useRef<HTMLInputElement>(null);
   const profile = useProfileName();
   const photo = useProfilePhoto();
+
+  useEffect(() => {
+    fetch("/api/user/plan")
+      .then((r) => r.json())
+      .then((d) => {
+        const { plan, isSuperAdmin } = getEffectivePlan(d);
+        setIsSuperAdmin(isSuperAdmin);
+        setUserPlan(plan);
+      })
+      .catch(() => setUserPlan("free"));
+  }, []);
+
+  const savedLocked = userPlan !== null && userPlan === "free" && !isSuperAdmin;
 
   const loadFolders = useCallback(async () => {
     const res = await fetch("/api/folders");
@@ -430,7 +446,26 @@ export default function SavedPage() {
   const totalItems = folders.reduce((sum, f) => sum + f.count, 0);
 
   return (
-    <div className="min-h-screen" style={{ background: "var(--bg-primary)" }}>
+    <div className="min-h-screen" style={{ background: "var(--bg-primary)", position: "relative" }}>
+      {/* Blur overlay for free users */}
+      {savedLocked && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 100, backdropFilter: "blur(10px)", background: "rgba(0,0,0,0.5)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, padding: 24 }}>
+          <div style={{ width: 60, height: 60, borderRadius: 16, background: "rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.8"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <p style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.6)" }}>Funció de pagament</p>
+          <h2 style={{ fontSize: 22, fontWeight: 900, color: "#fff", textAlign: "center", margin: 0 }}>Guardats & Carpetes</h2>
+          <p style={{ fontSize: 14, color: "rgba(255,255,255,0.75)", textAlign: "center", maxWidth: 320, lineHeight: 1.6, margin: 0 }}>
+            Guarda i organitza el contingut que t'inspira en carpetes. Disponible a partir del pla Weekly.
+          </p>
+          <Link href="/pricing" style={{ background: "var(--selected-bg)", color: "#fff", textDecoration: "none", borderRadius: 14, padding: "13px 32px", fontWeight: 700, fontSize: 15 }}>
+            Veure plans
+          </Link>
+          <Link href="/feed" style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", textDecoration: "none" }}>
+            Torna a la biblioteca
+          </Link>
+        </div>
+      )}
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "40px 24px 60px" }}>
 
         {/* Header */}

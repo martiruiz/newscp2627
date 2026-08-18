@@ -10,10 +10,20 @@ function buildWhere(queue: string): any {
       return { reviewStatus: "pending" };
     case "missing":
       return {
-        OR: [
-          { sports: { none: {} } },
-          { accountUsername: null },
-          { entityName: null },
+        AND: [
+          {
+            OR: [
+              { reviewStatus: null },
+              { reviewStatus: { not: "approved" } },
+            ],
+          },
+          {
+            OR: [
+              { sports: { none: {} } },
+              { accountUsername: null },
+              { entityName: null },
+            ],
+          },
         ],
       };
     case "errors":

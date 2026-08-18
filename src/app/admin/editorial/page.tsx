@@ -16,6 +16,7 @@ export default function EditorialPage() {
   const [newsScraping, setNewsScraping] = useState(false);
   const [newsSaving, setNewsSaving] = useState(false);
   const [newsError, setNewsError] = useState<string | null>(null);
+  const [editingNewsId, setEditingNewsId] = useState<string | null>(null);
   const [newsPreview, setNewsPreview] = useState<{
     title: string; excerpt: string | null; imageUrl: string | null;
     platform: string | null; publishedAt: string;
@@ -59,33 +60,48 @@ export default function EditorialPage() {
     }
   }, [newsUrl]);
 
+  const handleNewsEdit = useCallback((art: typeof newsArticles[0]) => {
+    setEditingNewsId(art.id);
+    setNewsUrl(art.url);
+    setNewsPreview({
+      title: art.title,
+      excerpt: art.excerpt,
+      imageUrl: art.imageUrl,
+      platform: art.platform,
+      publishedAt: art.publishedAt ? art.publishedAt.slice(0, 10) : new Date().toISOString().slice(0, 10),
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [newsArticles]);
+
   const handleNewsSave = useCallback(async () => {
     if (!newsPreview) return;
     setNewsSaving(true);
     setNewsError(null);
     try {
+      const body = {
+        title: newsPreview.title,
+        excerpt: newsPreview.excerpt,
+        imageUrl: newsPreview.imageUrl,
+        platform: newsPreview.platform,
+        publishedAt: newsPreview.publishedAt ? new Date(newsPreview.publishedAt).toISOString() : null,
+      };
       const res = await fetch("/api/news", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          url: newsUrl.trim(),
-          title: newsPreview.title,
-          excerpt: newsPreview.excerpt,
-          imageUrl: newsPreview.imageUrl,
-          platform: newsPreview.platform,
-          publishedAt: newsPreview.publishedAt ? new Date(newsPreview.publishedAt).toISOString() : null,
-        }),
+        method: editingNewsId ? "PATCH" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editingNewsId ? { id: editingNewsId, ...body } : { url: newsUrl.trim(), ...body }),
       });
       const data = await res.json();
       if (!res.ok) { setNewsError(data.error ?? "Could not save. Try again."); return; }
       setNewsUrl("");
       setNewsPreview(null);
+      setEditingNewsId(null);
       fetchNews();
     } catch {
       setNewsError("Could not save the article. Check your connection.");
     } finally {
       setNewsSaving(false);
     }
-  }, [newsUrl, newsPreview, fetchNews]);
+  }, [newsUrl, newsPreview, editingNewsId, fetchNews]);
 
   const handleNewsDelete = useCallback(async (id: string) => {
     await fetch(`/api/news?id=${id}`, { method: "DELETE" });
@@ -233,19 +249,33 @@ export default function EditorialPage() {
         {activeTab === "news" && (
           <div className="space-y-6">
             <div className="rounded-2xl p-6" style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}>
-              <h2 className="font-bold text-sm mb-4" style={{ color: "var(--text-primary)" }}>Add news article</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-bold text-sm" style={{ color: "var(--text-primary)" }}>
+                  {editingNewsId ? "Edit article" : "Add news article"}
+                </h2>
+                {editingNewsId && (
+                  <button
+                    onClick={() => { setEditingNewsId(null); setNewsUrl(""); setNewsPreview(null); setNewsError(null); }}
+                    className="text-xs px-3 py-1.5 rounded-lg transition-all hover:opacity-70"
+                    style={{ background: "var(--bg-input)", border: "1px solid var(--border-color)", color: "var(--text-muted)" }}
+                  >
+                    Cancel
+                  </button>
+                )}
+              </div>
               <div className="flex gap-2 mb-4">
                 <input
                   value={newsUrl}
-                  onChange={(e) => { setNewsUrl(e.target.value); setNewsPreview(null); setNewsError(null); }}
-                  onKeyDown={(e) => { if (e.key === "Enter") handleNewsScrape(); }}
+                  onChange={(e) => { if (!editingNewsId) { setNewsUrl(e.target.value); setNewsPreview(null); setNewsError(null); } }}
+                  onKeyDown={(e) => { if (e.key === "Enter" && !editingNewsId) handleNewsScrape(); }}
                   placeholder="https://sportspro.com/article/..."
+                  readOnly={!!editingNewsId}
                   className="flex-1 px-3.5 py-2.5 rounded-xl text-sm outline-none"
-                  style={{ background: "var(--bg-input)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}
+                  style={{ background: "var(--bg-input)", border: "1px solid var(--border-color)", color: editingNewsId ? "var(--text-muted)" : "var(--text-primary)", opacity: editingNewsId ? 0.6 : 1 }}
                 />
                 <button
                   onClick={handleNewsScrape}
-                  disabled={!newsUrl.trim() || newsScraping}
+                  disabled={!newsUrl.trim() || newsScraping || !!editingNewsId}
                   className="px-4 py-2.5 rounded-xl text-xs font-bold transition-all hover:opacity-90 shrink-0 disabled:opacity-50"
                   style={{ background: "var(--selected-bg)", color: "var(--selected-text)" }}
                 >
@@ -346,7 +376,7 @@ export default function EditorialPage() {
                       className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all hover:opacity-90 disabled:opacity-40"
                       style={{ background: "var(--selected-bg)", color: "var(--selected-text)" }}
                     >
-                      {newsSaving ? "Publishing…" : "Publish article"}
+                      {newsSaving ? (editingNewsId ? "Saving…" : "Publishing…") : (editingNewsId ? "Save changes" : "Publish article")}
                     </button>
                   </div>
                 </div>
@@ -389,6 +419,14 @@ export default function EditorialPage() {
                         style={{ color: "var(--text-muted)" }}>
                         View ↗
                       </a>
+                      <button onClick={() => handleNewsEdit(art)}
+                        className="flex items-center justify-center rounded-lg transition-all hover:opacity-70 shrink-0"
+                        style={{ width: 28, height: 28, background: editingNewsId === art.id ? "var(--color-charcoal)" : "var(--bg-input)", border: "1px solid var(--border-color)", color: editingNewsId === art.id ? "#fff" : "var(--text-muted)" }}>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                      </button>
                       <button onClick={() => handleNewsDelete(art.id)}
                         className="flex items-center justify-center rounded-lg transition-all hover:opacity-70 shrink-0"
                         style={{ width: 28, height: 28, background: "var(--bg-input)", border: "1px solid var(--border-color)", color: "#ef4444" }}>

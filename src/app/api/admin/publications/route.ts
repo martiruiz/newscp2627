@@ -133,11 +133,9 @@ export async function GET(request: NextRequest) {
   }
 
   if (incompleteOnly) {
-    where.OR = [
-      { sports: { none: {} } },
-      { accountUsername: null },
-      { entityName: null },
-    ];
+    if (!where.AND) where.AND = [];
+    where.AND.push({ OR: [{ reviewStatus: null }, { reviewStatus: { not: "approved" } }] });
+    where.AND.push({ OR: [{ sports: { none: {} } }, { accountUsername: null }, { entityName: null }] });
   }
 
   const [publications, total] = await Promise.all([
@@ -256,6 +254,7 @@ export async function PATCH(request: NextRequest) {
       sportIds,        // string[] | undefined — replaces sports for all selected
       entityTypeIds,   // string[] | undefined
       competitionIds,  // string[] | undefined
+      contentCategoryIds: bulkContentCategoryIds, // string[] | undefined
       // classification bulk
       classificationAction,  // "add" | "remove" — never "set" for bulk
       classificationIds: classIds,
@@ -320,6 +319,17 @@ export async function PATCH(request: NextRequest) {
           if (competitionIds.length > 0) {
             await tx.publicationCompetition.createMany({
               data: batch.flatMap((pid) => competitionIds.map((cid: string) => ({ publicationId: pid, competitionId: cid }))),
+              skipDuplicates: true,
+            });
+          }
+        }
+
+        // Content categories (replace)
+        if (Array.isArray(bulkContentCategoryIds)) {
+          await tx.publicationContentCategory.deleteMany({ where: { publicationId: { in: batch } } });
+          if (bulkContentCategoryIds.length > 0) {
+            await tx.publicationContentCategory.createMany({
+              data: batch.flatMap((pid) => bulkContentCategoryIds.map((cid: string) => ({ publicationId: pid, contentCategoryId: cid }))),
               skipDuplicates: true,
             });
           }

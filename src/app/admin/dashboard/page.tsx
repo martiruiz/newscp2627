@@ -165,10 +165,15 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/admin/dashboard")
-      .then((r) => r.json())
-      .then(setData)
-      .finally(() => setLoading(false));
+    const load = () => {
+      fetch("/api/admin/dashboard")
+        .then((r) => r.json())
+        .then(setData)
+        .finally(() => setLoading(false));
+    };
+    load();
+    const interval = setInterval(load, 60_000);
+    return () => clearInterval(interval);
   }, []);
 
   if (loading) {

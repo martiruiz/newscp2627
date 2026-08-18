@@ -7,14 +7,24 @@ export async function GET() {
   const [newContent, missingInfo, withErrors] = await Promise.all([
     // New: publications with reviewStatus = "pending"
     prisma.publication.count({ where: { reviewStatus: "pending" } }),
-    // Missing info: mandatory fields empty AND not yet reviewed/approved
+    // Missing info: mandatory fields empty AND not explicitly approved
+    // Note: { not: "approved" } excludes NULLs in SQL, so we must OR with null explicitly
     prisma.publication.count({
       where: {
-        reviewStatus: { not: "approved" },
-        OR: [
-          { sports: { none: {} } },
-          { accountUsername: null },
-          { entityName: null },
+        AND: [
+          {
+            OR: [
+              { reviewStatus: null },
+              { reviewStatus: { not: "approved" } },
+            ],
+          },
+          {
+            OR: [
+              { sports: { none: {} } },
+              { accountUsername: null },
+              { entityName: null },
+            ],
+          },
         ],
       },
     }),

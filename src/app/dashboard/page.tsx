@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, Suspense } from "react";
+import { useState, useEffect, useRef, useCallback, Suspense } from "react";
 import Link from "next/link";
 import PublicationCard from "@/components/PublicationCard";
 import DashboardNotificationBell from "@/components/DashboardNotificationBell";
@@ -86,6 +86,8 @@ const QUICK_ACTIONS = [
   { label: "El meu compte", href: "/account", icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> },
 ];
 
+import { getEffectivePlan } from "@/lib/plan-utils";
+
 export default function DashboardPage() {
   const [greeting, setGreeting] = useState("Good morning");
   const [publications, setPublications] = useState<Publication[]>([]);
@@ -93,17 +95,35 @@ export default function DashboardPage() {
   const [activeSlide, setActiveSlide] = useState(0);
   const [newsItems, setNewsItems] = useState<{ id: string; url: string; title: string; platform: string | null; publishedAt: string | null; createdAt: string }[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
+  const [userPlan, setUserPlan] = useState<string>("free");
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [sports, setSports] = useState<{ name: string; slug: string }[]>([]);
+  const [selectedSport, setSelectedSport] = useState<string>("");
   const carouselRef = useRef<HTMLDivElement>(null);
+
+  const isFree = userPlan === "free" && !isSuperAdmin;
+
+  const fetchPubs = useCallback((sport: string) => {
+    setLoadingPubs(true);
+    const url = sport
+      ? `/api/publications?limit=5&order=latest&sport=${encodeURIComponent(sport)}`
+      : "/api/publications?limit=5&order=latest";
+    fetch(url)
+      .then((r) => r.json())
+      .then((d) => { setPublications(d.publications || []); setLoadingPubs(false); })
+      .catch(() => setLoadingPubs(false));
+  }, []);
 
   useEffect(() => {
     const h = new Date().getHours();
     if (h >= 12 && h < 18) setGreeting("Good afternoon");
     else if (h >= 18) setGreeting("Good evening");
 
-    fetch("/api/publications?limit=5&order=latest")
+    fetch("/api/filters")
       .then((r) => r.json())
-      .then((d) => { setPublications(d.publications || []); setLoadingPubs(false); })
-      .catch(() => setLoadingPubs(false));
+      .then((d) => setSports((d.sports ?? []).slice(0, 6)))
+      .catch(() => {});
 
     fetch("/api/news?limit=3")
       .then((r) => r.json())
@@ -114,7 +134,20 @@ export default function DashboardPage() {
       .then((r) => r.json())
       .then((d) => setStats(d))
       .catch(() => {});
-  }, []);
+
+    fetch("/api/user/plan")
+      .then((r) => r.json())
+      .then((d) => {
+        const { plan, isSuperAdmin } = getEffectivePlan(d);
+        setIsSuperAdmin(isSuperAdmin);
+        setUserPlan(plan);
+      })
+      .catch(() => {});
+  }, [fetchPubs]);
+
+  useEffect(() => {
+    fetchPubs(selectedSport);
+  }, [selectedSport, fetchPubs]);
 
   function onCarouselScroll() {
     const el = carouselRef.current;
@@ -125,6 +158,42 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "var(--bg-primary)", color: "var(--text-primary)" }}>
+
+      {/* Upgrade modal */}
+      {showUpgradeModal && (
+        <div
+          onClick={() => setShowUpgradeModal(false)}
+          style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(0,0,0,0.55)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: 24, padding: 32, maxWidth: 360, width: "100%", textAlign: "center" }}
+          >
+            <div style={{ width: 52, height: 52, borderRadius: 14, background: "var(--color-charcoal-subtle)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--selected-bg)" strokeWidth="1.8">
+                <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </div>
+            <p style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--selected-bg)", marginBottom: 8 }}>Funció de pagament</p>
+            <h3 style={{ fontSize: 18, fontWeight: 900, color: "var(--text-primary)", marginBottom: 8 }}>Accés restringit</h3>
+            <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 24, lineHeight: 1.6 }}>
+              Aquesta funció requereix el pla Weekly o superior.
+            </p>
+            <Link
+              href="/pricing"
+              style={{ display: "block", background: "var(--selected-bg)", color: "#fff", borderRadius: 12, padding: "12px 0", fontWeight: 700, fontSize: 14, textDecoration: "none", marginBottom: 10 }}
+            >
+              Veure plans
+            </Link>
+            <button
+              onClick={() => setShowUpgradeModal(false)}
+              style={{ fontSize: 13, color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer" }}
+            >
+              Torna al dashboard
+            </button>
+          </div>
+        </div>
+      )}
 
       <OnboardingModal />
       <Suspense>
@@ -183,16 +252,32 @@ export default function DashboardPage() {
 
         {/* Quick actions (mobile) */}
         <div className="flex gap-2 px-5 mb-5 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
-          {QUICK_ACTIONS.map((a) => (
-            <Link
-              key={a.label}
-              href={a.href}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap shrink-0 transition-all hover:opacity-80"
-              style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", color: "var(--text-secondary)" }}
-            >
-              {a.icon}{a.label}
-            </Link>
-          ))}
+          {QUICK_ACTIONS.map((a) => {
+            const isLockedAction = isFree && (a.href === "/saved" || a.href === "/news");
+            if (isLockedAction) {
+              return (
+                <button
+                  key={a.label}
+                  onClick={() => setShowUpgradeModal(true)}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap shrink-0 transition-all"
+                  style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", color: "var(--text-secondary)", opacity: 0.6 }}
+                >
+                  {a.icon}{a.label}
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                </button>
+              );
+            }
+            return (
+              <Link
+                key={a.label}
+                href={a.href}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap shrink-0 transition-all hover:opacity-80"
+                style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", color: "var(--text-secondary)" }}
+              >
+                {a.icon}{a.label}
+              </Link>
+            );
+          })}
         </div>
 
         {/* Publication carousel */}
@@ -262,7 +347,14 @@ export default function DashboardPage() {
               <p className="text-white font-black text-sm leading-tight">Uneix-te a la comunitat</p>
               <p className="text-[11px] leading-tight" style={{ color: "rgba(255,255,255,0.8)" }}>Creadors de contingut esportiu</p>
             </div>
-            <a href="https://chat.whatsapp.com/HJN3eY7wuMv18vxOJFqdfP" target="_blank" rel="noopener noreferrer" className="shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition-all" style={{ background: "#fff", color: "#075e54" }}>Unir-me</a>
+            {isFree ? (
+              <button onClick={() => setShowUpgradeModal(true)} className="shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5" style={{ background: "#fff", color: "#075e54" }}>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#075e54" strokeWidth="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                Unir-me
+              </button>
+            ) : (
+              <a href="https://chat.whatsapp.com/HJN3eY7wuMv18vxOJFqdfP" target="_blank" rel="noopener noreferrer" className="shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition-all" style={{ background: "#fff", color: "#075e54" }}>Unir-me</a>
+            )}
           </div>
         </div>
 
@@ -327,6 +419,15 @@ export default function DashboardPage() {
               <p className="text-xs" style={{ color: "var(--text-muted)" }}>Created by creators, for creators</p>
             </div>
             <div className="flex items-center gap-3 ml-auto shrink-0">
+              <button
+                onClick={() => { const e = new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true }); window.dispatchEvent(e); }}
+                className="hidden md:flex items-center gap-2 px-3 py-2 rounded-xl text-xs transition-all hover:opacity-80"
+                style={{ background: "var(--bg-input)", border: "1px solid var(--border-color)", color: "var(--text-muted)" }}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <span>Cerca</span>
+                <kbd style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--bg-card)", border: "1px solid var(--border-color)" }}>⌘K</kbd>
+              </button>
               <ThemeToggle />
               <DashboardNotificationBell />
               <DashboardUserProfile />
@@ -357,28 +458,104 @@ export default function DashboardPage() {
 
           {/* Quick actions (desktop) */}
           <div className="flex items-center gap-2 mb-8">
-            {QUICK_ACTIONS.map((a) => (
-              <Link
-                key={a.label}
-                href={a.href}
-                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all hover:opacity-80"
-                style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", color: "var(--text-secondary)" }}
-              >
-                {a.icon}{a.label}
-              </Link>
-            ))}
+            {QUICK_ACTIONS.map((a) => {
+              const isLockedAction = isFree && (a.href === "/saved" || a.href === "/news");
+              if (isLockedAction) {
+                return (
+                  <button
+                    key={a.label}
+                    onClick={() => setShowUpgradeModal(true)}
+                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all"
+                    style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", color: "var(--text-secondary)", opacity: 0.6 }}
+                  >
+                    {a.icon}{a.label}
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  </button>
+                );
+              }
+              return (
+                <Link
+                  key={a.label}
+                  href={a.href}
+                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all hover:opacity-80"
+                  style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", color: "var(--text-secondary)" }}
+                >
+                  {a.icon}{a.label}
+                </Link>
+              );
+            })}
           </div>
 
           {/* Desktop publications grid */}
           <section className="mb-10">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-bold text-base">Latest published content</h2>
-              <Link href="/feed" className="text-xs font-medium hover:underline" style={{ color: "var(--selected-bg)" }}>View all in Content Library →</Link>
+            <div className="flex items-center gap-3 mb-4 flex-wrap">
+              <h2 className="font-bold text-base shrink-0">Latest published content</h2>
+              {/* Sport quick-filter tabs */}
+              {sports.length > 0 && (
+                <div className="flex items-center gap-1.5 flex-wrap flex-1">
+                  <button
+                    onClick={() => setSelectedSport("")}
+                    className="px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all"
+                    style={{
+                      background: selectedSport === "" ? "var(--selected-bg)" : "var(--bg-input)",
+                      color: selectedSport === "" ? "#fff" : "var(--text-secondary)",
+                      border: `1px solid ${selectedSport === "" ? "transparent" : "var(--border-color)"}`,
+                    }}
+                  >
+                    All
+                  </button>
+                  {sports.map((s) => (
+                    <button
+                      key={s.slug}
+                      onClick={() => setSelectedSport(s.slug === selectedSport ? "" : s.slug)}
+                      className="px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all"
+                      style={{
+                        background: selectedSport === s.slug ? "var(--selected-bg)" : "var(--bg-input)",
+                        color: selectedSport === s.slug ? "#fff" : "var(--text-secondary)",
+                        border: `1px solid ${selectedSport === s.slug ? "transparent" : "var(--border-color)"}`,
+                      }}
+                    >
+                      {s.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+              <Link href="/feed" className="text-xs font-medium hover:underline shrink-0 ml-auto" style={{ color: "var(--selected-bg)" }}>View all →</Link>
             </div>
             {loadingPubs ? (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {[0, 1, 2].map((i) => (
-                  <div key={i} className="rounded-xl animate-pulse" style={{ height: 240, background: "var(--bg-card)", border: "1px solid var(--border-color)" }} />
+                  <div key={i} className="rounded-2xl overflow-hidden" style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}>
+                    {/* Image placeholder */}
+                    <div className="relative overflow-hidden" style={{ height: 200, background: "var(--bg-input)" }}>
+                      <div
+                        className="absolute inset-0"
+                        style={{
+                          background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.06) 50%, transparent 100%)",
+                          animation: "shimmer 1.4s ease-in-out infinite",
+                          animationDelay: `${i * 0.15}s`,
+                        }}
+                      />
+                    </div>
+                    {/* Content lines */}
+                    <div className="p-4 space-y-3">
+                      <div className="flex items-center gap-2">
+                        <div className="rounded-full overflow-hidden shrink-0" style={{ width: 28, height: 28, background: "var(--bg-input)" }}>
+                          <div style={{ width: "100%", height: "100%", background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent)", animation: "shimmer 1.4s ease-in-out infinite" }} />
+                        </div>
+                        <div className="rounded-md overflow-hidden" style={{ height: 12, width: "60%", background: "var(--bg-input)" }}>
+                          <div style={{ width: "100%", height: "100%", background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent)", animation: "shimmer 1.4s ease-in-out infinite", animationDelay: `${i * 0.15 + 0.1}s` }} />
+                        </div>
+                      </div>
+                      <div className="rounded-md overflow-hidden" style={{ height: 11, width: "80%", background: "var(--bg-input)" }}>
+                        <div style={{ width: "100%", height: "100%", background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent)", animation: "shimmer 1.4s ease-in-out infinite", animationDelay: `${i * 0.15 + 0.2}s` }} />
+                      </div>
+                      <div className="rounded-md overflow-hidden" style={{ height: 11, width: "50%", background: "var(--bg-input)" }}>
+                        <div style={{ width: "100%", height: "100%", background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent)", animation: "shimmer 1.4s ease-in-out infinite", animationDelay: `${i * 0.15 + 0.3}s` }} />
+                      </div>
+                    </div>
+                    <style>{`@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}`}</style>
+                  </div>
                 ))}
               </div>
             ) : publications.length === 0 ? (
@@ -394,12 +571,12 @@ export default function DashboardPage() {
             )}
           </section>
 
-          {/* Desktop middle row: Social Media News (2/3) + Saved (1/3) */}
+          {/* Desktop middle row: Industry Hub (2/3) + Saved (1/3) */}
           <div className="grid gap-6 mb-10" style={{ gridTemplateColumns: "2fr 1fr" }}>
-            {/* Social Media News */}
+            {/* Industry Hub */}
             <section className="rounded-xl p-5" style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}>
               <div className="flex items-center justify-between mb-4">
-                <h2 className="font-bold text-sm">Social Media News</h2>
+                <h2 className="font-bold text-sm">Industry Hub</h2>
                 <Link href="/news" className="text-xs font-medium hover:underline" style={{ color: "var(--selected-bg)" }}>See all →</Link>
               </div>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -426,7 +603,7 @@ export default function DashboardPage() {
             </section>
 
             {/* Saved quick view */}
-            <SavedQuickView />
+            <SavedQuickView isFree={isFree} onUpgradeClick={() => setShowUpgradeModal(true)} />
           </div>
 
           {/* WhatsApp community banner (desktop) */}
@@ -446,10 +623,17 @@ export default function DashboardPage() {
                 <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.85)" }}>Connecta amb altres creadors del món esportiu, comparteix estratègies, tendències i col·labora en temps real al nostre grup de WhatsApp.</p>
               </div>
               <div className="shrink-0">
-                <a href="https://chat.whatsapp.com/HJN3eY7wuMv18vxOJFqdfP" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 px-6 py-3 rounded-xl font-bold text-sm transition-all hover:scale-105 hover:shadow-lg" style={{ background: "#fff", color: "#075e54", boxShadow: "0 4px 16px rgba(0,0,0,0.2)" }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
-                  Unir-me ara
-                </a>
+                {isFree ? (
+                  <button onClick={() => setShowUpgradeModal(true)} className="flex items-center gap-2.5 px-6 py-3 rounded-xl font-bold text-sm transition-all" style={{ background: "#fff", color: "#075e54", boxShadow: "0 4px 16px rgba(0,0,0,0.2)" }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#075e54" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    Pla de pagament
+                  </button>
+                ) : (
+                  <a href="https://chat.whatsapp.com/HJN3eY7wuMv18vxOJFqdfP" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 px-6 py-3 rounded-xl font-bold text-sm transition-all hover:scale-105 hover:shadow-lg" style={{ background: "#fff", color: "#075e54", boxShadow: "0 4px 16px rgba(0,0,0,0.2)" }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+                    Unir-me ara
+                  </a>
+                )}
               </div>
             </div>
           </section>
@@ -542,22 +726,44 @@ interface SavedFolder {
   count: number;
 }
 
-function SavedQuickView() {
+function SavedQuickView({ isFree, onUpgradeClick }: { isFree: boolean; onUpgradeClick: () => void }) {
   const [folders, setFolders] = useState<SavedFolder[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/folders")
-      .then((r) => r.json())
-      .then((d) => { setFolders(Array.isArray(d) ? d : []); setLoading(false); })
-      .catch(() => setLoading(false));
-  }, []);
+    if (!isFree) {
+      fetch("/api/folders")
+        .then((r) => r.json())
+        .then((d) => { setFolders(Array.isArray(d) ? d : []); setLoading(false); })
+        .catch(() => setLoading(false));
+    } else {
+      setLoading(false);
+    }
+  }, [isFree]);
 
   return (
     <section
-      className="rounded-xl p-5 flex flex-col"
+      className="rounded-xl p-5 flex flex-col relative overflow-hidden"
       style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}
     >
+      {/* Blur overlay for free users */}
+      {isFree && (
+        <div
+          style={{ position: "absolute", inset: 0, zIndex: 10, backdropFilter: "blur(6px)", background: "rgba(0,0,0,0.45)", borderRadius: 12, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12, padding: 24 }}
+        >
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <div style={{ textAlign: "center" }}>
+            <p style={{ fontSize: 13, fontWeight: 800, color: "#fff", marginBottom: 4 }}>Guardats & Carpetes</p>
+            <p style={{ fontSize: 11, color: "rgba(255,255,255,0.7)", lineHeight: 1.5 }}>Disponible a partir del pla Weekly</p>
+          </div>
+          <button onClick={onUpgradeClick} style={{ background: "var(--selected-bg)", color: "#fff", border: "none", borderRadius: 10, padding: "8px 20px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+            Veure plans
+          </button>
+        </div>
+      )}
+
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--selected-bg)" strokeWidth="2">
@@ -565,7 +771,28 @@ function SavedQuickView() {
           </svg>
           <h2 className="font-bold text-sm">Saved</h2>
         </div>
-        <Link href="/saved" className="text-xs font-medium hover:underline" style={{ color: "var(--selected-bg)" }}>See all →</Link>
+        <div className="flex items-center gap-3">
+          {isFree ? (
+            <button
+              onClick={onUpgradeClick}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all"
+              style={{ background: "var(--bg-input)", border: "1px solid var(--border-color)", color: "var(--text-secondary)", opacity: 0.65 }}
+            >
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              Nova carpeta
+            </button>
+          ) : (
+            <Link
+              href="/saved"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all hover:opacity-80"
+              style={{ background: "var(--bg-input)", border: "1px solid var(--border-color)", color: "var(--text-secondary)" }}
+            >
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Nova carpeta
+            </Link>
+          )}
+          <Link href="/saved" className="text-xs font-medium hover:underline" style={{ color: "var(--selected-bg)" }}>See all →</Link>
+        </div>
       </div>
 
       {loading ? (

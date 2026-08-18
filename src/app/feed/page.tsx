@@ -5,6 +5,24 @@ import { useSearchParams } from "next/navigation";
 import FilterSidebar, { type SelectedFilters } from "@/components/FilterSidebar";
 import PublicationCard from "@/components/PublicationCard";
 import LibraryTutorialOverlay from "@/components/LibraryTutorialOverlay";
+import { getEffectivePlan, getFreeSearchUsage, incrementFreeSearch, FREE_SEARCH_LIMIT } from "@/lib/plan-utils";
+
+/* ─── Saved views (localStorage) ─────────────────────────────────────── */
+
+const VIEWS_KEY = "scp-saved-views";
+
+interface SavedView {
+  id: string;
+  name: string;
+  filters: SelectedFilters;
+}
+
+function loadViews(): SavedView[] {
+  try { return JSON.parse(localStorage.getItem(VIEWS_KEY) || "[]"); } catch { return []; }
+}
+function saveViews(views: SavedView[]) {
+  try { localStorage.setItem(VIEWS_KEY, JSON.stringify(views)); } catch {}
+}
 
 interface Publication {
   id: string;
@@ -45,7 +63,7 @@ const DEFAULT_FILTERS: SelectedFilters = {
   dateFrom: "",
   dateTo: "",
   search: "",
-  order: "latest",
+  order: "recommended",
 };
 
 const PAGE_SIZE = 100;
@@ -111,10 +129,15 @@ const SMART_CHIPS = [
 function SmartFilters({
   filters,
   setFilters,
+  userPlan,
+  onUpgradeClick,
 }: {
   filters: SelectedFilters;
   setFilters: React.Dispatch<React.SetStateAction<SelectedFilters>>;
+  userPlan: string;
+  onUpgradeClick: () => void;
 }) {
+  const isFree = !userPlan || userPlan === "free";
   const [infoOpen, setInfoOpen] = useState(false);
   const infoRef = useRef<HTMLDivElement>(null);
 
@@ -152,7 +175,7 @@ function SmartFilters({
               <line x1="12" y1="8" x2="12" y2="8.01"/>
               <line x1="12" y1="12" x2="12" y2="16"/>
             </svg>
-            Selection criteria
+            Why these results?
           </button>
 
           {/* Dropdown */}
@@ -168,7 +191,7 @@ function SmartFilters({
             >
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>
-                  Selection criteria
+                  Why these results?
                 </h3>
                 <button onClick={() => setInfoOpen(false)} style={{ color: "var(--text-muted)" }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -205,6 +228,7 @@ function SmartFilters({
             <button
               key={chip.value}
               onClick={() => {
+                if (isFree) { onUpgradeClick(); return; }
                 const arr = filters[chip.filterKey] as string[];
                 const updated = arr.includes(chip.value)
                   ? arr.filter((v) => v !== chip.value)
@@ -216,6 +240,7 @@ function SmartFilters({
                 background: isSelected ? chip.gradient : "var(--bg-card)",
                 border: `1.5px solid ${isSelected ? "transparent" : "var(--border-color)"}`,
                 minHeight: 72,
+                opacity: isFree ? 0.6 : 1,
               }}
             >
               <div
@@ -259,6 +284,7 @@ function SmartFilters({
             <button
               key={chip.value}
               onClick={() => {
+                if (isFree) { onUpgradeClick(); return; }
                 const arr = filters[chip.filterKey] as string[];
                 const updated = arr.includes(chip.value)
                   ? arr.filter((v) => v !== chip.value)
@@ -270,11 +296,16 @@ function SmartFilters({
                 background: isSelected ? chip.gradient : "var(--bg-card)",
                 color: isSelected ? "#fff" : "var(--text-secondary)",
                 border: `1.5px solid ${isSelected ? "transparent" : "var(--border-color)"}`,
+                opacity: isFree ? 0.6 : 1,
               }}
             >
               <span style={{ color: isSelected ? "rgba(255,255,255,0.85)" : "var(--text-muted)" }}>{chip.icon}</span>
               {chip.label}
-              {isSelected && (
+              {isFree ? (
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ opacity: 0.7 }}>
+                  <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+              ) : isSelected && (
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="3">
                   <path d="M20 6L9 17l-5-5"/>
                 </svg>
@@ -289,7 +320,8 @@ function SmartFilters({
 
 export default function FeedPage() {
   const searchParams = useSearchParams();
-  const initialOrder = searchParams.get("order") === "random" ? "random" : "latest";
+  const rawOrder = searchParams.get("order");
+  const initialOrder = rawOrder === "random" ? "random" : "recommended";
   const initialPage = parseInt(searchParams.get("p") || "1", 10) || 1;
 
   const [publications, setPublications] = useState<Publication[]>([]);
@@ -299,15 +331,79 @@ export default function FeedPage() {
   const [filters, setFilters] = useState<SelectedFilters>({ ...DEFAULT_FILTERS, order: initialOrder });
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [userPlan, setUserPlan] = useState<string>("free");
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [showSearchLimitModal, setShowSearchLimitModal] = useState(false);
+  const [searchesRemaining, setSearchesRemaining] = useState(FREE_SEARCH_LIMIT);
+
+  // Intercepted filter change that enforces search limit for free users
+  const handleFiltersChange = useCallback((
+    updaterOrValue: SelectedFilters | ((prev: SelectedFilters) => SelectedFilters)
+  ) => {
+    const isFreeUser = userPlan === "free";
+    if (!isFreeUser) {
+      setFilters(updaterOrValue as React.SetStateAction<SelectedFilters>);
+      return;
+    }
+    const prevFilters = filters;
+    const next = typeof updaterOrValue === "function"
+      ? (updaterOrValue as (prev: SelectedFilters) => SelectedFilters)(prevFilters)
+      : updaterOrValue;
+    const searchChanged = next.search !== prevFilters.search && next.search !== "";
+    if (searchChanged) {
+      const usage = getFreeSearchUsage();
+      if (usage.count >= FREE_SEARCH_LIMIT) {
+        setShowSearchLimitModal(true);
+        return;
+      }
+      const newCount = incrementFreeSearch();
+      setSearchesRemaining(FREE_SEARCH_LIMIT - newCount);
+    }
+    setFilters(updaterOrValue as React.SetStateAction<SelectedFilters>);
+  }, [userPlan, filters]);
 
   const [readyPubs, setReadyPubs] = useState(new Set<string>());
+  const [savedViews, setSavedViews] = useState<SavedView[]>([]);
+  const [showSaveViewModal, setShowSaveViewModal] = useState(false);
+  const [newViewName, setNewViewName] = useState("");
+
+  useEffect(() => { setSavedViews(loadViews()); }, []);
+
+  function handleSaveView() {
+    if (!newViewName.trim()) return;
+    const view: SavedView = { id: Date.now().toString(), name: newViewName.trim(), filters };
+    const updated = [...savedViews, view];
+    setSavedViews(updated);
+    saveViews(updated);
+    setNewViewName("");
+    setShowSaveViewModal(false);
+  }
+
+  function handleDeleteView(id: string) {
+    const updated = savedViews.filter((v) => v.id !== id);
+    setSavedViews(updated);
+    saveViews(updated);
+  }
 
   const abortRef = useRef<AbortController | null>(null);
   const mainRef = useRef<HTMLDivElement>(null);
 
-  // Sync URL ?order=random param into filter state
+  // Fetch user plan
   useEffect(() => {
-    const urlOrder = searchParams.get("order") === "random" ? "random" : "latest";
+    fetch("/api/user/plan").then((r) => r.json()).then((d) => {
+      const { plan } = getEffectivePlan(d);
+      setUserPlan(plan);
+      if (plan === "free") {
+        const usage = getFreeSearchUsage();
+        setSearchesRemaining(Math.max(0, FREE_SEARCH_LIMIT - usage.count));
+      }
+    }).catch(() => {});
+  }, []);
+
+  // Sync URL ?order param into filter state
+  useEffect(() => {
+    const raw = searchParams.get("order");
+    const urlOrder = raw === "random" ? "random" : "recommended";
     setFilters((f) => {
       if (f.order === urlOrder) return f;
       return { ...f, order: urlOrder };
@@ -392,18 +488,115 @@ export default function FeedPage() {
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "var(--bg-primary)" }}>
+      {/* Upgrade modal (SmartFilters / feed) */}
+      {showUpgradeModal && (
+        <div
+          className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+          style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }}
+          onClick={() => setShowUpgradeModal(false)}
+        >
+          <div
+            className="rounded-2xl p-7 max-w-sm w-full relative"
+            style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", boxShadow: "0 24px 64px rgba(0,0,0,0.35)" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button onClick={() => setShowUpgradeModal(false)} className="absolute top-4 right-4 p-1 rounded-lg hover:opacity-60" style={{ color: "var(--text-muted)" }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <div className="flex items-center justify-center w-14 h-14 rounded-2xl mb-4 mx-auto" style={{ background: "linear-gradient(135deg, #2563EB 0%, #1E3A8A 100%)" }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <h3 className="text-lg font-black text-center mb-2" style={{ color: "var(--text-primary)" }}>Funció de pagament</h3>
+            <p className="text-sm text-center mb-6" style={{ color: "var(--text-muted)", lineHeight: 1.6 }}>
+              Aquesta funció requereix un pla Weekly, Basic o Pro. Accedeix a tots els filtres avançats i molt més.
+            </p>
+            <a href="/pricing" className="block w-full py-3 rounded-xl text-sm font-bold text-center hover:opacity-90" style={{ background: "linear-gradient(135deg, #2563EB 0%, #1E3A8A 100%)", color: "#fff" }}>
+              Veure plans
+            </a>
+            <button onClick={() => setShowUpgradeModal(false)} className="block w-full mt-2 py-2.5 rounded-xl text-sm font-medium text-center hover:opacity-70" style={{ color: "var(--text-muted)" }}>
+              Ara no
+            </button>
+          </div>
+        </div>
+      )}
+      {/* Search limit modal */}
+      {showSearchLimitModal && (
+        <div
+          className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+          style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }}
+          onClick={() => setShowSearchLimitModal(false)}
+        >
+          <div
+            className="rounded-2xl p-7 max-w-sm w-full relative"
+            style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", boxShadow: "0 24px 64px rgba(0,0,0,0.35)" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-center w-14 h-14 rounded-2xl mb-4 mx-auto" style={{ background: "linear-gradient(135deg, #E8567A 0%, #A82346 100%)" }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </div>
+            <h3 className="text-lg font-black text-center mb-2" style={{ color: "var(--text-primary)" }}>Límit de cerques assolit</h3>
+            <p className="text-sm text-center mb-2" style={{ color: "var(--text-muted)", lineHeight: 1.6 }}>
+              El pla gratuït inclou <strong>5 cerques per dia</strong>. Ja has fet les 5 cerques d'avui.
+            </p>
+            <p className="text-xs text-center mb-6" style={{ color: "var(--text-muted)" }}>
+              Les cerques es renoven cada dia. O actualitza al pla Weekly per a cerques il·limitades.
+            </p>
+            <a href="/pricing" className="block w-full py-3 rounded-xl text-sm font-bold text-center hover:opacity-90" style={{ background: "linear-gradient(135deg, #2563EB 0%, #1E3A8A 100%)", color: "#fff" }}>
+              Veure plans
+            </a>
+            <button onClick={() => setShowSearchLimitModal(false)} className="block w-full mt-2 py-2.5 rounded-xl text-sm font-medium text-center hover:opacity-70" style={{ color: "var(--text-muted)" }}>
+              Tancar
+            </button>
+          </div>
+        </div>
+      )}
+      {/* Save view modal */}
+      {showSaveViewModal && (
+        <div
+          className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center p-4"
+          style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)" }}
+          onClick={() => setShowSaveViewModal(false)}
+        >
+          <div
+            className="rounded-2xl p-5 w-full max-w-sm"
+            style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-base font-black mb-3" style={{ color: "var(--text-primary)" }}>Desa la vista</h3>
+            <input
+              autoFocus
+              className="w-full px-4 py-3 rounded-xl text-sm mb-3"
+              placeholder="Nom de la vista…"
+              value={newViewName}
+              onChange={(e) => setNewViewName(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") handleSaveView(); }}
+              style={{ background: "var(--bg-input)", color: "var(--text-primary)", border: "1px solid var(--border-color)" }}
+            />
+            <div className="flex gap-2">
+              <button onClick={handleSaveView} disabled={!newViewName.trim()} className="flex-1 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40" style={{ background: "var(--selected-bg)", color: "#fff" }}>
+                Desa
+              </button>
+              <button onClick={() => setShowSaveViewModal(false)} className="flex-1 py-2.5 rounded-xl text-sm font-semibold" style={{ background: "var(--bg-input)", color: "var(--text-muted)" }}>
+                Cancel·la
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Suspense>
         <LibraryTutorialOverlay />
       </Suspense>
       <div className="flex-1 flex">
         <FilterSidebar
           filters={filters}
-          onFiltersChange={setFilters}
+          onFiltersChange={handleFiltersChange as typeof setFilters}
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
           collapsed={sidebarCollapsed}
           onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
           resultCount={pagination?.total}
+          userPlan={userPlan}
         />
 
         <main ref={mainRef} className="flex-1 min-w-0 p-4">
@@ -427,6 +620,22 @@ export default function FeedPage() {
                   </span>
                 )}
               </button>
+              {/* Save view button — only show when filters are active */}
+              {activeFilterCount > 0 && (
+                <button
+                  onClick={() => setShowSaveViewModal(true)}
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all hover:opacity-80"
+                  style={{ background: "var(--bg-input)", color: "var(--text-muted)", border: "1px solid var(--border-color)" }}
+                  title="Desa la vista actual"
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                    <polyline points="17 21 17 13 7 13 7 21"/>
+                    <polyline points="7 3 7 8 15 8"/>
+                  </svg>
+                  <span className="hidden sm:inline">Desa vista</span>
+                </button>
+              )}
               {pagination && (
                 <span className="text-sm font-medium" style={{ color: "var(--text-muted)" }}>
                   <span className="sm:hidden">{pagination.total >= 1000 ? `${(pagination.total / 1000).toFixed(0)} K` : pagination.total} ideas</span>
@@ -439,8 +648,8 @@ export default function FeedPage() {
               style={{ border: "1px solid var(--border-color)" }}
             >
               {[
-                { value: "latest", label: "Latest", icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> },
-                { value: "random", label: "Random", icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><polyline points="16 3 21 3 21 8"/><polyline points="16 21 21 21 21 16"/><line x1="4" y1="4" x2="21" y2="21"/><line x1="21" y1="4" x2="4" y2="21"/></svg> },
+                { value: "recommended", label: "Recommended", icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> },
+                { value: "random", label: "Inspire me", icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><polyline points="16 3 21 3 21 8"/><polyline points="16 21 21 21 21 16"/><line x1="4" y1="4" x2="21" y2="21"/><line x1="21" y1="4" x2="4" y2="21"/></svg> },
               ].map((opt, i) => {
                 const active = filters.order === opt.value;
                 return (
@@ -462,8 +671,28 @@ export default function FeedPage() {
             </div>
           </div>
 
+          {/* Saved views */}
+          {savedViews.length > 0 && (
+            <div className="flex gap-2 overflow-x-auto pb-1 mb-2 -mx-1 px-1" style={{ scrollbarWidth: "none" }}>
+              {savedViews.map((view) => (
+                <div key={view.id} className="flex items-center gap-1 shrink-0 rounded-full pl-3 pr-1 py-1 text-xs font-semibold" style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", color: "var(--text-secondary)" }}>
+                  <button onClick={() => setFilters(view.filters)} className="hover:opacity-80">
+                    {view.name}
+                  </button>
+                  <button
+                    onClick={() => handleDeleteView(view.id)}
+                    className="flex items-center justify-center w-4 h-4 rounded-full hover:opacity-70"
+                    style={{ color: "var(--text-muted)" }}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
           {/* Smart filters */}
-          <SmartFilters filters={filters} setFilters={setFilters} />
+          <SmartFilters filters={filters} setFilters={setFilters} userPlan={userPlan} onUpgradeClick={() => setShowUpgradeModal(true)} />
 
           {activeFilterCount > 0 && (
             <div className="flex flex-wrap items-center gap-1.5 mb-3">

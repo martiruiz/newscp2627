@@ -122,3 +122,101 @@ body {
   color: var(--color-muted);
   pointer-events: none;
 }
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ── Embed skeleton shimmer ──────────────────────────────────────── */
+@keyframes skeleton-shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.embed-skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-input);
+}
+
+.embed-skeleton-line {
+  background: rgba(128, 128, 128, 0.12);
+  border-radius: 6px;
+}
+
+[data-theme="light"] .embed-skeleton-line,
+@media (prefers-color-scheme: light) {
+  .embed-skeleton-line { background: rgba(0, 0, 0, 0.07); }
+}
+
+.embed-skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.06) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.6s ease-in-out infinite;
+}
+
+[data-theme="light"] .embed-skeleton::after {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0, 0, 0, 0.04) 50%,
+    transparent 100%
+  );
+  animation: skeleton-shimmer 1.6s ease-in-out infinite;
+}
+
+/* Embed unavailable fallback */
+.embed-unavailable {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--bg-input);
+  border-radius: 8px;
+  min-height: 200px;
+  padding: 32px 24px;
+}
+
+/* ── Safe-area utilities (iPhone notch / Dynamic Island) ──────────── */
+:root {
+  --safe-top:    env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left:   env(safe-area-inset-left, 0px);
+  --safe-right:  env(safe-area-inset-right, 0px);
+}
+
+/* Bottom nav height + safe area for page content offset */
+.pb-mobile-nav {
+  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+}
+
+/* Main content area: accounts for fixed mobile nav on small screens */
+.main-content-wrapper {
+  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+}
+@media (min-width: 768px) {
+  .main-content-wrapper {
+    padding-bottom: 0;
+  }
+}
+
+/* Tap highlight removal for interactive elements */
+button, a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevent text size adjustment on orientation change */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}

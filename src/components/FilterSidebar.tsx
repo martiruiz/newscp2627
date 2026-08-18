@@ -47,7 +47,14 @@ interface FilterSidebarProps {
   collapsed: boolean;
   onToggleCollapse: () => void;
   resultCount?: number;
+  userPlan?: string;
 }
+
+const FREE_RESTRICTED_CLASSIFICATIONS = new Set([
+  "top-picks", "replicable-ideas", "overperforming",
+  "collabs-partnerships", "merchandising", "transfers",
+]);
+const FREE_RESTRICTED_ENTITY_TYPES = new Set(["content-creators"]);
 
 interface SearchResult {
   label: string;
@@ -75,7 +82,7 @@ const ENTITY_DISPLAY: Record<string, string> = {
   Players: "Athlete",
 };
 
-const HIDDEN_ENTITY_SLUGS = new Set(["meme", "clubs-meme", "content-creators"]);
+const HIDDEN_ENTITY_SLUGS = new Set(["meme", "clubs-meme", "content-creators", "ia"]);
 
 const ENTITY_PLURAL: Record<string, string> = {
   brands: "brands",
@@ -88,8 +95,89 @@ const ENTITY_PLURAL: Record<string, string> = {
 
 type SectionId = "date" | "sport" | "published" | "account" | "contentCategory" | null;
 
-export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClose, collapsed, onToggleCollapse, resultCount }: FilterSidebarProps) {
+function SkeletonBar({ w = "100%", h = 10, r = 6, opacity = 1 }: { w?: string | number; h?: number; r?: number; opacity?: number }) {
+  return (
+    <div
+      style={{
+        width: w, height: h, borderRadius: r, opacity,
+        background: "var(--border-color)",
+        animation: "scp-shimmer 1.4s ease-in-out infinite",
+      }}
+    />
+  );
+}
+
+function FilterSkeleton() {
+  return (
+    <>
+      <style>{`
+        @keyframes scp-shimmer {
+          0%   { opacity: 0.4; }
+          50%  { opacity: 1; }
+          100% { opacity: 0.4; }
+        }
+      `}</style>
+
+      {/* Search bar */}
+      <SkeletonBar h={32} r={8} />
+
+      {/* Section: Discover */}
+      <div style={{ marginTop: 20, marginBottom: 8 }}>
+        <SkeletonBar w={60} h={8} r={4} opacity={0.6} />
+      </div>
+      {[1, 2, 3, 4].map((i) => (
+        <div key={i} style={{ marginBottom: 6 }}>
+          <SkeletonBar h={36} r={10} />
+        </div>
+      ))}
+
+      {/* Section: Content Categories */}
+      <div style={{ marginTop: 20, marginBottom: 8 }}>
+        <SkeletonBar w={100} h={8} r={4} opacity={0.6} />
+      </div>
+      {[1, 2, 3].map((i) => (
+        <div key={i} style={{ marginBottom: 6 }}>
+          <SkeletonBar h={36} r={10} />
+        </div>
+      ))}
+
+      {/* Section: Explore By */}
+      <div style={{ marginTop: 20, marginBottom: 8 }}>
+        <SkeletonBar w={72} h={8} r={4} opacity={0.6} />
+      </div>
+      {[1, 2, 3, 4].map((i) => (
+        <div key={i} style={{ marginBottom: 6 }}>
+          <SkeletonBar h={40} r={10} />
+        </div>
+      ))}
+
+      {/* Section: Format */}
+      <div style={{ marginTop: 20, marginBottom: 8 }}>
+        <SkeletonBar w={50} h={8} r={4} opacity={0.6} />
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 6 }}>
+        {[1, 2, 3, 4].map((i) => (
+          <SkeletonBar key={i} h={60} r={10} />
+        ))}
+      </div>
+
+      {/* Section: Platform */}
+      <div style={{ marginTop: 20, marginBottom: 8 }}>
+        <SkeletonBar w={60} h={8} r={4} opacity={0.6} />
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
+        {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+          <SkeletonBar key={i} h={52} r={10} />
+        ))}
+      </div>
+    </>
+  );
+}
+
+export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClose, collapsed, onToggleCollapse, resultCount, userPlan }: FilterSidebarProps) {
+  const isFree = !userPlan || userPlan === "free";
   const [filterData, setFilterData] = useState<Filters | null>(null);
+  const [filtersLoading, setFiltersLoading] = useState(true);
   const [filteredAccounts, setFilteredAccounts] = useState<EntityNameOption[]>([]);
   const [entitySearch, setEntitySearch] = useState("");
   const [globalSearch, setGlobalSearch] = useState("");
@@ -98,6 +186,12 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
   const [showAllSports, setShowAllSports] = useState(false);
   const [openSection, setOpenSection] = useState<SectionId>(null);
   const [hoveredPlatform, setHoveredPlatform] = useState<string | null>(null);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+
+  function guardFree(action: () => void) {
+    if (isFree) { setShowUpgradeModal(true); return; }
+    action();
+  }
 
   const toggleSection = useCallback((id: SectionId) => {
     setOpenSection((prev) => (prev === id ? null : id));
@@ -129,13 +223,15 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
     if (filters.classification.length > 0) params.set("classification", filters.classification.join(","));
     if (filters.contentCategory.length > 0) params.set("contentCategory", filters.contentCategory.join(","));
     const qs = params.toString();
+    setFiltersLoading(true);
     fetch(`/api/filters${qs ? `?${qs}` : ""}`)
       .then((res) => res.json())
       .then((data) => {
         setFilterData(data);
         setFilteredAccounts(data.entityNames || []);
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setFiltersLoading(false));
   }, [filters.sport, filters.entityType, filters.format, filters.platform, filters.classification, filters.contentCategory]);
 
   const toggleArrayFilter = useCallback(
@@ -306,6 +402,58 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
 
   return (
     <>
+      {/* Upgrade modal */}
+      {showUpgradeModal && (
+        <div
+          className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+          style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }}
+          onClick={() => setShowUpgradeModal(false)}
+        >
+          <div
+            className="rounded-2xl p-7 max-w-sm w-full relative"
+            style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", boxShadow: "0 24px 64px rgba(0,0,0,0.35)" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowUpgradeModal(false)}
+              className="absolute top-4 right-4 p-1 rounded-lg transition-opacity hover:opacity-60"
+              style={{ color: "var(--text-muted)" }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+            <div className="flex items-center justify-center w-14 h-14 rounded-2xl mb-4 mx-auto"
+              style={{ background: "linear-gradient(135deg, #2563EB 0%, #1E3A8A 100%)" }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2">
+                <rect x="3" y="11" width="18" height="11" rx="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </div>
+            <h3 className="text-lg font-black text-center mb-2" style={{ color: "var(--text-primary)" }}>
+              Funció de pagament
+            </h3>
+            <p className="text-sm text-center mb-6" style={{ color: "var(--text-muted)", lineHeight: 1.6 }}>
+              Aquesta funció requereix un pla Weekly, Basic o Pro. Accedeix a tots els filtres avançats i molt més.
+            </p>
+            <a
+              href="/pricing"
+              className="block w-full py-3 rounded-xl text-sm font-bold text-center transition-opacity hover:opacity-90"
+              style={{ background: "linear-gradient(135deg, #2563EB 0%, #1E3A8A 100%)", color: "#fff" }}
+            >
+              Veure plans
+            </a>
+            <button
+              onClick={() => setShowUpgradeModal(false)}
+              className="block w-full mt-2 py-2.5 rounded-xl text-sm font-medium text-center transition-opacity hover:opacity-70"
+              style={{ color: "var(--text-muted)" }}
+            >
+              Ara no
+            </button>
+          </div>
+        </div>
+      )}
+
       {isOpen && (
         <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={onClose} />
       )}
@@ -393,7 +541,8 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
             </div>
           </div>
 
-          {/* Global search */}
+          {!filterData && <FilterSkeleton />}
+          <div style={{ display: filterData ? undefined : "none" }}>
           <div data-tutorial="filter-search" className="mb-4 relative">
             <div
               className="flex items-center gap-2 rounded-lg px-3 py-2"
@@ -479,6 +628,7 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
                   },
                 };
                 const { gradient, icon } = chipConfig[slug];
+                const isRestricted = isFree && FREE_RESTRICTED_CLASSIFICATIONS.has(slug);
                 return (
                   <QuickFilterButton
                     key={opt.slug}
@@ -486,7 +636,8 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
                     icon={icon}
                     isSelected={filters.classification.includes(opt.slug)}
                     gradient={gradient}
-                    onClick={() => toggleArrayFilter("classification", opt.slug)}
+                    locked={isRestricted}
+                    onClick={() => isRestricted ? setShowUpgradeModal(true) : toggleArrayFilter("classification", opt.slug)}
                   />
                 );
               })}
@@ -495,18 +646,21 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
                 icon={<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>}
                 isSelected={ccIsSelected}
                 gradient="linear-gradient(135deg, #D4A420 0%, #7B4D0B 100%)"
-                onClick={() => toggleArrayFilter("entityType", ccSlug)}
+                locked={isFree && FREE_RESTRICTED_ENTITY_TYPES.has(ccSlug)}
+                onClick={() => guardFree(() => toggleArrayFilter("entityType", ccSlug))}
               />
               {(() => {
                 const opt = filterData.classifications.find((c) => c.slug === "overperforming");
                 if (!opt) return null;
+                const isRestricted = isFree;
                 return (
                   <QuickFilterButton
                     label="Overperforming"
                     icon={<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>}
                     isSelected={filters.classification.includes("overperforming")}
                     gradient="linear-gradient(135deg, #3B82F6 0%, #1E3A8A 100%)"
-                    onClick={() => toggleArrayFilter("classification", "overperforming")}
+                    locked={isRestricted}
+                    onClick={() => isRestricted ? setShowUpgradeModal(true) : toggleArrayFilter("classification", "overperforming")}
                   />
                 );
               })()}
@@ -556,6 +710,7 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
                   },
                 };
                 const { gradient, icon, tutorialId } = cfg[slug];
+                const isRestricted = isFree && FREE_RESTRICTED_CLASSIFICATIONS.has(slug);
                 return (
                   <div key={slug} data-tutorial={tutorialId}>
                     <QuickFilterButton
@@ -563,7 +718,8 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
                       icon={icon}
                       isSelected={filters.classification.includes(slug)}
                       gradient={gradient}
-                      onClick={() => toggleArrayFilter("classification", slug)}
+                      locked={isRestricted}
+                      onClick={() => isRestricted ? setShowUpgradeModal(true) : toggleArrayFilter("classification", slug)}
                     />
                   </div>
                 );
@@ -763,9 +919,10 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
             title="Date range"
             icon="calendar"
             open={openSection === "date"}
-            onToggle={() => toggleSection("date")}
+            onToggle={() => isFree ? setShowUpgradeModal(true) : toggleSection("date")}
             summary={dateSummary}
             badge={filters.dateFrom || filters.dateTo ? 1 : 0}
+            locked={isFree}
           >
             <DateRangePresets filters={filters} onFiltersChange={onFiltersChange} />
           </AccordionSection>
@@ -865,6 +1022,41 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
                     </button>
                   );
                 })}
+                {/* IA — entity type displayed as a format chip */}
+                {(() => {
+                  const iaType = filterData.entityTypes.find((e) => e.slug === "ia");
+                  const isSelected = filters.entityType.includes("ia");
+                  return (
+                    <button
+                      onClick={() => toggleArrayFilter("entityType", "ia")}
+                      className="flex flex-col items-center gap-1.5 p-2.5 rounded-xl"
+                      style={{
+                        background: isSelected ? "rgba(31,41,55,0.08)" : "var(--bg-card)",
+                        border: `1.5px solid ${isSelected ? "var(--selected-bg)" : "var(--border-color)"}`,
+                        transition: "background 0.15s, border-color 0.15s, transform 0.12s, box-shadow 0.15s",
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!isSelected) {
+                          e.currentTarget.style.background = "rgba(31,41,55,0.06)";
+                          e.currentTarget.style.borderColor = "rgba(31,41,55,0.4)";
+                        }
+                        e.currentTarget.style.transform = "translateY(-1px)";
+                        e.currentTarget.style.boxShadow = "0 4px 12px rgba(31,41,55,0.15)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = isSelected ? "rgba(31,41,55,0.08)" : "var(--bg-card)";
+                        e.currentTarget.style.borderColor = isSelected ? "var(--selected-bg)" : "var(--border-color)";
+                        e.currentTarget.style.transform = "translateY(0)";
+                        e.currentTarget.style.boxShadow = "none";
+                      }}
+                    >
+                      <FormatIcon slug="ia" selected={isSelected} />
+                      <span className="text-[10px] font-medium" style={{ color: isSelected ? "var(--selected-bg)" : "var(--text-muted)" }}>
+                        IA
+                      </span>
+                    </button>
+                  );
+                })()}
               </div>
             </div>
           )}
@@ -911,12 +1103,13 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
           {/* Saved — below platform icons */}
           <div className="mt-2">
             <button
-              onClick={() => onFiltersChange({ ...filters, saved: filters.saved === "true" ? "" : "true" })}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium transition-all w-full justify-center"
+              onClick={() => isFree ? setShowUpgradeModal(true) : onFiltersChange({ ...filters, saved: filters.saved === "true" ? "" : "true" })}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium transition-all w-full justify-center relative"
               style={{
                 background: filters.saved === "true" ? "var(--selected-bg)" : "var(--bg-card)",
                 color: filters.saved === "true" ? "var(--selected-text)" : "var(--text-secondary)",
                 border: `1.5px solid ${filters.saved === "true" ? "var(--selected-bg)" : "var(--border-color)"}`,
+                opacity: isFree ? 0.6 : 1,
               }}
             >
               {filters.saved === "true" && (
@@ -928,8 +1121,14 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
                 <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
               </svg>
               Saved
+              {isFree && (
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginLeft: 2, opacity: 0.7 }}>
+                  <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+              )}
             </button>
           </div>
+          </div>{/* end display:none wrapper */}
 
         </div>
 
@@ -964,15 +1163,16 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
 
 /* ─── Quick Filter Button ─── */
 
-function QuickFilterButton({ label, icon, isSelected, gradient, onClick }: {
+function QuickFilterButton({ label, icon, isSelected, gradient, onClick, locked }: {
   label: string;
   icon: React.ReactNode;
   isSelected: boolean;
   gradient: string;
   onClick: () => void;
+  locked?: boolean;
 }) {
   const [hovered, setHovered] = useState(false);
-  const showGradient = isSelected || hovered;
+  const showGradient = !locked && (isSelected || hovered);
 
   return (
     <button
@@ -984,6 +1184,7 @@ function QuickFilterButton({ label, icon, isSelected, gradient, onClick }: {
         background: showGradient ? gradient : "var(--bg-secondary)",
         color: showGradient ? "#fff" : "var(--text-primary)",
         border: `1px solid ${showGradient ? "transparent" : "var(--border-color)"}`,
+        opacity: locked ? 0.6 : 1,
       }}
     >
       <div className="flex items-center gap-2">
@@ -992,7 +1193,11 @@ function QuickFilterButton({ label, icon, isSelected, gradient, onClick }: {
         </span>
         <span className="text-xs font-semibold">{label}</span>
       </div>
-      {isSelected ? (
+      {locked ? (
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2">
+          <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+      ) : isSelected ? (
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="3">
           <path d="M20 6L9 17l-5-5" />
         </svg>
@@ -1017,6 +1222,7 @@ function AccordionSection({
   onToggle,
   children,
   tutorialId,
+  locked,
 }: {
   id: string;
   tutorialId?: string;
@@ -1028,6 +1234,7 @@ function AccordionSection({
   open: boolean;
   onToggle: () => void;
   children: React.ReactNode;
+  locked?: boolean;
 }) {
   const iconSvg = (() => {
     switch (icon) {
@@ -1057,12 +1264,17 @@ function AccordionSection({
       <button
         onClick={onToggle}
         className="flex items-center justify-between w-full px-3 py-2.5 text-left transition-colors"
-        style={{ background: open ? "var(--bg-card)" : "var(--bg-secondary)" }}
+        style={{ background: open ? "var(--bg-card)" : "var(--bg-secondary)", opacity: locked ? 0.6 : 1 }}
       >
         <div className="flex items-center gap-2 min-w-0">
           {iconSvg && <span className="shrink-0" style={{ color: "var(--text-muted)" }}>{iconSvg}</span>}
           <span className="text-xs font-semibold shrink-0" style={{ color: "var(--text-primary)" }}>{title}</span>
-          {badge !== undefined && badge > 0 && (
+          {locked && (
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" className="shrink-0">
+              <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          )}
+          {!locked && badge !== undefined && badge > 0 && (
             <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full shrink-0" style={{ background: "var(--selected-bg)", color: "var(--selected-text)" }}>
               {badge}
             </span>
@@ -1127,6 +1339,23 @@ function FormatIcon({ slug, selected }: { slug: string; selected: boolean }) {
       return <svg width={size} height={size} viewBox="0 0 32 32" fill="none" stroke={color} strokeWidth="1.5"><rect x="3" y="7" width="20" height="18" rx="2" /><path d="M23 13l6-4v14l-6-4v-6z" fill={color} fillOpacity="0.3" /></svg>;
     case "story":
       return <svg width={size} height={size} viewBox="0 0 32 32" fill="none" stroke={color} strokeWidth="1.5"><rect x="8" y="3" width="16" height="26" rx="3" /><circle cx="16" cy="25" r="1.5" fill={color} stroke="none" /></svg>;
+    case "ia":
+      return (
+        <svg width={size} height={size} viewBox="0 0 32 32" fill="none" stroke={color} strokeWidth="1.5">
+          {/* Robot/AI head */}
+          <rect x="8" y="10" width="16" height="14" rx="3" />
+          {/* Eyes */}
+          <circle cx="12" cy="16" r="2" fill={color} stroke="none" />
+          <circle cx="20" cy="16" r="2" fill={color} stroke="none" />
+          {/* Mouth */}
+          <path d="M12 21h8" strokeLinecap="round" />
+          {/* Antenna */}
+          <path d="M16 10V6" strokeLinecap="round" />
+          <circle cx="16" cy="5" r="1.5" fill={color} stroke="none" />
+          {/* Ears */}
+          <path d="M8 16H5M24 16h3" strokeLinecap="round" />
+        </svg>
+      );
     default:
       return <svg width={size} height={size} viewBox="0 0 32 32" fill="none" stroke={color} strokeWidth="1.5"><rect x="4" y="4" width="24" height="24" rx="3" /></svg>;
   }

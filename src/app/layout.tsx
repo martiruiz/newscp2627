@@ -4,6 +4,8 @@ import "./globals.css";
 import LayoutShell from "@/components/LayoutShell";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import RegisterSW from "@/components/RegisterSW";
+import CommandPalette from "@/components/CommandPalette";
+import SuperAdminPlanSwitcher from "@/components/SuperAdminPlanSwitcher";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -38,8 +40,9 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
+  maximumScale: 5,
   themeColor: "#0f1724",
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -63,6 +66,8 @@ export default function RootLayout({
           <LayoutShell>{children}</LayoutShell>
         </LanguageProvider>
         <RegisterSW />
+        <CommandPalette />
+        <SuperAdminPlanSwitcher />
       </body>
     </html>
   );

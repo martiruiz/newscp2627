@@ -115,18 +115,24 @@ export default function TwitterEmbed({
   return (
     <div style={{ position: "relative" }}>
       {loading && (
-        <div className="flex flex-col items-center justify-center gap-3 rounded-lg"
-          style={{ background: "var(--bg-input)", minHeight: 200 }}>
-          <div className="relative">
-            <div className="absolute inset-0 rounded-full animate-ping opacity-20"
-              style={{ background: "#1D9BF0" }} />
-            <div className="relative animate-pulse">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="#1D9BF0">
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.74l7.73-8.835L1.254 2.25H8.08l4.213 5.567zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-              </svg>
+        <div className="embed-skeleton" style={{ minHeight: 220, borderRadius: 8 }}>
+          <div style={{ padding: "18px 20px 0", display: "flex", flexDirection: "column", gap: 14 }}>
+            <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+              <div className="embed-skeleton-line" style={{ width: 40, height: 40, borderRadius: "50%" }} />
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 7 }}>
+                <div className="embed-skeleton-line" style={{ height: 12, width: "40%" }} />
+                <div className="embed-skeleton-line" style={{ height: 10, width: "26%" }} />
+              </div>
+            </div>
+            <div className="embed-skeleton-line" style={{ height: 13, width: "92%" }} />
+            <div className="embed-skeleton-line" style={{ height: 13, width: "75%" }} />
+            <div className="embed-skeleton-line" style={{ height: 80, borderRadius: 8 }} />
+            <div style={{ display: "flex", gap: 16 }}>
+              <div className="embed-skeleton-line" style={{ height: 10, width: 40 }} />
+              <div className="embed-skeleton-line" style={{ height: 10, width: 40 }} />
+              <div className="embed-skeleton-line" style={{ height: 10, width: 40 }} />
             </div>
           </div>
-          <span className="text-xs animate-pulse" style={{ color: "var(--text-muted)" }}>Loading...</span>
         </div>
       )}
       <div ref={containerRef} style={{ display: loading ? "none" : "block" }} />

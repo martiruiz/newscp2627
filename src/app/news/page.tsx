@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import BlogEmbeds from "@/components/BlogEmbeds";
+import { getEffectivePlan } from "@/lib/plan-utils";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -35,7 +36,93 @@ interface BlogPost {
 }
 
 type DateFilter = "7" | "14" | "30" | "all";
-type Tab = "news" | "blog";
+type Tab = "news" | "blog" | "jobs";
+
+interface JobPosting {
+  id: string;
+  title: string;
+  company: string;
+  companyHandle: string | null;
+  companyLogo: string | null;
+  description: string;
+  jobType: string;
+  workMode: string | null;
+  location: string | null;
+  salary: string | null;
+  sourceUrl: string;
+  applyUrl: string | null;
+  featured: boolean;
+  postedAt: string;
+}
+
+const JOB_TYPE_COLORS: Record<string, string> = {
+  "FULL-TIME":   "#0d9488",
+  "PART-TIME":   "#7c3aed",
+  "CONTRACT":    "#d97706",
+  "INTERNSHIP":  "#2563eb",
+  "FREELANCE":   "#db2777",
+};
+
+function JobCompanyAvatar({ company, logo }: { company: string; logo: string | null }) {
+  const initials = company.split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase();
+  const colors = ["#0d9488", "#2563eb", "#7c3aed", "#db2777", "#d97706", "#059669"];
+  const color = colors[company.charCodeAt(0) % colors.length];
+  if (logo) {
+    return (
+      <img src={logo} alt={company} className="rounded-xl object-contain shrink-0"
+        style={{ width: 44, height: 44, border: "1px solid var(--border-color)", background: "var(--bg-primary)", padding: 4 }}
+        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+    );
+  }
+  return (
+    <div className="rounded-xl flex items-center justify-center text-white font-bold text-sm shrink-0"
+      style={{ width: 44, height: 44, background: color }}>{initials}</div>
+  );
+}
+
+function JobCard({ job }: { job: JobPosting }) {
+  const typeColor = JOB_TYPE_COLORS[job.jobType] ?? "#6b7280";
+  const dateStr = new Date(job.postedAt).toLocaleDateString("ca-CA", { day: "numeric", month: "short", year: "numeric" });
+  return (
+    <div className="rounded-2xl flex flex-col gap-3 p-5 transition-shadow hover:shadow-md"
+      style={{ background: "var(--bg-card, var(--bg-secondary))", border: job.featured ? "2px solid #0d9488" : "1px solid var(--border-color)", position: "relative" }}>
+      {job.featured && (
+        <span className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md" style={{ background: "#0d9488", color: "#fff" }}>Featured</span>
+      )}
+      <div className={`flex items-center gap-3 ${job.featured ? "mt-4" : ""}`}>
+        <JobCompanyAvatar company={job.company} logo={job.companyLogo} />
+        <div className="min-w-0">
+          {job.companyHandle && <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>@{job.companyHandle}</p>}
+          <p className="text-sm font-semibold truncate" style={{ color: "var(--text-primary)" }}>{job.company}</p>
+        </div>
+      </div>
+      <div>
+        <h3 className="font-bold text-base leading-tight mb-2" style={{ color: "var(--text-primary)" }}>{job.title}</h3>
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-[11px] font-bold px-2 py-0.5 rounded-md" style={{ background: typeColor, color: "#fff" }}>{job.jobType}</span>
+          <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>Publicat el {dateStr}</span>
+        </div>
+      </div>
+      <p className="text-sm leading-relaxed flex-1" style={{ color: "var(--text-secondary)", display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+        {job.description}
+      </p>
+      {(job.workMode || job.location || job.salary) && (
+        <div className="flex items-center justify-between text-[12px] pt-1" style={{ borderTop: "1px solid var(--border-color)", color: "var(--text-muted)" }}>
+          <div>{job.workMode && <span className="font-medium">{job.workMode}</span>}{job.location && <span>{job.workMode ? <><br/></> : ""}{job.location}</span>}</div>
+          {job.salary && <span className="font-semibold text-right" style={{ color: "var(--text-secondary)" }}>{job.salary}</span>}
+        </div>
+      )}
+      <div className="flex gap-2 mt-auto pt-1">
+        <a href={job.sourceUrl} target="_blank" rel="noopener noreferrer"
+          className="flex-1 text-center text-sm font-bold py-2 rounded-xl transition-all hover:opacity-80"
+          style={{ border: "2px solid #0d9488", color: "#0d9488", background: "transparent" }}>VEURE</a>
+        <a href={job.applyUrl || job.sourceUrl} target="_blank" rel="noopener noreferrer"
+          className="flex-1 text-center text-sm font-bold py-2 rounded-xl text-white transition-all hover:opacity-90"
+          style={{ background: "#0d9488" }}>APLICAR</a>
+      </div>
+    </div>
+  );
+}
 
 const PLATFORMS = ["Instagram", "TikTok", "X", "YouTube", "Facebook", "LinkedIn", "Snapchat", "WhatsApp", "Pinterest", "Threads", "Reddit"] as const;
 type Platform = (typeof PLATFORMS)[number];
@@ -136,8 +223,6 @@ const PLATFORM_STYLES: Record<Platform, { gradient: string; icon: React.ReactNod
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 }
-
-const SUPERADMIN_EMAILS = ["guinewagency@gmail.com", "marti@agenciaguinew.com"];
 
 // ── Platform filter cards ─────────────────────────────────────────────────────
 
@@ -577,9 +662,24 @@ function BlogPostRow({ post, expanded, onDelete, onEdit, isSuperAdmin, onClick }
 
 export default function NewsPage() {
   const searchParams = useSearchParams();
-  const [tab, setTab] = useState<Tab>(() => (searchParams.get("tab") === "blog" ? "blog" : "news"));
+  const [tab, setTab] = useState<Tab>(() => {
+    const t = searchParams.get("tab");
+    if (t === "blog") return "blog";
+    if (t === "jobs") return "jobs";
+    return "news";
+  });
   const highlightArticleId = searchParams.get("article");
   const [highlightedId, setHighlightedId] = useState<string | null>(highlightArticleId);
+  const [userPlan, setUserPlan] = useState<string | null>(null);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/user/plan").then((r) => r.json()).then((d) => {
+      const { plan, isSuperAdmin } = getEffectivePlan(d);
+      setUserPlan(plan);
+      setIsSuperAdmin(isSuperAdmin);
+    }).catch(() => setUserPlan("free"));
+  }, []);
 
   // Scroll to highlighted article once articles load
   useEffect(() => {
@@ -604,6 +704,20 @@ export default function NewsPage() {
   const [newsSearch, setNewsSearch] = useState("");
   const [showAdd, setShowAdd] = useState(false);
 
+  // Jobs state
+  const [jobs, setJobs] = useState<JobPosting[]>([]);
+  const [jobsLoading, setJobsLoading] = useState(false);
+  const [jobSearch, setJobSearch] = useState("");
+  const [jobTypeFilter, setJobTypeFilter] = useState("all");
+  const [jobModeFilter, setJobModeFilter] = useState("all");
+
+  useEffect(() => {
+    if (tab !== "jobs") return;
+    if (jobs.length > 0) return;
+    setJobsLoading(true);
+    fetch("/api/jobs").then((r) => r.json()).then((d) => setJobs(d.jobs ?? [])).finally(() => setJobsLoading(false));
+  }, [tab, jobs.length]);
+
   // Blog state
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [blogLoading, setBlogLoading] = useState(true);
@@ -615,22 +729,8 @@ export default function NewsPage() {
   const [carouselPostId, setCarouselPostId] = useState<string | null>(null); // carousel panel
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
 
-  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const searchRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const blogSearchRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    try {
-      let raw = localStorage.getItem("scp-account-profile");
-      if (!raw) {
-        const defaultProfile = { email: "guinewagency@gmail.com", name: "", surname: "", company: "", orgSize: "", address: "", city: "", postalCode: "", country: "Spain", vatId: "" };
-        localStorage.setItem("scp-account-profile", JSON.stringify(defaultProfile));
-        raw = JSON.stringify(defaultProfile);
-      }
-      const { email } = JSON.parse(raw);
-      setIsSuperAdmin(SUPERADMIN_EMAILS.includes((email ?? "").toLowerCase()));
-    } catch {}
-  }, []);
 
   async function fetchArticles() {
     setNewsLoading(true);
@@ -696,19 +796,62 @@ export default function NewsPage() {
     { id: "all", label: "All" },
   ];
 
+  const newsLocked = userPlan !== null && userPlan === "free" && !isSuperAdmin;
+  const jobsLocked = userPlan !== null && !isSuperAdmin && !["basic_monthly","basic_annual","pro_monthly","pro_annual","basic","pro"].includes(userPlan ?? "");
+
   return (
-    <div className="min-h-screen" style={{ background: "var(--bg-primary)", color: "var(--text-primary)" }}>
+    <div className="min-h-screen" style={{ background: "var(--bg-primary)", color: "var(--text-primary)", position: "relative" }}>
+      {/* Blur overlay for free plan */}
+      {newsLocked && (
+        <div
+          style={{
+            position: "fixed", inset: 0, zIndex: 100,
+            backdropFilter: "blur(10px)",
+            background: "rgba(0,0,0,0.5)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}
+        >
+          <div
+            className="rounded-2xl p-8 max-w-sm w-full text-center mx-4"
+            style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", boxShadow: "0 24px 64px rgba(0,0,0,0.4)" }}
+          >
+            <div className="flex items-center justify-center w-14 h-14 rounded-2xl mb-4 mx-auto"
+              style={{ background: "linear-gradient(135deg, #2563EB 0%, #1E3A8A 100%)" }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2">
+                <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 0-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/>
+                <path d="M18 14h-8M15 18h-5M10 6h8v4h-8V6z"/>
+              </svg>
+            </div>
+            <h2 className="text-lg font-black mb-2" style={{ color: "var(--text-primary)" }}>
+              Sports Industry Hub
+            </h2>
+            <p className="text-sm mb-6 leading-relaxed" style={{ color: "var(--text-muted)" }}>
+              Totes les novetats de cada xarxa social i les últimes tendències del sector, en un sol lloc. Disponible a partir del pla Weekly.
+            </p>
+            <a
+              href="/pricing"
+              className="block w-full py-3 rounded-xl text-sm font-bold text-center transition-opacity hover:opacity-90"
+              style={{ background: "linear-gradient(135deg, #2563EB 0%, #1E3A8A 100%)", color: "#fff" }}
+            >
+              Veure plans
+            </a>
+            <a href="/feed" className="block mt-3 text-xs hover:underline" style={{ color: "var(--text-muted)" }}>
+              Torna a la biblioteca
+            </a>
+          </div>
+        </div>
+      )}
+
       {/* Hero */}
       <div className="text-center px-6 py-8 md:py-16" style={{ background: "linear-gradient(180deg, rgba(31,41,55,0.06) 0%, transparent 100%)", borderBottom: "1px solid var(--border-color)" }}>
         <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-4" style={{ color: "var(--selected-bg)" }}>
-          Social Media News
+          Sports Industry Hub
         </p>
         <h1 className="font-black text-2xl md:text-4xl leading-tight mb-4" style={{ color: "var(--text-primary)" }}>
-          Everything happening on social,{" "}
-          <span style={{ color: "var(--selected-bg)" }}>in one place</span>
+          Sports Industry Hub
         </h1>
-        <p className="text-sm max-w-lg mx-auto leading-relaxed mb-8" style={{ color: "var(--text-muted)" }}>
-          We collect and organize the latest updates from every platform so you don&apos;t have to.
+        <p className="text-sm max-w-xl mx-auto leading-relaxed mb-8" style={{ color: "var(--text-muted)" }}>
+          Actualitzacions de les plataformes de xarxes socials, insights and career opportunities shaping the sports content industry.
         </p>
 
         {/* Tab toggle */}
@@ -742,6 +885,22 @@ export default function NewsPage() {
               <polyline points="10 9 9 9 8 9"/>
             </svg>
             Blog
+          </button>
+          <button
+            onClick={() => setTab("jobs")}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+            style={{
+              background: tab === "jobs" ? "var(--selected-bg)" : "transparent",
+              color: tab === "jobs" ? "#fff" : "var(--text-muted)",
+            }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="2" y="7" width="20" height="14" rx="2"/>
+              <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+              <line x1="12" y1="12" x2="12" y2="16"/>
+              <line x1="10" y1="14" x2="14" y2="14"/>
+            </svg>
+            Jobs
           </button>
         </div>
       </div>
@@ -965,6 +1124,110 @@ export default function NewsPage() {
             )}
           </>
         )}
+        {/* ── JOBS TAB ─────────────────────────────────────────────────────── */}
+        {tab === "jobs" && (
+          <>
+            {jobsLocked ? (
+              <div className="flex items-center justify-center" style={{ minHeight: "40vh" }}>
+                <div className="text-center max-w-sm mx-auto">
+                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
+                    style={{ background: "rgba(13,148,136,0.1)", border: "1px solid rgba(13,148,136,0.3)" }}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="1.8">
+                      <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                  </div>
+                  <h2 className="text-lg font-black mb-2" style={{ color: "var(--text-primary)" }}>Oportunitats Laborals</h2>
+                  <p className="text-sm mb-1 font-medium" style={{ color: "#0d9488" }}>Accés exclusiu Basic i Pro</p>
+                  <p className="text-sm mb-6 leading-relaxed" style={{ color: "var(--text-muted)" }}>
+                    Descobreix ofertes de feina al món de la comunicació esportiva. Disponible a partir del pla Basic.
+                  </p>
+                  <a href="/pricing" className="inline-block px-6 py-3 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90" style={{ background: "#0d9488" }}>
+                    Veure plans
+                  </a>
+                </div>
+              </div>
+            ) : jobsLoading ? (
+              <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))" }}>
+                {[0,1,2,3,4,5].map((i) => <div key={i} className="rounded-2xl animate-pulse" style={{ height: 280, background: "var(--bg-card)", border: "1px solid var(--border-color)" }} />)}
+              </div>
+            ) : jobs.length === 0 ? (
+              <div className="rounded-2xl py-20 text-center" style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="mx-auto mb-3" style={{ color: "var(--text-muted)" }}>
+                  <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+                </svg>
+                <p className="font-bold mb-1" style={{ color: "var(--text-primary)" }}>Aviat hi haurà ofertes</p>
+                <p className="text-sm" style={{ color: "var(--text-muted)" }}>Estem recopilant oportunitats laborals del sector.</p>
+              </div>
+            ) : (
+              <>
+                {/* Filters */}
+                <div className="flex flex-wrap items-center gap-3 mb-6">
+                  <div className="flex-1 min-w-[200px] relative">
+                    <svg className="absolute" style={{ left: 12, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" placeholder="Cerca per títol, empresa o ubicació..." value={jobSearch} onChange={(e) => setJobSearch(e.target.value)}
+                      className="w-full pl-9 pr-3 py-2 text-sm rounded-xl"
+                      style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", color: "var(--text-primary)", outline: "none" }} />
+                  </div>
+                  {Array.from(new Set(jobs.map((j) => j.jobType))).length > 1 && (
+                    <select value={jobTypeFilter} onChange={(e) => setJobTypeFilter(e.target.value)}
+                      className="px-3 py-2 text-sm rounded-xl"
+                      style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}>
+                      <option value="all">Tots els tipus</option>
+                      {Array.from(new Set(jobs.map((j) => j.jobType))).map((t) => <option key={t} value={t}>{t}</option>)}
+                    </select>
+                  )}
+                  {Array.from(new Set(jobs.map((j) => j.workMode).filter(Boolean))).length > 1 && (
+                    <select value={jobModeFilter} onChange={(e) => setJobModeFilter(e.target.value)}
+                      className="px-3 py-2 text-sm rounded-xl"
+                      style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}>
+                      <option value="all">Totes les modalitats</option>
+                      {Array.from(new Set(jobs.map((j) => j.workMode).filter(Boolean))).map((m) => <option key={m as string} value={m as string}>{m}</option>)}
+                    </select>
+                  )}
+                </div>
+
+                {/* Grid */}
+                {(() => {
+                  const q = jobSearch.toLowerCase();
+                  const filtered = jobs.filter((j) => {
+                    const ms = !q || j.title.toLowerCase().includes(q) || j.company.toLowerCase().includes(q) || (j.location ?? "").toLowerCase().includes(q);
+                    const mt = jobTypeFilter === "all" || j.jobType === jobTypeFilter;
+                    const mm = jobModeFilter === "all" || j.workMode === jobModeFilter;
+                    return ms && mt && mm;
+                  });
+                  const featured = filtered.filter((j) => j.featured);
+                  const regular = filtered.filter((j) => !j.featured);
+                  return (
+                    <>
+                      {featured.length > 0 && (
+                        <div className="mb-8">
+                          <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "var(--text-muted)" }}>Destacades</p>
+                          <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))" }}>
+                            {featured.map((j) => <JobCard key={j.id} job={j} />)}
+                          </div>
+                        </div>
+                      )}
+                      {regular.length > 0 && (
+                        <div>
+                          {featured.length > 0 && <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "var(--text-muted)" }}>Totes les ofertes</p>}
+                          <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))" }}>
+                            {regular.map((j) => <JobCard key={j.id} job={j} />)}
+                          </div>
+                        </div>
+                      )}
+                      {filtered.length === 0 && (
+                        <div className="rounded-2xl py-16 text-center" style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}>
+                          <p className="text-sm" style={{ color: "var(--text-muted)" }}>Cap oferta coincideix amb la cerca.</p>
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
+              </>
+            )}
+          </>
+        )}
+
       </div>
 
       {showAdd && <AddNewsModal onClose={() => setShowAdd(false)} onSaved={fetchArticles} />}

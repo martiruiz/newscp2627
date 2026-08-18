@@ -165,7 +165,24 @@ export async function GET(request: NextRequest) {
   let publications;
   let total: number;
 
-  if (order === "random") {
+  if (order === "recommended") {
+    // Prioritise top-picks & overperforming; fall back to latest
+    const [pubs, countResult] = await Promise.all([
+      prisma.publication.findMany({
+        where,
+        include,
+        orderBy: [
+          { classifications: { _count: "desc" } },
+          { publishedAt: "desc" },
+        ],
+        skip,
+        take: limit,
+      }),
+      prisma.publication.count({ where }),
+    ]);
+    publications = pubs;
+    total = countResult;
+  } else if (order === "random") {
     const [allIds, countResult] = await Promise.all([
       prisma.publication.findMany({ where, select: { id: true } }),
       prisma.publication.count({ where }),

@@ -42,10 +42,10 @@ export async function GET() {
     // Total
     prisma.publication.count(),
 
-    // Imported today / week / month (by createdAt)
-    prisma.publication.count({ where: { createdAt: { gte: todayStart } } }),
-    prisma.publication.count({ where: { createdAt: { gte: weekStart } } }),
-    prisma.publication.count({ where: { createdAt: { gte: monthStart } } }),
+    // Rows processed today / week / month (from ImportBatch, not just new publications)
+    prisma.importBatch.aggregate({ where: { createdAt: { gte: todayStart } }, _sum: { importedRows: true, updatedRows: true, skippedRows: true } }),
+    prisma.importBatch.aggregate({ where: { createdAt: { gte: weekStart } }, _sum: { importedRows: true, updatedRows: true, skippedRows: true } }),
+    prisma.importBatch.aggregate({ where: { createdAt: { gte: monthStart } }, _sum: { importedRows: true, updatedRows: true, skippedRows: true } }),
 
     // With errors
     prisma.publication.count({
@@ -155,9 +155,9 @@ export async function GET() {
   return NextResponse.json({
     totalPublications,
     ingestion: {
-      today: importedToday,
-      week: importedWeek,
-      month: importedMonth,
+      today: (importedToday._sum.importedRows ?? 0) + (importedToday._sum.updatedRows ?? 0) + (importedToday._sum.skippedRows ?? 0),
+      week: (importedWeek._sum.importedRows ?? 0) + (importedWeek._sum.updatedRows ?? 0) + (importedWeek._sum.skippedRows ?? 0),
+      month: (importedMonth._sum.importedRows ?? 0) + (importedMonth._sum.updatedRows ?? 0) + (importedMonth._sum.skippedRows ?? 0),
     },
     quality: {
       withErrors,

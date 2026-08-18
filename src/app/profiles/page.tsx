@@ -6,6 +6,7 @@ import InstagramEmbed from "@/components/InstagramEmbed";
 import YouTubeFeedEmbed from "@/components/YouTubeFeedEmbed";
 import TikTokFeedEmbed from "@/components/TikTokFeedEmbed";
 import TwitterEmbed from "@/components/TwitterEmbed";
+import { getEffectivePlan } from "@/lib/plan-utils";
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -901,6 +902,7 @@ function ProfileRow({
 type SortKey = "followers" | "er" | "avgLikes";
 
 export default function ProfilesPage() {
+  const [userPlan, setUserPlan] = useState<string | null>(null);
   const [filters, setFilters] = useState<Filters>({
     search: "",
     gender: "all",
@@ -915,6 +917,16 @@ export default function ProfilesPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
+
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/user/plan").then((r) => r.json()).then((d) => {
+      const { plan, isSuperAdmin } = getEffectivePlan(d);
+      setUserPlan(plan);
+      setIsSuperAdmin(isSuperAdmin);
+    }).catch(() => setUserPlan("free"));
+  }, []);
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 767px)");
@@ -983,8 +995,52 @@ export default function ProfilesPage() {
     (filters.minFollowers || filters.maxFollowers ? 1 : 0) +
     (filters.minER || filters.maxER ? 1 : 0);
 
+  const PROFILES_ALLOWED = new Set(["basic", "pro"]);
+  const profilesLocked = userPlan !== null && !PROFILES_ALLOWED.has(userPlan) && !isSuperAdmin;
+
   return (
-    <div className="flex" style={{ height: "calc(100vh - 0px)", overflow: "hidden" }}>
+    <div className="flex" style={{ height: "calc(100vh - 0px)", overflow: "hidden", position: "relative" }}>
+      {/* Blur overlay for locked plans */}
+      {profilesLocked && (
+        <div
+          style={{
+            position: "absolute", inset: 0, zIndex: 50,
+            backdropFilter: "blur(8px)",
+            background: "rgba(0,0,0,0.45)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}
+        >
+          <div
+            className="rounded-2xl p-8 max-w-sm w-full text-center mx-4"
+            style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", boxShadow: "0 24px 64px rgba(0,0,0,0.4)" }}
+          >
+            <div className="flex items-center justify-center w-14 h-14 rounded-2xl mb-4 mx-auto"
+              style={{ background: "linear-gradient(135deg, #059669 0%, #047857 100%)" }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </div>
+            <h2 className="text-lg font-black mb-2" style={{ color: "var(--text-primary)" }}>
+              Secció Profiles
+            </h2>
+            <p className="text-sm mb-6 leading-relaxed" style={{ color: "var(--text-muted)" }}>
+              Segueix perfils de clubs, creadors de contingut, jugadors i patrocinadors. Disponible a partir del pla Basic.
+            </p>
+            <a
+              href="/pricing"
+              className="block w-full py-3 rounded-xl text-sm font-bold text-center transition-opacity hover:opacity-90"
+              style={{ background: "linear-gradient(135deg, #059669 0%, #047857 100%)", color: "#fff" }}
+            >
+              Veure plans
+            </a>
+            <a href="/feed" className="block mt-3 text-xs hover:underline" style={{ color: "var(--text-muted)" }}>
+              Torna a la biblioteca
+            </a>
+          </div>
+        </div>
+      )}
+
       {/* Desktop filter sidebar */}
       {!isMobile && <FilterSidebarPanel filters={filters} onChange={setFilters} />}
 

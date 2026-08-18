@@ -8,6 +8,7 @@ interface User {
   name: string | null;
   role: string;
   plan: string;
+  superAdmin: boolean;
   createdAt: string;
 }
 
@@ -51,6 +52,7 @@ export default function UsersPage() {
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
 
   const fetchUsers = useCallback(async () => {
     const [usersRes, meRes] = await Promise.all([
@@ -86,6 +88,17 @@ export default function UsersPage() {
     setEmail(""); setPassword(""); setPlan("free");
     await fetchUsers();
     setCreating(false);
+  }
+
+  async function handleToggleSuperAdmin(user: User) {
+    setTogglingId(user.id);
+    await fetch("/api/admin/users", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: user.id, superAdmin: !user.superAdmin }),
+    });
+    await fetchUsers();
+    setTogglingId(null);
   }
 
   async function handleDelete(id: string) {
@@ -287,7 +300,7 @@ export default function UsersPage() {
             <div
               className="grid text-[10px] font-semibold uppercase tracking-wider px-4 py-2.5"
               style={{
-                gridTemplateColumns: "1fr auto auto auto",
+                gridTemplateColumns: tab === "admin" ? "1fr auto auto auto auto" : "1fr auto auto auto",
                 gap: "1rem",
                 background: "var(--bg-secondary)",
                 borderBottom: "1px solid var(--border-color)",
@@ -296,6 +309,7 @@ export default function UsersPage() {
             >
               <span>Email</span>
               <span>{tab === "app" ? "Pla" : "Rol"}</span>
+              {tab === "admin" && <span>Superadmin</span>}
               <span>Creat</span>
               <span>Accions</span>
             </div>
@@ -312,7 +326,7 @@ export default function UsersPage() {
                     key={user.id}
                     className="grid items-center px-4 py-3"
                     style={{
-                      gridTemplateColumns: "1fr auto auto auto",
+                      gridTemplateColumns: tab === "admin" ? "1fr auto auto auto auto" : "1fr auto auto auto",
                       gap: "1rem",
                       borderBottom: i < displayed.length - 1 ? "1px solid var(--border-color)" : "none",
                     }}
@@ -358,6 +372,26 @@ export default function UsersPage() {
                       >
                         {user.role}
                       </span>
+                    )}
+
+                    {/* Superadmin toggle (admins only) */}
+                    {tab === "admin" && (
+                      <button
+                        onClick={() => handleToggleSuperAdmin(user)}
+                        disabled={togglingId === user.id || user.id === currentUserId}
+                        title={user.id === currentUserId ? "No et pots treure el superadmin a tu mateix" : user.superAdmin ? "Revocar superadmin" : "Donar accés superadmin"}
+                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all disabled:opacity-40"
+                        style={{
+                          background: user.superAdmin ? "rgba(99,102,241,0.15)" : "var(--bg-input)",
+                          color: user.superAdmin ? "#818cf8" : "var(--text-muted)",
+                          border: `1px solid ${user.superAdmin ? "rgba(99,102,241,0.35)" : "var(--border-color)"}`,
+                        }}
+                      >
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                        {user.superAdmin ? "Actiu" : "Off"}
+                      </button>
                     )}
 
                     {/* Date */}

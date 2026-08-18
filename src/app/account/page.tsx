@@ -655,7 +655,27 @@ function LanguageInlineSelect() {
 
 function SubscriptionSection() {
   const [billing, setBilling] = useState<"monthly" | "annual">("monthly");
-  const currentPlan = "free";
+  const [currentPlan, setCurrentPlan] = useState<string>("free");
+  const [hasSubscription, setHasSubscription] = useState(false);
+  const [planExpiresAt, setPlanExpiresAt] = useState<string | null>(null);
+  const [loading, setLoading] = useState<string | null>(null);
+  const [loadingPlan, setLoadingPlan] = useState(true);
+  const [successMsg, setSuccessMsg] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/user/plan")
+      .then((r) => r.json())
+      .then((d) => {
+        setCurrentPlan(d.plan ?? "free");
+        setHasSubscription(!!d.hasSubscription);
+        setPlanExpiresAt(d.planExpiresAt ?? null);
+      })
+      .catch(() => {})
+      .finally(() => setLoadingPlan(false));
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("success") === "1") setSuccessMsg(true);
+  }, []);
 
   const PLANS = [
     {
@@ -663,7 +683,8 @@ function SubscriptionSection() {
       name: "Free",
       monthly: 0,
       annual: 0,
-      color: "var(--text-primary)",
+      color: "var(--text-secondary)",
+      badge: null,
       features: [
         "Accés limitat a la Content Library",
         "Filtres bàsics per plataforma",
@@ -677,6 +698,7 @@ function SubscriptionSection() {
         "Exportació CSV",
         "Suport prioritari",
       ],
+      planKey: null,
     },
     {
       id: "basic",
@@ -684,6 +706,7 @@ function SubscriptionSection() {
       monthly: 9.99,
       annual: 7.99,
       color: "#0A66C2",
+      badge: null,
       features: [
         "Accés complet a la Content Library",
         "Filtres avançats i cerca",
@@ -696,6 +719,7 @@ function SubscriptionSection() {
         "Panell d'idees de contingut",
         "Suport prioritari",
       ],
+      planKey: (billing === "monthly" ? "basic_monthly" : "basic_annual") as string,
     },
     {
       id: "pro",
@@ -703,6 +727,7 @@ function SubscriptionSection() {
       monthly: 39.99,
       annual: 29.99,
       color: "var(--selected-bg)",
+      badge: "Popular",
       features: [
         "Tot el de Basic",
         "Panell d'idees de contingut",
@@ -712,11 +737,77 @@ function SubscriptionSection() {
         "Suport prioritari",
       ],
       missing: [],
+      planKey: (billing === "monthly" ? "pro_monthly" : "pro_annual") as string,
     },
   ];
 
+  async function handleCheckout(planKey: string) {
+    setLoading(planKey);
+    try {
+      const res = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ planKey }),
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+      else alert(data.error ?? "Error al iniciar el pagament");
+    } catch {
+      alert("Error al connectar amb el servidor de pagaments");
+    } finally {
+      setLoading(null);
+    }
+  }
+
+  async function handlePortal() {
+    setLoading("portal");
+    try {
+      const res = await fetch("/api/stripe/portal", { method: "POST" });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+      else alert(data.error ?? "Error al obrir el portal");
+    } catch {
+      alert("Error al connectar amb el servidor");
+    } finally {
+      setLoading(null);
+    }
+  }
+
   return (
     <div className="space-y-5">
+      {/* Success banner */}
+      {successMsg && (
+        <div className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium"
+          style={{ background: "rgba(34,197,94,0.12)", border: "1px solid rgba(34,197,94,0.3)", color: "#22C55E" }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Subscripció activada correctament. Benvingut/da al teu nou pla!
+        </div>
+      )}
+
+      {/* Current plan info + manage */}
+      {hasSubscription && (
+        <div className="flex items-center justify-between px-4 py-3 rounded-xl"
+          style={{ background: "var(--bg-input)", border: "1px solid var(--border-color)" }}>
+          <div>
+            <p className="text-xs font-semibold" style={{ color: "var(--text-muted)" }}>Subscripció activa</p>
+            <p className="text-sm font-bold capitalize" style={{ color: "var(--text-primary)" }}>Pla {currentPlan}</p>
+            {planExpiresAt && (
+              <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>
+                Renova el {new Date(planExpiresAt).toLocaleDateString("ca-CA", { day: "numeric", month: "long", year: "numeric" })}
+              </p>
+            )}
+          </div>
+          <button
+            onClick={handlePortal}
+            disabled={loading === "portal"}
+            className="px-4 py-2 rounded-lg text-xs font-semibold transition-all hover:opacity-80 disabled:opacity-50"
+            style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}
+          >
+            {loading === "portal" ? "…" : "Gestionar subscripció"}
+          </button>
+        </div>
+      )}
+
       {/* Billing toggle */}
       <div className="flex items-center gap-1 p-1 rounded-xl self-start w-fit" style={{ background: "var(--bg-input)" }}>
         {(["monthly", "annual"] as const).map((b) => (
@@ -742,15 +833,16 @@ function SubscriptionSection() {
       {/* Plan cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {PLANS.map((plan) => {
-          const isCurrent = plan.id === currentPlan;
+          const isCurrent = !loadingPlan && plan.id === currentPlan;
           const price = billing === "monthly" ? plan.monthly : plan.annual;
+          const isLoadingThis = loading === plan.planKey;
           return (
             <div
               key={plan.id}
               className="rounded-2xl p-5 flex flex-col"
               style={{
-                border: isCurrent ? `2px solid ${plan.color}` : "1px solid var(--border-color)",
-                background: isCurrent ? `rgba(31,41,55,0.04)` : "var(--bg-card)",
+                border: isCurrent ? `2px solid ${plan.color}` : plan.badge ? `1px solid ${plan.color}40` : "1px solid var(--border-color)",
+                background: plan.badge ? "var(--bg-card)" : "var(--bg-card)",
                 position: "relative",
               }}
             >
@@ -760,6 +852,14 @@ function SubscriptionSection() {
                   style={{ background: plan.color, color: "#fff" }}
                 >
                   Pla actual
+                </span>
+              )}
+              {plan.badge && !isCurrent && (
+                <span
+                  className="absolute -top-3 right-4 text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full"
+                  style={{ background: plan.color, color: "#fff" }}
+                >
+                  {plan.badge}
                 </span>
               )}
 
@@ -804,21 +904,32 @@ function SubscriptionSection() {
               </div>
 
               <button
-                className="w-full py-2.5 rounded-xl text-xs font-bold transition-all hover:opacity-90"
+                onClick={() => plan.planKey && !isCurrent ? handleCheckout(plan.planKey) : undefined}
+                disabled={isCurrent || !plan.planKey || isLoadingThis || loadingPlan}
+                className="w-full py-2.5 rounded-xl text-xs font-bold transition-all hover:opacity-90 disabled:opacity-60"
                 style={{
-                  background: isCurrent ? "var(--bg-input)" : "var(--selected-bg)",
-                  color: isCurrent ? "var(--text-muted)" : "#fff",
-                  border: isCurrent ? "1px solid var(--border-color)" : "none",
-                  cursor: isCurrent ? "default" : "pointer",
+                  background: isCurrent ? "var(--bg-input)" : plan.planKey ? "var(--selected-bg)" : "var(--bg-input)",
+                  color: isCurrent ? "var(--text-muted)" : plan.planKey ? "#fff" : "var(--text-muted)",
+                  border: (isCurrent || !plan.planKey) ? "1px solid var(--border-color)" : "none",
+                  cursor: (isCurrent || !plan.planKey) ? "default" : "pointer",
                 }}
-                disabled={isCurrent}
               >
-                {isCurrent ? "Pla actual" : `Canviar a ${plan.name}`}
+                {isLoadingThis ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="animate-spin" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                    Redirigint…
+                  </span>
+                ) : isCurrent ? "Pla actual" : plan.planKey ? `Subscriure's a ${plan.name}` : "Pla gratuït"}
               </button>
             </div>
           );
         })}
       </div>
+
+      {/* Security note */}
+      <p className="text-[11px] text-center" style={{ color: "var(--text-muted)" }}>
+        Pagaments segurs amb Stripe · Cancel·lació en qualsevol moment
+      </p>
     </div>
   );
 }

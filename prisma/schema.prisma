@@ -8,15 +8,31 @@ datasource db {
 }
 
 model User {
-  id        String      @id @default(uuid())
-  email     String      @unique
-  name      String?
-  password  String
-  role      String      @default("ROLE_ADMIN")
-  plan      String      @default("free")
-  savedPosts SavedPost[]
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  id                   String      @id @default(uuid())
+  email                String      @unique
+  name                 String?
+  password             String
+  role                 String      @default("ROLE_ADMIN")
+  plan                 String      @default("free")
+  superAdmin           Boolean     @default(false)
+  stripeCustomerId     String?     @unique
+  stripeSubscriptionId String?     @unique
+  planExpiresAt        DateTime?
+  savedPosts           SavedPost[]
+  // Onboarding
+  onboardingCompleted    Boolean   @default(false)
+  onboardingCompletedAt  DateTime?
+  userType               String?
+  userSports             String?
+  userCompetitions       String?
+  ownAccounts            String?
+  competitors            String?
+  goals                  String?
+  resources              String?
+  market                 String?
+  preferredLanguage      String?
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
 }
 
 model Platform {
@@ -245,6 +261,26 @@ model PushSubscription {
   p256dh    String
   auth      String
   createdAt DateTime @default(now())
+}
+
+model JobPosting {
+  id            String    @id @default(uuid())
+  title         String
+  company       String
+  companyHandle String?
+  companyLogo   String?
+  description   String
+  jobType       String    @default("FULL-TIME")
+  workMode      String?
+  location      String?
+  salary        String?
+  sourceUrl     String
+  applyUrl      String?
+  featured      Boolean   @default(false)
+  active        Boolean   @default(true)
+  postedAt      DateTime  @default(now())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
 model ImportBatch {

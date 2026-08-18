@@ -1,7 +1,7 @@
 {
   "name": "Sports Content Playbook",
   "short_name": "SCP Nova",
-  "description": "Discover and save the best sports content from social media",
+  "description": "Discover, save and analyse the best sports content from social media. The ultimate library for sports content creators.",
   "start_url": "/feed",
   "scope": "/",
   "display": "standalone",
@@ -10,7 +10,9 @@
   "theme_color": "#0f1724",
   "orientation": "portrait-primary",
   "lang": "ca",
-  "categories": ["sports", "social", "news"],
+  "categories": ["sports", "social", "news", "productivity"],
+  "dir": "ltr",
+  "id": "/feed",
   "icons": [
     {
       "src": "/icon-192.png",
@@ -45,16 +47,27 @@
   ],
   "shortcuts": [
     {
-      "name": "Biblioteca",
-      "short_name": "Biblioteca",
+      "name": "Content Library",
+      "short_name": "Library",
+      "description": "Browse all sports content",
       "url": "/feed",
       "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "Profiles",
       "short_name": "Profiles",
+      "description": "Search sports influencers",
       "url": "/profiles",
       "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Industry Hub",
+      "short_name": "News",
+      "description": "Sports industry news",
+      "url": "/news",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     }
-  ]
+  ],
+  "prefer_related_applications": false,
+  "related_applications": []
 }

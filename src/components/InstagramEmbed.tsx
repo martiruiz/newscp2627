@@ -166,22 +166,47 @@ export default function InstagramEmbed({ shortcode, canonicalUrl, platform = "In
 
   if (status === "error") {
     return (
-      <div
-        className="flex flex-col items-center justify-center gap-3 p-8 rounded-lg"
-        style={{ background: "var(--bg-input)", minHeight: "200px" }}
-      >
-        <Logo size={40} />
-        <span style={{ color: "var(--text-muted)" }} className="text-sm">
-          Publication unavailable
-        </span>
+      <div className="embed-unavailable">
+        <div style={{
+          width: 44,
+          height: 44,
+          borderRadius: "50%",
+          background: "rgba(225,48,108,0.10)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}>
+          <Logo size={22} />
+        </div>
+        <div style={{ textAlign: "center" }}>
+          <p style={{ color: "var(--text-secondary)", fontSize: 13, fontWeight: 500, margin: 0 }}>
+            Post no disponible
+          </p>
+          <p style={{ color: "var(--text-muted)", fontSize: 11, margin: "4px 0 0" }}>
+            El contingut ha estat eliminat o és privat
+          </p>
+        </div>
         <a
           href={canonicalUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sm px-4 py-1.5 rounded-md"
-          style={{ background: "var(--accent-blue)", color: "#fff" }}
+          style={{
+            fontSize: 12,
+            fontWeight: 600,
+            color: "#E1306C",
+            textDecoration: "none",
+            display: "flex",
+            alignItems: "center",
+            gap: 4,
+            opacity: 0.85,
+          }}
         >
-          View on {platform}
+          Veure a {platform}
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
         </a>
       </div>
     );
@@ -190,22 +215,22 @@ export default function InstagramEmbed({ shortcode, canonicalUrl, platform = "In
   return (
     <div ref={containerRef} className="w-full overflow-hidden">
       {status === "loading" && (
-        <div
-          className="flex flex-col items-center justify-center gap-3 rounded-lg"
-          style={{ background: "var(--bg-input)", minHeight: "400px" }}
-        >
-          <div className="relative">
-            <div
-              className="absolute inset-0 rounded-full animate-ping opacity-20"
-              style={{ background: "linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)" }}
-            />
-            <div className="relative animate-pulse">
-              <Logo size={48} />
+        <div className="embed-skeleton" style={{ minHeight: 460, borderRadius: 8 }}>
+          <div style={{ padding: "18px 20px 0", display: "flex", flexDirection: "column", gap: 14 }}>
+            <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+              <div className="embed-skeleton-line" style={{ width: 38, height: 38, borderRadius: "50%" }} />
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 7 }}>
+                <div className="embed-skeleton-line" style={{ height: 11, width: "38%" }} />
+                <div className="embed-skeleton-line" style={{ height: 10, width: "24%" }} />
+              </div>
+            </div>
+            <div className="embed-skeleton-line" style={{ height: 340, borderRadius: 8 }} />
+            <div style={{ display: "flex", gap: 12 }}>
+              <div className="embed-skeleton-line" style={{ height: 24, width: 24, borderRadius: "50%" }} />
+              <div className="embed-skeleton-line" style={{ height: 24, width: 24, borderRadius: "50%" }} />
+              <div className="embed-skeleton-line" style={{ height: 24, width: 24, borderRadius: "50%" }} />
             </div>
           </div>
-          <span className="text-xs animate-pulse" style={{ color: "var(--text-muted)" }}>
-            Loading...
-          </span>
         </div>
       )}
       <blockquote

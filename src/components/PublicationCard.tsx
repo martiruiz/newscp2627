@@ -6,6 +6,7 @@ import YouTubeFeedEmbed from "./YouTubeFeedEmbed";
 import TikTokFeedEmbed from "./TikTokFeedEmbed";
 import TwitterEmbed from "./TwitterEmbed";
 import LinkedInEmbed from "./LinkedInEmbed";
+import FacebookEmbed from "./FacebookEmbed";
 import FolderPickerModal from "./FolderPickerModal";
 import { getPlatformLogo } from "./SocialLogos";
 
@@ -47,67 +48,19 @@ function buildProfileUrl(platform: string, username: string): string {
   }
 }
 
-function PlatformLoader({ color, icon }: { color: string; icon: React.ReactNode }) {
+function EmbedSkeleton({ height = 380 }: { height?: number }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-3 rounded-lg"
-      style={{ background: "var(--bg-input)", minHeight: 200 }}>
-      <div className="relative">
-        <div className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ background: color }} />
-        <div className="relative animate-pulse">{icon}</div>
+    <div className="embed-skeleton" style={{ minHeight: height, borderRadius: 8 }}>
+      <div style={{ padding: "18px 20px 0", display: "flex", flexDirection: "column", gap: 14 }}>
+        <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+          <div className="embed-skeleton-line" style={{ width: 38, height: 38, borderRadius: "50%" }} />
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 7 }}>
+            <div className="embed-skeleton-line" style={{ height: 11, width: "40%" }} />
+            <div className="embed-skeleton-line" style={{ height: 10, width: "26%" }} />
+          </div>
+        </div>
+        <div className="embed-skeleton-line" style={{ height: height - 120, borderRadius: 8 }} />
       </div>
-      <span className="text-xs animate-pulse" style={{ color: "var(--text-muted)" }}>Loading...</span>
-    </div>
-  );
-}
-
-function FacebookEmbedInline({
-  originalUrl,
-  canonicalUrl,
-  onLoaded,
-}: {
-  originalUrl: string;
-  canonicalUrl: string;
-  onLoaded?: () => void;
-}) {
-  const notifiedRef = useRef(false);
-  const [errored, setErrored] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const notify = useCallback(() => {
-    if (!notifiedRef.current) { notifiedRef.current = true; setLoading(false); onLoaded?.(); }
-  }, [onLoaded]);
-
-  const isFb = originalUrl.includes("facebook.com");
-  const embedUrl = isFb
-    ? `https://www.facebook.com/plugins/post.php?href=${encodeURIComponent(originalUrl)}&show_text=true&width=500`
-    : null;
-
-  if (!embedUrl || errored) {
-    return (
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, padding: 32, background: "var(--bg-input)", minHeight: 180 }}>
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-        <a href={canonicalUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, fontWeight: 600, padding: "6px 16px", borderRadius: 8, background: "#1877F2", color: "#fff", textDecoration: "none" }}>View on Facebook</a>
-      </div>
-    );
-  }
-
-  return (
-    <div style={{ position: "relative" }}>
-      {loading && (
-        <PlatformLoader color="#1877F2" icon={
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="#1877F2">
-            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-          </svg>
-        } />
-      )}
-      <iframe
-        src={embedUrl}
-        style={{ border: "none", display: loading ? "none" : "block", width: "100%", minHeight: 500 }}
-        scrolling="no"
-        title="Facebook post"
-        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-        onLoad={notify}
-        onError={() => { setErrored(true); notify(); }}
-      />
     </div>
   );
 }
@@ -116,13 +69,7 @@ function PinterestEmbed({ embedSrc, onLoaded }: { embedSrc: string; onLoaded?: (
   const [loading, setLoading] = useState(true);
   return (
     <div style={{ width: "100%", display: "flex", justifyContent: "center", background: "var(--bg-input)", position: "relative" }}>
-      {loading && (
-        <PlatformLoader color="#E60023" icon={
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="#E60023">
-            <path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/>
-          </svg>
-        } />
-      )}
+      {loading && <EmbedSkeleton height={500} />}
       <iframe
         src={embedSrc}
         style={{ border: "none", display: loading ? "none" : "block", width: "100%", maxWidth: 450, minHeight: 500 }}
@@ -208,7 +155,7 @@ function PlatformEmbed({
 
   if (platform === "facebook") {
     return (
-      <FacebookEmbedInline
+      <FacebookEmbed
         originalUrl={publication.originalUrl || publication.canonicalUrl}
         canonicalUrl={publication.canonicalUrl}
         onLoaded={onLoaded}
@@ -232,23 +179,37 @@ function PlatformEmbed({
     }
   }, [onLoaded]);
   return (
-    <div
-      style={{
-        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-        gap: 12, padding: 32, background: "var(--bg-input)", minHeight: 180,
-      }}
-    >
-      <Logo size={40} />
+    <div className="embed-unavailable">
+      <div style={{
+        width: 44, height: 44, borderRadius: "50%",
+        background: "rgba(128,128,128,0.1)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+      }}>
+        <Logo size={22} />
+      </div>
+      <div style={{ textAlign: "center" }}>
+        <p style={{ color: "var(--text-secondary)", fontSize: 13, fontWeight: 500, margin: 0 }}>
+          Post no disponible
+        </p>
+        <p style={{ color: "var(--text-muted)", fontSize: 11, margin: "4px 0 0" }}>
+          El contingut ha estat eliminat o és privat
+        </p>
+      </div>
       <a
         href={publication.canonicalUrl}
         target="_blank"
         rel="noopener noreferrer"
         style={{
-          fontSize: 12, fontWeight: 600, padding: "6px 16px", borderRadius: 8,
-          background: "var(--accent-blue)", color: "#fff", textDecoration: "none",
+          fontSize: 12, fontWeight: 600, color: "var(--text-muted)", textDecoration: "none",
+          display: "flex", alignItems: "center", gap: 4, opacity: 0.85,
         }}
       >
-        View on {publication.platform}
+        Veure a {publication.platform}
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+          <polyline points="15 3 21 3 21 9"/>
+          <line x1="10" y1="14" x2="21" y2="3"/>
+        </svg>
       </a>
     </div>
   );

@@ -3,58 +3,24 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { getEffectivePlan } from "@/lib/plan-utils";
 import { useState, useEffect } from "react";
 import DashboardUserProfile from "./DashboardUserProfile";
 
 const ANNUAL_BANNER_DISMISSED_KEY = "scp-annual-banner-dismissed";
-const ANNUAL_BANNER_START_KEY = "scp-annual-banner-start";
-const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
-
-function formatCountdown(ms: number): string {
-  if (ms <= 0) return "00:00:00";
-  const totalSec = Math.floor(ms / 1000);
-  const h = Math.floor(totalSec / 3600);
-  const m = Math.floor((totalSec % 3600) / 60);
-  const s = totalSec % 60;
-  return [h, m, s].map((n) => String(n).padStart(2, "0")).join(":");
-}
 
 function AnnualBanner() {
-  const { t } = useLanguage();
   const [visible, setVisible] = useState(false);
-  const [remaining, setRemaining] = useState(TWENTY_FOUR_HOURS);
 
   useEffect(() => {
     try {
       if (sessionStorage.getItem(ANNUAL_BANNER_DISMISSED_KEY)) return;
-
-      let start = Number(sessionStorage.getItem(ANNUAL_BANNER_START_KEY));
-      if (!start) {
-        start = Date.now();
-        sessionStorage.setItem(ANNUAL_BANNER_START_KEY, String(start));
-      }
-
-      const left = start + TWENTY_FOUR_HOURS - Date.now();
-      if (left <= 0) return; // expired this session
-
-      setRemaining(left);
       setVisible(true);
-
-      const timer = setInterval(() => {
-        const r = start + TWENTY_FOUR_HOURS - Date.now();
-        if (r <= 0) {
-          setVisible(false);
-          clearInterval(timer);
-        } else {
-          setRemaining(r);
-        }
-      }, 1000);
-
-      return () => clearInterval(timer);
     } catch {}
   }, []);
 
-  function dismiss() {
+  function dismiss(e: React.MouseEvent) {
+    e.preventDefault();
     try { sessionStorage.setItem(ANNUAL_BANNER_DISMISSED_KEY, "1"); } catch {}
     setVisible(false);
   }
@@ -62,47 +28,13 @@ function AnnualBanner() {
   if (!visible) return null;
 
   return (
-    <div
-      className="mx-2 mt-2 rounded-xl px-3 py-2.5"
-      style={{
-        background: "linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%)",
-        border: "1px solid #f9a8d4",
-      }}
-    >
-      <p className="text-[11px] leading-snug mb-2" style={{ color: "#9d174d" }}>
-        {t("banner.annualText").split("10€").map((part, i, arr) =>
-          i < arr.length - 1
-            ? <span key={i}>{part}<strong>10€</strong></span>
-            : <span key={i}>{part}</span>
-        )}
-      </p>
-      <div
-        className="flex items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 mb-2"
-        style={{ background: "rgba(190,24,93,0.1)", border: "1px solid rgba(190,24,93,0.2)" }}
-      >
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#be185d" strokeWidth="2.5">
-          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-        </svg>
-        <span className="text-[11px] font-bold font-mono" style={{ color: "#be185d" }}>
-          {t("banner.expires")} {formatCountdown(remaining)}
-        </span>
-      </div>
-      <div className="flex items-center gap-1.5">
-        <Link
-          href="/account?tab=subscription"
-          className="px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all hover:opacity-90"
-          style={{ background: "#be185d", color: "#fff" }}
-        >
-          {t("banner.saveNow")}
-        </Link>
-        <button
-          onClick={dismiss}
-          className="px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all hover:opacity-80"
-          style={{ color: "#be185d", background: "transparent" }}
-        >
-          {t("banner.dismiss")}
-        </button>
-      </div>
+    <div className="mx-3 mt-1 flex items-center justify-between gap-2 px-3 py-2 rounded-lg" style={{ background: "var(--bg-hover)", border: "1px solid var(--border-color)" }}>
+      <Link href="/pricing" className="text-[11px] font-semibold hover:underline" style={{ color: "var(--text-muted)" }}>
+        Canvia a anual · −20%
+      </Link>
+      <button onClick={dismiss} className="text-[11px] hover:opacity-60" style={{ color: "var(--text-muted)" }}>
+        ×
+      </button>
     </div>
   );
 }
@@ -150,6 +82,8 @@ function NavIcon({ name, size = 18 }: { name: string; size?: number }) {
       return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>;
     case "profiles":
       return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>;
+    case "jobs":
+      return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>;
     case "signout":
       return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>;
     case "import":
@@ -182,13 +116,25 @@ function ScpLogo({ compact = false }: { compact?: boolean }) {
   );
 }
 
-function NavItemRow({ item, active }: { item: NavItem; active: boolean }) {
+const FREE_RESTRICTED_HREFS = new Set(["/news", "/saved"]);
+const NON_BASIC_RESTRICTED_HREFS = new Set(["/profiles"]);
+
+function NavItemRow({ item, active, isFree, isNonBasic, isSuperAdmin }: { item: NavItem; active: boolean; isFree?: boolean; isNonBasic?: boolean; isSuperAdmin?: boolean }) {
+  const isLocked = !isSuperAdmin && (
+    (isFree && FREE_RESTRICTED_HREFS.has(item.href)) ||
+    (isNonBasic && NON_BASIC_RESTRICTED_HREFS.has(item.href))
+  );
   const cls = "flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm transition-all text-left";
-  const style = { background: active ? "var(--color-charcoal-subtle)" : "transparent", color: active ? "var(--color-charcoal)" : "var(--text-secondary)" };
+  const style = { background: active ? "var(--color-charcoal-subtle)" : "transparent", color: active ? "var(--color-charcoal)" : "var(--text-secondary)", opacity: isLocked ? 0.55 : 1 };
   const inner = (
     <>
       <span style={{ color: active ? "var(--color-charcoal)" : "var(--text-muted)" }}><NavIcon name={item.icon} size={16} /></span>
-      <span className="font-medium" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.label}</span>
+      <span className="font-medium flex-1" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.label}</span>
+      {isLocked && (
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ flexShrink: 0, opacity: 0.7 }}>
+          <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+      )}
     </>
   );
   if (item.href.startsWith("#")) return <button onClick={() => {}} className={cls} style={style}>{inner}</button>;
@@ -241,8 +187,60 @@ function SupportButton() {
   );
 }
 
+function UpgradeCta() {
+  const [plan, setPlan] = useState<string | null>(null);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/user/plan")
+      .then((r) => r.json())
+      .then((d) => { setPlan(d.plan ?? "free"); setIsSuperAdmin(d.superAdmin === true); })
+      .catch(() => setPlan("free"));
+  }, []);
+
+  if (!plan || plan !== "free" || isSuperAdmin) return null;
+
+  return (
+    <div className="px-3 pb-2 shrink-0">
+      <Link
+        href="/pricing"
+        className="flex items-center gap-2.5 w-full px-3 py-2.5 rounded-xl text-left transition-all hover:opacity-90"
+        style={{
+          background: "linear-gradient(135deg, rgba(37,99,235,0.15) 0%, rgba(37,99,235,0.05) 100%)",
+          border: "1px solid rgba(37,99,235,0.25)",
+        }}
+      >
+        <span style={{ color: "#2563EB", flexShrink: 0 }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+        </span>
+        <div className="flex-1 min-w-0">
+          <p className="text-[11px] font-bold" style={{ color: "#2563EB" }}>Pla gratuït</p>
+          <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>Fes upgrade per accedir a tot</p>
+        </div>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5" style={{ flexShrink: 0 }}>
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </Link>
+    </div>
+  );
+}
+
 function ExpandedSidebar({ onToggle, pathname }: { onToggle: () => void; pathname: string }) {
   const { TOP_NAV, BOTTOM_NAV } = useNavItems();
+  const [plan, setPlan] = useState<string>("free");
+  const [isSuper, setIsSuper] = useState(false);
+  useEffect(() => {
+    fetch("/api/user/plan").then((r) => r.json()).then((d) => {
+      const { plan: effectivePlan, isSuperAdmin } = getEffectivePlan(d);
+      setPlan(effectivePlan);
+      setIsSuper(isSuperAdmin);
+    }).catch(() => {});
+  }, []);
+
+  const isFree = plan === "free";
+  const isNonBasic = plan === "free" || plan === "weekly";
   return (
     <aside
       className="sticky top-0 h-screen flex flex-col shrink-0 overflow-hidden"
@@ -265,7 +263,7 @@ function ExpandedSidebar({ onToggle, pathname }: { onToggle: () => void; pathnam
       <nav className="flex-1 px-2 overflow-y-auto">
         <div className="space-y-0.5">
           {TOP_NAV.map((item) => (
-            <NavItemRow key={item.label} item={item} active={pathname === item.href || (item.href === "/feed" && item.label === "Content Library" && pathname === "/feed")} />
+            <NavItemRow key={item.label} item={item} isFree={isFree} isNonBasic={isNonBasic} isSuperAdmin={isSuper} active={pathname === item.href || (item.href === "/feed" && item.label === "Content Library" && pathname === "/feed")} />
           ))}
         </div>
 
@@ -279,6 +277,9 @@ function ExpandedSidebar({ onToggle, pathname }: { onToggle: () => void; pathnam
 
         <AnnualBanner />
       </nav>
+
+      {/* Upgrade CTA for free plan */}
+      <UpgradeCta />
 
       {/* User profile card */}
       <div className="px-3 pb-2 shrink-0">

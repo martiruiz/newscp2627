@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
 
   const users = await prisma.user.findMany({
     orderBy: { createdAt: "desc" },
-    select: { id: true, email: true, name: true, role: true, plan: true, createdAt: true },
+    select: { id: true, email: true, name: true, role: true, plan: true, superAdmin: true, createdAt: true },
   });
   return NextResponse.json({ users });
 }
@@ -35,6 +35,21 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ user });
   } catch {
     return NextResponse.json({ error: "Email already exists" }, { status: 409 });
+  }
+}
+
+export async function PATCH(request: NextRequest) {
+  const { id, superAdmin } = await request.json();
+  if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
+  try {
+    const user = await prisma.user.update({
+      where: { id },
+      data: { superAdmin: Boolean(superAdmin) },
+      select: { id: true, email: true, superAdmin: true },
+    });
+    return NextResponse.json({ user });
+  } catch {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 }
 
