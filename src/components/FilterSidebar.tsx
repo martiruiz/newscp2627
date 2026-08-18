@@ -188,6 +188,15 @@ export default function FilterSidebar({ filters, onFiltersChange, isOpen, onClos
   const [hoveredPlatform, setHoveredPlatform] = useState<string | null>(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [isOpen]);
+
   function guardFree(action: () => void) {
     if (isFree) { setShowUpgradeModal(true); return; }
     action();
