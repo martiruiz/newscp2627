@@ -318,6 +318,8 @@ function SmartFilters({
   );
 }
 
+type FeedMode = "recommended" | "random" | "favs";
+
 function FeedPageInner() {
   const searchParams = useSearchParams();
   const rawOrder = searchParams.get("order");
@@ -329,6 +331,9 @@ function FeedPageInner() {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [filters, setFilters] = useState<SelectedFilters>({ ...DEFAULT_FILTERS, order: initialOrder });
+  const [feedMode, setFeedMode] = useState<FeedMode>(initialOrder as FeedMode);
+  const [userSports, setUserSports] = useState<string[]>([]);
+  const [userSportsLoaded, setUserSportsLoaded] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [userPlan, setUserPlan] = useState<string>("free");
@@ -400,6 +405,14 @@ function FeedPageInner() {
     }).catch(() => {});
   }, []);
 
+  // Fetch user sports preferences (for Favs mode)
+  useEffect(() => {
+    fetch("/api/user/onboarding").then((r) => r.json()).then((d) => {
+      setUserSports(d.userSports ?? []);
+      setUserSportsLoaded(true);
+    }).catch(() => { setUserSportsLoaded(true); });
+  }, []);
+
   // Sync URL ?order param into filter state
   useEffect(() => {
     const raw = searchParams.get("order");
@@ -426,14 +439,22 @@ function FeedPageInner() {
       abortRef.current = controller;
 
       const params = new URLSearchParams();
-      params.set("page", String(page));
-      params.set("limit", String(PAGE_SIZE));
 
-      for (const [key, value] of Object.entries(filters)) {
-        if (Array.isArray(value)) {
-          if (value.length > 0) params.set(key, value.join(","));
-        } else if (value) {
-          params.set(key, value);
+      if (feedMode === "favs") {
+        // Favs: latest 50 from user's sports preferences
+        params.set("page", "1");
+        params.set("limit", "50");
+        params.set("order", "latest");
+        if (userSports.length > 0) params.set("sport", userSports.join(","));
+      } else {
+        params.set("page", String(page));
+        params.set("limit", String(PAGE_SIZE));
+        for (const [key, value] of Object.entries(filters)) {
+          if (Array.isArray(value)) {
+            if (value.length > 0) params.set(key, value.join(","));
+          } else if (value) {
+            params.set(key, value);
+          }
         }
       }
 
@@ -457,13 +478,19 @@ function FeedPageInner() {
         }
       }
     },
-    [filters]
+    [filters, feedMode, userSports]
   );
 
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [filters]);
+
+  // When switching to favs mode, wait for sports to load before fetching
+  useEffect(() => {
+    if (feedMode === "favs" && !userSportsLoaded) return;
+    setCurrentPage(1);
+  }, [feedMode, userSportsLoaded]);
 
   useEffect(() => {
     fetchPublications(currentPage);
@@ -587,17 +614,60 @@ function FeedPageInner() {
       <Suspense>
         <LibraryTutorialOverlay />
       </Suspense>
+
+      {/* ── TikTok-style mode tabs ──────────────────────────────────── */}
+      <div
+        className="sticky top-0 z-30 flex items-center justify-center"
+        style={{ background: "var(--bg-primary)", borderBottom: "1px solid var(--border-color)", paddingTop: 2 }}
+      >
+        {([
+          { id: "recommended" as FeedMode, label: "Recommended" },
+          { id: "random"      as FeedMode, label: "Inspire Me" },
+          { id: "favs"        as FeedMode, label: "Favs" },
+        ] as const).map((tab) => {
+          const active = feedMode === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => {
+                setFeedMode(tab.id);
+                if (tab.id !== "favs") {
+                  setFilters((f) => ({ ...f, order: tab.id === "random" ? "random" : "recommended" }));
+                }
+              }}
+              className="relative px-5 sm:px-8 py-3 text-sm font-bold transition-colors"
+              style={{ color: active ? "var(--text-primary)" : "var(--text-muted)", background: "transparent", border: "none", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}
+            >
+              {tab.id === "favs" && (
+                <svg width="12" height="12" viewBox="0 0 24 24" fill={active ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" style={{ display: "inline", marginRight: 5, verticalAlign: "middle", marginTop: -2 }}>
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+              )}
+              {tab.label}
+              {active && (
+                <span
+                  className="absolute bottom-0 left-1/2"
+                  style={{ width: "60%", height: 3, background: "var(--text-primary)", borderRadius: "2px 2px 0 0", transform: "translateX(-50%)", display: "block" }}
+                />
+              )}
+            </button>
+          );
+        })}
+      </div>
+
       <div className="flex-1 flex">
-        <FilterSidebar
-          filters={filters}
-          onFiltersChange={handleFiltersChange as typeof setFilters}
-          isOpen={sidebarOpen}
-          onClose={() => setSidebarOpen(false)}
-          collapsed={sidebarCollapsed}
-          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-          resultCount={pagination?.total}
-          userPlan={userPlan}
-        />
+        {feedMode !== "favs" && (
+          <FilterSidebar
+            filters={filters}
+            onFiltersChange={handleFiltersChange as typeof setFilters}
+            isOpen={sidebarOpen}
+            onClose={() => setSidebarOpen(false)}
+            collapsed={sidebarCollapsed}
+            onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+            resultCount={pagination?.total}
+            userPlan={userPlan}
+          />
+        )}
 
         <main ref={mainRef} className="flex-1 min-w-0 p-4">
           <div className="flex items-center justify-between mb-3">
@@ -642,32 +712,6 @@ function FeedPageInner() {
                   <span className="hidden sm:inline">{pagination.total.toLocaleString()} ideas</span>
                 </span>
               )}
-            </div>
-            <div
-              className="flex rounded-lg overflow-hidden"
-              style={{ border: "1px solid var(--border-color)" }}
-            >
-              {[
-                { value: "recommended", label: "Recommended", icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> },
-                { value: "random", label: "Inspire me", icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><polyline points="16 3 21 3 21 8"/><polyline points="16 21 21 21 21 16"/><line x1="4" y1="4" x2="21" y2="21"/><line x1="21" y1="4" x2="4" y2="21"/></svg> },
-              ].map((opt, i) => {
-                const active = filters.order === opt.value;
-                return (
-                  <button
-                    key={opt.value}
-                    onClick={() => setFilters({ ...filters, order: opt.value })}
-                    className="flex items-center gap-1.5 px-2.5 sm:px-4 py-2 text-xs font-semibold transition-all"
-                    style={{
-                      background: active ? "var(--selected-bg)" : "var(--bg-input)",
-                      color: active ? "#fff" : "var(--text-muted)",
-                      borderRight: i === 0 ? "1px solid var(--border-color)" : "none",
-                    }}
-                  >
-                    {opt.icon}
-                    <span className="hidden sm:inline">{opt.label}</span>
-                  </button>
-                );
-              })}
             </div>
           </div>
 

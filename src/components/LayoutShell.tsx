@@ -68,7 +68,6 @@ const ALL_NAV = [
   { id: "library",  label: "Library",  href: "/feed",                    match: "/feed",      Icon: PlansIcon,       ActiveIcon: null },
   { id: "news",     label: "News",     href: "/news",                    match: "/news",      Icon: NewsIcon,        ActiveIcon: null },
   { id: "discover", label: "Discover", href: "/feed?order=random&days=7", match: "/feed",     Icon: CompassIcon,     ActiveIcon: null },
-  { id: "favs",     label: "Favs",     href: "/favs",                    match: "/favs",      Icon: StarOutlineIcon, ActiveIcon: StarFilledIcon },
   { id: "profile",  label: "Profile",  href: "/account",                 match: "/account",   Icon: ProfileIcon,     ActiveIcon: null },
 ];
 

@@ -51,7 +51,6 @@ function useNavItems() {
   const TOP_NAV: NavItem[] = [
     { label: t("nav.dashboard"), href: "/dashboard", icon: "dashboard" },
     { label: t("nav.contentLibrary"), href: "/feed", icon: "library" },
-    { label: "Favs", href: "/favs", icon: "favs" },
     { label: "Profiles", href: "/profiles", icon: "profiles" },
     { label: t("nav.socialMediaNews"), href: "/news", icon: "news" },
     { label: t("nav.support"), href: "/support", icon: "contact" },
