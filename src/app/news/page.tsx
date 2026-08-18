@@ -843,14 +843,14 @@ function NewsPageInner() {
       )}
 
       {/* Hero */}
-      <div className="text-center px-6 py-8 md:py-16" style={{ background: "linear-gradient(180deg, rgba(31,41,55,0.06) 0%, transparent 100%)", borderBottom: "1px solid var(--border-color)" }}>
-        <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-4" style={{ color: "var(--selected-bg)" }}>
+      <div className="text-center px-6 py-4 md:py-16" style={{ background: "linear-gradient(180deg, rgba(31,41,55,0.06) 0%, transparent 100%)", borderBottom: "1px solid var(--border-color)" }}>
+        <p className="hidden md:block text-[10px] font-black uppercase tracking-[0.2em] mb-4" style={{ color: "var(--selected-bg)" }}>
           Sports Industry Hub
         </p>
-        <h1 className="font-black text-2xl md:text-4xl leading-tight mb-4" style={{ color: "var(--text-primary)" }}>
+        <h1 className="hidden md:block font-black text-2xl md:text-4xl leading-tight mb-4" style={{ color: "var(--text-primary)" }}>
           Sports Industry Hub
         </h1>
-        <p className="text-sm max-w-xl mx-auto leading-relaxed mb-8" style={{ color: "var(--text-muted)" }}>
+        <p className="hidden md:block text-sm max-w-xl mx-auto leading-relaxed mb-8" style={{ color: "var(--text-muted)" }}>
           Actualitzacions de les plataformes de xarxes socials, insights and career opportunities shaping the sports content industry.
         </p>
 
