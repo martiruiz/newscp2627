@@ -392,6 +392,7 @@ function FeedPageInner() {
 
   const abortRef = useRef<AbortController | null>(null);
   const mainRef = useRef<HTMLDivElement>(null);
+  const swipeTouchStart = useRef<{ x: number; y: number } | null>(null);
 
   // Fetch user plan
   useEffect(() => {
@@ -655,7 +656,22 @@ function FeedPageInner() {
         })}
       </div>
 
-      <div className="flex-1 flex">
+      <div
+        className="flex-1 flex"
+        onTouchStart={(e) => {
+          swipeTouchStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        }}
+        onTouchEnd={(e) => {
+          if (!swipeTouchStart.current || feedMode === "favs") return;
+          const dx = e.changedTouches[0].clientX - swipeTouchStart.current.x;
+          const dy = Math.abs(e.changedTouches[0].clientY - swipeTouchStart.current.y);
+          swipeTouchStart.current = null;
+          if (dx > 50 && dy < dx * 0.8) {
+            e.stopPropagation();
+            setSidebarOpen(true);
+          }
+        }}
+      >
         {feedMode !== "favs" && (
           <FilterSidebar
             filters={filters}
@@ -672,24 +688,6 @@ function FeedPageInner() {
         <main ref={mainRef} className="flex-1 min-w-0 p-4">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
-              <button
-                onClick={() => setSidebarOpen(true)}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm lg:hidden"
-                style={{ background: "var(--bg-input)", color: "var(--text-primary)", border: "1px solid var(--border-color)" }}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-                Filters
-                {activeFilterCount > 0 && (
-                  <span
-                    className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
-                    style={{ background: "var(--selected-bg)", color: "#fff" }}
-                  >
-                    {activeFilterCount}
-                  </span>
-                )}
-              </button>
               {/* Save view button — only show when filters are active */}
               {activeFilterCount > 0 && (
                 <button
