@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import AppSidebar from "./AppSidebar";
 
@@ -39,94 +39,126 @@ function ProfileIcon() {
     </svg>
   );
 }
-function PlusIcon() {
+function NewsIcon() {
   return (
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-      <line x1="12" y1="5" x2="12" y2="19"/>
-      <line x1="5" y1="12" x2="19" y2="12"/>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/>
+      <path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8z"/>
     </svg>
   );
 }
 
-const LEFT_NAV = [
-  { label: "Home", href: "/dashboard", match: "/dashboard", icon: <HomeIcon /> },
-  { label: "Library", href: "/feed", match: "/feed", icon: <PlansIcon /> },
-];
-const RIGHT_NAV = [
-  { label: "Discover", href: "/feed?order=random&days=7", match: "/feed", icon: <CompassIcon /> },
-  { label: "Profile", href: "/account", match: "/account", icon: <ProfileIcon /> },
+const ALL_NAV = [
+  { id: "home",     label: "Home",     href: "/dashboard",              match: "/dashboard", Icon: HomeIcon },
+  { id: "library",  label: "Library",  href: "/feed",                   match: "/feed",      Icon: PlansIcon },
+  { id: "news",     label: "News",     href: "/news",                   match: "/news",      Icon: NewsIcon },
+  { id: "discover", label: "Discover", href: "/feed?order=random&days=7", match: "/feed",    Icon: CompassIcon },
+  { id: "profile",  label: "Profile",  href: "/account",                match: "/account",   Icon: ProfileIcon },
 ];
 
 function MobileBottomNav({ pathname }: { pathname: string }) {
   const searchParams = useSearchParams();
   const isDiscover = pathname === "/feed" && searchParams.get("order") === "random";
 
-  const isActive = (item: { match: string; href: string }) => {
-    if (item.href.includes("order=random")) return isDiscover;
-    if (item.match === "/feed") return pathname === "/feed" && !isDiscover;
+  function isActive(item: typeof ALL_NAV[0]) {
+    if (item.id === "discover") return isDiscover;
+    if (item.id === "library") return pathname === "/feed" && !isDiscover;
     return pathname === item.match || pathname?.startsWith(item.match + "/");
-  };
+  }
 
   return (
-    <nav
-      className="fixed bottom-0 left-0 right-0 z-50 flex items-end md:hidden"
+    <div
+      className="md:hidden"
       style={{
-        background: "var(--bg-secondary)",
-        borderTop: "1px solid var(--border-color)",
-        paddingBottom: "env(safe-area-inset-bottom, 0px)",
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        zIndex: 50,
+        paddingBottom: "max(env(safe-area-inset-bottom, 0px), 12px)",
+        paddingLeft: 14,
+        paddingRight: 14,
+        paddingTop: 8,
+        pointerEvents: "none",
       }}
     >
-      {/* Left items */}
-      {LEFT_NAV.map((item) => (
-        <Link
-          key={item.label}
-          href={item.href}
-          className="flex-1 flex flex-col items-center justify-center py-3 gap-0.5 transition-all active:scale-95"
-        >
-          <span style={{ color: isActive(item) ? "var(--text-primary)" : "var(--text-muted)" }}>
-            {item.icon}
-          </span>
-          <span className="text-[9px] font-bold" style={{ color: isActive(item) ? "var(--text-primary)" : "var(--text-muted)" }}>
-            {item.label}
-          </span>
-        </Link>
-      ))}
-
-      {/* Center + button */}
-      <div className="flex flex-col items-center justify-center px-2 pb-1">
-        <Link
-          href="/news"
-          className="flex items-center justify-center rounded-full transition-all active:scale-90 hover:opacity-90"
-          style={{
-            width: 52,
-            height: 52,
-            background: "var(--selected-bg)",
-            boxShadow: "0 4px 16px rgba(0,0,0,0.3)",
-            color: "var(--selected-text)",
-            marginBottom: 2,
-          }}
-        >
-          <PlusIcon />
-        </Link>
-        <span className="text-[9px] font-bold" style={{ color: "var(--text-muted)" }}>News</span>
-      </div>
-
-      {/* Right items */}
-      {RIGHT_NAV.map((item) => (
-        <Link
-          key={item.label}
-          href={item.href}
-          className="flex-1 flex flex-col items-center justify-center py-3 gap-0.5 transition-all active:scale-95"
-        >
-          <span style={{ color: isActive(item) ? "var(--text-primary)" : "var(--text-muted)" }}>
-            {item.icon}
-          </span>
-          <span className="text-[9px] font-bold" style={{ color: isActive(item) ? "var(--text-primary)" : "var(--text-muted)" }}>
-            {item.label}
-          </span>
-        </Link>
-      ))}
-    </nav>
+      <nav
+        style={{
+          display: "flex",
+          alignItems: "center",
+          background: "#FFFFFF",
+          borderRadius: 32,
+          boxShadow: "0 8px 40px rgba(0,0,0,0.16), 0 2px 8px rgba(0,0,0,0.08)",
+          padding: "6px 4px",
+          pointerEvents: "auto",
+        }}
+      >
+        {ALL_NAV.map((item) => {
+          const active = isActive(item);
+          return (
+            <Link
+              key={item.id}
+              href={item.href}
+              style={{
+                flex: 1,
+                display: "flex",
+                justifyContent: "center",
+                textDecoration: "none",
+                WebkitTapHighlightColor: "transparent",
+              }}
+            >
+              {active ? (
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 3,
+                    background: "rgba(13,20,33,0.07)",
+                    borderRadius: 22,
+                    padding: "7px 14px 7px",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 38,
+                      height: 38,
+                      borderRadius: 19,
+                      background: "#0D1421",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "#FFFFFF",
+                    }}
+                  >
+                    <item.Icon />
+                  </div>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: "#0D1421", letterSpacing: "0.01em", lineHeight: 1 }}>
+                    {item.label}
+                  </span>
+                </div>
+              ) : (
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 3,
+                    padding: "13px 8px 11px",
+                    color: "#9CA3AF",
+                  }}
+                >
+                  <item.Icon />
+                  <span style={{ fontSize: 10, fontWeight: 600, color: "#9CA3AF", lineHeight: 1 }}>
+                    {item.label}
+                  </span>
+                </div>
+              )}
+            </Link>
+          );
+        })}
+      </nav>
+    </div>
   );
 }
 
@@ -145,16 +177,42 @@ function MobileTopHeader() {
 
 export default function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const isAdmin = pathname?.startsWith("/admin");
   const isDashboard = pathname === "/dashboard";
   const [collapsed, setCollapsed] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  }, []);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    const dy = Math.abs(e.changedTouches[0].clientY - touchStartY.current);
+    if (touchStartX.current < 30 && dx > 60 && dy < 80) {
+      router.back();
+    }
+  }, [router]);
 
   useEffect(() => {
     const stored = localStorage.getItem("sidebar-collapsed");
     if (stored === "true") setCollapsed(true);
     setMounted(true);
   }, []);
+
+  // Redirect to welcome/onboarding if logged in but not yet completed
+  useEffect(() => {
+    if (isAdmin || pathname === "/onboarding" || pathname === "/welcome" || pathname === "/pricing") return;
+    fetch("/api/user/plan").then((r) => r.json()).then((d) => {
+      if (d.email && d.onboardingCompleted === false) {
+        router.replace("/welcome");
+      }
+    }).catch(() => {});
+  }, [pathname, isAdmin, router]);
 
   function toggle() {
     setCollapsed((prev) => {
@@ -164,7 +222,7 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
     });
   }
 
-  if (isAdmin) return <>{children}</>;
+  if (isAdmin || pathname === "/welcome" || pathname === "/onboarding") return <>{children}</>;
 
   if (!mounted) {
     return (
@@ -179,6 +237,8 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
     <div
       className={`flex min-h-screen ${collapsed ? "flex-col" : ""}`}
       style={{ background: "var(--bg-primary)" }}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
       {/* Desktop sidebar — hidden on mobile */}
       <div className="hidden md:block shrink-0">
@@ -186,7 +246,7 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
       </div>
 
       {/* Main content */}
-      <div className="flex-1 min-w-0 pb-24 md:pb-0">
+      <div className="flex-1 min-w-0 main-content-wrapper">
         {!isDashboard && <MobileTopHeader />}
         {children}
       </div>

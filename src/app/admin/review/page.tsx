@@ -96,12 +96,12 @@ export default function ReviewPage() {
   const total = counts ? counts.newContent + counts.missingInfo + counts.withErrors : null;
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-8">
+    <div className="max-w-4xl mx-auto px-4 md:px-6 py-5 md:py-8">
       {/* Header */}
-      <div className="flex items-start justify-between mb-8">
+      <div className="flex items-center justify-between mb-5 md:mb-8">
         <div>
           <h1 className="text-2xl font-black" style={{ color: "var(--text-primary)" }}>Review</h1>
-          <p className="text-sm mt-0.5" style={{ color: "var(--text-muted)" }}>
+          <p className="text-xs md:text-sm mt-0.5" style={{ color: "var(--text-muted)" }}>
             {total !== null ? `${fmt(total)} elements pendents` : "Carregant…"}
             {lastUpdated && (
               <span> · actualitzat {lastUpdated.toLocaleTimeString("ca-ES", { hour: "2-digit", minute: "2-digit" })}</span>
@@ -121,7 +121,7 @@ export default function ReviewPage() {
       </div>
 
       {/* Queues */}
-      <div className="space-y-4">
+      <div className="space-y-3 md:space-y-4">
         {QUEUES.map((q) => {
           const count = q.countKey ? (counts?.[q.countKey] ?? null) : null;
           const isEmpty = count === 0;
@@ -132,27 +132,96 @@ export default function ReviewPage() {
               className="rounded-2xl overflow-hidden"
               style={{
                 background: "var(--bg-secondary)",
-                border: `1px solid ${q.available && !q.comingSoon ? "var(--border-color)" : "var(--border-color)"}`,
+                border: "1px solid var(--border-color)",
                 opacity: q.comingSoon ? 0.55 : 1,
               }}
             >
-              <div className="flex items-center gap-4 p-5">
-                {/* Icon */}
+              {/* ── Mobile layout ── */}
+              <div className="md:hidden p-4">
+                {/* Top row: icon + label + priority + count */}
+                <div className="flex items-center gap-3 mb-3">
+                  <div
+                    className="shrink-0 flex items-center justify-center w-10 h-10 rounded-xl"
+                    style={{ background: "var(--bg-input)", color: q.color }}
+                  >
+                    {q.icon}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>{q.label}</p>
+                      <span
+                        className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+                        style={{ background: q.comingSoon ? "var(--bg-input)" : `${q.color}22`, color: q.comingSoon ? "var(--text-muted)" : q.color }}
+                      >
+                        {q.comingSoon ? "Aviat" : q.priority}
+                      </span>
+                    </div>
+                    <p className="text-xs mt-0.5 leading-snug" style={{ color: "var(--text-muted)" }}>{q.description}</p>
+                  </div>
+                </div>
+
+                {/* Bottom row: count + CTA */}
+                {!q.comingSoon && (
+                  <div className="flex items-center justify-between gap-3 pt-3" style={{ borderTop: "1px solid var(--border-color)" }}>
+                    <div>
+                      <span
+                        className="text-3xl font-black tabular-nums"
+                        style={{ color: count && count > 0 ? q.color : "var(--text-muted)" }}
+                      >
+                        {counts === null ? "—" : fmt(count ?? 0)}
+                      </span>
+                      <span className="text-xs ml-1.5" style={{ color: "var(--text-muted)" }}>pendents</span>
+                      {lastUpdated && (
+                        <p className="text-[10px] mt-0.5" style={{ color: "var(--text-muted)", opacity: 0.6 }}>
+                          Última consulta: {lastUpdated.toLocaleTimeString("ca-ES", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+                        </p>
+                      )}
+                    </div>
+                    {q.available ? (
+                      isEmpty ? (
+                        <div
+                          className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold"
+                          style={{ background: "rgba(34,197,94,0.1)", color: "#22c55e", border: "1px solid rgba(34,197,94,0.2)" }}
+                        >
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+                          Tot revisat
+                        </div>
+                      ) : (
+                        <Link
+                          href={`/admin/review/${q.id}`}
+                          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95"
+                          style={{ background: q.color, color: "#fff" }}
+                        >
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                            <polygon points="5 3 19 12 5 21 5 3"/>
+                          </svg>
+                          Start review
+                        </Link>
+                      )
+                    ) : (
+                      <div
+                        className="px-4 py-2.5 rounded-xl text-xs font-semibold"
+                        style={{ background: "var(--bg-input)", color: "var(--text-muted)", border: "1px solid var(--border-color)" }}
+                      >
+                        Properament
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* ── Desktop layout (unchanged) ── */}
+              <div className="hidden md:flex items-center gap-4 p-5">
                 <div
                   className="shrink-0 flex items-center justify-center w-12 h-12 rounded-xl"
-                  style={{ background: `${q.color}15`, color: q.color }}
+                  style={{ background: "var(--bg-input)", color: "var(--text-primary)" }}
                 >
                   {q.icon}
                 </div>
-
-                {/* Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5">
                     <p className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>{q.label}</p>
-                    <span
-                      className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
-                      style={{ background: `${q.priorityColor}18`, color: q.priorityColor }}
-                    >
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "var(--bg-input)", color: "var(--text-muted)" }}>
                       {q.comingSoon ? "Aviat" : q.priority}
                     </span>
                   </div>
@@ -163,60 +232,39 @@ export default function ReviewPage() {
                     </p>
                   )}
                 </div>
-
-                {/* Count + CTA */}
                 <div className="shrink-0 flex items-center gap-4">
                   {!q.comingSoon && (
                     <div className="text-right">
-                      <p
-                        className="text-2xl font-black tabular-nums"
-                        style={{ color: count && count > 0 ? q.color : "var(--text-muted)" }}
-                      >
+                      <p className="text-2xl font-black tabular-nums" style={{ color: count && count > 0 ? q.color : "var(--text-muted)" }}>
                         {counts === null ? "—" : fmt(count ?? 0)}
                       </p>
                       <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>pendents</p>
                     </div>
                   )}
-
                   {q.available && !q.comingSoon ? (
                     isEmpty ? (
-                      <div
-                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold"
-                        style={{ background: "rgba(34,197,94,0.1)", color: "#22c55e", border: "1px solid rgba(34,197,94,0.2)" }}
-                      >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                          <path d="M20 6L9 17l-5-5"/>
-                        </svg>
+                      <div className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold" style={{ background: "rgba(34,197,94,0.1)", color: "#22c55e", border: "1px solid rgba(34,197,94,0.2)" }}>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
                         Tot revisat
                       </div>
                     ) : (
-                      <Link
-                        href={`/admin/review/${q.id}`}
-                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all hover:opacity-80"
-                        style={{ background: q.color, color: "#fff" }}
-                      >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                          <polygon points="5 3 19 12 5 21 5 3"/>
-                        </svg>
+                      <Link href={`/admin/review/${q.id}`} className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all hover:opacity-80" style={{ background: q.color, color: "#fff" }}>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                         Start review
                       </Link>
                     )
                   ) : (
-                    <div
-                      className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold"
-                      style={{ background: "var(--bg-input)", color: "var(--text-muted)", border: "1px solid var(--border-color)" }}
-                    >
+                    <div className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold" style={{ background: "var(--bg-input)", color: "var(--text-muted)", border: "1px solid var(--border-color)" }}>
                       Properament
                     </div>
                   )}
                 </div>
               </div>
 
-              {/* Empty state bar */}
               {isEmpty && q.available && !q.comingSoon && (
-                <div className="px-5 pb-4">
+                <div className="px-4 md:px-5 pb-4">
                   <p className="text-xs text-center py-2 rounded-lg" style={{ background: "rgba(34,197,94,0.06)", color: "#22c55e" }}>
-                    All caught up. There are no contents pending in this queue.
+                    Tot en ordre. No hi ha continguts pendents en aquesta cua.
                   </p>
                 </div>
               )}

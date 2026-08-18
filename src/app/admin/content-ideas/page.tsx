@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import BulkActionBar from "@/components/BulkActionBar";
+import { BulkEditPanel } from "@/components/BulkActionBar";
 import ReviewPanel from "@/components/ReviewPanel";
 
 /* ── Twitter widget singleton ── */
@@ -1421,17 +1421,33 @@ function QuickClassRow({ pub, classOptions }: { pub: Publication; classOptions: 
   );
 }
 
-function AdminCard({ pub, onOpen, classOptions, isSelected = false, onSelect }: {
+function AdminCard({ pub, onOpen, classOptions, isSelected = false, onSelect, onDelete }: {
   pub: Publication;
   onOpen: () => void;
   classOptions: TaxOption[];
   isSelected?: boolean;
   onSelect?: (id: string) => void;
+  onDelete?: (id: string) => void;
 }) {
   const platformColor = PLATFORM_COLORS[pub.platform.toLowerCase()] ?? "#555";
   const [classIds, setClassIds] = useState<string[]>(pub.classificationIds ?? []);
   const [classSlugs, setClassSlugs] = useState<string[]>(pub.classificationSlugs ?? []);
   const [toggling, setToggling] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  async function handleDelete(e: React.MouseEvent) {
+    e.stopPropagation();
+    if (!confirmDelete) { setConfirmDelete(true); return; }
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/admin/publications?id=${pub.id}`, { method: "DELETE" });
+      if (res.ok) onDelete?.(pub.id);
+    } finally {
+      setDeleting(false);
+      setConfirmDelete(false);
+    }
+  }
 
   async function toggleClassification(slug: string) {
     const opt = classOptions.find((o) => o.slug === slug);
@@ -1481,12 +1497,49 @@ function AdminCard({ pub, onOpen, classOptions, isSelected = false, onSelect }: 
           <PlatformIcon platform={pub.platform} size={13} />
           <span className="text-xs font-semibold" style={{ color: "var(--text-secondary)" }}>{pub.platform}</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
           {pub.publishedAt && (
             <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>
               {new Date(pub.publishedAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "2-digit" })}
             </span>
           )}
+          {/* Delete button */}
+          <button
+            onClick={handleDelete}
+            disabled={deleting}
+            title={confirmDelete ? "Clica per confirmar l'eliminació" : "Eliminar"}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 3,
+              padding: confirmDelete ? "2px 6px" : "2px 4px",
+              borderRadius: 6,
+              border: "none",
+              cursor: deleting ? "not-allowed" : "pointer",
+              fontSize: 10,
+              fontWeight: 700,
+              transition: "all 0.15s",
+              background: confirmDelete ? "#EF4444" : "transparent",
+              color: confirmDelete ? "#fff" : "var(--text-muted)",
+              opacity: deleting ? 0.5 : 1,
+            }}
+          >
+            {deleting ? (
+              <span style={{ letterSpacing: 2 }}>···</span>
+            ) : confirmDelete ? (
+              <>
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                Eliminar
+              </>
+            ) : (
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                <path d="M10 11v6M14 11v6"/>
+                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+              </svg>
+            )}
+          </button>
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: "var(--text-muted)", opacity: 0.6 }}>
             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
@@ -1714,7 +1767,13 @@ function UsernameAutocomplete({
   useEffect(() => {
     fetch("/api/admin/publications?distinctUsernames=1")
       .then((r) => r.json())
-      .then((d) => setAllUsernames((d.usernames ?? []).filter(Boolean)));
+      .then((d) => {
+        const raw: string[] = d.usernames ?? [];
+        const split = [...new Set(
+          raw.flatMap((u: string) => u.split(",").map((s) => s.trim())).filter(Boolean)
+        )].sort((a, b) => a.localeCompare(b));
+        setAllUsernames(split);
+      });
   }, []);
 
   const q = value.toLowerCase().replace(/^@/, "");
@@ -2190,6 +2249,8 @@ export default function ContentIdeasPage() {
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
+  const [showFilters, setShowFilters] = useState(true);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   // URL-synced review panel
   const reviewId = searchParams.get("review");
@@ -2218,6 +2279,20 @@ export default function ContentIdeasPage() {
   const nextReviewId = reviewIdx >= 0 && reviewIdx < pubs.length - 1 ? pubs[reviewIdx + 1].id : null;
   const [showAddByUrl, setShowAddByUrl] = useState(false);
   const [allMatchingSelected, setAllMatchingSelected] = useState(false);
+  const [showColumnsMenu, setShowColumnsMenu] = useState(false);
+  const [visibleColumns, setVisibleColumns] = useState<Record<string, boolean>>({
+    sport: true, platform: true, published: true, externalId: false,
+    account: false, entity: false, format: false, tags: true,
+  });
+  function toggleColumn(key: string) {
+    setVisibleColumns((prev) => ({ ...prev, [key]: !prev[key] }));
+  }
+  const TABLE_COLS = [
+    { key: "sport", label: "Esport" }, { key: "platform", label: "Plataforma" },
+    { key: "published", label: "Data publicació" }, { key: "externalId", label: "ID Extern" },
+    { key: "account", label: "@Compte" }, { key: "entity", label: "Entitat" },
+    { key: "format", label: "Format" }, { key: "tags", label: "Etiquetes" },
+  ];
 
   // Tax options for filters (slug-based)
   const [sportOpts, setSportOpts] = useState<FilterOption[]>([]);
@@ -2235,6 +2310,7 @@ export default function ContentIdeasPage() {
   }>({ sports: [], entities: [], formats: [], platforms: [], competitions: [], classifications: [], contentCategories: [] });
 
   const searchRef = useRef<NodeJS.Timeout | null>(null);
+  const scrollLastY = useRef(0);
 
   useEffect(() => {
     async function loadOpts() {
@@ -2330,7 +2406,7 @@ export default function ContentIdeasPage() {
   function setPendingField(key: keyof Filters, val: string) {
     const next = { ...pending, [key]: val };
     setPending(next);
-    if (["sport", "entity", "competition", "club", "format", "platform"].includes(key)) {
+    if (["sport", "entity", "competition", "club", "format", "platform", "dateFrom", "dateTo"].includes(key)) {
       setFilters(next);
       setPage(1);
     }
@@ -2371,6 +2447,7 @@ export default function ContentIdeasPage() {
     if (filters.externalId) params.set("externalId", filters.externalId);
     if (filters.dateFrom) params.set("dateFrom", filters.dateFrom);
     if (filters.dateTo) params.set("dateTo", filters.dateTo);
+    if (filters.incompleteOnly) params.set("incomplete", "1");
     const res = await fetch(`/api/admin/publications?${params}`);
     const data = await res.json();
     setSelected(new Set((data.publications ?? []).map((p: Publication) => p.id)));
@@ -2379,6 +2456,7 @@ export default function ContentIdeasPage() {
 
 
   const hasActiveFilter = Object.values(filters).some(Boolean);
+  const activeFilterCount = Object.values(filters).filter(Boolean).length;
 
   function formatDate(d: string | null) {
     if (!d) return "—";
@@ -2397,6 +2475,7 @@ export default function ContentIdeasPage() {
     if (filters.externalId) params.set("externalId", filters.externalId);
     if (filters.dateFrom) params.set("dateFrom", filters.dateFrom);
     if (filters.dateTo) params.set("dateTo", filters.dateTo);
+    if (filters.incompleteOnly) params.set("incomplete", "1");
 
     const res = await fetch(`/api/admin/publications?${params}`);
     const data = await res.json();
@@ -2419,45 +2498,124 @@ export default function ContentIdeasPage() {
   return (
     <div className="flex flex-col h-screen overflow-hidden" style={{ background: "var(--bg-primary)" }}>
       {/* Header */}
-      <div className="px-4 md:px-8 pt-5 md:pt-7 pb-3 md:pb-4 shrink-0">
-        <div className="flex flex-wrap items-start justify-between gap-3 mb-1">
+      <div className="px-4 md:px-8 pt-4 md:pt-7 pb-3 md:pb-4 shrink-0">
+        {/* Mobile header row */}
+        <div className="flex items-center justify-between gap-2 md:hidden mb-3">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-lg font-bold leading-tight" style={{ color: "var(--text-primary)" }}>Content</h1>
+            <p className="text-xs" style={{ color: "var(--text-muted)" }}>~{total.toLocaleString()} resultats</p>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            {/* Mobile filter button */}
+            <button
+              onClick={() => setShowMobileFilters(true)}
+              className="relative flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold"
+              style={{ background: hasActiveFilter ? "var(--color-charcoal)" : "var(--bg-input)", color: hasActiveFilter ? "#fff" : "var(--text-secondary)", border: "1px solid var(--border-color)" }}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+              </svg>
+              Filtres
+              {activeFilterCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 flex items-center justify-center w-4 h-4 rounded-full text-[9px] font-black" style={{ background: "#F5C542", color: "#0D1421" }}>
+                  {activeFilterCount}
+                </span>
+              )}
+            </button>
+            {/* Mobile add button */}
+            <button
+              onClick={() => setShowAddByUrl(true)}
+              className="flex items-center justify-center rounded-xl"
+              style={{ width: 36, height: 36, background: "var(--selected-bg)", color: "var(--selected-text)", flexShrink: 0 }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile search bar — always visible */}
+        <div className="relative md:hidden mb-3">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+            className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "var(--text-muted)" }}>
+            <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+          </svg>
+          <input
+            type="text"
+            value={pending.search}
+            onChange={(e) => onSearchInput(e.target.value)}
+            placeholder="Cerca per títol..."
+            className="w-full pl-9 pr-4 py-2.5 rounded-xl text-sm outline-none"
+            style={{ background: "var(--bg-input)", border: `1px solid ${pending.search ? "var(--color-charcoal)" : "var(--border-color)"}`, color: "var(--text-primary)" }}
+          />
+          {pending.search && (
+            <button
+              onClick={() => onSearchInput("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2"
+              style={{ color: "var(--text-muted)" }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          )}
+        </div>
+
+        {/* Mobile quick filter chips */}
+        <div className="flex items-center gap-2 mb-1 md:hidden overflow-x-auto scrollbar-none pb-1">
+          <button
+            onClick={() => {
+              const next = { ...pending, incompleteOnly: !pending.incompleteOnly };
+              setPending(next); setFilters(next); setPage(1);
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 transition-all"
+            style={{
+              background: pending.incompleteOnly ? "rgba(245,158,11,0.15)" : "var(--bg-input)",
+              color: pending.incompleteOnly ? "#f59e0b" : "var(--text-muted)",
+              border: `1px solid ${pending.incompleteOnly ? "rgba(245,158,11,0.4)" : "var(--border-color)"}`,
+            }}
+          >
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            Incomplets
+          </button>
+          {hasActiveFilter && (
+            <button
+              onClick={clearFilters}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap shrink-0"
+              style={{ background: "rgba(239,68,68,0.1)", color: "#ef4444", border: "1px solid rgba(239,68,68,0.3)" }}
+            >
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              Netejar
+            </button>
+          )}
+        </div>
+
+        {/* Desktop header row */}
+        <div className="hidden md:flex flex-wrap items-start justify-between gap-3 mb-1">
           <div>
             <h1 className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>Content Ideas</h1>
-            <div className="flex items-center gap-3 mt-0.5">
-              <p className="text-sm" style={{ color: "var(--text-muted)" }}>
-                ~{total.toLocaleString()} resultats
-              </p>
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  if (jumpDate) {
-                    setPendingField("dateTo", jumpDate);
-                    setFilters((f) => ({ ...f, dateTo: jumpDate }));
-                  }
-                }}
-                className="flex items-center gap-1"
-              >
-                <input
-                  type="date"
-                  value={jumpDate}
-                  onChange={(e) => setJumpDate(e.target.value)}
-                  className="text-xs px-2 py-1 rounded"
-                  style={{ background: "var(--bg-input)", color: "var(--text-primary)", border: "1px solid var(--border-color)" }}
-                  title="Saltar a una data"
-                />
-                {jumpDate && (
-                  <button
-                    type="button"
-                    onClick={() => { setJumpDate(""); setFilters((f) => ({ ...f, dateTo: "" })); setPending((p) => ({ ...p, dateTo: "" })); }}
-                    className="text-xs px-1.5 py-1 rounded"
-                    style={{ color: "var(--text-muted)", border: "1px solid var(--border-color)" }}
-                    title="Treure filtre de data"
-                  >✕</button>
-                )}
-              </form>
-            </div>
+            <p className="text-sm mt-0.5" style={{ color: "var(--text-muted)" }}>
+              ~{total.toLocaleString()} resultats
+            </p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
+            {/* Collapse filters toggle */}
+            <button
+              onClick={() => setShowFilters(v => !v)}
+              title={showFilters ? "Amagar filtres" : "Mostrar filtres"}
+              className="flex items-center justify-center rounded-lg transition-all hover:opacity-80"
+              style={{ width: 34, height: 34, background: showFilters ? "var(--color-charcoal)" : "var(--bg-input)", color: showFilters ? "#fff" : "var(--text-muted)", border: "1px solid var(--border-color)" }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                {showFilters
+                  ? <path d="M18 15l-6-6-6 6"/>
+                  : <path d="M6 9l6 6 6-6"/>}
+              </svg>
+            </button>
             {/* View mode toggle */}
             <div className="flex rounded-lg overflow-hidden" style={{ border: "1px solid var(--border-color)" }}>
               <button
@@ -2483,6 +2641,37 @@ export default function ContentIdeasPage() {
                 </svg>
               </button>
             </div>
+            {/* Columns toggle */}
+            <div className="relative">
+              <button
+                onClick={() => setShowColumnsMenu((v) => !v)}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold"
+                style={{ background: showColumnsMenu ? "var(--color-charcoal,#D4A420)" : "var(--bg-input)", color: showColumnsMenu ? "#fff" : "var(--text-secondary)", border: "1px solid var(--border-color)" }}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 3H4a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h8M12 3h8a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1h-8M12 3v18"/>
+                  <path d="M9 7H6m3 4H6m3 4H6"/>
+                </svg>
+                Columnes
+              </button>
+              {showColumnsMenu && (
+                <>
+                  <div className="fixed inset-0 z-30" onClick={() => setShowColumnsMenu(false)} />
+                  <div className="absolute right-0 top-full mt-1 z-40 rounded-xl py-2 w-52 shadow-2xl"
+                    style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}>
+                    <p className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: "var(--text-muted)" }}>Columnes de la taula</p>
+                    {TABLE_COLS.map(({ key, label }) => (
+                      <label key={key} className="flex items-center gap-2.5 px-3 py-1.5 hover:bg-white/5 cursor-pointer">
+                        <input type="checkbox" checked={!!visibleColumns[key]} onChange={() => toggleColumn(key)}
+                          className="rounded w-3.5 h-3.5" />
+                        <span className="text-xs" style={{ color: "var(--text-primary)" }}>{label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+
             <button
               onClick={() => setShowAddByUrl(true)}
               className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold"
@@ -2511,51 +2700,177 @@ export default function ContentIdeasPage() {
           </div>
         </div>
 
-        {/* Filter rows */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 mt-3 md:mt-4">
-          <FilterSelect label="Sport" value={pending.sport} options={sportOpts} onChange={(v) => setPendingField("sport", v)} multi />
-          <FilterSelect label="Entity" value={pending.entity} options={entityOpts} onChange={(v) => setPendingField("entity", v)} multi />
-          <FilterSelect label="Competition" value={pending.competition} options={compOpts} onChange={(v) => setPendingField("competition", v)} multi />
-          <FilterSelect label="Club" value={pending.club} options={clubOpts} onChange={(v) => setPendingField("club", v)} multi />
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 mt-2 md:mt-3">
-          <FilterSelect label="Format" value={pending.format} options={formatOpts} onChange={(v) => setPendingField("format", v)} multi />
-          <FilterSelect label="Platform" value={pending.platform} options={platformOpts} onChange={(v) => setPendingField("platform", v)} multi />
-          <div>
-            <div className="text-[10px] font-semibold uppercase tracking-wide mb-1.5" style={{ color: "var(--text-muted)" }}>Search</div>
-            <input
-              type="text"
-              value={pending.search}
-              onChange={(e) => onSearchInput(e.target.value)}
-              placeholder="Search by title..."
-              className="w-full px-3 py-2 rounded-lg text-sm outline-none"
-              style={{ background: "var(--bg-input)", border: `1px solid ${pending.search ? "var(--color-charcoal)" : "var(--border-color)"}`, color: "var(--text-primary)" }}
-            />
+        {/* Desktop quick filters + collapsible filter rows */}
+        <div className="hidden md:block">
+          <div className="flex items-center gap-2 mt-3">
+            <button
+              onClick={() => {
+                const next = { ...pending, incompleteOnly: !pending.incompleteOnly };
+                setPending(next);
+                setFilters(next);
+                setPage(1);
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all"
+              style={{
+                background: pending.incompleteOnly ? "rgba(245,158,11,0.15)" : "var(--bg-input)",
+                color: pending.incompleteOnly ? "#f59e0b" : "var(--text-muted)",
+                border: `1px solid ${pending.incompleteOnly ? "rgba(245,158,11,0.4)" : "var(--border-color)"}`,
+              }}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+              Informació incompleta
+            </button>
           </div>
-          <div>
-            <div className="text-[10px] font-semibold uppercase tracking-wide mb-1.5" style={{ color: "var(--text-muted)" }}>External ID</div>
-            <input
-              type="text"
-              value={pending.externalId}
-              onChange={(e) => { setPendingField("externalId", e.target.value); }}
-              onKeyDown={(e) => { if (e.key === "Enter") applyFilters(); }}
-              placeholder="Filter by ID..."
-              className="w-full px-3 py-2 rounded-lg text-sm outline-none"
-              style={{ background: "var(--bg-input)", border: `1px solid ${pending.externalId ? "var(--color-charcoal)" : "var(--border-color)"}`, color: "var(--text-primary)" }}
-            />
-          </div>
-        </div>
-        <div className="mt-3">
-          <AdminDateRangePicker
-            from={pending.dateFrom}
-            to={pending.dateTo}
-            onChange={(from, to) => { setPendingField("dateFrom", from); setPendingField("dateTo", to); }}
-          />
+          {showFilters && (
+            <>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 mt-3 md:mt-4">
+                <FilterSelect label="Sport" value={pending.sport} options={sportOpts} onChange={(v) => setPendingField("sport", v)} multi />
+                <FilterSelect label="Entity" value={pending.entity} options={entityOpts} onChange={(v) => setPendingField("entity", v)} multi />
+                <FilterSelect label="Competition" value={pending.competition} options={compOpts} onChange={(v) => setPendingField("competition", v)} multi />
+                <FilterSelect label="Club" value={pending.club} options={clubOpts} onChange={(v) => setPendingField("club", v)} multi />
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 mt-2 md:mt-3">
+                <FilterSelect label="Format" value={pending.format} options={formatOpts} onChange={(v) => setPendingField("format", v)} multi />
+                <FilterSelect label="Platform" value={pending.platform} options={platformOpts} onChange={(v) => setPendingField("platform", v)} multi />
+                <div>
+                  <div className="text-[10px] font-semibold uppercase tracking-wide mb-1.5" style={{ color: "var(--text-muted)" }}>Search</div>
+                  <input type="text" value={pending.search} onChange={(e) => onSearchInput(e.target.value)} placeholder="Search by title..."
+                    className="w-full px-3 py-2 rounded-lg text-sm outline-none"
+                    style={{ background: "var(--bg-input)", border: `1px solid ${pending.search ? "var(--color-charcoal)" : "var(--border-color)"}`, color: "var(--text-primary)" }} />
+                </div>
+                <div>
+                  <div className="text-[10px] font-semibold uppercase tracking-wide mb-1.5" style={{ color: "var(--text-muted)" }}>External ID</div>
+                  <input type="text" value={pending.externalId} onChange={(e) => { setPendingField("externalId", e.target.value); }}
+                    onKeyDown={(e) => { if (e.key === "Enter") applyFilters(); }} placeholder="Filter by ID..."
+                    className="w-full px-3 py-2 rounded-lg text-sm outline-none"
+                    style={{ background: "var(--bg-input)", border: `1px solid ${pending.externalId ? "var(--color-charcoal)" : "var(--border-color)"}`, color: "var(--text-primary)" }} />
+                </div>
+              </div>
+              <div className="mt-3">
+                <AdminDateRangePicker
+                  from={pending.dateFrom}
+                  to={pending.dateTo}
+                  onChange={(from, to) => {
+                    const next = { ...pending, dateFrom: from, dateTo: to };
+                    setPending(next);
+                    setFilters(next);
+                    setPage(1);
+                  }}
+                />
+              </div>
+            </>
+          )}
         </div>
       </div>
 
+      {/* Mobile filter bottom sheet */}
+      {showMobileFilters && (
+        <>
+          <div
+            className="md:hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowMobileFilters(false)}
+          />
+          <div
+            className="md:hidden fixed bottom-0 left-0 right-0 z-50 rounded-t-3xl overflow-hidden flex flex-col"
+            style={{ background: "var(--bg-card)", maxHeight: "85dvh", border: "1px solid var(--border-color)" }}
+          >
+            {/* Sheet header */}
+            <div className="flex items-center justify-between px-5 py-4 shrink-0" style={{ borderBottom: "1px solid var(--border-color)" }}>
+              <span className="text-base font-bold" style={{ color: "var(--text-primary)" }}>Filtres</span>
+              <div className="flex items-center gap-2">
+                {hasActiveFilter && (
+                  <button
+                    onClick={() => { clearFilters(); setShowMobileFilters(false); }}
+                    className="text-xs font-semibold px-3 py-1.5 rounded-full"
+                    style={{ background: "rgba(239,68,68,0.12)", color: "#ef4444" }}
+                  >
+                    Netejar tot
+                  </button>
+                )}
+                <button onClick={() => setShowMobileFilters(false)} style={{ color: "var(--text-muted)" }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            {/* Sheet body */}
+            <div className="overflow-y-auto flex-1 px-5 py-4 space-y-4">
+              {/* Incomplete toggle */}
+              <button
+                onClick={() => {
+                  const next = { ...pending, incompleteOnly: !pending.incompleteOnly };
+                  setPending(next); setFilters(next); setPage(1);
+                }}
+                className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold"
+                style={{
+                  background: pending.incompleteOnly ? "rgba(245,158,11,0.12)" : "var(--bg-input)",
+                  color: pending.incompleteOnly ? "#f59e0b" : "var(--text-primary)",
+                  border: `1px solid ${pending.incompleteOnly ? "rgba(245,158,11,0.4)" : "var(--border-color)"}`,
+                }}
+              >
+                <span className="flex items-center gap-2">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                  </svg>
+                  Informació incompleta
+                </span>
+                <div style={{ width: 20, height: 20, borderRadius: 10, background: pending.incompleteOnly ? "#f59e0b" : "var(--border-color)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  {pending.incompleteOnly && <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
+                </div>
+              </button>
+              <FilterSelect label="Sport" value={pending.sport} options={sportOpts} onChange={(v) => setPendingField("sport", v)} multi />
+              <FilterSelect label="Platform" value={pending.platform} options={platformOpts} onChange={(v) => setPendingField("platform", v)} multi />
+              <FilterSelect label="Entity" value={pending.entity} options={entityOpts} onChange={(v) => setPendingField("entity", v)} multi />
+              <FilterSelect label="Competition" value={pending.competition} options={compOpts} onChange={(v) => setPendingField("competition", v)} multi />
+              <FilterSelect label="Club" value={pending.club} options={clubOpts} onChange={(v) => setPendingField("club", v)} multi />
+              <FilterSelect label="Format" value={pending.format} options={formatOpts} onChange={(v) => setPendingField("format", v)} multi />
+              <div>
+                <div className="text-[10px] font-semibold uppercase tracking-wide mb-1.5" style={{ color: "var(--text-muted)" }}>External ID</div>
+                <input type="text" value={pending.externalId} onChange={(e) => setPendingField("externalId", e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") applyFilters(); }} placeholder="Filter by ID..."
+                  className="w-full px-3 py-2.5 rounded-xl text-sm outline-none"
+                  style={{ background: "var(--bg-input)", border: `1px solid ${pending.externalId ? "var(--color-charcoal)" : "var(--border-color)"}`, color: "var(--text-primary)" }} />
+              </div>
+              <AdminDateRangePicker
+                from={pending.dateFrom}
+                to={pending.dateTo}
+                onChange={(from, to) => {
+                  const next = { ...pending, dateFrom: from, dateTo: to };
+                  setPending(next); setFilters(next); setPage(1);
+                }}
+              />
+            </div>
+            {/* Sheet footer CTA */}
+            <div className="shrink-0 px-5 py-4" style={{ borderTop: "1px solid var(--border-color)" }}>
+              <button
+                onClick={() => setShowMobileFilters(false)}
+                className="w-full py-3.5 rounded-2xl text-sm font-bold"
+                style={{ background: "var(--selected-bg)", color: "var(--selected-text)" }}
+              >
+                Veure {total.toLocaleString()} resultats
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
       {/* Content: List or Grid */}
-      <div className="flex-1 overflow-auto px-4 md:px-8 pb-4">
+      <div
+        className="flex-1 overflow-auto px-4 md:px-8 pb-4"
+        onScroll={(e) => {
+          const y = e.currentTarget.scrollTop;
+          const delta = y - scrollLastY.current;
+          if (Math.abs(delta) > 4) {
+            window.dispatchEvent(new CustomEvent("admin-nav-scroll", { detail: { down: delta > 0 && y > 60 } }));
+            scrollLastY.current = y;
+          }
+        }}
+      >
         {viewMode === "list" && (
           <div className="overflow-x-auto -mx-1">
           <table className="w-full text-sm border-collapse" style={{ minWidth: 680 }}>
@@ -2569,19 +2884,20 @@ export default function ContentIdeasPage() {
                     className="rounded"
                   />
                 </th>
-                {["TITLE", "ID", "PUBLISHED", "SPORT", "PLATFORM", "TAGS", "ACTIONS"].map((h) => (
-                  <th
-                    key={h}
-                    className="py-3 text-left text-[11px] font-semibold uppercase tracking-wider pr-4"
-                    style={{ color: "var(--text-muted)" }}
-                  >
-                    {h}
-                  </th>
-                ))}
+                <th className="py-3 text-left text-[11px] font-semibold uppercase tracking-wider pr-4" style={{ color: "var(--text-muted)" }}>TÍTOL</th>
+                {visibleColumns.externalId && <th className="py-3 text-left text-[11px] font-semibold uppercase tracking-wider pr-4" style={{ color: "var(--text-muted)" }}>ID</th>}
+                {visibleColumns.published && <th className="py-3 text-left text-[11px] font-semibold uppercase tracking-wider pr-4" style={{ color: "var(--text-muted)" }}>PUBLICAT</th>}
+                {visibleColumns.sport && <th className="py-3 text-left text-[11px] font-semibold uppercase tracking-wider pr-4" style={{ color: "var(--text-muted)" }}>ESPORT</th>}
+                {visibleColumns.platform && <th className="py-3 text-left text-[11px] font-semibold uppercase tracking-wider pr-4" style={{ color: "var(--text-muted)" }}>PLATAFORMA</th>}
+                {visibleColumns.account && <th className="py-3 text-left text-[11px] font-semibold uppercase tracking-wider pr-4" style={{ color: "var(--text-muted)" }}>@COMPTE</th>}
+                {visibleColumns.entity && <th className="py-3 text-left text-[11px] font-semibold uppercase tracking-wider pr-4" style={{ color: "var(--text-muted)" }}>ENTITAT</th>}
+                {visibleColumns.format && <th className="py-3 text-left text-[11px] font-semibold uppercase tracking-wider pr-4" style={{ color: "var(--text-muted)" }}>FORMAT</th>}
+                {visibleColumns.tags && <th className="py-3 text-left text-[11px] font-semibold uppercase tracking-wider pr-4" style={{ color: "var(--text-muted)" }}>ETIQUETES</th>}
+                <th className="py-3 text-left text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-muted)" }}>ACCIONS</th>
               </tr>
               {selected.size > 0 && selected.size === pubs.length && pubs.length < total && !allMatchingSelected && (
                 <tr>
-                  <td colSpan={8} className="py-2 text-center text-xs" style={{ background: "var(--color-charcoal-subtle)", color: "var(--text-primary)" }}>
+                  <td colSpan={2 + Object.values(visibleColumns).filter(Boolean).length} className="py-2 text-center text-xs" style={{ background: "var(--color-charcoal-subtle)", color: "var(--text-primary)" }}>
                     {pubs.length} items d&apos;aquesta pàgina seleccionats.{" "}
                     <button onClick={selectAllMatching} className="font-semibold underline" style={{ color: "var(--color-charcoal)" }}>
                       Seleccionar els {total.toLocaleString()} resultats
@@ -2591,7 +2907,7 @@ export default function ContentIdeasPage() {
               )}
               {allMatchingSelected && (
                 <tr>
-                  <td colSpan={8} className="py-2 text-center text-xs" style={{ background: "var(--color-charcoal-subtle)", color: "var(--text-primary)" }}>
+                  <td colSpan={2 + Object.values(visibleColumns).filter(Boolean).length} className="py-2 text-center text-xs" style={{ background: "var(--color-charcoal-subtle)", color: "var(--text-primary)" }}>
                     Tots els {selected.size.toLocaleString()} resultats seleccionats.{" "}
                     <button onClick={() => { setSelected(new Set()); setAllMatchingSelected(false); }} className="font-semibold underline" style={{ color: "var(--color-charcoal)" }}>
                       Desseleccionar tot
@@ -2603,13 +2919,13 @@ export default function ContentIdeasPage() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={8} className="py-16 text-center text-sm" style={{ color: "var(--text-muted)" }}>
+                  <td colSpan={2 + Object.values(visibleColumns).filter(Boolean).length} className="py-16 text-center text-sm" style={{ color: "var(--text-muted)" }}>
                     Loading...
                   </td>
                 </tr>
               ) : pubs.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="py-16 text-center text-sm" style={{ color: "var(--text-muted)" }}>
+                  <td colSpan={2 + Object.values(visibleColumns).filter(Boolean).length} className="py-16 text-center text-sm" style={{ color: "var(--text-muted)" }}>
                     No results
                   </td>
                 </tr>
@@ -2625,27 +2941,51 @@ export default function ContentIdeasPage() {
                       <input type="checkbox" checked={selected.has(pub.id)} onChange={() => toggleSelect(pub.id)} />
                     </td>
                     <td className="py-3 pr-4 max-w-xs">
-                      <div className="flex items-center gap-1.5">
-                        {(!pub.sport || !pub.accountUsername || !pub.entityName) && (
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2.2" title="Informació incompleta" style={{ flexShrink: 0 }}>
-                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                            <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-                          </svg>
-                        )}
+                      <div className="flex flex-col gap-1">
                         <span className="block truncate text-sm" style={{ color: "var(--text-primary)" }} title={pub.rawTitle ?? pub.entityName ?? ""}>
                           {pub.rawTitle
                             ? (pub.rawTitle.length > 60 ? pub.rawTitle.slice(0, 60) + " ..." : pub.rawTitle)
                             : <span style={{ color: "var(--text-muted)" }}>—</span>}
                         </span>
+                        {(!pub.sport || !pub.accountUsername || !pub.entityName) && (
+                          <div className="flex items-center gap-1 flex-wrap">
+                            {!pub.sport && (
+                              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-semibold"
+                                style={{ background: "rgba(245,158,11,0.15)", color: "#f59e0b", border: "1px solid rgba(245,158,11,0.3)" }}>
+                                <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                Sense esport
+                              </span>
+                            )}
+                            {!pub.accountUsername && (
+                              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-semibold"
+                                style={{ background: "rgba(245,158,11,0.15)", color: "#f59e0b", border: "1px solid rgba(245,158,11,0.3)" }}>
+                                <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                Sense compte
+                              </span>
+                            )}
+                            {!pub.entityName && (
+                              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-semibold"
+                                style={{ background: "rgba(245,158,11,0.15)", color: "#f59e0b", border: "1px solid rgba(245,158,11,0.3)" }}>
+                                <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                Sense entitat
+                              </span>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </td>
-                    <td className="py-3 pr-4 font-mono text-xs" style={{ color: "var(--text-muted)" }}>{pub.externalPostId}</td>
-                    <td className="py-3 pr-4 text-xs whitespace-nowrap" style={{ color: "var(--text-secondary)" }}>{formatDate(pub.publishedAt)}</td>
-                    <td className="py-3 pr-4 text-xs" style={{ color: "var(--text-secondary)" }}>{pub.sport ?? <span style={{ color: "var(--text-muted)" }}>—</span>}</td>
-                    <td className="py-3 pr-4 text-xs" style={{ color: "var(--text-secondary)" }}>{pub.platform}</td>
-                    <td className="py-3 pr-4" onClick={(e) => e.stopPropagation()}>
-                      <QuickClassRow pub={pub} classOptions={taxForDrawer.classifications} />
-                    </td>
+                    {visibleColumns.externalId && <td className="py-3 pr-4 font-mono text-xs" style={{ color: "var(--text-muted)" }}>{pub.externalPostId}</td>}
+                    {visibleColumns.published && <td className="py-3 pr-4 text-xs whitespace-nowrap" style={{ color: "var(--text-secondary)" }}>{formatDate(pub.publishedAt)}</td>}
+                    {visibleColumns.sport && <td className="py-3 pr-4 text-xs" style={{ color: "var(--text-secondary)" }}>{pub.sport ?? <span style={{ color: "var(--text-muted)" }}>—</span>}</td>}
+                    {visibleColumns.platform && <td className="py-3 pr-4 text-xs" style={{ color: "var(--text-secondary)" }}>{pub.platform ?? <span style={{ color: "var(--text-muted)" }}>—</span>}</td>}
+                    {visibleColumns.account && <td className="py-3 pr-4 text-xs" style={{ color: "var(--text-secondary)" }}>{pub.accountUsername ? `@${pub.accountUsername}` : <span style={{ color: "var(--text-muted)" }}>—</span>}</td>}
+                    {visibleColumns.entity && <td className="py-3 pr-4 text-xs" style={{ color: "var(--text-secondary)" }}>{pub.entityName ?? <span style={{ color: "var(--text-muted)" }}>—</span>}</td>}
+                    {visibleColumns.format && <td className="py-3 pr-4 text-xs" style={{ color: "var(--text-secondary)" }}>{pub.format ?? <span style={{ color: "var(--text-muted)" }}>—</span>}</td>}
+                    {visibleColumns.tags && (
+                      <td className="py-3 pr-4" onClick={(e) => e.stopPropagation()}>
+                        <QuickClassRow pub={pub} classOptions={taxForDrawer.classifications} />
+                      </td>
+                    )}
                     <td className="py-3" onClick={(e) => e.stopPropagation()}>
                       <a href={pub.canonicalUrl} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded transition-all hover:opacity-70 inline-flex" style={{ color: "var(--text-muted)" }}>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -2662,24 +3002,54 @@ export default function ContentIdeasPage() {
           </div>
         )}
         {viewMode !== "list" && (
-          loading ? (
-            <div className="py-16 text-center text-sm" style={{ color: "var(--text-muted)" }}>Loading...</div>
-          ) : pubs.length === 0 ? (
-            <div className="py-16 text-center text-sm" style={{ color: "var(--text-muted)" }}>No results</div>
-          ) : (
-            <div className="grid gap-3 pt-2" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))" }}>
-              {pubs.map((pub) => (
-                <AdminCard
-                  key={pub.id}
-                  pub={pub}
-                  onOpen={() => openReview(pub.id)}
-                  classOptions={taxForDrawer.classifications}
-                  isSelected={selected.has(pub.id)}
-                  onSelect={toggleSelect}
+          <>
+            {/* Select-all bar for grid view */}
+            {pubs.length > 0 && !loading && (
+              <div className="flex items-center gap-3 py-2 mb-1 px-1">
+                <input
+                  type="checkbox"
+                  checked={selected.size === pubs.length && pubs.length > 0}
+                  onChange={toggleAll}
+                  className="rounded w-4 h-4"
+                  style={{ accentColor: "var(--color-charcoal,#D4A420)" }}
                 />
-              ))}
-            </div>
-          )
+                <span className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>
+                  {selected.size > 0
+                    ? `${selected.size.toLocaleString()} seleccionad${selected.size === 1 ? "a" : "es"}`
+                    : "Seleccionar tots"}
+                </span>
+                {selected.size > 0 && selected.size === pubs.length && pubs.length < total && !allMatchingSelected && (
+                  <button onClick={selectAllMatching} className="text-xs font-semibold underline" style={{ color: "var(--color-charcoal,#D4A420)" }}>
+                    Seleccionar els {total.toLocaleString()} resultats
+                  </button>
+                )}
+                {allMatchingSelected && (
+                  <button onClick={() => { setSelected(new Set()); setAllMatchingSelected(false); }} className="text-xs font-semibold underline" style={{ color: "var(--color-charcoal,#D4A420)" }}>
+                    Desseleccionar tot ({selected.size.toLocaleString()})
+                  </button>
+                )}
+              </div>
+            )}
+            {loading ? (
+              <div className="py-16 text-center text-sm" style={{ color: "var(--text-muted)" }}>Loading...</div>
+            ) : pubs.length === 0 ? (
+              <div className="py-16 text-center text-sm" style={{ color: "var(--text-muted)" }}>No results</div>
+            ) : (
+              <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(min(260px, 100%), 1fr))" }}>
+                {pubs.map((pub) => (
+                  <AdminCard
+                    key={pub.id}
+                    pub={pub}
+                    onOpen={() => openReview(pub.id)}
+                    classOptions={taxForDrawer.classifications}
+                    isSelected={selected.has(pub.id)}
+                    onSelect={toggleSelect}
+                    onDelete={(id) => setPubs((prev) => prev.filter((p) => p.id !== id))}
+                  />
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -2709,11 +3079,12 @@ export default function ContentIdeasPage() {
         </div>
       )}
 
-      {/* Bulk action bar */}
-      <BulkActionBar
+      {/* Bulk edit panel */}
+      <BulkEditPanel
         selected={selected}
         onClear={() => { setSelected(new Set()); setAllMatchingSelected(false); }}
         onDone={() => { setPage(1); fetchPubs(filters, 1); }}
+        onSelectAll={toggleAll}
         taxOptions={taxForDrawer}
       />
 

@@ -108,10 +108,41 @@ export default function FiltersPage() {
   const isReadOnly = selected === "club";
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ background: "var(--bg-primary)" }}>
-      {/* Left: categories */}
+    <div className="flex flex-col md:flex-row h-screen overflow-hidden" style={{ background: "var(--bg-primary)" }}>
+
+      {/* ── Mobile: category chip row ── */}
       <div
-        className="w-56 shrink-0 flex flex-col overflow-y-auto"
+        className="md:hidden shrink-0 flex items-center gap-2 px-4 py-3 overflow-x-auto"
+        style={{ borderBottom: "1px solid var(--border-color)", background: "var(--bg-secondary)", scrollbarWidth: "none" }}
+      >
+        {categories.map((cat) => (
+          <button
+            key={cat.key}
+            onClick={() => setSelected(cat.key)}
+            className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all"
+            style={{
+              background: selected === cat.key ? "var(--color-charcoal)" : "var(--bg-input)",
+              color: selected === cat.key ? "#fff" : "var(--text-secondary)",
+              border: `1px solid ${selected === cat.key ? "transparent" : "var(--border-color)"}`,
+            }}
+          >
+            {cat.label}
+            <span
+              className="px-1 py-0.5 rounded text-[10px]"
+              style={{
+                background: selected === cat.key ? "rgba(255,255,255,0.2)" : "var(--bg-primary)",
+                color: selected === cat.key ? "#fff" : "var(--text-muted)",
+              }}
+            >
+              {cat.count}
+            </span>
+          </button>
+        ))}
+      </div>
+
+      {/* ── Desktop: left sidebar ── */}
+      <div
+        className="hidden md:flex w-56 shrink-0 flex-col overflow-y-auto"
         style={{ borderRight: "1px solid var(--border-color)", background: "var(--bg-secondary)" }}
       >
         <div className="px-5 py-5 shrink-0" style={{ borderBottom: "1px solid var(--border-color)" }}>
@@ -145,55 +176,53 @@ export default function FiltersPage() {
         </nav>
       </div>
 
-      {/* Right: values */}
+      {/* ── Right / main content ── */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <div className="px-8 py-6 shrink-0" style={{ borderBottom: "1px solid var(--border-color)" }}>
-          <div className="flex items-start justify-between">
-            <div>
-              <h1 className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>
-                Filters
-              </h1>
-              <p className="text-sm mt-0.5" style={{ color: "var(--text-muted)" }}>
-                Manage catalog values for all filter categories
-              </p>
-            </div>
-          </div>
+        {/* Desktop header */}
+        <div className="hidden md:block px-8 py-6 shrink-0" style={{ borderBottom: "1px solid var(--border-color)" }}>
+          <h1 className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>Filters</h1>
+          <p className="text-sm mt-0.5" style={{ color: "var(--text-muted)" }}>Manage catalog values for all filter categories</p>
         </div>
 
-        <div className="flex-1 overflow-auto px-8 py-6">
-          {/* Category title row */}
-          <div className="flex items-center justify-between mb-5">
-            <div className="flex items-center gap-3">
-              <h2 className="text-base font-bold" style={{ color: "var(--text-primary)" }}>
+        <div className="flex-1 overflow-auto px-4 md:px-8 py-4 md:py-6">
+          {/* Category title + search */}
+          <div className="flex items-center gap-3 mb-4">
+            <div className="flex-1 min-w-0">
+              <h2 className="text-base font-bold truncate" style={{ color: "var(--text-primary)" }}>
                 {selCat?.label}
               </h2>
               {!loadingValues && (
-                <span className="text-sm" style={{ color: "var(--text-muted)" }}>
-                  {values.length} values · {totalIdeas.toLocaleString()} linked content ideas
-                </span>
+                <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
+                  {values.length} valors · {totalIdeas.toLocaleString()} continguts
+                </p>
               )}
             </div>
-            {/* Search values */}
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Filter values..."
-              className="px-3 py-2 rounded-lg text-sm outline-none"
-              style={{
-                width: 220,
-                background: "var(--bg-input)",
-                border: "1px solid var(--border-color)",
-                color: "var(--text-primary)",
-              }}
-            />
+            {/* Search */}
+            <div className="relative shrink-0">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "var(--text-muted)" }}>
+                <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+              </svg>
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Cerca..."
+                className="pl-8 pr-3 py-2 rounded-lg text-sm outline-none"
+                style={{
+                  width: 150,
+                  background: "var(--bg-input)",
+                  border: "1px solid var(--border-color)",
+                  color: "var(--text-primary)",
+                }}
+              />
+            </div>
           </div>
 
           {/* Add new value */}
           {!isReadOnly && (
             <div
-              className="flex items-center gap-3 mb-5 p-4 rounded-xl"
+              className="flex items-center gap-2 mb-4 p-3 rounded-xl"
               style={{ background: "var(--bg-secondary)", border: "1px solid var(--border-color)" }}
             >
               <input
@@ -201,8 +230,8 @@ export default function FiltersPage() {
                 value={newName}
                 onChange={(e) => { setNewName(e.target.value); setAddError(""); }}
                 onKeyDown={(e) => { if (e.key === "Enter") handleAdd(); }}
-                placeholder={`Add new ${selCat?.label} value...`}
-                className="flex-1 px-3 py-2 rounded-lg text-sm outline-none"
+                placeholder={`Afegir ${selCat?.label}...`}
+                className="flex-1 px-3 py-2.5 rounded-lg text-sm outline-none"
                 style={{
                   background: "var(--bg-input)",
                   border: `1px solid ${addError ? "#ef4444" : "var(--border-color)"}`,
@@ -212,10 +241,18 @@ export default function FiltersPage() {
               <button
                 onClick={handleAdd}
                 disabled={adding || !newName.trim()}
-                className="px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-50"
-                style={{ background: "var(--selected-bg)", color: "var(--selected-text)" }}
+                className="flex items-center justify-center rounded-xl disabled:opacity-50"
+                style={{ width: 40, height: 40, background: "var(--selected-bg)", color: "var(--selected-text)", flexShrink: 0 }}
               >
-                {adding ? "Adding..." : "Add"}
+                {adding ? (
+                  <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                  </svg>
+                ) : (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                  </svg>
+                )}
               </button>
               {addError && <span className="text-xs" style={{ color: "#ef4444" }}>{addError}</span>}
             </div>
@@ -223,21 +260,22 @@ export default function FiltersPage() {
 
           {/* Values list */}
           {loadingValues ? (
-            <div className="py-16 text-center text-sm" style={{ color: "var(--text-muted)" }}>Loading...</div>
+            <div className="py-16 text-center text-sm" style={{ color: "var(--text-muted)" }}>
+              <svg className="animate-spin mx-auto mb-3" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+              </svg>
+              Carregant...
+            </div>
           ) : (
-            <div
-              className="rounded-xl overflow-hidden"
-              style={{ border: "1px solid var(--border-color)" }}
-            >
+            <div className="rounded-xl overflow-hidden" style={{ border: "1px solid var(--border-color)" }}>
               {filtered.map((val, i) => (
                 <div
                   key={val.id}
-                  className="flex items-center justify-between px-5 py-3 transition-colors hover:bg-white/5 group"
+                  className="flex items-center justify-between px-4 py-3 transition-colors hover:bg-white/5 group"
                   style={{ borderBottom: i < filtered.length - 1 ? "1px solid var(--border-color)" : "none" }}
                 >
                   {editingId === val.id ? (
-                    /* Inline edit mode */
-                    <div className="flex items-center gap-2 flex-1 mr-4">
+                    <div className="flex items-center gap-2 flex-1 mr-2">
                       <input
                         ref={editInputRef}
                         type="text"
@@ -250,33 +288,35 @@ export default function FiltersPage() {
                       <button
                         onClick={() => handleSaveEdit(val.id)}
                         disabled={savingId === val.id || !editingName.trim()}
-                        className="px-3 py-1.5 rounded-lg text-xs font-semibold disabled:opacity-50"
+                        className="px-3 py-1.5 rounded-lg text-xs font-semibold disabled:opacity-50 whitespace-nowrap"
                         style={{ background: "var(--selected-bg)", color: "var(--selected-text)" }}
                       >
-                        {savingId === val.id ? "…" : "Save"}
+                        {savingId === val.id ? "…" : "Desar"}
                       </button>
                       <button
                         onClick={cancelEdit}
-                        className="px-2.5 py-1.5 rounded-lg text-xs"
-                        style={{ background: "var(--bg-input)", color: "var(--text-muted)", border: "1px solid var(--border-color)" }}
+                        className="p-1.5 rounded-lg text-xs"
+                        style={{ color: "var(--text-muted)" }}
                       >
-                        Cancel
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
                       </button>
                     </div>
                   ) : (
-                    <span className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>{val.name}</span>
+                    <span className="text-sm font-medium flex-1 min-w-0 truncate pr-2" style={{ color: "var(--text-primary)" }}>{val.name}</span>
                   )}
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs mr-2" style={{ color: "var(--text-muted)" }}>
-                      {(val.count || 0).toLocaleString()} ideas
+                  <div className="flex items-center gap-1 shrink-0">
+                    <span className="text-xs px-2" style={{ color: "var(--text-muted)" }}>
+                      {(val.count || 0).toLocaleString()}
                     </span>
                     {!isReadOnly && editingId !== val.id && (
                       <>
                         <button
                           onClick={() => startEdit(val)}
-                          className="opacity-0 group-hover:opacity-100 p-1.5 rounded transition-all hover:opacity-70"
+                          className="md:opacity-0 md:group-hover:opacity-100 p-1.5 rounded-lg transition-all"
                           style={{ color: "var(--text-muted)" }}
-                          title="Rename"
+                          title="Renombrar"
                         >
                           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -286,14 +326,18 @@ export default function FiltersPage() {
                         <button
                           onClick={() => handleDelete(val.id)}
                           disabled={deletingId === val.id}
-                          className="opacity-0 group-hover:opacity-100 p-1.5 rounded transition-all hover:opacity-70 disabled:opacity-30"
+                          className="md:opacity-0 md:group-hover:opacity-100 p-1.5 rounded-lg transition-all disabled:opacity-30"
                           style={{ color: "#ef4444" }}
-                          title="Delete"
+                          title="Eliminar"
                         >
-                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <polyline points="3 6 5 6 21 6"/>
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                          </svg>
+                          {deletingId === val.id ? (
+                            <span style={{ fontSize: 10, letterSpacing: 1 }}>···</span>
+                          ) : (
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <polyline points="3 6 5 6 21 6"/>
+                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                            </svg>
+                          )}
                         </button>
                       </>
                     )}
@@ -302,7 +346,7 @@ export default function FiltersPage() {
               ))}
               {filtered.length === 0 && (
                 <div className="py-12 text-center text-sm" style={{ color: "var(--text-muted)" }}>
-                  {search ? "No values match your search" : "No values yet"}
+                  {search ? "Cap resultat" : "Cap valor encara"}
                 </div>
               )}
             </div>
