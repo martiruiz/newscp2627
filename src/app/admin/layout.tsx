@@ -216,7 +216,7 @@ function SidebarContent({
 
         {ADMIN_NAV.map((item) => {
           const active = isActive(item);
-          const badge = item.badge === "review" && reviewBadge > 0 ? reviewBadge : 0;
+          const badge = ("badge" in item && item.badge === "review") && reviewBadge > 0 ? reviewBadge : 0;
 
           return (
             <Link
@@ -488,6 +488,7 @@ function AdminMobileBottomNav({ pathname, reviewBadge, hidden }: { pathname: str
 /* ── Main layout ── */
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [reviewBadge, setReviewBadge] = useState(0);

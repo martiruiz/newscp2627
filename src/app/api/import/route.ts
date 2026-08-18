@@ -288,6 +288,7 @@ function handleImport(file: File, filename: string) {
           entityName: string | null;
           importBatchId: string;
           importStatus: string;
+          reviewStatus: string;
         }> = [];
         const sportsToCreate: Array<{ postId: string; sportIds: string[] }> = [];
         const entityTypesToCreate: Array<{ postId: string; entityTypeIds: string[] }> = [];

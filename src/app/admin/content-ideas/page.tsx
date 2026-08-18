@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { BulkEditPanel } from "@/components/BulkActionBar";
 import ReviewPanel from "@/components/ReviewPanel";
@@ -2227,7 +2227,7 @@ function AddByUrlModal({
   );
 }
 
-export default function ContentIdeasPage() {
+export function ContentIdeasPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [filters, setFilters] = useState<Filters>(() => {
@@ -3113,4 +3113,8 @@ export default function ContentIdeasPage() {
       )}
     </div>
   );
+}
+
+export default function ContentIdeasPageWrapper() {
+  return <Suspense><ContentIdeasPage /></Suspense>;
 }

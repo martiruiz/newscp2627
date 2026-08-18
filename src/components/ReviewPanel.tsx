@@ -6,7 +6,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 
 declare global {
   interface Window {
-    twttr?: { widgets: { createTweet: (id: string, el: HTMLElement, opts?: Record<string, unknown>) => Promise<HTMLElement | undefined>; }; };
+    twttr?: { widgets: { createTweet: (id: string, el: HTMLElement, opts?: Record<string, unknown>) => Promise<HTMLElement | undefined>; load: (el?: HTMLElement) => void; }; };
   }
 }
 let _twttrP: Promise<void> | null = null;
@@ -242,7 +242,7 @@ function AutocompleteField({ label, value, onChange, suggestionType, placeholder
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
   const [activeIdx, setActiveIdx] = useState(-1);
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

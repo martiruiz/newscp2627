@@ -5,7 +5,7 @@ import { useEffect, useRef, useId } from "react";
 declare global {
   interface Window {
     instgrm?: { Embeds?: { process: () => void } };
-    twttr?: { widgets?: { load: (el?: HTMLElement) => void } };
+    twttr?: { widgets: { createTweet: (id: string, el: HTMLElement, opts?: Record<string, unknown>) => Promise<HTMLElement | undefined>; load: (el?: HTMLElement) => void; }; };
   }
 }
 

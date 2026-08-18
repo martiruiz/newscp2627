@@ -318,7 +318,7 @@ function SmartFilters({
   );
 }
 
-export default function FeedPage() {
+function FeedPageInner() {
   const searchParams = useSearchParams();
   const rawOrder = searchParams.get("order");
   const initialOrder = rawOrder === "random" ? "random" : "recommended";
@@ -1036,4 +1036,8 @@ function SkeletonCard({ index }: { index: number }) {
       `}</style>
     </div>
   );
+}
+
+export default function FeedPage() {
+  return <Suspense><FeedPageInner /></Suspense>;
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 
 /* ─── Types ──────────────────────────────────────────────────────────── */
@@ -208,7 +208,7 @@ const I = {
 
 /* ─── Data ───────────────────────────────────────────────────────────── */
 
-const USER_TYPES: { id: UserTypeId; Icon: () => JSX.Element; label: string }[] = [
+const USER_TYPES: { id: UserTypeId; Icon: () => React.ReactElement; label: string }[] = [
   { id: "club",              Icon: I.Club,       label: "Club / Team" },
   { id: "federation_league", Icon: I.Federation, label: "Federation / League" },
   { id: "content_creator",   Icon: I.Creator,    label: "Content Creator" },
@@ -218,7 +218,7 @@ const USER_TYPES: { id: UserTypeId; Icon: () => JSX.Element; label: string }[] =
   { id: "other",             Icon: I.Other,      label: "Other" },
 ];
 
-const SPORTS_PRIMARY: { id: string; Icon: () => JSX.Element; label: string }[] = [
+const SPORTS_PRIMARY: { id: string; Icon: () => React.ReactElement; label: string }[] = [
   { id: "football",   Icon: I.Football,   label: "Football" },
   { id: "basketball", Icon: I.Basketball, label: "Basketball" },
   { id: "handball",   Icon: I.Handball,   label: "Handball" },
@@ -253,7 +253,7 @@ const SPORTS_MORE: { id: string; label: string }[] = [
   { id: "field_hockey",  label: "Field Hockey" },
 ];
 
-const GOALS: { id: GoalId; Icon: () => JSX.Element; label: string; desc: string }[] = [
+const GOALS: { id: GoalId; Icon: () => React.ReactElement; label: string; desc: string }[] = [
   { id: "content_ideas",       Icon: I.Lightbulb, label: "Find content ideas",     desc: "Discover proven ideas you can adapt." },
   { id: "audience_growth",     Icon: I.TrendUp,   label: "Grow my audience",       desc: "Increase reach and followers." },
   { id: "trends",              Icon: I.Zap,       label: "Discover trends",        desc: "See what's gaining momentum." },
@@ -317,7 +317,7 @@ function BackButton({ onClick }: { onClick: () => void }) {
 }
 
 interface CardProps {
-  Icon: () => JSX.Element;
+  Icon: () => React.ReactElement;
   label: string;
   desc?: string;
   selected: boolean;

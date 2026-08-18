@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 
 interface ReviewCounts {
@@ -78,7 +78,18 @@ const QUEUES = [
     ),
     available: true,
   },
-] as const;
+] satisfies Array<{
+  id: string;
+  label: string;
+  description: string;
+  priority: string;
+  priorityColor: string;
+  countKey: keyof ReviewCounts | null;
+  color: string;
+  icon: ReactNode;
+  available: boolean;
+  comingSoon?: boolean;
+}>;
 
 export default function ReviewPage() {
   const [counts, setCounts] = useState<ReviewCounts | null>(null);

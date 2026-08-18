@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 type Mode = "login" | "register";
@@ -20,7 +20,7 @@ function EyeIcon({ open }: { open: boolean }) {
   );
 }
 
-export default function AdminLoginPage() {
+function AdminLoginPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -352,4 +352,8 @@ export default function AdminLoginPage() {
       </div>
     </div>
   );
+}
+
+export default function AdminLoginPage() {
+  return <Suspense><AdminLoginPageInner /></Suspense>;
 }

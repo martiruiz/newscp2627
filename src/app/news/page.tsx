@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import BlogEmbeds from "@/components/BlogEmbeds";
 import { getEffectivePlan } from "@/lib/plan-utils";
@@ -660,7 +660,7 @@ function BlogPostRow({ post, expanded, onDelete, onEdit, isSuperAdmin, onClick }
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 
-export default function NewsPage() {
+function NewsPageInner() {
   const searchParams = useSearchParams();
   const [tab, setTab] = useState<Tab>(() => {
     const t = searchParams.get("tab");
@@ -1243,4 +1243,8 @@ export default function NewsPage() {
       )}
     </div>
   );
+}
+
+export default function NewsPage() {
+  return <Suspense><NewsPageInner /></Suspense>;
 }

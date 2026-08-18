@@ -297,7 +297,6 @@ export async function PATCH(request: NextRequest) {
           if (sportIds.length > 0) {
             await tx.publicationSport.createMany({
               data: batch.flatMap((pid) => sportIds.map((sid: string) => ({ publicationId: pid, sportId: sid }))),
-              skipDuplicates: true,
             });
           }
         }
@@ -308,7 +307,6 @@ export async function PATCH(request: NextRequest) {
           if (entityTypeIds.length > 0) {
             await tx.publicationEntityType.createMany({
               data: batch.flatMap((pid) => entityTypeIds.map((eid: string) => ({ publicationId: pid, entityTypeId: eid }))),
-              skipDuplicates: true,
             });
           }
         }
@@ -319,7 +317,6 @@ export async function PATCH(request: NextRequest) {
           if (competitionIds.length > 0) {
             await tx.publicationCompetition.createMany({
               data: batch.flatMap((pid) => competitionIds.map((cid: string) => ({ publicationId: pid, competitionId: cid }))),
-              skipDuplicates: true,
             });
           }
         }
@@ -330,7 +327,6 @@ export async function PATCH(request: NextRequest) {
           if (bulkContentCategoryIds.length > 0) {
             await tx.publicationContentCategory.createMany({
               data: batch.flatMap((pid) => bulkContentCategoryIds.map((cid: string) => ({ publicationId: pid, contentCategoryId: cid }))),
-              skipDuplicates: true,
             });
           }
         }
@@ -339,7 +335,6 @@ export async function PATCH(request: NextRequest) {
         if (classificationAction === "add" && Array.isArray(classIds) && classIds.length > 0) {
           await tx.publicationClassification.createMany({
             data: batch.flatMap((pid) => classIds.map((cid: string) => ({ publicationId: pid, classificationId: cid }))),
-            skipDuplicates: true,
           });
         } else if (classificationAction === "remove" && Array.isArray(classIds) && classIds.length > 0) {
           await tx.publicationClassification.deleteMany({
