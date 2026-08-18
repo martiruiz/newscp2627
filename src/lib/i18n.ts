@@ -141,7 +141,7 @@ const ca: Translations = {
   "banner.dismiss": "Tancar",
   "banner.expires": "Caduca en",
   "feed.recommended": "Recomanat",
-  "feed.inspireMe": "Inspira'm",
+  "feed.inspireMe": "Discover",
   "feed.forYou": "Per a tu",
   "feed.whyResults": "Per què aquests resultats?",
   "feed.smartFilters": "Filtres intel·ligents",
