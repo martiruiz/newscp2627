@@ -664,11 +664,6 @@ function FeedPageInner() {
               className="relative px-5 sm:px-8 py-3 text-sm font-bold transition-colors"
               style={{ color: active ? "var(--text-primary)" : "var(--text-muted)", background: "transparent", border: "none", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}
             >
-              {tab.id === "favs" && (
-                <svg width="12" height="12" viewBox="0 0 24 24" fill={active ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" style={{ display: "inline", marginRight: 5, verticalAlign: "middle", marginTop: -2 }}>
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                </svg>
-              )}
               {t(tab.labelKey)}
               {active && (
                 <span
