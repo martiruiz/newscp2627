@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useRouter } from "next/navigation";
 import InstagramEmbed from "./InstagramEmbed";
 import YouTubeFeedEmbed from "./YouTubeFeedEmbed";
 import TikTokFeedEmbed from "./TikTokFeedEmbed";
@@ -247,10 +248,149 @@ const CLASSIFICATION_META: Record<string, { gradient: string; icon: React.ReactN
   },
 };
 
+function AddToPlanModal({ publication, onClose }: { publication: Publication; onClose: () => void }) {
+  const [plans, setPlans] = useState<{ id: string; name: string; type: string; phases?: { id: string; label: string }[] }[]>([]);
+  const [planId, setPlanId] = useState("");
+  const [phaseId, setPhaseId] = useState("");
+  const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
+  const [saving, setSaving] = useState(false);
+  const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/plans").then((r) => r.json()).then((data) => {
+      setPlans(data.filter((p: { archivedAt: string | null }) => !p.archivedAt));
+      if (data[0]) setPlanId(data[0].id);
+    }).catch(() => {});
+  }, []);
+
+  const selectedPlan = plans.find((p) => p.id === planId);
+
+  async function handleAdd() {
+    if (!planId) return;
+    setSaving(true);
+    try {
+      const title = publication.accountUsername
+        ? `@${publication.accountUsername} · ${publication.platform}`
+        : `${publication.platform} content`;
+      const itemRes = await fetch("/api/calendar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title,
+          plannedDate: date,
+          status: "planned",
+          sourceType: "scp",
+          sourceContentId: publication.id,
+          platforms: [publication.platform],
+          planId: planId || null,
+          phaseId: phaseId || null,
+          referenceUrl: publication.canonicalUrl,
+          thumbnailUrl: null,
+          creatorName: publication.accountUsername,
+          sport: publication.sports?.[0] || null,
+          contentFormat: publication.contentFormat || null,
+        }),
+      });
+      const item = await itemRes.json();
+      if (item.id) {
+        await fetch("/api/content-references", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ calendarItemId: item.id, publicationId: publication.id }),
+        });
+      }
+      setDone(true);
+    } catch { /* non-critical */ }
+    setSaving(false);
+  }
+
+  const overlay: React.CSSProperties = {
+    position: "fixed", inset: 0, background: "rgba(0,0,0,0.55)", zIndex: 1000,
+    display: "flex", alignItems: "center", justifyContent: "center", padding: 16,
+  };
+  const modal: React.CSSProperties = {
+    background: "var(--bg-primary)", borderRadius: 16, width: "100%", maxWidth: 400,
+    border: "1px solid var(--border-color)", padding: 24, display: "flex", flexDirection: "column", gap: 16,
+  };
+  const inp: React.CSSProperties = {
+    width: "100%", padding: "9px 12px", borderRadius: 8, border: "1px solid var(--border-color)",
+    background: "var(--bg-input)", color: "var(--text-primary)", fontSize: 14, outline: "none", boxSizing: "border-box",
+  };
+  const lbl: React.CSSProperties = { fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", display: "block", marginBottom: 5 };
+
+  return (
+    <div style={overlay} onClick={onClose}>
+      <div style={modal} onClick={(e) => e.stopPropagation()}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: "var(--text-primary)" }}>Add to plan</h3>
+          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", padding: 4 }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+
+        {done ? (
+          <div style={{ textAlign: "center", padding: "20px 0" }}>
+            <div style={{ width: 48, height: 48, borderRadius: "50%", background: "rgba(34,197,94,0.12)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px" }}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <p style={{ margin: "0 0 16px", color: "var(--text-primary)", fontWeight: 600 }}>Added to plan!</p>
+            <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
+              <button onClick={onClose} style={{ padding: "8px 18px", borderRadius: 8, border: "1px solid var(--border-color)", background: "none", color: "var(--text-secondary)", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Close</button>
+              <a href="/calendar?tab=plans" style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: "#0D1421", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", textDecoration: "none", display: "inline-block" }}>View plan</a>
+            </div>
+          </div>
+        ) : (
+          <>
+            {publication.accountUsername && (
+              <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 12px", borderRadius: 10, background: "var(--bg-secondary)", border: "1px solid var(--border-color)" }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4.5"/></svg>
+                <span style={{ fontSize: 13, color: "var(--text-muted)" }}>@{publication.accountUsername} · {publication.platform}</span>
+              </div>
+            )}
+            <div>
+              <label style={lbl}>Plan</label>
+              <select value={planId} onChange={(e) => { setPlanId(e.target.value); setPhaseId(""); }} style={{ ...inp, appearance: "auto" }}>
+                <option value="">Select a plan…</option>
+                {plans.map((p) => (
+                  <option key={p.id} value={p.id}>{p.name}</option>
+                ))}
+              </select>
+            </div>
+            {selectedPlan?.phases && selectedPlan.phases.length > 0 && (
+              <div>
+                <label style={lbl}>Phase (optional)</label>
+                <select value={phaseId} onChange={(e) => setPhaseId(e.target.value)} style={{ ...inp, appearance: "auto" }}>
+                  <option value="">No specific phase</option>
+                  {selectedPlan.phases.map((ph) => (
+                    <option key={ph.id} value={ph.id}>{ph.label}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+            <div>
+              <label style={lbl}>Planned date</label>
+              <input type="date" value={date} onChange={(e) => setDate(e.target.value)} style={inp} />
+            </div>
+            <button
+              onClick={handleAdd}
+              disabled={!planId || saving}
+              style={{ padding: "11px 0", borderRadius: 10, border: "none", background: planId ? "#0D1421" : "var(--bg-secondary)", color: planId ? "#fff" : "var(--text-muted)", fontSize: 14, fontWeight: 700, cursor: planId ? "pointer" : "default", transition: "opacity 0.15s" }}
+            >
+              {saving ? "Adding…" : "Add to plan"}
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function PublicationCard({ publication, animationDelay = 0, shouldAnimate = false, onLoaded, eager = false }: PublicationCardProps) {
+  const router = useRouter();
   const [visible, setVisible] = useState(!shouldAnimate);
   const [isSaved, setIsSaved] = useState(publication.isSaved);
   const [showFolderPicker, setShowFolderPicker] = useState(false);
+  const [showAddToPlan, setShowAddToPlan] = useState(false);
 
   useEffect(() => {
     if (!shouldAnimate) return;
@@ -329,6 +469,31 @@ export default function PublicationCard({ publication, animationDelay = 0, shoul
             );
           })}
           <button
+            onClick={() => setShowAddToPlan(true)}
+            className="p-1.5 rounded-md transition-colors hover:opacity-80"
+            title="Add to plan"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" strokeWidth="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="13" x2="12" y2="17"/><line x1="10" y1="15" x2="14" y2="15"/>
+            </svg>
+          </button>
+          <button
+            onClick={() => {
+              try { sessionStorage.setItem("scp-pending-calendar-pub", JSON.stringify(publication)); } catch {}
+              if (window.location.pathname === "/calendar") {
+                window.dispatchEvent(new CustomEvent("open-calendar-add", { detail: { publication } }));
+              } else {
+                router.push("/calendar");
+              }
+            }}
+            className="p-1.5 rounded-md transition-colors hover:opacity-80"
+            title="Add to calendar"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" strokeWidth="2">
+              <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="15" x2="12" y2="19"/><line x1="10" y1="17" x2="14" y2="17"/>
+            </svg>
+          </button>
+          <button
             onClick={handleSave}
             className="p-1.5 rounded-md transition-colors hover:opacity-80"
             title={isSaved ? "Saved" : "Save"}
@@ -356,6 +521,9 @@ export default function PublicationCard({ publication, animationDelay = 0, shoul
           onClose={() => setShowFolderPicker(false)}
           onSaved={(saved) => setIsSaved(saved)}
         />
+      )}
+      {showAddToPlan && (
+        <AddToPlanModal publication={publication} onClose={() => setShowAddToPlan(false)} />
       )}
     </div>
   );

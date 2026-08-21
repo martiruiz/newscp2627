@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { type Locale, LOCALE_NAMES, LANG_STORAGE_KEY } from "@/lib/i18n";
 
-type Section = "profile" | "payments" | "subscription";
+type Section = "profile" | "payments" | "subscription" | "users";
 
 const PAYMENT_HISTORY = [
   { id: "INV-2026-08", date: "Aug 1, 2026", amount: "€29.00", plan: "Pro Monthly", status: "paid" },
@@ -140,6 +140,19 @@ function SectionNav({ active, onChange, onSignOut }: { active: Section; onChange
         <p className="px-3 mb-1 text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>
           {t("account.admin")}
         </p>
+        <button
+          onClick={() => onChange("users" as Section)}
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-left transition-all w-full"
+          style={{ background: active === "users" ? "var(--color-charcoal-subtle)" : "transparent", color: active === "users" ? "var(--selected-bg)" : "var(--text-secondary)" }}
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          Registre d'usuaris
+        </button>
         <Link
           href="/admin/import"
           className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all w-full hover:opacity-80"
@@ -308,6 +321,7 @@ function Select({
 
 const PROFILE_KEY = "scp-account-profile";
 const PHOTO_KEY = "scp-account-photo";
+const CREST_KEY = "scp-club-crest";
 const PREFS_KEY = "scp-onboarding-prefs";
 
 const DEFAULT_FORM = {
@@ -323,6 +337,163 @@ const DEFAULT_FORM = {
   vatId: "",
 };
 
+// ── Appearance Section ──────────────────────────────────────────────────────
+
+const SCHEDULE_KEY = "scp-theme-schedule";
+
+function AppearanceSection() {
+  const [enabled, setEnabled] = useState(false);
+  const [lightStart, setLightStart] = useState("08:00");
+  const [lightEnd, setLightEnd] = useState("20:00");
+  const [savedMsg, setSavedMsg] = useState(false);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(SCHEDULE_KEY);
+      if (raw) {
+        const s = JSON.parse(raw);
+        setEnabled(s.enabled ?? false);
+        setLightStart(s.lightStart ?? "08:00");
+        setLightEnd(s.lightEnd ?? "20:00");
+      }
+    } catch {}
+  }, []);
+
+  function applyNow(en: boolean, ls: string, le: string) {
+    try {
+      if (!en) {
+        const manual = localStorage.getItem("scp-theme");
+        if (manual) document.documentElement.setAttribute("data-theme", manual);
+        else document.documentElement.removeAttribute("data-theme");
+        return;
+      }
+      const now = new Date();
+      const cur = now.getHours() * 60 + now.getMinutes();
+      const [lsh, lsm] = ls.split(":").map(Number);
+      const [leh, lem] = le.split(":").map(Number);
+      const lsn = lsh * 60 + (lsm || 0);
+      const len = leh * 60 + (lem || 0);
+      const isLight = lsn < len ? cur >= lsn && cur < len : cur >= lsn || cur < len;
+      if (isLight) document.documentElement.removeAttribute("data-theme");
+      else document.documentElement.setAttribute("data-theme", "blue");
+    } catch {}
+  }
+
+  function save() {
+    const sched = { enabled, lightStart, lightEnd };
+    localStorage.setItem(SCHEDULE_KEY, JSON.stringify(sched));
+    applyNow(enabled, lightStart, lightEnd);
+    setSavedMsg(true);
+    setTimeout(() => setSavedMsg(false), 2500);
+  }
+
+  const now = new Date();
+  const cur = now.getHours() * 60 + now.getMinutes();
+  const [lsh, lsm] = lightStart.split(":").map(Number);
+  const [leh, lem] = lightEnd.split(":").map(Number);
+  const lsn = lsh * 60 + (lsm || 0);
+  const len = leh * 60 + (lem || 0);
+  const wouldBeLight = lsn < len ? cur >= lsn && cur < len : cur >= lsn || cur < len;
+  const curTime = now.toLocaleTimeString("ca-ES", { hour: "2-digit", minute: "2-digit" });
+
+  const cardStyle: React.CSSProperties = {
+    background: "var(--bg-card)",
+    border: "1px solid var(--border-color)",
+    borderRadius: 16,
+    padding: 24,
+  };
+
+  const timeInputStyle: React.CSSProperties = {
+    padding: "8px 12px", borderRadius: 10, border: "1px solid var(--border-color)",
+    background: "var(--bg-input)", color: "var(--text-primary)", fontSize: 14,
+    outline: "none", cursor: "pointer",
+  };
+
+  return (
+    <div style={cardStyle}>
+      <div className="flex items-start justify-between gap-4 mb-4">
+        <div>
+          <h3 className="font-bold text-sm mb-0.5" style={{ color: "var(--text-primary)" }}>Aparença</h3>
+          <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+            Canvia automàticament entre tema clar i fosc segons l&apos;hora del dia.
+          </p>
+        </div>
+        {/* Toggle */}
+        <button
+          onClick={() => setEnabled((v) => !v)}
+          style={{
+            width: 44, height: 24, borderRadius: 12, border: "none", cursor: "pointer",
+            background: enabled ? "var(--selected-bg)" : "var(--border-color)",
+            position: "relative", flexShrink: 0, transition: "background 0.2s",
+          }}
+        >
+          <div style={{
+            width: 18, height: 18, borderRadius: "50%", background: "#fff",
+            position: "absolute", top: 3,
+            left: enabled ? 23 : 3,
+            transition: "left 0.2s",
+          }} />
+        </button>
+      </div>
+
+      {enabled && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          {/* Time range */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <div>
+              <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                Inici mode clar ☀️
+              </label>
+              <input type="time" value={lightStart} onChange={(e) => setLightStart(e.target.value)} style={timeInputStyle} />
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                Fi mode clar 🌙
+              </label>
+              <input type="time" value={lightEnd} onChange={(e) => setLightEnd(e.target.value)} style={timeInputStyle} />
+            </div>
+          </div>
+
+          {/* Preview pill */}
+          <div style={{
+            display: "flex", alignItems: "center", gap: 8,
+            padding: "10px 14px", borderRadius: 10,
+            background: wouldBeLight ? "#FEF9EC" : "#0D1421",
+            border: `1px solid ${wouldBeLight ? "#F5C542" : "#2d3d5e"}`,
+          }}>
+            <span style={{ fontSize: 18 }}>{wouldBeLight ? "☀️" : "🌙"}</span>
+            <span style={{ fontSize: 13, fontWeight: 600, color: wouldBeLight ? "#92400E" : "#E5E7EB" }}>
+              Ara ({curTime}) — tema {wouldBeLight ? "clar" : "fosc"} actiu
+            </span>
+          </div>
+
+          <p style={{ fontSize: 12, color: "var(--text-muted)", margin: 0 }}>
+            Mode clar de {lightStart} a {lightEnd}. La resta del temps: mode fosc.
+          </p>
+        </div>
+      )}
+
+      <div style={{ marginTop: enabled ? 20 : 8, display: "flex", alignItems: "center", gap: 10 }}>
+        <button
+          onClick={save}
+          style={{
+            padding: "9px 20px", borderRadius: 10, border: "none",
+            background: "var(--selected-bg)", color: "#fff",
+            fontSize: 13, fontWeight: 700, cursor: "pointer",
+          }}
+        >
+          {savedMsg ? "✓ Desat" : "Desar aparença"}
+        </button>
+        {savedMsg && (
+          <span style={{ fontSize: 12, color: "var(--text-muted)" }}>El canvi s&apos;ha aplicat.</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Profile Section ──────────────────────────────────────────────────────────
+
 function ProfileSection({ fromOnboarding }: { fromOnboarding?: boolean }) {
   const { t } = useLanguage();
   const router = useRouter();
@@ -334,12 +505,18 @@ function ProfileSection({ fromOnboarding }: { fromOnboarding?: boolean }) {
   const [dragging, setDragging] = useState(false);
   const [photo, setPhoto] = useState<string | null>(null);
   const [photoError, setPhotoError] = useState("");
+  const [crest, setCrest] = useState<string | null>(null);
+  const [crestError, setCrestError] = useState("");
   const profileName = useProfileName();
 
   useEffect(() => {
     try {
       const stored = localStorage.getItem(PHOTO_KEY);
       if (stored) setPhoto(stored);
+    } catch {}
+    try {
+      const storedCrest = localStorage.getItem(CREST_KEY);
+      if (storedCrest) setCrest(storedCrest);
     } catch {}
   }, []);
 
@@ -358,6 +535,25 @@ function ProfileSection({ fromOnboarding }: { fromOnboarding?: boolean }) {
       const dataUrl = e.target?.result as string;
       setPhoto(dataUrl);
       try { localStorage.setItem(PHOTO_KEY, dataUrl); } catch {}
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function handleCrestFile(file: File) {
+    setCrestError("");
+    if (!file.type.startsWith("image/")) {
+      setCrestError("El fitxer ha de ser una imatge (JPG, PNG, SVG o WebP).");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      setCrestError("La imatge no pot superar els 2 MB.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target?.result as string;
+      setCrest(dataUrl);
+      try { localStorage.setItem(CREST_KEY, dataUrl); } catch {}
     };
     reader.readAsDataURL(file);
   }
@@ -465,6 +661,75 @@ function ProfileSection({ fromOnboarding }: { fromOnboarding?: boolean }) {
         </div>
         {photoError && (
           <p className="text-xs mt-2" style={{ color: "#ef4444" }}>{photoError}</p>
+        )}
+      </div>
+
+      {/* Club crest */}
+      <div
+        className="rounded-2xl p-6"
+        style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}
+      >
+        <h3 className="font-bold text-sm mb-1" style={{ color: "var(--text-primary)" }}>Escut del club</h3>
+        <p className="text-xs mb-4" style={{ color: "var(--text-muted)" }}>
+          S&apos;utilitza per identificar el teu equip als Matchday Hubs i als plans de contingut.
+        </p>
+        <div className="flex items-center gap-4">
+          <label
+            className="shrink-0 relative cursor-pointer group"
+            style={{ display: "block" }}
+            onDragOver={(e) => { e.preventDefault(); }}
+            onDrop={(e) => {
+              e.preventDefault();
+              const file = e.dataTransfer.files[0];
+              if (file) handleCrestFile(file);
+            }}
+          >
+            <div
+              className="rounded-2xl overflow-hidden flex items-center justify-center"
+              style={{ width: 68, height: 68, background: crest ? "transparent" : "var(--bg-input)", border: "1.5px dashed var(--border-color)" }}
+            >
+              {crest
+                ? <img src={crest} alt="Club crest" style={{ width: 68, height: 68, objectFit: "contain", padding: 4 }} />
+                : <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5"><path d="M12 2L3 7l2 13 7 2 7-2 2-13L12 2z"/></svg>
+              }
+            </div>
+            <div
+              className="absolute inset-0 rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+              style={{ background: "rgba(0,0,0,0.45)" }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" />
+              </svg>
+            </div>
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/svg+xml"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleCrestFile(file);
+                e.target.value = "";
+              }}
+            />
+          </label>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold mb-0.5" style={{ color: "var(--text-primary)" }}>
+              {crest ? "Escut pujat" : "Puja l'escut"}
+            </p>
+            <p className="text-xs" style={{ color: "var(--text-muted)" }}>JPG, PNG, SVG · Max 2 MB</p>
+            {crest && (
+              <button
+                onClick={() => { setCrest(null); try { localStorage.removeItem(CREST_KEY); } catch {} }}
+                className="text-xs mt-1"
+                style={{ color: "#ef4444", background: "none", border: "none", cursor: "pointer", padding: 0 }}
+              >
+                Eliminar escut
+              </button>
+            )}
+          </div>
+        </div>
+        {crestError && (
+          <p className="text-xs mt-2" style={{ color: "#ef4444" }}>{crestError}</p>
         )}
       </div>
 
@@ -604,6 +869,9 @@ function ProfileSection({ fromOnboarding }: { fromOnboarding?: boolean }) {
           </div>
         )}
       </div>
+
+      {/* Appearance */}
+      <AppearanceSection />
 
       {/* Save */}
       <div className="flex items-center gap-3">
@@ -1068,6 +1336,120 @@ function useProfileName() {
   return name;
 }
 
+// ── Users registry section ────────────────────────────────────────────────────
+
+interface AppUser {
+  id: string;
+  email: string;
+  name: string | null;
+  role: string;
+  plan: string;
+  superAdmin: boolean;
+  createdAt: string;
+}
+
+function UsersSection() {
+  const [users, setUsers] = useState<AppUser[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    fetch("/api/admin/users")
+      .then((r) => r.json())
+      .then((d) => { setUsers(d.users || []); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, []);
+
+  const filtered = users.filter((u) =>
+    !search || u.email.toLowerCase().includes(search.toLowerCase()) || (u.name || "").toLowerCase().includes(search.toLowerCase())
+  );
+
+  const PLAN_LABELS: Record<string, string> = {
+    free: "Free", basic_monthly: "Basic", basic_annual: "Basic Anual",
+    pro_monthly: "Pro", pro_annual: "Pro Anual",
+  };
+
+  const cardStyle: React.CSSProperties = {
+    background: "var(--bg-card)",
+    border: "1px solid var(--border-color)",
+    borderRadius: 14,
+    overflow: "hidden",
+  };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      {/* Stats */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
+        {[
+          { label: "Total inscrits", value: users.length },
+          { label: "Pro / Anual", value: users.filter((u) => u.plan.includes("pro")).length },
+          { label: "Admins", value: users.filter((u) => u.superAdmin).length },
+        ].map((stat) => (
+          <div key={stat.label} style={{ ...cardStyle, padding: "14px 16px" }}>
+            <div style={{ fontSize: 22, fontWeight: 900, color: "var(--text-primary)", lineHeight: 1 }}>{stat.value}</div>
+            <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 3 }}>{stat.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Search */}
+      <input
+        value={search} onChange={(e) => setSearch(e.target.value)}
+        placeholder="Cerca per nom o email…"
+        style={{ width: "100%", padding: "9px 12px", borderRadius: 8, border: "1px solid var(--border-color)", background: "var(--bg-input)", color: "var(--text-primary)", fontSize: 14, outline: "none", boxSizing: "border-box" }}
+      />
+
+      {/* Table */}
+      <div style={cardStyle}>
+        {loading ? (
+          <div style={{ padding: 32, textAlign: "center", color: "var(--text-muted)", fontSize: 14 }}>Carregant…</div>
+        ) : filtered.length === 0 ? (
+          <div style={{ padding: 32, textAlign: "center", color: "var(--text-muted)", fontSize: 14 }}>Cap usuari trobat</div>
+        ) : (
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+              <thead>
+                <tr style={{ borderBottom: "1px solid var(--border-color)", background: "var(--bg-input)" }}>
+                  {["Usuari", "Email", "Pla", "Rol", "Data inscripció"].map((h) => (
+                    <th key={h} style={{ padding: "10px 14px", textAlign: "left", fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-muted)", whiteSpace: "nowrap" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((u, i) => (
+                  <tr key={u.id} style={{ borderBottom: i < filtered.length - 1 ? "1px solid var(--border-color)" : "none" }}>
+                    <td style={{ padding: "11px 14px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <div style={{ width: 28, height: 28, borderRadius: 8, background: "var(--selected-bg)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, flexShrink: 0 }}>
+                          {(u.name || u.email).slice(0, 2).toUpperCase()}
+                        </div>
+                        <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>{u.name || "—"}</span>
+                        {u.superAdmin && <span style={{ fontSize: 9, fontWeight: 800, padding: "1px 5px", borderRadius: 4, background: "#F59E0B20", color: "#F59E0B" }}>Admin</span>}
+                      </div>
+                    </td>
+                    <td style={{ padding: "11px 14px", color: "var(--text-secondary)" }}>{u.email}</td>
+                    <td style={{ padding: "11px 14px" }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 7px", borderRadius: 5, background: u.plan.includes("pro") ? "#10B98120" : "var(--bg-input)", color: u.plan.includes("pro") ? "#10B981" : "var(--text-muted)" }}>
+                        {PLAN_LABELS[u.plan] ?? u.plan}
+                      </span>
+                    </td>
+                    <td style={{ padding: "11px 14px", color: "var(--text-muted)", fontSize: 12 }}>{u.role === "ROLE_ADMIN" ? "Admin" : "Usuari"}</td>
+                    <td style={{ padding: "11px 14px", color: "var(--text-muted)", fontSize: 12, whiteSpace: "nowrap" }}>
+                      {new Date(u.createdAt).toLocaleDateString("ca-ES", { day: "numeric", month: "short", year: "numeric" })}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      <p style={{ fontSize: 11, color: "var(--text-muted)", textAlign: "right" }}>{filtered.length} de {users.length} usuaris</p>
+    </div>
+  );
+}
+
 export default function AccountPage() {
   const [section, setSection] = useState<Section>("profile");
   const [showSignOutModal, setShowSignOutModal] = useState(false);
@@ -1081,6 +1463,7 @@ export default function AccountPage() {
     setFromOnboarding(params.get("from") === "onboarding");
     const tab = params.get("tab");
     if (tab === "subscription") setSection("subscription");
+    if (tab === "users") setSection("users");
   }, []);
 
   async function handleSignOut() {
@@ -1092,6 +1475,7 @@ export default function AccountPage() {
     profile: { title: t("account.myProfile"), subtitle: t("account.profileSubtitle") },
     subscription: { title: t("account.subscriptionTitle"), subtitle: t("account.subscriptionSubtitle") },
     payments: { title: t("account.payments"), subtitle: t("account.paymentsSubtitle") },
+    users: { title: "Registre d'usuaris", subtitle: "Tots els usuaris inscrits a la plataforma" },
   };
 
   const { title, subtitle } = SECTION_TITLES[section];
@@ -1133,6 +1517,7 @@ export default function AccountPage() {
           {section === "profile" && <ProfileSection fromOnboarding={fromOnboarding} />}
           {section === "subscription" && <SubscriptionSection />}
           {section === "payments" && <PaymentsSection />}
+          {section === "users" && <UsersSection />}
         </div>
       </div>
 
@@ -1179,6 +1564,7 @@ export default function AccountPage() {
             {section === "profile" && <ProfileSection fromOnboarding={fromOnboarding} />}
             {section === "subscription" && <SubscriptionSection />}
             {section === "payments" && <PaymentsSection />}
+            {section === "users" && <UsersSection />}
           </div>
         </div>
       </div>

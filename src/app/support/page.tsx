@@ -55,9 +55,9 @@ export default function SupportPage() {
 
   return (
     <div className="min-h-screen" style={{ background: "var(--bg-primary)", color: "var(--text-primary)" }}>
-      {/* Hero */}
+      {/* Hero — hidden on mobile */}
       <div
-        className="text-center px-6 py-12 md:py-20"
+        className="hidden md:block text-center px-6 py-12 md:py-20"
         style={{
           background: "linear-gradient(180deg, rgba(31,41,55,0.06) 0%, transparent 100%)",
           borderBottom: "1px solid var(--border-color)",

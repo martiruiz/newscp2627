@@ -283,6 +283,310 @@ model JobPosting {
   updatedAt     DateTime  @updatedAt
 }
 
+model CalendarItem {
+  id              String   @id @default(uuid())
+  userId          String
+  sourceContentId String?
+  sourceType      String   @default("scp")
+  title           String
+  plannedDate     String
+  plannedTime     String?
+  status          String   @default("planned")
+  platforms       String   @default("[]")
+  notes           String?
+  referenceUrl    String?
+  thumbnailUrl    String?
+  creatorName     String?
+  sport           String?
+  contentFormat   String?
+  collaborators   String   @default("[]")
+  hook            String?
+  script          String?
+  cta             String?
+  // Plan Builder extensions (all nullable for backward compat)
+  planId                         String?
+  phaseId                        String?
+  priority                       String?  // required | recommended | optional
+  contentPillar                  String?
+  campaign                       String?
+  objective                      String?
+  targetAudience                 String?
+  assigneeId                     String?
+  productionDeadline             String?
+  approvalStatus                 String?  // draft | pending_approval | changes_requested | approved
+  approverId                     String?
+  shortConcept                   String?
+  whyThisIdea                    String?
+  caption                        String?
+  shotList                       String?
+  requiredAssets                 String?
+  sourceSnapshot                 String?  // JSON snapshot of source publication
+  relativeTimeRule               String?  // e.g. "T-90m" | "event_end+30m"
+  relativeTimeManuallyOverridden Boolean  @default(false)
+  publishedUrl                   String?
+  hubPhase                       String?  // D-2 | D-1 | D0 | H-3 | H0 | H+1 | D+1
+  publishedBy                    String?  // home | away | both | competition
+  visibility                     String?  // shared | home_only | away_only | schedule_only
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  plan  ContentPlan?      @relation(fields: [planId], references: [id])
+  phase ContentPlanPhase? @relation(fields: [phaseId], references: [id])
+
+  @@index([userId])
+  @@index([userId, plannedDate])
+  @@index([planId])
+  @@index([phaseId])
+}
+
+model ContentPlan {
+  id             String   @id @default(uuid())
+  userId         String
+  name           String
+  type           String   @default("custom")
+  sport          String?
+  startDate      String
+  endDate        String
+  timezone       String   @default("Europe/Madrid")
+  eventStartAt   String?
+  eventEndAt     String?
+  team           String?
+  opponent       String?
+  competition    String?
+  venue          String?
+  homeAway       String?
+  mainObjective       String?
+  secondaryObjective  String?
+  targetAudience      String?
+  platforms           String   @default("[]")
+  contentPillars      String   @default("[]")
+  teamMembers         String   @default("[]")
+  sponsors            String   @default("[]")
+  kpis                String   @default("[]")
+  clientName          String?
+  coverageIntensity   String?
+  colorScheme         String?
+  parentPlanId        String?
+  ownerId             String?
+  approverId          String?
+  status              String   @default("draft")
+  currentVersion      Int      @default(1)
+  notes               String?
+  archivedAt          String?
+  fixtureId            String?
+  fixture              Fixture? @relation(fields: [fixtureId], references: [id])
+  collaborationEnabled Boolean @default(false)
+  guestOrgName         String?
+  guestOrgEmail        String?
+  inviteToken          String?
+  hubStatus            String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  phases      ContentPlanPhase[]
+  items       CalendarItem[]
+  versions    PlanVersion[]
+  reviewLinks ReviewLink[]
+  comments    PlanComment[]
+
+  @@index([userId])
+  @@index([userId, status])
+  @@index([userId, startDate])
+}
+
+model ContentPlanPhase {
+  id                 String   @id @default(uuid())
+  planId             String
+  plan               ContentPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  phaseKey           String?
+  label              String
+  description        String?
+  sortOrder          Int      @default(0)
+  anchorType         String   @default("absolute")
+  startOffsetMinutes Int?
+  endOffsetMinutes   Int?
+  startsAt           String?
+  endsAt             String?
+  enabled            Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  items CalendarItem[]
+
+  @@index([planId])
+}
+
+model PlanVersion {
+  id            String      @id @default(uuid())
+  planId        String
+  plan          ContentPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  version       Int
+  snapshot      String
+  submittedBy   String?
+  summary       String?
+  approvalState String?
+  createdAt     DateTime    @default(now())
+
+  @@index([planId])
+}
+
+model PlanComment {
+  id          String      @id @default(uuid())
+  planId      String
+  plan        ContentPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  itemId      String?
+  authorName  String
+  authorEmail String?
+  content     String
+  isInternal  Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+
+  @@index([planId])
+  @@index([itemId])
+}
+
+model ApprovalAction {
+  id           String   @id @default(uuid())
+  planId       String?
+  itemId       String?
+  reviewLinkId String?
+  action       String
+  actorName    String
+  actorEmail   String?
+  comment      String?
+  version      Int?
+  createdAt    DateTime @default(now())
+
+  @@index([planId])
+  @@index([itemId])
+}
+
+model ReviewLink {
+  id          String      @id @default(uuid())
+  planId      String
+  plan        ContentPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  tokenHash   String      @unique
+  permissions String      @default("view")
+  expiresAt   String?
+  revokedAt   String?
+  label       String?
+  createdBy   String?
+  createdAt   DateTime    @default(now())
+
+  @@index([planId])
+}
+
+model PlanTemplate {
+  id             String   @id @default(uuid())
+  userId         String?
+  name           String
+  type           String
+  sport          String?
+  description    String?
+  platforms      String   @default("[]")
+  contentPillars String   @default("[]")
+  isSystem       Boolean  @default(false)
+  archivedAt     String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  phases PlanTemplatePhase[]
+
+  @@index([userId])
+}
+
+model PlanTemplatePhase {
+  id                 String       @id @default(uuid())
+  templateId         String
+  template           PlanTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  phaseKey           String?
+  label              String
+  description        String?
+  sortOrder          Int          @default(0)
+  anchorType         String       @default("absolute")
+  startOffsetMinutes Int?
+  endOffsetMinutes   Int?
+
+  items PlanTemplateItem[]
+
+  @@index([templateId])
+}
+
+model PlanTemplateItem {
+  id               String            @id @default(uuid())
+  phaseId          String
+  phase            PlanTemplatePhase @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+  title            String
+  platforms        String            @default("[]")
+  contentPillar    String?
+  objective        String?
+  priority         String            @default("recommended")
+  relativeTimeRule String?
+  shortConcept     String?
+  hook             String?
+  script           String?
+  cta              String?
+
+  @@index([phaseId])
+}
+
+model Fixture {
+  id          String   @id @default(uuid())
+  userId      String
+  sport       String?
+  homeTeam    String
+  awayTeam    String
+  homeCrest   String?
+  awayCrest   String?
+  competition String?
+  matchday    String?
+  venue       String?
+  kickoffAt   String?
+  timezone    String   @default("Europe/Madrid")
+  durationMin Int?
+  status      String   @default("scheduled")
+  homeScore   Int?
+  awayScore   Int?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  plans ContentPlan[]
+
+  @@index([userId])
+  @@index([kickoffAt])
+}
+
+model ContentReference {
+  id             String   @id @default(uuid())
+  calendarItemId String
+  publicationId  String
+  adaptationNote String?
+  createdAt      DateTime @default(now())
+
+  @@index([calendarItemId])
+  @@index([publicationId])
+}
+
+model ContentVariant {
+  id             String   @id @default(uuid())
+  calendarItemId String
+  platform       String
+  format         String?
+  copy           String?
+  hashtags       String?
+  durationSec    Int?
+  dimensions     String?
+  plannedAt      String?
+  status         String   @default("planned")
+  publishedUrl   String?
+  metrics        String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([calendarItemId])
+}
+
 model ImportBatch {
   id             String        @id @default(uuid())
   filename       String

@@ -29,7 +29,7 @@ interface Publication {
 
 const TOOLS = [
   {
-    label: "Social\nNews",
+    label: "Xarxes\nSocials",
     href: "/news",
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -39,7 +39,7 @@ const TOOLS = [
     ),
   },
   {
-    label: "Support",
+    label: "Suport",
     href: "/support",
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -48,7 +48,7 @@ const TOOLS = [
     ),
   },
   {
-    label: "Saved",
+    label: "Guardats",
     href: "/saved",
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -89,7 +89,7 @@ const QUICK_ACTIONS = [
 import { getEffectivePlan } from "@/lib/plan-utils";
 
 export default function DashboardPage() {
-  const [greeting, setGreeting] = useState("Good morning");
+  const [greeting, setGreeting] = useState("Bon dia");
   const [publications, setPublications] = useState<Publication[]>([]);
   const [loadingPubs, setLoadingPubs] = useState(true);
   const [activeSlide, setActiveSlide] = useState(0);
@@ -100,6 +100,12 @@ export default function DashboardPage() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [sports, setSports] = useState<{ name: string; slug: string }[]>([]);
   const [selectedSport, setSelectedSport] = useState<string>("");
+  const [upcomingItems, setUpcomingItems] = useState<{ id: string; title: string; plannedDate: string; plannedTime: string | null; status: string; platforms: string[] }[]>([]);
+  const [loadingCalendar, setLoadingCalendar] = useState(true);
+  const [upcomingFixtures, setUpcomingFixtures] = useState<{ id: string; name: string; team: string | null; opponent: string | null; startDate: string; eventStartAt: string | null; competition: string | null; homeAway: string | null; opponentCrest: string | null }[]>([]);
+  const [clubCrest, setClubCrest] = useState<string | null>(null);
+  const [loadingNews, setLoadingNews] = useState(true);
+  const [loadingStats, setLoadingStats] = useState(true);
   const carouselRef = useRef<HTMLDivElement>(null);
 
   const isFree = userPlan === "free" && !isSuperAdmin;
@@ -117,8 +123,8 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const h = new Date().getHours();
-    if (h >= 12 && h < 18) setGreeting("Good afternoon");
-    else if (h >= 18) setGreeting("Good evening");
+    if (h >= 12 && h < 18) setGreeting("Bona tarda");
+    else if (h >= 18) setGreeting("Bona nit");
 
     fetch("/api/filters")
       .then((r) => r.json())
@@ -127,13 +133,13 @@ export default function DashboardPage() {
 
     fetch("/api/news?limit=3")
       .then((r) => r.json())
-      .then((d) => setNewsItems(d.articles || []))
-      .catch(() => {});
+      .then((d) => { setNewsItems(d.articles || []); setLoadingNews(false); })
+      .catch(() => setLoadingNews(false));
 
     fetch("/api/dashboard/stats")
       .then((r) => r.json())
-      .then((d) => setStats(d))
-      .catch(() => {});
+      .then((d) => { setStats(d); setLoadingStats(false); })
+      .catch(() => setLoadingStats(false));
 
     fetch("/api/user/plan")
       .then((r) => r.json())
@@ -143,6 +149,37 @@ export default function DashboardPage() {
         setUserPlan(plan);
       })
       .catch(() => {});
+
+    const today = new Date().toISOString().slice(0, 10);
+    const in14 = new Date(Date.now() + 14 * 86400000).toISOString().slice(0, 10);
+    fetch(`/api/calendar?from=${today}&to=${in14}`)
+      .then((r) => r.json())
+      .then((d) => { setUpcomingItems(Array.isArray(d) ? d.slice(0, 6) : []); setLoadingCalendar(false); })
+      .catch(() => setLoadingCalendar(false));
+
+    fetch("/api/plans?type=matchday")
+      .then((r) => r.json())
+      .then((d: Record<string, unknown>[]) => {
+        const future = d
+          .filter((p) => p.startDate && (p.startDate as string) >= today)
+          .sort((a, b) => ((a.startDate as string) > (b.startDate as string) ? 1 : -1))
+          .slice(0, 5)
+          .map((p) => ({
+            id: p.id as string,
+            name: p.name as string,
+            team: p.team as string | null,
+            opponent: p.opponent as string | null,
+            startDate: p.startDate as string,
+            eventStartAt: p.eventStartAt as string | null,
+            competition: p.competition as string | null,
+            homeAway: p.homeAway as string | null,
+            opponentCrest: p.opponentCrest as string | null,
+          }));
+        setUpcomingFixtures(future);
+      })
+      .catch(() => {});
+
+    try { setClubCrest(localStorage.getItem("scp-club-crest")); } catch {}
   }, [fetchPubs]);
 
   useEffect(() => {
@@ -217,11 +254,21 @@ export default function DashboardPage() {
         {/* Greeting */}
         <div className="px-5 mb-4">
           <h1 className="text-xl font-black mb-0.5">{greeting}, Creator!</h1>
-          <p className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>Created by creators, for creators</p>
+          <p className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>Fet per creadors, per a creadors</p>
         </div>
 
         {/* Stats row (mobile) */}
-        {stats && (
+        {loadingStats ? (
+          <div className="grid grid-cols-2 gap-2.5 px-5 mb-4">
+            {[0,1,2,3].map((i) => (
+              <div key={i} className="rounded-2xl p-3.5" style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}>
+                <div style={{ width: 20, height: 20, borderRadius: 5, background: "var(--bg-hover)", animation: "pulse 1.5s ease-in-out infinite", marginBottom: 8 }} />
+                <div style={{ height: 18, width: "55%", borderRadius: 5, background: "var(--bg-hover)", animation: "pulse 1.5s ease-in-out infinite", marginBottom: 5 }} />
+                <div style={{ height: 10, width: "70%", borderRadius: 4, background: "var(--bg-hover)", animation: "pulse 1.5s ease-in-out infinite" }} />
+              </div>
+            ))}
+          </div>
+        ) : stats && (
           <div className="grid grid-cols-2 gap-2.5 px-5 mb-4">
             {[
               {
@@ -283,8 +330,8 @@ export default function DashboardPage() {
         {/* Publication carousel */}
         <div className="mb-2">
           <div className="flex items-center justify-between px-5 mb-3">
-            <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>Latest content</p>
-            <Link href="/feed" className="text-[10px] font-bold" style={{ color: "var(--selected-bg)" }}>See all →</Link>
+            <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>Últim contingut</p>
+            <Link href="/feed" className="text-[10px] font-bold" style={{ color: "var(--selected-bg)" }}>Veure tot →</Link>
           </div>
 
           {loadingPubs ? (
@@ -296,8 +343,8 @@ export default function DashboardPage() {
           ) : publications.length === 0 ? (
             <div className="mx-5 rounded-2xl p-6 text-center" style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}>
               <p className="text-sm" style={{ color: "var(--text-muted)" }}>
-                No content yet.{" "}
-                <a href="/admin/import" className="hover:underline" style={{ color: "var(--selected-bg)" }}>Import some →</a>
+                Sense contingut.{" "}
+                <a href="/admin/import" className="hover:underline" style={{ color: "var(--selected-bg)" }}>Importa'n →</a>
               </p>
             </div>
           ) : (
@@ -358,9 +405,57 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* Mobile fixtures */}
+        {upcomingFixtures.length > 0 && (
+          <div className="px-5 mb-5">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>Propers Partits</p>
+              <Link href="/calendar" className="text-[10px] font-bold" style={{ color: "var(--selected-bg)" }}>Veure tots →</Link>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {upcomingFixtures.slice(0, 3).map((fixture) => {
+                const isHome = fixture.homeAway !== "away";
+                const homeTeam = isHome ? (fixture.team || "Local") : (fixture.opponent || "Visitant");
+                const awayTeam = isHome ? (fixture.opponent || "Visitant") : (fixture.team || "Local");
+                const homeCrest = isHome ? clubCrest : fixture.opponentCrest;
+                const awayCrest = isHome ? fixture.opponentCrest : clubCrest;
+                const kickoff = fixture.eventStartAt?.slice(11, 16) || "20:00";
+                const dateObj = new Date(fixture.startDate + "T12:00:00");
+                const dayStr = dateObj.toLocaleDateString("ca-ES", { weekday: "short", day: "numeric", month: "short" });
+                const diff = new Date(`${fixture.startDate}T${kickoff}:00`).getTime() - Date.now();
+                const daysLeft = diff > 0 ? Math.floor(diff / 86400000) : -1;
+                const countdownStr = diff <= 0 ? "Finalitzat" : daysLeft > 0 ? `${daysLeft}d` : `${Math.floor((diff % 86400000) / 3600000)}h`;
+                return (
+                  <Link key={fixture.id} href="/calendar" style={{ textDecoration: "none" }}>
+                    <div style={{ background: "linear-gradient(135deg, #050D1A 0%, #0D1B33 100%)", borderRadius: 12, padding: "12px 14px", display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: 10, border: "1px solid rgba(255,255,255,0.07)" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <div style={{ width: 36, height: 36, borderRadius: 8, background: "rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", flexShrink: 0 }}>
+                          {homeCrest ? <img src={homeCrest} alt="" style={{ width: 30, height: 30, objectFit: "contain" }} /> : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>}
+                        </div>
+                        <span style={{ fontSize: 12, fontWeight: 800, color: "#fff", textTransform: "uppercase" }}>{homeTeam}</span>
+                      </div>
+                      <div style={{ textAlign: "center" }}>
+                        <div style={{ fontSize: 14, fontWeight: 900, color: "#F5C542" }}>{kickoff}</div>
+                        <div style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>{dayStr}</div>
+                        <div style={{ fontSize: 10, fontWeight: 700, color: diff <= 0 ? "#9CA3AF" : "#34D399", marginTop: 4 }}>{countdownStr}</div>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-end" }}>
+                        <span style={{ fontSize: 12, fontWeight: 800, color: "#fff", textTransform: "uppercase" }}>{awayTeam}</span>
+                        <div style={{ width: 36, height: 36, borderRadius: 8, background: "rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", flexShrink: 0 }}>
+                          {awayCrest ? <img src={awayCrest} alt="" style={{ width: 30, height: 30, objectFit: "contain" }} /> : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>}
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Tools grid */}
         <div className="px-5 mb-4">
-          <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: "var(--text-muted)" }}>Tools</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: "var(--text-muted)" }}>Eines</p>
           <div className="grid grid-cols-3 gap-3">
             {TOOLS.map((tool) => (
               <Link
@@ -381,12 +476,12 @@ export default function DashboardPage() {
         {/* Mobile news preview */}
         <div className="px-5 mb-6">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>Sports & Creator News</p>
-            <Link href="/news" className="text-[10px] font-bold" style={{ color: "var(--selected-bg)" }}>See all →</Link>
+            <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>Esports i novetats</p>
+            <Link href="/news" className="text-[10px] font-bold" style={{ color: "var(--selected-bg)" }}>Veure tot →</Link>
           </div>
           <div className="space-y-2">
             {newsItems.length === 0 ? (
-              <p className="text-xs text-center py-4" style={{ color: "var(--text-muted)" }}>No news yet. Add some from the News section.</p>
+              <p className="text-xs text-center py-4" style={{ color: "var(--text-muted)" }}>Sense notícies. Afegeix-ne des de la secció de Notícies.</p>
             ) : newsItems.slice(0, 3).map((item) => {
               const color = item.platform ? (PLATFORM_COLORS[item.platform] ?? "#3b82f6") : "#3b82f6";
               return (
@@ -416,7 +511,7 @@ export default function DashboardPage() {
           <div className="flex items-center gap-6 mb-6">
             <div className="shrink-0">
               <h1 className="text-xl font-bold mb-0.5">{greeting}, Creator!</h1>
-              <p className="text-xs" style={{ color: "var(--text-muted)" }}>Created by creators, for creators</p>
+              <p className="text-xs" style={{ color: "var(--text-muted)" }}>Fet per creadors, per a creadors</p>
             </div>
             <div className="flex items-center gap-3 ml-auto shrink-0">
               <button
@@ -435,7 +530,19 @@ export default function DashboardPage() {
           </div>
 
           {/* Stats row (desktop) */}
-          {stats && (
+          {loadingStats ? (
+            <div className="grid grid-cols-4 gap-4 mb-6">
+              {[0,1,2,3].map((i) => (
+                <div key={i} className="rounded-2xl p-4 flex items-center gap-3" style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}>
+                  <div style={{ width: 36, height: 36, borderRadius: 10, background: "var(--bg-hover)", animation: "pulse 1.5s ease-in-out infinite", flexShrink: 0 }} />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ height: 20, width: "60%", borderRadius: 6, background: "var(--bg-hover)", animation: "pulse 1.5s ease-in-out infinite", marginBottom: 6 }} />
+                    <div style={{ height: 10, width: "80%", borderRadius: 4, background: "var(--bg-hover)", animation: "pulse 1.5s ease-in-out infinite" }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : stats && (
             <div data-tutorial="metrics" className="grid grid-cols-4 gap-4 mb-6">
               {[
                 { label: "Publicacions indexades", value: stats.totalPublications.toLocaleString(), icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--selected-bg)" strokeWidth="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg> },
@@ -486,10 +593,148 @@ export default function DashboardPage() {
             })}
           </div>
 
+          {/* ── Upcoming Fixtures widget ── */}
+          {upcomingFixtures.length > 0 && (
+            <section className="mb-8">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="font-bold text-base">Propers Partits</h2>
+                <Link href="/calendar" className="text-xs font-semibold hover:opacity-70 transition-opacity" style={{ color: "var(--text-muted)" }}>
+                  Veure tots →
+                </Link>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {upcomingFixtures.map((fixture) => {
+                  const isHome = fixture.homeAway !== "away";
+                  const homeTeam = isHome ? (fixture.team || "Local") : (fixture.opponent || "Visitant");
+                  const awayTeam = isHome ? (fixture.opponent || "Visitant") : (fixture.team || "Local");
+                  const homeCrest = isHome ? clubCrest : fixture.opponentCrest;
+                  const awayCrest = isHome ? fixture.opponentCrest : clubCrest;
+                  const kickoff = fixture.eventStartAt?.slice(11, 16) || "20:00";
+                  const dateObj = new Date(fixture.startDate + "T12:00:00");
+                  const dayStr = dateObj.toLocaleDateString("ca-ES", { weekday: "long", day: "numeric", month: "long" });
+                  // Countdown
+                  const matchDt = new Date(`${fixture.startDate}T${kickoff}:00`);
+                  const diff = matchDt.getTime() - Date.now();
+                  const daysLeft = diff > 0 ? Math.floor(diff / 86400000) : -1;
+                  const hoursLeft = diff > 0 ? Math.floor((diff % 86400000) / 3600000) : 0;
+                  const countdownStr = diff <= 0 ? "Finalitzat" : daysLeft > 0 ? `${daysLeft}d ${hoursLeft}h` : `${hoursLeft}h ${Math.floor((diff % 3600000) / 60000)}min`;
+
+                  return (
+                    <Link key={fixture.id} href="/calendar" style={{ textDecoration: "none" }}>
+                      <div
+                        style={{ background: "linear-gradient(135deg, #050D1A 0%, #0D1B33 100%)", borderRadius: 14, padding: "16px 20px", display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: 16, cursor: "pointer", border: "1px solid rgba(255,255,255,0.07)" }}
+                        onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.9")}
+                        onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+                      >
+                        {/* Home team */}
+                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                          <div style={{ width: 44, height: 44, borderRadius: 10, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", flexShrink: 0 }}>
+                            {homeCrest
+                              ? <img src={homeCrest} alt="" style={{ width: 38, height: 38, objectFit: "contain" }} />
+                              : <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                            }
+                          </div>
+                          <span style={{ fontSize: 14, fontWeight: 900, color: "#fff", textTransform: "uppercase", letterSpacing: "0.01em" }}>{homeTeam}</span>
+                        </div>
+
+                        {/* Centre: date + score/time + countdown */}
+                        <div style={{ textAlign: "center", flexShrink: 0 }}>
+                          <div style={{ fontSize: 10, color: "rgba(255,255,255,0.45)", fontWeight: 600, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.06em" }}>{fixture.competition || ""}</div>
+                          <div style={{ fontSize: 18, fontWeight: 900, color: "#F5C542", letterSpacing: "0.05em" }}>{kickoff}</div>
+                          <div style={{ fontSize: 10, color: "rgba(255,255,255,0.5)", marginTop: 4 }}>{dayStr}</div>
+                          <div style={{ fontSize: 11, fontWeight: 700, color: diff <= 0 ? "#9CA3AF" : "#34D399", marginTop: 6, background: "rgba(52,211,153,0.1)", padding: "2px 8px", borderRadius: 99, display: "inline-block" }}>
+                            {countdownStr}
+                          </div>
+                        </div>
+
+                        {/* Away team */}
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, justifyContent: "flex-end" }}>
+                          <span style={{ fontSize: 14, fontWeight: 900, color: "#fff", textTransform: "uppercase", letterSpacing: "0.01em" }}>{awayTeam}</span>
+                          <div style={{ width: 44, height: 44, borderRadius: 10, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", flexShrink: 0 }}>
+                            {awayCrest
+                              ? <img src={awayCrest} alt="" style={{ width: 38, height: 38, objectFit: "contain" }} />
+                              : <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                            }
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+
+          {/* ── Upcoming calendar widget ── */}
+          <section className="mb-8">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="font-bold text-base">Calendari de contingut</h2>
+              <Link href="/calendar" className="text-xs font-semibold hover:opacity-70 transition-opacity" style={{ color: "var(--text-muted)" }}>
+                Veure tot →
+              </Link>
+            </div>
+            {loadingCalendar ? (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 10 }}>
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="rounded-xl p-3.5" style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderLeft: "3px solid var(--border-color)" }}>
+                    <div style={{ display: "flex", gap: 6, marginBottom: 8 }}>
+                      <div style={{ height: 18, width: 64, borderRadius: 5, background: "var(--bg-hover)", animation: "pulse 1.5s ease-in-out infinite" }} />
+                      <div style={{ height: 18, width: 48, borderRadius: 5, background: "var(--bg-hover)", marginLeft: "auto", animation: "pulse 1.5s ease-in-out infinite" }} />
+                    </div>
+                    <div style={{ height: 16, width: "80%", borderRadius: 4, background: "var(--bg-hover)", marginBottom: 8, animation: "pulse 1.5s ease-in-out infinite" }} />
+                    <div style={{ display: "flex", gap: 4 }}>
+                      <div style={{ height: 14, width: 24, borderRadius: 4, background: "var(--bg-hover)", animation: "pulse 1.5s ease-in-out infinite" }} />
+                      <div style={{ height: 14, width: 24, borderRadius: 4, background: "var(--bg-hover)", animation: "pulse 1.5s ease-in-out infinite" }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : upcomingItems.length === 0 ? (
+              <Link href="/calendar" style={{ display: "block", textDecoration: "none" }}>
+                <div className="rounded-2xl p-6 flex flex-col items-center gap-2" style={{ background: "var(--bg-card)", border: "1px dashed var(--border-color)" }}>
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  <p className="text-xs font-semibold" style={{ color: "var(--text-muted)" }}>Sense contingut planificat per als propers 14 dies</p>
+                  <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>Crea un nou pla al calendari</p>
+                </div>
+              </Link>
+            ) : (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 10 }}>
+                {upcomingItems.map((item) => {
+                  const STATUS_COLOR: Record<string, string> = { idea: "#6B7280", planned: "#3B82F6", in_production: "#F59E0B", ready: "#8B5CF6", published: "#10B981" };
+                  const STATUS_LABEL: Record<string, string> = { idea: "Idea", planned: "Planificat", in_production: "En producció", ready: "Llest", published: "Publicat" };
+                  const PLATFORM_ICON: Record<string, string> = { Instagram: "IG", TikTok: "TK", YouTube: "YT", Twitter: "X", Facebook: "FB", LinkedIn: "LI" };
+                  const color = STATUS_COLOR[item.status] ?? "#6B7280";
+                  const d = new Date(item.plannedDate + "T12:00:00");
+                  const dayStr = d.toLocaleDateString("ca-ES", { weekday: "short", day: "numeric", month: "short" });
+                  return (
+                    <Link key={item.id} href={`/calendar?item=${item.id}`} style={{ textDecoration: "none" }}>
+                      <div className="rounded-xl p-3.5 hover:opacity-90 transition-opacity" style={{ background: "var(--bg-card)", border: `1px solid var(--border-color)`, borderLeft: `3px solid ${color}` }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+                          <span style={{ fontSize: 10, fontWeight: 800, padding: "2px 6px", borderRadius: 5, background: color + "18", color }}>{STATUS_LABEL[item.status] ?? item.status}</span>
+                          <span style={{ fontSize: 10, color: "var(--text-muted)", marginLeft: "auto" }}>{dayStr}{item.plannedTime ? " · " + item.plannedTime.slice(0, 5) : ""}</span>
+                        </div>
+                        <p className="text-sm font-semibold truncate" style={{ color: "var(--text-primary)", marginBottom: 6 }}>{item.title}</p>
+                        {item.platforms.length > 0 && (
+                          <div style={{ display: "flex", gap: 4 }}>
+                            {item.platforms.slice(0, 4).map((p) => (
+                              <span key={p} style={{ fontSize: 9, fontWeight: 800, padding: "1px 5px", borderRadius: 4, background: "var(--bg-input)", color: "var(--text-muted)" }}>
+                                {PLATFORM_ICON[p] ?? p.slice(0, 2).toUpperCase()}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+
           {/* Desktop publications grid */}
           <section className="mb-10">
             <div className="flex items-center gap-3 mb-4 flex-wrap">
-              <h2 className="font-bold text-base shrink-0">Latest published content</h2>
+              <h2 className="font-bold text-base shrink-0">Últim contingut publicat</h2>
               {/* Sport quick-filter tabs */}
               {sports.length > 0 && (
                 <div className="flex items-center gap-1.5 flex-wrap flex-1">
@@ -502,7 +747,7 @@ export default function DashboardPage() {
                       border: `1px solid ${selectedSport === "" ? "transparent" : "var(--border-color)"}`,
                     }}
                   >
-                    All
+                    Tot
                   </button>
                   {sports.map((s) => (
                     <button
@@ -520,7 +765,7 @@ export default function DashboardPage() {
                   ))}
                 </div>
               )}
-              <Link href="/feed" className="text-xs font-medium hover:underline shrink-0 ml-auto" style={{ color: "var(--selected-bg)" }}>View all →</Link>
+              <Link href="/feed" className="text-xs font-medium hover:underline shrink-0 ml-auto" style={{ color: "var(--selected-bg)" }}>Veure tot →</Link>
             </div>
             {loadingPubs ? (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -560,7 +805,7 @@ export default function DashboardPage() {
               </div>
             ) : publications.length === 0 ? (
               <div className="rounded-xl p-8 text-center" style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}>
-                <p className="text-sm" style={{ color: "var(--text-muted)" }}>No content yet. <a href="/admin/import" className="hover:underline" style={{ color: "var(--selected-bg)" }}>Import some →</a></p>
+                <p className="text-sm" style={{ color: "var(--text-muted)" }}>Sense contingut. <a href="/admin/import" className="hover:underline" style={{ color: "var(--selected-bg)" }}>Importa'n →</a></p>
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -577,11 +822,20 @@ export default function DashboardPage() {
             <section className="rounded-xl p-5" style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}>
               <div className="flex items-center justify-between mb-4">
                 <h2 className="font-bold text-sm">Industry Hub</h2>
-                <Link href="/news" className="text-xs font-medium hover:underline" style={{ color: "var(--selected-bg)" }}>See all →</Link>
+                <Link href="/news" className="text-xs font-medium hover:underline" style={{ color: "var(--selected-bg)" }}>Veure tot →</Link>
               </div>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {newsItems.length === 0 ? (
-                  <p className="text-xs col-span-3 text-center py-6" style={{ color: "var(--text-muted)" }}>No news yet. Add some from the News section.</p>
+                {loadingNews ? (
+                  [0,1,2,3,4,5].map((i) => (
+                    <div key={i} className="rounded-xl p-4" style={{ background: "var(--bg-primary)", border: "1px solid var(--border-color)" }}>
+                      <div style={{ height: 14, width: "35%", borderRadius: 4, background: "var(--bg-hover)", animation: "pulse 1.5s ease-in-out infinite", marginBottom: 10 }} />
+                      <div style={{ height: 12, width: "90%", borderRadius: 4, background: "var(--bg-hover)", animation: "pulse 1.5s ease-in-out infinite", marginBottom: 5 }} />
+                      <div style={{ height: 12, width: "70%", borderRadius: 4, background: "var(--bg-hover)", animation: "pulse 1.5s ease-in-out infinite", marginBottom: 10 }} />
+                      <div style={{ height: 10, width: "30%", borderRadius: 4, background: "var(--bg-hover)", animation: "pulse 1.5s ease-in-out infinite" }} />
+                    </div>
+                  ))
+                ) : newsItems.length === 0 ? (
+                  <p className="text-xs col-span-3 text-center py-6" style={{ color: "var(--text-muted)" }}>Sense notícies. Afegeix-ne des de la secció de Notícies.</p>
                 ) : newsItems.slice(0, 6).map((item) => {
                   const color = item.platform ? (PLATFORM_COLORS[item.platform] ?? "#3b82f6") : "#3b82f6";
                   const dateStr = item.publishedAt
@@ -769,7 +1023,7 @@ function SavedQuickView({ isFree, onUpgradeClick }: { isFree: boolean; onUpgrade
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--selected-bg)" strokeWidth="2">
             <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
           </svg>
-          <h2 className="font-bold text-sm">Saved</h2>
+          <h2 className="font-bold text-sm">Guardats</h2>
         </div>
         <div className="flex items-center gap-3">
           {isFree ? (
@@ -791,7 +1045,7 @@ function SavedQuickView({ isFree, onUpgradeClick }: { isFree: boolean; onUpgrade
               Nova carpeta
             </Link>
           )}
-          <Link href="/saved" className="text-xs font-medium hover:underline" style={{ color: "var(--selected-bg)" }}>See all →</Link>
+          <Link href="/saved" className="text-xs font-medium hover:underline" style={{ color: "var(--selected-bg)" }}>Veure tot →</Link>
         </div>
       </div>
 
@@ -807,8 +1061,8 @@ function SavedQuickView({ isFree, onUpgradeClick }: { isFree: boolean; onUpgrade
             <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
           </svg>
           <p className="text-xs text-center" style={{ color: "var(--text-muted)" }}>
-            No folders yet.<br/>
-            <Link href="/saved" className="hover:underline" style={{ color: "var(--selected-bg)" }}>Create a folder →</Link>
+            Sense carpetes.<br/>
+            <Link href="/saved" className="hover:underline" style={{ color: "var(--selected-bg)" }}>Crea'n una →</Link>
           </p>
         </div>
       ) : (
@@ -827,7 +1081,7 @@ function SavedQuickView({ isFree, onUpgradeClick }: { isFree: boolean; onUpgrade
                 {folder.name}
               </p>
               <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>
-                {folder.count} {folder.count === 1 ? "item" : "items"}
+                {folder.count} {folder.count === 1 ? "element" : "elements"}
               </p>
             </Link>
           ))}

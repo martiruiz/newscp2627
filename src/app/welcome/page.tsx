@@ -237,11 +237,11 @@ export default function WelcomePage() {
               alignItems: "center",
               justifyContent: "center",
               boxShadow: "0 8px 32px rgba(245,197,66,0.15), 0 0 0 1px rgba(245,197,66,0.08)",
+              overflow: "hidden",
+              padding: 6,
             }}
           >
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
-              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="#F5C542" />
-            </svg>
+            <img src="/logo.svg" alt="Sports Content Playbook" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
           </div>
           <div
             style={{
@@ -365,7 +365,7 @@ export default function WelcomePage() {
           }}
         >
           {[
-            { value: "420K+", label: "publicacions" },
+            { value: "500K+", label: "publicacions" },
             { value: "10+", label: "plataformes" },
             { value: "4.9★", label: "valoració" },
           ].map((stat, i) => (
@@ -390,22 +390,29 @@ export default function WelcomePage() {
         {/* Social proof */}
         <div style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 8 }}>
           <div style={{ display: "flex" }}>
-            {["#E1306C", "#1DA1F2", "#F5C542", "#a855f7"].map((color, i) => (
+            {[
+              { src: "https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg", alt: "FC Barcelona" },
+              { src: "https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg", alt: "Real Madrid" },
+              { src: "https://upload.wikimedia.org/wikipedia/en/5/57/UD_Las_Palmas_logo.svg", alt: "UD Las Palmas" },
+              { src: "https://upload.wikimedia.org/wikipedia/en/8/8b/KKS_Lech_Pozna%C5%84_logo.svg", alt: "Lech Poznań" },
+            ].map((club, i) => (
               <div
                 key={i}
                 style={{
-                  width: 24,
-                  height: 24,
-                  borderRadius: 12,
-                  background: color,
-                  border: "2px solid #080e1a",
-                  marginLeft: i > 0 ? -8 : 0,
+                  width: 30,
+                  height: 30,
+                  borderRadius: 15,
+                  background: "#fff",
+                  border: "2.5px solid #080e1a",
+                  marginLeft: i > 0 ? -10 : 0,
+                  overflow: "hidden",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
+                  flexShrink: 0,
                 }}
               >
-                <span style={{ fontSize: 9, color: "#fff", fontWeight: 700 }}>{["C", "A", "F", "M"][i]}</span>
+                <img src={club.src} alt={club.alt} style={{ width: 26, height: 26, objectFit: "contain" }} />
               </div>
             ))}
           </div>

@@ -6,6 +6,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import RegisterSW from "@/components/RegisterSW";
 import CommandPalette from "@/components/CommandPalette";
 import SuperAdminPlanSwitcher from "@/components/SuperAdminPlanSwitcher";
+import ThemeScheduler from "@/components/ThemeScheduler";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -56,8 +57,26 @@ export default function RootLayout({
         {/* Apply stored theme before paint to avoid flash */}
         <script dangerouslySetInnerHTML={{ __html: `
           try {
-            var t = localStorage.getItem('scp-theme');
-            if (t) document.documentElement.setAttribute('data-theme', t);
+            var raw = localStorage.getItem('scp-theme-schedule');
+            if (raw) {
+              var sched = JSON.parse(raw);
+              if (sched && sched.enabled) {
+                var now = new Date();
+                var cur = now.getHours() * 60 + now.getMinutes();
+                var lsp = (sched.lightStart || '08:00').split(':');
+                var lep = (sched.lightEnd || '20:00').split(':');
+                var ls = parseInt(lsp[0]) * 60 + parseInt(lsp[1] || 0);
+                var le = parseInt(lep[0]) * 60 + parseInt(lep[1] || 0);
+                var isLight = ls < le ? (cur >= ls && cur < le) : (cur >= ls || cur < le);
+                if (!isLight) document.documentElement.setAttribute('data-theme', 'blue');
+              } else {
+                var t2 = localStorage.getItem('scp-theme');
+                if (t2) document.documentElement.setAttribute('data-theme', t2);
+              }
+            } else {
+              var t = localStorage.getItem('scp-theme');
+              if (t) document.documentElement.setAttribute('data-theme', t);
+            }
           } catch(e) {}
         `}} />
       </head>
@@ -65,6 +84,7 @@ export default function RootLayout({
         <LanguageProvider>
           <LayoutShell>{children}</LayoutShell>
         </LanguageProvider>
+        <ThemeScheduler />
         <RegisterSW />
         <CommandPalette />
         <SuperAdminPlanSwitcher />

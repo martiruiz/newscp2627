@@ -12,7 +12,15 @@ export async function getOrCreateDefaultUser() {
         email: "admin@scp-nova.local",
         name: "Admin",
         password: "not-used",
+        superAdmin: true,
+        plan: "pro_annual",
       },
+    });
+  } else if (!user.superAdmin) {
+    // Ensure the default user always has super admin and pro access
+    user = await prisma.user.update({
+      where: { id: DEFAULT_USER_ID },
+      data: { superAdmin: true, plan: "pro_annual" },
     });
   }
   return user;

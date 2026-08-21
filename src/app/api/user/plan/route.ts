@@ -1,20 +1,41 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
+import { getOrCreateDefaultUser } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+async function resolveUserId(): Promise<string | null> {
   const cookieStore = await cookies();
+  // 1. Prefer the admin session cookie (set by /admin/login)
   const adminCookie = cookieStore.get("scp_admin_session");
-  if (!adminCookie?.value) {
-    return NextResponse.json({ plan: "free", hasSubscription: false });
+  if (adminCookie?.value) {
+    const [id] = adminCookie.value.split(":");
+    return id || null;
   }
+  // 2. Fall back to the user-facing identity cookie
+  const userCookie = cookieStore.get("scp_user_id");
+  return userCookie?.value ?? null;
+}
 
-  const [userId] = adminCookie.value.split(":");
+export async function GET() {
+  // Ensure default user exists and has super admin flag
+  const defaultUser = await getOrCreateDefaultUser();
+
+  const userId = (await resolveUserId()) ?? defaultUser.id;
+
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { plan: true, stripeCustomerId: true, stripeSubscriptionId: true, planExpiresAt: true, email: true, name: true, superAdmin: true, onboardingCompleted: true },
+    select: {
+      plan: true,
+      stripeCustomerId: true,
+      stripeSubscriptionId: true,
+      planExpiresAt: true,
+      email: true,
+      name: true,
+      superAdmin: true,
+      onboardingCompleted: true,
+    },
   });
 
   if (!user) return NextResponse.json({ plan: "free", hasSubscription: false });

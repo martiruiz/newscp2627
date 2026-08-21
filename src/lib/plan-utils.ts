@@ -9,8 +9,8 @@ export function getEffectivePlan(apiData: { plan?: string; email?: string; super
   if (isSuperAdmin) {
     const testPlan =
       typeof window !== "undefined"
-        ? (localStorage.getItem(TEST_PLAN_KEY) ?? "pro")
-        : "pro";
+        ? (localStorage.getItem(TEST_PLAN_KEY) ?? "pro_annual")
+        : "pro_annual";
     return { plan: testPlan, isSuperAdmin: true };
   }
   return { plan: apiData.plan ?? "free", isSuperAdmin: false };

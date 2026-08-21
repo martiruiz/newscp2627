@@ -4,15 +4,17 @@ import { useEffect, useState } from "react";
 import { TEST_PLAN_KEY } from "@/lib/plan-utils";
 
 const PLANS = [
-  { id: "free",    label: "Free" },
-  { id: "weekly",  label: "Weekly" },
-  { id: "basic",   label: "Basic" },
-  { id: "pro",     label: "Pro" },
+  { id: "free",         label: "Free" },
+  { id: "weekly",       label: "Weekly" },
+  { id: "basic_monthly", label: "Basic M" },
+  { id: "basic_annual",  label: "Basic A" },
+  { id: "pro_monthly",   label: "Pro M" },
+  { id: "pro_annual",    label: "Pro A" },
 ];
 
 export default function SuperAdminPlanSwitcher() {
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
-  const [current, setCurrent] = useState<string>("pro");
+  const [current, setCurrent] = useState<string>("pro_annual");
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -21,7 +23,7 @@ export default function SuperAdminPlanSwitcher() {
       .then((d) => {
         if (d.superAdmin === true) {
           setIsSuperAdmin(true);
-          setCurrent(localStorage.getItem(TEST_PLAN_KEY) ?? "pro");
+          setCurrent(localStorage.getItem(TEST_PLAN_KEY) ?? "pro_annual");
         }
       })
       .catch(() => {});
@@ -67,7 +69,7 @@ export default function SuperAdminPlanSwitcher() {
               Vista del pla
             </span>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 5 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 5 }}>
             {PLANS.map((p) => (
               <button
                 key={p.id}
