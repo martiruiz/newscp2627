@@ -11,6 +11,12 @@
       toggle.setAttribute("aria-expanded", String(open));
       toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
     });
+    $$(".nav-links a", nav).forEach((a) =>
+      a.addEventListener("click", () => {
+        nav.classList.remove("is-open");
+        toggle?.setAttribute("aria-expanded", "false");
+      })
+    );
   });
 
   // Mark the current page in the nav
@@ -115,6 +121,11 @@
       $$("[data-price]").forEach((el) => {
         el.textContent = `€${Number(el.dataset.price) * n}`;
       });
+      $$("[data-plan-link]").forEach((a) => {
+        const url = new URL(a.getAttribute("href"), location.href);
+        url.searchParams.set("users", String(n));
+        a.setAttribute("href", `signup.html${url.search}`);
+      });
       $$("[data-seat-label]").forEach((el) => {
         el.textContent = `${n} user${n > 1 ? "s" : ""} access to Sports Content Playbook`;
       });
@@ -140,26 +151,56 @@
     });
   });
 
-  // Social news: platform + text filters
-  $$("[data-news-filters]").forEach((filters) => {
-    const rows = $$("[data-news-list] .news-row");
-    const empty = $("[data-news-empty]");
-    const search = $("[data-news-search]", filters);
-    const apply = () => {
-      const platforms = $$("[data-platforms] [aria-pressed='true']", filters).map((b) => b.dataset.platform);
-      const q = search.value.trim().toLowerCase();
-      let shown = 0;
-      rows.forEach((row) => {
-        const okPlatform = !platforms.length || platforms.includes(row.dataset.platform);
-        const okText = !q || row.textContent.toLowerCase().includes(q);
-        row.hidden = !(okPlatform && okText);
-        if (!row.hidden) shown++;
+  // Contact form: client-side validation (no backend connected yet)
+  $$("[data-contact-form]").forEach((form) => {
+    const status = $("[data-form-status]", form);
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      let ok = true;
+      $$("input[required]", form).forEach((input) => {
+        const valid = input.type === "checkbox" ? input.checked : input.checkValidity() && input.value.trim();
+        const target = input.type === "checkbox" ? input.closest(".check") : input;
+        target.classList.toggle("is-invalid", !valid);
+        if (!valid) ok = false;
       });
-      if (empty) empty.hidden = shown > 0;
-    };
-    $("[data-platforms]", filters).addEventListener("change", apply);
-    search.addEventListener("input", apply);
+      status.className = `form-status ${ok ? "ok" : "err"}`;
+      status.textContent = ok
+        ? "Thanks! We’ll get back to you as soon as possible."
+        : "Please fill in your name, a valid email and accept the privacy policy.";
+      if (ok) form.reset();
+    });
+    form.addEventListener("input", (e) => e.target.classList.remove("is-invalid"));
+    form.addEventListener("change", (e) => e.target.closest(".check")?.classList.remove("is-invalid"));
   });
+
+  // Walkthrough video modal (set data-video to a YouTube/Vimeo embed URL)
+  const modal = $("[data-video-modal]");
+  $$("[data-video]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const url = btn.dataset.video.trim();
+      if (!url || !modal) {
+        if (btn.dataset.videoFallback) location.href = btn.dataset.videoFallback;
+        return;
+      }
+      const frame = $(".video-frame", modal);
+      $("iframe", frame)?.remove();
+      const iframe = document.createElement("iframe");
+      iframe.src = url;
+      iframe.allow = "autoplay; fullscreen; picture-in-picture";
+      iframe.allowFullscreen = true;
+      iframe.title = "Sports Content Playbook walkthrough";
+      frame.append(iframe);
+      modal.hidden = false;
+    });
+  });
+  const closeModal = () => {
+    if (!modal || modal.hidden) return;
+    modal.hidden = true;
+    $("iframe", modal)?.remove();
+  };
+  $("[data-video-close]")?.addEventListener("click", closeModal);
+  modal?.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
 
   // Toggle groups (aria-pressed)
   $$("[data-toggle-group]").forEach((group) => {

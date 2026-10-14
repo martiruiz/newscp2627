@@ -84,3 +84,25 @@
     apply();
   });
 })();
+
+// Welcome offer shown when entering the platform (once per browser session)
+(() => {
+  const modal = document.querySelector("[data-offer]");
+  if (!modal) return;
+  const KEY = "scp-offer-seen";
+  let seen = false;
+  try { seen = sessionStorage.getItem(KEY) === "1"; } catch {}
+  const close = () => {
+    modal.hidden = true;
+    document.body.style.overflow = "";
+    try { sessionStorage.setItem(KEY, "1"); } catch {}
+  };
+  if (!seen) {
+    modal.hidden = false;
+    document.body.style.overflow = "hidden";
+    modal.querySelector(".offer-cta").focus({ preventScroll: true });
+  }
+  modal.querySelector("[data-offer-close]").addEventListener("click", close);
+  modal.addEventListener("click", (e) => { if (e.target === modal) close(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !modal.hidden) close(); });
+})();

@@ -1,0 +1,17 @@
+{
+  "name": "scp-news-pipeline",
+  "private": true,
+  "type": "module",
+  "description": "Fetches sports marketing, social media and AI news, rewrites them for sports digital marketing with Claude and stores them in Supabase.",
+  "scripts": {
+    "start": "node index.js",
+    "dry-run": "node index.js --dry-run"
+  },
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "@anthropic-ai/sdk": "0.129.0",
+    "@supabase/supabase-js": "2.117.0",
+    "fast-xml-parser": "5.11.2",
+    "zod": "4.6.5"
+  }
+}

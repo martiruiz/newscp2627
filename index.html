@@ -3,12 +3,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Sports Content Playbook</title>
-  <meta name="description" content="Discover trends early, analyze what's working in real time and keep an eye on your competition.">
+  <title>Sports Content Ideas & Sports Social Media Tools | SCP</title>
+  <meta name="description" content="Find proven sports content ideas, analyze competitors and plan your sports content calendar with the sports social media tool used by 100+ clubs.">
+  <link rel="canonical" href="https://sportscontentplaybook.com/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Sports Content Playbook">
+  <meta property="og:title" content="Sports Content Ideas & Sports Social Media Tools | SCP">
+  <meta property="og:description" content="Find proven sports content ideas, analyze competitors and plan your sports content calendar with the sports social media tool used by 100+ clubs.">
+  <meta property="og:url" content="https://sportscontentplaybook.com/">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="assets/icon-logo.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=Caveat:wght@500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -16,14 +23,15 @@
   <header class="site-nav" data-nav>
     <a class="brand" href="index.html"><img src="assets/icon-logo.svg" alt="">Sports Content Playbook</a>
     <nav class="nav-links" aria-label="Main">
+      <a href="index.html#how-it-works">How it works</a>
       <a href="content-library.html">Content Library</a>
       <a href="news.html">Social News</a>
       <a href="pricing.html">Pricing</a>
       <a href="blog.html">Blog</a>
     </nav>
     <div class="nav-actions">
-      <a class="btn btn-outline" href="#">Login</a>
-      <a class="btn btn-gold" href="pricing.html">Try It For Free</a>
+      <a class="btn btn-outline" href="login.html">Login</a>
+      <a class="btn btn-gold" href="signup.html">Try It For Free</a>
     </div>
     <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" data-nav-toggle><span></span></button>
   </header>
@@ -42,7 +50,7 @@
 
       <h1>Stop wasting hours searching for <span class="gold">content ideas</span></h1>
       <p class="hero-sub">Discover trends early, analyze what’s working in real time and keep an eye on your competition.<br>Use advanced filters to navigate thousands of posts and save the ones that matter into your own collections.</p>
-      <a class="btn btn-gold" href="pricing.html">Try It For Free</a>
+      <a class="btn btn-gold" href="signup.html">Try It For Free</a>
 
       <div class="hero-shot">
         <img src="assets/hero-library.png" alt="The Sports Content Playbook content library with filters and saved posts">
@@ -204,7 +212,7 @@
     </section>
 
     <!-- Magic behind SCP -->
-    <section class="magic container" data-steps>
+    <section class="magic container" id="how-it-works" data-steps>
       <h2 class="section-title">The <span class="gold">magic</span> behind SCP</h2>
       <div class="magic-grid">
         <ol class="steps">
@@ -245,11 +253,63 @@
       </div>
     </section>
 
+    <!-- Pricing -->
+    <section class="home-pricing container">
+      <div class="home-pricing-head">
+        <h2 class="section-title">Simple, <span class="gold">user-based</span> pricing</h2>
+        <p>Choose how you want to be billed. Each user account can be used on up to two devices.</p>
+      </div>
+
+      <div class="tier-grid">
+        <article class="tier">
+          <div class="tier-top">
+            <h3>Monthly</h3>
+            <p class="tier-desc">Flexible access for your club, billed every month.</p>
+            <hr>
+            <p class="tier-price">€39<small>/mo</small></p>
+            <p class="tier-billed">Billed monthly · 1 user</p>
+          </div>
+          <div class="tier-body">
+            <p class="tier-includes">Includes:</p>
+            <ul>
+              <li><img src="assets/tick.svg" alt="">Full access to the content database</li>
+              <li><img src="assets/tick.svg" alt="">Daily content updates</li>
+              <li><img src="assets/tick.svg" alt="">Advanced search and filtering</li>
+              <li><img src="assets/tick.svg" alt="">Save and organize favorites</li>
+              <li><img src="assets/tick.svg" alt="">Custom accounts tracking requests</li>
+              <li><img src="assets/tick.svg" alt="">Priority email support</li>
+              <li><img src="assets/tick.svg" alt="">Access on up to 2 devices per user</li>
+            </ul>
+            <a class="btn btn-dark btn-xl" href="signup.html?plan=monthly">Get Started <span aria-hidden="true">→</span></a>
+          </div>
+        </article>
+
+        <article class="tier is-popular">
+          <div class="tier-top">
+            <div class="tier-name"><h3>Yearly</h3><span class="tier-badge">Popular</span></div>
+            <p class="tier-desc">Best value for teams that research content all season long.</p>
+            <hr>
+            <p class="tier-price">€32<small>/mo</small></p>
+            <p class="tier-billed">Billed yearly · 1 user</p>
+          </div>
+          <div class="tier-body">
+            <p class="tier-includes">Includes everything in Monthly, plus:</p>
+            <ul>
+              <li><img src="assets/tick.svg" alt="">2 months free compared to monthly billing</li>
+            </ul>
+            <a class="btn btn-gold btn-xl" href="signup.html?plan=yearly">Get Started <span aria-hidden="true">→</span></a>
+          </div>
+        </article>
+      </div>
+
+      <p class="home-pricing-more">Need more users? <a class="link-gold" href="pricing.html">See pricing for up to 8 users</a> or <a class="link-gold" href="contact.html">talk to our team</a>.</p>
+    </section>
+
     <!-- CTA -->
     <section class="cta container">
       <div class="cta-box">
         <h2 class="section-title">Browse the platform and discover how <span class="gold">modern sports teams</span> research content</h2>
-        <a class="btn btn-gold btn-lg" href="pricing.html">Try It Free Now</a>
+        <a class="btn btn-gold btn-lg" href="signup.html">Try It Free Now</a>
       </div>
     </section>
 
@@ -322,6 +382,39 @@
         </div>
       </div>
     </section>
+    <!-- Walkthrough video -->
+    <section class="walkthrough container">
+      <div class="walk-box">
+        <div class="walk-text">
+          <span class="walk-hint" aria-hidden="true">Watch video
+            <svg viewBox="0 0 110 60" fill="none"><path d="M4 56C14 24 52 8 100 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M92 11l9 7-10 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <h2 class="section-title section-title-md">Learn how to find <span class="gold">winning content ideas</span> with Sports Content Playbook</h2>
+          <p>Watch a quick walkthrough and see how sports teams use SCP to research, save and plan their content.</p>
+          <a class="btn btn-gold" href="signup.html">Try It For Free</a>
+        </div>
+
+        <div class="walk-media">
+          <div class="walk-tags" aria-hidden="true">
+            <span class="pill pill-top">Top Picks</span>
+            <span class="pill pill-replicable">Replicable ideas</span>
+            <span class="pill pill-over">Overperforming</span>
+            <span class="walk-score"><b>97.83%</b> AI confidence</span>
+          </div>
+          <div class="walk-shot"><img src="assets/hero-library.png" alt="Sports Content Playbook content library"></div>
+          <img class="walk-badge" src="assets/magic-3-badge.png" alt="Daily upload complete: 5.248 new posts imported">
+          <button class="walk-play" type="button" data-video="" data-video-fallback="book-a-call.html">
+            <img src="assets/play-triangle.svg" alt="">Watch walkthrough
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <div class="video-modal" hidden data-video-modal>
+      <div class="video-frame">
+        <button class="video-close" type="button" aria-label="Close video" data-video-close>×</button>
+      </div>
+    </div>
   </main>
 
   <footer class="site-footer">
@@ -331,8 +424,8 @@
           <a class="brand footer-brand" href="index.html"><img src="assets/icon-logo-lg.svg" alt="">Sports Content Playbook</a>
           <p>Discover trends early, analyze what’s working in real time and keep an eye on your competition.<br>Use advanced filters to navigate thousands of posts and save the ones that matter.</p>
           <div class="actions">
-            <a class="btn btn-outline" href="#">Login</a>
-            <a class="btn btn-gold" href="pricing.html">Try It For Free</a>
+            <a class="btn btn-outline" href="login.html">Login</a>
+            <a class="btn btn-gold" href="signup.html">Try It For Free</a>
           </div>
         </div>
         <div class="footer-cols">
