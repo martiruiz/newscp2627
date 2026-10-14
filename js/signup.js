@@ -43,8 +43,18 @@
     if (error) setStatus(error.message, "err");
   });
 
-  // Email magic link
+  // Email magic link (or password on the login page)
   const form = document.querySelector("[data-signup-form]");
+  const pwField = document.querySelector("[data-password-field]");
+  const pwToggle = document.querySelector("[data-password-toggle]");
+  let usePassword = false;
+  pwToggle?.addEventListener("click", () => {
+    usePassword = !usePassword;
+    pwField.hidden = !usePassword;
+    pwField.querySelector("input").required = usePassword;
+    document.querySelector("[data-submit-label]").textContent = usePassword ? "Log in" : "Send me a login link";
+    pwToggle.textContent = usePassword ? "Email me a login link instead" : "Log in with a password instead";
+  });
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     let ok = true;
@@ -62,6 +72,13 @@
     const fields = Object.fromEntries(new FormData(form));
     const button = form.querySelector("[type=submit]");
     button.disabled = true;
+    if (usePassword) {
+      const { error: pwError } = await auth.client.auth.signInWithPassword({ email: fields.email.trim(), password: fields.password });
+      button.disabled = false;
+      if (pwError) return setStatus("Wrong email or password.", "err");
+      location.href = redirectUrl;
+      return;
+    }
     const { error } = await auth.client.auth.signInWithOtp({
       email: fields.email.trim(),
       options: {

@@ -71,6 +71,14 @@
     root.style.setProperty("--step-ms", `${DURATION}ms`);
     let current = 1;
     let timer;
+    // Fit the visual area to the step being shown (avoids empty space below shorter visuals)
+    const fit = () => {
+      const active = visuals.find((v) => Number(v.dataset.step) === current);
+      const h = active?.firstElementChild?.getBoundingClientRect().height;
+      if (h) active.parentElement.style.height = `${Math.ceil(h)}px`;
+    };
+    root.querySelectorAll("[data-step] img").forEach((img) => img.addEventListener("load", fit));
+    window.addEventListener("resize", fit);
     const show = (n) => {
       current = n;
       buttons.forEach((b) => {
@@ -83,6 +91,7 @@
         b.setAttribute("aria-pressed", String(on));
       });
       visuals.forEach((v) => v.classList.toggle("is-active", Number(v.dataset.step) === n));
+      fit();
       clearTimeout(timer);
       timer = setTimeout(() => show((current % buttons.length) + 1), DURATION);
     };
