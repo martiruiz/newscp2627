@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Content Library — Sports Content Playbook</title>
+  <meta name="description" content="Discover trends early, analyze what's working in real time and keep an eye on your competition.">
+  <link rel="icon" href="assets/icon-logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="library-page">
+
+  <header class="site-nav" data-nav>
+    <a class="brand" href="index.html"><img src="assets/icon-logo.svg" alt="">Sports Content Playbook</a>
+    <nav class="nav-links" aria-label="Main">
+      <a href="content-library.html">Content Library</a>
+      <a href="news.html">Social News</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="blog.html">Blog</a>
+    </nav>
+    <div class="nav-actions">
+      <a class="btn btn-outline" href="#">Login</a>
+      <a class="btn btn-gold" href="pricing.html">Try It For Free</a>
+    </div>
+    <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" data-nav-toggle><span></span></button>
+  </header>
+
+  <main class="library" data-library>
+    <aside class="filters" aria-label="Filters">
+      <div class="filters-head">
+        <h1>Filters</h1>
+        <button class="link-gold" type="button" data-clear>Clear all</button>
+      </div>
+
+      <div class="criteria" data-criteria>
+        <h2>Understand how <span class="gold">ANY / ALL</span> work</h2>
+        <button class="close" type="button" aria-label="Close" data-criteria-close><img src="assets/close-white.svg" alt=""></button>
+        <h3>ANY</h3>
+        <p>Shows posts that match at least one of the selected values.</p>
+        <p class="eg">→ In “Club”, select Real Madrid + FC Barcelona<br>→ You’ll see posts about Real Madrid OR Barcelona</p>
+        <h3>ALL</h3>
+        <p>Shows posts that match all selected values at the same time.<br>Useful for finding collaborations or combined appearances.</p>
+        <p class="eg">→ In “Entity”, select Brand + Player<br>→ You’ll only see posts where a brand AND a player appear together</p>
+      </div>
+
+      <div class="f-group">
+        <div class="f-label">Order</div>
+        <div class="f-row" data-toggle-group="single">
+          <button class="pill pill-gold seg-btn" type="button" aria-pressed="true">Random</button>
+          <button class="pill pill-dark seg-btn" type="button" aria-pressed="false">Latest</button>
+        </div>
+      </div>
+
+      <div class="f-group f-cols">
+        <div>
+          <div class="f-label">From</div>
+          <button class="f-select" type="button">Select...<img class="cal" src="assets/calendar.svg" alt=""></button>
+        </div>
+        <div>
+          <div class="f-label">To</div>
+          <button class="f-select" type="button">Select...<img class="cal" src="assets/calendar.svg" alt=""></button>
+        </div>
+      </div>
+
+      <div class="f-group">
+        <div class="f-label">Smart Filters
+          <button class="hint link-muted" type="button" data-criteria-open>Selection criteria <i aria-hidden="true">i</i></button>
+        </div>
+        <div class="f-row" data-toggle-group="multi" data-smart>
+          <button class="pill pill-top smart" type="button" aria-pressed="false" data-label="top">Top Picks</button>
+          <button class="pill pill-replicable smart" type="button" aria-pressed="false" data-label="replicable">Replicable ideas</button>
+          <button class="pill pill-over smart" type="button" aria-pressed="false" data-label="over">Overperforming</button>
+        </div>
+      </div>
+
+      <div class="f-group">
+        <div class="f-label">Sport
+          <span class="toggle" data-toggle-group="single"><button type="button" aria-pressed="false">ALL</button><button type="button" aria-pressed="true">ANY</button></span>
+        </div>
+        <button class="f-select" type="button">Select...<img src="assets/cl-chevron.svg" alt=""></button>
+      </div>
+
+      <div class="f-group">
+        <div class="f-label">Entity
+          <span class="toggle" data-toggle-group="single"><button type="button" aria-pressed="false">ALL</button><button type="button" aria-pressed="true">ANY</button></span>
+        </div>
+        <div class="f-select has-chips" data-chips>
+          <span class="chip">Clubs <button type="button" aria-label="Remove Clubs"><img src="assets/close-gold.svg" alt=""></button></span>
+          <span class="chip">Players <button type="button" aria-label="Remove Players"><img src="assets/close-gold.svg" alt=""></button></span>
+          <img src="assets/cl-chevron.svg" alt="">
+        </div>
+      </div>
+
+      <div class="f-group">
+        <div class="f-label">Competition
+          <span class="toggle" data-toggle-group="single"><button type="button" aria-pressed="false">ALL</button><button type="button" aria-pressed="true">ANY</button></span>
+        </div>
+        <div class="f-list">
+          <div class="head">Select...<img src="assets/cl-chevron.svg" alt=""></div>
+          <label class="search"><input type="search" placeholder="Search..." aria-label="Search competitions" data-search><img src="assets/search.svg" alt=""></label>
+          <ul data-toggle-group="multi" data-options>
+            <li><button type="button" aria-pressed="false">FC Barcelona</button></li>
+            <li><button type="button" aria-pressed="false">Real Madrid</button></li>
+            <li><button type="button" aria-pressed="true">Liverpool</button></li>
+            <li><button type="button" aria-pressed="false">Rayo Vallecano</button></li>
+            <li><button type="button" aria-pressed="false">AC Milan</button></li>
+            <li><button type="button" aria-pressed="false">Arsenal</button></li>
+            <li><button type="button" aria-pressed="false">PSG</button></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="f-group">
+        <div class="f-label">Format
+          <span class="toggle" data-toggle-group="single"><button type="button" aria-pressed="false">ALL</button><button type="button" aria-pressed="true">ANY</button></span>
+        </div>
+        <div class="tiles" data-toggle-group="multi">
+          <button class="tile" type="button" aria-pressed="true"><span class="box"><img src="assets/fmt-carousel.svg" width="61" height="57" alt=""></span>Carousel</button>
+          <button class="tile" type="button" aria-pressed="false"><span class="box"><img src="assets/fmt-reel.svg" width="57" height="65" alt=""></span>Reel</button>
+          <button class="tile" type="button" aria-pressed="false"><span class="box"><img src="assets/fmt-image.svg" width="46" height="46" alt=""></span>Image</button>
+          <button class="tile" type="button" aria-pressed="false"><span class="box"><img src="assets/fmt-video.svg" width="64" height="55" alt=""></span>Video</button>
+        </div>
+      </div>
+
+      <div class="f-group">
+        <div class="f-label">Platform
+          <span class="toggle" data-toggle-group="single"><button type="button" aria-pressed="false">ALL</button><button type="button" aria-pressed="true">ANY</button></span>
+        </div>
+        <div class="tiles" data-toggle-group="multi">
+          <button class="tile" type="button" aria-pressed="true" aria-label="Instagram"><span class="box"><img src="assets/pf-instagram.svg" width="54" height="54" alt=""></span></button>
+          <button class="tile" type="button" aria-pressed="false" aria-label="TikTok"><span class="box"><img src="assets/pf-tiktok.svg" width="31" height="36" alt=""></span></button>
+          <button class="tile" type="button" aria-pressed="false" aria-label="Facebook"><span class="box raw"><img src="assets/pf-facebook-tile.svg" alt=""></span></button>
+          <button class="tile" type="button" aria-pressed="false" aria-label="X"><span class="box"><img src="assets/pf-x.svg" width="45" height="45" alt=""></span></button>
+          <button class="tile" type="button" aria-pressed="false" aria-label="LinkedIn"><span class="box"><img src="assets/pf-linkedin.svg" width="52" height="52" alt=""></span></button>
+          <button class="tile" type="button" aria-pressed="false" aria-label="YouTube"><span class="box"><img src="assets/pf-youtube.svg" width="43" height="30" alt=""></span></button>
+        </div>
+      </div>
+    </aside>
+
+    <section class="feed" aria-label="Posts">
+      <div class="feed-bar">
+        <button class="pill pill-dark collapse" type="button" aria-expanded="true" data-collapse><img src="assets/chevron-duo.svg" alt="">Collapse filters</button>
+        <div class="spacer"></div>
+        <div class="f-row seg" data-toggle-group="single" data-view>
+          <button class="pill" type="button" aria-pressed="true" data-view-btn="all">All posts</button>
+          <button class="pill" type="button" aria-pressed="false" data-view-btn="saved">Saved (Custom folder) <img src="assets/folder-grey.svg" width="21" height="21" alt=""></button>
+          <button class="pill" type="button" aria-pressed="false" data-view-btn="saved">Saved (All) <img src="assets/folder-grey.svg" width="21" height="21" alt=""></button>
+        </div>
+      </div>
+
+      <div class="posts" data-posts>
+        <article class="post" data-labels="top">
+          <div class="post-head"><span class="pill pill-top">Top Picks</span><button class="pill pill-dark" type="button" data-save>Save <img src="assets/plus-grey.svg" width="14" height="14" alt=""></button></div>
+          <div class="post-shot"><img src="assets/post-1.png" alt="Instagram post by gophermbb: a season full of memories" loading="lazy"></div>
+        </article>
+        <article class="post" data-labels="">
+          <div class="post-head"><span></span><button class="pill pill-dark" type="button" data-save>Save <img src="assets/plus-grey.svg" width="14" height="14" alt=""></button></div>
+          <div class="post-shot"><img src="assets/post-2.png" alt="Instagram post by asseofficiel: decibel meter in the stands" loading="lazy"></div>
+        </article>
+        <article class="post" data-labels="replicable" data-saved>
+          <div class="post-head"><span class="pill pill-replicable">Replicable ideas</span><button class="pill pill-gold" type="button" data-save>Saved <img src="assets/folder-gold.svg" width="21" height="21" alt=""></button></div>
+          <div class="post-shot"><img src="assets/post-3.png" alt="Instagram post by villarrealcf: El único secreto es el trabajo" loading="lazy"></div>
+        </article>
+        <article class="post" data-labels="">
+          <div class="post-head"><span></span><button class="pill pill-dark" type="button" data-save>Save <img src="assets/plus-grey.svg" width="14" height="14" alt=""></button></div>
+          <div class="post-shot"><img src="assets/post-4.png" alt="Instagram post by laclippers: The colors of Intuit Dome" loading="lazy"></div>
+        </article>
+        <article class="post" data-labels="over">
+          <div class="post-head"><span class="pill pill-over">Overperforming</span><button class="pill pill-dark" type="button" data-save>Save <img src="assets/plus-grey.svg" width="14" height="14" alt=""></button></div>
+          <div class="post-shot"><img src="assets/post-5.png" alt="Instagram post by iam_armand: Three shirts. Three trophies. One era." loading="lazy"></div>
+        </article>
+        <article class="post" data-labels="" data-saved>
+          <div class="post-head"><span></span><button class="pill pill-gold" type="button" data-save>Saved <img src="assets/folder-gold.svg" width="21" height="21" alt=""></button></div>
+          <div class="post-shot"><img src="assets/post-6.png" alt="Instagram post by atletifemenino" loading="lazy"></div>
+        </article>
+        <p class="posts-empty" hidden data-empty>No posts match these filters.</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/library.js" defer></script>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
