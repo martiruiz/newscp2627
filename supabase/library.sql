@@ -20,6 +20,11 @@ create table if not exists public.accounts (
   primary key (platform, handle)
 );
 
+-- array_to_string() isn't marked immutable, so generated columns can't call it directly
+create or replace function public.immutable_array_to_string(arr text[], sep text)
+returns text language sql immutable parallel safe
+as $$ select array_to_string(arr, sep) $$;
+
 -- ---------- Posts ----------
 create table if not exists public.posts (
   id              text primary key,
@@ -58,7 +63,7 @@ create table if not exists public.posts (
   source          text,           -- brightdata / metricool / manual …
   fetched_at      timestamptz not null default now(),
   search          tsvector generated always as (
-    to_tsvector('simple', coalesce(caption, '') || ' ' || coalesce(account_handle, '') || ' ' || array_to_string(entities, ' ') || ' ' || array_to_string(topics, ' '))
+    to_tsvector('simple', coalesce(caption, '') || ' ' || coalesce(account_handle, '') || ' ' || public.immutable_array_to_string(entities, ' ') || ' ' || public.immutable_array_to_string(topics, ' '))
   ) stored
 );
 
