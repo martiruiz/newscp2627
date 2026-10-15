@@ -26,6 +26,16 @@ Address: `https://sportscontentplaybook.com/admin/` (login at `admin/login.html`
 Supabase **Storage**: the SQL creates a private bucket called `imports` for the original CSV files. If your project
 doesn't allow creating buckets from SQL, create it by hand (Storage → New bucket → `imports`, private).
 
+## Trying it before the website is live (GitHub Pages)
+
+1. The repository owner: GitHub → Settings → Pages → Source **Deploy from a branch** → `main` / `(root)` → Save.
+   After a minute the site is at `https://martiruiz.github.io/newscp2627/` and the admin at `…/newscp2627/admin/`.
+2. Supabase → Authentication → URL Configuration → Redirect URLs → add `https://martiruiz.github.io/newscp2627/**`
+   (needed for the email login links).
+3. Do the Setup steps above, sign up once on `…/newscp2627/signup.html` if you don't have an account, and make yourself superadmin.
+4. Open `…/newscp2627/admin/`, log in ("Email me a login link instead" if you have no password; set one later on Account)
+   and import one of the daily CSVs.
+
 ## CSV format
 
 Same columns as the files you already import:
