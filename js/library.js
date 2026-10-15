@@ -369,6 +369,7 @@
 
   // Media-first card: only the photo / video cover (the platform's embed page, cropped to the media),
   // with SCP overlays. The full embed opens in the detail drawer.
+  const isReel = (p) => /^(reels?|shorts?|video)$/i.test(first(p, "format")) || /\/(reel|shorts)\//.test(p.url || "");
   function card(p) {
     const pf = platformOf(p);
     const src = previewSrc(p);
@@ -376,8 +377,8 @@
     const fmt = pretty(first(p, "format"));
     return `
       <article class="lib-card" data-id="${esc(p.id)}">
-        <div class="lib-media">
-          ${src ? `<iframe class="lib-frame${pf === "instagram" ? " is-ig" : ""}" src="${esc(src)}" loading="lazy" tabindex="-1" title="Post preview" scrolling="no"></iframe>` : `<span class="lib-noimg"></span>`}
+        <div class="lib-media${isReel(p) ? " is-reel" : ""}">
+          ${src ? `<div class="lib-zoom"><iframe class="lib-frame${pf === "instagram" ? " is-ig" : ""}" src="${esc(src)}" loading="lazy" tabindex="-1" title="Post preview" scrolling="no"></iframe></div>` : `<span class="lib-noimg"></span>`}
           <button class="lib-hit" type="button" data-open="${esc(p.id)}" aria-label="Open post${who ? ` by ${esc(who)}` : ""}"></button>
           <div class="lib-top">
             ${pf ? `<span class="lib-badge lib-badge-pf"><img src="assets/pf-${pf}.svg" alt="${esc(pf)}"></span>` : ""}
