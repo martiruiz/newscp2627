@@ -21,9 +21,6 @@
     collapse.setAttribute("aria-expanded", String(!collapsed));
     collapse.lastChild.textContent = collapsed ? "Show filters" : "Collapse filters";
   });
-  const criteria = $("[data-criteria]");
-  $("[data-criteria-close]").addEventListener("click", () => (criteria.hidden = true));
-  $("[data-criteria-open]").addEventListener("click", () => { criteria.hidden = false; criteria.scrollIntoView({ behavior: "smooth", block: "nearest" }); });
   const compSearch = $("[data-search]");
   compSearch.addEventListener("input", () => {
     const q = compSearch.value.trim().toLowerCase();
@@ -39,7 +36,6 @@
     labels: pressed("[data-smart]"),
     sport: $("[data-sport]").value,
     entities: pressed("[data-entities]"),
-    entityMode: pressed("[data-entity-mode]")[0] || "any",
     competitions: pressed("[data-competitions]"),
     formats: pressed("[data-formats]"),
     platforms: pressed("[data-platforms]"),
@@ -87,7 +83,7 @@
     if (s.to) q = q.lte("posted_at", `${s.to}T23:59:59Z`);
     if (s.labels.length) q = q.overlaps("labels", s.labels);
     if (s.sport) q = q.eq("sport", s.sport);
-    if (s.entities.length) q = s.entityMode === "all" ? q.contains("entity_types", s.entities) : q.overlaps("entity_types", s.entities);
+    if (s.entities.length) q = q.overlaps("entity_types", s.entities);
     if (s.competitions.length) q = q.in("competition", s.competitions);
     if (s.formats.length) q = q.in("format", s.formats.flatMap((f) => (f === "reel" ? ["reel", "short"] : [f])));
     if (s.platforms.length) q = q.in("platform", s.platforms);
@@ -297,7 +293,7 @@
   $("[data-q]").addEventListener("input", () => { clearTimeout(timer); timer = setTimeout(() => load(true), 350); });
   more.addEventListener("click", () => load(false));
   $("[data-clear]").addEventListener("click", () => {
-    $$(".filters [aria-pressed='true']").forEach((b) => { if (!b.closest(".toggle") && !b.closest("[data-order]")) b.setAttribute("aria-pressed", "false"); });
+    $$(".filters [aria-pressed='true']").forEach((b) => { if (!b.closest("[data-order]")) b.setAttribute("aria-pressed", "false"); });
     $("[data-from]").value = ""; $("[data-to]").value = ""; $("[data-sport]").value = ""; $("[data-q]").value = "";
     compSearch.value = ""; compSearch.dispatchEvent(new Event("input"));
     load(true);
