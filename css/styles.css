@@ -129,7 +129,7 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
   position: sticky;
   top: 29px;
   z-index: 50;
-  width: min(1120px, 100% - 2 * var(--gutter));
+  width: min(1320px, 100% - 2 * var(--gutter));
   height: 58px;
   margin: 29px auto 0;
   padding: 0 11px 0 21px;
@@ -1111,7 +1111,7 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
   .nav-links { gap: 22px; }
 }
 
-@media (max-width: 1080px) {
+@media (max-width: 1180px) {
   .nav-links,
   .nav-actions { display: none; }
   .nav-toggle { display: grid; place-items: center; }
@@ -1901,7 +1901,25 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
   background: var(--surface-2); color: var(--text); border: 0.5px solid var(--line); font: inherit; font-size: 13px;
 }
 
-.nav-user { max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; color: var(--muted); }
+.nav-user {
+  display: flex; align-items: center; gap: 9px; max-width: 200px; height: 42px; padding: 0 14px 0 5px;
+  border-radius: 100px; font-size: 14px; font-weight: 500; letter-spacing: -0.02em; color: var(--text);
+  white-space: nowrap; transition: background 0.2s;
+}
+.nav-user > span:last-child { overflow: hidden; text-overflow: ellipsis; }
+.nav-user:hover, .nav-user[aria-current="page"] { background: var(--surface-2); }
+.nav-avatar, .profile-avatar {
+  display: inline-grid; place-items: center; flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%;
+  background: radial-gradient(64% 64% at 50% 100%, #ffe0a0 0%, #f8cc75 50%, #f0b84a 100%);
+  color: var(--bg); font-family: var(--font-display); font-weight: 700; font-size: 13px;
+}
+.profile-avatar { width: 72px; height: 72px; font-size: 26px; box-shadow: 0 0 40px rgba(240, 184, 74, 0.35); }
+.profile { padding-top: 64px; }
+.profile-h2 { margin-bottom: 20px; font-family: var(--font-display); font-weight: 600; font-size: 18px; letter-spacing: -0.02em; }
+.profile .auth-card + .auth-card { margin-top: 20px; }
+.profile input:disabled { opacity: 0.6; cursor: not-allowed; }
+.form-status.ok { color: #00d85b; }
+@media (max-width: 1240px) { .nav-user { max-width: 150px; } }
 
 /* ---------- Social News: platform tiles + dynamic rows ---------- */
 

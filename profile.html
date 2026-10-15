@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en" class="auth-checking">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>My profile — Sports Content Playbook</title>
+  <link rel="icon" href="assets/icon-logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>.auth-checking body { visibility: hidden; }</style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.0/dist/umd/supabase.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/guard.js"></script>
+</head>
+<body class="auth-page">
+  <header class="site-nav" data-nav>
+    <a class="brand" href="index.html"><img src="assets/icon-logo.svg" alt="">Sports Content Playbook</a>
+    <nav class="nav-links" aria-label="Main">
+      <a href="index.html#how-it-works">How it works</a>
+      <a href="content-library.html">Content Library</a>
+      <a href="news.html">Social News</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="blog.html">Blog</a>
+    </nav>
+    <div class="nav-actions">
+      <a class="nav-user" href="profile.html" aria-current="page" data-user-link><span class="nav-avatar" data-user-initials></span><span data-user-name></span></a>
+      <a class="btn btn-outline" href="admin/content-ideas.html" hidden data-admin-link>Admin</a>
+      <button class="btn btn-outline" type="button" data-logout>Log out</button>
+    </div>
+    <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" data-nav-toggle><span></span></button>
+  </header>
+
+  <main class="auth profile">
+    <span class="profile-avatar" data-user-initials></span>
+    <h1 data-profile-title>My profile</h1>
+    <p class="auth-plan" data-profile-plan hidden></p>
+
+    <div class="auth-card">
+      <h2 class="profile-h2">Personal details</h2>
+      <form novalidate data-profile-form>
+        <div class="auth-row">
+          <label class="auth-field">First name
+            <input name="first_name" type="text" autocomplete="given-name" required>
+          </label>
+          <label class="auth-field">Last name
+            <input name="last_name" type="text" autocomplete="family-name">
+          </label>
+        </div>
+        <label class="auth-field">Email
+          <input name="email" type="email" disabled>
+        </label>
+        <button class="btn btn-gold auth-submit" type="submit">Save changes</button>
+        <p class="form-status" role="status" data-profile-status></p>
+      </form>
+    </div>
+
+    <div class="auth-card">
+      <h2 class="profile-h2">Password</h2>
+      <form novalidate data-password-form>
+        <label class="auth-field">New password
+          <input name="password" type="password" autocomplete="new-password" minlength="8" placeholder="At least 8 characters">
+        </label>
+        <button class="btn btn-outline auth-submit" type="submit">Update password</button>
+        <p class="form-status" role="status" data-password-status></p>
+      </form>
+    </div>
+
+    <p class="auth-legal"><a href="content-library.html">← Back to the Content Library</a></p>
+  </main>
+
+  <script src="js/profile.js" defer></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

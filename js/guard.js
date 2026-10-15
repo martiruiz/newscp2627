@@ -11,9 +11,20 @@
 
   document.documentElement.classList.remove("auth-checking");
 
+  // Nav: show the member's name (falls back to the email's first part) + initials, linking to profile.html
+  function setUser(profile, email) {
+    const full = [profile?.first_name, profile?.last_name].filter(Boolean).join(" ").trim();
+    const name = full || email.split("@")[0];
+    const initials = (full ? full.split(/\s+/).slice(0, 2).map((w) => w[0]) : [name[0]]).join("").toUpperCase();
+    document.querySelectorAll("[data-user-name]").forEach((el) => (el.textContent = name));
+    document.querySelectorAll("[data-user-initials]").forEach((el) => (el.textContent = initials));
+    document.querySelectorAll("[data-user-link]").forEach((el) => (el.title = `${email} — My profile`));
+    if (document.querySelector("[data-profile-title]") && full) document.querySelector("[data-profile-title]").textContent = full;
+  }
+  window.SCP_SET_USER = setUser;
+
   const ready = () => {
-    const email = document.querySelector("[data-user-email]");
-    if (email) email.textContent = session.user.email;
+    setUser(null, session.user.email);
     document.querySelectorAll("[data-logout]").forEach((b) =>
       b.addEventListener("click", async () => {
         await auth.client.auth.signOut();
@@ -21,8 +32,9 @@
       })
     );
     auth.getProfile().then((r) => {
+      setUser(r?.profile, session.user.email);
       const role = r?.profile?.role;
-      if (role === "admin" || role === "superadmin") {
+      if (role === "superadmin") {
         document.querySelectorAll("[data-admin-link]").forEach((a) => (a.hidden = false));
       }
     });

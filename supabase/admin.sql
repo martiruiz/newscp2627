@@ -3,7 +3,7 @@
 -- Requires supabase/schema.sql (profiles + roles) to have been run first.
 -- Then run supabase/admin-catalog-seed.sql to load the filter values from the previous back-end.
 --
--- Only users whose profile role is 'admin' or 'superadmin' can read or change anything here.
+-- Only superadmins can read or change anything here.
 
 -- ---------------------------------------------------------------------------
 -- 0. Helper: is the current user an admin?
@@ -14,7 +14,7 @@ language sql
 stable
 security definer set search_path = public
 as $$
-  select coalesce((select role in ('admin', 'superadmin') from public.profiles where id = auth.uid()), false);
+  select coalesce((select role = 'superadmin' from public.profiles where id = auth.uid()), false);
 $$;
 
 -- ---------------------------------------------------------------------------

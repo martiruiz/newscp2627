@@ -160,11 +160,11 @@
     renderSide(pageKey, session, profile);
     // Logged out in another tab → go to the login page (our own Logout button navigates by itself)
     db.auth.onAuthStateChange((event) => { if (event === "SIGNED_OUT" && !loggingOut) toLogin(); });
-    if (!["admin", "superadmin"].includes(profile?.role)) {
+    if (profile?.role !== "superadmin") {
       main.innerHTML = `
         <div class="panel panel-pad" style="max-width:520px">
           <h2>No access</h2>
-          <p class="muted" style="margin-top:6px">Your account (${esc(session.user.email)}) doesn't have admin access. Ask a superadmin to add you on the Users page.</p>
+          <p class="muted" style="margin-top:6px">Your account (${esc(session.user.email)}) doesn't have access to the back-end. Only superadmins can use it.</p>
         </div>`;
       document.documentElement.classList.remove("auth-checking");
       throw new Error("not admin");

@@ -20,7 +20,7 @@
   });
 
   const role = profile?.role;
-  if (role !== "admin" && role !== "superadmin") {
+  if (role !== "superadmin") {
     return show("Your account doesn't have access to the admin panel.");
   }
 
