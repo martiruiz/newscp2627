@@ -314,7 +314,6 @@
       return showEmpty("No posts match these filters.");
     }
     grid.insertAdjacentHTML("beforeend", rows.map(card).join(""));
-    processEmbeds();
     rows.forEach((p) => cache.set(String(p.id), p));
     offset += rows.length;
     more.hidden = offset >= data.total;
@@ -365,23 +364,28 @@
   }
   const tagChips = (p, cats) => cats.flatMap((c) => (p.tags?.[c] || []).map((v) => `<button type="button" class="lib-tag" data-tag="${c}:${v.id}" title="${esc(CAT_LABEL[c])}">${esc(pretty(v.name))}</button>`)).join("");
 
-  // Each card is the platform's own embed (Instagram blockquote + embed.js), as it looks on Instagram
-  function cardEmbed(p) {
-    if (/^\s*<blockquote class="(instagram-media|tiktok-embed|twitter-tweet)/.test(p.embed || "")) return p.embed;
-    const src = previewSrc(p);
-    if (src) return `<iframe class="lib-frame" src="${esc(src)}" loading="lazy" title="Post" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
-    return p.url ? `<a class="btn btn-outline" href="${esc(p.url)}" target="_blank" rel="noopener">Open post</a>` : "";
-  }
+  // Media-first card: only the photo / video cover (the platform's embed page, cropped to the media),
+  // with SCP overlays. The full embed opens in the detail drawer.
   function card(p) {
+    const pf = platformOf(p);
+    const src = previewSrc(p);
     const who = first(p, "club") || first(p, "competition") || first(p, "entity");
+    const fmt = pretty(first(p, "format"));
     return `
       <article class="lib-card" data-id="${esc(p.id)}">
-        <div class="post-head"><span class="pill pill-dark lib-format-pill">${esc(pretty(first(p, "format")) || "Post")}</span>${saveBtn(p.id)}</div>
-        <div class="lib-embed">${cardEmbed(p)}</div>
-        <div class="lib-meta">
-          <p class="lib-account">${esc(who)} <time>${date(p.published_at)}</time></p>
-          <div class="lib-tags">${tagChips(p, ["sport", "competition", "entity"])}</div>
-          <button class="link-gold lib-details" type="button" data-open="${esc(p.id)}">View details →</button>
+        <div class="lib-media">
+          ${src ? `<iframe class="lib-frame${pf === "instagram" ? " is-ig" : ""}" src="${esc(src)}" loading="lazy" tabindex="-1" title="Post preview" scrolling="no"></iframe>` : `<span class="lib-noimg"></span>`}
+          <button class="lib-hit" type="button" data-open="${esc(p.id)}" aria-label="Open post${who ? ` by ${esc(who)}` : ""}"></button>
+          <div class="lib-top">
+            ${pf ? `<span class="lib-badge lib-badge-pf"><img src="assets/pf-${pf}.svg" alt="${esc(pf)}"></span>` : ""}
+            ${fmt ? `<span class="lib-badge">${esc(fmt)}</span>` : ""}
+            <span class="lib-save">${saveBtn(p.id)}</span>
+          </div>
+          <div class="lib-bottom">
+            <div class="lib-tags">${tagChips(p, ["sport", "competition"])}</div>
+            <p class="lib-who">${esc(who)}</p>
+            <p class="lib-when">${date(p.published_at)}${first(p, "entity") ? ` · ${esc(pretty(first(p, "entity")))}` : ""}</p>
+          </div>
         </div>
       </article>`;
   }
@@ -395,13 +399,6 @@
     const src = previewSrc(p);
     if (src) return `<div class="yt-frame is-vertical"><iframe src="${esc(src)}" title="Post" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe></div>`;
     return `<a class="btn btn-outline" href="${esc(p.url)}" target="_blank" rel="noopener">Open post</a>`;
-  }
-  function processEmbeds() {
-    if (!grid.querySelector(".instagram-media")) return;
-    if (window.instgrm) return window.instgrm.Embeds.process();
-    if (!document.querySelector('script[src="https://www.instagram.com/embed.js"]')) {
-      const sc = document.createElement("script"); sc.async = true; sc.src = "https://www.instagram.com/embed.js"; document.body.append(sc);
-    }
   }
   const SCRIPTS = { "instagram-media": "https://www.instagram.com/embed.js", "tiktok-embed": "https://www.tiktok.com/embed.js", "twitter-tweet": "https://platform.twitter.com/widgets.js" };
   function runEmbedScript() {
