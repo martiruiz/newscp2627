@@ -1445,6 +1445,65 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
   .contact + .testimonials { padding-top: 100px; }
 }
 
+/* ---------- Book a call ---------- */
+
+.book .contact-intro .section-title { margin-top: 28px; }
+.book-points { list-style: none; margin: 32px 0 0; padding: 0; display: grid; gap: 16px; max-width: 520px; }
+.book-points li { display: flex; gap: 12px; align-items: flex-start; color: var(--muted); }
+.book-points li img { width: 16px; height: 16px; flex-shrink: 0; margin-top: 3px; }
+.book-points b { color: var(--text); font-weight: 600; }
+.book .contact-intro .book-alt { margin-top: 32px; font-size: 14px; }
+.book-form { padding-top: 60px; }
+
+.field-select { position: relative; display: block; }
+.field-select select {
+  appearance: none;
+  width: 100%;
+  height: 43px;
+  padding: 0 44px 0 18px;
+  background: var(--surface-2);
+  border: 0.5px solid var(--line-soft);
+  border-radius: 100px;
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  letter-spacing: -0.03em;
+  outline: 0;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.field-select select:has(option[value=""]:checked) { color: var(--muted); }
+.field-select select option { background: var(--surface-2); color: var(--text); }
+.field-select select:focus { border-color: rgba(240, 184, 74, 0.6); box-shadow: 0 0 0 3px rgba(240, 184, 74, 0.15); }
+.field-select img { position: absolute; right: 22px; top: 50%; width: 15px; height: 15px; transform: translateY(-50%); pointer-events: none; }
+
+.book-pick { margin: 4px 0 0; padding: 0; border: 0; min-width: 0; }
+.book-pick legend { padding: 0; margin-bottom: 10px; font-family: var(--font-display); font-weight: 600; font-size: 15px; }
+.book-pick legend small { font-family: var(--font-body); font-weight: 500; font-size: 13px; color: var(--muted); }
+.book-options { display: flex; flex-wrap: wrap; gap: 8px; }
+.book-options label {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 35px;
+  padding: 0 16px;
+  background: var(--surface-2);
+  border: 0.5px solid var(--line-soft);
+  border-radius: 100px;
+  font-size: 14px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s, border-color 0.2s;
+}
+.book-options label:hover { color: var(--text); }
+.book-options input { position: absolute; opacity: 0; pointer-events: none; }
+.book-options label:has(input:checked) { background: var(--gold-tint); color: var(--gold); border-color: transparent; }
+.book-options label:has(input:focus-visible) { box-shadow: 0 0 0 3px rgba(240, 184, 74, 0.25); }
+
+@media (max-width: 960px) {
+  .book-form { padding-top: 0; }
+}
+
 /* ---------- Home pricing tiers ---------- */
 
 .home-pricing { padding: 0; }
