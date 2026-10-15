@@ -159,3 +159,44 @@ create policy "Own folder items" on public.folder_items for all to authenticated
 
 -- Only the pipeline can recompute scores
 revoke execute on function public.refresh_outliers(timestamptz) from public, anon, authenticated;
+
+-- =====================================================================
+-- v2 — creator-first filters (moments, style, clubs like mine, saved searches)
+-- Safe to re-run.
+-- =====================================================================
+
+-- What the post is for (one per post) and how it's made
+alter table public.posts add column if not exists moment   text check (moment in (
+  'matchday', 'signing', 'kit', 'sponsor', 'behind_the_scenes', 'fans', 'milestone',
+  'community', 'ticketing', 'training', 'humour', 'other'));
+alter table public.posts add column if not exists style    text check (style in (
+  'talking_head', 'pov', 'meme', 'graphic', 'montage', 'interview', 'challenge', 'vlog', 'live_action', 'other'));
+alter table public.posts add column if not exists language text;   -- ISO 639-1 (es, en, ca, it…)
+alter table public.accounts add column if not exists language text;
+create index if not exists posts_moment_idx on public.posts (moment);
+create index if not exists posts_style_idx  on public.posts (style);
+-- entity_types now means "who's in it": players, fans, staff, sponsors, mascot, legends
+
+-- Posts + account context (size, kind, country) for the library page
+create or replace view public.library_posts with (security_invoker = true) as
+select p.*,
+       a.followers as account_followers,
+       a.kind      as account_kind,
+       a.country   as account_country,
+       a.sport     as account_sport
+from public.posts p
+left join public.accounts a on a.platform = p.platform and a.handle = p.account_handle;
+grant select on public.library_posts to authenticated;
+
+-- Saved filter combinations, per user
+create table if not exists public.saved_searches (
+  id          uuid primary key default gen_random_uuid(),
+  user_id     uuid not null references auth.users (id) on delete cascade default auth.uid(),
+  name        text not null,
+  filters     jsonb not null,
+  created_at  timestamptz not null default now(),
+  unique (user_id, name)
+);
+alter table public.saved_searches enable row level security;
+drop policy if exists "Own saved searches" on public.saved_searches;
+create policy "Own saved searches" on public.saved_searches for all to authenticated using (user_id = auth.uid()) with check (user_id = auth.uid());

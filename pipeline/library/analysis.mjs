@@ -14,8 +14,11 @@
 //   "scrollStoppers": [ { "t": 0, "moment": "", "why": "" } ],
 //   "replicable": { "is": true, "howToAdapt": "how a club / brand can recreate it with its own assets" },
 //   "topPick": true,
-//   "sport": "football", "competition": "LaLiga", "entities": ["FC Barcelona"], "entityTypes": ["clubs"],
+//   "sport": "football", "competition": "LaLiga", "entities": ["FC Barcelona"], "entityTypes": ["players", "staff"],
 //   "topics": ["behind-the-scenes", "kit"],
+//   "moment": "matchday|signing|kit|sponsor|behind_the_scenes|fans|milestone|community|ticketing|training|humour|other",
+//   "style": "talking_head|pov|meme|graphic|montage|interview|challenge|vlog|live_action|other",
+//   "language": "es",
 //   "basis": "video" | "thumbnail"      // what the analysis is based on
 // }
 import fs from "node:fs";
@@ -57,6 +60,9 @@ if (cmd === "next") {
     ...(analysis.entities && { entities: analysis.entities }),
     ...(analysis.entityTypes && { entity_types: analysis.entityTypes }),
     ...(analysis.topics && { topics: analysis.topics }),
+    ...(analysis.moment && { moment: analysis.moment }),
+    ...(analysis.style && { style: analysis.style }),
+    ...(analysis.language && { language: analysis.language }),
   }).eq("id", a);
   if (error) throw error;
   console.log(`Saved analysis for ${a} (labels: ${[...labels].join(", ") || "none"}).`);
