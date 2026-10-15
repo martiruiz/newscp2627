@@ -2316,3 +2316,11 @@ a.blog-img { display: block; }
 .dr-tag-row dt { padding-top: 4px; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
 .dr-tag-row dd { margin: 0; display: flex; flex-wrap: wrap; gap: 6px; }
 .dr-hint { margin-top: 10px; font-size: 12px; color: var(--muted-dim); }
+.lib-embed { margin-top: 12px; border-radius: 12px; overflow: hidden; background: #fff; min-height: 420px; }
+.lib-embed .instagram-media, .lib-embed iframe.instagram-media {
+  min-width: 0 !important; width: 100% !important; max-width: none !important; margin: 0 !important; border: 0 !important; border-radius: 12px !important; box-shadow: none !important;
+}
+.lib-embed > .lib-frame { position: static; display: block; width: 100%; height: 560px; border: 0; pointer-events: auto; }
+.lib-embed:has(iframe.instagram-media) { min-height: 0; background: transparent; }
+.lib-details { margin-top: 10px; font-size: 13px; font-weight: 600; }
+.library .posts { align-items: start; }

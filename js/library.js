@@ -290,7 +290,7 @@
     const s = state();
     renderActive(s);
     if (reset) { offset = 0; grid.innerHTML = ""; empty.hidden = true; note.hidden = true; }
-    if (!db) return showDemo("Content isn't connected yet.");
+    if (!db) return showNote("Content isn't connected yet.");
     const my = ++token;
     more.hidden = true;
     grid.setAttribute("aria-busy", "true");
@@ -303,28 +303,41 @@
       if (!ids.length) { grid.removeAttribute("aria-busy"); return showEmpty(view.kind === "saved" ? "You haven't saved any posts yet." : "This folder is empty."); }
     }
     if (reset) refreshCounts(args);
-    const { data, error } = await db.rpc("library_ideas", { ...args, p_order: s.order, p_seed: seed, p_ids: ids, p_limit: PAGE, p_offset: offset });
+    const { data, error } = await fetchIdeas({ ...args, p_order: s.order, p_seed: seed, p_ids: ids, p_limit: PAGE, p_offset: offset });
     if (my !== token) return;
     grid.removeAttribute("aria-busy");
-    if (error) return showDemo(/does not exist|schema cache|function/i.test(error.message) ? "The library database isn't set up yet." : "Couldn't load posts right now.");
+    if (error) return showNote(/schema cache|does not exist|function/i.test(error.message) ? "The library isn't connected yet (run supabase/library-ideas.sql in Supabase)." : "Couldn't load posts right now.");
     const rows = data?.data || [];
     if (reset) $("[data-result-count]").textContent = `${Number(data.total).toLocaleString("en-GB")} post${data.total === 1 ? "" : "s"}`;
     if (!rows.length && offset === 0) {
-      if (!chipsFor(s).length && view.kind === "all") return showDemo("The library is empty for now — posts appear here after the first import.");
+      if (!chipsFor(s).length && view.kind === "all") return showEmpty("The library is empty for now — posts appear here after the first import.");
       return showEmpty("No posts match these filters.");
     }
     grid.insertAdjacentHTML("beforeend", rows.map(card).join(""));
+    processEmbeds();
     rows.forEach((p) => cache.set(String(p.id), p));
     offset += rows.length;
     more.hidden = offset >= data.total;
   }
 
   function showEmpty(text) { empty.textContent = text; empty.hidden = false; $("[data-result-count]").textContent = ""; }
-  function showDemo(text) {
-    note.textContent = `${text} Showing example posts.`;
-    note.hidden = false;
-    grid.innerHTML = [1, 2, 3, 4, 5, 6].map((n) => `
-      <article class="post"><div class="post-shot"><img src="assets/post-${n}.png" alt="Example post" loading="lazy"></div></article>`).join("");
+  function showNote(text) { note.textContent = text; note.hidden = false; $("[data-result-count]").textContent = ""; }
+
+  // library_ideas (members). Until supabase/library-ideas.sql has been run, superadmins fall back to the admin search
+  // (newest first only; saved posts are filtered from the page).
+  let useAdminSearch = false;
+  async function fetchIdeas(a) {
+    if (!useAdminSearch) {
+      const r = await db.rpc("library_ideas", a);
+      if (!r.error || !/schema cache|does not exist/i.test(r.error.message)) return r;
+      useAdminSearch = true;
+    }
+    const page = Math.floor(a.p_offset / a.p_limit) + 1;
+    const r = await db.rpc("search_content_ideas", { p_filters: a.p_filters, p_q: a.p_q, p_from: a.p_from, p_to: a.p_to, p_page: page, p_per_page: a.p_limit });
+    if (r.error) return r;
+    let rows = r.data.data;
+    if (a.p_ids) rows = rows.filter((x) => a.p_ids.includes(Number(x.id)));
+    return { data: { total: a.p_ids ? rows.length : r.data.meta.total, data: rows } };
   }
 
   // ---------- Rendering ----------
@@ -352,21 +365,23 @@
   }
   const tagChips = (p, cats) => cats.flatMap((c) => (p.tags?.[c] || []).map((v) => `<button type="button" class="lib-tag" data-tag="${c}:${v.id}" title="${esc(CAT_LABEL[c])}">${esc(pretty(v.name))}</button>`)).join("");
 
-  function card(p) {
-    const pf = platformOf(p);
+  // Each card is the platform's own embed (Instagram blockquote + embed.js), as it looks on Instagram
+  function cardEmbed(p) {
+    if (/^\s*<blockquote class="(instagram-media|tiktok-embed|twitter-tweet)/.test(p.embed || "")) return p.embed;
     const src = previewSrc(p);
+    if (src) return `<iframe class="lib-frame" src="${esc(src)}" loading="lazy" title="Post" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
+    return p.url ? `<a class="btn btn-outline" href="${esc(p.url)}" target="_blank" rel="noopener">Open post</a>` : "";
+  }
+  function card(p) {
     const who = first(p, "club") || first(p, "competition") || first(p, "entity");
     return `
       <article class="lib-card" data-id="${esc(p.id)}">
         <div class="post-head"><span class="pill pill-dark lib-format-pill">${esc(pretty(first(p, "format")) || "Post")}</span>${saveBtn(p.id)}</div>
-        <button class="lib-thumb" type="button" data-open="${esc(p.id)}" aria-label="Open post${who ? ` by ${esc(who)}` : ""}">
-          ${src ? `<iframe class="lib-frame${pf === "instagram" ? " is-ig" : ""}" src="${esc(src)}" loading="lazy" tabindex="-1" title="Post preview" scrolling="no"></iframe>` : `<span class="lib-noimg"></span>`}
-          ${pf ? `<span class="lib-platform"><img src="assets/pf-${pf}.svg" alt=""></span>` : ""}
-        </button>
+        <div class="lib-embed">${cardEmbed(p)}</div>
         <div class="lib-meta">
           <p class="lib-account">${esc(who)} <time>${date(p.published_at)}</time></p>
-          ${p.title ? `<p class="lib-caption">${esc(p.title.slice(0, 160))}</p>` : ""}
           <div class="lib-tags">${tagChips(p, ["sport", "competition", "entity"])}</div>
+          <button class="link-gold lib-details" type="button" data-open="${esc(p.id)}">View details →</button>
         </div>
       </article>`;
   }
@@ -380,6 +395,13 @@
     const src = previewSrc(p);
     if (src) return `<div class="yt-frame is-vertical"><iframe src="${esc(src)}" title="Post" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe></div>`;
     return `<a class="btn btn-outline" href="${esc(p.url)}" target="_blank" rel="noopener">Open post</a>`;
+  }
+  function processEmbeds() {
+    if (!grid.querySelector(".instagram-media")) return;
+    if (window.instgrm) return window.instgrm.Embeds.process();
+    if (!document.querySelector('script[src="https://www.instagram.com/embed.js"]')) {
+      const sc = document.createElement("script"); sc.async = true; sc.src = "https://www.instagram.com/embed.js"; document.body.append(sc);
+    }
   }
   const SCRIPTS = { "instagram-media": "https://www.instagram.com/embed.js", "tiktok-embed": "https://www.tiktok.com/embed.js", "twitter-tweet": "https://platform.twitter.com/widgets.js" };
   function runEmbedScript() {
