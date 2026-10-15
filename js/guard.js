@@ -41,7 +41,7 @@
     );
     auth.getProfile().then((r) => {
       setUser(r?.profile, session.user.email);
-      setAvatar(r?.profile?.avatar_url);
+      setAvatar(r?.profile?.avatar_url || session.user.user_metadata?.avatar_url);
       const role = r?.profile?.role;
       if (role === "superadmin") {
         document.querySelectorAll("[data-admin-link]").forEach((a) => (a.hidden = false));

@@ -204,50 +204,70 @@
   });
 
   // ---------- Profile photo: square-cropped + resized to 400px in the browser, stored in Storage "avatars/<user id>/" ----------
+  // The URL is saved on the profile (profiles.avatar_url) and on the account itself (user metadata), so it shows
+  // everywhere even before the profile columns exist. Google sign-ups already bring their Google photo there.
   const avatarEl = $("[data-pf-avatar]");
   const fileInput = $("[data-pf-file]");
+  const photoMsg = $("[data-pf-photo-status]");
+  let avatarUrl = profile.avatar_url || session.user.user_metadata?.avatar_url || null;
   function showAvatar(url) {
     avatarEl.style.backgroundImage = url ? `url("${url}")` : "";
     avatarEl.classList.toggle("has-photo", Boolean(url));
     $("[data-pf-photo-remove]").hidden = !url;
     window.SCP_SET_AVATAR?.(url);
   }
-  showAvatar(profile.avatar_url);
+  const say = (text, kind = "") => { photoMsg.textContent = text; photoMsg.className = `pf-photo-status ${kind}`; };
+  async function saveAvatarUrl(url) {
+    const [meta, prof] = await Promise.all([
+      db.auth.updateUser({ data: { avatar_url: url } }),
+      db.rpc("update_my_avatar", { p_url: url }),
+    ]);
+    if (meta.error && prof.error) throw meta.error;
+  }
+  const ownFile = (url) => (url && url.includes(`/avatars/${session.user.id}/`) ? decodeURIComponent(url.split("/avatars/")[1]) : null);
+  showAvatar(avatarUrl);
   $("[data-pf-photo]").addEventListener("click", () => fileInput.click());
   fileInput.addEventListener("change", async () => {
     const file = fileInput.files[0];
     fileInput.value = "";
     if (!file) return;
-    const msg = $("[data-pf-photo-status]");
-    if (!file.type.startsWith("image/")) { msg.textContent = "Please choose an image."; return; }
-    msg.textContent = "Uploading…";
+    if (!file.type.startsWith("image/")) return say("Please choose an image.", "err");
+    if (file.size > 15 * 1024 * 1024) return say("That image is too big (max 15 MB).", "err");
+    const before = avatarUrl;
     try {
       const img = await createImageBitmap(file);
       const side = Math.min(img.width, img.height), size = Math.min(400, side);
       const canvas = Object.assign(document.createElement("canvas"), { width: size, height: size });
       canvas.getContext("2d").drawImage(img, (img.width - side) / 2, (img.height - side) / 2, side, side, 0, 0, size, size);
       const blob = await new Promise((ok) => canvas.toBlob(ok, "image/jpeg", 0.88));
+      showAvatar(URL.createObjectURL(blob)); // instant preview
+      avatarEl.classList.add("is-saving");
+      say("Saving photo…");
       const path = `${session.user.id}/avatar-${Date.now()}.jpg`;
       const up = await db.storage.from("avatars").upload(path, blob, { contentType: "image/jpeg", upsert: true });
       if (up.error) throw up.error;
       const url = db.storage.from("avatars").getPublicUrl(path).data.publicUrl;
-      const { error } = await db.rpc("update_my_avatar", { p_url: url });
-      if (error) throw error;
-      if (profile.avatar_url) { const old = profile.avatar_url.split("/avatars/")[1]; if (old) db.storage.from("avatars").remove([decodeURIComponent(old)]); }
-      profile.avatar_url = url;
+      await saveAvatarUrl(url);
+      const old = ownFile(before);
+      if (old) db.storage.from("avatars").remove([old]);
+      avatarUrl = url;
       showAvatar(url);
-      msg.textContent = "";
+      say("Photo saved ✓", "ok");
+      setTimeout(() => photoMsg.textContent === "Photo saved ✓" && say(""), 2500);
     } catch (err) {
-      msg.textContent = /bucket|schema cache|does not exist|not found/i.test(err.message || "") ? "Photo storage isn't set up yet (run supabase/member-profile.sql)." : `Couldn't upload: ${err.message}`;
-    }
+      showAvatar(before);
+      say(/bucket|not found|row-level|policy/i.test(err.message || "") ? "Photo storage isn't set up yet (run the Supabase SQL)." : `Couldn't save the photo: ${err.message}`, "err");
+    } finally { avatarEl.classList.remove("is-saving"); }
   });
   $("[data-pf-photo-remove]").addEventListener("click", async () => {
-    const { error } = await db.rpc("update_my_avatar", { p_url: null });
-    if (error) { $("[data-pf-photo-status]").textContent = error.message; return; }
-    const old = profile.avatar_url?.split("/avatars/")[1];
-    if (old) db.storage.from("avatars").remove([decodeURIComponent(old)]);
-    profile.avatar_url = null;
-    showAvatar(null);
+    try {
+      await saveAvatarUrl(null);
+      const old = ownFile(avatarUrl);
+      if (old) db.storage.from("avatars").remove([old]);
+      avatarUrl = null;
+      showAvatar(null);
+      say("Photo removed", "ok");
+    } catch (err) { say(err.message, "err"); }
   });
 
   // ---------- Password ----------
