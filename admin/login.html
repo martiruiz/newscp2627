@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Log in — SCP Admin</title>
+  <link rel="icon" href="../assets/icon-logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+  <main class="login">
+    <div class="panel login-card">
+      <h1>Sports Content Playbook</h1>
+      <p class="sub">Admin Panel</p>
+      <form novalidate data-login>
+        <label class="field"><span class="label">Email</span><input class="input" type="email" name="email" autocomplete="email" required></label>
+        <label class="field" data-pw><span class="label">Password</span><input class="input" type="password" name="password" autocomplete="current-password"></label>
+        <p class="error-text" data-msg hidden></p>
+        <button class="btn btn-primary" type="submit" data-submit>Sign In</button>
+      </form>
+      <p class="login-alt"><button class="link" type="button" data-toggle>Email me a login link instead</button></p>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.0/dist/umd/supabase.min.js"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script>
+    (async () => {
+      const auth = window.SCP_AUTH;
+      const form = document.querySelector("[data-login]");
+      const msg = document.querySelector("[data-msg]");
+      const pw = document.querySelector("[data-pw]");
+      const submit = document.querySelector("[data-submit]");
+      const params = new URLSearchParams(location.search);
+      const next = /^[a-z0-9-]+\.html$/i.test(params.get("next") || "") ? params.get("next") : "content-ideas.html";
+      const target = new URL(next, location.href).href;
+      let magic = false;
+      const show = (text, ok) => { msg.textContent = text; msg.className = ok ? "ok-text" : "error-text"; msg.hidden = false; };
+
+      if (!auth?.ready) return show("Supabase isn't connected yet (keys missing in js/config.js).");
+      let leaving = false;
+      const go = () => { if (!leaving) { leaving = true; location.replace(target); } };
+      const { data: { session } } = await auth.client.auth.getSession();
+      if (session) return go();
+      // Arriving from an email login link: Supabase signs in from the URL, then we move on
+      auth.client.auth.onAuthStateChange((event, s) => { if (s && event === "SIGNED_IN") go(); });
+
+      document.querySelector("[data-toggle]").addEventListener("click", (e) => {
+        magic = !magic;
+        pw.hidden = magic;
+        submit.textContent = magic ? "Send login link" : "Sign In";
+        e.target.textContent = magic ? "Use a password instead" : "Email me a login link instead";
+        msg.hidden = true;
+      });
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const email = form.email.value.trim();
+        if (!email || !form.email.checkValidity()) return show("Please enter a valid email.");
+        submit.disabled = true;
+        try {
+          if (magic) {
+            const { error } = await auth.client.auth.signInWithOtp({ email, options: { emailRedirectTo: target, shouldCreateUser: false } });
+            if (error) throw error;
+            show("Check your inbox — we've sent you a login link.", true);
+          } else {
+            const { error } = await auth.client.auth.signInWithPassword({ email, password: form.password.value });
+            if (error) throw new Error("Wrong email or password.");
+            go();
+          }
+        } catch (err) {
+          show(/signups not allowed|not found/i.test(err.message) ? "There's no account with that email." : err.message);
+        } finally { submit.disabled = false; }
+      });
+    })();
+  </script>
+</body>
+</html>

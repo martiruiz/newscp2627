@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /admin.html
+Disallow: /admin/
 Disallow: /content-library.html
 
 Sitemap: https://sportscontentplaybook.com/sitemap.xml
