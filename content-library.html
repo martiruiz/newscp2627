@@ -53,8 +53,16 @@
       </div>
 
       <div class="f-group f-cols">
-        <label class="f-date"><span class="f-label">From</span><input type="date" class="f-select" data-from></label>
-        <label class="f-date"><span class="f-label">To</span><input type="date" class="f-select" data-to></label>
+        <div class="dp" data-dp="from">
+          <div class="f-label">From</div>
+          <button class="f-select dp-trigger" type="button" aria-haspopup="dialog"><span data-dp-label>Select...</span><img class="cal" src="assets/calendar.svg" alt=""></button>
+          <input type="hidden" data-from>
+        </div>
+        <div class="dp" data-dp="to">
+          <div class="f-label">To</div>
+          <button class="f-select dp-trigger" type="button" aria-haspopup="dialog"><span data-dp-label>Select...</span><img class="cal" src="assets/calendar.svg" alt=""></button>
+          <input type="hidden" data-to>
+        </div>
       </div>
 
       <div class="f-group">
@@ -184,6 +192,7 @@
     </div>
   </div>
 
+  <script src="js/datepicker.js" defer></script>
   <script src="js/library.js" defer></script>
 
   <script src="js/main.js"></script>

@@ -294,7 +294,7 @@
   more.addEventListener("click", () => load(false));
   $("[data-clear]").addEventListener("click", () => {
     $$(".filters [aria-pressed='true']").forEach((b) => { if (!b.closest("[data-order]")) b.setAttribute("aria-pressed", "false"); });
-    $("[data-from]").value = ""; $("[data-to]").value = ""; $("[data-sport]").value = ""; $("[data-q]").value = "";
+    ["[data-from]", "[data-to]"].forEach((sel) => { $(sel).value = ""; $(sel).dispatchEvent(new Event("input")); }); $("[data-sport]").value = ""; $("[data-q]").value = "";
     compSearch.value = ""; compSearch.dispatchEvent(new Event("input"));
     load(true);
   });
