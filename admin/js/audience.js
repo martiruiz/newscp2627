@@ -19,6 +19,9 @@
     return;
   }
 
+  // Website newsletter sign-ups (home pop-up)
+  const { data: signups } = await A.db.from("newsletter_signups").select("*").order("created_at", { ascending: false });
+
   // Catalog names for sport / competition ids
   const names = new Map();
   try { const { data: cat } = await A.db.rpc("catalog_with_counts"); for (const v of cat || []) names.set(Number(v.id), v.name); } catch {}
@@ -71,6 +74,13 @@
         <div class="panel panel-pad"><span>Newsletter subscribers</span><b>${num(subs.length)}</b></div>
         <div class="panel panel-pad"><span>With 5 favourites</span><b>${num(list.filter((p) => (prefsOf(p).favouriteProfiles || []).length >= 5).length)}</b></div>
       </div>
+      <section class="panel aud-signups">
+        <div class="values-head" style="justify-content:space-between"><h2 style="font-size:16px">Website sign-ups <span class="muted">· newsletter pop-up on the home page</span></h2>
+          <span><b>${num((signups || []).length)}</b> <button class="btn btn-sm" type="button" data-export-signups ${(signups || []).length ? "" : "disabled"}>${icon("download")}Export</button></span></div>
+        ${(signups || []).length ? `<div class="table-wrap"><table class="data"><thead><tr><th>Email</th><th>Name</th><th>Resource</th><th>Signed up</th></tr></thead>
+          <tbody>${signups.slice(0, 8).map((x) => `<tr><td>${esc(x.email)}</td><td>${esc(x.first_name || "—")}</td><td class="muted">${esc(x.resource || "—")}</td><td class="muted">${new Date(x.created_at).toLocaleString("en-GB")}</td></tr>`).join("")}</tbody></table></div>
+          ${signups.length > 8 ? `<p class="muted" style="padding:10px 16px">+${num(signups.length - 8)} more in the export</p>` : ""}` : `<p class="muted" style="padding:14px 16px">No sign-ups yet.</p>`}
+      </section>
       <div class="aud-grid">
         ${bars("Favourite profiles", count(list, (pr) => (pr.favouriteProfiles || []).map((f) => f.name)))}
         ${bars("Favourite creators", count(list, (pr) => (pr.favouriteCreators || []).map((f) => f.name)))}
@@ -96,6 +106,12 @@
       </section>`;
   }
   main.addEventListener("input", (e) => { const k = e.target.dataset.seg; if (k) { seg[k] = e.target.value; render(); if (k === "q") { const i = $("[data-seg=q]"); i.focus(); i.setSelectionRange(i.value.length, i.value.length); } } });
+
+  main.addEventListener("click", (e) => {
+    if (!e.target.closest("[data-export-signups]")) return;
+    const cols = ["email", "first_name", "source", "resource", "consent_text", "created_at"];
+    A.downloadBlob(new Blob(["\ufeff" + A.toCSV(signups, cols)], { type: "text/csv;charset=utf-8" }), `website-signups-${new Date().toISOString().slice(0, 10)}.csv`);
+  });
 
   // Newsletter list for the current segment (only people who opted in)
   $("[data-export]").addEventListener("click", () => {

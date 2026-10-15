@@ -399,3 +399,4 @@ body { background: radial-gradient(60% 40% at 50% 0%, rgba(240, 184, 74, 0.06), 
 .aud-bars li span, .aud-bars li b { position: relative; z-index: 1; }
 .aud-bars li i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--accent-soft); border-radius: 8px; }
 @media (max-width: 900px) { .aud-filters, .aud-kpis { grid-template-columns: 1fr 1fr; } }
+.aud-signups { margin-bottom: 16px; }
