@@ -40,6 +40,7 @@
         <button class="btn btn-ghost" type="button" data-clear>Clear Filters</button>
       </div>
     </div>
+    <div class="info-box notice-broken" hidden data-broken></div>
     <section data-filters></section>
     <div class="selbar" hidden data-selbar>
       <span data-selcount></span>
@@ -211,6 +212,29 @@
       clearSelection(); A.resetCatalog(); load();
     } catch (e) { A.toast(A.errMsg(e), "err"); }
   });
+
+  // ---------- Posts that no longer exist on Instagram (marked by pipeline/library/check-embeds.mjs) ----------
+  async function loadBroken() {
+    const box = $("[data-broken]");
+    const { count, error } = await A.db.from("content_ideas").select("id", { count: "exact", head: true }).not("unavailable_at", "is", null);
+    if (error || !count) { box.hidden = true; return; }
+    box.hidden = false;
+    box.innerHTML = `<span><b>${num(count)} post${count === 1 ? "" : "s"}</b> no longer exist${count === 1 ? "s" : ""} on Instagram (deleted or made private). They're already hidden from the Content Library.</span>
+      <button class="btn btn-danger btn-sm" type="button" data-delete-broken>${icon("trash")}Delete them</button>`;
+    $("[data-delete-broken]", box).addEventListener("click", async () => {
+      const ok = await A.confirmDialog({
+        title: `Delete ${num(count)} unavailable post${count === 1 ? "" : "s"}?`,
+        text: "They will be permanently deleted with all their filter links. This cannot be undone.",
+        confirm: "Delete", danger: true,
+      });
+      if (!ok) return;
+      const { error: e } = await A.db.from("content_ideas").delete().not("unavailable_at", "is", null);
+      if (e) return A.toast(A.errMsg(e), "err");
+      A.toast(`${num(count)} unavailable post${count === 1 ? "" : "s"} deleted.`);
+      A.resetCatalog(); loadBroken(); load();
+    });
+  }
+  loadBroken();
 
   // ---------- Bulk edit (queue of add / remove operations) ----------
   $("[data-bulk-edit]").addEventListener("click", () => {

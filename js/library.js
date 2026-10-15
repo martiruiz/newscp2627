@@ -104,7 +104,10 @@
   async function refreshCounts(args) {
     const my = ++countToken;
     const active = CATEGORIES.filter((c) => selected[c.key].size).map((c) => c.key);
-    const call = (filters) => db.rpc("available_filter_counts", { ...args, p_filters: filters });
+    const call = async (filters) => {
+      const r = useAdminSearch ? { error: { message: "schema cache" } } : await db.rpc("library_filter_counts", { ...args, p_filters: filters });
+      return r.error && /schema cache|does not exist/i.test(r.error.message) ? db.rpc("available_filter_counts", { ...args, p_filters: filters }) : r;
+    };
     const [base, ...own] = await Promise.all([
       call(args.p_filters),
       ...active.map((k) => { const f = { ...args.p_filters }; delete f[k]; return call(f); }),

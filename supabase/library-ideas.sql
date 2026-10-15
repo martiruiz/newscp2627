@@ -9,7 +9,13 @@ create policy "Members read idea tags" on public.content_idea_tags for select to
 drop policy if exists "Members read catalog" on public.idea_catalog;
 create policy "Members read catalog" on public.idea_catalog for select to authenticated using (true);
 
--- One page of ideas for the Content Library.
+-- Posts that no longer exist on the platform (deleted / private). Set by pipeline/library/check-embeds.mjs.
+-- They are hidden from the Content Library; superadmins can delete them from Admin → Content Ideas.
+alter table public.content_ideas add column if not exists unavailable_at timestamptz;
+alter table public.content_ideas add column if not exists checked_at     timestamptz;
+create index if not exists content_ideas_unavailable_idx on public.content_ideas (unavailable_at) where unavailable_at is not null;
+
+-- One page of ideas for the Content Library (unavailable posts excluded).
 --   p_filters: {"sport": {"ids": [1, 2]}, "club": {"ids": [7]}}  → any value within a category, every category must match
 --   p_order:   'latest' | 'random' (stable per p_seed so "Load more" doesn't repeat posts)
 --   p_ids:     restrict to these ideas (saved posts / a folder)
@@ -32,7 +38,7 @@ set search_path = public
 as $$
   with m as (
     select c.* from public.filter_content_ideas(p_filters, p_q, null, p_from, p_to) c
-    where p_ids is null or c.id = any (p_ids)
+    where c.unavailable_at is null and (p_ids is null or c.id = any (p_ids))
   ),
   page as (
     select * from m
@@ -55,6 +61,28 @@ as $$
 $$;
 revoke execute on function public.library_ideas(jsonb, text, date, date, text, text, bigint[], int, int) from public, anon;
 grant execute on function public.library_ideas(jsonb, text, date, date, text, text, bigint[], int, int) to authenticated;
+
+-- Filter counts for the Content Library (unavailable posts excluded).
+create or replace function public.library_filter_counts(
+  p_filters  jsonb default '{}'::jsonb,
+  p_q        text  default null,
+  p_from     date  default null,
+  p_to       date  default null
+)
+returns table (value_id bigint, ideas bigint)
+language sql
+stable
+security invoker
+set search_path = public
+as $$
+  select t.value_id, count(*)
+  from public.filter_content_ideas(p_filters, p_q, null, p_from, p_to) c
+  join public.content_idea_tags t on t.idea_id = c.id
+  where c.unavailable_at is null
+  group by t.value_id;
+$$;
+revoke execute on function public.library_filter_counts(jsonb, text, date, date) from public, anon;
+grant execute on function public.library_filter_counts(jsonb, text, date, date) to authenticated;
 
 -- Folders can now hold imported ideas too (saved as 'ci-<id>'), so post_id no longer has to exist in public.posts.
 alter table public.folder_items drop constraint if exists folder_items_post_id_fkey;
