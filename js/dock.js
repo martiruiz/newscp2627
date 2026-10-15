@@ -59,13 +59,8 @@
     <div class="nl-panel">
       <button class="nl-close" type="button" aria-label="Close" data-nl-close>${svg(I.x)}</button>
       <div class="nl-visual" aria-hidden="true">
-        <div class="nl-kit">
-          <span class="nl-kit-tag">FREE · PDF</span>
-          <img src="assets/icon-logo-lg.svg" alt="">
-          <b>Sports Content<br>Idea Kit</b>
-          <span class="nl-kit-sub">50 proven post formats from clubs, leagues &amp; brands</span>
-          <div class="nl-kit-grid"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-        </div>
+        <img class="nl-photo" src="assets/newsletter-phones.webp" alt="" width="1400" height="875" decoding="async">
+        <div class="nl-badge"><span>FREE</span>Sports Content Idea Kit<small>50 proven post formats</small></div>
         <div class="nl-chip nl-chip-1">${svg(I.trend)}What's working this week</div>
         <div class="nl-chip nl-chip-2">${svg(I.zap)}Ready-to-copy hooks</div>
       </div>
