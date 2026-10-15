@@ -16,7 +16,9 @@
   const note = $("[data-feed-note]");
 
   // ---------- Labels ----------
-  const MOMENTS = { matchday: "⚽ Matchday", signing: "✍️ Signings", kit: "👕 Kit", sponsor: "🤝 Sponsors", behind_the_scenes: "🎬 Behind the scenes", fans: "📣 Fans", milestone: "🏆 Milestones", training: "💪 Training", humour: "😂 Humour", community: "💙 Community", ticketing: "🎟️ Tickets" };
+  const MOMENTS = { matchday: "Matchday", signing: "Signings", kit: "Kit", sponsor: "Sponsors", behind_the_scenes: "Behind the scenes", fans: "Fans", milestone: "Milestones", training: "Training", humour: "Humour", community: "Community", ticketing: "Tickets" };
+  const MOMENT_ICONS = { matchday: "goal", signing: "pen-line", kit: "shirt", sponsor: "handshake", behind_the_scenes: "clapperboard", fans: "megaphone", milestone: "trophy", training: "dumbbell", humour: "laugh", community: "heart-handshake", ticketing: "ticket" };
+  const icon = (name) => (window.SCP_ICONS ? window.SCP_ICONS(name) : "");
   const LABELS = { top_pick: ["Top Picks", "pill-top"], replicable: ["Replicable ideas", "pill-replicable"], overperforming: ["Overperforming", "pill-over"] };
   const PERIODS = { 7: "This week", 31: "This month", season: "This season", custom: "Custom dates" };
   const SIZES = { s: ["Under 10K", 0, 1e4], m: ["10K–100K", 1e4, 1e5], l: ["100K–1M", 1e5, 1e6], xl: ["Over 1M", 1e6, null] };
@@ -82,18 +84,18 @@
 
   // ---------- Upcoming dates (seasonal ideas) ----------
   const KEY_DATES = [
-    { m: 1, d: 1, emoji: "🎆", name: "New Year", q: "new year" },
-    { m: 2, d: 14, emoji: "💘", name: "Valentine’s Day", q: "valentine" },
-    { m: 3, d: 8, emoji: "💜", name: "Women’s Day", q: "women's day" },
-    { m: 4, d: 1, emoji: "🃏", name: "April Fools", q: "april fools" },
-    { m: 4, d: 22, emoji: "🌍", name: "Earth Day", q: "earth day" },
-    { m: 6, d: 28, emoji: "🏳️‍🌈", name: "Pride", q: "pride" },
-    { m: 7, d: 15, emoji: "🧳", name: "Pre-season", q: "preseason" },
-    { m: 8, d: 15, emoji: "📅", name: "Fixture release", q: "fixtures" },
-    { m: 10, d: 31, emoji: "🎃", name: "Halloween", q: "halloween" },
-    { m: 11, d: 0, emoji: "🛍️", name: "Black Friday", q: "black friday" }, // 4th Friday of November
-    { m: 12, d: 25, emoji: "🎄", name: "Christmas", q: "christmas" },
-    { m: 12, d: 28, emoji: "🤡", name: "Inocentes", q: "inocentes" },
+    { m: 1, d: 1, icon: "party-popper", name: "New Year", q: "new year" },
+    { m: 2, d: 14, icon: "heart", name: "Valentine’s Day", q: "valentine" },
+    { m: 3, d: 8, icon: "sparkles", name: "Women’s Day", q: "women's day" },
+    { m: 4, d: 1, icon: "drama", name: "April Fools", q: "april fools" },
+    { m: 4, d: 22, icon: "earth", name: "Earth Day", q: "earth day" },
+    { m: 6, d: 28, icon: "rainbow", name: "Pride", q: "pride" },
+    { m: 7, d: 15, icon: "plane", name: "Pre-season", q: "preseason" },
+    { m: 8, d: 15, icon: "calendar-days", name: "Fixture release", q: "fixtures" },
+    { m: 10, d: 31, icon: "ghost", name: "Halloween", q: "halloween" },
+    { m: 11, d: 0, icon: "shopping-bag", name: "Black Friday", q: "black friday" }, // 4th Friday of November
+    { m: 12, d: 25, icon: "tree-pine", name: "Christmas", q: "christmas" },
+    { m: 12, d: 28, icon: "drama", name: "Inocentes", q: "inocentes" },
   ];
   function nextOccurrence(k, now) {
     const make = (y) => {
@@ -114,7 +116,7 @@
       .filter((k) => k.days <= 75).sort((a, b) => a.days - b.days).slice(0, 4);
     const q = $("[data-q]").value.trim().toLowerCase();
     $("[data-upcoming]").innerHTML = list.length
-      ? `<span class="upcoming-label">Coming up</span>` + list.map((k) => `<button type="button" class="upcoming-chip" data-upcoming-q="${esc(k.q)}" aria-pressed="${q === k.q}">${k.emoji} ${esc(k.name)} <small>${k.days === 0 ? "today" : `in ${k.days} day${k.days === 1 ? "" : "s"}`}</small></button>`).join("")
+      ? `<span class="upcoming-label">Coming up</span>` + list.map((k) => `<button type="button" class="upcoming-chip" data-upcoming-q="${esc(k.q)}" aria-pressed="${q === k.q}">${icon(k.icon)}${esc(k.name)} <small>${k.days === 0 ? "today" : `in ${k.days} day${k.days === 1 ? "" : "s"}`}</small></button>`).join("")
       : "";
   }
   $("[data-upcoming]").addEventListener("click", (e) => {
@@ -346,11 +348,11 @@
           ${thumb}
           <span class="lib-platform"><img src="assets/pf-${esc(p.platform)}.svg" alt=""></span>
           ${p.outlier_score ? `<span class="lib-outlier" title="vs. the account's usual ${esc(p.outlier_metric || "")}">${Number(p.outlier_score).toFixed(1)}x</span>` : ""}
-          ${p.format ? `<span class="lib-format">${FORMAT_NAME[p.format] || ""}${p.moment && MOMENTS[p.moment] ? ` · ${MOMENTS[p.moment].split(" ").slice(1).join(" ")}` : ""}</span>` : ""}
+          ${p.format ? `<span class="lib-format">${FORMAT_NAME[p.format] || ""}${p.moment && MOMENTS[p.moment] ? ` · ${MOMENTS[p.moment]}` : ""}</span>` : ""}
         </button>
         <div class="lib-meta">
           <p class="lib-account">@${esc(p.account_handle)} <time>${date(p.posted_at)}</time></p>
-          <p class="lib-stats">${p.views != null ? `<span>▶ ${compact(p.views)}</span>` : ""}<span>♥ ${compact(p.likes)}</span><span>💬 ${compact(p.comments)}</span>${p.account_followers ? `<span title="Account followers">👥 ${compact(p.account_followers)}</span>` : ""}</p>
+          <p class="lib-stats">${p.views != null ? `<span title="Views">${icon("play")}${compact(p.views)}</span>` : ""}<span title="Likes">${icon("heart")}${compact(p.likes)}</span><span title="Comments">${icon("message-circle")}${compact(p.comments)}</span>${p.account_followers ? `<span title="Account followers">${icon("users")}${compact(p.account_followers)}</span>` : ""}</p>
           ${p.caption ? `<p class="lib-caption">${esc(p.caption.slice(0, 140))}</p>` : ""}
         </div>
       </article>`;
@@ -389,7 +391,7 @@
       <div class="dr-media">${embed(p)}</div>
       <div class="dr-info">
         <p class="dr-account">@${esc(p.account_handle)} · ${date(p.posted_at)}${p.account_followers ? ` · ${compact(p.account_followers)} followers` : ""}</p>
-        <div class="dr-labels">${p.moment && MOMENTS[p.moment] ? `<span class="pill pill-dark pill-xs-solid">${MOMENTS[p.moment]}</span>` : ""}${labels}${p.suspicious ? '<span class="pill pill-dark pill-xs-solid">Reach without engagement</span>' : ""}</div>
+        <div class="dr-labels">${p.moment && MOMENTS[p.moment] ? `<span class="pill pill-dark pill-xs-solid">${icon(MOMENT_ICONS[p.moment])}${MOMENTS[p.moment]}</span>` : ""}${labels}${p.suspicious ? '<span class="pill pill-dark pill-xs-solid">Reach without engagement</span>' : ""}</div>
         <dl class="dr-stats">
           <div><dt>Views</dt><dd>${compact(p.views)}</dd></div>
           <div><dt>Likes</dt><dd>${compact(p.likes)}</dd></div>
@@ -404,7 +406,7 @@
         ${a.replicable?.howToAdapt ? section("How to adapt it", `<p>${esc(a.replicable.howToAdapt)}</p>`) : ""}
         ${p.caption ? section("Caption", `<p class="dr-caption">${esc(p.caption)}</p>`) : ""}
         <div class="dr-actions">
-          <button class="pill pill-gold" type="button" data-more-like="${esc(p.id)}">✨ More like this</button>
+          <button class="pill pill-gold" type="button" data-more-like="${esc(p.id)}">${icon("sparkles")}More like this</button>
           ${saveBtn(p.id)}
           <a class="pill pill-dark" href="${esc(p.url)}" target="_blank" rel="noopener">Open on ${esc(PLATFORM_NAMES[p.platform] || p.platform)} ↗</a>
         </div>
@@ -439,7 +441,7 @@
   function renderMenu() {
     const set = saved.get(menuPost) || new Set();
     $("[data-folder-list]").innerHTML = folders.length
-      ? folders.map((f) => `<li><button type="button" data-folder="${f.id}" aria-pressed="${set.has(f.id)}">${set.has(f.id) ? "✓ " : ""}${esc(f.name)}</button></li>`).join("")
+      ? folders.map((f) => `<li><button type="button" data-folder="${f.id}" aria-pressed="${set.has(f.id)}">${set.has(f.id) ? icon("check") : ""}${esc(f.name)}</button></li>`).join("")
       : `<li class="folder-menu-empty">No folders yet — create your first one.</li>`;
   }
   function openMenu(btn, id) {

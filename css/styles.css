@@ -2194,3 +2194,15 @@ a.blog-img { display: block; }
   .need { padding-inline: var(--gutter); }
   .active-bar { margin-inline: var(--gutter); }
 }
+
+/* Line icons */
+.ico { width: 18px; height: 18px; flex-shrink: 0; }
+.moments button .ico { width: 19px; height: 19px; color: var(--gold); opacity: 0.85; transition: opacity 0.2s; }
+.moments button:hover .ico, .moments button[aria-pressed="true"] .ico { opacity: 1; }
+.upcoming-chip { display: inline-flex; align-items: center; gap: 6px; }
+.upcoming-chip .ico { width: 15px; height: 15px; color: var(--gold); }
+.pill .ico { width: 15px; height: 15px; }
+.lib-stats span { display: inline-flex; align-items: center; gap: 5px; }
+.lib-stats .ico { width: 14px; height: 14px; opacity: 0.8; }
+.folder-menu li button { display: flex; align-items: center; gap: 8px; }
+.folder-menu li button .ico { width: 15px; height: 15px; }
