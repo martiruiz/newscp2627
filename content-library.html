@@ -39,7 +39,10 @@
     <aside class="filters" aria-label="Filters">
       <div class="filters-head">
         <h1>Filters</h1>
-        <button class="link-gold" type="button" data-clear>Clear all</button>
+        <div class="filters-head-actions">
+          <button class="link-gold" type="button" data-clear>Clear all</button>
+          <button class="filters-hide" type="button" aria-label="Hide filters" title="Hide filters" data-hide-filters><img src="assets/chevron-duo.svg" alt=""></button>
+        </div>
       </div>
 
 
@@ -145,7 +148,7 @@
 
     <section class="feed" aria-label="Posts">
       <div class="feed-bar">
-        <button class="pill pill-dark collapse" type="button" aria-expanded="true" data-collapse><img src="assets/chevron-duo.svg" alt="">Collapse filters</button>
+        <button class="pill pill-dark collapse" type="button" aria-expanded="true" data-collapse><img src="assets/chevron-duo.svg" alt=""><span data-collapse-label>Hide filters</span><b class="filter-count" hidden data-filter-count></b></button>
         <label class="feed-search"><img src="assets/search.svg" alt=""><input type="search" placeholder="Search captions, accounts, topics…" aria-label="Search posts" data-q></label>
         <div class="spacer"></div>
         <div class="f-row seg" data-view>

@@ -15,12 +15,24 @@
   const note = $("[data-feed-note]");
 
   // ---------- Sidebar basics ----------
+  // Show / hide the filters column (remembered per browser)
   const collapse = $("[data-collapse]");
-  collapse.addEventListener("click", () => {
-    const collapsed = root.classList.toggle("filters-collapsed");
+  const setCollapsed = (collapsed) => {
+    root.classList.toggle("filters-collapsed", collapsed);
     collapse.setAttribute("aria-expanded", String(!collapsed));
-    collapse.lastChild.textContent = collapsed ? "Show filters" : "Collapse filters";
-  });
+    $("[data-collapse-label]").textContent = collapsed ? "Show filters" : "Hide filters";
+    try { localStorage.setItem("scp-filters-collapsed", collapsed ? "1" : "0"); } catch {}
+  };
+  collapse.addEventListener("click", () => setCollapsed(!root.classList.contains("filters-collapsed")));
+  $("[data-hide-filters]").addEventListener("click", () => setCollapsed(true));
+  try { if (localStorage.getItem("scp-filters-collapsed") === "1") setCollapsed(true); } catch {}
+  const updateCount = () => {
+    const s = state();
+    const n = [s.from || s.to, s.sport].filter(Boolean).length + s.labels.length + s.entities.length + s.competitions.length + s.formats.length + s.platforms.length;
+    const badge = $("[data-filter-count]");
+    badge.textContent = n;
+    badge.hidden = n === 0;
+  };
   const compSearch = $("[data-search]");
   compSearch.addEventListener("input", () => {
     const q = compSearch.value.trim().toLowerCase();
@@ -68,6 +80,7 @@
   const isFiltered = (s) => s.from || s.to || s.labels.length || s.sport || s.entities.length || s.competitions.length || s.formats.length || s.platforms.length || s.q;
 
   async function load(reset) {
+    updateCount();
     if (reset) { offset = 0; grid.innerHTML = ""; empty.hidden = true; note.hidden = true; }
     if (!db) return showDemo("Content isn't connected yet.");
     const my = ++token;
