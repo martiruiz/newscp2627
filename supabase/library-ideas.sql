@@ -23,7 +23,10 @@ create index if not exists content_ideas_unavailable_idx on public.content_ideas
 -- One page of ideas for the Content Library (unavailable posts excluded).
 --   p_filters: {"sport": {"ids": [1, 2]}, "club": {"ids": [7]}}  → any value within a category, every category must match
 --   p_order:   'latest' | 'random' (stable per p_seed so "Load more" doesn't repeat posts)
---   p_ids:     restrict to these ideas (saved posts / a folder)
+--              | 'foryou': posts tagged with p_boost (favourite profiles / creators) first, then p_boost2 (their sports /
+--                competitions), then the rest — newest first inside each group
+--   p_ids:     restrict to these ideas (saved posts)
+drop function if exists public.library_ideas(jsonb, text, date, date, text, text, bigint[], int, int);
 create or replace function public.library_ideas(
   p_filters  jsonb    default '{}'::jsonb,
   p_q        text     default null,
@@ -33,7 +36,9 @@ create or replace function public.library_ideas(
   p_seed     text     default '',
   p_ids      bigint[] default null,
   p_limit    int      default 24,
-  p_offset   int      default 0
+  p_offset   int      default 0,
+  p_boost    bigint[] default null,
+  p_boost2   bigint[] default null
 )
 returns jsonb
 language sql
@@ -42,14 +47,21 @@ security invoker
 set search_path = public
 as $$
   with m as (
-    select c.* from public.filter_content_ideas(p_filters, p_q, null, p_from, p_to) c
+    select c.*,
+      case when p_order = 'foryou' then
+        case
+          when exists (select 1 from public.content_idea_tags t where t.idea_id = c.id and t.value_id = any (p_boost))  then 0
+          when exists (select 1 from public.content_idea_tags t where t.idea_id = c.id and t.value_id = any (p_boost2)) then 1
+          else 2
+        end
+      end as rank,
+      case when p_order = 'random' then md5(c.id::text || coalesce(p_seed, '')) end as shuffle
+    from public.filter_content_ideas(p_filters, p_q, null, p_from, p_to) c
     where c.unavailable_at is null and (p_ids is null or c.id = any (p_ids))
   ),
   page as (
     select * from m
-    order by
-      case when p_order = 'random' then md5(m.id::text || coalesce(p_seed, '')) end,
-      m.published_at desc nulls last, m.id desc
+    order by rank nulls last, shuffle nulls last, published_at desc nulls last, id desc
     limit least(greatest(coalesce(p_limit, 24), 1), 100) offset greatest(coalesce(p_offset, 0), 0)
   )
   select jsonb_build_object(
@@ -59,14 +71,12 @@ as $$
         'id', p.id, 'external_id', p.external_id, 'title', p.title, 'published_at', p.published_at,
         'embed', p.embed, 'url', p.url, 'tags', public.content_idea_tag_map(p.id),
         'media_ratio', p.media_ratio, 'has_analysis', p.analysis is not null
-      ) order by
-        case when p_order = 'random' then md5(p.id::text || coalesce(p_seed, '')) end,
-        p.published_at desc nulls last, p.id desc)
+      ) order by p.rank nulls last, p.shuffle nulls last, p.published_at desc nulls last, p.id desc)
       from page p), '[]'::jsonb)
   );
 $$;
-revoke execute on function public.library_ideas(jsonb, text, date, date, text, text, bigint[], int, int) from public, anon;
-grant execute on function public.library_ideas(jsonb, text, date, date, text, text, bigint[], int, int) to authenticated;
+revoke execute on function public.library_ideas(jsonb, text, date, date, text, text, bigint[], int, int, bigint[], bigint[]) from public, anon;
+grant execute on function public.library_ideas(jsonb, text, date, date, text, text, bigint[], int, int, bigint[], bigint[]) to authenticated;
 
 -- Filter counts for the Content Library (unavailable posts excluded).
 create or replace function public.library_filter_counts(

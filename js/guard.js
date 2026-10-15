@@ -22,6 +22,14 @@
     if (document.querySelector("[data-profile-title]") && full) document.querySelector("[data-profile-title]").textContent = full;
   }
   window.SCP_SET_USER = setUser;
+  // Profile photo replaces the initials wherever they're shown
+  function setAvatar(url) {
+    document.querySelectorAll(".nav-avatar, .pf-avatar").forEach((el) => {
+      el.style.backgroundImage = url ? `url("${url}")` : "";
+      el.classList.toggle("has-photo", Boolean(url));
+    });
+  }
+  window.SCP_SET_AVATAR = setAvatar;
 
   const ready = () => {
     setUser(null, session.user.email);
@@ -33,6 +41,7 @@
     );
     auth.getProfile().then((r) => {
       setUser(r?.profile, session.user.email);
+      setAvatar(r?.profile?.avatar_url);
       const role = r?.profile?.role;
       if (role === "superadmin") {
         document.querySelectorAll("[data-admin-link]").forEach((a) => (a.hidden = false));

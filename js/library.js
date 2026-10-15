@@ -264,6 +264,25 @@
     await loadSavedSearches();
   });
 
+  // ---------- "For you": the member's favourite profiles / creators first, then their sports / competitions ----------
+  const me = { boost: [], boost2: [], fav: new Set() };
+  async function loadMe() {
+    const prefs = (await auth?.getProfile?.())?.profile?.preferences || {};
+    const favIds = [...(prefs.favouriteProfiles || []), ...(prefs.favouriteCreators || [])].map((f) => f.id).filter(Boolean).map(Number);
+    me.boost = favIds;
+    me.fav = new Set(favIds);
+    me.boost2 = [...(prefs.sports || []), ...(prefs.competitions || [])].map(Number);
+    if (!me.boost.length && !me.boost2.length) return;
+    const order = $("[data-order]");
+    order.insertAdjacentHTML("afterbegin", `<button type="button" aria-pressed="false" data-value="foryou" title="Your favourite profiles first, then your sports">${icon("star")}For you</button>`);
+    const btn = order.firstElementChild;
+    btn.addEventListener("click", () => {
+      $$("button", order).forEach((o) => o.setAttribute("aria-pressed", String(o === btn)));
+      order.dispatchEvent(new CustomEvent("change", { bubbles: true }));
+    });
+    $$("button", order).forEach((o) => o.setAttribute("aria-pressed", String(o === btn)));
+  }
+
   // ---------- Saved boards (js/boards.js) ----------
   const boards = window.SCP_BOARDS;
   $$("[data-icon]").forEach((el) => (el.outerHTML = icon(el.dataset.icon)));
@@ -286,7 +305,8 @@
     const args = queryArgs(s);
     const ids = null;
     if (reset) refreshCounts(args);
-    const { data, error } = await fetchIdeas({ ...args, p_order: s.order, p_seed: seed, p_ids: ids, p_limit: PAGE, p_offset: offset });
+    const boost = s.order === "foryou" ? { p_boost: me.boost, p_boost2: me.boost2 } : {};
+    const { data, error } = await fetchIdeas({ ...args, p_order: s.order, p_seed: seed, p_ids: ids, p_limit: PAGE, p_offset: offset, ...boost });
     if (my !== token) return;
     grid.removeAttribute("aria-busy");
     if (error) return showNote(/schema cache|does not exist|function/i.test(error.message) ? "The library isn't connected yet (run supabase/library-ideas.sql in Supabase)." : "Couldn't load posts right now.");
@@ -368,6 +388,7 @@
           <div class="lib-top">
             ${pf ? `<span class="lib-badge lib-badge-pf"><img src="assets/pf-${pf}.svg" alt="${esc(pf)}"></span>` : ""}
             ${fmt ? `<span class="lib-badge">${esc(fmt)}</span>` : ""}
+            ${(p.tags?.club || []).some((v) => me.fav.has(Number(v.id))) ? `<span class="lib-badge lib-badge-fav" title="One of your favourite profiles">${icon("star")}Favourite</span>` : ""}
             <span class="lib-save">${saveBtn(p.id)}</span>
           </div>
           <div class="lib-bottom">
@@ -568,7 +589,7 @@
   $("[data-clear]").addEventListener("click", clearAll);
 
   if (!db) return load(true);
-  Promise.all([loadCatalog().then(renderFacets).catch(() => {}), boards.load(), loadSavedSearches()]).then(() => { load(true); openFromHash(); });
+  Promise.all([loadCatalog().then(renderFacets).catch(() => {}), boards.load(), loadSavedSearches(), loadMe().catch(() => {})]).then(() => { load(true); openFromHash(); });
 })();
 
 // Welcome offer shown when entering the platform (once per browser session)

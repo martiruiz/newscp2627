@@ -16,7 +16,7 @@
   <script src="js/auth.js"></script>
   <script src="js/guard.js"></script>
 </head>
-<body class="auth-page">
+<body class="profile-page">
   <header class="site-nav" data-nav>
     <a class="brand" href="index.html"><img src="assets/icon-logo.svg" alt="">Sports Content Playbook</a>
     <nav class="nav-links" aria-label="Main">
@@ -33,44 +33,113 @@
     <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" data-nav-toggle><span></span></button>
   </header>
 
-  <main class="auth profile">
-    <span class="profile-avatar" data-user-initials></span>
-    <h1 data-profile-title>My profile</h1>
-    <p class="auth-plan" data-profile-plan hidden></p>
-
-    <div class="auth-card">
-      <h2 class="profile-h2">Personal details</h2>
-      <form novalidate data-profile-form>
-        <div class="auth-row">
-          <label class="auth-field">First name
-            <input name="first_name" type="text" autocomplete="given-name" required>
-          </label>
-          <label class="auth-field">Last name
-            <input name="last_name" type="text" autocomplete="family-name">
-          </label>
+  <main class="pf" data-pf>
+    <!-- Hero -->
+    <section class="pf-hero">
+      <div class="pf-id">
+        <div class="pf-photo">
+          <button class="pf-avatar" data-pf-avatar type="button" data-pf-photo aria-label="Change profile photo"><span data-user-initials></span><span class="pf-cam"><span data-icon="camera"></span></span></button>
+          <input type="file" accept="image/*" hidden data-pf-file>
+          <button class="pf-photo-remove" type="button" hidden data-pf-photo-remove>Remove photo</button>
+          <p class="pf-photo-status" data-pf-photo-status></p>
         </div>
-        <label class="auth-field">Email
-          <input name="email" type="email" disabled>
-        </label>
-        <button class="btn btn-gold auth-submit" type="submit">Save changes</button>
-        <p class="form-status" role="status" data-profile-status></p>
+        <div>
+          <p class="pf-eyebrow" data-pf-role>Your profile</p>
+          <h1 data-profile-title>My profile</h1>
+          <p class="pf-org" data-pf-org></p>
+        </div>
+      </div>
+      <div class="pf-meter" data-pf-meter>
+        <svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="52" class="pf-ring-bg"/><circle cx="60" cy="60" r="52" class="pf-ring" data-pf-ring/></svg>
+        <div class="pf-meter-text"><b data-pf-pct>0%</b><span>complete</span></div>
+      </div>
+      <div class="pf-why">
+        <b>Make the library yours</b>
+        <p>Tell us about your club and your favourite profiles. We'll put their new posts first in the Content Library and send you newsletters that fit what you do.</p>
+        <p class="pf-next" data-pf-next></p>
+      </div>
+    </section>
+
+    <div class="pf-layout">
+      <nav class="pf-nav" aria-label="Profile sections" data-pf-nav>
+        <a href="#about"><span data-icon="user"></span>About you</a>
+        <a href="#club"><span data-icon="trophy"></span>Your sport</a>
+        <a href="#channels"><span data-icon="megaphone"></span>Channels</a>
+        <a href="#favourites"><span data-icon="star"></span>Favourites</a>
+        <a href="#goals"><span data-icon="target"></span>Goals &amp; content</a>
+        <a href="#newsletter"><span data-icon="mail"></span>Newsletter</a>
+        <a href="#security"><span data-icon="lock"></span>Account</a>
+      </nav>
+
+      <form class="pf-form" novalidate data-pf-form>
+        <section class="pf-card" id="about">
+          <header><h2>About you</h2><p>Who's using the platform.</p></header>
+          <div class="pf-grid">
+            <label class="pf-field">First name<input name="first_name" type="text" autocomplete="given-name" required></label>
+            <label class="pf-field">Last name<input name="last_name" type="text" autocomplete="family-name"></label>
+            <label class="pf-field">Email<input name="email" type="email" disabled></label>
+            <label class="pf-field">Country<input name="country" type="text" autocomplete="country-name" placeholder="e.g. Spain"></label>
+          </div>
+          <div class="pf-q"><span>Your role</span><div class="pf-chips" data-single="role"></div></div>
+          <div class="pf-q"><span>Content language</span><div class="pf-chips" data-single="language"></div></div>
+        </section>
+
+        <section class="pf-card" id="club">
+          <header><h2>Your sport</h2><p>The organisation you create content for.</p></header>
+          <div class="pf-grid">
+            <label class="pf-field pf-wide">Organisation<input name="organization" type="text" placeholder="e.g. FC Barcelona Femení, Liga F, Nike…"></label>
+          </div>
+          <div class="pf-q"><span>Type of organisation</span><div class="pf-chips" data-single="orgType"></div></div>
+          <div class="pf-q"><span>Sports</span><div class="pf-chips" data-catalog-chips="sport"></div></div>
+          <div class="pf-q"><span>Competitions you follow</span><div class="pf-picker" data-picker="competitions" data-source="competition" data-max="10" data-placeholder="Search competitions…"></div></div>
+          <div class="pf-q"><span>Content team size</span><div class="pf-chips" data-single="teamSize"></div></div>
+        </section>
+
+        <section class="pf-card" id="channels">
+          <header><h2>Channels</h2><p>Where you publish.</p></header>
+          <div class="pf-q"><span>Platforms you manage</span><div class="pf-chips pf-chips-pf" data-multi="platforms"></div></div>
+          <div class="pf-q"><span>Followers on your main account</span><div class="pf-chips" data-single="audience"></div></div>
+        </section>
+
+        <section class="pf-card pf-card-gold" id="favourites">
+          <header><h2><span data-icon="sparkles"></span>Your favourites</h2><p>Up to 5 of each. Their new posts appear first in your Content Library (“For you”).</p></header>
+          <div class="pf-q"><span>5 favourite profiles <small>clubs, leagues, brands</small></span><div class="pf-picker" data-picker="favouriteProfiles" data-source="club" data-max="5" data-free data-placeholder="Search a profile, or type any name…"></div></div>
+          <div class="pf-q"><span>5 favourite creators <small>athletes, creators, media</small></span><div class="pf-picker" data-picker="favouriteCreators" data-source="club" data-max="5" data-free data-placeholder="Search a creator, or type any name…"></div></div>
+        </section>
+
+        <section class="pf-card" id="goals">
+          <header><h2>Goals &amp; content</h2><p>What you want your content to achieve.</p></header>
+          <div class="pf-q"><span>Main goals</span><div class="pf-chips" data-multi="goals"></div></div>
+          <div class="pf-q"><span>Formats you make most</span><div class="pf-chips" data-multi="formats"></div></div>
+          <div class="pf-q"><span>Topics you care about</span><div class="pf-chips" data-multi="topics"></div></div>
+          <label class="pf-field pf-wide">Your biggest content challenge right now<textarea name="challenge" rows="3" maxlength="500" placeholder="e.g. We struggle to come up with matchday ideas that aren't just scores and line-ups."></textarea></label>
+        </section>
+
+        <section class="pf-card" id="newsletter">
+          <header><h2>Newsletter</h2><p>Ideas and platform news, picked for your profile.</p></header>
+          <label class="pf-switch"><input type="checkbox" name="newsletter"><span class="switch" aria-hidden="true"></span><span><b>Send me the Sports Content Playbook newsletter</b><small>You can unsubscribe any time.</small></span></label>
+          <div class="pf-q" data-newsletter-only><span>How often</span><div class="pf-chips" data-single="frequency"></div></div>
+          <div class="pf-q" data-newsletter-only><span>What you want in it</span><div class="pf-chips" data-multi="newsletterTopics"></div></div>
+        </section>
+
+        <section class="pf-card" id="security">
+          <header><h2>Account</h2><p>Sign-in and security.</p></header>
+          <div class="pf-grid">
+            <label class="pf-field">New password<input name="password" type="password" autocomplete="new-password" minlength="8" placeholder="At least 8 characters"></label>
+          </div>
+          <div class="pf-row"><button class="btn btn-outline" type="button" data-password-save>Update password</button><p class="form-status" role="status" data-password-status></p></div>
+        </section>
       </form>
     </div>
 
-    <div class="auth-card">
-      <h2 class="profile-h2">Password</h2>
-      <form novalidate data-password-form>
-        <label class="auth-field">New password
-          <input name="password" type="password" autocomplete="new-password" minlength="8" placeholder="At least 8 characters">
-        </label>
-        <button class="btn btn-outline auth-submit" type="submit">Update password</button>
-        <p class="form-status" role="status" data-password-status></p>
-      </form>
+    <div class="pf-savebar" data-pf-savebar hidden>
+      <p data-pf-status>You have unsaved changes</p>
+      <button class="btn btn-outline" type="button" data-pf-discard>Discard</button>
+      <button class="btn btn-gold" type="button" data-pf-save>Save profile</button>
     </div>
-
-    <p class="auth-legal"><a href="content-library.html">← Back to the Content Library</a></p>
   </main>
 
+  <script src="js/icons.js"></script>
   <script src="js/profile.js" defer></script>
   <script src="js/main.js"></script>
 </body>
