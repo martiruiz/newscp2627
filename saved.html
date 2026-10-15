@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en" class="auth-checking">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Saved boards — Sports Content Playbook</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="assets/icon-logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>.auth-checking body { visibility: hidden; }</style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.0/dist/umd/supabase.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/guard.js"></script>
+</head>
+<body class="saved-page">
+  <header class="site-nav" data-nav>
+    <a class="brand" href="index.html"><img src="assets/icon-logo.svg" alt="">Sports Content Playbook</a>
+    <nav class="nav-links" aria-label="Main">
+      <a href="index.html#how-it-works">How it works</a>
+      <a href="content-library.html" aria-current="page">Content Library</a>
+      <a href="news.html">Social News</a>
+      <a href="pricing.html">Pricing</a>
+    </nav>
+    <div class="nav-actions">
+      <a class="nav-user" href="profile.html" data-user-link><span class="nav-avatar" data-user-initials></span><span data-user-name></span></a>
+      <a class="btn btn-outline" href="admin/content-ideas.html" hidden data-admin-link>Admin</a>
+      <button class="btn btn-outline" type="button" data-logout>Log out</button>
+    </div>
+    <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" data-nav-toggle><span></span></button>
+  </header>
+
+  <main class="sv" data-saved>
+    <div class="sv-loading"></div>
+  </main>
+
+  <script src="js/icons.js"></script>
+  <script src="js/boards.js"></script>
+  <script src="js/saved.js" defer></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

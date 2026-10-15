@@ -1,5 +1,5 @@
 // Content Library — imported content ("content_ideas") with filters built from the import columns
-// (idea_catalog categories), detail drawer, folders and saved searches.
+// (idea_catalog categories), details / analysis pop-up, saved boards (js/boards.js) and saved searches.
 (() => {
   const root = document.querySelector("[data-library]");
   if (!root) return;
@@ -264,26 +264,11 @@
     await loadSavedSearches();
   });
 
-  // ---------- Saved folders (imported ideas are stored as "ci-<id>") ----------
-  const key = (id) => `ci-${id}`;
-  let folders = [];
-  let saved = new Map(); // "ci-<id>" -> Set(folder_id)
-  async function loadFolders() {
-    const [{ data: f }, { data: items }] = await Promise.all([
-      db.from("folders").select("id,name").order("created_at"),
-      db.from("folder_items").select("folder_id,post_id"),
-    ]);
-    folders = f || [];
-    saved = new Map();
-    for (const it of items || []) {
-      if (!saved.has(it.post_id)) saved.set(it.post_id, new Set());
-      saved.get(it.post_id).add(it.folder_id);
-    }
-    $("[data-folder-select]").innerHTML = `<option value="">Choose a folder…</option>` + folders.map((x) => `<option value="${x.id}">${esc(x.name)}</option>`).join("");
-  }
+  // ---------- Saved boards (js/boards.js) ----------
+  const boards = window.SCP_BOARDS;
+  $$("[data-icon]").forEach((el) => (el.outerHTML = icon(el.dataset.icon)));
 
   // ---------- Query ----------
-  let view = { kind: "all", folder: null };
   let offset = 0;
   let token = 0;
   let seed = String(Math.random()).slice(2, 10);
@@ -299,12 +284,7 @@
     grid.setAttribute("aria-busy", "true");
 
     const args = queryArgs(s);
-    let ids = null;
-    if (view.kind !== "all") {
-      ids = [...saved.entries()].filter(([, set]) => view.kind === "saved" || set.has(view.folder))
-        .map(([id]) => id).filter((id) => id.startsWith("ci-")).map((id) => Number(id.slice(3)));
-      if (!ids.length) { grid.removeAttribute("aria-busy"); return showEmpty(view.kind === "saved" ? "You haven't saved any posts yet." : "This folder is empty."); }
-    }
+    const ids = null;
     if (reset) refreshCounts(args);
     const { data, error } = await fetchIdeas({ ...args, p_order: s.order, p_seed: seed, p_ids: ids, p_limit: PAGE, p_offset: offset });
     if (my !== token) return;
@@ -313,7 +293,7 @@
     const rows = data?.data || [];
     if (reset) $("[data-result-count]").textContent = `${Number(data.total).toLocaleString("en-GB")} post${data.total === 1 ? "" : "s"}`;
     if (!rows.length && offset === 0) {
-      if (!chipsFor(s).length && view.kind === "all") return showEmpty("The library is empty for now — posts appear here after the first import.");
+      if (!chipsFor(s).length) return showEmpty("The library is empty for now — posts appear here after the first import.");
       return showEmpty("No posts match these filters.");
     }
     addCards(rows);
@@ -361,10 +341,7 @@
     return "";
   }
 
-  function saveBtn(id) {
-    const on = saved.has(key(id));
-    return `<button class="pill ${on ? "pill-gold" : "pill-dark"}" type="button" data-save="${esc(id)}">${on ? "Saved" : "Save"} <img src="assets/${on ? "folder-gold.svg" : "plus-grey.svg"}" width="${on ? 21 : 14}" height="${on ? 21 : 14}" alt=""></button>`;
-  }
+  const saveBtn = (id) => boards.button(id);
   const tagChips = (p, cats) => cats.flatMap((c) => (p.tags?.[c] || []).map((v) => `<button type="button" class="lib-tag" data-tag="${c}:${v.id}" title="${esc(CAT_LABEL[c])}">${esc(pretty(v.name))}</button>`)).join("");
 
   // Media-first card at the post's real shape. Reels play right in the grid; on photos and carousels a click opens
@@ -525,7 +502,10 @@
     if (!b) return;
     try { await navigator.clipboard.writeText(b.dataset.copy); b.lastChild.textContent = "Copied"; setTimeout(() => (b.lastChild.textContent = "Copy"), 1600); } catch {}
   });
-  function closeDrawer() { drawer.hidden = true; body.innerHTML = ""; document.body.style.overflow = ""; }
+  function closeDrawer() {
+    drawer.hidden = true; body.innerHTML = ""; document.body.style.overflow = "";
+    if (location.hash.startsWith("#post=")) history.replaceState(null, "", location.pathname + location.search);
+  }
   $("[data-drawer-close]").addEventListener("click", closeDrawer);
   drawer.addEventListener("click", (e) => { if (e.target === drawer) closeDrawer(); });
 
@@ -546,87 +526,34 @@
     goToResults();
   }
 
-  // ---------- Save to folder menu ----------
-  const menu = $("[data-folder-menu]");
-  let menuPost = null; // "ci-<id>"
-  function renderMenu() {
-    const set = saved.get(menuPost) || new Set();
-    $("[data-folder-list]").innerHTML = folders.length
-      ? folders.map((f) => `<li><button type="button" data-folder="${f.id}" aria-pressed="${set.has(f.id)}">${set.has(f.id) ? icon("check") : ""}${esc(f.name)}</button></li>`).join("")
-      : `<li class="folder-menu-empty">No folders yet — create your first one.</li>`;
-  }
-  function openMenu(btn, id) {
-    menuPost = key(id);
-    renderMenu();
-    menu.hidden = false;
-    const r = btn.getBoundingClientRect();
-    menu.style.top = `${Math.min(window.innerHeight - menu.offsetHeight - 12, r.bottom + 8)}px`;
-    menu.style.left = `${Math.max(12, Math.min(window.innerWidth - menu.offsetWidth - 12, r.right - menu.offsetWidth))}px`;
-  }
-  const refreshSaveButtons = (k) => { const id = k.slice(3); $$(`[data-save="${CSS.escape(id)}"]`).forEach((b) => (b.outerHTML = saveBtn(id))); };
   document.addEventListener("click", (e) => {
-    const save = e.target.closest("[data-save]");
-    if (save) { e.stopPropagation(); return openMenu(save, save.dataset.save); }
     const tag = e.target.closest("[data-tag]");
     if (tag) return filterByTag(tag.dataset.tag);
     const open = e.target.closest("[data-open]");
     if (open) return openPost(open.dataset.open);
     const like = e.target.closest("[data-more-like]");
     if (like) return moreLikeThis(like.dataset.moreLike);
-    if (!menu.hidden && !e.target.closest("[data-folder-menu]")) menu.hidden = true;
   });
-  $("[data-folder-list]").addEventListener("click", async (e) => {
-    const b = e.target.closest("[data-folder]");
-    if (!b) return;
-    const folderId = b.dataset.folder;
-    const set = saved.get(menuPost) || new Set();
-    if (set.has(folderId)) { await db.from("folder_items").delete().eq("folder_id", folderId).eq("post_id", menuPost); set.delete(folderId); }
-    else {
-      const { error } = await db.from("folder_items").insert({ folder_id: folderId, post_id: menuPost });
-      if (error) return alert(error.message);
-      set.add(folderId);
-    }
-    set.size ? saved.set(menuPost, set) : saved.delete(menuPost);
-    renderMenu();
-    refreshSaveButtons(menuPost);
-  });
-  $("[data-folder-new]").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const input = e.target.querySelector("input");
-    const name = input.value.trim();
-    if (!name) return;
-    const { data, error } = await db.from("folders").insert({ name }).select("id,name").single();
-    if (error) return alert(/duplicate/i.test(error.message) ? "You already have a folder with that name." : error.message);
-    folders.push(data);
-    const { error: e2 } = await db.from("folder_items").insert({ folder_id: data.id, post_id: menuPost });
-    if (e2) return alert(e2.message);
-    saved.set(menuPost, new Set([...(saved.get(menuPost) || []), data.id]));
-    input.value = "";
-    renderMenu();
-    refreshSaveButtons(menuPost);
-    $("[data-folder-select]").insertAdjacentHTML("beforeend", `<option value="${data.id}">${esc(data.name)}</option>`);
-  });
-  document.addEventListener("keydown", (e) => {
-    if (e.key !== "Escape") return;
-    menu.hidden = true;
-    if (!drawer.hidden) closeDrawer();
-  });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !drawer.hidden) closeDrawer(); });
 
-  // ---------- Views: all / saved / folder ----------
-  const viewBtns = $$("[data-view-btn]");
-  const folderPick = $("[data-folder-pick]");
-  const setView = (v) => {
-    view = v;
-    viewBtns.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.viewBtn === v.kind)));
-    folderPick.classList.toggle("is-active", v.kind === "folder");
-    load(true);
-  };
-  viewBtns.forEach((b) => b.addEventListener("click", () => setView({ kind: b.dataset.viewBtn, folder: null })));
-  $("[data-folder-select]").addEventListener("change", (e) => (e.target.value ? setView({ kind: "folder", folder: e.target.value }) : setView({ kind: "all" })));
+  // Deep link from the Saved page: content-library.html#post=<id> opens that post's details
+  async function openFromHash() {
+    const id = /^#post=(\d+)$/.exec(location.hash)?.[1];
+    if (!id) return;
+    if (!cache.has(id)) {
+      const { data } = await db.from("content_ideas").select("*, content_idea_tags(idea_catalog(id,category,name))").eq("id", id).maybeSingle();
+      if (!data) return;
+      const tags = {};
+      for (const { idea_catalog: v } of data.content_idea_tags || []) if (v) (tags[v.category] ||= []).push({ id: v.id, name: v.name });
+      cache.set(id, { ...data, tags });
+    }
+    openPost(id);
+  }
+  window.addEventListener("hashchange", openFromHash);
 
   // ---------- Filter events ----------
   root.addEventListener("change", (e) => {
-    if (e.target.closest("[data-folder-select], [data-saved-searches], [data-facet-search]")) return;
+    if (e.target.closest("[data-saved-searches], [data-facet-search]")) return;
     if (e.target.closest("[data-order]")) seed = String(Math.random()).slice(2, 10); // new shuffle each "Surprise me"
     load(true);
   });
@@ -641,7 +568,7 @@
   $("[data-clear]").addEventListener("click", clearAll);
 
   if (!db) return load(true);
-  Promise.all([loadCatalog().then(renderFacets).catch(() => {}), loadFolders(), loadSavedSearches()]).then(() => load(true));
+  Promise.all([loadCatalog().then(renderFacets).catch(() => {}), boards.load(), loadSavedSearches()]).then(() => { load(true); openFromHash(); });
 })();
 
 // Welcome offer shown when entering the platform (once per browser session)

@@ -76,11 +76,7 @@
         <button class="pill pill-dark collapse" type="button" aria-expanded="true" data-collapse><img src="assets/chevron-duo.svg" alt=""><span data-collapse-label>Hide filters</span><b class="filter-count" hidden data-filter-count></b></button>
         <label class="feed-search"><img src="assets/search.svg" alt=""><input type="search" placeholder="Search captions…" aria-label="Search posts" data-q></label>
         <div class="spacer"></div>
-        <div class="f-row seg" data-view>
-          <button class="pill" type="button" aria-pressed="true" data-view-btn="all">All posts</button>
-          <label class="pill folder-pick" data-folder-pick><span>Folders</span><img src="assets/folder-grey.svg" width="21" height="21" alt=""><select data-folder-select aria-label="Saved folder"><option value="">Choose a folder…</option></select></label>
-          <button class="pill" type="button" aria-pressed="false" data-view-btn="saved">Saved (All) <img src="assets/folder-grey.svg" width="21" height="21" alt=""></button>
-        </div>
+        <a class="pill saved-link" href="saved.html" data-saved-link><span data-icon="bookmark"></span>Saved boards</a>
       </div>
 
       <div class="need">
@@ -118,13 +114,6 @@
     </div>
   </div>
 
-  <!-- Save to folder -->
-  <div class="folder-menu" hidden data-folder-menu>
-    <p class="folder-menu-title">Save to folder</p>
-    <ul data-folder-list></ul>
-    <form data-folder-new><input type="text" placeholder="New folder name" maxlength="60" required><button class="pill pill-gold" type="submit">Create</button></form>
-  </div>
-
   <div class="offer-modal" hidden data-offer role="dialog" aria-modal="true" aria-labelledby="offer-title">
     <div class="offer-card">
       <button class="offer-close" type="button" aria-label="Close" data-offer-close>
@@ -141,6 +130,7 @@
   </div>
 
   <script src="js/icons.js"></script>
+  <script src="js/boards.js"></script>
   <script src="js/datepicker.js" defer></script>
   <script src="js/library.js" defer></script>
 
