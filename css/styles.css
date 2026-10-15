@@ -2441,3 +2441,11 @@ a.blog-img { display: block; }
   .an-media, .an-info { overflow: visible; }
   .an-media { border-right: 0; border-bottom: 0.5px solid var(--line); }
 }
+
+/* Photos / carousels: click → details pop-up. Notches at the middle of both sides leave Instagram's carousel arrows clickable. */
+.lib-hit {
+  --nw: 46px; --nh: 30px;
+  position: absolute; inset: 0; z-index: 2; cursor: pointer; background: transparent;
+  clip-path: polygon(0 0, 100% 0, 100% calc(50% - var(--nh)), calc(100% - var(--nw)) calc(50% - var(--nh)), calc(100% - var(--nw)) calc(50% + var(--nh)), 100% calc(50% + var(--nh)), 100% 100%, 0 100%, 0 calc(50% + var(--nh)), var(--nw) calc(50% + var(--nh)), var(--nw) calc(50% - var(--nh)), 0 calc(50% - var(--nh)));
+}
+.lib-hit:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }

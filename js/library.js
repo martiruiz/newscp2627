@@ -367,8 +367,8 @@
   }
   const tagChips = (p, cats) => cats.flatMap((c) => (p.tags?.[c] || []).map((v) => `<button type="button" class="lib-tag" data-tag="${c}:${v.id}" title="${esc(CAT_LABEL[c])}">${esc(pretty(v.name))}</button>`)).join("");
 
-  // Media-first card at the post's real shape. The media is live (play reels, swipe carousels right in the grid);
-  // "Analysis" opens the pop-up with the deep breakdown.
+  // Media-first card at the post's real shape. Reels play right in the grid; on photos and carousels a click opens
+  // the details pop-up, except on the carousel arrows (left / right, middle), which stay live to swipe in the card.
   const isReel = (p) => /^(reels?|shorts?|video)$/i.test(first(p, "format")) || /\/(reel|shorts)\//.test(p.url || "");
   // Instagram's embed shows reels (9:16) letterboxed inside its media box (usually 4:5): the card is 9:16 and the box is zoomed to fill it.
   function shape(p) {
@@ -387,6 +387,7 @@
       <article class="lib-card" data-id="${esc(p.id)}">
         <div class="lib-media${sh.zoom ? " is-reel" : ""}" style="aspect-ratio: 1 / ${sh.ratio.toFixed(4)}">
           ${src ? `<div class="lib-zoom"${zoomStyle}><iframe class="lib-frame${pf === "instagram" ? " is-ig" : ""}" src="${esc(src)}" loading="lazy" title="${esc(who || "Post")}" scrolling="no" allow="encrypted-media; picture-in-picture; fullscreen"></iframe></div>` : `<span class="lib-noimg"></span>`}
+          ${sh.zoom ? "" : `<button class="lib-hit" type="button" data-open="${esc(p.id)}" aria-label="Details${who ? ` · ${esc(who)}` : ""}"></button>`}
           <div class="lib-top">
             ${pf ? `<span class="lib-badge lib-badge-pf"><img src="assets/pf-${pf}.svg" alt="${esc(pf)}"></span>` : ""}
             ${fmt ? `<span class="lib-badge">${esc(fmt)}</span>` : ""}
