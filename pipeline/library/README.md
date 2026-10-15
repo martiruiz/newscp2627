@@ -1,22 +1,26 @@
 # Content Library pipeline
 
-How posts get into the SCP Content Library (Supabase) and how the best ones get a deep breakdown.
+The Content Library shows the posts imported from the admin (Admin → Import, CSV → table `content_ideas`).
+These scripts keep them healthy and give them a deep breakdown.
 
 ```
-Bright Data / Metricool / any export
-        │  JSON
-        ▼
-node library/ingest.mjs <files>      → accounts + posts (upsert, no duplicates) → refresh_outliers()
+Admin → Import (CSV)                 → content_ideas + filter values (sport, competition, club, entity, format, platform…)
         │
-        ▼
-posts.outlier_score / labels         → "Overperforming" = ≥ 2x the account's median (views, or interactions)
+        ▼  GitHub Action "Check library posts" (daily)
+node library/check-embeds.mjs        → hides posts removed / made private on Instagram (unavailable_at)
+                                       + stores each post's shape (media_ratio) so cards keep their real size
         │
-        ▼  daily scheduled task "SCP anàlisi posts destacats" (Claude Code subscription)
-node library/analysis.mjs next 15    → top outliers without analysis
-node library/frames.mjs <url>        → video → contact sheets → Claude "watches" the post
-node library/analysis.mjs save …     → hook, format, angle, scroll stoppers, why it works, how to adapt
-                                       + labels top_pick / replicable, sport, competition, entities, topics
+        ▼  scheduled task "SCP anàlisi posts destacats" (Claude Code subscription)
+node library/analysis.mjs next 20    → newest posts without analysis
+node library/frames.mjs <url>        → video → contact sheets → Claude "watches" the post (reels)
+node library/analysis.mjs cover <id> → the post's image (photos / carousels)
+node library/analysis.mjs save …     → summary, hook, why it works, format, angle, visual breakdown,
+                                       scroll stoppers, how to adapt → "View analysis" pop-up in the library
 ```
+
+`instagram.mjs` reads Instagram's public embed page (no login, no cookies): post status, media shape, image and video URLs.
+
+The older flow below (`ingest.mjs` → `posts` table with outlier scores) is kept for Bright Data / Metricool exports.
 
 ## Setup
 

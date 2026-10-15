@@ -11,6 +11,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { idFromUrl } from "./adapters.mjs";
+import { igEmbed } from "./instagram.mjs";
 
 const args = process.argv.slice(2);
 const url = args.find((a) => !a.startsWith("--"));
@@ -23,9 +24,19 @@ const framesDir = path.join(dir, "frames");
 fs.mkdirSync(framesDir, { recursive: true });
 const video = path.join(dir, "video.mp4");
 
+// Instagram fallback: the public embed page (the one shown on websites) carries the video file URL — no login needed
+async function fromInstagramEmbed() {
+  const { video: src } = await igEmbed(ref.url, { captioned: true });
+  if (!src) return false;
+  try {
+    fs.writeFileSync(video, Buffer.from(await (await fetch(src)).arrayBuffer()));
+    return fs.statSync(video).size > 10000;
+  } catch { return false; }
+}
+
 if (!fs.existsSync(video)) {
   const r = spawnSync("yt-dlp", ["--no-playlist", "--no-warnings", "-f", "mp4/best", "-o", video, "--write-thumbnail", "--convert-thumbnails", "jpg", "-o", `thumbnail:${path.join(dir, "cover")}`, ref.url], { encoding: "utf8" });
-  if (r.status !== 0 || !fs.existsSync(video)) {
+  if ((r.status !== 0 || !fs.existsSync(video)) && !(await fromInstagramEmbed())) {
     console.error(`Could not download the video (${(r.stderr || "").trim().split("\n").pop() || "unknown error"}).`);
     console.error("Analyse it from the thumbnail and caption instead, and say so in the analysis.");
     process.exit(1);

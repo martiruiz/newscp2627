@@ -2302,9 +2302,7 @@ a.blog-img { display: block; }
 
 .lib-format-pill { height: 30px; padding: 0 12px; font-size: 13px; }
 .lib-thumb { background: #fff; }
-.lib-frame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; pointer-events: none; background: #fff; }
-/* Instagram's embed page: skip its header so the photo / video cover fills the card */
-.lib-frame.is-ig { top: -56px; height: calc(100% + 260px); }
+.lib-frame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: #fff; }
 .lib-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .lib-tag {
   height: 24px; padding: 0 10px; border-radius: 100px; font-size: 12px; color: var(--muted);
@@ -2333,13 +2331,12 @@ a.blog-img { display: block; }
 }
 @keyframes lib-shimmer { to { background-position: -150% 0; } }
 .lib-card:hover .lib-media { transform: translateY(-4px); border-color: rgba(240, 184, 74, 0.7); box-shadow: 0 0 0 1px rgba(240, 184, 74, 0.35), 0 18px 50px rgba(0, 0, 0, 0.45), 0 0 40px rgba(240, 184, 74, 0.18); }
-.lib-media .lib-frame { position: absolute; left: 0; top: 0; width: 100%; height: 100%; border: 0; pointer-events: none; background: transparent; }
+.lib-media .lib-frame { position: absolute; left: 0; top: 0; width: 100%; height: 100%; border: 0; background: transparent; }
 /* Instagram embed page: header ≈ 54px, then the media (square-ish width × 4:5). Shift up and oversize so only the media shows. */
 .lib-media .lib-frame.is-ig { left: -1px; width: calc(100% + 2px); top: -55px; height: calc(100% + 400px); }
 /* Reels: Instagram letterboxes the 9:16 cover inside a 4:5 box. Zoom from the centre so it fills the card (like Instagram's own grid). */
-.lib-zoom { position: absolute; inset: 0; }
-.lib-media.is-reel .lib-zoom { transform: scale(var(--reel-zoom, 1.48)); }
-.lib-hit { position: absolute; inset: 0; z-index: 2; cursor: pointer; }
+.lib-zoom { position: absolute; inset: 0; overflow: hidden; }
+.lib-media.is-reel .lib-zoom { inset: var(--inset) 0; overflow: visible; transform: scale(var(--zoom)); }
 .lib-media::after { /* legibility gradient */
   content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
   background: linear-gradient(to bottom, rgba(10, 15, 30, 0.55) 0%, transparent 22%, transparent 52%, rgba(10, 15, 30, 0.92) 100%);
@@ -2364,3 +2361,83 @@ a.blog-img { display: block; }
 .lib-who { font-family: var(--font-display); font-weight: 600; font-size: 17px; letter-spacing: -0.02em; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .lib-when { margin-top: 2px; font-size: 12px; color: rgba(255, 255, 255, 0.7); }
 @media (hover: none) { .lib-bottom .lib-tags { opacity: 1; transform: none; } }
+
+/* Masonry: each card keeps its post's real shape */
+.library .posts.masonry { display: flex; align-items: flex-start; gap: 22px; }
+.mcol { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 22px; }
+.lib-media { aspect-ratio: 4 / 5; }
+.lib-analysis {
+  display: flex; align-items: center; gap: 8px; width: 100%; height: 40px; margin-top: 10px; padding: 0 14px;
+  border-radius: 12px; background: var(--surface-2); border: 0.5px solid var(--line); color: var(--muted);
+  font-size: 13px; font-weight: 500; transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+.lib-analysis .ico, .lib-analysis svg { width: 16px; height: 16px; flex-shrink: 0; }
+.lib-analysis span { flex: 1; text-align: left; }
+.lib-analysis.is-ready { color: var(--gold); border-color: rgba(240, 184, 74, 0.35); background: linear-gradient(90deg, rgba(240, 184, 74, 0.12), rgba(240, 184, 74, 0.03)); }
+.lib-analysis:hover { color: var(--text); border-color: rgba(240, 184, 74, 0.6); }
+
+/* Analysis pop-up */
+.an-modal { position: fixed; inset: 0; z-index: 160; display: grid; place-items: center; padding: 28px; background: rgba(6, 10, 22, 0.72); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); animation: an-fade 0.2s ease; }
+.an-modal[hidden] { display: none; }
+@keyframes an-fade { from { opacity: 0; } }
+@keyframes an-rise { from { opacity: 0; transform: translateY(14px) scale(0.985); } }
+.an-panel {
+  position: relative; width: min(1180px, 100%); max-height: calc(100vh - 56px); overflow: hidden; display: flex;
+  border-radius: 24px; background: var(--surface); border: 0.5px solid rgba(240, 184, 74, 0.35);
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.6), 0 0 80px rgba(240, 184, 74, 0.12); animation: an-rise 0.28s cubic-bezier(.2,.8,.2,1);
+}
+.an-close { position: absolute; top: 14px; right: 14px; z-index: 3; width: 38px; height: 38px; border-radius: 50%; background: var(--surface-2); border: 0.5px solid var(--line); font-size: 24px; line-height: 1; color: var(--muted); }
+.an-close:hover { color: var(--text); border-color: rgba(240, 184, 74, 0.6); }
+.an-body { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); width: 100%; min-height: 0; }
+.an-media { display: grid; justify-items: center; align-content: start; padding: 28px; overflow-y: auto; background: radial-gradient(70% 50% at 50% 0%, rgba(240, 184, 74, 0.08), transparent 70%), var(--bg); border-right: 0.5px solid var(--line); }
+.an-media blockquote, .an-media iframe { margin: 0 !important; width: 100% !important; max-width: 460px !important; min-width: 0 !important; }
+.an-info { overflow-y: auto; padding: 30px 32px 34px; }
+.an-eyebrow { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.an-head h2 { margin-top: 6px; padding-right: 40px; font-family: var(--font-display); font-weight: 600; font-size: 28px; letter-spacing: -0.02em; }
+.an-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.an-actions .ico, .an-actions svg { width: 15px; height: 15px; }
+.an-summary { margin-top: 22px; font-size: 17px; line-height: 1.55; color: var(--text); }
+.an-block { margin-top: 18px; padding: 18px 20px; border-radius: 16px; background: var(--surface-2); border: 0.5px solid var(--line-soft); }
+.an-block h3 { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-family: var(--font-display); font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); }
+.an-block h3 svg { width: 16px; height: 16px; }
+.an-block p { margin-top: 8px; color: var(--muted); font-size: 15px; line-height: 1.55; }
+.an-block b { color: var(--text); font-weight: 600; }
+.an-hook-block { background: linear-gradient(135deg, rgba(240, 184, 74, 0.14), rgba(240, 184, 74, 0.02) 60%), var(--surface-2); border-color: rgba(240, 184, 74, 0.3); }
+.an-hook { margin: 4px 0 10px; font-family: var(--font-display); font-weight: 600; font-size: 22px; line-height: 1.3; letter-spacing: -0.02em; color: var(--text); }
+.an-hook::before { content: "“"; color: var(--gold); }
+.an-hook::after { content: "”"; color: var(--gold); }
+.an-chip { display: inline-flex; align-items: center; height: 26px; margin: 2px 6px 2px 0; padding: 0 11px; border-radius: 100px; background: var(--gold-tint); color: var(--gold); font-size: 12px; font-weight: 500; }
+.an-template { position: relative; margin-top: 14px; padding: 12px 92px 12px 14px; border-radius: 12px; background: var(--bg); border: 0.5px dashed rgba(240, 184, 74, 0.45); }
+.an-template > span { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.an-template p { margin-top: 4px; color: var(--text); }
+.an-copy { position: absolute; top: 50%; right: 10px; transform: translateY(-50%); display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border-radius: 100px; background: var(--surface-3); font-size: 12px; color: var(--muted); }
+.an-copy svg { width: 14px; height: 14px; }
+.an-copy:hover { color: var(--gold); }
+.an-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0; }
+.an-facts div { padding: 10px 12px; border-radius: 10px; background: var(--bg); }
+.an-facts dt { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.an-facts dd { margin: 4px 0 0; font-size: 14px; color: var(--text); }
+.an-timeline, .an-stoppers { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.an-timeline li, .an-stoppers li { display: grid; grid-template-columns: 46px 1fr; gap: 12px; position: relative; }
+.an-timeline li:not(:last-child)::after { content: ""; position: absolute; left: 22px; top: 30px; bottom: -12px; width: 1px; background: var(--line); }
+.an-t { display: grid; place-items: center; height: 26px; border-radius: 100px; background: var(--bg); border: 0.5px solid rgba(240, 184, 74, 0.4); color: var(--gold); font-size: 12px; font-variant-numeric: tabular-nums; }
+.an-timeline b, .an-stoppers b { display: block; font-size: 14px; }
+.an-timeline q { display: block; margin-top: 4px; font-size: 13px; color: var(--gold-light); quotes: "“" "”"; }
+.an-timeline p, .an-stoppers p { margin-top: 4px; font-size: 13px; }
+.an-adapt { background: linear-gradient(135deg, rgba(0, 216, 91, 0.1), transparent 60%), var(--surface-2); border-color: rgba(0, 216, 91, 0.25); }
+.an-adapt h3 { color: #4ee38a; }
+.an-topics { margin-top: 14px; }
+.an-empty { display: flex; gap: 14px; margin-top: 22px; padding: 18px 20px; border-radius: 16px; background: var(--surface-2); border: 0.5px dashed rgba(240, 184, 74, 0.4); }
+.an-empty svg { width: 22px; height: 22px; color: var(--gold); flex-shrink: 0; }
+.an-empty p { margin-top: 4px; font-size: 14px; color: var(--muted); }
+.an-loading { height: 120px; margin-top: 22px; border-radius: 16px; background: linear-gradient(110deg, var(--surface-2) 30%, var(--surface-3) 50%, var(--surface-2) 70%) 0 0 / 300% 100%; animation: lib-shimmer 1.4s linear infinite; }
+.an-caption { margin-top: 18px; color: var(--muted); font-size: 14px; }
+.an-caption summary { cursor: pointer; font-weight: 600; color: var(--text); }
+.an-caption p { margin-top: 8px; white-space: pre-line; line-height: 1.55; }
+@media (max-width: 900px) {
+  .an-modal { padding: 0; }
+  .an-panel { max-height: 100vh; height: 100%; border-radius: 0; }
+  .an-body { grid-template-columns: 1fr; overflow-y: auto; }
+  .an-media, .an-info { overflow: visible; }
+  .an-media { border-right: 0; border-bottom: 0.5px solid var(--line); }
+}

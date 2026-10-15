@@ -13,6 +13,11 @@ create policy "Members read catalog" on public.idea_catalog for select to authen
 -- They are hidden from the Content Library; superadmins can delete them from Admin → Content Ideas.
 alter table public.content_ideas add column if not exists unavailable_at timestamptz;
 alter table public.content_ideas add column if not exists checked_at     timestamptz;
+-- Media shape (height / width of the post as Instagram shows it: 1.25 = 4:5, 1.333 = 3:4, 0.5625 = 16:9). Set by check-embeds.mjs.
+alter table public.content_ideas add column if not exists media_ratio numeric;
+-- Deep analysis (hook, why it works, format, angle, visual breakdown…). Written by pipeline/library/analysis.mjs.
+alter table public.content_ideas add column if not exists analysis    jsonb;
+alter table public.content_ideas add column if not exists analyzed_at timestamptz;
 create index if not exists content_ideas_unavailable_idx on public.content_ideas (unavailable_at) where unavailable_at is not null;
 
 -- One page of ideas for the Content Library (unavailable posts excluded).
@@ -52,7 +57,8 @@ as $$
     'data', coalesce((
       select jsonb_agg(jsonb_build_object(
         'id', p.id, 'external_id', p.external_id, 'title', p.title, 'published_at', p.published_at,
-        'embed', p.embed, 'url', p.url, 'tags', public.content_idea_tag_map(p.id)
+        'embed', p.embed, 'url', p.url, 'tags', public.content_idea_tag_map(p.id),
+        'media_ratio', p.media_ratio, 'has_analysis', p.analysis is not null
       ) order by
         case when p_order = 'random' then md5(p.id::text || coalesce(p_seed, '')) end,
         p.published_at desc nulls last, p.id desc)

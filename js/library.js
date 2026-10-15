@@ -292,7 +292,7 @@
   async function load(reset) {
     const s = state();
     renderActive(s);
-    if (reset) { offset = 0; grid.innerHTML = ""; empty.hidden = true; note.hidden = true; }
+    if (reset) { offset = 0; resetGrid(); empty.hidden = true; note.hidden = true; }
     if (!db) return showNote("Content isn't connected yet.");
     const my = ++token;
     more.hidden = true;
@@ -316,7 +316,7 @@
       if (!chipsFor(s).length && view.kind === "all") return showEmpty("The library is empty for now — posts appear here after the first import.");
       return showEmpty("No posts match these filters.");
     }
-    grid.insertAdjacentHTML("beforeend", rows.map(card).join(""));
+    addCards(rows);
     rows.forEach((p) => cache.set(String(p.id), p));
     offset += rows.length;
     more.hidden = offset >= data.total;
@@ -367,19 +367,26 @@
   }
   const tagChips = (p, cats) => cats.flatMap((c) => (p.tags?.[c] || []).map((v) => `<button type="button" class="lib-tag" data-tag="${c}:${v.id}" title="${esc(CAT_LABEL[c])}">${esc(pretty(v.name))}</button>`)).join("");
 
-  // Media-first card: only the photo / video cover (the platform's embed page, cropped to the media),
-  // with SCP overlays. The full embed opens in the detail drawer.
+  // Media-first card at the post's real shape. The media is live (play reels, swipe carousels right in the grid);
+  // "Analysis" opens the pop-up with the deep breakdown.
   const isReel = (p) => /^(reels?|shorts?|video)$/i.test(first(p, "format")) || /\/(reel|shorts)\//.test(p.url || "");
+  // Instagram's embed shows reels (9:16) letterboxed inside its media box (usually 4:5): the card is 9:16 and the box is zoomed to fill it.
+  function shape(p) {
+    const box = Number(p.media_ratio) || 1.25;
+    if (!isReel(p) || box >= 16 / 9) return { ratio: box };
+    return { ratio: 16 / 9, zoom: 1 / (box * 9 / 16), boxFrac: box / (16 / 9) };
+  }
   function card(p) {
     const pf = platformOf(p);
     const src = previewSrc(p);
     const who = first(p, "club") || first(p, "competition") || first(p, "entity");
     const fmt = pretty(first(p, "format"));
+    const sh = shape(p);
+    const zoomStyle = sh.zoom ? ` style="--zoom:${sh.zoom.toFixed(4)};--inset:${((1 - sh.boxFrac) / 2 * 100).toFixed(3)}%"` : "";
     return `
       <article class="lib-card" data-id="${esc(p.id)}">
-        <div class="lib-media${isReel(p) ? " is-reel" : ""}">
-          ${src ? `<div class="lib-zoom"><iframe class="lib-frame${pf === "instagram" ? " is-ig" : ""}" src="${esc(src)}" loading="lazy" tabindex="-1" title="Post preview" scrolling="no"></iframe></div>` : `<span class="lib-noimg"></span>`}
-          <button class="lib-hit" type="button" data-open="${esc(p.id)}" aria-label="Open post${who ? ` by ${esc(who)}` : ""}"></button>
+        <div class="lib-media${sh.zoom ? " is-reel" : ""}" style="aspect-ratio: 1 / ${sh.ratio.toFixed(4)}">
+          ${src ? `<div class="lib-zoom"${zoomStyle}><iframe class="lib-frame${pf === "instagram" ? " is-ig" : ""}" src="${esc(src)}" loading="lazy" title="${esc(who || "Post")}" scrolling="no" allow="encrypted-media; picture-in-picture; fullscreen"></iframe></div>` : `<span class="lib-noimg"></span>`}
           <div class="lib-top">
             ${pf ? `<span class="lib-badge lib-badge-pf"><img src="assets/pf-${pf}.svg" alt="${esc(pf)}"></span>` : ""}
             ${fmt ? `<span class="lib-badge">${esc(fmt)}</span>` : ""}
@@ -391,8 +398,49 @@
             <p class="lib-when">${date(p.published_at)}${first(p, "entity") ? ` · ${esc(pretty(first(p, "entity")))}` : ""}</p>
           </div>
         </div>
+        <button class="lib-analysis${p.has_analysis ? " is-ready" : ""}" type="button" data-open="${esc(p.id)}">${icon("sparkles")}<span>${p.has_analysis ? "View analysis" : "Details"}</span>${icon("arrow-up-right")}</button>
       </article>`;
   }
+
+  // ---------- Masonry: N columns, each card goes to the shortest one (heights known from the ratios) ----------
+  const GAP = 22;
+  let cols = [], colH = [], placed = [];
+  function columnCount() {
+    const w = grid.clientWidth - parseFloat(getComputedStyle(grid).paddingLeft) - parseFloat(getComputedStyle(grid).paddingRight);
+    const collapsed = root.classList.contains("filters-collapsed");
+    const [max, min] = collapsed ? [4, 250] : [3, 240];
+    return Math.max(1, Math.min(max, Math.floor((w + GAP) / (min + GAP))));
+  }
+  function buildColumns(n) {
+    grid.innerHTML = "";
+    grid.classList.add("masonry");
+    cols = Array.from({ length: n }, () => grid.appendChild(Object.assign(document.createElement("div"), { className: "mcol" })));
+    colH = cols.map(() => 0);
+  }
+  function place(el, ratio) {
+    const i = colH.indexOf(Math.min(...colH));
+    cols[i].appendChild(el);
+    colH[i] += ratio + 0.25; // + caption / button area
+  }
+  function resetGrid() { placed = []; buildColumns(columnCount()); }
+  function addCards(rows) {
+    const tpl = document.createElement("template");
+    tpl.innerHTML = rows.map(card).join("");
+    [...tpl.content.children].forEach((el, i) => {
+      const ratio = shape(rows[i]).ratio;
+      placed.push({ el, ratio });
+      place(el, ratio);
+    });
+  }
+  // Re-flow only when the number of columns changes (moving iframes reloads them)
+  new ResizeObserver(() => {
+    if (!cols.length) return;
+    const n = columnCount();
+    if (n === cols.length) return;
+    const keep = placed;
+    buildColumns(n);
+    keep.forEach(({ el, ratio }) => place(el, ratio));
+  }).observe(grid);
 
   // ---------- Detail drawer ----------
   const drawer = $("[data-drawer]");
@@ -416,30 +464,66 @@
       }
     }
   }
-  const section = (title, html) => (html ? `<section class="dr-sec"><h3>${title}</h3>${html}</section>` : "");
+  const MOMENT_NAMES = { matchday: "Matchday", signing: "Signing", kit: "Kit", sponsor: "Sponsor", behind_the_scenes: "Behind the scenes", fans: "Fans", milestone: "Milestone", community: "Community", ticketing: "Tickets", training: "Training", humour: "Humour", other: "Other" };
+  const STYLE_NAMES = { talking_head: "Talking head", pov: "POV", meme: "Meme", graphic: "Graphic", montage: "Montage", interview: "Interview", challenge: "Challenge", vlog: "Vlog", live_action: "Live action", other: "Other" };
+  const block = (title, ico, html, cls = "") => (html ? `<section class="an-block ${cls}"><h3>${icon(ico)}${title}</h3>${html}</section>` : "");
+  const stamp = (t, basis) => (basis === "video" ? `${t}s` : `#${t}`);
 
-  function openPost(id) {
+  function analysisHtml(a) {
+    if (!a) return `
+      <div class="an-empty">${icon("sparkles")}<div><b>Analysis on its way</b><p>We break down new posts every day: hook, why it works, format, angle and how to adapt it to your club.</p></div></div>`;
+    const fmt = a.format || {};
+    const facts = [["Category", fmt.category], ["Type", fmt.type], ["Layout", fmt.visualLayout], ["Pacing", fmt.pacing], ["Moment", MOMENT_NAMES[a.moment]], ["Style", STYLE_NAMES[a.style]]].filter(([, v]) => v);
+    return `
+      ${a.summary ? `<p class="an-summary">${esc(a.summary)}</p>` : ""}
+      ${block("Hook", "zap", a.hook ? `
+        <blockquote class="an-hook">${esc(a.hook.text || "")}</blockquote>
+        ${a.hook.category ? `<span class="an-chip">${esc(a.hook.category)}</span>` : ""}
+        ${a.hook.whyItWorks ? `<p>${esc(a.hook.whyItWorks)}</p>` : ""}
+        ${a.hook.template ? `<div class="an-template"><span>Template</span><p>${esc(a.hook.template)}</p><button class="an-copy" type="button" data-copy="${esc(a.hook.template)}">${icon("copy")}Copy</button></div>` : ""}` : "", "an-hook-block")}
+      ${block("Why it works", "lightbulb", a.whyItWorks ? `<p>${esc(a.whyItWorks)}</p>` : "")}
+      ${block("Format", "layout-grid", facts.length ? `<dl class="an-facts">${facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>` : "")}
+      ${block("Angle", "compass", a.angle?.angle || a.angle?.topic ? `${a.angle.topic ? `<span class="an-chip">${esc(a.angle.topic)}</span>` : ""}<p>${esc(a.angle.angle || "")}</p>` : "")}
+      ${block(a.basis === "video" ? "Visual breakdown" : "Slide by slide", "clapperboard", a.visualBreakdown?.length ? `<ol class="an-timeline">${a.visualBreakdown.map((v) => `<li><span class="an-t">${stamp(v.t, a.basis)}</span><div><b>${esc(v.shot)}</b>${v.onScreenText ? `<q>${esc(v.onScreenText)}</q>` : ""}${v.why ? `<p>${esc(v.why)}</p>` : ""}</div></li>`).join("")}</ol>` : "")}
+      ${block("Scroll stoppers", "hand", a.scrollStoppers?.length ? `<ul class="an-stoppers">${a.scrollStoppers.map((v) => `<li><span class="an-t">${stamp(v.t, a.basis)}</span><div><b>${esc(v.moment)}</b>${v.why ? `<p>${esc(v.why)}</p>` : ""}</div></li>`).join("")}</ul>` : "")}
+      ${block(a.replicable?.is === false ? "Hard to replicate" : "How to adapt it to your club", "repeat", a.replicable?.howToAdapt ? `<p>${esc(a.replicable.howToAdapt)}</p>` : "", "an-adapt")}
+      ${a.topics?.length ? `<div class="an-topics">${a.topics.map((t) => `<span class="an-chip">${esc(t)}</span>`).join("")}</div>` : ""}`;
+  }
+
+  async function openPost(id) {
     const p = cache.get(String(id));
     if (!p) return;
     const pf = platformOf(p);
+    const who = first(p, "club") || first(p, "competition") || first(p, "entity");
     const groups = CATEGORIES.filter((c) => p.tags?.[c.key]?.length).map((c) => `<div class="dr-tag-row"><dt>${esc(c.label)}</dt><dd>${tagChips(p, [c.key])}</dd></div>`).join("");
     body.innerHTML = `
-      <div class="dr-media">${embedHtml(p)}</div>
-      <div class="dr-info">
-        <p class="dr-account">${esc(first(p, "club") || first(p, "entity"))}${p.published_at ? ` · ${date(p.published_at)}` : ""}</p>
-        ${groups ? `<dl class="dr-tags">${groups}</dl>` : ""}
-        <p class="dr-hint">Click a tag to see more posts like it.</p>
-        ${p.title ? section("Caption", `<p class="dr-caption">${esc(p.title)}</p>`) : ""}
-        <div class="dr-actions">
-          <button class="pill pill-gold" type="button" data-more-like="${esc(p.id)}">${icon("sparkles")}More like this</button>
-          ${saveBtn(p.id)}
-          ${p.url ? `<a class="pill pill-dark" href="${esc(p.url)}" target="_blank" rel="noopener">Open on ${esc(PLATFORM_NAMES[pf] || "the platform")} ↗</a>` : ""}
-        </div>
+      <div class="an-media">${embedHtml(p)}</div>
+      <div class="an-info">
+        <header class="an-head">
+          <p class="an-eyebrow">${esc(pretty(first(p, "format")) || "Post")}${p.published_at ? ` · ${date(p.published_at)}` : ""}</p>
+          <h2>${esc(who || "Post")}</h2>
+          <div class="an-actions">
+            <button class="pill pill-gold" type="button" data-more-like="${esc(p.id)}">${icon("sparkles")}More like this</button>
+            ${saveBtn(p.id)}
+            ${p.url ? `<a class="pill pill-dark" href="${esc(p.url)}" target="_blank" rel="noopener">Open on ${esc(PLATFORM_NAMES[pf] || "the platform")} ↗</a>` : ""}
+          </div>
+        </header>
+        <div data-analysis><div class="an-loading"></div></div>
+        ${groups ? `<section class="an-block"><h3>${icon("tags")}Tags</h3><dl class="dr-tags">${groups}</dl><p class="dr-hint">Click a tag to see more posts like it.</p></section>` : ""}
+        ${p.title ? `<details class="an-caption"><summary>Caption</summary><p>${esc(p.title)}</p></details>` : ""}
       </div>`;
     drawer.hidden = false;
     document.body.style.overflow = "hidden";
     runEmbedScript();
+    const { data } = await db.from("content_ideas").select("analysis").eq("id", p.id).maybeSingle();
+    if (drawer.hidden || !body.querySelector("[data-analysis]")) return;
+    body.querySelector("[data-analysis]").innerHTML = analysisHtml(data?.analysis);
   }
+  body.addEventListener("click", async (e) => {
+    const b = e.target.closest("[data-copy]");
+    if (!b) return;
+    try { await navigator.clipboard.writeText(b.dataset.copy); b.lastChild.textContent = "Copied"; setTimeout(() => (b.lastChild.textContent = "Copy"), 1600); } catch {}
+  });
   function closeDrawer() { drawer.hidden = true; body.innerHTML = ""; document.body.style.overflow = ""; }
   $("[data-drawer-close]").addEventListener("click", closeDrawer);
   drawer.addEventListener("click", (e) => { if (e.target === drawer) closeDrawer(); });
