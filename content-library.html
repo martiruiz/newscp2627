@@ -45,62 +45,7 @@
       </div>
 
       <section class="fx">
-        <h2 class="fx-title">Clubs like mine</h2>
-        <div class="like-mine" data-like-mine>
-          <button class="like-mine-toggle" type="button" role="switch" aria-checked="false" data-like-toggle>
-            <span class="switch" aria-hidden="true"></span>
-            <span><b>Only accounts like mine</b><small data-like-summary>Set your sport and size</small></span>
-          </button>
-          <button class="link-muted like-mine-edit" type="button" data-like-edit>Edit</button>
-        </div>
-      </section>
-
-      <section class="fx">
-        <h2 class="fx-title">Performance</h2>
-        <div class="f-row" data-toggle-group="multi" data-smart>
-          <button class="pill pill-top smart" type="button" aria-pressed="false" data-value="top_pick">Top Picks</button>
-          <button class="pill pill-replicable smart" type="button" aria-pressed="false" data-value="replicable">Replicable ideas</button>
-          <button class="pill pill-over smart" type="button" aria-pressed="false" data-value="overperforming">Overperforming</button>
-        </div>
-      </section>
-
-      <section class="fx">
-        <h2 class="fx-title">Platform</h2>
-        <div class="icon-row" data-toggle-group="multi" data-platforms>
-          <button type="button" aria-pressed="false" data-value="instagram" aria-label="Instagram" title="Instagram"><img src="assets/pf-instagram.svg" alt=""></button>
-          <button type="button" aria-pressed="false" data-value="tiktok" aria-label="TikTok" title="TikTok"><img src="assets/pf-tiktok.svg" alt=""></button>
-          <button type="button" aria-pressed="false" data-value="youtube" aria-label="YouTube" title="YouTube"><img src="assets/pf-youtube.svg" alt=""></button>
-          <button type="button" aria-pressed="false" data-value="x" aria-label="X" title="X"><img src="assets/pf-x.svg" alt=""></button>
-          <button type="button" aria-pressed="false" data-value="facebook" aria-label="Facebook" title="Facebook"><img src="assets/pf-facebook.svg" alt=""></button>
-          <button type="button" aria-pressed="false" data-value="linkedin" aria-label="LinkedIn" title="LinkedIn"><img src="assets/pf-linkedin.svg" alt=""></button>
-        </div>
-      </section>
-
-      <section class="fx">
-        <h2 class="fx-title">Format</h2>
-        <div class="f-row" data-toggle-group="multi" data-formats>
-          <button class="pill seg-btn" type="button" aria-pressed="false" data-value="reel">Reel / Short</button>
-          <button class="pill seg-btn" type="button" aria-pressed="false" data-value="carousel">Carousel</button>
-          <button class="pill seg-btn" type="button" aria-pressed="false" data-value="image">Image</button>
-          <button class="pill seg-btn" type="button" aria-pressed="false" data-value="video">Video</button>
-        </div>
-        <h3 class="fx-sub">Style</h3>
-        <div class="f-row" data-toggle-group="multi" data-styles>
-          <button class="pill seg-btn" type="button" aria-pressed="false" data-value="talking_head">Talking head</button>
-          <button class="pill seg-btn" type="button" aria-pressed="false" data-value="pov">POV</button>
-          <button class="pill seg-btn" type="button" aria-pressed="false" data-value="meme">Meme</button>
-          <button class="pill seg-btn" type="button" aria-pressed="false" data-value="graphic">Graphic</button>
-          <button class="pill seg-btn" type="button" aria-pressed="false" data-value="montage">Montage</button>
-          <button class="pill seg-btn" type="button" aria-pressed="false" data-value="interview">Interview</button>
-          <button class="pill seg-btn" type="button" aria-pressed="false" data-value="challenge">Challenge</button>
-          <button class="pill seg-btn" type="button" aria-pressed="false" data-value="vlog">Vlog</button>
-        </div>
-      </section>
-
-      <details class="fx fx-more" data-more-filters>
-        <summary><span>More filters</span><b class="filter-count" hidden data-more-count></b></summary>
-
-        <h3 class="fx-sub">When</h3>
+        <h2 class="fx-title">When</h2>
         <div class="f-row" data-toggle-group="single" data-period>
           <button class="pill seg-btn" type="button" aria-pressed="false" data-value="7">This week</button>
           <button class="pill seg-btn" type="button" aria-pressed="false" data-value="31">This month</button>
@@ -120,66 +65,16 @@
             <input type="hidden" data-to>
           </div>
         </div>
+      </section>
 
-        <h3 class="fx-sub">Sport</h3>
-        <label class="f-select f-select-native">
-          <select data-sport aria-label="Sport">
-            <option value="">All sports</option>
-            <option>football</option><option>basketball</option><option>handball</option><option>tennis</option>
-            <option>padel</option><option>formula 1</option><option>motogp</option><option>american football</option>
-            <option>cycling</option><option>rugby</option><option>volleyball</option><option>golf</option><option>esports</option><option>other</option>
-          </select>
-          <img src="assets/cl-chevron.svg" alt="">
-        </label>
-
-        <h3 class="fx-sub">Who’s in it</h3>
-        <div class="f-row" data-toggle-group="multi" data-entities>
-          <button class="pill seg-btn" type="button" aria-pressed="false" data-value="players">Players</button>
-          <button class="pill seg-btn" type="button" aria-pressed="false" data-value="fans">Fans</button>
-          <button class="pill seg-btn" type="button" aria-pressed="false" data-value="staff">Staff</button>
-          <button class="pill seg-btn" type="button" aria-pressed="false" data-value="sponsors">Sponsors</button>
-          <button class="pill seg-btn" type="button" aria-pressed="false" data-value="mascot">Mascot</button>
-          <button class="pill seg-btn" type="button" aria-pressed="false" data-value="legends">Legends</button>
-        </div>
-
-        <h3 class="fx-sub">Competition</h3>
-        <div class="f-list">
-          <label class="search"><input type="search" placeholder="Search..." aria-label="Search competitions" data-search><img src="assets/search.svg" alt=""></label>
-          <ul data-toggle-group="multi" data-options data-competitions>
-            <li><button type="button" aria-pressed="false">LaLiga</button></li>
-            <li><button type="button" aria-pressed="false">Premier League</button></li>
-            <li><button type="button" aria-pressed="false">Champions League</button></li>
-            <li><button type="button" aria-pressed="false">Serie A</button></li>
-            <li><button type="button" aria-pressed="false">Bundesliga</button></li>
-            <li><button type="button" aria-pressed="false">Ligue 1</button></li>
-            <li><button type="button" aria-pressed="false">Liga F</button></li>
-            <li><button type="button" aria-pressed="false">NBA</button></li>
-            <li><button type="button" aria-pressed="false">EuroLeague</button></li>
-            <li><button type="button" aria-pressed="false">Liga ACB</button></li>
-            <li><button type="button" aria-pressed="false">Liga ASOBAL</button></li>
-            <li><button type="button" aria-pressed="false">NFL</button></li>
-            <li><button type="button" aria-pressed="false">Formula 1</button></li>
-            <li><button type="button" aria-pressed="false">MotoGP</button></li>
-          </ul>
-        </div>
-
-        <h3 class="fx-sub">Language</h3>
-        <div class="f-row" data-toggle-group="multi" data-languages>
-          <button class="pill seg-btn" type="button" aria-pressed="false" data-value="en">English</button>
-          <button class="pill seg-btn" type="button" aria-pressed="false" data-value="es">Español</button>
-          <button class="pill seg-btn" type="button" aria-pressed="false" data-value="ca">Català</button>
-          <button class="pill seg-btn" type="button" aria-pressed="false" data-value="it">Italiano</button>
-          <button class="pill seg-btn" type="button" aria-pressed="false" data-value="pt">Português</button>
-          <button class="pill seg-btn" type="button" aria-pressed="false" data-value="fr">Français</button>
-          <button class="pill seg-btn" type="button" aria-pressed="false" data-value="de">Deutsch</button>
-        </div>
-      </details>
+      <!-- One section per imported column (platform, format, sport, competition, club, entity, trend, campaign) — built by js/library.js -->
+      <div data-facets></div>
     </aside>
 
     <section class="feed" aria-label="Posts">
       <div class="feed-bar">
         <button class="pill pill-dark collapse" type="button" aria-expanded="true" data-collapse><img src="assets/chevron-duo.svg" alt=""><span data-collapse-label>Hide filters</span><b class="filter-count" hidden data-filter-count></b></button>
-        <label class="feed-search"><img src="assets/search.svg" alt=""><input type="search" placeholder="Search captions, accounts, topics…" aria-label="Search posts" data-q></label>
+        <label class="feed-search"><img src="assets/search.svg" alt=""><input type="search" placeholder="Search captions…" aria-label="Search posts" data-q></label>
         <div class="spacer"></div>
         <div class="f-row seg" data-view>
           <button class="pill" type="button" aria-pressed="true" data-view-btn="all">All posts</button>
@@ -192,23 +87,9 @@
         <div class="need-head">
           <h2>What do you need today?</h2>
           <div class="need-order" data-toggle-group="single" data-order>
-            <button type="button" aria-pressed="true" data-value="outlier">Top outliers</button>
-            <button type="button" aria-pressed="false" data-value="latest">Latest</button>
+            <button type="button" aria-pressed="true" data-value="latest">Latest</button>
             <button type="button" aria-pressed="false" data-value="random">Surprise me</button>
           </div>
-        </div>
-        <div class="moments" data-moments>
-          <button type="button" aria-pressed="false" data-value="matchday"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 13V2l8 4-8 4" /> <path d="M20.561 10.222a9 9 0 1 1-12.55-5.29" /> <path d="M8.002 9.997a5 5 0 1 0 8.9 2.02" /></svg>Matchday</button>
-          <button type="button" aria-pressed="false" data-value="signing"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 21h8" /> <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /></svg>Signings</button>
-          <button type="button" aria-pressed="false" data-value="kit"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" /></svg>Kit</button>
-          <button type="button" aria-pressed="false" data-value="sponsor"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m11 17 2 2a1 1 0 1 0 3-3" /> <path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4" /> <path d="m21 3 1 11h-2" /> <path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3" /> <path d="M3 4h8" /></svg>Sponsors</button>
-          <button type="button" aria-pressed="false" data-value="behind_the_scenes"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12.296 3.464 3.02 3.956" /> <path d="M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1.1-.3 2.2.3 2.5 1.3z" /> <path d="M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /> <path d="m6.18 5.276 3.1 3.899" /></svg>Behind the scenes</button>
-          <button type="button" aria-pressed="false" data-value="fans"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 6a13 13 0 0 0 8.4-2.8A1 1 0 0 1 21 4v12a1 1 0 0 1-1.6.8A13 13 0 0 0 11 14H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z" /> <path d="M6 14a12 12 0 0 0 2.4 7.2 2 2 0 0 0 3.2-2.4A8 8 0 0 1 10 14" /> <path d="M8 6v8" /></svg>Fans</button>
-          <button type="button" aria-pressed="false" data-value="milestone"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14.66V17a1 1 0 0 1-1 1 2 2 0 0 0-2 2v2" /> <path d="M14 14.66V17a1 1 0 0 0 1 1 2 2 0 0 1 2 2v2" /> <path d="M17.916 10H19.5A2.5 2.5 0 0 0 22 7.5V5a1 1 0 0 0-1-1h-3" /> <path d="M4 22h16" /> <path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z" /> <path d="M6.084 10H4.5A2.5 2.5 0 0 1 2 7.5V5a1 1 0 0 1 1-1h3" /></svg>Milestones</button>
-          <button type="button" aria-pressed="false" data-value="training"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.596 12.768a2 2 0 1 0 2.829-2.829l-1.768-1.767a2 2 0 0 0 2.828-2.829l-2.828-2.828a2 2 0 0 0-2.829 2.828l-1.767-1.768a2 2 0 1 0-2.829 2.829z" /> <path d="m2.5 21.5 1.4-1.4" /> <path d="m20.1 3.9 1.4-1.4" /> <path d="M5.343 21.485a2 2 0 1 0 2.829-2.828l1.767 1.768a2 2 0 1 0 2.829-2.829l-6.364-6.364a2 2 0 1 0-2.829 2.829l1.768 1.767a2 2 0 0 0-2.828 2.829z" /> <path d="m9.6 14.4 4.8-4.8" /></svg>Training</button>
-          <button type="button" aria-pressed="false" data-value="humour"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 10V9" /> <path d="M7.084 14.302a5.12 5.12 0 009.833 0 .24.24 0 00-.235-.302H7.32a.24.24 0 00-.235.302" /> <path d="M9 10V9" /> <circle cx="12" cy="12" r="10" /></svg>Humour</button>
-          <button type="button" aria-pressed="false" data-value="community"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.414 14.414C21 12.828 22 11.5 22 9.5a5.5 5.5 0 0 0-9.591-3.676.6.6 0 0 1-.818.001A5.5 5.5 0 0 0 2 9.5c0 2.3 1.5 4 3 5.5l5.535 5.362a2 2 0 0 0 2.879.052 2.12 2.12 0 0 0-.004-3 2.124 2.124 0 1 0 3-3 2.124 2.124 0 0 0 3.004 0 2 2 0 0 0 0-2.828l-1.881-1.882a2.41 2.41 0 0 0-3.409 0l-1.71 1.71a2 2 0 0 1-2.828 0 2 2 0 0 1 0-2.828l2.823-2.762" /></svg>Community</button>
-          <button type="button" aria-pressed="false" data-value="ticketing"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" /> <path d="M13 5v2" /> <path d="M13 17v2" /> <path d="M13 11v2" /></svg>Tickets</button>
         </div>
         <div class="upcoming" data-upcoming></div>
       </div>
@@ -222,38 +103,12 @@
       </div>
 
       <p class="feed-note" hidden data-feed-note></p>
+      <p class="result-count" data-result-count></p>
       <div class="posts" data-posts aria-live="polite"></div>
       <p class="posts-empty" hidden data-empty>No posts match these filters.</p>
       <div class="load-more"><button class="pill pill-dark" type="button" hidden data-more>Load more</button></div>
     </section>
   </main>
-
-  <!-- Clubs like mine -->
-  <div class="drawer like-modal" hidden data-like-modal role="dialog" aria-modal="true" aria-labelledby="like-title">
-    <form class="like-panel" data-like-form>
-      <h2 id="like-title">Show me accounts like mine</h2>
-      <p>We’ll show ideas from accounts in your sport with an audience similar to yours — ideas you can actually make.</p>
-      <label class="auth-field">Sport
-        <select name="sport" required>
-          <option value="">Choose…</option>
-          <option>football</option><option>basketball</option><option>handball</option><option>tennis</option><option>padel</option>
-          <option>formula 1</option><option>motogp</option><option>american football</option><option>cycling</option><option>rugby</option>
-          <option>volleyball</option><option>golf</option><option>esports</option><option>other</option>
-        </select>
-      </label>
-      <fieldset class="like-sizes">
-        <legend>Followers on your main account</legend>
-        <label><input type="radio" name="size" value="s" required> Under 10K</label>
-        <label><input type="radio" name="size" value="m"> 10K – 100K</label>
-        <label><input type="radio" name="size" value="l"> 100K – 1M</label>
-        <label><input type="radio" name="size" value="xl"> Over 1M</label>
-      </fieldset>
-      <div class="like-actions">
-        <button class="btn btn-outline" type="button" data-like-cancel>Cancel</button>
-        <button class="btn btn-gold" type="submit">Save and apply</button>
-      </div>
-    </form>
-  </div>
 
   <!-- Post detail -->
   <div class="drawer" hidden data-drawer role="dialog" aria-modal="true" aria-label="Post details">
