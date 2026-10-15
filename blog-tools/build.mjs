@@ -364,6 +364,7 @@ function replaceBetween(file, start, end, content) {
 if (posts.length) {
   replaceBetween("blog.html", "<!-- POSTS:START -->", "<!-- POSTS:END -->", posts.map(card).join("\n"));
   replaceBetween("news.html", "<!-- BLOG:START -->", "<!-- BLOG:END -->", posts.slice(0, 3).map(card).join("\n"));
+  replaceBetween("index.html", "<!-- HOME-BLOG:START -->", "<!-- HOME-BLOG:END -->", posts.slice(0, 3).map(card).join("\n"));
 }
 
 // ---------- Sitemap & robots ----------

@@ -2283,3 +2283,7 @@ a.blog-img { display: block; }
 .lib-stats .ico { width: 14px; height: 14px; opacity: 0.8; }
 .folder-menu li button { display: flex; align-items: center; gap: 8px; }
 .folder-menu li button .ico { width: 15px; height: 15px; }
+
+/* Home: latest blog posts between the CTA and testimonials */
+.home-blog { padding: 0 0 40px; }
+.home-blog .blog-grid { margin-top: 40px; }
