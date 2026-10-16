@@ -432,9 +432,9 @@
   let cols = [], colH = [], placed = [];
   function columnCount() {
     const w = grid.clientWidth - parseFloat(getComputedStyle(grid).paddingLeft) - parseFloat(getComputedStyle(grid).paddingRight);
-    const collapsed = root.classList.contains("filters-collapsed");
-    const [max, min] = collapsed ? [4, 250] : [3, 240];
-    return Math.max(1, Math.min(max, Math.floor((w + GAP) / (min + GAP))));
+    // as many ~240px columns as fit (with or without the filters column), up to 6 on very wide screens
+    const MAX = 6, MIN = 240;
+    return Math.max(1, Math.min(MAX, Math.floor((w + GAP) / (MIN + GAP))));
   }
   function buildColumns(n) {
     grid.innerHTML = "";
