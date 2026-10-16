@@ -177,7 +177,7 @@
   function entryHtml(e, compact = false) {
     const t = typeOf(e.content_type);
     const ref = !compact && T ? thumbPost(refOf(e)) : null;
-    return `<div class="org-entry org-s-${e.status}${compact ? " is-compact" : ""}${ref ? " has-thumb" : ""}" draggable="true" data-entry="${e.id}" title="${esc(e.label || "Untitled")}">
+    return `<div class="org-entry org-s-${e.status}${compact ? " is-compact" : ""}${ref ? " has-thumb" : ""}" draggable="true" data-entry="${e.id}" aria-label="${esc(e.label || "Untitled")}">
       ${ref ? T.html(ref, "org-entry-thumb") : ""}
       <div class="org-entry-tools">
         <button type="button" data-dup="${e.id}" aria-label="Duplicate">${icon("copy")}</button>
@@ -351,6 +351,23 @@
       const created = await create(date, t, { label: p ? `Our version: ${p.who}` : "", content_type: type, inspiration: `ci-${insp}`, status: date ? "planned" : "idea" });
       return created && openEntry(created.id);
     }
+  });
+
+  // ---------- Hover preview: the post and the entry's details (js/post-preview.js) ----------
+  window.SCP_PREVIEW?.attach(layout, "[data-entry]", (el) => {
+    const e = entries.find((x) => x.id === el.dataset.entry);
+    if (!e) return null;
+    const ref = refOf(e);
+    const d = e.entry_date ? parse(e.entry_date) : null;
+    const t = typeOf(e.content_type);
+    return {
+      post: thumbPost(ref), title: e.label, status: e.status, statusLabel: STATUS[e.status],
+      lines: [
+        d ? `${DAY_NAMES[dow(d)]} ${d.getDate()} ${d.toLocaleDateString("en-GB", { month: "short" })} · ${e.time_slot}` : "No date · idea",
+        [t?.label, ref ? `Reference: ${esc(ref.who)}` : ""].filter(Boolean).join(" · "),
+      ],
+      copy: e.copy, href: ref?.url,
+    };
   });
 
   // ---------- Entry modal (autosave) ----------

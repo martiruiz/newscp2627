@@ -211,7 +211,7 @@
   }
   function entryHtml(e) {
     const r = S.refs.get(refId(e));
-    return `<div class="pp-entry s-${e.status}" draggable="true" data-pp-entry="${e.id}" title="${esc(e.label || "Untitled")} · open in the Content Plan">
+    return `<div class="pp-entry s-${e.status}" draggable="true" data-pp-entry="${e.id}" aria-label="${esc(e.label || "Untitled")} · open in the Content Plan">
       ${r ? T.html(r, "pp-thumb") : `<span class="pp-thumb pp-thumb-none">${icon(TYPE_ICON[e.content_type] || "layout-grid")}</span>`}
       <span class="pp-entry-txt"><b>${esc(e.label || "Untitled")}</b><small><i></i>${STATUS[e.status] || ""}${e.entry_date && e.time_slot !== "12:00" ? ` · ${e.time_slot}` : ""}</small></span>
       <button type="button" class="pp-entry-x" data-pp-del="${e.id}" aria-label="Remove from the plan" title="Remove from the plan">${icon("x")}</button>
@@ -283,6 +283,18 @@
     ? `<span><b>${S.selected.size} selected</b> · drag one of them onto a day</span><button type="button" data-pp-clear>Clear</button>`
     : `<span>${icon("hand")}Drag posts onto a day · <kbd>Shift</kbd>+click to select several</span>`;
   const renderFoot = () => { const f = $("[data-pp-foot]", panel); if (f) f.innerHTML = footHtml(); };
+
+  // Hover preview of a planned post (js/post-preview.js)
+  window.SCP_PREVIEW?.attach(panel, "[data-pp-entry]", (el) => {
+    const e = S.entries.find((x) => x.id === el.dataset.ppEntry);
+    if (!e) return null;
+    const r = S.refs.get(refId(e));
+    return {
+      post: r, title: e.label, status: e.status, statusLabel: STATUS[e.status],
+      lines: [e.entry_date ? `${fmtDay(e.entry_date)} · ${e.time_slot}` : "No date · idea", r ? `Reference: ${esc(r.who)}${r.format ? ` · ${esc(r.format)}` : ""}` : ""],
+      copy: e.copy, href: r?.url,
+    };
+  });
 
   // Panel clicks
   panel.addEventListener("click", async (e) => {

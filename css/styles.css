@@ -3661,3 +3661,25 @@ tr[data-hour] { animation: orgRowIn 0.25s ease-out; }
 .org-cell:hover .org-add { background: var(--gold); color: var(--bg); }
 .org-cell.is-over::after { content: attr(data-drop-label); position: absolute; left: 6px; right: 6px; bottom: 6px; padding: 6px 8px; border-radius: 8px; border: 1.5px dashed var(--gold); background: rgba(240, 184, 74, 0.12); color: var(--gold); font: 600 11px var(--font-body); text-align: center; pointer-events: none; }
 .org-cell.is-over .org-add { display: none; }
+
+/* ---------- Hover preview of a planned post (js/post-preview.js) ---------- */
+.pv { position: fixed; z-index: 2200; display: flex; flex-direction: column; width: max-content; max-width: 320px; min-width: 240px; border-radius: 18px; overflow: hidden;
+  background: var(--surface-2); border: 1px solid rgba(240, 184, 74, 0.35); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(0, 0, 0, 0.2); animation: pvIn 0.18s ease-out; }
+@keyframes pvIn { from { opacity: 0; transform: translateY(6px) scale(0.98); } }
+.pv-media { position: relative; align-self: center; max-width: 100%; background: #000; }
+.pv-thumb { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 0; }
+.pv-thumb iframe { pointer-events: auto; }
+.pv-body { display: flex; flex-direction: column; gap: 4px; padding: 12px 14px 14px; }
+.pv-status { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; padding: 3px 9px; border-radius: 100px; background: var(--surface); font-size: 11px; font-weight: 600; color: var(--s); }
+.pv-status i { width: 7px; height: 7px; border-radius: 50%; background: var(--s); }
+.pv-title { font-family: var(--font-display); font-size: 15px; line-height: 1.3; margin-top: 2px; }
+.pv-line { font-size: 12px; color: var(--muted); }
+.pv-line:empty { display: none; }
+.pv-copy { margin: 6px 0 0; padding: 8px 10px; border-radius: 10px; background: var(--surface); font-size: 12px; line-height: 1.45; color: var(--muted); white-space: pre-line; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+.pv-link { display: inline-flex; align-items: center; gap: 5px; margin-top: 6px; font-size: 12px; font-weight: 600; color: var(--gold); }
+.pv-link svg { width: 13px; height: 13px; }
+
+/* "+ 10:00" no longer covers posts: when a cell has posts, the add button is a small icon in the corner */
+.org-cell:has(.org-entry) .org-add span { display: none !important; }
+.org-cell:has(.org-entry) .org-add { width: 22px; min-width: 22px; height: 22px; padding: 0; right: 3px; bottom: 3px; }
+.org-cell:has(.org-entry:hover) .org-add { opacity: 0; }
