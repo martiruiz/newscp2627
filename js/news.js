@@ -25,7 +25,7 @@
   const row = (n) => {
     const icon = n.platform === "other" ? "all" : n.platform;
     return `
-      <article class="news-row" data-platform="${esc(n.platform)}">
+      <article class="news-row" id="news-${esc(n.id)}" data-platform="${esc(n.platform)}">
         <div class="news-row-text">
           <span class="news-meta"><b>${esc((LABELS[n.platform] || n.platform).toUpperCase())}</b> ${esc(fmtDate(n.published_at))}</span>
           <h2>${esc(n.title)}</h2>
@@ -70,6 +70,9 @@
     state.offset += data.length;
     more.hidden = data.length < PAGE;
     if (!list.children.length) showMessage("No news match these filters yet.");
+    // Links from the newsletter: news.html#news-<id> → scroll to that story and highlight it
+    const target = /^#news-\d+$/.test(location.hash) && document.querySelector(location.hash);
+    if (target && !target.dataset.seen) { target.dataset.seen = "1"; target.classList.add("is-target"); target.scrollIntoView({ block: "center", behavior: "smooth" }); }
   }
 
   // Platform tiles (single choice)

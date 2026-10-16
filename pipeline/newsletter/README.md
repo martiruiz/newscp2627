@@ -7,8 +7,9 @@ Home pop-up sign-up ─▶ newsletter_signups ─▶ Database Webhook ─▶ Edg
 Profile "Send me the newsletter" ─▶ profiles.newsletter ─────────▶ synced to the segment every Monday
 
 Every Monday 08:00 (Barcelona) — GitHub Action "Weekly newsletter"
-node newsletter/weekly.mjs  → Social News (7 days) + newest Content Library posts + latest blog article
-                            → Claude picks and writes (subject, intro, takes, tip)
+node newsletter/weekly.mjs  → header + intro · Social News "This week on SCP" (top story + headlines, last 7 days)
+                              · 3 latest blog articles with photo · Follow SCP (Instagram, TikTok, LinkedIn)
+                            → Claude writes subject, intro, top-story take and a teaser per article
                             → Resend broadcast DRAFT + preview email to NEWSLETTER_REVIEW_TO
 You: Resend → Broadcasts → "SCP weekly — <date>" → Send   (nothing goes out without this click)
 ```
@@ -29,4 +30,5 @@ You: Resend → Broadcasts → "SCP weekly — <date>" → Send   (nothing goes 
 
 Local dry run (no emails, writes `pipeline/newsletter-preview.html`): `node newsletter/weekly.mjs --dry-run` with `pipeline/.env`.
 
-Emails load images from `sportscontentplaybook.com` (logo) and Supabase Storage (post images), so the website must be published at that domain.
+Emails load images from `sportscontentplaybook.com` (logo and blog photos), so the website must be published at that domain.
+Social links: edit `SOCIAL` at the top of `newsletter/template.mjs` (empty = hidden).

@@ -1,69 +1,79 @@
 // HTML for the weekly SCP newsletter (email-safe: tables + inline styles, SCP navy / gold).
+// Structure: header + intro · Social News ("This week on SCP") · 3 blog articles with photo · social links.
 // Resend placeholders: {{{contact.first_name|there}}} and {{{RESEND_UNSUBSCRIBE_URL}}}.
 export const SITE = "https://sportscontentplaybook.com";
+// Social profiles shown at the bottom (empty = hidden)
+export const SOCIAL = {
+  Instagram: "",
+  TikTok: "",
+  LinkedIn: "https://www.linkedin.com/company/sportscontentplaybook",
+};
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
-const PLATFORM = { instagram: "Instagram", tiktok: "TikTok", x: "X", youtube: "YouTube", facebook: "Facebook", linkedin: "LinkedIn", snapchat: "Snapchat", whatsapp: "WhatsApp", pinterest: "Pinterest", threads: "Threads", ai: "AI", other: "Sports marketing" };
+// **bold** in Claude's text → <b>
+const rich = (s) => esc(s).replace(/\*\*(.+?)\*\*/g, '<b style="color:#ffffff">$1</b>');
+const FONT = "font-family:Arial,Helvetica,sans-serif";
 
-const label = (t) => `<tr><td style="padding:34px 0 14px;color:#f0b84a;font-size:12px;letter-spacing:1.6px;text-transform:uppercase;font-weight:700">${t}</td></tr>`;
-const button = (href, text) => `<a href="${esc(href)}" style="display:inline-block;padding:13px 24px;border-radius:100px;background:#f0b84a;color:#121b33;font-weight:700;font-size:15px;text-decoration:none">${esc(text)}</a>`;
+const bar = (text) => `<tr><td style="padding:30px 0 16px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+  <td style="background:#f0b84a;border-radius:10px;padding:12px 18px;color:#121b33;font-size:18px;font-weight:700;${FONT}">${text}</td></tr></table></td></tr>`;
 
-function postCard(p) {
-  const img = p.image ? `<tr><td><a href="${esc(p.link)}"><img src="${esc(p.image)}" width="248" alt="${esc(p.who)}" style="display:block;width:100%;max-width:248px;height:auto;border-radius:12px"></a></td></tr>` : "";
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#17213b;border-radius:16px">
-    <tr><td style="padding:12px">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">${img}
-        <tr><td style="padding:12px 4px 2px;color:#fff;font-size:15px;font-weight:700">${esc(p.who)}</td></tr>
-        <tr><td style="padding:0 4px 8px;color:#8b98ae;font-size:12px">${esc([p.format, p.sport].filter(Boolean).join(" · "))}</td></tr>
-        ${p.hook ? `<tr><td style="padding:0 4px 8px;color:#ffe0a0;font-size:13px;line-height:1.45">Hook: “${esc(p.hook)}”</td></tr>` : ""}
-        <tr><td style="padding:0 4px 8px;color:#b4c0d3;font-size:13px;line-height:1.5">${esc(p.why)}</td></tr>
-        <tr><td style="padding:0 4px 4px"><a href="${esc(p.link)}" style="color:#f0b84a;font-size:13px;font-weight:700;text-decoration:none">See the breakdown →</a></td></tr>
-      </table>
-    </td></tr></table>`;
+function blogCard(b, i) {
+  return `<tr><td style="padding:${i ? "28px" : "4px"} 0 0">
+    <a href="${esc(b.link)}"><img src="${esc(b.image)}" width="536" alt="${esc(b.title)}" style="display:block;width:100%;max-width:536px;height:auto;border-radius:14px;border:0"></a>
+    <p style="margin:16px 0 0;color:#f0b84a;font-size:12px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;${FONT}">${esc(b.type)} · ${esc(b.date)}</p>
+    <a href="${esc(b.link)}" style="display:block;margin-top:8px;color:#ffffff;font-size:22px;line-height:1.3;font-weight:700;text-decoration:none;${FONT}">${esc(b.title)}</a>
+    ${b.teaser.map((p) => `<p style="margin:12px 0 0;color:#b4c0d3;font-size:15px;line-height:1.65;${FONT}">${rich(p)}</p>`).join("")}
+    <p style="margin:16px 0 0"><a href="${esc(b.link)}" style="display:inline-block;padding:11px 20px;border-radius:100px;background:#1d2845;border:1px solid rgba(240,184,74,0.5);color:#f0b84a;font-size:14px;font-weight:700;text-decoration:none;${FONT}">Read the article →</a></p>
+  </td></tr>`;
 }
 
-export function renderWeekly({ subject, preheader, intro, news, posts, tip, blog, dateLabel }) {
-  const rows = [];
-  for (let i = 0; i < posts.length; i += 2) {
-    const [a, b] = [posts[i], posts[i + 1]];
-    rows.push(`<tr><td class="col" width="50%" valign="top" style="padding:0 6px 12px 0">${postCard(a)}</td><td class="col" width="50%" valign="top" style="padding:0 0 12px 6px">${b ? postCard(b) : ""}</td></tr>`);
-  }
+export function renderWeekly({ subject, preheader, intro, topStory, news, blogs, dateLabel }) {
+  const socials = Object.entries(SOCIAL).filter(([, url]) => url);
   return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(subject)}</title>
-<style>@media (max-width:600px){.col{display:block!important;width:100%!important;padding:0 0 12px 0!important}.pad{padding-left:20px!important;padding-right:20px!important}}</style></head>
+<style>@media (max-width:600px){.pad{padding-left:20px!important;padding-right:20px!important}}</style></head>
 <body style="margin:0;padding:0;background:#0e1529">
 <div style="display:none;max-height:0;overflow:hidden;opacity:0">${esc(preheader)}</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0e1529"><tr><td align="center" style="padding:28px 12px">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;font-family:Arial,Helvetica,sans-serif">
-  <tr><td class="pad" style="padding:0 32px 18px">
-    <table role="presentation" width="100%"><tr>
-      <td><a href="${SITE}" style="color:#fff;text-decoration:none;font-weight:700;font-size:15px"><img src="${SITE}/assets/icon-logo-lg.png" width="26" height="25" alt="" style="vertical-align:middle;margin-right:8px">Sports Content Playbook</a></td>
-      <td align="right" style="color:#8b98ae;font-size:12px">${esc(dateLabel)}</td>
-    </tr></table>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;${FONT}">
+
+  <!-- Header -->
+  <tr><td class="pad" align="center" style="padding:36px 32px 32px;background:#121b33;border:1px solid rgba(240,184,74,0.4);border-radius:22px 22px 0 0">
+    <a href="${SITE}" style="text-decoration:none"><img src="${SITE}/assets/icon-logo-lg.png" width="44" height="42" alt="" style="display:block;margin:0 auto 12px"></a>
+    <a href="${SITE}" style="color:#ffffff;font-size:22px;font-weight:700;text-decoration:none;letter-spacing:-0.3px">Sports Content <span style="color:#f0b84a">Playbook</span></a>
+    <p style="margin:6px 0 0;color:#8b98ae;font-size:12px;letter-spacing:1.4px;text-transform:uppercase">The weekly playbook · ${esc(dateLabel)}</p>
+    <p style="margin:24px 0 0;color:#e6ebf3;font-size:16px;line-height:1.65;text-align:center">Hi {{{contact.first_name|there}}}, welcome to this week's SCP! ${rich(intro)}</p>
   </td></tr>
-  <tr><td class="pad" style="padding:34px 32px;background:#121b33;border:1px solid rgba(240,184,74,0.4);border-radius:22px">
+
+  <tr><td class="pad" style="padding:0 32px 34px;background:#17213b;border:1px solid rgba(240,184,74,0.4);border-top:0;border-radius:0 0 22px 22px">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-      <tr><td style="color:#f0b84a;font-size:12px;letter-spacing:1.6px;text-transform:uppercase;font-weight:700;padding-bottom:12px">The weekly playbook</td></tr>
-      <tr><td style="color:#fff;font-size:28px;line-height:1.2;font-weight:700;padding-bottom:16px">${esc(subject)}</td></tr>
-      <tr><td style="color:#b4c0d3;font-size:15px;line-height:1.65">Hi {{{contact.first_name|there}}},<br><br>${esc(intro)}</td></tr>
 
-      ${posts.length ? `${label("Sports posts working right now")}<tr><td><table role="presentation" width="100%" cellpadding="0" cellspacing="0">${rows.join("")}</table></td></tr>` : ""}
+      ${topStory || news.length ? `${bar("Social News: this week on SCP")}
+      ${topStory ? `<tr><td style="color:#ffffff;font-size:16px;font-weight:700;padding:4px 0 10px">Top story of the week:</td></tr>
+      <tr><td style="padding:0 0 4px 0"><table role="presentation" cellpadding="0" cellspacing="0"><tr>
+        <td valign="top" style="color:#f0b84a;font-size:16px;padding:1px 10px 0 4px">•</td>
+        <td><a href="${esc(topStory.link)}" style="color:#f0b84a;font-size:16px;font-weight:700;line-height:1.45;text-decoration:none">${esc(topStory.title)}</a>
+          <p style="margin:6px 0 0;color:#b4c0d3;font-size:14px;line-height:1.6">${rich(topStory.take)}</p></td></tr></table></td></tr>` : ""}
+      ${news.length ? `<tr><td style="padding:18px 0"><div style="height:2px;width:80%;margin:0 auto;background:#f0b84a;border-radius:2px;line-height:2px;font-size:0">&nbsp;</div></td></tr>
+      ${news.map((n) => `<tr><td style="padding:0 0 12px"><table role="presentation" cellpadding="0" cellspacing="0"><tr>
+        <td valign="top" style="color:#f0b84a;font-size:16px;padding:1px 10px 0 4px">•</td>
+        <td><a href="${esc(n.link)}" style="color:#f0b84a;font-size:15px;font-weight:700;line-height:1.45;text-decoration:none">${esc(n.title)}</a></td></tr></table></td></tr>`).join("")}` : ""}` : ""}
 
-      ${news.length ? `${label("This week in sports digital marketing")}${news.map((n) => `
-      <tr><td style="padding:0 0 12px"><table role="presentation" width="100%" style="background:#17213b;border-radius:14px"><tr><td style="padding:16px 18px">
-        <div style="color:#f0b84a;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding-bottom:6px">${esc(PLATFORM[n.platform] || "News")}</div>
-        <a href="${esc(n.link)}" style="color:#fff;font-size:16px;font-weight:700;line-height:1.35;text-decoration:none">${esc(n.title)}</a>
-        <div style="color:#b4c0d3;font-size:14px;line-height:1.55;padding-top:6px">${esc(n.take)}</div>
-      </td></tr></table></td></tr>`).join("")}` : ""}
+      ${blogs.length ? `${bar("From the SCP blog")}${blogs.map(blogCard).join("")}` : ""}
 
-      ${tip ? `${label("Try this week")}<tr><td style="padding:18px 20px;background:rgba(240,184,74,0.12);border:1px solid rgba(240,184,74,0.35);border-radius:14px;color:#fff;font-size:15px;line-height:1.6">${esc(tip)}</td></tr>` : ""}
-
-      ${blog ? `${label("From the blog")}<tr><td style="padding:0 0 4px"><a href="${esc(blog.link)}" style="color:#fff;font-size:17px;font-weight:700;line-height:1.35;text-decoration:none">${esc(blog.title)}</a><div style="color:#b4c0d3;font-size:14px;line-height:1.55;padding-top:6px">${esc(blog.excerpt)}</div></td></tr>` : ""}
-
-      <tr><td style="padding:34px 0 4px" align="center">${button(`${SITE}/content-library.html`, "Explore the Content Library")}</td></tr>
+      <tr><td align="center" style="padding:36px 0 0">
+        <a href="${SITE}/content-library.html" style="display:inline-block;padding:14px 26px;border-radius:100px;background:#f0b84a;color:#121b33;font-weight:700;font-size:15px;text-decoration:none">Explore the Content Library</a>
+      </td></tr>
     </table>
   </td></tr>
-  <tr><td class="pad" style="padding:24px 32px;color:#6f7d95;font-size:12px;line-height:1.6" align="center">
+
+  <!-- Social links -->
+  ${socials.length ? `<tr><td align="center" style="padding:28px 20px 6px">
+    <p style="margin:0 0 12px;color:#ffffff;font-size:15px;font-weight:700">Follow SCP</p>
+    ${socials.map(([name, url]) => `<a href="${esc(url)}" style="display:inline-block;margin:4px;padding:10px 18px;border-radius:100px;background:#17213b;border:1px solid rgba(255,255,255,0.14);color:#ffffff;font-size:14px;font-weight:700;text-decoration:none">${esc(name)}</a>`).join("")}
+  </td></tr>` : ""}
+
+  <tr><td class="pad" style="padding:20px 32px;color:#6f7d95;font-size:12px;line-height:1.6" align="center">
     You're receiving this because you subscribed at sportscontentplaybook.com.<br>
-    <a href="{{{RESEND_UNSUBSCRIBE_URL}}}" style="color:#8b98ae">Unsubscribe</a> · <a href="https://www.linkedin.com/company/sportscontentplaybook" style="color:#8b98ae">LinkedIn</a>
+    <a href="{{{RESEND_UNSUBSCRIBE_URL}}}" style="color:#8b98ae">Unsubscribe</a>
   </td></tr>
 </table></td></tr></table></body></html>`;
 }

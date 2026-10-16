@@ -4,9 +4,9 @@
 //   node newsletter/weekly.mjs            → builds this week's issue, creates the draft, emails a preview to NEWSLETTER_REVIEW_TO
 //   node newsletter/weekly.mjs --dry-run  → builds it and writes newsletter-preview.html, nothing is sent or saved
 //
-// Content: Social News (last 7 days), newest Content Library posts (analysed ones first), latest blog article.
-// Claude picks and writes the intro, the takes and the tip. Subscribers = website sign-ups + members who opted in
-// on their profile (synced to the Resend segment before each issue).
+// Structure: header + intro · Social News ("This week on SCP": top story + other headlines) · 3 blog articles with photo
+// · social links. Claude writes the intro, the top-story take and a short teaser for each article.
+// Subscribers = website sign-ups + members who opted in on their profile (synced to the Resend segment before each issue).
 //
 // Env: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, ANTHROPIC_API_KEY, RESEND_API_KEY, RESEND_SEGMENT_ID,
 //      NEWSLETTER_FROM, NEWSLETTER_REVIEW_TO (who receives the preview)
@@ -17,7 +17,6 @@ import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { loadEnv } from "../library/env.mjs";
-import { igEmbed } from "../library/instagram.mjs";
 import { renderWeekly, SITE } from "./template.mjs";
 
 loadEnv();
@@ -41,65 +40,53 @@ if (!DRY) {
 
 // ---------- 1. Gather content ----------
 const { data: newsData } = await db.from("news").select("id,url,source_name,platform,title,paragraphs,published_at")
-  .eq("relevant", true).gte("published_at", since).order("published_at", { ascending: false }).limit(10);
+  .eq("relevant", true).gte("published_at", since).order("published_at", { ascending: false }).limit(12);
 const newsRows = newsData || [];
 
-const postSelect = "id,url,title,published_at,analysis,content_idea_tags(idea_catalog(category,name))";
-let { data: postRows } = await db.from("content_ideas").select(postSelect)
-  .is("unavailable_at", null).gte("created_at", since).order("analyzed_at", { ascending: false, nullsFirst: false }).limit(12);
-if ((postRows || []).length < 4) {
-  ({ data: postRows } = await db.from("content_ideas").select(postSelect)
-    .is("unavailable_at", null).order("analyzed_at", { ascending: false, nullsFirst: false }).order("published_at", { ascending: false }).limit(12));
-}
-const tagsOf = (p) => { const t = {}; for (const { idea_catalog: v } of p.content_idea_tags || []) if (v) (t[v.category] ||= []).push(v.name); return t; };
-const posts = (postRows || []).map((p) => ({ ...p, tags: tagsOf(p) }));
-
 const blogDir = path.join(ROOT, "content/blog");
-const blogPost = fs.existsSync(blogDir)
+const blogPosts = fs.existsSync(blogDir)
   ? fs.readdirSync(blogDir).filter((f) => f.endsWith(".json")).map((f) => JSON.parse(fs.readFileSync(path.join(blogDir, f), "utf8")))
-      .filter((p) => !p.draft).sort((a, b) => b.date.localeCompare(a.date))[0]
-  : null;
+      .filter((p) => !p.draft).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3)
+  : [];
 
-if (!newsRows.length && !posts.length) { console.log("No content this week — skipping."); process.exit(0); }
-console.log(`Content: ${newsRows.length} news, ${posts.length} posts, blog: ${blogPost ? blogPost.slug : "none"}`);
+if (!newsRows.length && !blogPosts.length) { console.log("No content this week — skipping."); process.exit(0); }
+console.log(`Content: ${newsRows.length} news, ${blogPosts.length} blog article(s)`);
 
 // ---------- 2. Claude: pick and write ----------
 const SYSTEM = `You write the weekly newsletter of Sports Content Playbook (SCP), a content-intelligence platform for the social media teams of sports clubs, leagues, athletes and sports brands.
 
-You receive this week's material: platform/industry news, sports social posts from our Content Library (some with an expert analysis), and our latest blog article. Write in English, warm and expert, short sentences, no hype, no emojis.
+You receive this week's Social News (sports digital marketing / platform / AI news) and our latest blog articles. Write in English: warm, expert, short sentences, no hype, no emojis.
 
 Return:
-- subject: max 60 characters, specific and curiosity-driven (not clickbait). No emojis.
+- subject: max 60 characters, specific and curiosity-driven, no emojis.
 - preheader: max 110 characters, complements the subject.
-- intro: 2–3 sentences that set up this week's theme. Do not greet (the greeting is added for you).
-- news: pick up to 4 of the most useful news items (by id). For each, "take": 1–2 sentences on what it means for a sports social team.
-- posts: pick 4 posts (by id), varied in sport and format, preferring ones with an analysis. For each: "why": 1–2 sentences on what makes it work and how a club could adapt it; "hook": the opening hook if the analysis has one, else "".
-- tip: one concrete, actionable idea a sports social team can try this week, based on the material.
-Only use facts present in the material. Never invent numbers, results or quotes. Never identify people except by names given in the material.`;
+- intro: 1–2 sentences, "In this edition: …" summarising the most interesting things inside. Do not greet (the greeting is added for you). You may bold 1–3 key names with **double asterisks**.
+- topStory: the single most important news item for sports social teams (by id) and "take": 2 sentences on what happened and what it means for a club.
+- news: up to 6 other useful news item ids, most relevant first (not the top story).
+- blogs: for EACH blog article given (by slug), "teaser": 2 short paragraphs (35–60 words each) that make people want to read it. Bold key names or figures that appear in the article with **double asterisks** (max 3 per paragraph).
+Only use facts present in the material. Never invent numbers, results or quotes.`;
 
 const SCHEMA = {
   type: "object", additionalProperties: false,
   properties: {
-    subject: { type: "string" }, preheader: { type: "string" }, intro: { type: "string" }, tip: { type: "string" },
-    news: { type: "array", items: { type: "object", additionalProperties: false, properties: { id: { type: "integer" }, take: { type: "string" } }, required: ["id", "take"] } },
-    posts: { type: "array", items: { type: "object", additionalProperties: false, properties: { id: { type: "integer" }, why: { type: "string" }, hook: { type: "string" } }, required: ["id", "why", "hook"] } },
+    subject: { type: "string" }, preheader: { type: "string" }, intro: { type: "string" },
+    topStory: { type: ["object", "null"], additionalProperties: false, properties: { id: { type: "integer" }, take: { type: "string" } }, required: ["id", "take"] },
+    news: { type: "array", items: { type: "integer" } },
+    blogs: { type: "array", items: { type: "object", additionalProperties: false, properties: { slug: { type: "string" }, teaser: { type: "array", items: { type: "string" } } }, required: ["slug", "teaser"] } },
   },
-  required: ["subject", "preheader", "intro", "news", "posts", "tip"],
+  required: ["subject", "preheader", "intro", "topStory", "news", "blogs"],
 };
 const Result = z.object({
-  subject: z.string().min(5), preheader: z.string(), intro: z.string().min(10), tip: z.string(),
-  news: z.array(z.object({ id: z.number(), take: z.string() })),
-  posts: z.array(z.object({ id: z.number(), why: z.string(), hook: z.string() })),
+  subject: z.string().min(5), preheader: z.string(), intro: z.string().min(10),
+  topStory: z.object({ id: z.number(), take: z.string() }).nullable(),
+  news: z.array(z.number()),
+  blogs: z.array(z.object({ slug: z.string(), teaser: z.array(z.string()) })),
 });
 
+const plain = (html) => String(html || "").replace(/<[^>]+>/g, " ").replace(/&[a-z#0-9]+;/gi, " ").replace(/\s+/g, " ").trim();
 const material = {
   news: newsRows.map((n) => ({ id: n.id, platform: n.platform, title: n.title, summary: (n.paragraphs || []).join(" ").slice(0, 900) })),
-  posts: posts.map((p) => ({
-    id: p.id, account: p.tags.club?.[0] || p.tags.entity?.[0] || "", sport: p.tags.sport?.[0] || "", format: p.tags.format?.[0] || "",
-    caption: (p.title || "").slice(0, 400),
-    analysis: p.analysis ? { summary: p.analysis.summary, hook: p.analysis.hook?.text, whyItWorks: p.analysis.whyItWorks, howToAdapt: p.analysis.replicable?.howToAdapt } : null,
-  })),
-  blog: blogPost ? { title: blogPost.title, excerpt: blogPost.excerpt } : null,
+  blogs: blogPosts.map((b) => ({ slug: b.slug, title: b.title, excerpt: b.excerpt, text: plain(b.body_html).slice(0, 2500) })),
 };
 
 const claude = new Anthropic();
@@ -116,35 +103,23 @@ if (response.stop_reason === "refusal" || response.stop_reason === "max_tokens")
 const out = Result.parse(JSON.parse(response.content.find((b) => b.type === "text").text));
 console.log(`Claude: "${out.subject}" (${response.usage.input_tokens} in / ${response.usage.output_tokens} out tokens)`);
 
-// ---------- 3. Images: copy each picked post's image to our public bucket (Instagram links expire) ----------
-async function stableImage(post) {
-  try {
-    const { image } = await igEmbed(post.url);
-    if (!image) return null;
-    const buf = Buffer.from(await (await fetch(image)).arrayBuffer());
-    if (DRY) return image;
-    const file = `${weekStart}/${post.id}.jpg`;
-    const { error } = await db.storage.from("newsletter").upload(file, buf, { contentType: "image/jpeg", upsert: true });
-    if (error) return null;
-    return db.storage.from("newsletter").getPublicUrl(file).data.publicUrl;
-  } catch { return null; }
-}
-const byId = new Map(posts.map((p) => [p.id, p]));
-const pickedPosts = [];
-for (const pick of out.posts.slice(0, 4)) {
-  const p = byId.get(pick.id);
-  if (!p) continue;
-  pickedPosts.push({
-    who: p.tags.club?.[0] || p.tags.entity?.[0] || "Post", format: p.tags.format?.[0] || "", sport: p.tags.sport?.[0] || "",
-    hook: pick.hook, why: pick.why, image: await stableImage(p), link: `${SITE}/content-library.html#post=${p.id}`,
-  });
-}
+// ---------- 3. Assemble ----------
 const newsById = new Map(newsRows.map((n) => [n.id, n]));
-const pickedNews = out.news.slice(0, 4).map((n) => ({ ...newsById.get(n.id), take: n.take })).filter((n) => n.title)
-  .map((n) => ({ platform: n.platform, title: n.title, take: n.take, link: `${SITE}/news.html` }));
-const blog = blogPost ? { title: blogPost.title, excerpt: blogPost.excerpt, link: `${SITE}/blog/${blogPost.slug}.html` } : null;
+const newsLink = (n) => `${SITE}/news.html#news-${n.id}`;
+const top = out.topStory && newsById.get(out.topStory.id);
+const topStory = top ? { title: top.title, take: out.topStory.take, link: newsLink(top) } : null;
+const news = out.news.filter((id) => id !== top?.id).map((id) => newsById.get(id)).filter(Boolean).slice(0, 6)
+  .map((n) => ({ title: n.title, link: newsLink(n) }));
+const TYPE = { news: "News & updates", trends: "Social media trends", ideas: "Sports content ideas" };
+const teasers = new Map(out.blogs.map((b) => [b.slug, b.teaser.slice(0, 2)]));
+const blogs = blogPosts.map((b) => ({
+  title: b.title, type: TYPE[b.type] || "Blog",
+  date: new Date(`${b.date}T12:00:00Z`).toLocaleDateString("en-GB", { day: "numeric", month: "long" }),
+  image: `${SITE}/assets/blog/${b.image?.file}`, link: `${SITE}/blog/${b.slug}.html`,
+  teaser: teasers.get(b.slug)?.length ? teasers.get(b.slug) : [b.excerpt],
+}));
 
-const html = renderWeekly({ subject: out.subject, preheader: out.preheader, intro: out.intro, news: pickedNews, posts: pickedPosts, tip: out.tip, blog, dateLabel });
+const html = renderWeekly({ subject: out.subject, preheader: out.preheader, intro: out.intro, topStory, news, blogs, dateLabel });
 
 if (DRY) {
   const file = path.join(ROOT, "pipeline", "newsletter-preview.html");
@@ -184,7 +159,7 @@ if (!draft.ok) throw new Error(`Resend broadcast error ${draft.status}: ${JSON.s
 const broadcastId = draft.data.id;
 console.log(`Draft broadcast created: ${broadcastId}`);
 
-await db.from("newsletter_issues").insert({ week_start: weekStart, subject: out.subject, broadcast_id: broadcastId, items: { news: pickedNews, posts: pickedPosts, tip: out.tip, blog } });
+await db.from("newsletter_issues").insert({ week_start: weekStart, subject: out.subject, broadcast_id: broadcastId, items: { topStory, news, blogs } });
 
 if (env("NEWSLETTER_REVIEW_TO")) {
   const banner = `<div style="background:#f0b84a;color:#121b33;padding:14px 18px;font-family:Arial,sans-serif;font-size:14px;text-align:center"><b>Preview — not sent yet.</b> To send it to all subscribers: Resend → Broadcasts → “${name}” → Send.</div>`;
