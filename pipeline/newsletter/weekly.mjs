@@ -46,7 +46,9 @@ const { data: newsData } = await db.from("news").select("id,url,source_name,plat
 const newsRows = newsData || [];
 
 // Featured posts: newest imports (analysed ones first); fallback to the newest overall
-const postSelect = "id,url,title,published_at,ai_analyses(result),content_idea_tags(idea_catalog(category,name))";
+// Posts a superadmin removed from the library (supabase/quality.sql) never go out
+const removedPosts = new Set(((await db.from("content_removals").select("external_id")).data || []).map((r) => r.external_id));
+const postSelect = "id,external_id,url,title,published_at,ai_analyses(result),content_idea_tags(idea_catalog(category,name))";
 let { data: postRows } = await db.from("content_ideas").select(postSelect)
   .is("unavailable_at", null).gte("created_at", since).order("analyzed_at", { ascending: false, nullsFirst: false }).limit(16);
 if ((postRows || []).length < 4) {
@@ -54,7 +56,7 @@ if ((postRows || []).length < 4) {
     .is("unavailable_at", null).order("analyzed_at", { ascending: false, nullsFirst: false }).order("published_at", { ascending: false }).limit(16));
 }
 const tagsOf = (p) => { const t = {}; for (const { idea_catalog: v } of p.content_idea_tags || []) if (v) (t[v.category] ||= []).push(v.name); return t; };
-const libPosts = (postRows || []).map((p) => ({ ...p, analysis: p.ai_analyses?.[0]?.result || null, tags: tagsOf(p) }));
+const libPosts = (postRows || []).filter((p) => !removedPosts.has(p.external_id)).map((p) => ({ ...p, analysis: p.ai_analyses?.[0]?.result || null, tags: tagsOf(p) }));
 
 const blogDir = path.join(ROOT, "content/blog");
 const blogPosts = fs.existsSync(blogDir)

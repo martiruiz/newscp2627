@@ -161,5 +161,21 @@ check("members can't list subscriptions", await as(U.A, `select * from public.ad
 check("members can't change prices", (await as(U.A, `update public.plans set price_month = 0 where key = 'all_access' returning key`)).length === 0);
 check("anonymous visitors can read plan prices", (await db.transaction(async (tx) => { await tx.exec("set local role anon"); return (await tx.query("select count(*)::int n from public.plans")).rows[0].n; })) === 4);
 
+console.log("\n12. Quality review: superadmin removes posts from the library");
+await db.exec(sql("quality.sql")); await db.exec(sql("quality.sql"));
+const libTotal = async (u) => (await as(u, `select public.library_ideas('{}'::jsonb) r`))[0].r.total;
+const libBefore = await libTotal(U.A);
+check("members can't remove posts", await as(U.A, `select public.remove_content_idea(20, 'x')`).then(() => false, () => true));
+await as(U.SUPER, `select public.remove_content_idea(20, 'Low quality')`);
+check("removed post disappears from the library", (await libTotal(U.A)) === libBefore - 1);
+check("members can't read it directly (saved boards, planner)", (await as(U.A, `select count(*)::int n from public.content_ideas where id = 20`))[0].n === 0);
+check("members can't read the removals list", (await as(U.A, `select count(*)::int n from public.content_removals`))[0].n === 0);
+check("superadmin sees the removal with its reason", (await as(U.SUPER, `select reason from public.content_removals where external_id = 'p20'`))[0]?.reason === "Low quality");
+await db.exec(`delete from public.content_ideas where external_id = 'p20'; insert into public.content_ideas (external_id, title, url) values ('p20', 'Post 20 again', 'https://www.instagram.com/p/X20/');`);
+check("re-imported post stays hidden", (await libTotal(U.A)) === libBefore - 1 && (await as(U.A, `select count(*)::int n from public.content_ideas where external_id = 'p20'`))[0].n === 0);
+check("members can't restore", await as(U.A, `select public.restore_content_idea('p20')`).then(() => false, () => true));
+await as(U.SUPER, `select public.restore_content_idea('p20')`);
+check("restore brings it back", (await libTotal(U.A)) === libBefore);
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

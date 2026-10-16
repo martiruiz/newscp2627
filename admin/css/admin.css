@@ -411,3 +411,8 @@ body { background: radial-gradient(60% 40% at 50% 0%, rgba(240, 184, 74, 0.06), 
 .input-sm { height: 34px; padding: 0 10px; font-size: 13px; min-width: 70px; }
 .success-text { color: var(--green); margin-top: 10px; font-size: 13px; }
 @media (max-width: 1000px) { .bill-grid { grid-template-columns: 1fr; } }
+.notice-removed { padding: 14px 18px; border-radius: 12px; background: var(--surface-2, rgba(255,255,255,0.04)); border: 1px solid var(--line); color: var(--muted); font-size: 14px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 16px; margin-bottom: 18px; }
+.notice-removed b { color: var(--text); }
+.removed-list { flex-basis: 100%; display: grid; gap: 8px; max-height: 320px; overflow: auto; }
+.removed-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); }
+.removed-row a { color: var(--text); font-weight: 500; }

@@ -41,6 +41,7 @@
       </div>
     </div>
     <div class="info-box notice-broken" hidden data-broken></div>
+    <div class="info-box notice-removed" hidden data-removed></div>
     <section data-filters></section>
     <div class="selbar" hidden data-selbar>
       <span data-selcount></span>
@@ -235,6 +236,31 @@
     });
   }
   loadBroken();
+
+  // ---------- Posts a superadmin removed from the Content Library (supabase/quality.sql) ----------
+  async function loadRemoved() {
+    const box = $("[data-removed]");
+    const { data, error } = await A.db.from("content_removals").select("*").order("removed_at", { ascending: false });
+    if (error || !data?.length) { box.hidden = true; return; }
+    box.hidden = false;
+    box.innerHTML = `<span><b>${num(data.length)} post${data.length === 1 ? "" : "s"}</b> removed from the Content Library for quality. They stay hidden in future imports.</span>
+      <button class="btn btn-sm" type="button" data-toggle-removed>Review</button>
+      <div class="removed-list" hidden data-removed-list>${data.map((r) => `<div class="removed-row">
+        <div><a href="${esc(r.url || "#")}" target="_blank" rel="noopener">${esc((r.title || r.external_id || "").slice(0, 90) || "Post")}</a>
+          <div class="muted">${esc(r.reason || "No reason")} · ${new Date(r.removed_at).toLocaleDateString("en-GB")}</div></div>
+        <button class="btn btn-sm" type="button" data-restore="${esc(r.external_id)}">${icon("undo")}Restore</button></div>`).join("")}</div>`;
+    $("[data-toggle-removed]", box).addEventListener("click", () => { const l = $("[data-removed-list]", box); l.hidden = !l.hidden; });
+    box.addEventListener("click", async (e) => {
+      const b = e.target.closest("[data-restore]");
+      if (!b) return;
+      b.disabled = true;
+      const { error: err } = await A.db.rpc("restore_content_idea", { p_external_id: b.dataset.restore });
+      if (err) { b.disabled = false; return A.toast(A.errMsg(err), "err"); }
+      A.toast("Post restored to the Content Library.");
+      loadRemoved();
+    });
+  }
+  loadRemoved();
 
   // ---------- Bulk edit (queue of add / remove operations) ----------
   $("[data-bulk-edit]").addEventListener("click", () => {

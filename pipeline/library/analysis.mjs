@@ -37,13 +37,14 @@ if (cmd === "next") {
   const n = Number(a) || 10;
   const { data: rows, error } = await db
     .from("content_ideas")
-    .select("id,url,title,published_at,ai_analyses(id),content_idea_tags(idea_catalog(category,name))")
+    .select("id,external_id,url,title,published_at,ai_analyses(id),content_idea_tags(idea_catalog(category,name))")
     .is("unavailable_at", null)
     .order("published_at", { ascending: false, nullsFirst: false })
     .limit(n * 10);
   if (error) throw error;
-  const data = rows.filter((r) => !(r.ai_analyses || []).length).slice(0, n);
-  const out = data.map(({ content_idea_tags: t, ai_analyses: _a, title, ...p }) => {
+  const removed = new Set(((await db.from("content_removals").select("external_id")).data || []).map((r) => r.external_id));
+  const data = rows.filter((r) => !(r.ai_analyses || []).length && !removed.has(r.external_id)).slice(0, n);
+  const out = data.map(({ content_idea_tags: t, ai_analyses: _a, external_id: _e, title, ...p }) => {
     const tags = {};
     for (const { idea_catalog: v } of t || []) if (v) (tags[v.category] ||= []).push(v.name);
     return { ...p, caption: title, tags };

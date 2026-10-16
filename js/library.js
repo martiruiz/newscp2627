@@ -265,9 +265,11 @@
   });
 
   // ---------- "For you": the member's favourite profiles / creators first, then their sports / competitions ----------
-  const me = { boost: [], boost2: [], fav: new Set() };
+  const me = { boost: [], boost2: [], fav: new Set(), isSuper: false };
   async function loadMe() {
-    const prefs = (await auth?.getProfile?.())?.profile?.preferences || {};
+    const profile = (await auth?.getProfile?.())?.profile;
+    me.isSuper = profile?.role === "superadmin";
+    const prefs = profile?.preferences || {};
     const favIds = [...(prefs.favouriteProfiles || []), ...(prefs.favouriteCreators || [])].map((f) => f.id).filter(Boolean).map(Number);
     me.boost = favIds;
     me.fav = new Set(favIds);
@@ -390,6 +392,7 @@
             ${fmt ? `<span class="lib-badge">${esc(fmt)}</span>` : ""}
             ${(p.tags?.club || []).some((v) => me.fav.has(Number(v.id))) ? `<span class="lib-badge lib-badge-fav" title="One of your favourite profiles">${icon("star")}Favourite</span>` : ""}
             <span class="lib-save">${saveBtn(p.id)}</span>
+            ${me.isSuper ? `<button class="lib-remove" type="button" data-remove="${esc(p.id)}" title="Remove from the library (superadmin)" aria-label="Remove from the library">${icon("trash-2")}</button>` : ""}
           </div>
           <div class="lib-bottom">
             <div class="lib-tags">${tagChips(p, ["sport", "competition"])}</div>
@@ -530,6 +533,7 @@
             <button class="pill pill-gold" type="button" data-more-like="${esc(p.id)}">${icon("sparkles")}More like this</button>
             ${saveBtn(p.id)}
             ${p.url ? `<a class="pill pill-dark" href="${esc(p.url)}" target="_blank" rel="noopener">Open on ${esc(PLATFORM_NAMES[pf] || "the platform")} ↗</a>` : ""}
+            ${me.isSuper ? `<button class="pill pill-danger" type="button" data-remove="${esc(p.id)}">${icon("trash-2")}Remove from library</button>` : ""}
           </div>
         </header>
         <div data-analysis><div class="an-loading"></div></div>
@@ -647,7 +651,69 @@
     goToResults();
   }
 
+  // ---------- Quality review (superadmins only, supabase/quality.sql) ----------
+  // Removing hides the post for everyone and keeps it hidden in future imports. Undo / restore any time.
+  const REASONS = ["Low quality", "Not sports content", "Duplicate", "Off-brand", "Other"];
+  function askRemove(btn, id) {
+    document.querySelectorAll(".rm-pop").forEach((x) => x.remove());
+    const pop = document.createElement("div");
+    pop.className = "rm-pop";
+    pop.innerHTML = `<b>Remove this post from the library?</b><p>Members won't see it any more, and it stays hidden in future imports.</p>
+      <div class="rm-reasons">${REASONS.map((r, i) => `<label><input type="radio" name="rm-reason" value="${esc(r)}"${i ? "" : " checked"}>${esc(r)}</label>`).join("")}</div>
+      <div class="rm-actions"><button type="button" data-rm-cancel>Cancel</button><button type="button" data-rm-ok>${icon("trash-2")}Remove</button></div>`;
+    document.body.append(pop);
+    const r = btn.getBoundingClientRect();
+    const w = pop.offsetWidth, h = pop.offsetHeight;
+    pop.style.left = `${Math.max(12, Math.min(innerWidth - w - 12, r.right - w))}px`;
+    pop.style.top = `${r.bottom + 8 + h > innerHeight ? Math.max(12, r.top - h - 8) : r.bottom + 8}px`;
+    const close = () => { pop.remove(); document.removeEventListener("mousedown", outside, true); };
+    const outside = (e) => { if (!pop.contains(e.target)) close(); };
+    setTimeout(() => document.addEventListener("mousedown", outside, true));
+    pop.querySelector("[data-rm-cancel]").addEventListener("click", close);
+    pop.querySelector("[data-rm-ok]").addEventListener("click", async (e) => {
+      e.target.disabled = true;
+      const reason = pop.querySelector("input:checked")?.value || null;
+      const { error } = await db.rpc("remove_content_idea", { p_post_id: Number(id), p_reason: reason });
+      close();
+      if (error) return toast(/schema cache|does not exist/i.test(error.message) ? "Run supabase/quality.sql in Supabase first." : error.message);
+      removeCard(id);
+    });
+  }
+  function removeCard(id) {
+    const p = cache.get(String(id));
+    if (!drawer.hidden && body.querySelector(`[data-remove="${CSS.escape(String(id))}"]`)) closeDrawer();
+    const el = grid.querySelector(`.lib-card[data-id="${CSS.escape(String(id))}"]`);
+    const spot = el && { parent: el.parentNode, next: el.nextSibling, entry: placed.find((x) => x.el === el) };
+    if (el) {
+      el.classList.add("is-removing");
+      setTimeout(() => { el.remove(); placed = placed.filter((x) => x.el !== el); }, 260);
+    }
+    toast("Removed from the library.", "Undo", async () => {
+      const { error } = await db.rpc("restore_content_idea", { p_external_id: p?.external_id });
+      if (error) return toast(error.message);
+      if (spot?.parent?.isConnected) {
+        el.classList.remove("is-removing");
+        spot.parent.insertBefore(el, spot.next?.parentNode === spot.parent ? spot.next : null);
+        if (spot.entry) placed.push(spot.entry);
+      }
+      toast("Post restored.");
+    });
+  }
+  let toastTimer;
+  function toast(text, action, onAction) {
+    document.querySelector(".lib-toast")?.remove();
+    const t = document.createElement("div");
+    t.className = "lib-toast";
+    t.innerHTML = `<span>${esc(text)}</span>${action ? `<button type="button">${esc(action)}</button>` : ""}`;
+    document.body.append(t);
+    if (action) t.querySelector("button").addEventListener("click", () => { t.remove(); onAction(); });
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.remove(), action ? 8000 : 3500);
+  }
+
   document.addEventListener("click", (e) => {
+    const rm = e.target.closest("[data-remove]");
+    if (rm && me.isSuper) { e.preventDefault(); e.stopPropagation(); return askRemove(rm, rm.dataset.remove); }
     const tag = e.target.closest("[data-tag]");
     if (tag) return filterByTag(tag.dataset.tag);
     const open = e.target.closest("[data-open]");
@@ -662,7 +728,7 @@
     const id = /^#post=(\d+)$/.exec(location.hash)?.[1];
     if (!id) return;
     if (!cache.has(id)) {
-      const { data } = await db.from("content_ideas").select("id,url,title,published_at,embed,media_ratio,content_idea_tags(idea_catalog(id,category,name))").eq("id", id).maybeSingle();
+      const { data } = await db.from("content_ideas").select("id,external_id,url,title,published_at,embed,media_ratio,content_idea_tags(idea_catalog(id,category,name))").eq("id", id).maybeSingle();
       if (!data) return;
       const tags = {};
       for (const { idea_catalog: v } of data.content_idea_tags || []) if (v) (tags[v.category] ||= []).push({ id: v.id, name: v.name });
