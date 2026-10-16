@@ -248,7 +248,26 @@
             </div>
           </div>
           <div class="magic-visual" data-step="2">
-            <img src="assets/magic-2.png" alt="AI analysis of a PSG post: visual analysis, filters applied and a 97.83% confidence score">
+            <div class="scan" data-scan role="img" aria-label="AI analysis of a PSG post: visual analysis, filters applied and a 97.83% confidence score">
+              <img class="scan-base" src="assets/scan/psg-post.webp" alt="" width="960" height="1556">
+              <div class="scan-photo" aria-hidden="true"><i class="scan-beam"></i></div>
+              <div class="scan-line" aria-hidden="true"><span class="scan-pill"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 2.5l1.6 4.9 4.9 1.6-4.9 1.6L10 15.5 8.4 10.6 3.5 9l4.9-1.6zM18 13l.9 2.6 2.6.9-2.6.9L18 20l-.9-2.6-2.6-.9 2.6-.9z"/></svg>AI analysis</span></div>
+              <section class="scan-panel scan-visual" aria-hidden="true">
+                <p class="scan-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Visual analysis</p>
+                <div class="scan-visual-body">
+                  <span class="scan-thumb"><img src="assets/scan/psg-thumb.webp" alt=""><i></i></span>
+                  <ul class="scan-checks"><li>Player focus</li><li>Celebration</li><li>Stadium</li><li>High energy</li><li class="scan-more">…</li></ul>
+                </div>
+              </section>
+              <section class="scan-panel scan-filters" aria-hidden="true">
+                <p class="scan-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 4h18l-7 8.5V19l-4 2v-8.5z"/></svg>Filters applied</p>
+                <div class="scan-chips"><span>Football</span><span>Matchday</span><span>PSG</span><span>Champions League</span><span>Instagram</span><span>Image</span></div>
+              </section>
+              <section class="scan-panel scan-score" aria-hidden="true">
+                <div><p class="scan-label">AI confidence score</p><p class="scan-pct"><b data-scan-pct>97.83</b>%</p><p class="scan-sub">Smarter everyday</p></div>
+                <svg class="scan-brain" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/><path d="M17.599 6.5a3 3 0 0 0 .399-1.375"/><path d="M6.003 5.125A3 3 0 0 0 6.401 6.5"/><path d="M3.477 10.896a4 4 0 0 1 .585-.396"/><path d="M19.938 10.5a4 4 0 0 1 .585.396"/><path d="M6 18a4 4 0 0 1-1.967-.516"/><path d="M19.967 17.484A4 4 0 0 1 18 18"/></svg>
+              </section>
+            </div>
           </div>
           <div class="magic-visual" data-step="3">
             <div class="compose">
@@ -441,6 +460,7 @@
   <script src="js/config.js"></script>
   <script src="js/dock.js" defer></script>
   <script src="js/radar.js" defer></script>
+  <script src="js/scan.js" defer></script>
   <script src="js/plans.js" defer></script>
   <script src="js/main.js"></script>
 </body>
