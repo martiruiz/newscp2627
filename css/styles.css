@@ -3683,3 +3683,29 @@ tr[data-hour] { animation: orgRowIn 0.25s ease-out; }
 .org-cell:has(.org-entry) .org-add span { display: none !important; }
 .org-cell:has(.org-entry) .org-add { width: 22px; min-width: 22px; height: 22px; padding: 0; right: 3px; bottom: 3px; }
 .org-cell:has(.org-entry:hover) .org-add { opacity: 0; }
+
+/* ---------- Content Plan: Inspiration as saved boards → posts ---------- */
+.org-board { display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 10px 8px 8px; border-radius: 12px; background: var(--surface-2); border: 0.5px solid var(--line); color: var(--text); text-align: left; cursor: pointer; transition: border-color 0.15s, transform 0.15s; }
+.org-board:hover { border-color: rgba(240, 184, 74, 0.6); transform: translateX(-2px); }
+.org-board > svg { width: 16px; height: 16px; color: var(--muted); flex: none; }
+.org-board.is-all { background: linear-gradient(90deg, rgba(240, 184, 74, 0.1), rgba(240, 184, 74, 0.02)); border-color: rgba(240, 184, 74, 0.3); }
+.org-board-cover { position: relative; display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: 1fr 1fr; gap: 2px; width: 52px; height: 52px; flex: none; border-radius: 10px; overflow: hidden; background: var(--surface-3); color: var(--gold); place-items: center; }
+.org-board-cover > svg { grid-column: 1 / -1; grid-row: 1 / -1; width: 18px; height: 18px; }
+.org-board-thumb { width: 100%; height: 100%; border-radius: 0; }
+.org-board-thumb:first-child { grid-row: 1 / span 2; }
+.org-board-thumb:only-child { grid-column: 1 / -1; }
+.org-board-txt { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.org-board-txt b { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.org-board-txt small { font-size: 11px; color: var(--muted); }
+.org-board-head { display: flex; align-items: center; gap: 8px; }
+.org-board-head b { display: block; font-family: var(--font-display); font-size: 15px; }
+.org-board-head small { font-size: 11px; color: var(--muted); }
+.org-board-back { display: grid; place-items: center; width: 32px; height: 32px; flex: none; border-radius: 10px; border: 0.5px solid var(--line); background: var(--surface-2); color: var(--text); cursor: pointer; }
+.org-board-back svg { width: 16px; height: 16px; }
+.org-board-back:hover { border-color: var(--gold); color: var(--gold); }
+.org-board-search { display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 10px; border-radius: 10px; background: var(--surface-2); border: 0.5px solid var(--line); }
+.org-board-search svg { width: 14px; height: 14px; color: var(--muted); flex: none; }
+.org-board-search input { flex: 1; min-width: 0; border: 0; background: transparent; color: var(--text); font: 13px var(--font-body); outline: none; }
+.org-insp-thumb { width: 44px; height: 55px; border-radius: 8px; }
+.org-insp-item > div { min-width: 0; flex: 1; padding-right: 22px; }
+.org-insp-date { display: block; margin-top: 2px; font-size: 11px; color: var(--muted); }

@@ -517,27 +517,87 @@
     $("[name=label]", basePanel).focus();
   });
 
-  // ---------- Inspiration (saved posts) ----------
+  // ---------- Inspiration: saved boards first, then the posts inside a board (newest saved first) ----------
+  let inspBoard = null; // null = list of boards, "all" = every saved post, or a board id
+  try { inspBoard = localStorage.getItem("scp-plan-board") || null; } catch {}
+  let inspQuery = "";
   async function loadInspiration() {
-    const list = $("[data-insp-list]");
     if (!B) return;
     await B.load();
     const ids = [...new Set(B.itemsOf().map((it) => Number(it.post_id.replace(/^ci-/, ""))).filter(Boolean))];
-    if (!ids.length) { list.innerHTML = `<p class="org-empty">Save posts in the <a href="content-library.html">Content Library</a> and drag them here to plan your version.</p>`; return; }
-    const { data } = await db.from("content_ideas").select("id,url,title,unavailable_at,content_idea_tags(idea_catalog(category,name))").in("id", ids.slice(0, 200));
-    for (const row of data || []) {
-      if (row.unavailable_at) continue;
-      const tags = {};
-      for (const { idea_catalog: v } of row.content_idea_tags || []) if (v) (tags[v.category] ||= []).push(v.name);
-      inspiration.set(Number(row.id), { ...row, tags, who: tags.club?.[0] || tags.entity?.[0] || "Post" });
+    for (let i = 0; i < ids.length; i += 200) {
+      const { data } = await db.from("content_ideas").select("id,url,title,published_at,media_ratio,unavailable_at,content_idea_tags(idea_catalog(category,name))").in("id", ids.slice(i, i + 200));
+      for (const row of data || []) {
+        if (row.unavailable_at) continue;
+        const tags = {};
+        for (const { idea_catalog: v } of row.content_idea_tags || []) if (v) (tags[v.category] ||= []).push(v.name);
+        inspiration.set(Number(row.id), { ...row, tags, who: tags.club?.[0] || tags.entity?.[0] || "Post" });
+      }
     }
-    list.innerHTML = [...inspiration.values()].map((p) => `
-      <div class="org-insp-item" draggable="true" data-insp="${p.id}">
-        <span class="org-insp-grip">${icon("grip-vertical")}</span>
-        <div><b>${esc(p.who)}</b><span>${esc([p.tags.format?.[0], p.tags.sport?.[0]].filter(Boolean).join(" · "))}</span>${p.title ? `<p>${esc(p.title.slice(0, 90))}</p>` : ""}</div>
-        ${p.url ? `<a class="org-insp-link" href="${esc(p.url)}" target="_blank" rel="noopener" aria-label="Open the original post" draggable="false">${icon("external-link")}</a>` : ""}
-      </div>`).join("");
+    if (inspBoard && inspBoard !== "all" && !B.boards.some((b) => b.id === inspBoard)) inspBoard = null;
+    renderInspiration();
   }
+  // Saved posts of a board, newest saved first (each post once)
+  function postsOfBoard(boardId) {
+    const seen = new Set();
+    return B.itemsOf(boardId === "all" ? null : boardId)
+      .slice().sort((a, b) => String(b.added_at).localeCompare(String(a.added_at)))
+      .map((it) => ({ p: inspiration.get(Number(it.post_id.replace(/^ci-/, ""))), added: it.added_at }))
+      .filter(({ p }) => p && !seen.has(p.id) && seen.add(p.id));
+  }
+  const shortDate = (v) => (v ? new Date(v).toLocaleDateString("en-GB", { day: "numeric", month: "short" }) : "");
+  function renderInspiration() {
+    const list = $("[data-insp-list]");
+    if (!B.itemsOf().length) { list.innerHTML = `<p class="org-empty">Save posts in the <a href="content-library.html">Content Library</a> and drag them here to plan your version.</p>`; return; }
+    if (!inspBoard) {
+      const boardRow = (id, name, posts, extra = "") => `
+        <button type="button" class="org-board${extra}" data-board="${id}">
+          <span class="org-board-cover">${posts.slice(0, 3).map(({ p }) => T ? T.html(thumbPost(p), "org-board-thumb") : "").join("") || icon("bookmark")}</span>
+          <span class="org-board-txt"><b>${esc(name)}</b><small>${posts.length} post${posts.length === 1 ? "" : "s"}${posts[0] ? ` · last saved ${shortDate(posts[0].added)}` : ""}</small></span>
+          ${icon("chevron-right")}
+        </button>`;
+      list.innerHTML = boardRow("all", "All saved posts", postsOfBoard("all"), " is-all")
+        + B.boards.map((b) => ({ b, posts: postsOfBoard(b.id) }))
+          .sort((x, y) => String(y.posts[0]?.added || "").localeCompare(String(x.posts[0]?.added || "")))
+          .map(({ b, posts }) => boardRow(b.id, b.name, posts)).join("");
+    } else {
+      const name = inspBoard === "all" ? "All saved posts" : B.boards.find((b) => b.id === inspBoard)?.name || "Board";
+      const q = inspQuery.trim().toLowerCase();
+      const posts = postsOfBoard(inspBoard).filter(({ p }) => !q || `${p.who} ${p.title || ""} ${Object.values(p.tags).flat().join(" ")}`.toLowerCase().includes(q));
+      list.innerHTML = `
+        <div class="org-board-head">
+          <button type="button" class="org-board-back" data-board-back aria-label="Back to your boards">${icon("chevron-left")}</button>
+          <div><b>${esc(name)}</b><small>${posts.length} post${posts.length === 1 ? "" : "s"} · newest saved first</small></div>
+        </div>
+        <label class="org-board-search">${icon("search")}<input type="search" placeholder="Search this board…" value="${esc(inspQuery)}" data-insp-q></label>
+        ${posts.map(({ p, added }) => `
+          <div class="org-insp-item" draggable="true" data-insp="${p.id}">
+            ${T ? T.html(thumbPost(p), "org-insp-thumb") : `<span class="org-insp-grip">${icon("grip-vertical")}</span>`}
+            <div><b>${esc(p.who)}</b><span>${esc([p.tags.format?.[0], p.tags.sport?.[0]].filter(Boolean).join(" · "))}</span>
+              <small class="org-insp-date">Saved ${shortDate(added)}${p.published_at ? ` · posted ${shortDate(p.published_at)}` : ""}</small>
+              ${p.title ? `<p>${esc(p.title.slice(0, 90))}</p>` : ""}</div>
+            ${p.url ? `<a class="org-insp-link" href="${esc(p.url)}" target="_blank" rel="noopener" aria-label="Open the original post" draggable="false">${icon("external-link")}</a>` : ""}
+          </div>`).join("") || `<p class="org-empty">${q ? "No posts match your search." : "This board is empty."}</p>`}`;
+    }
+    if (T) requestAnimationFrame(() => T.fit(list));
+  }
+  const inspList = $("[data-insp-list]");
+  inspList.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-board]");
+    if (b) { inspBoard = b.dataset.board; inspQuery = ""; try { localStorage.setItem("scp-plan-board", inspBoard); } catch {} renderInspiration(); inspList.scrollTop = 0; return; }
+    if (e.target.closest("[data-board-back]")) { inspBoard = null; inspQuery = ""; try { localStorage.removeItem("scp-plan-board"); } catch {} renderInspiration(); }
+  });
+  window.SCP_PREVIEW?.attach(inspList, ".org-insp-item", (el) => {
+    const p = inspiration.get(Number(el.dataset.insp));
+    return p && { post: thumbPost(p), title: p.who, lines: [[p.tags.format?.[0], p.tags.sport?.[0]].filter(Boolean).map(esc).join(" · "), p.published_at ? `Posted ${shortDate(p.published_at)}` : ""], copy: p.title, href: p.url };
+  });
+  inspList.addEventListener("input", (e) => {
+    if (!e.target.matches("[data-insp-q]")) return;
+    inspQuery = e.target.value;
+    const pos = e.target.selectionStart;
+    renderInspiration();
+    const input = $("[data-insp-q]", inspList); input.focus(); input.setSelectionRange(pos, pos);
+  });
   $("[data-toggle-insp]").addEventListener("click", () => layout.classList.toggle("insp-hidden"));
 
   // ---------- Plans, views, navigation ----------
