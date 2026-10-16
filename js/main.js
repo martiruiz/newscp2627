@@ -97,7 +97,7 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString("en-GB")}`;
   $$("[data-steps]").forEach((root) => {
     const buttons = $$("[data-step-btn]", root);
     const visuals = $$("[data-step]", root);
-    const DURATION = 6000;
+    const DURATION = 8000;
     root.style.setProperty("--step-ms", `${DURATION}ms`);
     let current = 1;
     let timer;

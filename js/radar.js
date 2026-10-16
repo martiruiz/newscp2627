@@ -7,7 +7,12 @@
   const ACCOUNTS = [
     ["FC Barcelona", "fcbarcelona"], ["NBA", "nba"], ["433", "433"], ["Manchester City", "mancity"], ["ESPN", "espn"],
     ["Chicago Bulls", "chicagobulls"], ["MotoGP", "motogp"], ["New England Patriots", "patriots"], ["MLB", "mlb"],
+    ["Real Madrid", "realmadrid"], ["UEFA Champions League", "championsleague"], ["The Olympic Games", "olympics"], ["LALIGA", "laliga"],
+    ["NFL", "nfl"], ["Formula 1", "f1"], ["Premier League", "premierleague"], ["Bleacher Report", "bleacherreport"],
+    ["Nike", "nike"], ["adidas", "adidas"], ["PUMA", "puma"], ["Under Armour", "underarmour"], ["Red Bull", "redbull"],
   ];
+  // different order on every visit, so every account gets its turn up front
+  for (let i = ACCOUNTS.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [ACCOUNTS[i], ACCOUNTS[j]] = [ACCOUNTS[j], ACCOUNTS[i]]; }
   const RINGS = [170, 198, 226, 254, 282];   // radii (SVG units, 644 × 600 box, centre 322/300) chips travel on
   const CX = 322, CY = 300, W = 644, H = 600;
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;

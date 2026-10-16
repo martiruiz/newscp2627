@@ -610,7 +610,7 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
 
 .step-progress { display: block; height: 2px; margin-top: 18px; background: var(--line-soft); border-radius: 2px; overflow: hidden; }
 .step-progress i { display: block; height: 100%; width: 0; background: var(--gold); }
-.step.is-active .step-progress i { animation: step-progress var(--step-ms, 6000ms) linear forwards; }
+.step.is-active .step-progress i { animation: step-progress var(--step-ms, 8000ms) linear forwards; }
 @keyframes step-progress { to { width: 100%; } }
 
 .magic-visuals { position: relative; min-height: 600px; transition: height 0.4s ease; }
