@@ -4,13 +4,13 @@
 // - base: €39 per user per month; volume discount 2 users −10%, 3 users −15%, 5 users −20%
 // - yearly billing: about −20% on the monthly price (shown per month, billed once a year)
 // Excel → commercial: monthly 39 / 70.20 / 99.45 / 156 → 39 / 69 / 99 / 155
-//                     yearly  31.20 / 56.16 / 79.56 / 124.80 → 31 / 55 / 79 / 125
+//                     yearly  31.20 / 56.16 / 79.56 / 124.80 → 32 / 55 / 79 / 125
 // Totals and savings are derived from these two prices. "Team" (6+ users) has no price: custom proposal.
 window.SCP_PRICING = {
   base: 39,
   yearlyDiscount: 20,
   volumeDiscount: { 1: 0, 2: 10, 3: 15, 5: 20 },
-  prices: { 1: { monthly: 39, yearly: 31 }, 2: { monthly: 69, yearly: 55 }, 3: { monthly: 99, yearly: 79 }, 5: { monthly: 155, yearly: 125 } },
+  prices: { 1: { monthly: 39, yearly: 32 }, 2: { monthly: 69, yearly: 55 }, 3: { monthly: 99, yearly: 79 }, 5: { monthly: 155, yearly: 125 } },
 };
 window.SCP_PRICE = (users) => {
   const P = window.SCP_PRICING;
