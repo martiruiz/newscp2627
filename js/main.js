@@ -142,6 +142,22 @@
     buttons.forEach((b) => b.addEventListener("click", () => update(Number(b.dataset.n))));
   });
 
+  // Pricing card: Monthly / Yearly switch (the big price, the struck-through monthly price and the plan in the link)
+  $$("[data-price-card]").forEach((card) => {
+    const toggle = $("[data-billing-toggle]", card);
+    const set = (billing) => {
+      card.dataset.billing = billing;
+      $$("[data-billing]", toggle).forEach((b) => b.setAttribute("aria-checked", String(b.dataset.billing === billing)));
+      $$("[data-plan-link]", card).forEach((a) => {
+        const url = new URL(a.getAttribute("href"), location.href);
+        url.searchParams.set("plan", billing);
+        a.setAttribute("href", `signup.html${url.search}`);
+      });
+    };
+    $$("[data-billing]", toggle).forEach((b) => b.addEventListener("click", () => set(b.dataset.billing)));
+    $$("[data-billing-switch]", card).forEach((b) => b.addEventListener("click", () => set(b.dataset.billingSwitch)));
+  });
+
   // Blog category tabs
   $$("[data-blog-tabs]").forEach((tabs) => {
     const cards = $$("[data-blog-grid] .blog-card");

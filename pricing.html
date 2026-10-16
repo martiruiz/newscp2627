@@ -60,41 +60,39 @@
         <button type="button" role="radio" aria-checked="false" data-n="8">8 users</button>
       </div>
 
-      <div class="plans">
-        <article class="plan">
-          <h2>Monthly</h2>
-          <p class="seats" data-seat-label>1 user access to Sports Content Playbook</p>
-          <hr>
-          <p class="price"><span data-price="39">€39</span><small>/mo</small></p>
-          <p class="billed">Billed monthly</p>
-          <hr>
-          <p class="includes">Includes:</p>
-          <ul>
-            <li><img src="assets/tick.svg" alt="">Full access to the content database</li>
-            <li><img src="assets/tick.svg" alt="">Daily content updates</li>
-            <li><img src="assets/tick.svg" alt="">Advanced search and filtering</li>
-            <li><img src="assets/tick.svg" alt="">Save and organize favorites</li>
-            <li><img src="assets/tick.svg" alt="">Custom accounts tracking requests</li>
-            <li><img src="assets/tick.svg" alt="">Priority email support</li>
-            <li><img src="assets/tick.svg" alt="">Access on up to 2 devices per user</li>
-          </ul>
-          <a class="btn btn-gold btn-xl" href="signup.html?plan=monthly" data-plan-link>Subscribe Now</a>
-        </article>
-
-        <article class="plan">
-          <h2>Yearly</h2>
-          <p class="seats" data-seat-label>1 user access to Sports Content Playbook</p>
-          <hr>
-          <p class="price"><span data-price="32">€32</span><small>/mo</small></p>
-          <p class="billed">Billed yearly</p>
-          <hr>
-          <p class="includes">Includes:</p>
-          <ul>
-            <li><img src="assets/tick.svg" alt="">Everything in the Monthly subscription, plus 2 months free</li>
-          </ul>
-          <a class="btn btn-gold btn-xl" href="signup.html?plan=yearly" data-plan-link>Subscribe Now</a>
-        </article>
-      </div>
+      <article class="price-card" data-billing="yearly" data-price-card>
+        <header class="price-card-head">
+          <div>
+            <h2>Sports Content Playbook</h2>
+            <p class="seats" data-seat-label>1 user access to Sports Content Playbook</p>
+          </div>
+          <div class="billing-toggle" role="radiogroup" aria-label="Billing period" data-billing-toggle>
+            <button type="button" role="radio" aria-checked="false" data-billing="monthly">Monthly</button>
+            <button type="button" role="radio" aria-checked="true" data-billing="yearly">Yearly <span class="save-badge">−18%</span></button>
+          </div>
+        </header>
+        <hr>
+        <div class="price-line">
+          <s class="price-old" data-when="yearly" aria-label="Monthly price"><span data-price="39">€39</span></s>
+          <span class="price-now"><span data-when="yearly" data-price="32">€32</span><span data-when="monthly" data-price="39">€39</span></span>
+          <span class="price-per">per month, <span data-when="yearly">billed annually</span><span data-when="monthly">billed monthly</span></span>
+        </div>
+        <p class="price-note" data-when="yearly"><span data-price="384">€384</span> billed once a year · you save <b><span data-price="84">€84</span></b>, 2 months free</p>
+        <p class="price-note" data-when="monthly">Switch to <button class="link-gold" type="button" data-billing-switch="yearly">yearly billing</button> and get 2 months free.</p>
+        <hr>
+        <p class="includes">Includes:</p>
+        <ul class="price-features">
+          <li><img src="assets/tick.svg" alt="">Full access to the content database</li>
+          <li><img src="assets/tick.svg" alt="">Daily content updates</li>
+          <li><img src="assets/tick.svg" alt="">Advanced search and filtering</li>
+          <li><img src="assets/tick.svg" alt="">Save and organize favorites</li>
+          <li><img src="assets/tick.svg" alt="">Custom accounts tracking requests</li>
+          <li><img src="assets/tick.svg" alt="">Priority email support</li>
+          <li><img src="assets/tick.svg" alt="">Access on up to 2 devices per user</li>
+          <li><img src="assets/tick.svg" alt="">Cancel anytime</li>
+        </ul>
+        <a class="btn btn-gold btn-xl" href="signup.html?plan=yearly" data-plan-link>Subscribe Now</a>
+      </article>
     </section>
 
     <section class="faq pricing-faq container">
