@@ -3,7 +3,8 @@
   const auth = window.SCP_AUTH;
   const mode = document.body.dataset.authMode || "signup"; // "signup" | "login"
   const params = new URLSearchParams(location.search);
-  const plan = ["monthly", "yearly"].includes(params.get("plan")) ? params.get("plan") : "";
+  const PLAN_NAMES = { library: "Library", library_ai: "Library + AI", library_planner: "Library + Planner", all_access: "All Access" };
+  const plan = PLAN_NAMES[params.get("plan")] ? params.get("plan") : "";
   const users = Math.min(Math.max(parseInt(params.get("users"), 10) || 1, 1), 8);
   const status = document.querySelector("[data-auth-status]");
   // Only allow returning to a page of this site (e.g. ?next=content-library.html)
@@ -18,9 +19,7 @@
   // Show the plan picked on the pricing cards
   const summary = document.querySelector("[data-plan-summary]");
   if (plan && summary) {
-    const price = window.SCP_PRICE ? window.SCP_EUR(window.SCP_PRICE(users)[plan]) : "";
-    const label = plan === "monthly" ? "Monthly" : "Yearly";
-    summary.innerHTML = `Selected plan: <b>${label}</b> · ${users} user${users > 1 ? "s" : ""}${price ? ` · ${price}/mo` : ""}`;
+    summary.innerHTML = `Selected plan: <b>${PLAN_NAMES[plan]}</b>`;
     summary.hidden = false;
   }
 

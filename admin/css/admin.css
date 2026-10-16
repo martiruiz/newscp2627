@@ -400,3 +400,14 @@ body { background: radial-gradient(60% 40% at 50% 0%, rgba(240, 184, 74, 0.06), 
 .aud-bars li i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--accent-soft); border-radius: 8px; }
 @media (max-width: 900px) { .aud-filters, .aud-kpis { grid-template-columns: 1fr 1fr; } }
 .aud-signups { margin-bottom: 16px; }
+
+/* Plans & AI */
+.bill-kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.bill-kpi span { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+.bill-kpi b { display: block; margin-top: 6px; font-family: var(--display); font-size: 26px; }
+.bill-kpi small { display: block; margin-top: 4px; font-size: 12px; color: var(--dim); }
+.bill-grid { display: grid; grid-template-columns: minmax(300px, 0.8fr) minmax(0, 1.2fr); gap: 16px; align-items: start; }
+.bill-form { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 12px; }
+.input-sm { height: 34px; padding: 0 10px; font-size: 13px; min-width: 70px; }
+.success-text { color: var(--green); margin-top: 10px; font-size: 13px; }
+@media (max-width: 1000px) { .bill-grid { grid-template-columns: 1fr; } }

@@ -397,9 +397,35 @@
             <p class="lib-when">${date(p.published_at)}${first(p, "entity") ? ` · ${esc(pretty(first(p, "entity")))}` : ""}</p>
           </div>
         </div>
-        <button class="lib-analysis${p.has_analysis ? " is-ready" : ""}" type="button" data-open="${esc(p.id)}">${icon("sparkles")}<span>${p.has_analysis ? "View analysis" : "Details"}</span>${icon("arrow-up-right")}</button>
+        ${aiButton(p.id)}
       </article>`;
   }
+
+  // ---------- AI analyses: credits & unlocks (supabase/billing.sql) ----------
+  // Unlocking spends 1 credit (monthly units first, then packs); re-opening an unlocked analysis is free.
+  const ai = { ent: null, unlocked: new Set() };
+  async function loadAi() {
+    const [{ data: ent }, { data: ids }] = await Promise.all([db.rpc("my_entitlements"), db.rpc("my_unlocked_posts")]);
+    ai.ent = ent || null;
+    ai.unlocked = new Set((ids || []).map(Number));
+    renderCredits();
+  }
+  const credits = () => (ai.ent ? (ai.ent.monthly_left || 0) + (ai.ent.pack_left || 0) : 0);
+  function renderCredits() {
+    const el = $("[data-ai-credits]");
+    if (!el) return;
+    if (!ai.ent?.has_ai) { el.hidden = true; return; }
+    el.hidden = false;
+    el.innerHTML = ai.ent.is_staff ? `${icon("sparkles")}AI · team access`
+      : `${icon("sparkles")}<b>${credits()}</b> AI credit${credits() === 1 ? "" : "s"}${ai.ent.pack_left ? `<small>${ai.ent.monthly_left} monthly + ${ai.ent.pack_left} pack</small>` : `<small>renews ${new Date(ai.ent.cycle_end).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</small>`}`;
+  }
+  function aiButton(id) {
+    const n = Number(id);
+    if (ai.ent && !ai.ent.has_ai) return `<button class="lib-analysis is-locked" type="button" data-open="${esc(id)}">${icon("lock")}<span>AI Analysis</span>${icon("arrow-up-right")}</button>`;
+    if (ai.unlocked.has(n)) return `<button class="lib-analysis is-ready" type="button" data-open="${esc(id)}">${icon("sparkles")}<span>View AI Analysis</span>${icon("arrow-up-right")}</button>`;
+    return `<button class="lib-analysis" type="button" data-open="${esc(id)}">${icon("sparkles")}<span>Unlock AI Analysis <small>· 1 credit</small></span>${icon("arrow-up-right")}</button>`;
+  }
+  const refreshAiButtons = (id) => $$(`.lib-card[data-id="${CSS.escape(String(id))}"] .lib-analysis`).forEach((b) => (b.outerHTML = aiButton(id)));
 
   // ---------- Masonry: N columns, each card goes to the shortest one (heights known from the ratios) ----------
   const GAP = 22;
@@ -469,8 +495,7 @@
   const stamp = (t, basis) => (basis === "video" ? `${t}s` : `#${t}`);
 
   function analysisHtml(a) {
-    if (!a) return `
-      <div class="an-empty">${icon("sparkles")}<div><b>Analysis on its way</b><p>We break down new posts every day: hook, why it works, format, angle and how to adapt it to your club.</p></div></div>`;
+    if (!a) return `<div class="an-empty">${icon("sparkles")}<div><b>Analysis not available</b><p>Please try again later.</p></div></div>`;
     const fmt = a.format || {};
     const facts = [["Category", fmt.category], ["Type", fmt.type], ["Layout", fmt.visualLayout], ["Pacing", fmt.pacing], ["Moment", MOMENT_NAMES[a.moment]], ["Style", STYLE_NAMES[a.style]]].filter(([, v]) => v);
     return `
@@ -514,11 +539,86 @@
     drawer.hidden = false;
     document.body.style.overflow = "hidden";
     runEmbedScript();
-    const { data } = await db.from("content_ideas").select("analysis").eq("id", p.id).maybeSingle();
-    if (drawer.hidden || !body.querySelector("[data-analysis]")) return;
-    body.querySelector("[data-analysis]").innerHTML = analysisHtml(data?.analysis);
+    showAnalysisArea(p.id);
+  }
+
+  const area = () => body.querySelector("[data-analysis]");
+  const balanceLine = () => ai.ent?.is_staff ? "Team access: no credits used."
+    : `You have <b>${credits()} credit${credits() === 1 ? "" : "s"}</b> left${ai.ent?.pack_left ? ` (${ai.ent.monthly_left} monthly + ${ai.ent.pack_left} from packs)` : " this month"}.`;
+  async function showAnalysisArea(id) {
+    const n = Number(id);
+    if (!ai.ent) await loadAi().catch(() => {});
+    if (!area()) return;
+    if (!ai.ent?.has_ai) {
+      area().innerHTML = `<div class="ai-gate">${icon("lock")}<div><b>AI analyses are part of Library + AI and All Access</b>
+        <p>Hook, why it works, format, angle, visual breakdown and how to adapt it to your club, for any post in the library.</p>
+        <a class="btn btn-gold" href="pricing.html">See plans</a></div></div>`;
+      return;
+    }
+    if (ai.unlocked.has(n)) return loadUnlocked(n);
+    area().innerHTML = `<div class="ai-unlock">
+      <div class="ai-unlock-top">${icon("sparkles")}<div><b>AI analysis of this post</b><p>Hook, why it works, format, angle, visual breakdown and how to adapt it to your club.</p></div></div>
+      ${credits() > 0 || ai.ent.is_staff
+        ? `<button class="btn btn-gold ai-unlock-btn" type="button" data-unlock="${n}">${icon("sparkles")}Unlock AI Analysis — 1 credit</button>
+           <p class="ai-balance">${balanceLine()} Once unlocked, you can open it again for free.</p>`
+        : noCreditsHtml()}
+    </div>`;
+  }
+  const noCreditsHtml = () => `<div class="ai-empty"><b>You've used all your AI credits</b>
+    <p>Your monthly credits renew on ${ai.ent?.cycle_end ? new Date(ai.ent.cycle_end).toLocaleDateString("en-GB", { day: "numeric", month: "long" }) : "your next billing date"}. Need more now?</p>
+    <div class="ai-empty-actions"><a class="btn btn-gold" href="pricing.html#packs">Buy an analysis pack</a><a class="btn btn-outline" href="pricing.html">Upgrade your plan</a></div></div>`;
+  function generating(text = "Unlocking the analysis…") {
+    area().innerHTML = `<div class="ai-working"><span class="ai-spinner"></span><div><b>${text}</b><p>Reading the post, the hook and the format. This can take up to a minute.</p></div></div>`;
+  }
+  async function loadUnlocked(n) {
+    const { data } = await db.rpc("get_unlocked_analysis", { p_post_id: n });
+    if (!area()) return;
+    if (data?.status === "unlocked") { area().innerHTML = analysisHtml(data.analysis); return; }
+    if (data?.status === "pending") return waitFor(n);
+    if (data?.status === "failed") { ai.unlocked.delete(n); refreshAiButtons(n); return showAnalysisArea(n); }
+    area().innerHTML = analysisHtml(null);
+  }
+  // A pending unlock: ask the server to generate it (only the first request actually runs) and poll until it's ready
+  async function waitFor(n) {
+    generating();
+    const { data: { session } } = await db.auth.getSession();
+    const cfg = window.SCP_CONFIG;
+    fetch(`${cfg.supabaseUrl}/functions/v1/ai-analyze`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", apikey: cfg.supabaseAnonKey, Authorization: `Bearer ${session?.access_token}` },
+      body: JSON.stringify({ post_id: n }),
+    }).catch(() => null);
+    const started = Date.now();
+    while (Date.now() - started < 150000) {
+      await new Promise((r) => setTimeout(r, 2500));
+      if (!area()) return;
+      const { data } = await db.rpc("get_unlocked_analysis", { p_post_id: n });
+      if (data?.status === "unlocked") { area().innerHTML = analysisHtml(data.analysis); return; }
+      if (data?.status === "failed") {
+        ai.unlocked.delete(n); refreshAiButtons(n); await loadAi();
+        area().innerHTML = `<div class="ai-empty"><b>We couldn't generate this analysis</b><p>Your credit has been refunded. Please try again in a few minutes.</p>
+          <div class="ai-empty-actions"><button class="btn btn-gold" type="button" data-unlock="${n}">Try again — 1 credit</button></div></div>`;
+        return;
+      }
+    }
+    area().innerHTML = `<div class="ai-empty"><b>Still working on it</b><p>Close this window and open the post again in a minute — you won't be charged again.</p></div>`;
+  }
+  async function unlock(n) {
+    generating();
+    const minWait = new Promise((r) => setTimeout(r, 1200)); // same feel whether it was ready or not
+    const { data, error } = await db.rpc("unlock_analysis", { p_post_id: n });
+    await minWait;
+    if (error) { area().innerHTML = `<div class="ai-empty"><b>Something went wrong</b><p>${esc(error.message)}</p></div>`; return; }
+    if (data.balance) { ai.ent = data.balance; renderCredits(); }
+    if (data.status === "no_access") return showAnalysisArea(n);
+    if (data.status === "no_credits") { area().innerHTML = noCreditsHtml(); return; }
+    ai.unlocked.add(n); refreshAiButtons(n);
+    if (data.status === "unlocked") { area().innerHTML = analysisHtml(data.analysis); return; }
+    if (data.status === "pending") return waitFor(n);
   }
   body.addEventListener("click", async (e) => {
+    const u = e.target.closest("[data-unlock]");
+    if (u) { u.disabled = true; return unlock(Number(u.dataset.unlock)); }
     const b = e.target.closest("[data-copy]");
     if (!b) return;
     try { await navigator.clipboard.writeText(b.dataset.copy); b.lastChild.textContent = "Copied"; setTimeout(() => (b.lastChild.textContent = "Copy"), 1600); } catch {}
@@ -562,7 +662,7 @@
     const id = /^#post=(\d+)$/.exec(location.hash)?.[1];
     if (!id) return;
     if (!cache.has(id)) {
-      const { data } = await db.from("content_ideas").select("*, content_idea_tags(idea_catalog(id,category,name))").eq("id", id).maybeSingle();
+      const { data } = await db.from("content_ideas").select("id,url,title,published_at,embed,media_ratio,content_idea_tags(idea_catalog(id,category,name))").eq("id", id).maybeSingle();
       if (!data) return;
       const tags = {};
       for (const { idea_catalog: v } of data.content_idea_tags || []) if (v) (tags[v.category] ||= []).push({ id: v.id, name: v.name });
@@ -589,7 +689,7 @@
   $("[data-clear]").addEventListener("click", clearAll);
 
   if (!db) return load(true);
-  Promise.all([loadCatalog().then(renderFacets).catch(() => {}), boards.load(), loadSavedSearches(), loadMe().catch(() => {})]).then(() => { load(true); openFromHash(); });
+  Promise.all([loadCatalog().then(renderFacets).catch(() => {}), boards.load(), loadSavedSearches(), loadMe().catch(() => {}), loadAi().catch(() => {})]).then(() => { load(true); openFromHash(); });
 })();
 
 // Welcome offer shown when entering the platform (once per browser session)

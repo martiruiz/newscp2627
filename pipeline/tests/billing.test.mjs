@@ -1,0 +1,165 @@
+// Billing / AI-unlock / planner-permission tests against the real SCP migrations, in an in-memory Postgres (PGlite)
+// with Supabase-style stubs (auth.uid(), anon / authenticated roles, storage). Nothing touches the real database.
+//   cd pipeline && npm run test:billing
+import { PGlite } from "@electric-sql/pglite";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+const ROOT = process.argv[2] || path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
+const db = new PGlite();
+const sql = (f) => fs.readFileSync(`${ROOT}/supabase/${f}`, "utf8");
+
+await db.exec(`
+  create schema auth;
+  create table auth.users (id uuid primary key, email text, raw_user_meta_data jsonb default '{}'::jsonb);
+  create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
+  create role anon; create role authenticated; create role service_role;
+  grant usage on schema public to anon, authenticated, service_role;
+  grant usage on schema auth to anon, authenticated;
+  alter default privileges in schema public grant all on tables to anon, authenticated, service_role;
+  alter default privileges in schema public grant all on sequences to anon, authenticated, service_role;
+  create schema storage; create table storage.buckets (id text primary key, name text, public boolean, file_size_limit bigint, allowed_mime_types text[]);
+  create table storage.objects (id uuid primary key default gen_random_uuid(), bucket_id text, name text);
+  create function storage.foldername(text) returns text[] language sql as $$ select string_to_array($1, '/') $$;
+`);
+for (const f of ["schema.sql", "library.sql", "admin.sql", "admin-superadmin-only.sql", "library-ideas.sql", "org.sql", "member-profile.sql", "billing.sql"]) {
+  try { await db.exec(sql(f)); console.log(`✓ migration ${f}`); }
+  catch (e) { console.log(`✗ migration ${f}: ${e.message}`); process.exit(1); }
+}
+// re-running must be safe
+try { await db.exec(sql("billing.sql")); console.log("✓ billing.sql re-run is safe"); } catch (e) { console.log(`✗ re-run: ${e.message}`); process.exit(1); }
+
+// ---------- fixtures ----------
+const U = { A: "aaaaaaaa-0000-0000-0000-000000000001", B: "bbbbbbbb-0000-0000-0000-000000000002", C: "cccccccc-0000-0000-0000-000000000003",
+  LIB: "dddddddd-0000-0000-0000-000000000004", PLAN: "eeeeeeee-0000-0000-0000-000000000005", ALL: "ffffffff-0000-0000-0000-000000000006",
+  SUPER: "99999999-0000-0000-0000-000000000009" };
+for (const [k, id] of Object.entries(U)) await db.query(`insert into auth.users (id, email) values ($1, $2)`, [id, `${k.toLowerCase()}@test.dev`]);
+await db.exec(`update public.profiles set role = 'superadmin' where id = '${U.SUPER}'`);
+await db.exec(`insert into public.content_ideas (external_id, title, url) select 'p' || g, 'Post ' || g, 'https://www.instagram.com/p/X' || g || '/' from generate_series(1, 40) g;`);
+const plan = (u, key, started = "now()") => db.exec(`insert into public.subscriptions (user_id, plan_key, started_at) values ('${u}', '${key}', ${started}) on conflict (user_id) do update set plan_key = excluded.plan_key, started_at = excluded.started_at, status = 'active'`);
+await plan(U.A, "library_ai"); await plan(U.B, "library_ai"); await plan(U.C, "library_ai");
+await plan(U.LIB, "library"); await plan(U.PLAN, "library_planner"); await plan(U.ALL, "all_access");
+
+// act as a user (RLS applies) — every call in its own transaction, like PostgREST
+async function as(user, q, params = []) {
+  return db.transaction(async (tx) => {
+    await tx.exec(`set local role authenticated; select set_config('request.jwt.claim.sub', '${user}', true);`);
+    return (await tx.query(q, params)).rows;
+  });
+}
+const unlock = async (u, post) => (await as(u, `select public.unlock_analysis($1) r`, [post]))[0].r;
+const ent = async (u) => (await as(u, `select public.my_entitlements() r`))[0].r;
+// the Edge Function (service role): claim → (API call) → complete / fail
+let apiCalls = 0;
+async function generate(post, ok = true) {
+  const claimed = (await db.query(`select public.claim_generation($1, 'v1') c`, [post])).rows[0].c;
+  if (!claimed) return "not-claimed";
+  apiCalls++;
+  if (!ok) { await db.query(`select public.fail_generation($1, 'v1', 'boom')`, [post]); return "failed"; }
+  await db.query(`select public.complete_generation($1, 'v1', $2::jsonb, 'claude-opus-5-5', 1200, 900, 0.05)`, [post, JSON.stringify({ summary: `Analysis of ${post}`, hook: { text: "hook" }, whyItWorks: "x", format: {}, angle: {}, basis: "image" })]);
+  return "done";
+}
+
+let pass = 0, fail = 0;
+const check = (name, cond, extra = "") => { if (cond) { pass++; console.log(`  ✓ ${name}`); } else { fail++; console.log(`  ✗ ${name} ${extra}`); } };
+
+console.log("\n1-3. Two users, same post: each pays 1, only one API call, no double charge on re-open");
+let r = await unlock(U.A, 1);
+check("A: post not analysed yet → pending, charged", r.status === "pending" && r.charged === true, JSON.stringify(r));
+check("A: second click while generating → no extra charge", (await unlock(U.A, 1)).charged === false);
+check("generation claimed once", (await generate(1)) === "done");
+check("second claim for same post refused (no 2nd API call)", (await generate(1)) === "not-claimed");
+r = await unlock(U.A, 1);
+check("A: re-open after generation → unlocked, not charged", r.status === "unlocked" && r.charged === false && r.analysis?.summary === "Analysis of 1");
+check("A balance 30 → 29", (await ent(U.A)).monthly_left === 29, JSON.stringify(await ent(U.A)));
+r = await unlock(U.B, 1);
+check("B: stored analysis → unlocked immediately, charged", r.status === "unlocked" && r.charged === true);
+check("B balance 30 → 29", (await ent(U.B)).monthly_left === 29);
+check("B: re-open → free", (await unlock(U.B, 1)).charged === false && (await ent(U.B)).monthly_left === 29);
+check("exactly 1 real API call for post 1", apiCalls === 1, `apiCalls=${apiCalls}`);
+const reuse = (await db.query(`select user_id, reused from public.user_ai_unlocks where post_id = 1 order by unlocked_at`)).rows;
+check("B's unlock marked as reused (internal metric)", reuse.find((x) => x.user_id === U.B)?.reused === true && reuse.find((x) => x.user_id === U.A)?.reused === false);
+
+console.log("\n4. Failed generation does not keep the credit");
+r = await unlock(U.A, 2);
+check("A unlocks post 2 → pending (balance 28)", r.status === "pending" && (await ent(U.A)).monthly_left === 28);
+await generate(2, false);
+check("after failure the credit is refunded (balance 29)", (await ent(U.A)).monthly_left === 29);
+check("unlock marked failed", (await as(U.A, `select status from public.user_ai_unlocks where post_id = 2`))[0].status === "failed");
+r = await unlock(U.A, 2);
+check("retry charges again (28) as attempt 2", r.status === "pending" && (await ent(U.A)).monthly_left === 28);
+await generate(2);
+check("retry succeeds, A can read it", (await unlock(U.A, 2)).status === "unlocked" && (await ent(U.A)).monthly_left === 28);
+
+console.log("\n5. Simultaneous clicks of the same user");
+const both = await Promise.all([unlock(U.C, 3), unlock(U.C, 3)]);
+check("only one of two simultaneous requests charges", both.filter((x) => x.charged).length === 1, JSON.stringify(both.map((x) => [x.status, x.charged])));
+check("C balance 30 → 29 (one consumption)", (await ent(U.C)).monthly_left === 29);
+const dupe = await db.query(`insert into public.user_ai_unlocks (user_id, post_id, status, source) values ($1, 3, 'pending', 'subscription') on conflict do nothing returning id`, [U.C]);
+check("database refuses a second unlock row for the same user + post", dupe.rows.length === 0);
+const ledgerDupe = await db.query(`select count(*)::int n from public.ai_credit_ledger where user_id = $1 and type = 'consume'`, [U.C]);
+check("ledger has a single consumption for C", ledgerDupe.rows[0].n === 1);
+
+console.log("\n6. Plans & permissions");
+check("Library: AI → no_access, no charge", (await unlock(U.LIB, 5)).status === "no_access");
+check("Library + Planner: AI → no_access", (await unlock(U.PLAN, 5)).status === "no_access");
+check("All Access: AI allowed", (await unlock(U.ALL, 5)).status === "pending");
+const tryPlanner = async (u) => { try { await as(u, `insert into public.org_entries (entry_date, time_slot, label) values (current_date, '10:00', 'x')`); return true; } catch { return false; } };
+check("Library: planner blocked by RLS", !(await tryPlanner(U.LIB)));
+check("Library + AI: planner blocked by RLS", !(await tryPlanner(U.A)));
+check("Library + Planner: planner allowed", await tryPlanner(U.PLAN));
+check("All Access: planner allowed", await tryPlanner(U.ALL));
+check("Library: pack purchase refused (no AI plan)", await db.query(`select public.grant_pack($1, 'pack_10')`, [U.LIB]).then(() => false, () => true));
+const e = await ent(U.ALL);
+check("All Access has 100 monthly units (1 used)", e.monthly_limit === 100 && e.monthly_left === 99, JSON.stringify(e));
+
+console.log("\n7. The planner never touches AI credits");
+const before = (await ent(U.ALL)).monthly_left;
+await as(U.ALL, `insert into public.org_plans (name) values ('Matchday plan')`);
+const pid = (await as(U.ALL, `select id from public.org_plans limit 1`))[0].id;
+await as(U.ALL, `insert into public.org_entries (plan_id, entry_date, time_slot, label, inspiration, status) values ($1, current_date, '12:00', 'Reuse post 1', 'ci-1', 'planned'), ($1, current_date + 7, '12:00', 'Reuse post 1 again', 'ci-1', 'idea')`, [pid]);
+await as(U.ALL, `update public.org_entries set entry_date = entry_date + 1, notes = 'moved', status = 'in_production' where label = 'Reuse post 1'`);
+await as(U.ALL, `delete from public.org_entries where label = 'x'`);
+check("dragging / duplicating / moving / saving: balance unchanged", (await ent(U.ALL)).monthly_left === before);
+check("same saved post reused in two entries", (await as(U.ALL, `select count(*)::int n from public.org_entries where inspiration = 'ci-1'`))[0].n === 2);
+
+console.log("\n8. Packs: monthly first, then pack");
+await db.query(`select public.grant_pack($1, 'pack_10')`, [U.B]);
+for (let i = 0; i < 29; i++) await db.query(`insert into public.ai_credit_ledger (user_id, type, amount, source, reference, cycle_start) values ($1, 'consume', -1, 'subscription', 'test:' || $2, (select public.ai_cycle_start(started_at) from public.subscriptions where user_id = $1))`, [U.B, i]);
+let eb = await ent(U.B);
+check("B: monthly exhausted, 10 pack units", eb.monthly_left === 0 && eb.pack_left === 10, JSON.stringify(eb));
+await generate(6); // analysis exists for post 6
+r = await unlock(U.B, 6);
+check("next unlock uses the pack (10 → 9)", r.status === "unlocked" && (await ent(U.B)).pack_left === 9);
+check("pack movement recorded with source 'pack'", (await db.query(`select source from public.ai_credit_ledger where user_id = $1 and type = 'consume' order by id desc limit 1`, [U.B])).rows[0].source === "pack");
+await plan(U.B, "library"); // downgrade
+check("pack balance kept but not usable without AI", (await ent(U.B)).pack_left === 0 && (await ent(U.B)).pack_balance === 9);
+check("after downgrade the stored analysis is hidden", (await as(U.B, `select count(*)::int n from public.ai_analyses`))[0].n === 0);
+await plan(U.B, "library_ai");
+
+console.log("\n9. Monthly renewal (also on yearly plans)");
+const cyc = async (start, now) => (await db.query(`select public.ai_cycle_start($1::timestamptz, $2::timestamptz) c`, [start, now])).rows[0].c.toISOString().slice(0, 10);
+check("started 15 Jan, now 20 Mar → cycle 15 Mar", (await cyc("2026-01-15", "2026-03-20")) === "2026-03-15");
+check("started 15 Jan, now 10 Mar → cycle 15 Feb", (await cyc("2026-01-15", "2026-03-10")) === "2026-02-15");
+await db.exec(`update public.subscriptions set started_at = now() - interval '40 days', billing_interval = 'year' where user_id = '${U.C}'`);
+check("C (yearly, started 40 days ago): last month's usage no longer counts → 30 left", (await ent(U.C)).monthly_left === 30, JSON.stringify(await ent(U.C)));
+
+console.log("\n10. Data protection");
+check("C (never unlocked post 6) can't read its analysis", (await as(U.C, `select count(*)::int n from public.ai_analyses where post_id = 6`))[0].n === 0);
+check("A reads analyses they unlocked", (await as(U.A, `select count(*)::int n from public.ai_analyses`))[0].n === 2);
+check("library list doesn't reveal stored analyses", !("has_analysis" in (await as(U.A, `select public.library_ideas('{}'::jsonb) r`))[0].r.data[0]));
+check("members can't call the generation functions", await as(U.A, `select public.complete_generation(9, 'v1', '{}'::jsonb, 'm', 1, 1, 0)`).then(() => false, () => true));
+check("members can't write their own credits", await as(U.A, `insert into public.ai_credit_ledger (user_id, type, amount, source, reference) values ('${U.A}', 'adjust', 100, 'pack', 'hack')`).then(() => false, () => true));
+
+console.log("\n11. Metrics");
+const m = (await as(U.SUPER, `select public.admin_ai_metrics() r`))[0].r;
+check("metrics separate generations from unlocks", m.analyses_generated_api === 3 && m.unlocks === 4 && m.unlocks_reused === 2 && m.reuse_pct === 50 && Number(m.api_cost_usd) === 0.15, JSON.stringify(m));
+
+const subs = await as(U.SUPER, `select * from public.admin_subscriptions()`);
+check("admin sees every member's plan and balance", subs.length === 6 && subs.find((x) => x.email === "a@test.dev").monthly_left === 28);
+check("members can't list subscriptions", await as(U.A, `select * from public.admin_subscriptions()`).then(() => false, () => true));
+check("members can't change prices", (await as(U.A, `update public.plans set price_month = 0 where key = 'all_access' returning key`)).length === 0);
+check("anonymous visitors can read plan prices", (await db.transaction(async (tx) => { await tx.exec("set local role anon"); return (await tx.query("select count(*)::int n from public.plans")).rows[0].n; })) === 4);
+
+console.log(`\n${pass} passed, ${fail} failed`);
+process.exit(fail ? 1 : 0);

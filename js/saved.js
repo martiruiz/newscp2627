@@ -29,7 +29,7 @@
   async function loadPosts() {
     const ids = [...new Set(B.itemsOf().map((it) => Number(it.post_id.replace(/^ci-/, ""))).filter(Boolean))].filter((id) => !posts.has(id));
     for (let i = 0; i < ids.length; i += 200) {
-      const { data } = await db.from("content_ideas").select("*, content_idea_tags(idea_catalog(id,category,name))").in("id", ids.slice(i, i + 200));
+      const { data } = await db.from("content_ideas").select("id,url,title,published_at,embed,media_ratio,unavailable_at,content_idea_tags(idea_catalog(id,category,name))").in("id", ids.slice(i, i + 200));
       for (const row of data || []) {
         const tags = {};
         for (const { idea_catalog: v } of row.content_idea_tags || []) if (v) (tags[v.category] ||= []).push({ id: v.id, name: v.name });

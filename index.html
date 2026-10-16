@@ -254,57 +254,11 @@
 
     <!-- Pricing -->
     <section class="home-pricing pricing-hero container">
-      <h2 class="section-title">User-based pricing</h2>
-      <p class="lead">Our plans are based on the number of users who need access to Sports Content Playbook within your club, company, or organization. Each user account can be used on up to two devices.</p>
+      <h2 class="section-title">Pick the plan that <span class="gold">fits your team</span></h2>
+      <p class="lead">Start with the Content Library, then add AI analyses, the Content Planner, or both. Cancel anytime.</p>
 
-      <div class="seat-picker" role="radiogroup" aria-label="Number of users" data-seats>
-        <button type="button" role="radio" aria-checked="true" data-n="1">1 user</button>
-        <button type="button" role="radio" aria-checked="false" data-n="2">2 users</button>
-        <button type="button" role="radio" aria-checked="false" data-n="3">3 users</button>
-        <button type="button" role="radio" aria-checked="false" data-n="5">5 users</button>
-        <button type="button" role="radio" aria-checked="false" data-n="team">Team</button>
-      </div>
-
-      <article class="price-card" data-billing="yearly" data-price-card>
-        <header class="price-card-head">
-          <div>
-            <h2>Sports Content Playbook</h2>
-            <p class="seats" data-seat-label>1 user access to Sports Content Playbook</p>
-          </div>
-          <div class="billing-toggle" role="radiogroup" aria-label="Billing period" data-billing-toggle data-price-only>
-            <button type="button" role="radio" aria-checked="false" data-billing="monthly">Monthly</button>
-            <button type="button" role="radio" aria-checked="true" data-billing="yearly">Yearly <span class="save-badge" data-discount>−20%</span></button>
-          </div>
-        </header>
-        <hr>
-        <div class="team-offer" data-team-only>
-          <p class="team-eyebrow">Team plan · 6+ users</p>
-          <p class="team-title">A <span class="gold">custom proposal</span> for your whole organization</p>
-          <p class="price-note">Tell us about your club, league or brand and we'll prepare a personalized commercial proposal with great advantages: preferential pricing per user, priority account tracking for your competitors and a dedicated onboarding for your team.</p>
-        </div>
-        <div class="price-line" data-price-only>
-          <s class="price-old" data-when="yearly" aria-label="Monthly price"><span data-amount="monthly">€39</span></s>
-          <span class="price-now"><span data-when="yearly" data-amount="yearly">€32</span><span data-when="monthly" data-amount="monthly">€39</span></span>
-          <span class="price-per">per month, <span data-when="yearly">billed annually</span><span data-when="monthly">billed monthly</span></span>
-        </div>
-        <p class="price-note" data-price-only data-when="yearly">You save <b><span data-amount="saving-year">€84</span> a year</b> (<span data-amount="saving-month">€7</span>/month)</p>
-        <p class="price-note" data-price-only data-when="monthly">Switch to <button class="link-gold" type="button" data-billing-switch="yearly">yearly billing</button> and save <b><span data-discount-plain>20%</span></b>: <span data-amount="saving-year">€84</span> a year.</p>
-        <p class="price-volume" data-price-only data-volume-only hidden><span class="volume-pill"><span data-volume-pct>10%</span> multi-user discount</span><span>You pay <span data-amount="volume-saving">€7</span>/month less than <span data-amount="list">€78</span> for individual licences.</span></p>
-        <hr>
-        <p class="includes">Includes:</p>
-        <ul class="price-features">
-          <li><img src="assets/tick.svg" alt="">Full access to the content database</li>
-          <li><img src="assets/tick.svg" alt="">Daily content updates</li>
-          <li><img src="assets/tick.svg" alt="">Advanced search and filtering</li>
-          <li><img src="assets/tick.svg" alt="">Save and organize favorites</li>
-          <li><img src="assets/tick.svg" alt="">Custom accounts tracking requests</li>
-          <li><img src="assets/tick.svg" alt="">Priority email support</li>
-          <li><img src="assets/tick.svg" alt="">Access on up to 2 devices per user</li>
-          <li><img src="assets/tick.svg" alt="">Cancel anytime</li>
-        </ul>
-        <a class="btn btn-gold btn-xl" href="signup.html?plan=yearly" data-plan-link data-price-only>Subscribe Now</a>
-        <a class="btn btn-gold btn-xl" href="contact.html" data-team-only>Request a custom proposal</a>
-      </article>
+      <div class="plans" data-plans></div>
+      <p class="plans-team">Need SCP for your whole club or agency? <a class="link-gold" href="contact.html">Ask for a team proposal</a>.</p>
     </section>
 
     <!-- CTA -->
@@ -478,6 +432,7 @@
 
   <script src="js/config.js"></script>
   <script src="js/dock.js" defer></script>
+  <script src="js/plans.js" defer></script>
   <script src="js/main.js"></script>
 </body>
 </html>
