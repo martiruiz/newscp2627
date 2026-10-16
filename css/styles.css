@@ -788,7 +788,7 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
 }
 .acc-item.is-open .acc-panel { grid-template-rows: 1fr; }
 .acc-panel > div { overflow: hidden; }
-.acc-panel p { max-width: 425px; padding: 0 37px 27px; margin-top: -10px; color: var(--muted); }
+.acc-panel p { max-width: 520px; padding: 0 37px 26px; margin: 0; color: var(--muted); }
 
 /* ---------- Footer ---------- */
 
