@@ -1,9 +1,11 @@
-// Org — content planner (adapted from the ASOBAL "organigrama").
+// Content Plan — the member's content plan (adapted from the ASOBAL "organigrama"; the page used to be called "Org").
 // Plans (org_plans) with a week view (days × hours) and a month view. Each planned post has a status
 // (Idea → Planned → In production → Published), type, copy, private notes and an optional saved post as inspiration
 // (with its original link). Every change is saved automatically. A personal "weekly base" of recurring posts shows as
 // red placeholders in the week view until each one is planned.
-// Only plans with the Planner feature can use it (also enforced by RLS). Nothing here touches AI credits.
+// Posts can also be dropped in from the Content Library's Content Plan panel (js/plan-panel.js), and kept with
+// no date as ideas for later ("No date" tray). content-plan.html#entry=<id> opens that entry.
+// Only plans with the Content Plan feature (has_planner) can use it (also enforced by RLS). Nothing here touches AI credits.
 // Tables: org_plans, org_entries, org_base_slots (supabase/org.sql + billing.sql). Saved posts: js/boards.js.
 (() => {
   const root = document.querySelector("[data-org]");
@@ -49,12 +51,26 @@
 
   // ---------- Data ----------
   let plans = [], planId = null, entries = [], base = [];
-  const inspiration = new Map(); // content idea id -> post
+  const inspiration = new Map(); // content idea id -> saved post (Inspiration list)
+  const refs = new Map();        // content idea id -> post used as reference by an entry
+  const T = window.SCP_THUMB;
+  const refOf = (e) => { const id = /^ci-\d+$/.test(e?.inspiration || "") ? Number(e.inspiration.slice(3)) : null; return id ? refs.get(id) || inspiration.get(id) : null; };
+  const thumbPost = (p) => p && { id: p.id, url: p.url, media_ratio: p.media_ratio, reel: /reel|video/i.test(p.tags?.format?.[0] || "") || /\/(reel|shorts)\//.test(p.url || "") };
+  async function loadRefs() {
+    const ids = [...new Set(entries.map((e) => (/^ci-\d+$/.test(e.inspiration || "") ? Number(e.inspiration.slice(3)) : null)).filter((id) => id && !refs.has(id) && !inspiration.has(id)))];
+    if (!ids.length) return;
+    const { data } = await db.from("content_ideas").select("id,url,title,media_ratio,content_idea_tags(idea_catalog(category,name))").in("id", ids.slice(0, 200));
+    for (const row of data || []) {
+      const tags = {};
+      for (const { idea_catalog: v } of row.content_idea_tags || []) if (v) (tags[v.category] ||= []).push(v.name);
+      refs.set(Number(row.id), { ...row, tags, who: tags.club?.[0] || tags.entity?.[0] || "Post" });
+    }
+  }
   const err = $("[data-org-error]");
   const fail = (e) => {
     const msg = e?.message || String(e);
-    err.textContent = /does not exist|schema cache|relation|column/i.test(msg) ? "The planner isn't set up yet — run supabase/org.sql and supabase/billing.sql in Supabase."
-      : /row-level security|policy/i.test(msg) ? "Your plan doesn't include the Planner." : `Something went wrong: ${msg}`;
+    err.textContent = /does not exist|schema cache|relation|column/i.test(msg) ? "The Content Plan isn't set up yet — run supabase/org.sql and supabase/billing.sql in Supabase."
+      : /row-level security|policy/i.test(msg) ? "Your plan doesn't include the Content Plan." : `Something went wrong: ${msg}`;
     err.hidden = false;
   };
 
@@ -78,12 +94,15 @@
     if (!planId) return;
     err.hidden = true;
     const [from, to] = range();
-    const [{ data: e, error: e1 }, { data: b, error: e2 }] = await Promise.all([
+    const [{ data: e, error: e1 }, { data: b, error: e2 }, { data: u, error: e3 }] = await Promise.all([
       db.from("org_entries").select("*").eq("plan_id", planId).gte("entry_date", iso(from)).lte("entry_date", iso(to)).order("created_at"),
       db.from("org_base_slots").select("*").order("day").order("time_slot"),
+      db.from("org_entries").select("*").eq("plan_id", planId).is("entry_date", null).order("created_at", { ascending: false }),
     ]);
-    if (e1 || e2) fail(e1 || e2);
-    entries = e || []; base = b || [];
+    if (e1 || e2 || e3) fail(e1 || e2 || e3);
+    entries = [...(e || []), ...(u || [])]; base = b || [];
+    render();
+    await loadRefs();
     render();
   }
   async function create(date, time, extra = {}) {
@@ -124,7 +143,7 @@
       $("[data-week-range]").textContent = `${from.toLocaleDateString("en-GB", { day: "numeric", month: "short" })} – ${to.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}`;
     } else {
       $("[data-week-label]").textContent = anchor.toLocaleDateString("en-GB", { month: "long", year: "numeric" });
-      $("[data-week-range]").textContent = `${entries.filter((e) => parse(e.entry_date).getMonth() === anchor.getMonth()).length} posts planned`;
+      $("[data-week-range]").textContent = `${entries.filter((e) => e.entry_date && parse(e.entry_date).getMonth() === anchor.getMonth()).length} posts planned`;
     }
     // Weekly base coverage (week view)
     const days = weekDays().map(iso);
@@ -139,7 +158,7 @@
     const fill = $("[data-base-fill]");
     fill.style.width = `${total ? pct : 0}%`;
     fill.className = pct === 100 ? "is-done" : pct >= 60 ? "is-good" : pct >= 30 ? "is-mid" : "is-low";
-    const scope = view === "week" ? inWeek : entries;
+    const scope = view === "week" ? inWeek : entries.filter((e) => e.entry_date);
     $("[data-legend]").innerHTML = Object.entries(STATUS).map(([k, v]) => `<span class="org-dot org-s-${k}"><i></i>${v}<b>${scope.filter((e) => e.status === k).length}</b></span>`).join("");
     $("[data-mobile-days]").innerHTML = view !== "week" ? "" : weekDays().map((d, i) => `<button type="button" class="${i === mobileDay ? "is-active" : ""}${inWeek.some((e) => e.entry_date === iso(d)) ? " has" : ""}" data-mobile-day="${i}"><span>${DAYS[i]}</span><b>${d.getDate()}</b></button>`).join("");
     $$("[data-view]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.view === view)));
@@ -148,7 +167,9 @@
   // ---------- Render ----------
   function entryHtml(e, compact = false) {
     const t = typeOf(e.content_type);
-    return `<div class="org-entry org-s-${e.status}${compact ? " is-compact" : ""}" draggable="true" data-entry="${e.id}" title="${esc(e.label || "Untitled")}">
+    const ref = !compact && T ? thumbPost(refOf(e)) : null;
+    return `<div class="org-entry org-s-${e.status}${compact ? " is-compact" : ""}${ref ? " has-thumb" : ""}" draggable="true" data-entry="${e.id}" title="${esc(e.label || "Untitled")}">
+      ${ref ? T.html(ref, "org-entry-thumb") : ""}
       <div class="org-entry-tools">
         <button type="button" data-dup="${e.id}" aria-label="Duplicate">${icon("copy")}</button>
         <button type="button" data-del="${e.id}" aria-label="Delete">${icon("trash-2")}</button>
@@ -195,19 +216,25 @@
         </div>`;
       }).join("")}</div>`;
   }
+  function renderUndated() {
+    const list = entries.filter((e) => !e.entry_date);
+    $("[data-undated]").innerHTML = list.length ? list.map((e) => entryHtml(e)).join("") : `<p class="org-empty">Drop posts here to keep them as ideas without a date.</p>`;
+  }
   function render() {
     renderHeader();
+    renderUndated();
     $("[data-week-view]").hidden = view !== "week";
     $("[data-month-view]").hidden = view !== "month";
     $(".org-progress").hidden = view !== "week";
     view === "week" ? renderWeek() : renderMonth();
+    if (T) requestAnimationFrame(() => T.fit(layout));
   }
 
   // ---------- Interactions (both views) ----------
   const layout = $("[data-layout]");
   layout.addEventListener("click", async (e) => {
     const cellEl = e.target.closest("[data-cell]");
-    const [date, t] = cellEl ? cellEl.dataset.cell.split("|") : [];
+    const [date, t] = cellEl ? cellEl.dataset.cell.split("|").map((x, i) => (i === 0 ? x || null : x)) : [];
     const del = e.target.closest("[data-del]");
     if (del) return remove(del.dataset.del);
     const dup = e.target.closest("[data-dup]");
@@ -230,7 +257,7 @@
   });
   layout.addEventListener("dragstart", (e) => {
     const ent = e.target.closest("[data-entry]");
-    const insp = e.target.closest("[data-insp]");
+    const insp = !ent && e.target.closest(".org-insp-item");
     if (ent) { e.dataTransfer.setData("text/scp-org-entry", ent.dataset.entry); e.dataTransfer.effectAllowed = "move"; ent.classList.add("is-dragging"); }
     if (insp) { e.dataTransfer.setData("text/scp-inspiration", insp.dataset.insp); e.dataTransfer.effectAllowed = "copy"; }
   });
@@ -248,19 +275,22 @@
     if (!cellEl) return;
     e.preventDefault();
     cellEl.classList.remove("is-over");
-    const [date, t] = cellEl.dataset.cell.split("|");
+    const [d0, t] = cellEl.dataset.cell.split("|");
+    const date = d0 || null; // "No date" tray
     const moving = e.dataTransfer.getData("text/scp-org-entry");
     if (moving) {
       const src = entries.find((x) => x.id === moving);
-      // month view keeps the post's time; week view moves it to the cell's hour
-      return update(moving, { entry_date: date, time_slot: view === "month" ? src.time_slot : t });
+      // month view and the tray keep the post's time; week view moves it to the cell's hour
+      const changes = { entry_date: date, time_slot: view === "month" || !date ? src.time_slot : t };
+      if (date && src.status === "idea") changes.status = "planned";
+      return update(moving, changes);
     }
     const insp = e.dataTransfer.getData("text/scp-inspiration");
     if (insp) {
       const p = inspiration.get(Number(insp));
       const fmt = (p?.tags.format?.[0] || "").toLowerCase();
       const type = /reel|video/.test(fmt) ? "reel" : /carousel/.test(fmt) ? "carousel" : /image/.test(fmt) ? "post" : null;
-      const created = await create(date, t, { label: p ? `Our version: ${p.who}` : "", content_type: type, inspiration: `ci-${insp}` });
+      const created = await create(date, t, { label: p ? `Our version: ${p.who}` : "", content_type: type, inspiration: `ci-${insp}`, status: date ? "planned" : "idea" });
       return created && openEntry(created.id);
     }
   });
@@ -280,13 +310,13 @@
     if (!e) return;
     openId = id;
     const inspId = e.inspiration ? Number(e.inspiration.replace(/^ci-/, "")) : null;
-    const insp = inspId ? inspiration.get(inspId) : null;
-    const d = parse(e.entry_date);
+    const insp = inspId ? refs.get(inspId) || inspiration.get(inspId) : null;
+    const d = e.entry_date ? parse(e.entry_date) : null;
     entryPanel.innerHTML = `
       <header class="org-m-head">
         <span class="org-m-icon">${icon(typeOf(e.content_type)?.icon || "layout-grid")}</span>
         <div><input class="org-m-title" type="text" maxlength="140" placeholder="What are you posting?" value="${esc(e.label)}" data-f="label">
-        <p>${DAY_NAMES[dow(d)]} ${d.getDate()} ${d.toLocaleDateString("en-GB", { month: "short" })}
+        <p><label class="org-m-date">${icon("calendar-days")}<input type="date" value="${e.entry_date || ""}" data-f-date aria-label="Date"></label>${d ? `<span class="org-m-dayname">${DAY_NAMES[dow(d)]}</span>` : `<span class="org-m-dayname">No date · idea</span>`}
           · <select class="org-m-time" data-f-time aria-label="Time">${TIMES.map((t) => `<option${t === e.time_slot ? " selected" : ""}>${t}</option>`).join("")}</select>
           <span class="org-saved" data-save-state data-state="saved">${icon("check")}Saved</span></p></div>
         <button class="org-m-x" type="button" aria-label="Close" data-close>${icon("x")}</button>
@@ -301,9 +331,9 @@
         <p class="org-m-label">Notes <span>only you see these</span></p>
         <textarea class="org-m-copy org-m-notes" rows="3" maxlength="5000" placeholder="Ideas, assets needed, who's filming, approvals…" data-f="notes">${esc(e.notes || "")}</textarea>
         ${e.inspiration ? `<p class="org-m-label">Inspiration</p>
-        <div class="org-m-insp">${icon("sparkles")}<div><b>${esc(insp?.who || "Saved post")}</b><span>${esc([insp?.tags.format?.[0], insp?.tags.sport?.[0]].filter(Boolean).join(" · "))}</span></div>
+        <div class="org-m-insp">${T && insp ? T.html(thumbPost(insp), "org-m-thumb") : icon("sparkles")}<div><b>${esc(insp?.who || "Saved post")}</b><span>${esc([insp?.tags.format?.[0], insp?.tags.sport?.[0]].filter(Boolean).join(" · "))}</span></div>
           ${insp?.url ? `<a class="pill pill-dark" href="${esc(insp.url)}" target="_blank" rel="noopener">Original ${icon("external-link")}</a>` : ""}
-          <a class="pill pill-dark" href="content-library.html#post=${inspId}" target="_blank" rel="noopener">In SCP</a>
+          <a class="pill pill-dark" href="content-library.html#post=${inspId}" target="_blank" rel="noopener">View reference</a>
           <button class="org-m-unlink" type="button" data-f-unlink aria-label="Remove inspiration">${icon("x")}</button></div>` : ""}
       </div>
       <footer class="org-m-foot">
@@ -311,6 +341,7 @@
         <button class="btn btn-gold" type="button" data-close>Done</button>
       </footer>`;
     entryModal.hidden = false;
+    if (T) requestAnimationFrame(() => T.fit(entryPanel));
     setTimeout(() => !e.label && $("[data-f=label]", entryPanel).focus(), 30);
   }
   function closeEntry() {
@@ -326,7 +357,17 @@
     if (f === "copy") $("[data-copy-count]", entryPanel).textContent = ev.target.value.length;
     autosave(openId, { [f]: ev.target.value });
   });
-  entryModal.addEventListener("change", (ev) => { if (ev.target.matches("[data-f-time]") && openId) update(openId, { time_slot: ev.target.value }, { silent: true }); });
+  entryModal.addEventListener("change", async (ev) => {
+    if (!openId) return;
+    if (ev.target.matches("[data-f-time]")) update(openId, { time_slot: ev.target.value }, { silent: true });
+    if (ev.target.matches("[data-f-date]")) {
+      const e = entries.find((x) => x.id === openId);
+      const date = ev.target.value || null;
+      const changes = { entry_date: date, ...(date && e?.status === "idea" ? { status: "planned" } : {}) };
+      await update(openId, changes, { silent: true });
+      openEntry(openId);
+    }
+  });
   entryModal.addEventListener("click", async (ev) => {
     if (ev.target === entryModal || ev.target.closest("[data-close]")) return closeEntry();
     const e = entries.find((x) => x.id === openId);
@@ -352,7 +393,7 @@
     basePanel.innerHTML = `
       <header class="org-m-head">
         <span class="org-m-icon">${icon("repeat")}</span>
-        <div><p class="org-m-h">Weekly base</p><p>Your recurring posts. Every week they appear in red in the planner until you plan them.</p></div>
+        <div><p class="org-m-h">Weekly base</p><p>Your recurring posts. Every week they appear in red in your plan until you plan them.</p></div>
         <button class="org-m-x" type="button" aria-label="Close" data-close>${icon("x")}</button>
       </header>
       <div class="org-m-body">
@@ -460,14 +501,28 @@
     if (!baseModal.hidden) { baseModal.hidden = true; render(); }
   });
 
-  // ---------- Start: only plans with the Planner ----------
+  // ---------- Start: only plans with the Content Plan ----------
   (async () => {
     if (!db) return fail(new Error("not connected"));
     const { data: ent, error } = await db.rpc("my_entitlements");
     if (error && !/schema cache|does not exist/i.test(error.message)) return fail(error);
     if (ent && !ent.has_planner) { $("[data-gate]").hidden = false; $("[data-planner]").hidden = true; $(".org-controls").hidden = true; return; }
     await loadPlans();
-    await loadEntries();
+    await openFromHash() || await loadEntries();
     loadInspiration();
   })();
+  // content-plan.html#entry=<id> (from the Content Library panel): go to that entry's plan and week and open it
+  async function openFromHash() {
+    const id = /^#entry=([\w-]+)$/.exec(location.hash)?.[1];
+    if (!id) return false;
+    history.replaceState(null, "", location.pathname + location.search);
+    const { data: e } = await db.from("org_entries").select("id,plan_id,entry_date").eq("id", id).maybeSingle();
+    if (!e) return false;
+    if (e.plan_id && e.plan_id !== planId && plans.some((p) => p.id === e.plan_id)) { planId = e.plan_id; try { localStorage.setItem("scp-org-plan", planId); } catch {} renderPlans(); }
+    if (e.entry_date) { view = "week"; anchor = mondayOf(parse(e.entry_date)); mobileDay = dow(parse(e.entry_date)); }
+    await loadEntries();
+    openEntry(id);
+    return true;
+  }
+  window.addEventListener("hashchange", () => openFromHash());
 })();

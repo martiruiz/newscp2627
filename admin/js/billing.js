@@ -33,7 +33,7 @@
         <div class="table-wrap"><table class="data"><thead><tr><th>Member</th><th>Plan</th><th>AI credits</th><th>Unlocks</th><th>Since</th></tr></thead><tbody data-subs></tbody></table></div></section>
     </div>
     <section class="panel" style="margin-top:16px"><div class="values-head"><h2 style="font-size:16px">Plans</h2><span class="muted">Prices shown on the website. Stripe price IDs: only after the products are approved.</span></div>
-      <div class="table-wrap"><table class="data"><thead><tr><th>Plan</th><th>€ / month</th><th>€ / year</th><th>AI / month</th><th>AI</th><th>Planner</th><th>Stripe price (month)</th><th>Active</th><th></th></tr></thead><tbody data-plans></tbody></table></div></section>
+      <div class="table-wrap"><table class="data"><thead><tr><th>Plan</th><th>€ / month</th><th>€ / year</th><th>AI / month</th><th>AI</th><th>Content Plan</th><th>Stripe price (month)</th><th>Active</th><th></th></tr></thead><tbody data-plans></tbody></table></div></section>
     <section class="panel" style="margin-top:16px"><div class="values-head"><h2 style="font-size:16px">AI packs</h2></div>
       <div class="table-wrap"><table class="data"><thead><tr><th>Pack</th><th>Analyses</th><th>Price €</th><th>Stripe price</th><th>Active</th><th></th></tr></thead><tbody data-packs></tbody></table></div></section>`;
 

@@ -388,6 +388,7 @@
           ${src ? `<div class="lib-zoom"${zoomStyle}><iframe class="lib-frame${pf === "instagram" ? " is-ig" : ""}" src="${esc(src)}" loading="lazy" title="${esc(who || "Post")}" scrolling="no" allow="encrypted-media; picture-in-picture; fullscreen"></iframe></div>` : `<span class="lib-noimg"></span>`}
           ${sh.zoom ? "" : `<button class="lib-hit" type="button" data-open="${esc(p.id)}" aria-label="Details${who ? ` · ${esc(who)}` : ""}"></button>`}
           <div class="lib-top">
+            <button class="lib-grip" type="button" data-pp-grip="${esc(p.id)}" title="Drag to your Content Plan · click to select several" aria-label="Select to drag into the Content Plan">${icon("grip-vertical")}</button>
             ${pf ? `<span class="lib-badge lib-badge-pf"><img src="assets/pf-${pf}.svg" alt="${esc(pf)}"></span>` : ""}
             ${fmt ? `<span class="lib-badge">${esc(fmt)}</span>` : ""}
             ${(p.tags?.club || []).some((v) => me.fav.has(Number(v.id))) ? `<span class="lib-badge lib-badge-fav" title="One of your favourite profiles">${icon("star")}Favourite</span>` : ""}
@@ -400,7 +401,7 @@
             <p class="lib-when">${date(p.published_at)}${first(p, "entity") ? ` · ${esc(pretty(first(p, "entity")))}` : ""}</p>
           </div>
         </div>
-        ${aiButton(p.id)}
+        <div class="lib-actions">${aiButton(p.id)}<button class="lib-plan-add" type="button" data-plan-add="${esc(p.id)}" title="Add to your Content Plan" aria-label="Add to your Content Plan">${icon("calendar-plus")}</button></div>
       </article>`;
   }
 
@@ -429,6 +430,9 @@
     return `<button class="lib-analysis" type="button" data-open="${esc(id)}">${icon("sparkles")}<span>Unlock AI Analysis <small>· 1 credit</small></span>${icon("arrow-up-right")}</button>`;
   }
   const refreshAiButtons = (id) => $$(`.lib-card[data-id="${CSS.escape(String(id))}"] .lib-analysis`).forEach((b) => (b.outerHTML = aiButton(id)));
+
+  // The Content Plan panel (js/plan-panel.js) reads the posts shown here
+  window.SCP_LIB = { post: (id) => cache.get(String(id)) };
 
   // ---------- Masonry: N columns, each card goes to the shortest one (heights known from the ratios) ----------
   const GAP = 22;

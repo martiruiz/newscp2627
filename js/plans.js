@@ -11,7 +11,7 @@
   const FALLBACK_PLANS = [
     { key: "library", name: "Library", price_month: 9.99, has_ai: false, has_planner: false, ai_monthly_units: 0 },
     { key: "library_ai", name: "Library + AI", price_month: 19.99, has_ai: true, has_planner: false, ai_monthly_units: 30 },
-    { key: "library_planner", name: "Library + Planner", price_month: 24.99, has_ai: false, has_planner: true, ai_monthly_units: 0 },
+    { key: "library_planner", name: "Library + Content Plan", price_month: 24.99, has_ai: false, has_planner: true, ai_monthly_units: 0 },
     { key: "all_access", name: "All Access", price_month: 39.99, has_ai: true, has_planner: true, ai_monthly_units: 100 },
   ];
   const FALLBACK_PACKS = [
@@ -22,7 +22,7 @@
   const BLURB = {
     library: "Thousands of sports posts, ready to search.",
     library_ai: "The library plus expert AI breakdowns.",
-    library_planner: "The library plus your content planner.",
+    library_planner: "The library plus your Content Plan.",
     all_access: "Everything SCP has, for the whole content workflow.",
   };
   const tick = (t, on = true) => `<li class="${on ? "" : "is-off"}"><img src="assets/tick.svg" alt=""><span>${t}</span></li>`;
@@ -40,7 +40,7 @@
         ${tick("Saved boards and “For you” feed")}
         ${p.has_ai ? tick(`<b>${p.ai_monthly_units} AI analyses</b> every month`) : tick("AI analyses", false)}
         ${p.has_ai ? tick("Extra analysis packs available") : ""}
-        ${p.has_planner ? tick("<b>Content Planner</b>: weekly &amp; monthly plans") : tick("Content Planner", false)}
+        ${p.has_planner ? tick("<b>Content Plan</b>: weekly &amp; monthly plans, drag posts in") : tick("Content Plan", false)}
       </ul>
       <a class="btn ${best ? "btn-gold" : "btn-outline"} plan-cta" href="signup.html?plan=${encodeURIComponent(p.key)}">Get ${esc(p.name)}</a>
     </article>`;
