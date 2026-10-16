@@ -1,5 +1,6 @@
 // HTML for the weekly SCP newsletter (email-safe: tables + inline styles, SCP navy / gold).
-// Structure: header + intro · Social News ("This week on SCP") · 3 blog articles with photo · social links.
+// Structure: header + intro · Social News ("This week on SCP") · 4 featured posts (2 × 2) · 3 blog articles with photo
+// · social icons. Email clients block embeds (iframes / scripts), so posts are shown as their cover image linked to the post.
 // Resend placeholders: {{{contact.first_name|there}}} and {{{RESEND_UNSUBSCRIBE_URL}}}.
 export const SITE = "https://sportscontentplaybook.com";
 // Social profiles shown at the bottom (empty = hidden)
@@ -26,10 +27,24 @@ function blogCard(b, i) {
   </td></tr>`;
 }
 
-export function renderWeekly({ subject, preheader, intro, topStory, news, blogs, dateLabel }) {
+function featured(p) {
+  if (!p) return "";
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#121b33;border:1px solid rgba(255,255,255,0.08);border-radius:16px">
+    <tr><td style="padding:10px 10px 0">
+      ${p.image ? `<a href="${esc(p.url)}"><img src="${esc(p.image)}" width="238" alt="${esc(p.who)} on Instagram" style="display:block;width:100%;max-width:238px;height:auto;border-radius:10px;border:0"></a>` : ""}
+    </td></tr>
+    <tr><td style="padding:12px 14px 14px;${FONT}">
+      <p style="margin:0;color:#f0b84a;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase">${p.reel ? "&#9654; " : ""}${esc([p.format, p.sport].filter(Boolean).join(" · "))}</p>
+      <p style="margin:6px 0 0;color:#ffffff;font-size:15px;font-weight:700;line-height:1.3">${esc(p.who)}</p>
+      <p style="margin:6px 0 0;color:#b4c0d3;font-size:13px;line-height:1.55">${rich(p.description)}</p>
+      <p style="margin:10px 0 0"><a href="${esc(p.url)}" style="color:#f0b84a;font-size:13px;font-weight:700;text-decoration:none">${p.reel ? "Watch it" : "See the post"} →</a>${p.analysis ? ` <span style="color:#3a4a6b">·</span> <a href="${esc(p.analysis)}" style="color:#b4c0d3;font-size:13px;text-decoration:none">Breakdown in SCP</a>` : ""}</p>
+    </td></tr></table>`;
+}
+
+export function renderWeekly({ subject, preheader, intro, topStory, news, posts = [], blogs, dateLabel }) {
   const socials = Object.entries(SOCIAL).filter(([, url]) => url);
   return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(subject)}</title>
-<style>@media (max-width:600px){.pad{padding-left:20px!important;padding-right:20px!important}}</style></head>
+<style>@media (max-width:600px){.pad{padding-left:20px!important;padding-right:20px!important}.col{display:block!important;width:100%!important;padding:0 0 12px 0!important}}</style></head>
 <body style="margin:0;padding:0;background:#0e1529">
 <div style="display:none;max-height:0;overflow:hidden;opacity:0">${esc(preheader)}</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0e1529"><tr><td align="center" style="padding:28px 12px">
@@ -57,6 +72,13 @@ export function renderWeekly({ subject, preheader, intro, topStory, news, blogs,
         <td valign="top" style="color:#f0b84a;font-size:16px;padding:1px 10px 0 4px">•</td>
         <td><a href="${esc(n.link)}" style="color:#f0b84a;font-size:15px;font-weight:700;line-height:1.45;text-decoration:none">${esc(n.title)}</a></td></tr></table></td></tr>`).join("")}` : ""}` : ""}
 
+      ${posts.length ? `${bar("Featured content of the week")}
+      <tr><td><table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+        ${[0, 2].filter((i) => posts[i]).map((i) => `<tr>
+          <td class="col" width="50%" valign="top" style="padding:0 6px 12px 0">${featured(posts[i])}</td>
+          <td class="col" width="50%" valign="top" style="padding:0 0 12px 6px">${featured(posts[i + 1])}</td></tr>`).join("")}
+      </table></td></tr>` : ""}
+
       ${blogs.length ? `${bar("From the SCP blog")}${blogs.map(blogCard).join("")}` : ""}
 
       <tr><td align="center" style="padding:36px 0 0">
@@ -65,10 +87,10 @@ export function renderWeekly({ subject, preheader, intro, topStory, news, blogs,
     </table>
   </td></tr>
 
-  <!-- Social links -->
-  ${socials.length ? `<tr><td align="center" style="padding:28px 20px 6px">
-    <p style="margin:0 0 12px;color:#ffffff;font-size:15px;font-weight:700">Follow SCP</p>
-    ${socials.map(([name, url]) => `<a href="${esc(url)}" style="display:inline-block;margin:4px;padding:10px 18px;border-radius:100px;background:#17213b;border:1px solid rgba(255,255,255,0.14);color:#ffffff;font-size:14px;font-weight:700;text-decoration:none">${esc(name)}</a>`).join("")}
+  <!-- Social icons -->
+  ${socials.length ? `<tr><td align="center" style="padding:30px 20px 4px">
+    <p style="margin:0 0 14px;color:#ffffff;font-size:15px;font-weight:700">Follow SCP</p>
+    ${socials.map(([name, url]) => `<a href="${esc(url)}" style="display:inline-block;margin:0 7px;text-decoration:none"><img src="${SITE}/assets/email/social-${name.toLowerCase()}.png" width="44" height="44" alt="${esc(name)}" style="display:block;border:0"></a>`).join("")}
   </td></tr>` : ""}
 
   <tr><td class="pad" style="padding:20px 32px;color:#6f7d95;font-size:12px;line-height:1.6" align="center">

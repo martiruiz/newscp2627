@@ -8,7 +8,8 @@ Profile "Send me the newsletter" ─▶ profiles.newsletter ──────�
 
 Every Monday 08:00 (Barcelona) — GitHub Action "Weekly newsletter"
 node newsletter/weekly.mjs  → header + intro · Social News "This week on SCP" (top story + headlines, last 7 days)
-                              · 3 latest blog articles with photo · Follow SCP (Instagram, TikTok, LinkedIn)
+                              · 4 featured Content Library posts (2 × 2, cover image → post) · 3 latest blog articles
+                              with photo · Follow SCP icons (Instagram, TikTok, LinkedIn)
                             → Claude writes subject, intro, top-story take and a teaser per article
                             → Resend broadcast DRAFT + preview email to NEWSLETTER_REVIEW_TO
 You: Resend → Broadcasts → "SCP weekly — <date>" → Send   (nothing goes out without this click)
