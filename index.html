@@ -237,7 +237,15 @@
 
         <div class="magic-visuals">
           <div class="magic-visual is-active" data-step="1">
-            <img src="assets/magic-1.png" alt="SCP tracking accounts like FC Barcelona, NBA and 433">
+            <div class="radar" data-radar role="img" aria-label="SCP tracking sports accounts like FC Barcelona, NBA, 433, Manchester City, ESPN, Chicago Bulls, MotoGP, the Patriots and MLB">
+              <svg class="radar-rings" viewBox="0 0 644 600" aria-hidden="true">
+                <defs><radialGradient id="radar-glow"><stop offset="0" stop-color="#f0b84a" stop-opacity=".22"/><stop offset="1" stop-color="#f0b84a" stop-opacity="0"/></radialGradient></defs>
+                <circle cx="322" cy="300" r="150" fill="url(#radar-glow)" class="radar-glow"/>
+                <g class="radar-wave"><circle cx="322" cy="300" r="30" style="--i:0"/><circle cx="322" cy="300" r="58" style="--i:1"/><circle cx="322" cy="300" r="86" style="--i:2"/><circle cx="322" cy="300" r="114" style="--i:3"/><circle cx="322" cy="300" r="142" style="--i:4"/><circle cx="322" cy="300" r="170" style="--i:5"/><circle cx="322" cy="300" r="198" style="--i:6"/><circle cx="322" cy="300" r="226" style="--i:7"/><circle cx="322" cy="300" r="254" style="--i:8"/><circle cx="322" cy="300" r="282" style="--i:9"/></g>
+              </svg>
+              <span class="radar-center"><i></i>Tracking</span>
+              <div class="radar-chips" data-radar-chips></div>
+            </div>
           </div>
           <div class="magic-visual" data-step="2">
             <img src="assets/magic-2.png" alt="AI analysis of a PSG post: visual analysis, filters applied and a 97.83% confidence score">
@@ -432,6 +440,7 @@
 
   <script src="js/config.js"></script>
   <script src="js/dock.js" defer></script>
+  <script src="js/radar.js" defer></script>
   <script src="js/plans.js" defer></script>
   <script src="js/main.js"></script>
 </body>
