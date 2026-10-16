@@ -1,12 +1,14 @@
 // Sports Content Playbook — shared interactions
 
-// Prices per month for the whole plan (all users together). Yearly = 2 months free (monthly × 10 / 12, rounded down).
+// Prices per month for the whole plan (all users together).
+// "yearly" = price per month when billed annually; "monthly" = price when billed every month
+// (yearly × 12 / 10, i.e. yearly billing gives 2 months free, rounded up).
 // Used by the pricing page and by the sign-up summary. "Team" (6+ users) has no price: custom proposal.
 window.SCP_PRICES = {
   1: { monthly: 39, yearly: 32 },
-  2: { monthly: 60, yearly: 50 },
-  3: { monthly: 78, yearly: 65 },
-  5: { monthly: 125, yearly: 104 },
+  2: { monthly: 72, yearly: 60 },
+  3: { monthly: 94, yearly: 78 },
+  5: { monthly: 150, yearly: 125 },
 };
 window.SCP_PRICE = (users) => {
   const t = window.SCP_PRICES;
