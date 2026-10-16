@@ -658,6 +658,7 @@
     document.querySelectorAll(".rm-pop").forEach((x) => x.remove());
     const pop = document.createElement("div");
     pop.className = "rm-pop";
+    pop.style.cssText = "position:fixed;z-index:2000;width:300px;max-width:calc(100vw - 24px)"; // works even with a cached stylesheet
     pop.innerHTML = `<b>Remove this post from the library?</b><p>Members won't see it any more, and it stays hidden in future imports.</p>
       <div class="rm-reasons">${REASONS.map((r, i) => `<label><input type="radio" name="rm-reason" value="${esc(r)}"${i ? "" : " checked"}>${esc(r)}</label>`).join("")}</div>
       <div class="rm-actions"><button type="button" data-rm-cancel>Cancel</button><button type="button" data-rm-ok>${icon("trash-2")}Remove</button></div>`;
@@ -704,6 +705,7 @@
     document.querySelector(".lib-toast")?.remove();
     const t = document.createElement("div");
     t.className = "lib-toast";
+    t.style.cssText = "position:fixed;z-index:2100;left:50%;bottom:28px;transform:translateX(-50%)";
     t.innerHTML = `<span>${esc(text)}</span>${action ? `<button type="button">${esc(action)}</button>` : ""}`;
     document.body.append(t);
     if (action) t.querySelector("button").addEventListener("click", () => { t.remove(); onAction(); });

@@ -4,7 +4,11 @@
     {
       "name": "scp-web",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "5173", "--directory", "/Users/martiruiz/Desktop/NOU SCP 202627"],
+      "runtimeArgs": [
+        "/Users/martiruiz/Desktop/NOU SCP 202627/.claude/serve.py",
+        "5173",
+        "/Users/martiruiz/Desktop/NOU SCP 202627"
+      ],
       "port": 5173
     }
   ]
