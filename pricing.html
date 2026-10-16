@@ -65,7 +65,7 @@
           </div>
           <div class="billing-toggle" role="radiogroup" aria-label="Billing period" data-billing-toggle data-price-only>
             <button type="button" role="radio" aria-checked="false" data-billing="monthly">Monthly</button>
-            <button type="button" role="radio" aria-checked="true" data-billing="yearly">Yearly <span class="save-badge">−18%</span></button>
+            <button type="button" role="radio" aria-checked="true" data-billing="yearly">Yearly <span class="save-badge" data-discount>−18%</span></button>
           </div>
         </header>
         <hr>
@@ -75,11 +75,11 @@
           <p class="price-note">Tell us about your club, league or brand and we'll prepare a personalized commercial proposal with great advantages: preferential pricing per user, priority account tracking for your competitors and a dedicated onboarding for your team.</p>
         </div>
         <div class="price-line" data-price-only>
-          <s class="price-old" data-when="yearly" aria-label="Monthly price"><span data-price="39">€39</span></s>
-          <span class="price-now"><span data-when="yearly" data-price="32">€32</span><span data-when="monthly" data-price="39">€39</span></span>
+          <s class="price-old" data-when="yearly" aria-label="Monthly price"><span data-amount="monthly">€39</span></s>
+          <span class="price-now"><span data-when="yearly" data-amount="yearly">€32</span><span data-when="monthly" data-amount="monthly">€39</span></span>
           <span class="price-per">per month, <span data-when="yearly">billed annually</span><span data-when="monthly">billed monthly</span></span>
         </div>
-        <p class="price-note" data-price-only data-when="yearly"><span data-price="384">€384</span> billed once a year · you save <b><span data-price="84">€84</span></b>, 2 months free</p>
+        <p class="price-note" data-price-only data-when="yearly"><span data-amount="yearly-total">€384</span> billed once a year · you save <b><span data-amount="saving">€84</span></b>, 2 months free</p>
         <p class="price-note" data-price-only data-when="monthly">Switch to <button class="link-gold" type="button" data-billing-switch="yearly">yearly billing</button> and get 2 months free.</p>
         <hr>
         <p class="includes">Includes:</p>

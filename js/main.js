@@ -1,4 +1,20 @@
 // Sports Content Playbook — shared interactions
+
+// Prices per month for the whole plan (all users together). Yearly = 2 months free (monthly × 10 / 12, rounded down).
+// Used by the pricing page and by the sign-up summary. "Team" (6+ users) has no price: custom proposal.
+window.SCP_PRICES = {
+  1: { monthly: 39, yearly: 32 },
+  2: { monthly: 60, yearly: 50 },
+  3: { monthly: 78, yearly: 65 },
+  5: { monthly: 125, yearly: 104 },
+};
+window.SCP_PRICE = (users) => {
+  const t = window.SCP_PRICES;
+  if (t[users]) return t[users];
+  const n = Object.keys(t).map(Number).filter((k) => k <= users).pop() || 1; // nearest smaller plan, per-user rate
+  return { monthly: Math.round((t[n].monthly / n) * users), yearly: Math.round((t[n].yearly / n) * users) };
+};
+
 (() => {
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -135,9 +151,13 @@
         return;
       }
       const n = Number(choice);
-      $$("[data-price]").forEach((el) => {
-        el.textContent = `€${Number(el.dataset.price) * n}`;
-      });
+      const pr = window.SCP_PRICE(n);
+      const values = {
+        monthly: pr.monthly, yearly: pr.yearly,
+        "yearly-total": pr.yearly * 12, saving: (pr.monthly - pr.yearly) * 12,
+      };
+      $$("[data-amount]").forEach((el) => (el.textContent = `€${values[el.dataset.amount].toLocaleString("en-GB")}`));
+      $$("[data-discount]").forEach((el) => (el.textContent = `−${Math.round((1 - pr.yearly / pr.monthly) * 100)}%`));
       $$("[data-plan-link]").forEach((a) => {
         const url = new URL(a.getAttribute("href"), location.href);
         url.searchParams.set("users", String(n));
