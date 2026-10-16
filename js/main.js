@@ -93,7 +93,8 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString("en-GB")}`;
     cards.forEach((c, i) => c.addEventListener("click", () => setActive(i)));
   });
 
-  // "Magic behind SCP" steps — click to select, auto-advance
+  // "Magic behind SCP" steps — click to select, auto-advance. The progress can be paused (button on the active step,
+  // or by hovering the step text) and resumes where it stopped.
   $$("[data-steps]").forEach((root) => {
     const buttons = $$("[data-step-btn]", root);
     const visuals = $$("[data-step]", root);
@@ -101,6 +102,27 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString("en-GB")}`;
     root.style.setProperty("--step-ms", `${DURATION}ms`);
     let current = 1;
     let timer;
+    let startedAt = 0, remaining = DURATION;
+    let pinned = false, hovering = false, inView = false;
+    const PAUSE = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';
+    const PLAY = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.4-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>';
+    // one pause / play control per step (next to "STEP 0X"); only the active step shows it
+    const controls = buttons.map((b) => {
+      const c = document.createElement("button");
+      c.type = "button";
+      c.className = "step-pause";
+      c.dataset.stepPause = b.dataset.stepBtn;
+      b.parentElement.style.position = "relative";
+      b.parentElement.appendChild(c);
+      return c;
+    });
+    const paused = () => pinned || hovering;
+    const renderControls = () => controls.forEach((c) => {
+      c.innerHTML = pinned ? PLAY : PAUSE;
+      c.setAttribute("aria-label", pinned ? "Resume the steps" : "Pause the steps");
+      c.title = pinned ? "Resume" : "Pause";
+      c.classList.toggle("is-paused", pinned);
+    });
     // Fit the visual area to the step being shown (avoids empty space below shorter visuals)
     const fit = () => {
       const active = visuals.find((v) => Number(v.dataset.step) === current);
@@ -109,8 +131,23 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString("en-GB")}`;
     };
     root.querySelectorAll("[data-step] img").forEach((img) => img.addEventListener("load", fit));
     window.addEventListener("resize", fit);
+    const schedule = () => {
+      clearTimeout(timer);
+      if (paused() || !inView) return;
+      startedAt = performance.now();
+      timer = setTimeout(() => show((current % buttons.length) + 1), remaining);
+    };
+    const freeze = () => {
+      if (timer && startedAt) remaining = Math.max(0, remaining - (performance.now() - startedAt));
+      clearTimeout(timer); timer = null; startedAt = 0;
+    };
+    const applyPause = () => {
+      root.classList.toggle("steps-paused", paused());
+      if (paused()) freeze(); else schedule();
+    };
     const show = (n) => {
       current = n;
+      remaining = DURATION;
       buttons.forEach((b) => {
         const on = Number(b.dataset.stepBtn) === n;
         b.classList.remove("is-active");
@@ -120,15 +157,24 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString("en-GB")}`;
         }
         b.setAttribute("aria-pressed", String(on));
       });
+      controls.forEach((c) => c.classList.toggle("is-current", Number(c.dataset.stepPause) === n));
       visuals.forEach((v) => v.classList.toggle("is-active", Number(v.dataset.step) === n));
       fit();
-      clearTimeout(timer);
-      timer = setTimeout(() => show((current % buttons.length) + 1), DURATION);
+      startedAt = 0;
+      schedule();
     };
     buttons.forEach((b) => b.addEventListener("click", () => show(Number(b.dataset.stepBtn))));
+    controls.forEach((c) => c.addEventListener("click", () => { pinned = !pinned; renderControls(); applyPause(); }));
+    // hovering the active step's text also holds it
+    buttons.forEach((b) => {
+      b.addEventListener("pointerenter", () => { if (b.classList.contains("is-active")) { hovering = true; applyPause(); } });
+      b.addEventListener("pointerleave", () => { if (hovering) { hovering = false; applyPause(); } });
+    });
+    renderControls();
     const io = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) show(current);
-      else clearTimeout(timer);
+      inView = entry.isIntersecting;
+      if (inView) { if (!startedAt && remaining === DURATION) show(current); else schedule(); }
+      else freeze();
     }, { threshold: 0.3 });
     io.observe(root);
   });

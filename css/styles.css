@@ -3319,3 +3319,16 @@ a.blog-img { display: block; }
 @media (prefers-reduced-motion: reduce) {
   .scan.is-scanning .scan-line, .scan.is-scanning .scan-beam, .scan.is-scanning .scan-panel, .scan.is-scanning .scan-checks li, .scan.is-scanning .scan-chips span { animation: none; opacity: 1; }
 }
+
+/* Steps: pause / resume the progress */
+.steps-paused .step.is-active .step-progress i { animation-play-state: paused; }
+.step-pause {
+  position: absolute; top: -4px; right: 0; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%;
+  background: var(--surface-2); border: 0.5px solid rgba(240, 184, 74, 0.45); color: var(--gold);
+  opacity: 0; pointer-events: none; transition: opacity 0.2s, background 0.2s, transform 0.15s;
+}
+.step-pause.is-current { opacity: 1; pointer-events: auto; }
+.step-pause svg { width: 13px; height: 13px; }
+.step-pause:hover { background: var(--gold-tint); transform: scale(1.06); }
+.step-pause.is-paused { background: var(--gold); color: var(--bg); }
+.step-pause:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
