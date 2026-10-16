@@ -1591,6 +1591,8 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
 /* ---------- Home pricing tiers ---------- */
 
 .home-pricing { padding: 0; }
+.home-pricing.pricing-hero { padding-top: 0; }
+.home-pricing.pricing-hero .section-title { margin-top: 0; }
 .home-pricing-head { text-align: center; }
 .home-pricing-head p { max-width: 600px; margin: 28px auto 0; color: var(--muted); }
 
