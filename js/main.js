@@ -69,11 +69,72 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString("en-GB")}`;
       prev.disabled = track.scrollLeft <= 2;
       next.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 2;
     };
-    prev.addEventListener("click", () => track.scrollBy({ left: -step(), behavior: "smooth" }));
-    next.addEventListener("click", () => track.scrollBy({ left: step(), behavior: "smooth" }));
-    track.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
-    update();
+    // Auto-drift: while the carousel is on screen the cards glide slowly to the left, in an endless loop
+    // (the cards are cloned once). Pauses while hovered / touched and for a few seconds after the arrows are used.
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const SPEED = 18; // px per second
+    let loopWidth = 0;
+    let pos = 0;
+    let visible = false;
+    let hovered = false;
+    let pausedUntil = 0;
+    let last = 0;
+    let frame = 0;
+    if (!reduced && track.children.length > 1) {
+      const originals = [...track.children];
+      originals.forEach((card) => {
+        const clone = card.cloneNode(true);
+        clone.setAttribute("aria-hidden", "true");
+        clone.inert = true;
+        clone.dataset.clone = "";
+        track.appendChild(clone);
+      });
+      const measure = () => { loopWidth = track.children[originals.length].offsetLeft - track.children[0].offsetLeft; };
+      measure();
+      window.addEventListener("resize", measure);
+
+      const tick = (now) => {
+        frame = 0;
+        if (!visible) return;
+        const dt = last ? Math.min(now - last, 100) / 1000 : 0;
+        last = now;
+        if (!hovered && now > pausedUntil) {
+          if (Math.abs(track.scrollLeft - pos) > 2) pos = track.scrollLeft; // the user moved it: carry on from there
+          pos += SPEED * dt;
+          if (loopWidth && pos >= loopWidth) pos -= loopWidth;
+          track.scrollLeft = pos;
+        } else {
+          pos = track.scrollLeft;
+        }
+        frame = requestAnimationFrame(tick);
+      };
+      const start = () => { if (!frame) { last = 0; pos = track.scrollLeft; frame = requestAnimationFrame(tick); } };
+      new IntersectionObserver(([e]) => {
+        visible = e.isIntersecting;
+        track.classList.toggle("is-drifting", visible);
+        if (visible) start();
+      }, { threshold: 0.35 }).observe(track);
+
+      const pause = (ms) => { pausedUntil = performance.now() + ms; };
+      track.addEventListener("pointerenter", () => (hovered = true));
+      track.addEventListener("pointerleave", () => { hovered = false; pause(800); });
+      track.addEventListener("touchstart", () => pause(4000), { passive: true });
+      track.addEventListener("wheel", () => pause(3000), { passive: true });
+      [prev, next].forEach((b) => b.addEventListener("click", () => pause(5000)));
+    }
+
+    prev.addEventListener("click", () => {
+      if (loopWidth && track.scrollLeft < step()) track.scrollLeft += loopWidth; // wrap around backwards
+      track.scrollBy({ left: -step(), behavior: "smooth" });
+    });
+    next.addEventListener("click", () => {
+      if (loopWidth && track.scrollLeft + step() > loopWidth) track.scrollLeft -= loopWidth;
+      track.scrollBy({ left: step(), behavior: "smooth" });
+    });
+    const updateArrows = () => (loopWidth ? (prev.disabled = next.disabled = false) : update());
+    track.addEventListener("scroll", updateArrows, { passive: true });
+    window.addEventListener("resize", updateArrows);
+    updateArrows();
   });
 
   // Testimonials: arrows move the highlighted card

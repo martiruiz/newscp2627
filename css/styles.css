@@ -358,6 +358,7 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
   scrollbar-width: none;
 }
 .feature-track::-webkit-scrollbar { display: none; }
+.feature-track.is-drifting { scroll-snap-type: none; } /* the slow auto-drift needs free scrolling */
 
 .feature-card {
   position: relative;
