@@ -20,7 +20,16 @@
 
   const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const DAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-  const TIMES = Array.from({ length: 15 }, (_, i) => `${String(i + 8).padStart(2, "0")}:00`); // 08:00 → 22:00
+  const hh = (h) => `${String(h).padStart(2, "0")}:00`;
+  const TIMES = Array.from({ length: 24 }, (_, i) => hh(i));                                      // hour rows 00:00 → 23:00
+  const MINUTES = TIMES.flatMap((t) => ["00", "15", "30", "45"].map((m) => `${t.slice(0, 2)}:${m}`)); // times a post can have
+  const hourOf = (time) => Number(String(time || "12:00").slice(0, 2));
+  // The day (08:00–20:00) is always open; night (00–08) and evening (20–00) fold into one row each and can be opened.
+  const BANDS = { night: { from: 0, to: 8, label: "Night", range: "00:00 – 08:00" }, evening: { from: 20, to: 24, label: "Evening", range: "20:00 – 00:00" } };
+  const bandOf = (h) => (h < 8 ? "night" : h >= 20 ? "evening" : null);
+  let folds = { night: true, evening: true };
+  try { folds = { ...folds, ...JSON.parse(localStorage.getItem("scp-plan-folds") || "{}") }; } catch {}
+  const saveFolds = () => { try { localStorage.setItem("scp-plan-folds", JSON.stringify(folds)); } catch {} };
   const STATUS = { idea: "Idea", planned: "Planned", in_production: "In production", published: "Published" };
   const TYPES = [
     { key: "post", label: "Post", icon: "image" },
@@ -174,7 +183,7 @@
         <button type="button" data-dup="${e.id}" aria-label="Duplicate">${icon("copy")}</button>
         <button type="button" data-del="${e.id}" aria-label="Delete">${icon("trash-2")}</button>
       </div>
-      <p class="org-entry-title">${compact ? `<span class="org-entry-time">${e.time_slot}</span>` : ""}${e.label ? esc(e.label) : `<span class="org-untitled">Untitled</span>`}</p>
+      <p class="org-entry-title">${compact || !e.time_slot?.endsWith(":00") ? `<span class="org-entry-time">${e.time_slot}</span>` : ""}${e.label ? esc(e.label) : `<span class="org-untitled">Untitled</span>`}</p>
       ${compact ? "" : `<div class="org-entry-meta">
         <span class="org-status-chip">${STATUS[e.status]}</span>
         ${t ? `<span class="org-type">${icon(t.icon)}${t.label}</span>` : ""}
@@ -187,18 +196,59 @@
     const today = iso(new Date());
     const days = weekDays();
     const head = `<thead><tr><th class="org-time-h">Time</th>${days.map((d, i) => `<th class="${iso(d) === today ? "is-today" : ""}${i === mobileDay ? "" : " m-hide"}"><span>${DAYS[i]}</span><b>${d.getDate()}</b></th>`).join("")}</tr></thead>`;
-    const rows = TIMES.map((t) => `<tr><td class="org-time">${t}</td>${days.map((d, i) => {
+    const atHour = (date, h) => entries.filter((e) => e.entry_date === date && hourOf(e.time_slot) === h).sort((a, b) => a.time_slot.localeCompare(b.time_slot));
+    const hourRow = (t) => `<tr data-hour="${hourOf(t)}"><td class="org-time">${t}</td>${days.map((d, i) => {
       const date = iso(d);
-      const cell = entries.filter((e) => e.entry_date === date && e.time_slot === t);
-      const ghosts = base.filter((s) => s.day === i && s.time_slot === t).slice(cell.length);
-      return `<td class="org-cell${ghosts.length ? " has-ghost" : ""}${i === mobileDay ? "" : " m-hide"}" data-cell="${date}|${t}">
+      const cell = atHour(date, hourOf(t));
+      const ghosts = base.filter((s) => s.day === i && hourOf(s.time_slot) === hourOf(t)).slice(cell.length);
+      return `<td class="org-cell${ghosts.length ? " has-ghost" : ""}${date === today ? " is-today" : ""}${i === mobileDay ? "" : " m-hide"}" data-cell="${date}|${t}" data-drop-label="${DAYS[i]} ${d.getDate()} · ${t}">
         ${cell.map((e) => entryHtml(e)).join("")}
-        ${ghosts.map((g) => `<button type="button" class="org-ghost" data-ghost="${g.id}"><b>${esc(g.label)}</b><span>${typeOf(g.content_type)?.label || "Recurring"} · to plan</span></button>`).join("")}
-        <button type="button" class="org-add" data-add aria-label="Add a post on ${DAY_NAMES[i]} at ${t}">${icon("plus")}</button>
+        ${ghosts.map((g) => `<button type="button" class="org-ghost" data-ghost="${g.id}"><b>${esc(g.label)}</b><span>${typeOf(g.content_type)?.label || "Recurring"} · ${g.time_slot} · to plan</span></button>`).join("")}
+        <button type="button" class="org-add" data-add aria-label="Add a post on ${DAY_NAMES[i]} at ${t}">${icon("plus")}<span>${t}</span></button>
       </td>`;
-    }).join("")}</tr>`).join("");
-    $("[data-grid]").innerHTML = head + `<tbody>${rows}</tbody>`;
+    }).join("")}</tr>`;
+    // A folded band: one slim row with, per day, a dot per post planned in those hours
+    const foldRow = (key) => {
+      const b = BANDS[key];
+      const inBand = (date) => entries.filter((e) => e.entry_date === date && hourOf(e.time_slot) >= b.from && hourOf(e.time_slot) < b.to);
+      const total = days.reduce((n, d) => n + inBand(iso(d)).length, 0);
+      const ghostN = base.filter((s) => hourOf(s.time_slot) >= b.from && hourOf(s.time_slot) < b.to).length;
+      return `<tr class="org-fold${total ? " has-posts" : ""}" data-fold="${key}"><td class="org-time"><button type="button" data-fold-toggle="${key}" aria-expanded="false" title="Show ${b.range}">${icon(key === "night" ? "chevron-up" : "chevron-down")}<span>${b.label}</span></button></td>
+        <td colspan="7" class="org-fold-cell"><button type="button" class="org-fold-btn" data-fold-toggle="${key}">
+          <span class="org-fold-days">${days.map((d, i) => `<span class="${i === mobileDay ? "" : "m-hide"}">${inBand(iso(d)).map((e) => `<i class="org-s-${e.status}" title="${esc(e.time_slot)} · ${esc(e.label || "Untitled")}"></i>`).join("")}</span>`).join("")}</span>
+          <span class="org-fold-label">${total ? `<b>${total} post${total === 1 ? "" : "s"}</b> ${key === "night" ? "before 08:00" : "this evening"}` : `${b.label} · ${b.range}`}${ghostN ? ` · ${ghostN} recurring` : ""}<em>Show ${b.range}</em></span>
+        </button></td></tr>`;
+    };
+    const openBand = (key) => `<tr class="org-fold-open" data-fold="${key}"><td class="org-time"><button type="button" data-fold-toggle="${key}" aria-expanded="true" title="Hide ${BANDS[key].range}">${icon(key === "night" ? "chevron-down" : "chevron-up")}<span>Hide</span></button></td><td colspan="7" class="org-fold-cell is-open"></td></tr>`;
+    const band = (key) => {
+      const hours = TIMES.slice(BANDS[key].from, BANDS[key].to);
+      if (folds[key]) return foldRow(key);
+      return key === "night" ? openBand(key) + hours.map(hourRow).join("") : hours.map(hourRow).join("") + openBand(key);
+    };
+    $("[data-grid]").innerHTML = head + `<tbody>${band("night")}${TIMES.slice(8, 20).map(hourRow).join("")}${band("evening")}</tbody>`;
+    placeNow();
   }
+  // Gold "now" line across today's column, at the current minute; moves every minute
+  function placeNow() {
+    $$(".org-now").forEach((x) => x.remove());
+    if (view !== "week") return;
+    const now = new Date();
+    const cell = $(`[data-cell="${iso(now)}|${hh(now.getHours())}"]`);
+    if (!cell) return;
+    cell.insertAdjacentHTML("beforeend", `<span class="org-now" style="top:${(now.getMinutes() / 60) * 100}%"><i></i></span>`);
+  }
+  setInterval(placeNow, 60000);
+  // On the first load of the current week, scroll the grid to the current hour (opening its band if needed)
+  let scrolledToNow = false;
+  function scrollToNow() {
+    if (scrolledToNow || view !== "week" || iso(mondayOf(anchor)) !== iso(mondayOf(new Date()))) return;
+    scrolledToNow = true;
+    const h = new Date().getHours();
+    const row = $(`tr[data-hour="${Math.max(0, h - 1)}"]`) || $(`tr[data-fold="${bandOf(h)}"]`);
+    const wrap = $("[data-week-view]");
+    if (row && wrap) wrap.scrollTo({ top: Math.max(0, row.offsetTop - 60), behavior: "smooth" });
+  }
+
   function renderMonth() {
     const [start] = range();
     const today = iso(new Date());
@@ -228,6 +278,7 @@
     $(".org-progress").hidden = view !== "week";
     view === "week" ? renderWeek() : renderMonth();
     if (T) requestAnimationFrame(() => T.fit(layout));
+    if (view === "week" && base && entries) requestAnimationFrame(scrollToNow);
   }
 
   // ---------- Interactions (both views) ----------
@@ -235,6 +286,8 @@
   layout.addEventListener("click", async (e) => {
     const cellEl = e.target.closest("[data-cell]");
     const [date, t] = cellEl ? cellEl.dataset.cell.split("|").map((x, i) => (i === 0 ? x || null : x)) : [];
+    const fold = e.target.closest("[data-fold-toggle]");
+    if (fold) { folds[fold.dataset.foldToggle] = !folds[fold.dataset.foldToggle]; saveFolds(); return render(); }
     const del = e.target.closest("[data-del]");
     if (del) return remove(del.dataset.del);
     const dup = e.target.closest("[data-dup]");
@@ -250,7 +303,7 @@
     const ghost = e.target.closest("[data-ghost]");
     if (ghost) {
       const g = base.find((s) => s.id === ghost.dataset.ghost);
-      const created = await create(date, t, { label: g.label, content_type: g.content_type, status: "planned" });
+      const created = await create(date, g.time_slot || t, { label: g.label, content_type: g.content_type, status: "planned" });
       return created && openEntry(created.id);
     }
     if (e.target.closest("[data-add]")) { const created = await create(date, t); return created && openEntry(created.id); }
@@ -262,7 +315,12 @@
     if (insp) { e.dataTransfer.setData("text/scp-inspiration", insp.dataset.insp); e.dataTransfer.effectAllowed = "copy"; }
   });
   layout.addEventListener("dragend", () => $$(".is-dragging").forEach((x) => x.classList.remove("is-dragging")));
+  let foldTimer = null;
   layout.addEventListener("dragover", (e) => {
+    // Dragging over a folded band opens it after a moment
+    const fr = e.target.closest("tr.org-fold");
+    if (fr && !foldTimer) foldTimer = setTimeout(() => { foldTimer = null; folds[fr.dataset.fold] = false; saveFolds(); render(); }, 600);
+    if (!fr && foldTimer) { clearTimeout(foldTimer); foldTimer = null; }
     const cellEl = e.target.closest("[data-cell]");
     if (!cellEl) return;
     e.preventDefault();
@@ -281,7 +339,7 @@
     if (moving) {
       const src = entries.find((x) => x.id === moving);
       // month view and the tray keep the post's time; week view moves it to the cell's hour
-      const changes = { entry_date: date, time_slot: view === "month" || !date ? src.time_slot : t };
+      const changes = { entry_date: date, time_slot: view === "month" || !date ? src.time_slot : `${t.slice(0, 2)}:${(src.time_slot || "00:00").slice(3)}` };
       if (date && src.status === "idea") changes.status = "planned";
       return update(moving, changes);
     }
@@ -317,7 +375,7 @@
         <span class="org-m-icon">${icon(typeOf(e.content_type)?.icon || "layout-grid")}</span>
         <div><input class="org-m-title" type="text" maxlength="140" placeholder="What are you posting?" value="${esc(e.label)}" data-f="label">
         <p><label class="org-m-date">${icon("calendar-days")}<input type="date" value="${e.entry_date || ""}" data-f-date aria-label="Date"></label>${d ? `<span class="org-m-dayname">${DAY_NAMES[dow(d)]}</span>` : `<span class="org-m-dayname">No date · idea</span>`}
-          · <select class="org-m-time" data-f-time aria-label="Time">${TIMES.map((t) => `<option${t === e.time_slot ? " selected" : ""}>${t}</option>`).join("")}</select>
+          · <select class="org-m-time" data-f-time aria-label="Time">${(MINUTES.includes(e.time_slot) ? MINUTES : [...MINUTES, e.time_slot].sort()).map((t) => `<option${t === e.time_slot ? " selected" : ""}>${t}</option>`).join("")}</select>
           <span class="org-saved" data-save-state data-state="saved">${icon("check")}Saved</span></p></div>
         <button class="org-m-x" type="button" aria-label="Close" data-close>${icon("x")}</button>
       </header>
@@ -359,7 +417,11 @@
   });
   entryModal.addEventListener("change", async (ev) => {
     if (!openId) return;
-    if (ev.target.matches("[data-f-time]")) update(openId, { time_slot: ev.target.value }, { silent: true });
+    if (ev.target.matches("[data-f-time]")) {
+      const band = bandOf(hourOf(ev.target.value));
+      if (band && folds[band]) { folds[band] = false; saveFolds(); }
+      update(openId, { time_slot: ev.target.value }, { silent: true });
+    }
     if (ev.target.matches("[data-f-date]")) {
       const e = entries.find((x) => x.id === openId);
       const date = ev.target.value || null;
@@ -399,7 +461,7 @@
       <div class="org-m-body">
         <form class="org-base-form" data-base-form>
           <select name="day" aria-label="Day">${DAY_NAMES.map((n, i) => `<option value="${i}">${n}</option>`).join("")}</select>
-          <select name="time" aria-label="Time">${TIMES.map((t) => `<option${t === "12:00" ? " selected" : ""}>${t}</option>`).join("")}</select>
+          <select name="time" aria-label="Time">${MINUTES.map((t) => `<option${t === "12:00" ? " selected" : ""}>${t}</option>`).join("")}</select>
           <select name="type" aria-label="Type"><option value="">Any type</option>${TYPES.map((t) => `<option value="${t.key}">${t.label}</option>`).join("")}</select>
           <input name="label" type="text" maxlength="140" placeholder="e.g. Matchday recap reel" required aria-label="Post">
           <button class="btn btn-gold" type="submit">${icon("plus")}Add</button>
