@@ -125,8 +125,16 @@
   // Pricing seat picker
   $$("[data-seats]").forEach((picker) => {
     const buttons = $$("button", picker);
-    const update = (n) => {
-      buttons.forEach((b) => b.setAttribute("aria-checked", String(Number(b.dataset.n) === n)));
+    const update = (choice) => {
+      buttons.forEach((b) => b.setAttribute("aria-checked", String(b.dataset.n === String(choice))));
+      // "Team": no price, a custom proposal instead
+      const team = choice === "team";
+      $$("[data-price-card]").forEach((card) => card.classList.toggle("is-team", team));
+      if (team) {
+        $$("[data-seat-label]").forEach((el) => (el.textContent = "Team access for your whole organization"));
+        return;
+      }
+      const n = Number(choice);
       $$("[data-price]").forEach((el) => {
         el.textContent = `€${Number(el.dataset.price) * n}`;
       });
@@ -139,7 +147,7 @@
         el.textContent = `${n} user${n > 1 ? "s" : ""} access to Sports Content Playbook`;
       });
     };
-    buttons.forEach((b) => b.addEventListener("click", () => update(Number(b.dataset.n))));
+    buttons.forEach((b) => b.addEventListener("click", () => update(b.dataset.n === "team" ? "team" : Number(b.dataset.n))));
   });
 
   // Pricing card: Monthly / Yearly switch (the big price, the struck-through monthly price and the plan in the link)

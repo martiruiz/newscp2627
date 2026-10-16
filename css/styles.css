@@ -946,6 +946,13 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
 .price-card[data-billing="yearly"] [data-when="monthly"],
 .price-card[data-billing="monthly"] [data-when="yearly"] { display: none; }
 
+.price-card:not(.is-team) [data-team-only],
+.price-card.is-team [data-price-only] { display: none !important; }
+.team-offer { margin-top: 28px; }
+.team-eyebrow { font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--gold); }
+.team-title { margin-top: 10px; font-family: var(--font-display); font-weight: 600; font-size: 34px; line-height: 1.08; letter-spacing: -0.02em; }
+.team-offer .price-note { font-size: 15px; line-height: 1.5; }
+
 .price-card .includes { margin-top: 30px; font-size: 14px; color: var(--muted-dim); font-weight: 400; }
 .price-features { list-style: none; margin: 18px 0 36px; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px 24px; }
 .price-features li { display: flex; gap: 9px; align-items: flex-start; color: var(--muted); font-weight: 400; }
