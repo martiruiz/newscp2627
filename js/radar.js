@@ -41,12 +41,16 @@
     layer.appendChild(s.el);
   });
 
+  // Position in pixels from the ring point, then keep the whole label inside the radar box
   function place(s) {
     const r = RINGS[s.ring];
     const a = (s.angle * Math.PI) / 180;
-    // percentages so it scales with the container
-    s.el.style.left = `${((CX + r * Math.cos(a)) / W) * 100}%`;
-    s.el.style.top = `${((CY + r * Math.sin(a)) / H) * 100}%`;
+    const bw = radar.clientWidth, bh = radar.clientHeight, k = bw / W; // box scales with its width
+    const w = s.el.offsetWidth, h = s.el.offsetHeight, pad = 6;
+    const x = Math.min(bw - w / 2 - pad, Math.max(w / 2 + pad, (CX + r * Math.cos(a)) * k));
+    const y = Math.min(bh - h / 2 - pad, Math.max(h / 2 + pad, (CY + r * Math.sin(a)) * (bh / H)));
+    s.el.style.left = `${x}px`;
+    s.el.style.top = `${y}px`;
   }
   slots.forEach(place);
   if (reduce) return;
