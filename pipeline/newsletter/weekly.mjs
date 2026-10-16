@@ -128,9 +128,9 @@ console.log(`Claude: "${out.subject}" (${response.usage.input_tokens} in / ${res
 const newsById = new Map(newsRows.map((n) => [n.id, n]));
 const newsLink = (n) => `${SITE}/news.html#news-${n.id}`;
 const top = out.topStory && newsById.get(out.topStory.id);
-const topStory = top ? { title: top.title, take: out.topStory.take, link: newsLink(top) } : null;
+const topStory = top ? { title: top.title, take: out.topStory.take, platform: top.platform, link: newsLink(top) } : null;
 const news = out.news.filter((id) => id !== top?.id).map((id) => newsById.get(id)).filter(Boolean).slice(0, 6)
-  .map((n) => ({ title: n.title, link: newsLink(n) }));
+  .map((n) => ({ title: n.title, platform: n.platform, link: newsLink(n) }));
 // Featured posts: copy each cover image to our public bucket (Instagram image links expire)
 async function stableImage(post) {
   try {
@@ -166,7 +166,8 @@ const blogs = blogPosts.map((b) => ({
   teaser: teasers.get(b.slug)?.length ? teasers.get(b.slug) : [b.excerpt],
 }));
 
-const html = renderWeekly({ subject: out.subject, preheader: out.preheader, intro: out.intro, topStory, news, posts, blogs, dateLabel });
+const { count: pastIssues } = await db.from("newsletter_issues").select("id", { count: "exact", head: true });
+const html = renderWeekly({ subject: out.subject, preheader: out.preheader, intro: out.intro, topStory, news, posts, blogs, dateLabel, issue: (pastIssues || 0) + 1 });
 
 if (DRY) {
   const file = path.join(ROOT, "pipeline", "newsletter-preview.html");
