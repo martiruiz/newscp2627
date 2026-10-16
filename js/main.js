@@ -1,21 +1,29 @@
 // Sports Content Playbook — shared interactions
 
-// Prices per month for the whole plan (all users together).
-// "yearly" = price per month when billed annually; "monthly" = price when billed every month
-// (yearly × 12 / 10, i.e. yearly billing gives 2 months free, rounded up).
-// Used by the pricing page and by the sign-up summary. "Team" (6+ users) has no price: custom proposal.
-window.SCP_PRICES = {
-  1: { monthly: 39, yearly: 32 },
-  2: { monthly: 72, yearly: 60 },
-  3: { monthly: 94, yearly: 78 },
-  5: { monthly: 150, yearly: 125 },
-};
+// Prices (from Calcul_Descomptes_Usuaris.xlsx):
+// - base: €39 per user per month
+// - volume discount on the monthly price: 2 users −10%, 3 users −15%, 5 users −20%
+// - yearly billing: −20% on that monthly price (shown per month, billed once a year)
+// Amounts are rounded to cents. "Team" (6+ users) has no price: custom proposal.
+window.SCP_PRICING = { base: 39, yearlyDiscount: 20, volumeDiscount: { 1: 0, 2: 10, 3: 15, 5: 20 } };
 window.SCP_PRICE = (users) => {
-  const t = window.SCP_PRICES;
-  if (t[users]) return t[users];
-  const n = Object.keys(t).map(Number).filter((k) => k <= users).pop() || 1; // nearest smaller plan, per-user rate
-  return { monthly: Math.round((t[n].monthly / n) * users), yearly: Math.round((t[n].yearly / n) * users) };
+  const P = window.SCP_PRICING;
+  const cents = (v) => Math.round(v * 100) / 100;
+  const tiers = Object.keys(P.volumeDiscount).map(Number);
+  const volume = P.volumeDiscount[users] ?? P.volumeDiscount[tiers.filter((t) => t <= users).pop() || 1];
+  const list = P.base * users;                                   // price without any discount
+  const monthly = cents(list * (1 - volume / 100));              // preu mensual
+  const yearly = cents(monthly * (1 - P.yearlyDiscount / 100));  // preu mensual si contractes l'opció anual
+  return {
+    users, list, volume, yearlyDiscount: P.yearlyDiscount,
+    monthly, volumeSaving: cents(list - monthly),               // estalvi en € (per volum)
+    yearly, savingMonth: cents(monthly - yearly),                // estalvi en €/mes
+    savingYear: cents((monthly - yearly) * 12),                  // estalvi en €/any
+    yearlyTotal: cents(yearly * 12),                             // cost total anual
+  };
 };
+// €39 · €70.20 · €1,497.60
+window.SCP_EUR = (v) => `€${Number(v).toLocaleString("en-GB", { minimumFractionDigits: Number.isInteger(v) ? 0 : 2, maximumFractionDigits: 2 })}`;
 
 (() => {
   const $ = (sel, root = document) => root.querySelector(sel);
@@ -155,11 +163,14 @@ window.SCP_PRICE = (users) => {
       const n = Number(choice);
       const pr = window.SCP_PRICE(n);
       const values = {
-        monthly: pr.monthly, yearly: pr.yearly,
-        "yearly-total": pr.yearly * 12, saving: (pr.monthly - pr.yearly) * 12,
+        monthly: pr.monthly, yearly: pr.yearly, "yearly-total": pr.yearlyTotal,
+        "saving-month": pr.savingMonth, "saving-year": pr.savingYear, "volume-saving": pr.volumeSaving, list: pr.list,
       };
-      $$("[data-amount]").forEach((el) => (el.textContent = `€${values[el.dataset.amount].toLocaleString("en-GB")}`));
-      $$("[data-discount]").forEach((el) => (el.textContent = `−${Math.round((1 - pr.yearly / pr.monthly) * 100)}%`));
+      $$("[data-amount]").forEach((el) => (el.textContent = window.SCP_EUR(values[el.dataset.amount])));
+      $$("[data-discount]").forEach((el) => (el.textContent = `−${pr.yearlyDiscount}%`));
+      $$("[data-discount-plain]").forEach((el) => (el.textContent = `${pr.yearlyDiscount}%`));
+      $$("[data-volume-pct]").forEach((el) => (el.textContent = `${pr.volume}%`));
+      $$("[data-volume-only]").forEach((el) => (el.hidden = !pr.volume));
       $$("[data-plan-link]").forEach((a) => {
         const url = new URL(a.getAttribute("href"), location.href);
         url.searchParams.set("users", String(n));

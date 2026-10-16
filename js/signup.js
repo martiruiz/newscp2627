@@ -18,9 +18,9 @@
   // Show the plan picked on the pricing cards
   const summary = document.querySelector("[data-plan-summary]");
   if (plan && summary) {
-    const price = window.SCP_PRICE ? window.SCP_PRICE(users)[plan] : { monthly: 39, yearly: 32 }[plan] * users;
+    const price = window.SCP_PRICE ? window.SCP_EUR(window.SCP_PRICE(users)[plan]) : "";
     const label = plan === "monthly" ? "Monthly" : "Yearly";
-    summary.innerHTML = `Selected plan: <b>${label}</b> · ${users} user${users > 1 ? "s" : ""} · €${price}/mo`;
+    summary.innerHTML = `Selected plan: <b>${label}</b> · ${users} user${users > 1 ? "s" : ""}${price ? ` · ${price}/mo` : ""}`;
     summary.hidden = false;
   }
 

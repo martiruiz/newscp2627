@@ -946,6 +946,11 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
 .price-card[data-billing="yearly"] [data-when="monthly"],
 .price-card[data-billing="monthly"] [data-when="yearly"] { display: none; }
 
+.seat-off { margin-left: 4px; padding: 1px 5px; border-radius: 100px; font-size: 11px; font-weight: 600; background: var(--gold-tint); color: var(--gold); }
+.seat-picker button[aria-checked="true"] .seat-off { background: rgba(18, 27, 51, 0.16); color: var(--bg); }
+.price-volume { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-top: 12px; color: var(--muted); font-size: 14px; font-weight: 400; }
+.price-volume[hidden] { display: none; }
+.volume-pill { padding: 3px 10px; border-radius: 100px; background: var(--gold-tint); color: var(--gold); font-size: 13px; font-weight: 600; }
 .price-card:not(.is-team) [data-team-only],
 .price-card.is-team [data-price-only] { display: none !important; }
 .team-offer { margin-top: 28px; }
