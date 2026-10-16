@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en" class="auth-checking">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Org — Sports Content Playbook</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="assets/icon-logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>.auth-checking body { visibility: hidden; }</style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.0/dist/umd/supabase.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/guard.js"></script>
+</head>
+<body class="org-page">
+  <header class="site-nav" data-nav>
+    <a class="brand" href="index.html"><img src="assets/icon-logo.svg" alt="">Sports Content Playbook</a>
+    <nav class="nav-links" aria-label="Main">
+      <a href="index.html#how-it-works">How it works</a>
+      <a href="content-library.html">Content Library</a>
+      <a href="org.html" aria-current="page">Org</a>
+      <a href="news.html">Social News</a>
+      <a href="pricing.html">Pricing</a>
+    </nav>
+    <div class="nav-actions">
+      <a class="nav-user" href="profile.html" data-user-link><span class="nav-avatar" data-user-initials></span><span data-user-name></span></a>
+      <a class="btn btn-outline" href="admin/content-ideas.html" hidden data-admin-link>Admin</a>
+      <button class="btn btn-outline" type="button" data-logout>Log out</button>
+    </div>
+    <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" data-nav-toggle><span></span></button>
+  </header>
+
+  <main class="org" data-org>
+    <header class="org-head">
+      <div>
+        <p class="org-eyebrow"><span data-icon="layout-grid"></span>Org</p>
+        <h1>Weekly content planner</h1>
+        <p class="org-sub">Plan your club's week, track every post and keep your recurring formats covered.</p>
+      </div>
+      <div class="org-week">
+        <button class="org-nav-btn" type="button" aria-label="Previous week" data-week="-1"><span data-icon="chevron-left"></span></button>
+        <div class="org-week-label"><b data-week-label>This week</b><span data-week-range></span></div>
+        <button class="org-nav-btn" type="button" aria-label="Next week" data-week="1"><span data-icon="chevron-right"></span></button>
+        <button class="pill pill-dark" type="button" data-week="0">Today</button>
+      </div>
+    </header>
+
+    <section class="org-bar">
+      <div class="org-progress">
+        <div class="org-progress-top"><b data-base-title>Weekly base</b><span data-base-count></span></div>
+        <div class="org-progress-track"><i data-base-fill></i></div>
+      </div>
+      <div class="org-legend" data-legend></div>
+      <div class="org-actions">
+        <button class="pill pill-dark" type="button" data-edit-base><span data-icon="repeat"></span>Weekly base</button>
+        <button class="pill pill-dark" type="button" data-toggle-insp><span data-icon="bookmark"></span>Inspiration</button>
+      </div>
+    </section>
+    <p class="org-error" hidden data-org-error></p>
+
+    <div class="org-days-mobile" data-mobile-days></div>
+
+    <div class="org-layout" data-layout>
+      <div class="org-grid-wrap"><table class="org-grid" data-grid></table></div>
+      <aside class="org-insp" data-insp>
+        <div class="org-insp-head"><b>Inspiration</b><span>Drag a saved post into the planner</span></div>
+        <div class="org-insp-list" data-insp-list></div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- Entry -->
+  <div class="org-modal" hidden data-entry-modal role="dialog" aria-modal="true" aria-label="Planned post">
+    <div class="org-panel" data-entry-panel></div>
+  </div>
+  <!-- Weekly base -->
+  <div class="org-modal" hidden data-base-modal role="dialog" aria-modal="true" aria-label="Weekly base">
+    <div class="org-panel org-panel-wide" data-base-panel></div>
+  </div>
+
+  <script src="js/icons.js"></script>
+  <script src="js/boards.js"></script>
+  <script src="js/org.js" defer></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
