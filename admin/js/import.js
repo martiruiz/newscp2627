@@ -39,9 +39,27 @@
   }
   const splitValues = (v) => String(v ?? "").split(",").map((x) => x.trim().replace(/\s+/g, " ")).filter(Boolean);
 
-  async function analyze(file) {
-    const text = await file.text();
-    const parsed = Papa.parse(text, { header: true, skipEmptyLines: "greedy", transformHeader: (h) => h });
+  // Big files (hundreds of MB): read in pieces so the page never freezes, reporting progress as it goes
+  function parseFile(file, progress) {
+    return new Promise((resolve, reject) => {
+      const data = [], errors = [];
+      let fields = null;
+      Papa.parse(file, {
+        header: true, skipEmptyLines: "greedy", chunkSize: 4 * 1024 * 1024,
+        chunk: (res) => {
+          fields ||= res.meta.fields;
+          for (const r of res.data) data.push(r);
+          if (errors.length < 20) errors.push(...res.errors.slice(0, 20 - errors.length));
+          progress?.(`Reading the file… ${Math.min(99, Math.round((res.meta.cursor / file.size) * 100))}% · ${num(data.length)} rows`);
+        },
+        complete: () => resolve({ data, errors, meta: { fields: fields || [] } }),
+        error: (err) => reject(new Error(`Couldn't read the file: ${err?.message || err}`)),
+      });
+    });
+  }
+
+  async function analyze(file, progress) {
+    const parsed = await parseFile(file, progress);
     const headers = parsed.meta.fields || [];
     const map = {}; // field key -> original header
     const columns = headers.map((h) => {
@@ -91,10 +109,14 @@
     // Which ids already exist in the database (they'll be replaced)
     const ids = [...new Set(importable.map((r) => r.external_id))];
     const existing = [];
-    for (const part of A.chunk(ids, 150)) {
-      const { data, error } = await A.db.from("content_ideas").select("external_id").in("external_id", part);
-      if (error) throw error;
-      existing.push(...data.map((d) => d.external_id));
+    const parts = A.chunk(ids, 150);
+    let checked = 0;
+    // 8 requests at a time (each id list must fit in a URL)
+    for (let i = 0; i < parts.length; i += 8) {
+      const res = await Promise.all(parts.slice(i, i + 8).map((part) => A.db.from("content_ideas").select("external_id").in("external_id", part)));
+      for (const { data, error } of res) { if (error) throw error; existing.push(...data.map((d) => d.external_id)); }
+      checked = Math.min(ids.length, (i + 8) * 150);
+      progress?.(`Checking which posts already exist… ${num(checked)} / ${num(ids.length)}`);
     }
 
     // Filter values that don't exist yet (they'll be created)
@@ -346,21 +368,28 @@
     drop.addEventListener("dragleave", () => drop.classList.remove("is-over"));
     drop.addEventListener("drop", (e) => { e.preventDefault(); drop.classList.remove("is-over"); pick(e.dataTransfer.files[0]); });
     $("[data-go]").addEventListener("click", async (e) => {
-      e.currentTarget.disabled = true;
-      e.currentTarget.innerHTML = `<span class="spinner sm"></span> Analyzing...`;
+      const btn = e.currentTarget;
+      btn.disabled = true;
+      const say = (t) => { btn.innerHTML = `<span class="spinner sm"></span> ${esc(t)}`; };
+      say("Reading the file…");
       try {
-        const analysis = await analyze(wizard.file);
+        const analysis = await analyze(wizard.file, say);
+        say("Saving the analysis…");
         if (!analysis.total_rows) throw new Error("The file has no data rows.");
         // Create the import record and keep the original file
         const { data: rec, error } = await A.db.from("idea_imports").insert({ filename: wizard.file.name, total_rows: analysis.total_rows, status: "analyzed" }).select("id").single();
         if (error) throw error;
         const path = `${rec.id}/${wizard.file.name.replace(/[^\w.\- ]+/g, "_")}`;
-        const up = await A.db.storage.from("imports").upload(path, wizard.file, { contentType: "text/csv", upsert: true });
-        if (!up.error) await A.db.from("idea_imports").update({ file_path: path }).eq("id", rec.id);
+        // Keep a copy of the original file when it fits in Storage (Supabase's limit is 50 MB per file)
+        if (wizard.file.size <= 45 * 1024 * 1024) {
+          say("Saving a copy of the file…");
+          const up = await A.db.storage.from("imports").upload(path, wizard.file, { contentType: "text/csv", upsert: true });
+          if (!up.error) await A.db.from("idea_imports").update({ file_path: path }).eq("id", rec.id);
+        } else wizard.noCopy = true;
         wizard.importId = rec.id;
         wizard.analysis = analysis;
         renderAnalysis();
-      } catch (err) { renderUpload(`Upload failed: ${A.errMsg(err)}`); }
+      } catch (err) { console.error(err); renderUpload(`Upload failed: ${err?.message && !/schema cache|does not exist/i.test(err.message) ? err.message : A.errMsg(err)}`); }
     });
   }
 
@@ -384,6 +413,7 @@
       <div class="stat ${T.skipped_rows ? "amber" : ""}"><p>Skipped</p><b>${num(T.skipped_rows)}</b></div>
     </div>`);
 
+    if (wizard.noCopy) parts.push(`<div class="info-box">This file is ${num(Math.round(wizard.file.size / 1048576))} MB, more than Storage accepts (50 MB), so a copy of the original won't be kept in the history. The import works normally.</div>`);
     if (T.columns.missing.length) {
       parts.push(`<div class="panel panel-pad error-text">Required column${T.columns.missing.length > 1 ? "s" : ""} missing: <b class="mono">${T.columns.missing.join(", ")}</b>. Nothing can be imported from this file.</div>`);
     }
