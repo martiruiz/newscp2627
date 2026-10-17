@@ -3795,3 +3795,43 @@ tr[data-hour] { animation: orgRowIn 0.25s ease-out; }
 .dp2-grid button.is-on { background: var(--gold); border-color: var(--gold); color: var(--bg); box-shadow: 0 4px 14px rgba(240, 184, 74, 0.35); }
 .dp2-grid button.is-on i { color: var(--bg); }
 .dp2-link { border: 0; background: none; color: var(--gold); font: 600 12px var(--font-body); cursor: pointer; }
+
+/* ---------- Payments (js/checkout.js, js/plans.js, js/profile-billing.js) ---------- */
+.plan-interval { display: flex; width: max-content; margin: 0 auto 28px; padding: 4px; border-radius: 100px; background: var(--surface-2); border: 1px solid var(--line); }
+.plan-interval button { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 22px; border-radius: 100px; border: 0; background: transparent; color: var(--muted); font: 600 15px var(--font-body); cursor: pointer; transition: background 0.2s, color 0.2s; }
+.plan-interval button[aria-selected="true"] { background: var(--gold); color: var(--bg); }
+.plan-interval em { font-style: normal; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 100px; background: rgba(0, 216, 91, 0.16); color: #00d85b; }
+.plan-interval button[aria-selected="true"] em { background: rgba(18, 27, 51, 0.15); color: var(--bg); }
+.plan-sub { margin: 4px 0 0; min-height: 18px; font-size: 13px; color: var(--muted); }
+.plan-note { margin: 10px 0 0; text-align: center; font-size: 12px; color: var(--muted); }
+button.plan-cta { width: 100%; cursor: pointer; font: inherit; }
+.plan-cta.is-current { pointer-events: none; opacity: 0.8; }
+.plan-card.is-current { border-color: rgba(0, 216, 91, 0.55); }
+.plan-flag.is-current { background: #00d85b; color: var(--bg); }
+.pack-card button { width: 100%; cursor: pointer; font: inherit; }
+.is-busy { opacity: 0.85; cursor: progress !important; }
+.co-spin { display: inline-block; width: 14px; height: 14px; margin-right: 8px; vertical-align: -2px; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; animation: pf-spin 0.7s linear infinite; flex: none; }
+.co-toast { position: fixed; z-index: 2500; left: 50%; bottom: 28px; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; max-width: min(560px, calc(100vw - 32px)); padding: 14px 18px; border-radius: 16px; background: var(--surface-3); border: 1px solid var(--line); color: var(--text); font-size: 14px; line-height: 1.45; box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45); animation: libToast 0.25s ease-out; }
+.co-toast.is-ok { border-color: rgba(0, 216, 91, 0.5); }
+.co-toast.is-ok > span:first-child:not(.co-spin) { display: grid; place-items: center; width: 24px; height: 24px; flex: none; border-radius: 50%; background: #00d85b; color: var(--bg); font-weight: 700; }
+.co-toast.is-err { border-color: rgba(255, 107, 107, 0.6); }
+.co-toast a { color: var(--gold); }
+.pf-plan { display: grid; gap: 12px; padding: 18px; border-radius: 16px; background: var(--surface-2); border: 1px solid var(--line-soft); }
+.pf-plan-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.pf-plan-top b { font-family: var(--font-display); font-size: 20px; }
+.pf-plan-int { font-size: 13px; color: var(--muted); }
+.pf-plan-badge { padding: 4px 10px; border-radius: 100px; font-size: 12px; font-weight: 700; }
+.pf-plan-badge.is-active { background: rgba(0, 216, 91, 0.16); color: #00d85b; }
+.pf-plan-badge.is-trial { background: var(--gold-tint); color: var(--gold); }
+.pf-plan-badge.is-warn { background: rgba(255, 107, 107, 0.16); color: #ff8a8a; }
+.pf-billing-note { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+.pf-billing-note b { color: var(--text); }
+.pf-billing-credits { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 14px; color: var(--muted); }
+.pf-billing-credits svg { width: 16px; height: 16px; color: var(--gold); }
+.pf-billing-credits b { color: var(--text); }
+.pf-billing-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.pf-billing-actions .btn { gap: 8px; }
+.pf-billing-actions .btn svg { width: 15px; height: 15px; }
+.pf-billing-fine { margin: 0; font-size: 12px; color: var(--muted-dim); }
+.pf-billing-loading { color: var(--muted); }
+.pf-plan.is-empty p { margin: 0; }

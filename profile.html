@@ -9,12 +9,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20261017h">
+  <link rel="stylesheet" href="css/styles.css?v=20261017i">
   <style>.auth-checking body { visibility: hidden; }</style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.0/dist/umd/supabase.min.js"></script>
-  <script src="js/config.js?v=20261017h"></script>
-  <script src="js/auth.js?v=20261017h"></script>
-  <script src="js/guard.js?v=20261017h"></script>
+  <script src="js/config.js?v=20261017i"></script>
+  <script src="js/auth.js?v=20261017i"></script>
+  <script src="js/guard.js?v=20261017i"></script>
 </head>
 <body class="profile-page">
   <header class="site-nav" data-nav>
@@ -69,6 +69,7 @@
         <a href="#favourites"><span data-icon="star"></span>Favourites</a>
         <a href="#goals"><span data-icon="target"></span>Goals &amp; content</a>
         <a href="#newsletter"><span data-icon="mail"></span>Newsletter</a>
+        <a href="#billing"><span data-icon="star"></span>Plan &amp; billing</a>
         <a href="#security"><span data-icon="lock"></span>Account</a>
       </nav>
 
@@ -123,6 +124,11 @@
           <div class="pf-q" data-newsletter-only><span>What you want in it</span><div class="pf-chips" data-multi="newsletterTopics"></div></div>
         </section>
 
+        <section class="pf-card pf-billing" id="billing">
+          <header><h2>Plan &amp; billing</h2><p>Your plan, free trial, invoices and payment method.</p></header>
+          <div data-billing><p class="pf-billing-loading">Loading…</p></div>
+        </section>
+
         <section class="pf-card" id="security">
           <header><h2>Account</h2><p>Sign-in and security.</p></header>
           <div class="pf-grid">
@@ -140,8 +146,10 @@
     </div>
   </main>
 
-  <script src="js/icons.js?v=20261017h"></script>
-  <script src="js/profile.js?v=20261017h" defer></script>
-  <script src="js/main.js?v=20261017h"></script>
+  <script src="js/icons.js?v=20261017i"></script>
+  <script src="js/checkout.js?v=20261017i"></script>
+  <script src="js/profile.js?v=20261017i" defer></script>
+  <script src="js/profile-billing.js?v=20261017i" defer></script>
+  <script src="js/main.js?v=20261017i"></script>
 </body>
 </html>

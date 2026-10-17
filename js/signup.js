@@ -16,10 +16,15 @@
     status.textContent = text;
   };
 
+  // Plan picked on the pricing cards: the payment continues by itself after signing up (js/checkout.js)
+  const interval = params.get("interval") === "year" ? "year" : "month";
+  if (plan && mode === "signup") {
+    try { if (!localStorage.getItem("scp-checkout")) localStorage.setItem("scp-checkout", JSON.stringify({ req: { kind: "plan", plan, interval }, at: Date.now() })); } catch {}
+  }
   // Show the plan picked on the pricing cards
   const summary = document.querySelector("[data-plan-summary]");
   if (plan && summary) {
-    summary.innerHTML = `Selected plan: <b>${PLAN_NAMES[plan]}</b>`;
+    summary.innerHTML = `Selected plan: <b>${PLAN_NAMES[plan]}</b> · ${interval === "year" ? "yearly" : "monthly"} · 7-day free trial`;
     summary.hidden = false;
   }
 

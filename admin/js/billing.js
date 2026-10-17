@@ -9,12 +9,12 @@
   const usd = (n) => (n == null ? "—" : `$${Number(n).toFixed(n < 1 ? 4 : 2)}`);
 
   main.innerHTML = `
-    <div class="page-head"><div><h1>Plans &amp; AI</h1><p>AI analyses economics, prices and member plans. Nothing here charges money.</p></div>
+    <div class="page-head"><div><h1>Plans &amp; AI</h1><p>AI analyses economics, prices and member plans. Payments run through Stripe; nothing here charges money.</p></div>
       <div class="head-actions"><select class="select" data-period><option value="30">Last 30 days</option><option value="90">Last 90 days</option><option value="365">Last 12 months</option></select></div></div>
     <p class="error-text" hidden data-err></p>
     <section data-metrics></section>
     <div class="bill-grid">
-      <section class="panel panel-pad"><h2>Assign a plan</h2><p class="panel-sub">Manual until Stripe is connected. The member's monthly AI credits start counting from today.</p>
+      <section class="panel panel-pad"><h2>Assign a plan</h2><p class="panel-sub">For members who don't pay through Stripe (team, partners, invoices). Their monthly AI credits start counting from today.</p>
         <form class="bill-form" data-sub-form>
           <input class="input" type="email" name="email" placeholder="member@club.com" required>
           <select class="select" name="plan" data-plan-options></select>
@@ -32,8 +32,8 @@
       <section class="panel"><div class="values-head" style="justify-content:space-between"><h2 style="font-size:16px">Members with a plan</h2><span class="muted" data-sub-count></span></div>
         <div class="table-wrap"><table class="data"><thead><tr><th>Member</th><th>Plan</th><th>AI credits</th><th>Unlocks</th><th>Since</th></tr></thead><tbody data-subs></tbody></table></div></section>
     </div>
-    <section class="panel" style="margin-top:16px"><div class="values-head"><h2 style="font-size:16px">Plans</h2><span class="muted">Prices shown on the website. Stripe price IDs: only after the products are approved.</span></div>
-      <div class="table-wrap"><table class="data"><thead><tr><th>Plan</th><th>€ / month</th><th>€ / year</th><th>AI / month</th><th>AI</th><th>Content Plan</th><th>Stripe price (month)</th><th>Active</th><th></th></tr></thead><tbody data-plans></tbody></table></div></section>
+    <section class="panel" style="margin-top:16px"><div class="values-head"><h2 style="font-size:16px">Plans</h2><span class="muted">Prices shown on the website and charged by Stripe. After changing a price, run <code>node stripe/setup.mjs</code> so Stripe gets the new price (current subscribers keep theirs).</span></div>
+      <div class="table-wrap"><table class="data"><thead><tr><th>Plan</th><th>€ / month</th><th>€ / year</th><th>AI / month</th><th>AI</th><th>Content Plan</th><th>Trial days</th><th>AI in trial</th><th>Stripe</th><th>Active</th><th></th></tr></thead><tbody data-plans></tbody></table></div></section>
     <section class="panel" style="margin-top:16px"><div class="values-head"><h2 style="font-size:16px">AI packs</h2></div>
       <div class="table-wrap"><table class="data"><thead><tr><th>Pack</th><th>Analyses</th><th>Price €</th><th>Stripe price</th><th>Active</th><th></th></tr></thead><tbody data-packs></tbody></table></div></section>`;
 
@@ -77,14 +77,16 @@
       <td><input class="input input-sm" name="ai_monthly_units" type="number" min="0" value="${x.ai_monthly_units}"></td>
       <td><input class="check" type="checkbox" name="has_ai" ${x.has_ai ? "checked" : ""}></td>
       <td><input class="check" type="checkbox" name="has_planner" ${x.has_planner ? "checked" : ""}></td>
-      <td><input class="input input-sm" name="stripe_price_month" value="${esc(x.stripe_price_month || "")}" placeholder="price_…"></td>
+      <td><input class="input input-sm" name="trial_days" type="number" min="0" max="60" value="${x.trial_days ?? 7}"></td>
+      <td><input class="input input-sm" name="trial_ai_units" type="number" min="0" value="${x.trial_ai_units ?? 5}"></td>
+      <td class="muted" title="${esc([x.stripe_price_month, x.stripe_price_year].filter(Boolean).join(" · "))}">${x.stripe_price_month ? `<span class="status status-completed">Linked</span>${x.stripe_price_year ? "" : " <small>monthly only</small>"}` : `<span class="status status-reverted">Not linked</span>`}</td>
       <td><input class="check" type="checkbox" name="active" ${x.active ? "checked" : ""}></td>
       <td><button class="btn btn-sm" type="button" data-save-plan>Save</button></td></tr>`).join("");
     $("[data-packs]").innerHTML = packs.map((x) => `<tr data-pack="${x.key}">
       <td><input class="input input-sm" name="name" value="${esc(x.name)}"></td>
       <td><input class="input input-sm" name="units" type="number" min="1" value="${x.units}"></td>
       <td><input class="input input-sm" name="price" type="number" step="0.01" min="0" value="${x.price}"></td>
-      <td><input class="input input-sm" name="stripe_price" value="${esc(x.stripe_price || "")}" placeholder="price_…"></td>
+      <td>${x.stripe_price ? `<span class="status status-completed">Linked</span>` : `<span class="status status-reverted">Not linked</span>`}</td>
       <td><input class="check" type="checkbox" name="active" ${x.active ? "checked" : ""}></td>
       <td><button class="btn btn-sm" type="button" data-save-pack>Save</button></td></tr>`).join("");
   }

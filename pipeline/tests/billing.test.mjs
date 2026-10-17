@@ -177,5 +177,33 @@ check("members can't restore", await as(U.A, `select public.restore_content_idea
 await as(U.SUPER, `select public.restore_content_idea('p20')`);
 check("restore brings it back", (await libTotal(U.A)) === libBefore);
 
+console.log("\n13. Stripe: subscriptions from the webhook, 7-day trial, yearly, packs");
+await db.exec(sql("stripe.sql")); await db.exec(sql("stripe.sql"));
+const yearly = (await db.query(`select key, price_month, price_year from public.plans order by sort`)).rows;
+check("yearly prices filled in (10 × monthly)", yearly.every((p) => Number(p.price_year) === Math.round(Number(p.price_month) * 1000) / 100), JSON.stringify(yearly));
+const T = "77777777-0000-0000-0000-000000000007";
+await db.query(`insert into auth.users (id, email) values ($1, 't@test.dev')`, [T]);
+await db.exec(`insert into public.stripe_customers (user_id, customer_id) values ('${T}', 'cus_T')`);
+check("members can't activate a plan themselves", await as(T, `select public.stripe_apply_subscription('${T}', 'all_access', 'month', 'active', 'cus_T', 'sub_1', now(), now())`).then(() => false, () => true));
+check("members can't read Stripe customers", (await as(T, `select count(*)::int n from public.stripe_customers`))[0].n === 0);
+await db.query(`select public.stripe_apply_subscription($1, 'all_access', 'year', 'trialing', 'cus_T', 'sub_1', now(), now() + interval '7 days')`, [T]);
+let se = await ent(T);
+check("trial gives the plan's access", se.has_ai && se.has_planner && se.status === "trialing" && se.billing_interval === "year", JSON.stringify(se));
+check("AI during the trial is capped at 5", se.monthly_limit === 5, JSON.stringify(se));
+check("trial marked as used (one per member)", (await db.query(`select trial_used from public.stripe_customers where user_id = $1`, [T])).rows[0].trial_used === true);
+const startedTrial = (await db.query(`select started_at from public.subscriptions where user_id = $1`, [T])).rows[0].started_at;
+await db.query(`select public.stripe_apply_subscription($1, 'all_access', 'year', 'active', 'cus_T', 'sub_1', now() - interval '1 day', now() + interval '1 year')`, [T]);
+se = await ent(T);
+check("after the trial: full 100 AI credits", se.status === "active" && se.monthly_limit === 100);
+check("renewal / status change keeps the AI cycle anchor", String((await db.query(`select started_at from public.subscriptions where user_id = $1`, [T])).rows[0].started_at) === String(startedTrial));
+await db.query(`select public.grant_pack($1, 'pack_10', 9.99, 'stripe', 'cs_test_1')`, [T]);
+await db.query(`select public.grant_pack($1, 'pack_10', 9.99, 'stripe', 'cs_test_1')`, [T]);
+check("pack from Stripe granted once per checkout (webhook retries)", (await ent(T)).pack_left === 10);
+await db.query(`select public.stripe_apply_subscription($1, 'all_access', 'year', 'canceled', 'cus_T', 'sub_1', now(), now())`, [T]);
+se = await ent(T);
+check("canceled → no access", !se.has_library && !se.has_ai && se.pack_left === 0);
+const b = (await as(T, `select public.my_billing() r`))[0].r;
+check("profile billing shows the ended plan", b.has_customer && b.trial_used && b.subscription.status === "canceled" && b.subscription.plan === "all_access", JSON.stringify(b));
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);
