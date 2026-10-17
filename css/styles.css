@@ -3891,3 +3891,117 @@ button.plan-cta { width: 100%; cursor: pointer; font: inherit; }
 @media (prefers-reduced-motion: reduce) {
   .stat-ico *, .stats-bar { animation: none !important; transition: none !important; }
 }
+
+/* ---------- Feature cards: pro effects (js/features-fx.js toggles .fx-live and the cursor spotlight) ---------- */
+.feature-card { transition: transform 0.45s cubic-bezier(.2, .8, .2, 1), border-color 0.4s ease, box-shadow 0.4s ease; will-change: transform; }
+.feature-card::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity 0.35s ease;
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 30%), rgba(240, 184, 74, 0.1), transparent 65%); }
+.feature-card:hover { transform: translateY(-6px); border-color: rgba(240, 184, 74, 0.45); box-shadow: var(--inset-glow), 0 22px 50px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(240, 184, 74, 0.12); }
+.feature-card:hover::after { opacity: 1; }
+.feature-card h3, .feature-card p { position: relative; z-index: 1; }
+
+/* Light sweep across the coloured badges + breathing glow */
+.fx-shine { overflow: hidden; z-index: 2; }
+.fx-shine::after { content: ""; position: absolute; top: 0; bottom: 0; left: -60%; width: 45%; transform: skewX(-20deg);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent); animation: fxShine 3.6s ease-in-out infinite; }
+@keyframes fxShine { 0%, 55% { left: -60%; } 85%, 100% { left: 130%; } }
+.glow-top.fx-shine { animation: fxGlowTop 3.6s ease-in-out infinite; }
+.glow-over.fx-shine { animation: fxGlowOver 3.6s ease-in-out infinite; }
+.glow-replicable.fx-shine { animation: fxGlowRep 3.6s ease-in-out infinite; }
+@keyframes fxGlowTop { 0%, 100% { box-shadow: 0 0 70px 0 rgba(255, 104, 92, 0.75); } 50% { box-shadow: 0 0 120px 10px rgba(255, 104, 92, 0.95); } }
+@keyframes fxGlowOver { 0%, 100% { box-shadow: 0 0 70px 0 rgba(122, 92, 255, 0.75); } 50% { box-shadow: 0 0 120px 10px rgba(122, 92, 255, 0.95); } }
+@keyframes fxGlowRep { 0%, 100% { box-shadow: 0 0 70px 0 rgba(0, 216, 91, 0.7); } 50% { box-shadow: 0 0 120px 10px rgba(0, 216, 91, 0.9); } }
+
+/* Top Picks: three mini posts fan out behind the badge, sparkles */
+.fx-fan { position: absolute; left: 50%; top: 58px; width: 0; height: 0; }
+.fx-fan i { position: absolute; left: -32px; top: 0; width: 64px; height: 84px; border-radius: 9px; transform-origin: 50% 120%;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.03)); border: 1px solid rgba(255, 140, 120, 0.4);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35); animation: fxFan 4s cubic-bezier(.3, .7, .2, 1) infinite; }
+.fx-fan i::before { content: ""; position: absolute; inset: 7px 7px 26px; border-radius: 5px; background: linear-gradient(135deg, rgba(243, 47, 113, 0.45), rgba(255, 104, 92, 0.25)); }
+.fx-fan i::after { content: ""; position: absolute; left: 7px; right: 18px; bottom: 11px; height: 4px; border-radius: 4px; background: rgba(255, 255, 255, 0.25); }
+.fx-fan i:nth-child(1) { --r: -16deg; --x: -42px; }
+.fx-fan i:nth-child(2) { --r: 0deg; --x: 0px; animation-delay: 0.08s; }
+.fx-fan i:nth-child(3) { --r: 16deg; --x: 42px; animation-delay: 0.16s; }
+@keyframes fxFan { 0%, 12% { transform: translate(0, 18px) rotate(0) scale(0.8); opacity: 0; } 35%, 80% { transform: translate(var(--x), 0) rotate(var(--r)) scale(1); opacity: 1; } 100% { transform: translate(0, 18px) rotate(0) scale(0.8); opacity: 0; } }
+.fx-spark { position: absolute; width: 10px; height: 10px; opacity: 0; animation: fxSpark 4s ease-in-out infinite;
+  background: radial-gradient(circle, #fff 0 18%, transparent 20%), conic-gradient(from 45deg, transparent 0 22%, #ffd0c8 23% 27%, transparent 28% 47%, #ffd0c8 48% 52%, transparent 53% 72%, #ffd0c8 73% 77%, transparent 78% 97%, #ffd0c8 98%); }
+.fx-spark.s1 { left: 22%; top: 44px; animation-delay: 0.9s; } .fx-spark.s2 { right: 20%; top: 64px; animation-delay: 1.3s; } .fx-spark.s3 { left: 64%; top: 30px; animation-delay: 1.7s; transform: scale(0.7); }
+@keyframes fxSpark { 0%, 100% { opacity: 0; transform: scale(0.3) rotate(0); } 25% { opacity: 1; transform: scale(1.1) rotate(45deg); } 50% { opacity: 0; transform: scale(0.4) rotate(90deg); } }
+
+/* Overperforming: rising bars, a line that draws itself, delta chip */
+.fx-bars { position: absolute; left: 50%; bottom: 44px; width: 210px; height: 92px; transform: translateX(-50%); display: flex; align-items: flex-end; gap: 10px; opacity: 0.85; }
+.fx-bars i { flex: 1; height: var(--h); border-radius: 5px 5px 2px 2px; transform-origin: bottom; background: linear-gradient(to top, rgba(77, 91, 255, 0.08), rgba(122, 92, 255, 0.35));
+  animation: fxBar 4s cubic-bezier(.3, .8, .2, 1) infinite; }
+.fx-bars i:last-child { background: linear-gradient(to top, rgba(122, 92, 255, 0.25), #9b8cff); box-shadow: 0 0 24px rgba(122, 92, 255, 0.6); }
+.fx-bars i:nth-child(2) { animation-delay: 0.06s; } .fx-bars i:nth-child(3) { animation-delay: 0.12s; } .fx-bars i:nth-child(4) { animation-delay: 0.18s; } .fx-bars i:nth-child(5) { animation-delay: 0.24s; } .fx-bars i:nth-child(6) { animation-delay: 0.36s; }
+@keyframes fxBar { 0%, 8% { transform: scaleY(0.05); } 40%, 85% { transform: scaleY(1); } 100% { transform: scaleY(0.05); } }
+.fx-line { position: absolute; left: 50%; top: 48px; width: 220px; height: 80px; transform: translateX(-50%); }
+.fx-line path { stroke-dasharray: 260; stroke-dashoffset: 260; animation: fxDraw 4s ease-in-out infinite; filter: drop-shadow(0 0 6px rgba(150, 130, 255, 0.8)); }
+@keyframes fxDraw { 0%, 15% { stroke-dashoffset: 260; } 55%, 85% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 260; opacity: 0; } }
+.fx-delta { position: absolute; right: 22px; top: 30px; padding: 4px 10px; border-radius: 100px; font: 700 12px var(--font-body); color: #fff;
+  background: rgba(122, 92, 255, 0.35); border: 1px solid rgba(169, 160, 255, 0.6); opacity: 0; animation: fxDelta 4s ease-out infinite; }
+@keyframes fxDelta { 0%, 45% { opacity: 0; transform: translateY(8px) scale(0.9); } 58%, 85% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateY(-6px); } }
+
+/* Replicable ideas: the badge copies itself out to both sides */
+.fx-copy { top: 111px; opacity: 0; box-shadow: none; animation: fxCopy 3.6s cubic-bezier(.3, .7, .2, 1) infinite; }
+.fx-copy.c1 { --dx: -78px; --dy: -46px; } .fx-copy.c2 { --dx: 78px; --dy: 46px; animation-delay: 0.25s; }
+@keyframes fxCopy { 0%, 20% { transform: translateX(-50%) scale(1); opacity: 0; } 30% { opacity: 0.55; } 70% { transform: translate(calc(-50% + var(--dx)), var(--dy)) scale(0.7); opacity: 0.35; } 100% { transform: translate(calc(-50% + var(--dx)), var(--dy)) scale(0.6); opacity: 0; } }
+
+/* Competitors: a third club is typed in, then removed */
+.fx-chip-new { overflow: hidden; max-height: 0; margin-top: -6px; opacity: 0; animation: fxChip 6s ease-in-out infinite; }
+.fx-typed { display: inline-block; overflow: hidden; white-space: nowrap; max-width: 0; vertical-align: bottom; border-right: 1.5px solid var(--gold); animation: fxType 6s steps(8) infinite; }
+@keyframes fxChip { 0%, 15% { max-height: 0; margin-top: -6px; opacity: 0; } 22%, 78% { max-height: 35px; margin-top: 0; opacity: 1; } 86%, 100% { max-height: 0; margin-top: -6px; opacity: 0; } }
+@keyframes fxType { 0%, 22% { max-width: 0; } 45%, 78% { max-width: 80px; border-color: transparent; } 100% { max-width: 80px; } }
+.mini-select { transition: box-shadow 0.4s; }
+.feature-card:hover .mini-select { box-shadow: 0 0 90px 0 rgba(240, 184, 74, 0.4); }
+
+/* Never run out of ideas: endless feed scrolling up */
+.fx-feed { animation: fxFeed 16s linear infinite; }
+@keyframes fxFeed { from { transform: translateY(0); } to { transform: translateY(-200px); } }
+.fx-feed .thumb { transition: transform 0.3s ease; }
+.feature-card:hover .fx-feed { animation-duration: 8s; }
+
+/* Platforms: icons float, a highlight moves from one to the next */
+.fx-float span { animation: fxBob 3s ease-in-out infinite, fxPick 7.2s ease-in-out infinite; }
+.fx-float span:nth-child(2) { animation-delay: -0.5s, 1.2s; } .fx-float span:nth-child(3) { animation-delay: -1s, 2.4s; }
+.fx-float span:nth-child(4) { animation-delay: -1.5s, 3.6s; } .fx-float span:nth-child(5) { animation-delay: -2s, 4.8s; } .fx-float span:nth-child(6) { animation-delay: -2.5s, 6s; }
+@keyframes fxBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+@keyframes fxPick { 0%, 100% { border-color: var(--line-soft); box-shadow: none; } 6%, 14% { border-color: rgba(240, 184, 74, 0.7); box-shadow: 0 0 22px rgba(240, 184, 74, 0.35); } 22% { border-color: var(--line-soft); box-shadow: none; } }
+
+/* Trends: the highlight walks down the list and lands on Halloween, which starts trending */
+.fx-trend { position: relative; }
+.fx-trend li { position: relative; z-index: 1; transition: color 0.3s; }
+.fx-trend li.on { margin: 0; padding-left: 20px; background: none; color: var(--muted); animation: fxOnText 6s ease-in-out infinite; }
+.fx-trend li:nth-of-type(1) { animation: fxT1 6s ease-in-out infinite; } .fx-trend li:nth-of-type(2) { animation: fxT2 6s ease-in-out infinite; }
+@keyframes fxT1 { 0%, 4% { color: var(--muted); } 8%, 20% { color: var(--gold); } 24%, 100% { color: var(--muted); } }
+@keyframes fxT2 { 0%, 22% { color: var(--muted); } 26%, 38% { color: var(--gold); } 42%, 100% { color: var(--muted); } }
+@keyframes fxOnText { 0%, 40% { color: var(--muted); } 44%, 92% { color: var(--gold); } 100% { color: var(--muted); } }
+.fx-hl { position: absolute; left: 6px; right: 6px; top: 0; height: 35px; border-radius: 100px; background: var(--gold-tint); animation: fxHl 6s cubic-bezier(.6, 0, .3, 1) infinite; }
+@keyframes fxHl { 0%, 4% { transform: translateY(0); opacity: 0; } 8%, 20% { transform: translateY(0); opacity: 1; } 26%, 38% { transform: translateY(35px); } 44%, 92% { transform: translateY(70px); opacity: 1; box-shadow: 0 0 18px rgba(240, 184, 74, 0.25); } 100% { transform: translateY(70px); opacity: 0; } }
+.fx-badge { position: absolute; right: 14px; top: 8px; padding: 2px 8px; border-radius: 100px; font: 700 11px var(--font-body); font-style: normal; color: #00d85b; background: rgba(0, 216, 91, 0.14);
+  opacity: 0; animation: fxBadge 6s ease-out infinite; }
+@keyframes fxBadge { 0%, 48% { opacity: 0; transform: translateX(8px); } 54%, 90% { opacity: 1; transform: none; } 100% { opacity: 0; } }
+
+/* Save: the button is pressed, the branches draw in gold, the folders light up one by one */
+.fx-save .pill-gold { animation: fxPress 4.4s ease-in-out infinite; }
+@keyframes fxPress { 0%, 10% { transform: scale(1); } 14% { transform: scale(0.92); box-shadow: 0 0 20px 0 rgba(240, 184, 74, 0.3); } 20%, 100% { transform: scale(1); box-shadow: 0 0 46px 0 rgba(240, 184, 74, 0.5); } }
+.fx-save .branch::before, .fx-save .branch::after, .fx-save .branch i { animation: fxBranch 4.4s ease-in-out infinite; }
+@keyframes fxBranch { 0%, 16% { border-color: var(--line); } 26%, 80% { border-color: rgba(240, 184, 74, 0.8); } 92%, 100% { border-color: var(--line); } }
+.fx-save .folders .pill-dark { animation: fxFolder 4.4s ease-in-out infinite; transition: none; }
+.fx-save .folders .pill-dark:nth-child(1) { animation-delay: 0.1s; } .fx-save .folders .pill-dark:nth-child(2) { animation-delay: 0.35s; } .fx-save .folders .pill-dark:nth-child(3) { animation-delay: 0.6s; }
+@keyframes fxFolder { 0%, 24% { border-color: var(--line-soft); color: var(--muted); transform: translateX(0); }
+  30% { transform: translateX(4px); } 34%, 78% { border-color: rgba(240, 184, 74, 0.7); color: var(--gold); transform: translateX(0); box-shadow: 0 0 16px rgba(240, 184, 74, 0.2); }
+  90%, 100% { border-color: var(--line-soft); color: var(--muted); box-shadow: none; } }
+
+/* Only animate while the carousel is on screen; nothing for reduced motion */
+[data-carousel]:not(.fx-live) .feature-card *, [data-carousel]:not(.fx-live) .feature-card *::before, [data-carousel]:not(.fx-live) .feature-card *::after { animation-play-state: paused !important; }
+@media (prefers-reduced-motion: reduce) {
+  .feature-card *, .feature-card *::before, .feature-card *::after { animation: none !important; }
+  .fx-fan, .fx-spark, .fx-copy, .fx-delta, .fx-chip-new, .fx-hl, .fx-badge { display: none; }
+  .fx-trend li.on { margin: 0 6px; padding-left: 14px; background: var(--gold-tint); color: var(--gold); border-radius: 100px; }
+  .fx-line path { stroke-dashoffset: 0; }
+}
+.feature-visual:has(.fx-feed) { overflow: hidden; margin-inline: -26px; padding-inline: 26px; }
+.feature-visual:has(.fx-feed) .thumbs { left: 26px; right: 26px; }
+.feature-visual:has(.fx-feed) .thumbs-fade { left: 0; right: 0; top: auto; bottom: 0; height: 90px; z-index: 1; }
+.feature-visual:has(.fx-feed)::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 40px; z-index: 1; background: linear-gradient(to bottom, var(--surface), rgba(23, 33, 59, 0)); }
