@@ -600,6 +600,146 @@
   });
   $("[data-toggle-insp]").addEventListener("click", () => layout.classList.toggle("insp-hidden"));
 
+  // ---------- Download: PDF (print), Excel (.xlsx), calendar (.ics) of the week / month on screen ----------
+  const dlMenu = $("[data-dl-menu]");
+  const dlToggle = $("[data-dl-toggle]");
+  const setDl = (open) => { dlMenu.hidden = !open; dlToggle.setAttribute("aria-expanded", String(open)); };
+  dlToggle.addEventListener("click", () => {
+    $("[data-dl-scope]").textContent = `${view === "week" ? $("[data-week-label]").textContent : anchor.toLocaleDateString("en-GB", { month: "long", year: "numeric" })} · ${plans.find((p) => p.id === planId)?.name || "My plan"}`;
+    setDl(dlMenu.hidden);
+  });
+  document.addEventListener("mousedown", (e) => { if (!dlMenu.hidden && !e.target.closest(".org-dl")) setDl(false); });
+  dlMenu.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-dl]");
+    if (!b) return;
+    setDl(false);
+    const data = exportData($("[data-dl-ideas]").checked);
+    if (!data.dated.length && !data.ideas.length) return alert("There's nothing planned in this period yet.");
+    ({ pdf: exportPdf, xlsx: exportXlsx, ics: exportIcs })[b.dataset.dl](data);
+  });
+  function exportData(withIdeas) {
+    const [from, to] = view === "week" ? range() : [new Date(anchor.getFullYear(), anchor.getMonth(), 1), new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0)];
+    const byTime = (a, b) => (a.entry_date || "").localeCompare(b.entry_date || "") || a.time_slot.localeCompare(b.time_slot);
+    const dated = entries.filter((e) => e.entry_date && e.entry_date >= iso(from) && e.entry_date <= iso(to)).sort(byTime);
+    const ideas = withIdeas ? entries.filter((e) => !e.entry_date).sort((a, b) => String(a.created_at).localeCompare(String(b.created_at))) : [];
+    const plan = plans.find((p) => p.id === planId)?.name || "My plan";
+    const period = view === "week" ? `${from.toLocaleDateString("en-GB", { day: "numeric", month: "short" })} – ${to.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}` : anchor.toLocaleDateString("en-GB", { month: "long", year: "numeric" });
+    const slug = `content-plan-${plan}-${iso(from)}`.toLowerCase().normalize("NFD").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    return { from, to, dated, ideas, plan, period, slug };
+  }
+  const refInfo = (e) => {
+    const r = refOf(e);
+    const id = /^ci-\d+$/.test(e.inspiration || "") ? e.inspiration.slice(3) : null;
+    return { who: r?.who || "", url: r?.url || "", library: id ? new URL(`content-library.html#post=${id}`, location.href).href : "" };
+  };
+  const longDay = (date) => { const d = parse(date); return `${DAY_NAMES[dow(d)]} ${d.getDate()} ${d.toLocaleDateString("en-GB", { month: "long" })}`; };
+  function download(name, blob) {
+    const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: name });
+    document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  }
+
+  // PDF: a clean light document in a new tab, opened with the print dialog (Save as PDF)
+  function exportPdf({ from, to, dated, ideas, plan, period, slug }) {
+    const win = window.open("", "_blank");
+    if (!win) return alert("Allow pop-ups for this site to download the PDF.");
+    const COLORS = { idea: "#8b98ae", planned: "#4d7fe0", in_production: "#d99a1b", published: "#12a150" };
+    const item = (e) => {
+      const r = refInfo(e);
+      return `<div class="e" style="--c:${COLORS[e.status] || "#999"}">
+        <div class="t">${e.entry_date ? e.time_slot : "—"}</div>
+        <div class="b"><div class="h"><b>${esc(e.label || "Untitled")}</b><span class="s">${STATUS[e.status] || ""}</span>${typeOf(e.content_type) ? `<span class="k">${typeOf(e.content_type).label}</span>` : ""}</div>
+          ${e.copy ? `<p class="c">${esc(e.copy)}</p>` : ""}
+          ${e.notes ? `<p class="n"><i>Notes:</i> ${esc(e.notes)}</p>` : ""}
+          ${r.who || r.url ? `<p class="r">Reference: ${esc(r.who || "post")}${r.url ? ` · <a href="${esc(r.url)}">${esc(r.url)}</a>` : ""}</p>` : ""}</div></div>`;
+    };
+    const days = [];
+    for (let d = new Date(from); d <= to; d = addDays(d, 1)) days.push(iso(d));
+    const shownDays = view === "week" ? days : days.filter((d) => dated.some((e) => e.entry_date === d));
+    const counts = Object.entries(STATUS).map(([k, v]) => `<span style="--c:${COLORS[k]}"><i></i>${v} ${dated.filter((e) => e.status === k).length}</span>`).join("");
+    win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${esc(slug)}</title>
+      <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+      <style>
+        @page { size: A4; margin: 14mm 12mm; }
+        * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        body { margin: 0; font: 11px/1.45 Inter, system-ui, sans-serif; color: #121b33; }
+        header { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 12px; border-bottom: 2px solid #f0b84a; margin-bottom: 14px; }
+        .brand { font: 600 10px Inter; letter-spacing: .12em; text-transform: uppercase; color: #b07d14; }
+        h1 { margin: 4px 0 0; font: 700 22px "Host Grotesk", sans-serif; }
+        .period { font-size: 12px; color: #4b5872; margin-top: 2px; }
+        .legend { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; font-size: 10px; color: #4b5872; }
+        .legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--c); margin-right: 4px; }
+        .day { break-inside: avoid; margin-bottom: 10px; border: 1px solid #e3e7ef; border-radius: 10px; overflow: hidden; }
+        .day h2 { margin: 0; padding: 7px 12px; font: 600 12px "Host Grotesk", sans-serif; background: #f5f7fb; border-bottom: 1px solid #e3e7ef; }
+        .empty { padding: 8px 12px; color: #98a2b3; font-style: italic; }
+        .e { display: flex; gap: 12px; padding: 8px 12px; border-left: 3px solid var(--c); break-inside: avoid; }
+        .e + .e { border-top: 1px solid #eef1f6; }
+        .t { width: 38px; flex: none; font-weight: 600; color: #4b5872; font-variant-numeric: tabular-nums; }
+        .b { flex: 1; min-width: 0; }
+        .h { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .h b { font-size: 12px; }
+        .s { padding: 1px 7px; border-radius: 10px; font-size: 9px; font-weight: 600; color: #fff; background: var(--c); }
+        .k { font-size: 10px; color: #4b5872; }
+        .c { margin: 4px 0 0; white-space: pre-line; }
+        .n { margin: 3px 0 0; color: #4b5872; white-space: pre-line; }
+        .r { margin: 3px 0 0; font-size: 10px; color: #4b5872; word-break: break-all; }
+        a { color: #4d7fe0; }
+        footer { margin-top: 16px; font-size: 9px; color: #98a2b3; text-align: center; }
+      </style></head><body>
+      <header><div><div class="brand">Sports Content Playbook · Content Plan</div><h1>${esc(plan)}</h1><div class="period">${esc(period)} · ${dated.length} post${dated.length === 1 ? "" : "s"} planned</div></div><div class="legend">${counts}</div></header>
+      ${shownDays.map((d) => { const list = dated.filter((e) => e.entry_date === d); return `<section class="day"><h2>${longDay(d)}</h2>${list.length ? list.map(item).join("") : `<div class="empty">Nothing planned</div>`}</section>`; }).join("")}
+      ${ideas.length ? `<section class="day"><h2>No date · ideas for later (${ideas.length})</h2>${ideas.map(item).join("")}</section>` : ""}
+      <footer>Downloaded ${new Date().toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" })} · sportscontentplaybook</footer>
+      <script>document.fonts.ready.then(() => setTimeout(() => print(), 250));<\/script>
+    </body></html>`);
+    win.document.close();
+  }
+
+  // Excel (.xlsx) with SheetJS, loaded only when needed
+  function loadXlsx() {
+    if (window.XLSX) return Promise.resolve(window.XLSX);
+    return new Promise((ok, ko) => {
+      const sc = Object.assign(document.createElement("script"), { src: "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js", onload: () => ok(window.XLSX), onerror: ko });
+      document.head.append(sc);
+    });
+  }
+  async function exportXlsx({ dated, ideas, plan, period, slug }) {
+    let X;
+    try { X = await loadXlsx(); } catch { return alert("Couldn't load the Excel exporter. Check your connection and try again."); }
+    const row = (e) => {
+      const r = refInfo(e);
+      const d = e.entry_date ? parse(e.entry_date) : null;
+      // Excel dates are written in UTC: build the date at UTC midnight so it doesn't shift a day back
+      return { Date: d ? new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())) : "", Day: d ? DAY_NAMES[dow(d)] : "No date", Time: e.entry_date ? e.time_slot : "", Post: e.label || "", Status: STATUS[e.status] || "", Type: typeOf(e.content_type)?.label || "", Copy: e.copy || "", Notes: e.notes || "", Reference: r.who, "Original post": r.url, "In SCP": r.library };
+    };
+    const ws = X.utils.json_to_sheet([...dated, ...ideas].map(row), { cellDates: true, dateNF: "dd/mm/yyyy" });
+    ws["!cols"] = [12, 11, 7, 38, 13, 10, 50, 36, 22, 40, 40].map((w) => ({ wch: w }));
+    ws["!autofilter"] = { ref: ws["!ref"] };
+    const wb = X.utils.book_new();
+    X.utils.book_append_sheet(wb, ws, "Content Plan");
+    wb.Props = { Title: `${plan} · ${period}`, Author: "Sports Content Playbook" };
+    X.writeFile(wb, `${slug}.xlsx`);
+  }
+
+  // Calendar (.ics): one 30-minute event per dated post; imports into Google Calendar, Outlook, Apple Calendar
+  function exportIcs({ dated, plan, slug }) {
+    if (!dated.length) return alert("Only posts with a date go into the calendar, and there are none in this period.");
+    const txt = (v) => String(v || "").replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
+    const fold = (line) => { const out = []; let l = line; while (l.length > 74) { out.push(l.slice(0, 74)); l = " " + l.slice(74); } out.push(l); return out.join("\r\n"); };
+    const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
+    const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Sports Content Playbook//Content Plan//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH", `X-WR-CALNAME:${txt(`SCP · ${plan}`)}`];
+    for (const e of dated) {
+      const r = refInfo(e);
+      const start = `${e.entry_date.replace(/-/g, "")}T${e.time_slot.replace(":", "")}00`;
+      const desc = [`Status: ${STATUS[e.status] || ""}`, typeOf(e.content_type) ? `Type: ${typeOf(e.content_type).label}` : "", e.copy ? `\nCopy:\n${e.copy}` : "", e.notes ? `\nNotes:\n${e.notes}` : "", r.url ? `\nReference: ${r.who} ${r.url}` : ""].filter(Boolean).join("\n");
+      lines.push("BEGIN:VEVENT", `UID:${e.id}@sportscontentplaybook`, `DTSTAMP:${stamp}`, `DTSTART:${start}`, "DURATION:PT30M",
+        `SUMMARY:${txt(`${typeOf(e.content_type) ? `[${typeOf(e.content_type).label}] ` : ""}${e.label || "Post"}`)}`, `DESCRIPTION:${txt(desc)}`,
+        ...(r.url ? [`URL:${r.url}`] : []), `CATEGORIES:${txt(STATUS[e.status] || "Post")}`, "END:VEVENT");
+    }
+    lines.push("END:VCALENDAR");
+    download(`${slug}.ics`, new Blob([lines.map(fold).join("\r\n") + "\r\n"], { type: "text/calendar;charset=utf-8" }));
+  }
+
   // ---------- Plans, views, navigation ----------
   $("[data-plan]").addEventListener("change", async (e) => {
     if (e.target.value === "__rename") {

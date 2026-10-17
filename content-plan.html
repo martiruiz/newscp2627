@@ -9,12 +9,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20261017d">
+  <link rel="stylesheet" href="css/styles.css?v=20261017f">
   <style>.auth-checking body { visibility: hidden; }</style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.0/dist/umd/supabase.min.js"></script>
-  <script src="js/config.js?v=20261017d"></script>
-  <script src="js/auth.js?v=20261017d"></script>
-  <script src="js/guard.js?v=20261017d"></script>
+  <script src="js/config.js?v=20261017f"></script>
+  <script src="js/auth.js?v=20261017f"></script>
+  <script src="js/guard.js?v=20261017f"></script>
 </head>
 <body class="org-page">
   <header class="site-nav" data-nav>
@@ -75,6 +75,16 @@
       <div class="org-legend" data-legend></div>
       <div class="org-actions">
         <button class="pill pill-dark" type="button" data-edit-base><span data-icon="repeat"></span>Weekly base</button>
+        <div class="org-dl">
+          <button class="pill pill-dark" type="button" aria-haspopup="menu" aria-expanded="false" data-dl-toggle><span data-icon="download"></span>Download</button>
+          <div class="org-dl-menu" role="menu" hidden data-dl-menu>
+            <p class="org-dl-head" data-dl-scope>This week</p>
+            <button type="button" role="menuitem" data-dl="pdf"><span data-icon="file-text"></span><span><b>PDF</b><small>Print-ready plan, day by day</small></span></button>
+            <button type="button" role="menuitem" data-dl="xlsx"><span data-icon="sheet"></span><span><b>Excel</b><small>One row per post (.xlsx)</small></span></button>
+            <button type="button" role="menuitem" data-dl="ics"><span data-icon="calendar-days"></span><span><b>Calendar</b><small>Google, Outlook, Apple (.ics)</small></span></button>
+            <label class="org-dl-opt"><input type="checkbox" checked data-dl-ideas>Include “No date” ideas</label>
+          </div>
+        </div>
         <button class="pill pill-dark" type="button" data-toggle-insp><span data-icon="bookmark"></span>Ideas &amp; inspiration</button>
         <a class="pill pill-gold" href="content-library.html"><span data-icon="plus"></span>Add from the library</a>
       </div>
@@ -108,11 +118,11 @@
     <div class="org-panel org-panel-wide" data-base-panel></div>
   </div>
 
-  <script src="js/icons.js?v=20261017d"></script>
-  <script src="js/boards.js?v=20261017d"></script>
-  <script src="js/thumbs.js?v=20261017d"></script>
-  <script src="js/post-preview.js?v=20261017d"></script>
-  <script src="js/content-plan.js?v=20261017d" defer></script>
-  <script src="js/main.js?v=20261017d"></script>
+  <script src="js/icons.js?v=20261017f"></script>
+  <script src="js/boards.js?v=20261017f"></script>
+  <script src="js/thumbs.js?v=20261017f"></script>
+  <script src="js/post-preview.js?v=20261017f"></script>
+  <script src="js/content-plan.js?v=20261017f" defer></script>
+  <script src="js/main.js?v=20261017f"></script>
 </body>
 </html>
