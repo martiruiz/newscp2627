@@ -237,5 +237,35 @@ check("restored post visible again", (await as(U.A, `select count(*)::int n from
 check("members can't refresh stats", await as(U.A, `select public.refresh_library_stats('values')`).then(() => false, () => true));
 check("admin db stats only for admins", (await as(U.A, `select public.admin_db_stats() r`))[0].r === null && (await as(U.SUPER, `select public.admin_db_stats() r`))[0].r.database_bytes > 0);
 
+console.log("\n16. Performance part 2: tag-driven filters, cached pair counts");
+await db.exec(`insert into public.idea_catalog (category, name) values ('sport','Football'),('sport','Basketball'),('club','Betis') on conflict do nothing`);
+const vid = async (cat, name) => (await db.query(`select id from public.idea_catalog where category=$1 and name=$2`, [cat, name])).rows[0].id;
+const FB = await vid("sport", "Football"), BK = await vid("sport", "Basketball"), BE = await vid("club", "Betis");
+await db.exec(`insert into public.content_idea_tags (idea_id, value_id) select id, ${FB} from public.content_ideas where id % 2 = 0 on conflict do nothing;
+  insert into public.content_idea_tags (idea_id, value_id) select id, ${BK} from public.content_ideas where id % 2 = 1 on conflict do nothing;
+  insert into public.content_idea_tags (idea_id, value_id) select id, ${BE} from public.content_ideas where id % 4 = 0 on conflict do nothing;`);
+const before2 = {
+  fb: (await as(U.A, `select public.library_ideas($1::jsonb, null, null, null, 'latest', '', null, 100) r`, [JSON.stringify({ sport: { ids: [FB] } })]))[0].r,
+  fbBe: (await as(U.A, `select public.library_ideas($1::jsonb, null, null, null, 'latest', '', null, 100) r`, [JSON.stringify({ sport: { ids: [FB] }, club: { ids: [BE] } })]))[0].r,
+  either: (await as(U.A, `select public.library_ideas($1::jsonb, null, null, null, 'latest', '', null, 100) r`, [JSON.stringify({ sport: { ids: [FB, BK] } })]))[0].r,
+  liveCounts: (await as(U.A, `select value_id, ideas from public.library_filter_counts($1::jsonb)`, [JSON.stringify({ sport: { ids: [FB] } })])),
+};
+await db.exec(sql("performance-2.sql")); await db.exec(sql("performance-2.sql"));
+await db.query(`select public.refresh_library_stats('all')`);
+const after2 = {
+  fb: (await as(U.A, `select public.library_ideas($1::jsonb, null, null, null, 'latest', '', null, 100) r`, [JSON.stringify({ sport: { ids: [FB] } })]))[0].r,
+  fbBe: (await as(U.A, `select public.library_ideas($1::jsonb, null, null, null, 'latest', '', null, 100) r`, [JSON.stringify({ sport: { ids: [FB] }, club: { ids: [BE] } })]))[0].r,
+  either: (await as(U.A, `select public.library_ideas($1::jsonb, null, null, null, 'latest', '', null, 100) r`, [JSON.stringify({ sport: { ids: [FB, BK] } })]))[0].r,
+  pairCounts: (await as(U.A, `select value_id, ideas from public.library_filter_counts($1::jsonb)`, [JSON.stringify({ sport: { ids: [FB] } })])),
+};
+const ids = (r) => JSON.stringify(r.data.map((x) => x.id));
+check("one filter: same posts and total", ids(after2.fb) === ids(before2.fb) && after2.fb.total === before2.fb.total, `${before2.fb.total} vs ${after2.fb.total}`);
+check("two categories (AND): same posts", ids(after2.fbBe) === ids(before2.fbBe) && after2.fbBe.total === before2.fbBe.total);
+check("two values in one category (OR): same posts", ids(after2.either) === ids(before2.either) && after2.either.total === before2.either.total);
+const cm = (rows) => JSON.stringify(Object.fromEntries(rows.map((r) => [r.value_id, Number(r.ideas)]).sort((a, b) => a[0] - b[0])));
+check("cached pair counts = live counts", cm(after2.pairCounts) === cm(before2.liveCounts), `${cm(before2.liveCounts)} vs ${cm(after2.pairCounts)}`);
+const mixed = (await as(U.A, `select value_id, ideas from public.library_filter_counts($1::jsonb, 'Post')`, [JSON.stringify({ sport: { ids: [FB] }, club: { ids: [BE] } })]));
+check("live counts with search + two filters", mixed.find((r) => Number(r.value_id) === BE)?.ideas == after2.fbBe.total);
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);
