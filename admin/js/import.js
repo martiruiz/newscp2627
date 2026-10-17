@@ -573,6 +573,9 @@
         error_count: errors.length, errors, new_values: total.new_values_created, completed_at: new Date().toISOString(),
       }).eq("id", wizard.importId);
       wizard.result = { ...total, skipped, errors };
+      // Cached counts of the library (supabase/performance.sql)
+      term.log("sys", "refreshing library counts…");
+      for (const part of ["values", "totals"]) { const r = await A.db.rpc("refresh_library_stats", { p_part: part }); if (r.error) term.log("warn", `refresh ${part}: ${esc(r.error.message)}`); }
       A.resetCatalog();
       renderResults();
     } catch (err) {

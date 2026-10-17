@@ -217,5 +217,25 @@ check("history only: import gone, its posts stay (unlinked)", kept.n === 2 && ke
 const r2 = (await as(U.SUPER, `select public.delete_content_import(${i2}, true) r`))[0].r;
 check("delete + undo: its posts are removed", r2.deleted === 2 && (await db.query(`select count(*)::int n from public.content_ideas where external_id in ('u1','u2')`)).rows[0].n === 0, JSON.stringify(r2));
 
+console.log("\n15. Performance SQL: same results, cached counts");
+const latestBefore = (await as(U.A, `select public.library_ideas('{}'::jsonb, null, null, null, 'latest', '', null, 5) r`))[0].r;
+await db.exec(sql("performance.sql")); await db.exec(sql("performance.sql"));
+await db.query(`select public.refresh_library_stats('values')`); await db.query(`select public.refresh_library_stats('totals')`);
+const latestAfter = (await as(U.A, `select public.library_ideas('{}'::jsonb, null, null, null, 'latest', '', null, 5) r`))[0].r;
+check("latest page identical after optimisation", JSON.stringify(latestAfter.data.map((x) => x.id)) === JSON.stringify(latestBefore.data.map((x) => x.id)) && latestAfter.total === latestBefore.total, `${latestBefore.total} vs ${latestAfter.total}`);
+const rnd1 = (await as(U.A, `select public.library_ideas('{}'::jsonb, null, null, null, 'random', 'abc', null, 5) r`))[0].r.data.map((x) => x.id);
+const rnd2 = (await as(U.A, `select public.library_ideas('{}'::jsonb, null, null, null, 'random', 'abc', null, 5) r`))[0].r.data.map((x) => x.id);
+check("random order is stable for the same seed", rnd1.length === 5 && JSON.stringify(rnd1) === JSON.stringify(rnd2));
+const q = (await as(U.A, `select public.library_ideas('{}'::jsonb, 'Post 3', null, null, 'latest', '', null, 50) r`))[0].r;
+check("search counts exactly", q.total === q.data.length && q.data.every((x) => /Post 3/.test(x.title)), JSON.stringify(q.total));
+await as(U.SUPER, `select public.remove_content_idea(5, 'x')`);
+const live = (await as(U.A, `select public.library_ideas('{}'::jsonb, 'Post', null, null, 'latest', '', null, 100) r`))[0].r;
+check("removed posts stay hidden", !live.data.some((x) => x.id === 5));
+check("members can't read a removed post directly (RLS)", (await as(U.A, `select count(*)::int n from public.content_ideas where id = 5`))[0].n === 0 && (await as(U.SUPER, `select count(*)::int n from public.content_ideas where id = 5`))[0].n === 1);
+await as(U.SUPER, `select public.restore_content_idea('p5')`);
+check("restored post visible again", (await as(U.A, `select count(*)::int n from public.content_ideas where id = 5`))[0].n === 1);
+check("members can't refresh stats", await as(U.A, `select public.refresh_library_stats('values')`).then(() => false, () => true));
+check("admin db stats only for admins", (await as(U.A, `select public.admin_db_stats() r`))[0].r === null && (await as(U.SUPER, `select public.admin_db_stats() r`))[0].r.database_bytes > 0);
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);
