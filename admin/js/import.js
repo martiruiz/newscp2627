@@ -39,16 +39,67 @@
   }
   const splitValues = (v) => String(v ?? "").split(",").map((x) => x.trim().replace(/\s+/g, " ")).filter(Boolean);
 
+  // ---------- Live console ("hacker view") while analysing / importing ----------
+  // term.log(kind, html) adds a line (kinds: sys, read, row, map, check, warn, new, ok, err); term.stats(html) updates the header.
+  function terminal(host, title = "scp@import:~$ analyze") {
+    host.insertAdjacentHTML("beforeend", `<div class="term" data-term>
+      <div class="term-head"><span class="term-dots"><i></i><i></i><i></i></span><b>${esc(title)}</b><span class="term-stats" data-term-stats></span></div>
+      <div class="term-body" data-term-body><span class="term-cursor"></span></div></div>`);
+    const box = host.querySelector("[data-term]:last-child");
+    const body = $("[data-term-body]", box), statsEl = $("[data-term-stats]", box);
+    const cursor = $(".term-cursor", body);
+    const queue = [], MAX = 260, t0 = performance.now();
+    let raf = 0;
+    const flush = () => {
+      raf = 0;
+      const frag = document.createDocumentFragment();
+      for (const l of queue.splice(0)) {
+        const d = document.createElement("div");
+        d.className = `tl tl-${l.k}`;
+        d.innerHTML = `<span class="tl-t">${l.t}</span>${l.html}`;
+        frag.append(d);
+      }
+      body.insertBefore(frag, cursor);
+      while (body.childElementCount > MAX) body.firstElementChild.remove();
+      body.scrollTop = body.scrollHeight;
+    };
+    const log = (k, html) => {
+      queue.push({ k, html, t: `[${((performance.now() - t0) / 1000).toFixed(2).padStart(7, "0")}]` });
+      if (queue.length > 500) queue.splice(0, queue.length - 500);
+      raf ||= requestAnimationFrame(flush);
+    };
+    const stats = (html) => { statsEl.innerHTML = html; };
+    const elapsed = () => (performance.now() - t0) / 1000;
+    return { log, stats, elapsed };
+  }
+  const tq = (v, n = 38) => esc(String(v ?? "").replace(/\s+/g, " ").slice(0, n)) + (String(v ?? "").length > n ? "…" : "");
+  const fmtSecs = (s) => (s >= 3600 ? `${Math.floor(s / 3600)}h ${Math.floor((s % 3600) / 60)}m` : s >= 60 ? `${Math.floor(s / 60)}m ${Math.round(s % 60)}s` : `${Math.round(s)}s`);
+
   // Big files (hundreds of MB): read in pieces so the page never freezes, reporting progress as it goes
-  function parseFile(file, progress) {
+  function parseFile(file, progress, term) {
     return new Promise((resolve, reject) => {
       const data = [], errors = [];
-      let fields = null;
+      let fields = null, chunkNo = 0;
+      const MB = 1048576;
+      term?.log("sys", `open <b>${esc(file.name)}</b> · ${(file.size / MB).toFixed(1)} MB · streaming in 4 MB chunks`);
       Papa.parse(file, {
         header: true, skipEmptyLines: "greedy", chunkSize: 4 * 1024 * 1024,
         chunk: (res) => {
-          fields ||= res.meta.fields;
+          if (!fields) {
+            fields = res.meta.fields;
+            term?.log("sys", `delimiter <b>${esc(JSON.stringify(res.meta.delimiter))}</b> · ${fields.length} columns detected`);
+          }
           for (const r of res.data) data.push(r);
+          chunkNo++;
+          if (term) {
+            const mbs = res.meta.cursor / MB / Math.max(term.elapsed(), 0.001);
+            term.log("read", `READ chunk #${chunkNo} · +${num(res.data.length)} rows · ${(res.meta.cursor / MB).toFixed(1)}/${(file.size / MB).toFixed(1)} MB`);
+            for (const r of [res.data[0], res.data[Math.floor(res.data.length / 2)]].filter(Boolean)) {
+              const v = Object.values(r);
+              term.log("row", `→ ${v.slice(0, 6).map((x) => tq(x, 22)).join(" <i>│</i> ")}`);
+            }
+            term.stats(`<span>${num(data.length)} rows</span><span>${mbs.toFixed(1)} MB/s</span><span>${Math.round((res.meta.cursor / file.size) * 100)}%</span>`);
+          }
           if (errors.length < 20) errors.push(...res.errors.slice(0, 20 - errors.length));
           progress?.(`Reading the file… ${Math.min(99, Math.round((res.meta.cursor / file.size) * 100))}% · ${num(data.length)} rows`);
         },
@@ -58,8 +109,9 @@
     });
   }
 
-  async function analyze(file, progress) {
-    const parsed = await parseFile(file, progress);
+  async function analyze(file, progress, term) {
+    const parsed = await parseFile(file, progress, term);
+    term?.log("ok", `parsed ${num(parsed.data.length)} rows in ${fmtSecs(term.elapsed())}${parsed.errors.length ? ` · ${parsed.errors.length} parse warnings` : ""}`);
     const headers = parsed.meta.fields || [];
     const map = {}; // field key -> original header
     const columns = headers.map((h) => {
@@ -69,6 +121,11 @@
       return { csv_column: h, maps_to: f ? f.key : null, required: Boolean(f?.required) };
     });
     const missingColumns = FIELDS.filter((f) => f.required && !map[f.key]).map((f) => f.key);
+    if (term) {
+      for (const c of columns) term.log(c.maps_to ? "map" : "dim", c.maps_to ? `MAP  "${tq(c.csv_column, 30)}" → <b>${c.maps_to}</b>${c.required ? " (required)" : ""}` : `SKIP "${tq(c.csv_column, 30)}" (not used)`);
+      for (const m of missingColumns) term.log("err", `MISSING required column <b>${m}</b>`);
+      term.log("sys", "validating rows: ids, dates, embeds, duplicates…");
+    }
 
     const catalog = await A.loadCatalog(true);
     const known = Object.fromEntries(A.CATEGORIES.map((c) => [c.key, new Set(catalog.byCat[c.key].map((v) => v.name.toLowerCase()))]));
@@ -92,6 +149,7 @@
       else if (date === undefined) { miss.push("published_at"); badDate.push({ row: line, date: dateRaw }); }
       if (!row.embed) miss.push("embed");
       row._missing = miss;
+      if (miss.length && term && missing.length < 40) term.log("warn", `row ${line} · ${tq(row.external_id || "(no id)", 24)} · missing ${miss.join(", ")}`);
       if (miss.length) missing.push({ row: line, external_id: row.external_id, missing: miss.map((m) => (m === "published_at" && date === undefined ? "published_at (invalid date)" : m)) });
       if (date && date.getTime() > now) future.push({ row: line, external_id: row.external_id, date: dateRaw });
       if (!row.title && !miss.length) noTitle.push({ row: line, external_id: row.external_id });
@@ -103,6 +161,7 @@
       rows.push(row);
     });
 
+    term?.log("ok", `validated ${num(rows.length)} rows · ${num(missing.length)} incomplete · ${num(future.length)} future dates`);
     const dupCsv = [...seen.entries()].filter(([, lines]) => lines.length > 1).map(([external_id, lines]) => ({ external_id, occurrences: lines.length, rows: lines }));
     const importable = rows.filter((r, idx) => !r._missing.length && lastIndex.get(r.external_id) === idx);
 
@@ -110,12 +169,22 @@
     const ids = [...new Set(importable.map((r) => r.external_id))];
     const existing = [];
     const parts = A.chunk(ids, 150);
-    let checked = 0;
+    let checked = 0, round = 0;
+    term?.log("sys", `SELECT external_id FROM content_ideas WHERE external_id IN (…) · ${num(ids.length)} ids · ${num(parts.length)} queries · 8 in parallel`);
     // 8 requests at a time (each id list must fit in a URL)
     for (let i = 0; i < parts.length; i += 8) {
+      const q0 = performance.now(), before = existing.length;
       const res = await Promise.all(parts.slice(i, i + 8).map((part) => A.db.from("content_ideas").select("external_id").in("external_id", part)));
       for (const { data, error } of res) { if (error) throw error; existing.push(...data.map((d) => d.external_id)); }
       checked = Math.min(ids.length, (i + 8) * 150);
+      if (term) {
+        round++;
+        const found = existing.length - before;
+        const rate = checked / Math.max(term.elapsed(), 0.001);
+        term.log("check", `QUERY #${round} · ${num(Math.min(1200, ids.length - i * 150))} ids · ${found ? `<b>${found} already in DB</b>` : "0 found"} · ${Math.round(performance.now() - q0)} ms`);
+        if (found) term.log("dim", `  ↳ ${existing.slice(before, before + 3).map((x) => tq(x, 20)).join(", ")}${found > 3 ? ", …" : ""} will be replaced`);
+        term.stats(`<span>${num(checked)}/${num(ids.length)} checked</span><span>${num(existing.length)} existing</span><span>ETA ${fmtSecs((ids.length - checked) / Math.max(rate, 1))}</span>`);
+      }
       progress?.(`Checking which posts already exist… ${num(checked)} / ${num(ids.length)}`);
     }
 
@@ -125,7 +194,9 @@
       const found = new Map();
       for (const r of importable) for (const v of splitValues(r[c.key])) if (!known[c.key].has(v.toLowerCase()) && !found.has(v.toLowerCase())) found.set(v.toLowerCase(), v);
       if (found.size) newValues[c.key] = [...found.values()].sort((a, b) => a.localeCompare(b));
+      if (term && found.size) { term.log("new", `NEW ${c.key}: ${[...found.values()].slice(0, 6).map((v) => `"${tq(v, 18)}"`).join(", ")}${found.size > 6 ? ` +${found.size - 6} more` : ""}`); }
     }
+    term?.log("ok", `DONE · ${num(importable.length)} importable · ${num(existing.length)} to replace · ${num(rows.length - importable.length)} skipped · ${fmtSecs(term.elapsed())}`);
 
     return {
       total_rows: rows.length,
@@ -372,8 +443,9 @@
       btn.disabled = true;
       const say = (t) => { btn.innerHTML = `<span class="spinner sm"></span> ${esc(t)}`; };
       say("Reading the file…");
+      const term = terminal(btn.closest(".panel"));
       try {
-        const analysis = await analyze(wizard.file, say);
+        const analysis = await analyze(wizard.file, say, term);
         say("Saving the analysis…");
         if (!analysis.total_rows) throw new Error("The file has no data rows.");
         // Create the import record and keep the original file
@@ -389,7 +461,7 @@
         wizard.importId = rec.id;
         wizard.analysis = analysis;
         renderAnalysis();
-      } catch (err) { console.error(err); renderUpload(`Upload failed: ${err?.message && !/schema cache|does not exist/i.test(err.message) ? err.message : A.errMsg(err)}`); }
+      } catch (err) { console.error(err); term.log("err", `ERROR ${esc(err?.message || err)}`); await new Promise((r) => setTimeout(r, 1500)); renderUpload(`Upload failed: ${err?.message && !/schema cache|does not exist/i.test(err.message) ? err.message : A.errMsg(err)}`); }
     });
   }
 
@@ -468,13 +540,22 @@
     const T = wizard.analysis;
     wizard.step = "importing";
     wizardShell(`<section class="panel"><div class="big-spinner"><div class="spinner"></div><b>Importing...</b><p>This may take a few minutes for large files.</p><div class="progress"><i data-bar style="width:0%"></i></div><p class="dim" data-progress></p></div></section>`);
+    const term = terminal($(".big-spinner").parentElement, "scp@import:~$ import --commit");
     const rows = T.importable;
     const total = { created: 0, replaced: 0, errors: [], new_values_created: {} };
     try {
       await A.db.from("idea_imports").update({ status: "importing" }).eq("id", wizard.importId);
       const batches = A.chunk(rows, BATCH);
+      term.log("sys", `BEGIN import #${wizard.importId} · ${num(rows.length)} rows · ${num(batches.length)} batches of ${BATCH}`);
       for (let i = 0; i < batches.length; i++) {
+        const b0 = performance.now();
         const res = await rpc("import_content_ideas_batch", { p_import_id: wizard.importId, p_rows: batches[i] });
+        const doneRows = Math.min((i + 1) * BATCH, rows.length);
+        const rate = doneRows / Math.max(term.elapsed(), 0.001);
+        term.log(res.errors?.length ? "warn" : "ok", `INSERT batch ${i + 1}/${batches.length} · +${res.created} created · ${res.replaced} replaced${res.errors?.length ? ` · ${res.errors.length} errors` : ""} · ${Math.round(performance.now() - b0)} ms`);
+        term.log("row", `→ ${batches[i].slice(0, 3).map((r) => `${tq(r.external_id, 16)} ${tq(r.club || r.competition || "", 18)}`).join(" <i>│</i> ")}`);
+        for (const [k, vals] of Object.entries(res.new_values_created || {})) if (vals.length) term.log("new", `CREATE ${k}: ${vals.slice(0, 5).map((v) => `"${tq(v, 18)}"`).join(", ")}${vals.length > 5 ? ` +${vals.length - 5}` : ""}`);
+        term.stats(`<span>${num(doneRows)}/${num(rows.length)}</span><span>${Math.round(rate)} rows/s</span><span>ETA ${fmtSecs((rows.length - doneRows) / Math.max(rate, 1))}</span>`);
         total.created += res.created;
         total.replaced += res.replaced;
         total.errors.push(...(res.errors || []));
