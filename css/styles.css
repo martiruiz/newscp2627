@@ -3835,3 +3835,56 @@ button.plan-cta { width: 100%; cursor: pointer; font: inherit; }
 .pf-billing-fine { margin: 0; font-size: 12px; color: var(--muted-dim); }
 .pf-billing-loading { color: var(--muted); }
 .pf-plan.is-empty p { margin: 0; }
+
+/* ---------- Home stats in motion (js/stats.js): count-up, travelling highlight, animated icons ---------- */
+.stats { position: relative; }
+.stat:first-child .stat-num, .stat:first-child .stat-label { color: inherit; }
+.stat .stat-num { color: var(--text); transition: color 0.5s ease, text-shadow 0.5s ease; font-variant-numeric: tabular-nums; }
+.stat .stat-label { color: var(--muted); transition: color 0.5s ease; }
+.stat.is-active .stat-num { color: var(--gold); text-shadow: 0 0 24px rgba(240, 184, 74, 0.35); }
+.stat.is-active .stat-label { color: var(--gold); }
+.stat { cursor: default; transition: background 0.5s ease; }
+.stat::before { content: ""; position: absolute; inset: 0 0 auto; height: 100%; pointer-events: none; opacity: 0; transition: opacity 0.6s ease;
+  background: radial-gradient(120% 70% at 50% 0%, rgba(240, 184, 74, 0.09), transparent 70%); }
+.stat.is-active::before { opacity: 1; }
+.stats-bar { position: absolute; top: 0; left: 0; height: 2px; width: 25%; border-radius: 2px; pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--gold) 30%, var(--gold-light) 50%, var(--gold) 70%, transparent);
+  box-shadow: 0 0 16px rgba(240, 184, 74, 0.6); transform: translateX(var(--bar-x, 0%)); transition: transform 0.7s cubic-bezier(.65, 0, .35, 1); }
+.stat-ico { display: inline-grid; place-items: center; flex: none; color: var(--muted); transition: color 0.5s ease, transform 0.5s ease; }
+.stat.is-active .stat-ico { color: var(--gold); transform: scale(1.08); }
+.stat-ico svg { display: block; overflow: visible; }
+.ico-target svg { width: 34px; height: 34px; }
+.ico-filter svg { width: 29px; height: 37px; margin-top: -7px; }
+.ico-carousel svg { width: 46px; height: 34px; }
+.ico-update svg { width: 30px; height: 30px; }
+
+/* Target: radar pings + breathing core */
+.t-ping { transform-origin: 17px 17px; animation: tPing 2.4s cubic-bezier(.2, .6, .3, 1) infinite; }
+.t-ping-2 { animation-delay: 1.2s; }
+@keyframes tPing { 0% { transform: scale(1); opacity: 0.9; } 100% { transform: scale(2.3); opacity: 0; } }
+.t-core { transform-origin: 17px 17px; animation: tCore 2.4s ease-in-out infinite; }
+@keyframes tCore { 0%, 100% { transform: scale(1); } 50% { transform: scale(0.82); } }
+
+/* Filter: dots drop in, one comes out at the bottom */
+.f-dot { opacity: 0; animation: fDrop 2.4s ease-in infinite; }
+.f-dot-2 { animation-delay: 0.25s; } .f-dot-3 { animation-delay: 0.5s; }
+@keyframes fDrop { 0% { transform: translateY(0); opacity: 0; } 15% { opacity: 1; } 45% { transform: translateY(9px); opacity: 1; } 55%, 100% { transform: translateY(11px); opacity: 0; } }
+.f-out { opacity: 0; animation: fOut 2.4s ease-out infinite; animation-delay: 0.9s; }
+@keyframes fOut { 0% { transform: translateY(-4px); opacity: 0; } 25% { opacity: 1; } 60% { transform: translateY(6px); opacity: 0; } 100% { opacity: 0; } }
+
+/* Carousel: frames slide like a feed, the play button pulses */
+.c-strip { animation: cSlide 3s cubic-bezier(.7, 0, .3, 1) infinite; }
+@keyframes cSlide { 0%, 35% { transform: translateX(0); } 65%, 100% { transform: translateX(-26px); } }
+.c-play { transform-origin: 23px 17px; animation: cPlay 3s ease-in-out infinite; }
+@keyframes cPlay { 0%, 30%, 100% { transform: scale(1); opacity: 1; } 45%, 55% { transform: scale(0.6); opacity: 0; } 70% { transform: scale(1.15); opacity: 1; } }
+
+/* Update: arrows turn, pause, turn */
+.u-spin { transform-origin: 15px 15px; animation: uSpin 3s cubic-bezier(.65, 0, .35, 1) infinite; }
+@keyframes uSpin { 0%, 30% { transform: rotate(0deg); } 70%, 100% { transform: rotate(360deg); } }
+
+/* Animations run only while the section is on screen */
+.stats:not(.is-live) .stat-ico * { animation-play-state: paused; }
+@media (max-width: 960px) { .stats-bar { display: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .stat-ico *, .stats-bar { animation: none !important; transition: none !important; }
+}
