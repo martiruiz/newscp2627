@@ -3764,3 +3764,34 @@ tr[data-hour] { animation: orgRowIn 0.25s ease-out; }
 @media (hover: none) { .tp-foot span { visibility: hidden; } }
 .tp-quick { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); }
 .tp-quick button { padding: 0; }
+
+/* ---------- Date picker (js/date-picker.js) — same family as the time picker ---------- */
+.org-m-when { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 8px !important; }
+.org-m-when .tp-btn { margin: 0; }
+.org-m-when .org-saved { margin-left: 4px; }
+.dp2 { width: 318px; }
+.dp2-big { font-size: 26px !important; }
+.dp2-quick { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; padding-bottom: 12px; margin-bottom: 10px; border-bottom: 1px solid var(--line-soft); }
+.dp2-quick button { display: inline-flex; align-items: center; justify-content: center; gap: 4px; height: 28px; padding: 0 4px; border-radius: 100px; border: 1px solid var(--line); background: transparent; color: var(--muted); font: 600 11px var(--font-body); white-space: nowrap; cursor: pointer; }
+.dp2-quick button svg { width: 12px; height: 12px; }
+.dp2-quick button:hover { color: var(--text); border-color: var(--white-dim); }
+.dp2-quick button.is-on { background: var(--gold); border-color: var(--gold); color: var(--bg); }
+.dp2-quick button.is-none { border-style: dashed; }
+.dp2-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.dp2-nav b { font: 600 14px var(--font-display); }
+.dp2-nav button { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; border: 1px solid var(--line); background: transparent; color: var(--muted); cursor: pointer; }
+.dp2-nav button svg { width: 15px; height: 15px; }
+.dp2-nav button:hover { color: var(--gold); border-color: rgba(240, 184, 74, 0.5); }
+.dp2-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px; }
+.dp2-h { padding: 2px 0 6px; text-align: center; font-size: 11px; font-weight: 600; color: var(--muted); }
+.dp2-h.is-we { color: var(--muted-dim); }
+.dp2-grid button { position: relative; height: 36px; border-radius: 9px; border: 1px solid transparent; background: var(--surface); color: var(--text); font: 600 13px var(--font-body); font-variant-numeric: tabular-nums; cursor: pointer; transition: background 0.12s, transform 0.12s, border-color 0.12s; }
+.dp2-grid button:hover { border-color: rgba(240, 184, 74, 0.5); }
+.dp2-grid button:active { transform: scale(0.94); }
+.dp2-grid button i { position: absolute; left: 0; right: 0; bottom: 2px; font-style: normal; font-size: 9px; line-height: 1; letter-spacing: 1px; color: var(--gold); }
+.dp2-grid button.is-out { background: transparent; color: var(--muted-dim); }
+.dp2-grid button.is-past:not(.is-on) { color: var(--muted); }
+.dp2-grid button.is-today { border-color: var(--gold); color: var(--gold); }
+.dp2-grid button.is-on { background: var(--gold); border-color: var(--gold); color: var(--bg); box-shadow: 0 4px 14px rgba(240, 184, 74, 0.35); }
+.dp2-grid button.is-on i { color: var(--bg); }
+.dp2-link { border: 0; background: none; color: var(--gold); font: 600 12px var(--font-body); cursor: pointer; }

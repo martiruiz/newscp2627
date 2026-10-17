@@ -35,6 +35,7 @@ window.SCP_TIME = (() => {
   function open(btn, onChange) {
     if (owner === btn) return close();
     close();
+    window.SCP_DATE?.close();
     owner = btn;
     btn.setAttribute("aria-expanded", "true");
     let { h, m } = split(btn.dataset.value);

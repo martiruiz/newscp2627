@@ -391,7 +391,7 @@
       <header class="org-m-head">
         <span class="org-m-icon">${icon(typeOf(e.content_type)?.icon || "layout-grid")}</span>
         <div><input class="org-m-title" type="text" maxlength="140" placeholder="What are you posting?" value="${esc(e.label)}" data-f="label">
-        <p><label class="org-m-date">${icon("calendar-days")}<input type="date" value="${e.entry_date || ""}" data-f-date aria-label="Date"></label>${d ? `<span class="org-m-dayname">${DAY_NAMES[dow(d)]}</span>` : `<span class="org-m-dayname">No date · idea</span>`}
+        <p class="org-m-when">${window.SCP_DATE ? window.SCP_DATE.button(e.entry_date, 'aria-label="Date"') : ""}
           ${window.SCP_TIME ? window.SCP_TIME.button(e.time_slot, 'data-f-time aria-label="Time"') : ""}
           <span class="org-saved" data-save-state data-state="saved">${icon("check")}Saved</span></p></div>
         <button class="org-m-x" type="button" aria-label="Close" data-close>${icon("x")}</button>
@@ -420,7 +420,7 @@
     setTimeout(() => !e.label && $("[data-f=label]", entryPanel).focus(), 30);
   }
   function closeEntry() {
-    window.SCP_TIME?.close();
+    window.SCP_TIME?.close(); window.SCP_DATE?.close();
     if (!openId) return;
     for (const [id, timer] of pending) { clearTimeout(timer); pending.delete(id); const e = entries.find((x) => x.id === id); if (e) update(id, { label: e.label, copy: e.copy, notes: e.notes }, { silent: true }); }
     entryModal.hidden = true; openId = null; render();
@@ -434,6 +434,22 @@
     autosave(openId, { [f]: ev.target.value });
   });
   // Time picker (js/time-picker.js): saves as soon as a time is chosen; opens night / evening if the post moves there
+  // Date picker (js/date-picker.js): a date makes an idea "Planned"; "No date" sends it to the tray
+  window.SCP_DATE?.attach(entryModal, async (date) => {
+    if (!openId) return;
+    const e = entries.find((x) => x.id === openId);
+    const changes = { entry_date: date, ...(date && e?.status === "idea" ? { status: "planned" } : {}) };
+    await update(openId, changes, { silent: true });
+    openEntry(openId);
+    $("[data-date-btn]", entryPanel)?.focus();
+  }, {
+    counts: async (from, to) => {
+      const { data } = await db.from("org_entries").select("entry_date").eq("plan_id", planId).gte("entry_date", from).lte("entry_date", to);
+      const m = new Map();
+      for (const r of data || []) m.set(r.entry_date, (m.get(r.entry_date) || 0) + 1);
+      return m;
+    },
+  });
   window.SCP_TIME?.attach(entryModal, (value) => {
     if (!openId) return;
     const band = bandOf(hourOf(value));
@@ -443,13 +459,7 @@
   entryModal.addEventListener("change", async (ev) => {
     if (!openId) return;
 
-    if (ev.target.matches("[data-f-date]")) {
-      const e = entries.find((x) => x.id === openId);
-      const date = ev.target.value || null;
-      const changes = { entry_date: date, ...(date && e?.status === "idea" ? { status: "planned" } : {}) };
-      await update(openId, changes, { silent: true });
-      openEntry(openId);
-    }
+
   });
   entryModal.addEventListener("click", async (ev) => {
     if (ev.target === entryModal || ev.target.closest("[data-close]")) return closeEntry();
