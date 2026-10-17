@@ -4062,3 +4062,32 @@ button.plan-cta { width: 100%; cursor: pointer; font: inherit; }
   .plan-card, .plan-card *, .plan-card::before, .plan-card::after { animation: none !important; transition: none !important; }
   .plans[data-fx] .plan-card { opacity: 1 !important; transform: none !important; }
 }
+
+/* ---------- Home CTA typewriter (js/typewriter.js) ---------- */
+.cta-type { display: flex; align-items: center; justify-content: center; text-align: center; }
+.tw-line { display: block; }
+.cta-type .tw-text { display: inline; }
+.tw-caret { display: inline-block; width: 0.08em; height: 0.95em; margin-left: 0.08em; vertical-align: -0.08em; border-radius: 2px; background: var(--gold);
+  box-shadow: 0 0 14px rgba(240, 184, 74, 0.7); animation: twBlink 1s steps(1) infinite; }
+.cta-type.is-typing .tw-caret { animation: none; }
+@keyframes twBlink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .tw-caret { display: none; } }
+
+/* ---------- Home CTA: three ways to convert ---------- */
+.cta-box .cta-actions { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 14px 18px; margin-top: 56px; }
+.cta-box .cta-actions .btn { margin-top: 0; }
+.cta-actions .btn-lg { height: 54px; padding: 0 26px; font-size: 18px; font-weight: 600; }
+.cta-main { position: relative; overflow: hidden; gap: 10px; cursor: pointer; font-family: inherit; animation: planCta 3.6s ease-in-out infinite; }
+.cta-main::after { content: ""; position: absolute; top: 0; bottom: 0; left: -60%; width: 40%; transform: skewX(-20deg);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent); animation: fxShine 3.6s ease-in-out infinite 0.6s; }
+.cta-arrow { display: inline-block; transition: transform 0.25s ease; }
+.cta-main:hover .cta-arrow { transform: translateX(4px); }
+.cta-alt { border-color: rgba(240, 184, 74, 0.6); color: var(--gold); }
+.cta-alt:hover { background: var(--gold-tint); }
+.cta-demo { display: inline-flex; align-items: center; gap: 8px; padding: 0 6px; height: 54px; color: var(--text); font-size: 16px; font-weight: 500; text-decoration: underline; text-decoration-color: rgba(240, 184, 74, 0.5); text-underline-offset: 5px; transition: color 0.2s; }
+.cta-demo:hover { color: var(--gold); }
+.cta-demo-ico { display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--gold-tint); color: var(--gold); }
+.cta-demo-ico svg { width: 16px; height: 16px; }
+.cta-reassure { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px 22px; margin-top: 22px; color: var(--muted); font-size: 14px; }
+.cta-reassure span:first-letter { color: #00d85b; }
+@media (max-width: 640px) { .cta-actions { flex-direction: column; } .cta-actions .btn-lg { width: 100%; } }
