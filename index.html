@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=Caveat:wght@500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20261018a">
+  <link rel="stylesheet" href="css/styles.css?v=20261018b">
 </head>
 <body>
 
@@ -77,15 +77,22 @@
         <div class="stat">
           <div class="stat-head"><p class="stat-num" data-count="1000000" data-format="compact" data-suffix="+">1M+</p>
             <span class="stat-ico ico-carousel" aria-hidden="true"><svg viewBox="0 0 46 34" fill="none">
-              <defs><clipPath id="stat-reel-clip"><rect x="0" y="0" width="46" height="34"/></clipPath></defs>
-              <g clip-path="url(#stat-reel-clip)"><g class="c-strip">
-                <rect x="-27" y="3" width="20" height="28" rx="2.5" stroke="currentColor"/>
-                <rect x="-1" y="3" width="20" height="28" rx="2.5" stroke="currentColor" stroke-opacity=".6"/>
-                <rect x="13" y="3" width="20" height="28" rx="2.5" stroke="currentColor"/>
-                <rect x="39" y="3" width="20" height="28" rx="2.5" stroke="currentColor" stroke-opacity=".6"/>
-                <rect x="65" y="3" width="20" height="28" rx="2.5" stroke="currentColor"/>
+              <defs>
+                <linearGradient id="stat-reel-fade" x1="0" x2="46" y1="0" y2="0" gradientUnits="userSpaceOnUse">
+                  <stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".3" stop-color="#fff" stop-opacity=".55"/>
+                  <stop offset=".5" stop-color="#fff"/><stop offset=".7" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
+                </linearGradient>
+                <mask id="stat-reel-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="46" height="34"><rect width="46" height="34" fill="url(#stat-reel-fade)"/><rect x="13.5" y="3.5" width="19" height="27" rx="4" fill="#000"/></mask>
+              </defs>
+              <g mask="url(#stat-reel-mask)"><g class="c-strip">
+                <rect x="-20" y="8" width="14" height="18" rx="2.5" stroke="currentColor" stroke-width="1.4"/>
+                <rect x="-2" y="8" width="14" height="18" rx="2.5" stroke="currentColor" stroke-width="1.4"/>
+                <rect x="16" y="8" width="14" height="18" rx="2.5" stroke="currentColor" stroke-width="1.4"/>
+                <rect x="34" y="8" width="14" height="18" rx="2.5" stroke="currentColor" stroke-width="1.4"/>
+                <rect x="52" y="8" width="14" height="18" rx="2.5" stroke="currentColor" stroke-width="1.4"/>
               </g></g>
-              <path class="c-play" d="M20.6 13.6v6.8l5.6-3.4-5.6-3.4Z" stroke="currentColor" stroke-linejoin="round"/></svg></span></div>
+              <rect class="c-frame" x="14.5" y="4.5" width="17" height="25" rx="3.5" stroke="currentColor" stroke-width="1.6"/>
+              <path class="c-play" d="M20.8 13.4v7.2l6-3.6-6-3.6Z" fill="currentColor"/></svg></span></div>
           <p class="stat-label">Content examples imported</p>
         </div>
         <div class="stat">
@@ -481,14 +488,14 @@
     </div>
   </footer>
 
-  <script src="js/config.js?v=20261018a"></script>
-  <script src="js/dock.js?v=20261018a" defer></script>
-  <script src="js/radar.js?v=20261018a" defer></script>
-  <script src="js/scan.js?v=20261018a" defer></script>
-  <script src="js/import.js?v=20261018a" defer></script>
-  <script src="js/stats.js?v=20261018a" defer></script>
-  <script src="js/checkout.js?v=20261018a"></script>
-  <script src="js/plans.js?v=20261018a" defer></script>
-  <script src="js/main.js?v=20261018a"></script>
+  <script src="js/config.js?v=20261018b"></script>
+  <script src="js/dock.js?v=20261018b" defer></script>
+  <script src="js/radar.js?v=20261018b" defer></script>
+  <script src="js/scan.js?v=20261018b" defer></script>
+  <script src="js/import.js?v=20261018b" defer></script>
+  <script src="js/stats.js?v=20261018b" defer></script>
+  <script src="js/checkout.js?v=20261018b"></script>
+  <script src="js/plans.js?v=20261018b" defer></script>
+  <script src="js/main.js?v=20261018b"></script>
 </body>
 </html>

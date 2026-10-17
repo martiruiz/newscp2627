@@ -3873,10 +3873,13 @@ button.plan-cta { width: 100%; cursor: pointer; font: inherit; }
 @keyframes fOut { 0% { transform: translateY(-4px); opacity: 0; } 25% { opacity: 1; } 60% { transform: translateY(6px); opacity: 0; } 100% { opacity: 0; } }
 
 /* Carousel: frames slide like a feed, the play button pulses */
-.c-strip { animation: cSlide 3s cubic-bezier(.7, 0, .3, 1) infinite; }
-@keyframes cSlide { 0%, 35% { transform: translateX(0); } 65%, 100% { transform: translateX(-26px); } }
-.c-play { transform-origin: 23px 17px; animation: cPlay 3s ease-in-out infinite; }
-@keyframes cPlay { 0%, 30%, 100% { transform: scale(1); opacity: 1; } 45%, 55% { transform: scale(0.6); opacity: 0; } 70% { transform: scale(1.15); opacity: 1; } }
+/* a row of post frames slides one step behind a fixed "now playing" frame; the play button pops on each new post */
+.c-strip { animation: cSlide 2.6s cubic-bezier(.7, 0, .3, 1) infinite; }
+@keyframes cSlide { 0%, 40% { transform: translateX(0); } 75%, 100% { transform: translateX(-18px); } }
+.c-frame { transform-origin: 23px 17px; animation: cFrame 2.6s ease-in-out infinite; }
+@keyframes cFrame { 0%, 40%, 100% { transform: scale(1); } 60% { transform: scale(0.94); } 80% { transform: scale(1.03); } }
+.c-play { transform-origin: 23.8px 17px; animation: cPlay 2.6s ease-in-out infinite; }
+@keyframes cPlay { 0%, 38%, 100% { transform: scale(1); opacity: 1; } 52%, 62% { transform: scale(0.4); opacity: 0; } 82% { transform: scale(1.15); opacity: 1; } }
 
 /* Update: arrows turn, pause, turn */
 .u-spin { transform-origin: 15px 15px; animation: uSpin 3s cubic-bezier(.65, 0, .35, 1) infinite; }
