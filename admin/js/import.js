@@ -242,7 +242,7 @@
             done++;
           } catch (err) {
             m.close();
-            A.toast(/delete_content_import|schema cache/i.test(A.errMsg(err)) ? "Run supabase/import-delete.sql in Supabase first." : `Couldn't delete “${r.filename}”: ${A.errMsg(err)}`, "err");
+            A.toast(/delete_content_import|schema cache|PGRST202/i.test(`${err?.code} ${err?.message}`) ? "Deleting imports isn't set up yet — run supabase/import-delete.sql in the Supabase SQL Editor." : `Couldn't delete “${r.filename}”: ${A.errMsg(err)}`, "err");
             if (done) { A.resetCatalog?.(); showHistory(); }
             return;
           }
