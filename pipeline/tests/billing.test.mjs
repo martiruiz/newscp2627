@@ -267,5 +267,19 @@ check("cached pair counts = live counts", cm(after2.pairCounts) === cm(before2.l
 const mixed = (await as(U.A, `select value_id, ideas from public.library_filter_counts($1::jsonb, 'Post')`, [JSON.stringify({ sport: { ids: [FB] }, club: { ids: [BE] } })]));
 check("live counts with search + two filters", mixed.find((r) => Number(r.value_id) === BE)?.ideas == after2.fbBe.total);
 
+console.log("\n17. Performance part 3: strategy by size, cached totals, no temp tables");
+const libq = async (filters, q = null, order = "latest") => (await as(U.A, `select public.library_ideas($1::jsonb, $2, null, null, $3, 's', null, 100) r`, [JSON.stringify(filters), q, order]))[0].r;
+const cnt = async (filters, q = null) => cm(await as(U.A, `select value_id, ideas from public.library_filter_counts($1::jsonb, $2)`, [JSON.stringify(filters), q]));
+const cases = [{}, { sport: { ids: [FB] } }, { sport: { ids: [FB] }, club: { ids: [BE] } }, { sport: { ids: [FB, BK] } }, { club: { ids: [BE], mode: "all" } }];
+const snap = async () => { const o = []; for (const f of cases) { o.push(ids(await libq(f)), (await libq(f)).total, ids(await libq(f, "Post 1")), ids(await libq(f, null, "random")), await cnt(f), await cnt(f, "Post")); } return JSON.stringify(o); };
+const s2 = await snap();
+await db.exec(sql("performance-3.sql")); await db.exec(sql("performance-3.sql"));
+const s3 = await snap();
+check("same pages, totals and counts for every filter combination", s2 === s3);
+check("totals for one value / two values come from the cache", (await libq({ sport: { ids: [FB] }, club: { ids: [BE] } })).total === after2.fbBe.total);
+await as(U.SUPER, `select public.remove_content_idea(4, 'x')`);
+check("removed post excluded from tag totals", (await libq({ sport: { ids: [FB, BK] } })).total === after2.either.total - 1);
+await as(U.SUPER, `select public.restore_content_idea('p4')`);
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);
