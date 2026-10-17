@@ -1,4 +1,5 @@
-// SCP Admin — Import: CSV wizard (1. Upload → 2. Analysis → 3. Results) and import history (download / errors / revert).
+// SCP Admin — Import: CSV wizard (1. Upload → 2. Analysis → 3. Results) and import history (download / errors / revert /
+// delete one or several imports — undoing them too, or keeping their posts).
 // CSV format (same as the previous back-end):
 //   external_id,published_at,embed,url,format,title,sport,competition,club,platform,entity[,trend,campaign]
 //   Several values in one cell are separated by commas, e.g. "LaLiga,Champions League".
@@ -131,25 +132,29 @@
         <div><h1>Import</h1><p>Import history</p></div>
         <button class="btn btn-primary" type="button" data-new>${icon("import")}New Import</button>
       </div>
+      <div class="selbar" hidden data-imp-selbar><span data-imp-selcount></span><span class="spacer"></span>
+        <button class="btn btn-ghost btn-sm" type="button" data-imp-clear>Clear</button>
+        <button class="btn btn-danger btn-sm" type="button" data-imp-delete-sel>${icon("trash")}Delete selected</button></div>
       <section class="panel"><div class="table-wrap"><table class="data">
-        <thead><tr><th>File</th><th>Status</th><th>Rows</th><th>Created</th><th>Replaced</th><th>Skipped</th><th>Date</th><th class="td-actions">Actions</th></tr></thead>
-        <tbody data-history><tr><td class="table-empty" colspan="8"><span class="spinner sm"></span> Loading...</td></tr></tbody>
+        <thead><tr><th class="td-check"><input class="check" type="checkbox" data-imp-all aria-label="Select all imports"></th><th>File</th><th>Status</th><th>Rows</th><th>Created</th><th>Replaced</th><th>Skipped</th><th>Date</th><th class="td-actions">Actions</th></tr></thead>
+        <tbody data-history><tr><td class="table-empty" colspan="9"><span class="spinner sm"></span> Loading...</td></tr></tbody>
       </table></div></section>`;
     $("[data-new]").addEventListener("click", () => showWizard());
     const { data, error } = await A.db.from("idea_imports")
       .select("id,filename,file_path,status,total_rows,rows_created,rows_replaced,rows_skipped,error_count,created_at,completed_at")
       .order("created_at", { ascending: false }).limit(500);
     const body = $("[data-history]");
-    if (error) { body.innerHTML = `<tr><td class="table-empty error-text" colspan="8">${esc(A.errMsg(error))}</td></tr>`; return; }
+    if (error) { body.innerHTML = `<tr><td class="table-empty error-text" colspan="9">${esc(A.errMsg(error))}</td></tr>`; return; }
     if (!data.length) {
-      body.innerHTML = `<tr><td class="table-empty" colspan="8">No imports yet<br><button class="link" type="button" data-first style="margin-top:8px">Start your first import</button></td></tr>`;
+      body.innerHTML = `<tr><td class="table-empty" colspan="9">No imports yet<br><button class="link" type="button" data-first style="margin-top:8px">Start your first import</button></td></tr>`;
       $("[data-first]").addEventListener("click", () => showWizard());
       return;
     }
     const dash = (v, s) => (s === "analyzed" || v == null ? "—" : num(v));
     const LABEL = { analyzed: "Pending", importing: "Importing", completed: "Completed", reverted: "Reverted", failed: "Failed" };
     body.innerHTML = data.map((r) => `
-      <tr>
+      <tr data-imp-row="${r.id}">
+        <td class="td-check"><input class="check" type="checkbox" data-imp-pick="${r.id}" aria-label="Select ${esc(r.filename)}"></td>
         <td class="td-title" title="${esc(r.filename)}">${esc(r.filename)}</td>
         <td><span class="status status-${r.status}">${LABEL[r.status] || r.status}</span></td>
         <td>${r.status === "analyzed" ? 0 : num(r.total_rows)}</td>
@@ -161,10 +166,98 @@
           ${r.file_path ? `<button class="icon-btn" type="button" data-dl="${r.id}" title="Download CSV" aria-label="Download CSV">${icon("download")}</button>` : ""}
           ${r.error_count ? `<button class="icon-btn" type="button" data-errs="${r.id}" title="Download ${num(r.error_count)} errors as CSV" aria-label="Download errors">${icon("alert")}</button>` : ""}
           ${["completed", "failed"].includes(r.status) ? `<button class="icon-btn danger" type="button" data-revert="${r.id}" title="Revert import" aria-label="Revert import">${icon("undo")}</button>` : ""}
+          <button class="icon-btn danger" type="button" data-imp-del="${r.id}" title="Delete import" aria-label="Delete import">${icon("trash")}</button>
         </td>
       </tr>`).join("");
 
+    // ---------- Delete imports (one or several) ----------
+    const picked = new Set();
+    const syncSel = () => {
+      $("[data-imp-selbar]").hidden = !picked.size;
+      $("[data-imp-selcount]").innerHTML = `<b>${num(picked.size)}</b> import${picked.size === 1 ? "" : "s"} selected`;
+      $("[data-imp-all]").checked = picked.size === data.length;
+      $("[data-imp-all]").indeterminate = picked.size > 0 && picked.size < data.length;
+    };
+    $("[data-imp-all]").addEventListener("change", (e) => {
+      picked.clear();
+      if (e.target.checked) data.forEach((r) => picked.add(r.id));
+      $$("[data-imp-pick]").forEach((c) => (c.checked = e.target.checked));
+      syncSel();
+    });
+    body.addEventListener("change", (e) => {
+      const c = e.target.closest("[data-imp-pick]");
+      if (!c) return;
+      c.checked ? picked.add(Number(c.dataset.impPick)) : picked.delete(Number(c.dataset.impPick));
+      syncSel();
+    });
+    $("[data-imp-clear]").addEventListener("click", () => { picked.clear(); $$("[data-imp-pick]").forEach((c) => (c.checked = false)); syncSel(); });
+    $("[data-imp-delete-sel]").addEventListener("click", () => deleteImports(data.filter((r) => picked.has(r.id))));
+
+    // Asks how to delete: undo the import too (default) or keep its posts. Imports that never added posts are just removed.
+    function deleteImports(list) {
+      if (!list.length) return;
+      const withPosts = list.filter((r) => ["completed", "failed", "importing"].includes(r.status) && (r.rows_created || r.rows_replaced));
+      const created = withPosts.reduce((n, r) => n + (r.rows_created || 0), 0);
+      const replaced = withPosts.reduce((n, r) => n + (r.rows_replaced || 0), 0);
+      const one = list.length === 1;
+      const m = A.modal({
+        title: one ? `Delete “${list[0].filename}”?` : `Delete ${num(list.length)} imports?`,
+        size: "sm",
+        body: withPosts.length ? `
+          <div class="imp-del-opts">
+            <label class="imp-del-opt"><input type="radio" name="imp-del" value="undo">
+              <span><b>Delete and undo ${one ? "the import" : "the imports"}</b>
+              <small>The ${num(created)} post${created === 1 ? "" : "s"} ${one ? "it" : "they"} created ${created === 1 ? "is" : "are"} deleted from the library${replaced ? ` and the ${num(replaced)} post${replaced === 1 ? "" : "s"} ${one ? "it" : "they"} replaced ${replaced === 1 ? "is" : "are"} restored` : ""}.</small>
+              ${created >= 100 ? `<em class="imp-del-warn">⚠ ${num(created)} posts will disappear from the Content Library (and from members' saved boards).</em>` : ""}</span></label>
+            <label class="imp-del-opt"><input type="radio" name="imp-del" value="keep">
+              <span><b>Delete from the history only</b>
+              <small>The posts stay in the library. You won't be able to revert ${one ? "this import" : "these imports"} later.</small></span></label>
+          </div>
+          <p class="muted imp-del-note">The uploaded CSV file${one ? " is" : "s are"} deleted too. This can't be undone.</p>`
+          : `<p class="muted">${one ? "This import" : "These imports"} didn't add any posts. ${one ? "It's" : "They're"} removed from the history together with the uploaded CSV file${one ? "" : "s"}.</p>`,
+        foot: `<button class="btn btn-ghost" type="button" data-no>Cancel</button><button class="btn btn-danger" type="button" data-yes${withPosts.length ? " disabled" : ""}>${icon("trash")}Delete${one ? "" : ` ${num(list.length)}`}</button>`,
+      });
+      // With posts involved nothing is preselected: Delete is enabled only after choosing what happens to them
+      m.el.addEventListener("change", (ev) => {
+        if (!ev.target.matches("input[name=imp-del]")) return;
+        const yes = $("[data-yes]", m.el);
+        yes.disabled = false;
+        yes.innerHTML = `${icon("trash")}${ev.target.value === "undo" ? `Delete and remove ${num(created)} posts` : `Delete${one ? "" : ` ${num(list.length)}`}, keep posts`}`;
+      });
+      $("[data-no]", m.el).addEventListener("click", () => m.close());
+      $("[data-yes]", m.el).addEventListener("click", async (ev) => {
+        const btn = ev.currentTarget;
+        const choice = $("input[name=imp-del]:checked", m.el)?.value;
+        if (withPosts.length && !choice) return;
+        const undo = choice === "undo";
+        btn.disabled = true;
+        let done = 0, removed = 0, restored = 0;
+        const files = [];
+        for (const r of list) {
+          btn.innerHTML = `<span class="spinner sm"></span> ${num(done + 1)} / ${num(list.length)}`;
+          try {
+            const res = await rpc("delete_content_import", { p_import_id: r.id, p_with_posts: undo });
+            removed += res?.deleted || 0; restored += res?.restored || 0;
+            if (res?.file_path) files.push(res.file_path);
+            done++;
+          } catch (err) {
+            m.close();
+            A.toast(/delete_content_import|schema cache/i.test(A.errMsg(err)) ? "Run supabase/import-delete.sql in Supabase first." : `Couldn't delete “${r.filename}”: ${A.errMsg(err)}`, "err");
+            if (done) { A.resetCatalog?.(); showHistory(); }
+            return;
+          }
+        }
+        if (files.length) await A.db.storage.from("imports").remove(files);
+        m.close();
+        A.toast(`${num(done)} import${done === 1 ? "" : "s"} deleted${undo && (removed || restored) ? ` · ${num(removed)} posts removed${restored ? `, ${num(restored)} restored` : ""}` : ""}.`);
+        A.resetCatalog?.();
+        showHistory();
+      });
+    }
+
     body.addEventListener("click", async (e) => {
+      const del = e.target.closest("[data-imp-del]");
+      if (del) return deleteImports(data.filter((r) => r.id === Number(del.dataset.impDel)));
       const dl = e.target.closest("[data-dl]"), errs = e.target.closest("[data-errs]"), rev = e.target.closest("[data-revert]");
       const rec = (el, attr) => data.find((r) => r.id === Number(el.dataset[attr]));
       if (dl) {

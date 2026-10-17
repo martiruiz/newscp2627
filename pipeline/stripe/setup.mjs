@@ -19,6 +19,9 @@ const env = (k) => process.env[k] || "";
 const live = process.argv.includes("--live");
 const key = env("STRIPE_SECRET_KEY");
 if (!key) { console.error("Add STRIPE_SECRET_KEY to pipeline/.env (sk_test_… from Stripe → Developers → API keys)."); process.exit(1); }
+if (key.startsWith("pk_")) { console.error("That's the PUBLISHABLE key (pk_…). Use the SECRET key (sk_test_…): Stripe → API keys → Standard keys → Secret key → Reveal."); process.exit(1); }
+if (key.startsWith("rk_")) { console.error("That's a restricted key (rk_…). Use the standard SECRET key (sk_test_…)."); process.exit(1); }
+if (!/^sk_(test|live)_/.test(key)) { console.error("STRIPE_SECRET_KEY should start with sk_test_ (test) or sk_live_ (live)."); process.exit(1); }
 if (key.startsWith("sk_live_") && !live) { console.error("That's a LIVE key. Test with sk_test_… first, then run again with --live."); process.exit(1); }
 if (!key.startsWith("sk_live_") && live) { console.error("--live needs a live key (sk_live_…)."); process.exit(1); }
 if (!env("SUPABASE_URL") || !env("SUPABASE_SERVICE_ROLE_KEY")) { console.error("Add SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY to pipeline/.env."); process.exit(1); }

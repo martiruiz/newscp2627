@@ -205,5 +205,17 @@ check("canceled → no access", !se.has_library && !se.has_ai && se.pack_left ==
 const b = (await as(T, `select public.my_billing() r`))[0].r;
 check("profile billing shows the ended plan", b.has_customer && b.trial_used && b.subscription.status === "canceled" && b.subscription.plan === "all_access", JSON.stringify(b));
 
+console.log("\n14. Admin → Import: delete imports");
+await db.exec(sql("import-delete.sql"));
+const mkImport = async (name) => (await db.query(`insert into public.idea_imports (filename, status, total_rows, rows_created) values ($1, 'completed', 2, 2) returning id`, [name])).rows[0].id;
+const i1 = await mkImport("keep.csv"), i2 = await mkImport("undo.csv");
+await db.query(`insert into public.content_ideas (external_id, title, url, import_id) values ('k1','K1','u',$1), ('k2','K2','u',$1), ('u1','U1','u',$2), ('u2','U2','u',$2)`, [i1, i2]);
+check("members can't delete imports", await as(U.A, `select public.delete_content_import(${i1}, false)`).then(() => false, () => true));
+await as(U.SUPER, `select public.delete_content_import(${i1}, false)`);
+const kept = (await db.query(`select count(*)::int n, count(import_id)::int linked from public.content_ideas where external_id in ('k1','k2')`)).rows[0];
+check("history only: import gone, its posts stay (unlinked)", kept.n === 2 && kept.linked === 0 && !(await db.query(`select 1 from public.idea_imports where id = $1`, [i1])).rows.length);
+const r2 = (await as(U.SUPER, `select public.delete_content_import(${i2}, true) r`))[0].r;
+check("delete + undo: its posts are removed", r2.deleted === 2 && (await db.query(`select count(*)::int n from public.content_ideas where external_id in ('u1','u2')`)).rows[0].n === 0, JSON.stringify(r2));
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

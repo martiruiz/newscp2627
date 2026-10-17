@@ -416,3 +416,15 @@ body { background: radial-gradient(60% 40% at 50% 0%, rgba(240, 184, 74, 0.06), 
 .removed-list { flex-basis: 100%; display: grid; gap: 8px; max-height: 320px; overflow: auto; }
 .removed-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); }
 .removed-row a { color: var(--text); font-weight: 500; }
+
+/* Import → delete imports */
+.imp-del-opts { display: grid; gap: 8px; }
+.imp-del-opt { display: flex; gap: 10px; align-items: flex-start; padding: 12px; border-radius: 10px; border: 1px solid var(--border-2); cursor: pointer; }
+.imp-del-opt:has(input:checked) { border-color: var(--accent); background: var(--panel-3); }
+.imp-del-opt input { margin-top: 3px; accent-color: var(--accent); }
+.imp-del-opt b { display: block; font-size: 14px; }
+.imp-del-opt small { display: block; margin-top: 3px; font-size: 13px; line-height: 1.45; color: var(--muted); }
+.imp-del-note { margin-top: 12px; font-size: 13px; }
+.selbar .btn svg { width: 14px; height: 14px; }
+.imp-del-warn { display: block; margin-top: 6px; font-style: normal; font-size: 12.5px; font-weight: 600; color: var(--red); }
+.modal-foot .btn[disabled] { opacity: 0.45; cursor: not-allowed; }
