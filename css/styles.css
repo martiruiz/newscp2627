@@ -4005,3 +4005,60 @@ button.plan-cta { width: 100%; cursor: pointer; font: inherit; }
 .feature-visual:has(.fx-feed) .thumbs { left: 26px; right: 26px; }
 .feature-visual:has(.fx-feed) .thumbs-fade { left: 0; right: 0; top: auto; bottom: 0; height: 90px; z-index: 1; }
 .feature-visual:has(.fx-feed)::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 40px; z-index: 1; background: linear-gradient(to bottom, var(--surface), rgba(23, 33, 59, 0)); }
+
+/* ---------- Plans in motion (js/plans.js): staggered entrance, price count-up, animated best plan, hover light ---------- */
+@property --plan-angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+.plans[data-fx="wait"] .plan-card { opacity: 0; transform: translateY(28px); }
+.plans[data-fx="in"] .plan-card { animation: planIn 0.8s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(var(--ci, 0) * 0.12s); }
+.plans[data-fx="in"] .plan-card.is-best { animation-name: planInBest; }
+@keyframes planIn { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+@keyframes planInBest { from { opacity: 0; transform: translateY(28px) scale(0.97); } to { opacity: 1; transform: scale(1.03); } }
+.plans[data-fx="in"] .plan-features li { animation: planLi 0.5s ease-out both; animation-delay: calc(var(--ci, 0) * 0.12s + 0.35s + var(--li, 0) * 0.07s); }
+@keyframes planLi { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: none; } }
+.plans[data-fx="in"] .plan-features li img { animation: planTick 0.45s cubic-bezier(.3, 1.6, .5, 1) both; animation-delay: calc(var(--ci, 0) * 0.12s + 0.4s + var(--li, 0) * 0.07s); }
+@keyframes planTick { from { transform: scale(0) rotate(-45deg); } to { transform: none; } }
+.plan-price b { font-variant-numeric: tabular-nums; display: inline-block; }
+.plan-price.is-swapping b { animation: planSwap 0.5s cubic-bezier(.2, .8, .2, 1); }
+.plan-price.is-swapping span, .plan-price.is-swapping + .plan-sub { animation: planFade 0.5s ease; }
+@keyframes planSwap { from { opacity: 0; transform: translateY(-14px) rotateX(70deg); } to { opacity: 1; transform: none; } }
+@keyframes planFade { from { opacity: 0; } to { opacity: 1; } }
+
+/* Hover: lift + light following the cursor + arrow on the button */
+.plan-card { transition: transform 0.4s cubic-bezier(.2, .8, .2, 1), border-color 0.3s, box-shadow 0.3s; }
+.plan-card::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity 0.3s;
+  background: radial-gradient(280px circle at var(--mx, 50%) var(--my, 20%), rgba(240, 184, 74, 0.09), transparent 65%); }
+.plan-card:hover { transform: translateY(-6px); border-color: rgba(240, 184, 74, 0.45); box-shadow: var(--inset-glow), 0 24px 50px rgba(0, 0, 0, 0.4); }
+.plan-card:hover::after { opacity: 1; }
+.plan-card > * { position: relative; z-index: 1; }
+.plan-card .plan-flag { position: absolute; z-index: 3; }
+.plan-cta { display: inline-flex; align-items: center; justify-content: center; gap: 0; }
+.plan-cta-arrow { display: inline-block; width: 0; opacity: 0; font-style: normal; transform: translateX(-6px); transition: width 0.25s, opacity 0.25s, transform 0.25s, margin 0.25s; }
+.plan-card:hover .plan-cta-arrow, .plan-cta:focus-visible .plan-cta-arrow { width: 1em; margin-left: 8px; opacity: 1; transform: none; }
+
+/* Best plan: slightly bigger, a gold light running round the border, shining badge and button */
+.plan-card.is-best { transform: scale(1.03); z-index: 1; }
+.plan-card.is-best:hover { transform: scale(1.03) translateY(-6px); }
+.plan-card.is-best::before { content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1.5px; pointer-events: none; z-index: 2;
+  background: conic-gradient(from var(--plan-angle), transparent 0 62%, rgba(240, 184, 74, 0.2) 70%, var(--gold-light) 80%, var(--gold) 84%, transparent 92%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
+  animation: planBorder 4.5s linear infinite; }
+@keyframes planBorder { to { --plan-angle: 360deg; } }
+.plan-card.is-best { animation: planBestGlow 4.5s ease-in-out infinite; }
+.plans[data-fx="in"] .plan-card.is-best { animation: planInBest 0.8s cubic-bezier(.2, .8, .2, 1) both, planBestGlow 4.5s ease-in-out 1s infinite; animation-delay: calc(var(--ci, 0) * 0.12s), 1s; }
+@keyframes planBestGlow { 0%, 100% { box-shadow: 0 0 50px rgba(240, 184, 74, 0.14); } 50% { box-shadow: 0 0 90px rgba(240, 184, 74, 0.3); } }
+.plan-flag:not(.is-current) { overflow: hidden; }
+.plan-flag:not(.is-current)::after { content: ""; position: absolute; top: 0; bottom: 0; left: -70%; width: 50%; transform: skewX(-20deg);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.75), transparent); animation: fxShine 3.6s ease-in-out infinite; }
+.plan-card.is-best .plan-cta { position: relative; overflow: hidden; animation: planCta 3.6s ease-in-out infinite; }
+.plan-card.is-best .plan-cta::after { content: ""; position: absolute; top: 0; bottom: 0; left: -60%; width: 40%; transform: skewX(-20deg);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent); animation: fxShine 3.6s ease-in-out infinite 0.6s; }
+@keyframes planCta { 0%, 70%, 100% { box-shadow: 0 0 0 0 rgba(240, 184, 74, 0); } 80% { box-shadow: 0 0 0 6px rgba(240, 184, 74, 0.18); } 95% { box-shadow: 0 0 0 12px rgba(240, 184, 74, 0); } }
+
+/* Monthly / yearly switch: sliding pill */
+.plan-interval { position: relative; }
+.plan-interval button { position: relative; z-index: 1; }
+@media (max-width: 960px) { .plan-card.is-best, .plan-card.is-best:hover { transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .plan-card, .plan-card *, .plan-card::before, .plan-card::after { animation: none !important; transition: none !important; }
+  .plans[data-fx] .plan-card { opacity: 1 !important; transform: none !important; }
+}

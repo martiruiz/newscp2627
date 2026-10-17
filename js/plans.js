@@ -39,14 +39,14 @@
     const trial = Number(p.trial_days) > 0 && !mine?.plan ? Number(p.trial_days) : 0;
     const cta = current
       ? (mine.source === "stripe" ? `<button class="btn btn-outline plan-cta" type="button" data-billing-portal>Manage your plan</button>` : `<span class="btn btn-outline plan-cta is-current">Your plan</span>`)
-      : `<button class="btn ${best ? "btn-gold" : "btn-outline"} plan-cta" type="button" data-checkout-plan="${esc(p.key)}" data-interval="${yearly ? "year" : "month"}">${mine?.plan ? `Switch to ${esc(p.name)}` : trial ? `Start ${trial}-day free trial` : `Get ${esc(p.name)}`}</button>`;
+      : `<button class="btn ${best ? "btn-gold" : "btn-outline"} plan-cta" type="button" data-checkout-plan="${esc(p.key)}" data-interval="${yearly ? "year" : "month"}"><span>${mine?.plan ? `Switch to ${esc(p.name)}` : trial ? `Start ${trial}-day free trial` : `Get ${esc(p.name)}`}</span><i class="plan-cta-arrow" aria-hidden="true">→</i></button>`;
     return `<article class="plan-card${best ? " is-best" : ""}${current ? " is-current" : ""}">
       ${current ? `<span class="plan-flag is-current">${mine.status === "trialing" ? "Your trial" : "Your plan"}</span>` : best ? `<span class="plan-flag">Most complete</span>` : ""}
       <h3>${esc(p.name)}</h3>
       <p class="plan-blurb">${esc(BLURB[p.key] || "")}</p>
       <p class="plan-price">${yearly
-        ? `<b>${eur(p.price_year)}</b><span>/ year</span>`
-        : `<b>${eur(p.price_month)}</b><span>/ month</span>`}</p>
+        ? `<b data-price="${p.price_year}">${eur(p.price_year)}</b><span>/ year</span>`
+        : `<b data-price="${p.price_month}">${eur(p.price_month)}</b><span>/ month</span>`}</p>
       <p class="plan-sub">${yearly ? `${eur(p.price_year / 12)}/month · ${saving > 0 ? `save ${saving}%` : "billed yearly"}` : hasYear(p) ? `or ${eur(p.price_year)}/year (save ${saving}%)` : "&nbsp;"}</p>
       <ul class="plan-features">
         ${tick("Full Content Library: thousands of posts")}
@@ -76,6 +76,52 @@
       <button type="button" role="tab" aria-selected="${interval === "year"}" data-interval-pick="year">Yearly${best ? `<em>save ${best}%</em>` : ""}</button>
     </div>`;
   }
+  // ---------- Motion: cards rise in one by one, features appear line by line, prices count up (once, on screen);
+  // switching monthly / yearly flips the prices; a light follows the cursor on each card ----------
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const countUp = (el, delay) => {
+    const to = Number(el.dataset.price);
+    if (!to || reduced) return;
+    const start = performance.now() + delay, dur = 1100;
+    el.textContent = eur(0);
+    const tick = (now) => {
+      const t = Math.min(1, Math.max(0, (now - start) / dur));
+      const v = to * (1 - Math.pow(1 - t, 3));
+      el.textContent = t >= 1 ? eur(to) : `€${v.toFixed(2)}`;
+      if (t < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  };
+  function decorate(box, swap) {
+    [...box.querySelectorAll(".plan-card")].forEach((card, i) => {
+      card.style.setProperty("--ci", i);
+      card.querySelectorAll(".plan-features li").forEach((li, k) => li.style.setProperty("--li", k));
+    });
+    if (box.dataset.fx === "in") { box.dataset.fx = "done"; return; } // redrawn while entering (e.g. current plan loaded)
+    if (box.dataset.fx === "done") {
+      if (swap) box.querySelectorAll(".plan-price").forEach((p) => p.classList.add("is-swapping"));
+      return;
+    }
+    if (reduced || !("IntersectionObserver" in window)) { box.dataset.fx = "done"; return; }
+    box.dataset.fx = "wait";
+    if (box._fxObs) return;
+    box._fxObs = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      box._fxObs.disconnect();
+      box.dataset.fx = "in";
+      box.querySelectorAll("[data-price]").forEach((el, i) => countUp(el, 250 + i * 120));
+      setTimeout(() => { box.dataset.fx = "done"; }, 2200);
+    }, { threshold: 0.25 });
+    box._fxObs.observe(box);
+    box.addEventListener("pointermove", (e) => {
+      const card = e.target.closest(".plan-card");
+      if (!card) return;
+      const r = card.getBoundingClientRect();
+      card.style.setProperty("--mx", `${e.clientX - r.left}px`);
+      card.style.setProperty("--my", `${e.clientY - r.top}px`);
+    });
+  }
+
   async function get(table, fallback) {
     try {
       const r = await fetch(`${cfg.supabaseUrl}/rest/v1/${table}?select=*&active=eq.true&order=sort`, { headers: { apikey: cfg.supabaseAnonKey, Authorization: `Bearer ${cfg.supabaseAnonKey}` } });
@@ -86,8 +132,9 @@
   (async () => {
     const [plans, packs] = await Promise.all([get("plans", FALLBACK_PLANS), packBox ? get("ai_packs", FALLBACK_PACKS) : []]);
     try { interval = new URLSearchParams(location.search).get("interval") === "year" || localStorage.getItem("scp-interval") === "year" ? "year" : "month"; } catch {}
-    const draw = () => boxes.forEach((b) => {
+    const draw = (swap = false) => boxes.forEach((b) => {
       b.innerHTML = plans.map(planCard).join("");
+      decorate(b, swap);
       let t = b.previousElementSibling?.matches?.(".plan-interval") ? b.previousElementSibling : null;
       if (plans.some(hasYear)) { if (t) t.outerHTML = toggleHtml(plans); else b.insertAdjacentHTML("beforebegin", toggleHtml(plans)); }
     });
@@ -96,9 +143,10 @@
     document.addEventListener("click", (e) => {
       const b = e.target.closest("[data-interval-pick]");
       if (!b) return;
+      if (interval === b.dataset.intervalPick) return;
       interval = b.dataset.intervalPick;
       try { localStorage.setItem("scp-interval", interval); } catch {}
-      draw();
+      draw(true);
     });
     // Signed in: mark the current plan
     const client = window.SCP_AUTH?.client;
