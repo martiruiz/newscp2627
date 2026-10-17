@@ -392,7 +392,7 @@
         <span class="org-m-icon">${icon(typeOf(e.content_type)?.icon || "layout-grid")}</span>
         <div><input class="org-m-title" type="text" maxlength="140" placeholder="What are you posting?" value="${esc(e.label)}" data-f="label">
         <p><label class="org-m-date">${icon("calendar-days")}<input type="date" value="${e.entry_date || ""}" data-f-date aria-label="Date"></label>${d ? `<span class="org-m-dayname">${DAY_NAMES[dow(d)]}</span>` : `<span class="org-m-dayname">No date · idea</span>`}
-          · <select class="org-m-time" data-f-time aria-label="Time">${(MINUTES.includes(e.time_slot) ? MINUTES : [...MINUTES, e.time_slot].sort()).map((t) => `<option${t === e.time_slot ? " selected" : ""}>${t}</option>`).join("")}</select>
+          ${window.SCP_TIME ? window.SCP_TIME.button(e.time_slot, 'data-f-time aria-label="Time"') : ""}
           <span class="org-saved" data-save-state data-state="saved">${icon("check")}Saved</span></p></div>
         <button class="org-m-x" type="button" aria-label="Close" data-close>${icon("x")}</button>
       </header>
@@ -420,6 +420,7 @@
     setTimeout(() => !e.label && $("[data-f=label]", entryPanel).focus(), 30);
   }
   function closeEntry() {
+    window.SCP_TIME?.close();
     if (!openId) return;
     for (const [id, timer] of pending) { clearTimeout(timer); pending.delete(id); const e = entries.find((x) => x.id === id); if (e) update(id, { label: e.label, copy: e.copy, notes: e.notes }, { silent: true }); }
     entryModal.hidden = true; openId = null; render();
@@ -432,13 +433,16 @@
     if (f === "copy") $("[data-copy-count]", entryPanel).textContent = ev.target.value.length;
     autosave(openId, { [f]: ev.target.value });
   });
+  // Time picker (js/time-picker.js): saves as soon as a time is chosen; opens night / evening if the post moves there
+  window.SCP_TIME?.attach(entryModal, (value) => {
+    if (!openId) return;
+    const band = bandOf(hourOf(value));
+    if (band && folds[band]) { folds[band] = false; saveFolds(); }
+    update(openId, { time_slot: value }, { silent: true });
+  });
   entryModal.addEventListener("change", async (ev) => {
     if (!openId) return;
-    if (ev.target.matches("[data-f-time]")) {
-      const band = bandOf(hourOf(ev.target.value));
-      if (band && folds[band]) { folds[band] = false; saveFolds(); }
-      update(openId, { time_slot: ev.target.value }, { silent: true });
-    }
+
     if (ev.target.matches("[data-f-date]")) {
       const e = entries.find((x) => x.id === openId);
       const date = ev.target.value || null;
@@ -467,6 +471,7 @@
   // ---------- Weekly base modal ----------
   const baseModal = $("[data-base-modal]");
   const basePanel = $("[data-base-panel]");
+  window.SCP_TIME?.attach(baseModal, (value, btn) => { const input = btn.parentElement.querySelector("[name=time]"); if (input) input.value = value; });
   function renderBase() {
     const byDay = DAYS.map((_, d) => base.filter((s) => s.day === d));
     basePanel.innerHTML = `
@@ -478,7 +483,7 @@
       <div class="org-m-body">
         <form class="org-base-form" data-base-form>
           <select name="day" aria-label="Day">${DAY_NAMES.map((n, i) => `<option value="${i}">${n}</option>`).join("")}</select>
-          <select name="time" aria-label="Time">${MINUTES.map((t) => `<option${t === "12:00" ? " selected" : ""}>${t}</option>`).join("")}</select>
+          <span class="org-base-time">${window.SCP_TIME ? window.SCP_TIME.button("12:00", 'aria-label="Time"') : ""}<input type="hidden" name="time" value="12:00"></span>
           <select name="type" aria-label="Type"><option value="">Any type</option>${TYPES.map((t) => `<option value="${t.key}">${t.label}</option>`).join("")}</select>
           <input name="label" type="text" maxlength="140" placeholder="e.g. Matchday recap reel" required aria-label="Post">
           <button class="btn btn-gold" type="submit">${icon("plus")}Add</button>
