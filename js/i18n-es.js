@@ -1388,4 +1388,10 @@ window.SCP_ES = {
   "Your bank needs you to confirm the payment to finish the change.": "Tu banco necesita que confirmes el pago para terminar el cambio.",
   "We'd like a custom plan for {n} or more users.": "Nos gustaría un plan a medida para {n} usuarios o más.",
   "Too many messages in a short time. Please try again later.": "Demasiados mensajes en poco tiempo. Inténtalo más tarde.",
+  "Every post, filter and category, updated daily": "Todos los posts, filtros y categorías, actualizados cada día",
+  "Save posts to boards": "Guarda posts en tableros",
+  "Weekly and monthly calendars, drag and drop, PDF / Excel / calendar export": "Calendarios semanales y mensuales, arrastrar y soltar, exportar a PDF / Excel / calendario",
+  "Hook, why it works, format and how to adapt it": "Gancho, por qué funciona, formato y cómo adaptarlo",
+  "{n}-day free trial on every plan · card required · cancel anytime": "{n} días de prueba gratis en todos los planes · con tarjeta · cancela cuando quieras",
+  "Best value": "Mejor precio",
 };

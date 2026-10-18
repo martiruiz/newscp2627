@@ -4603,3 +4603,20 @@ html.theme-anim, html.theme-anim body, html.theme-anim *, html.theme-anim *::bef
 .news-meta, .post-cover figcaption, .plan-note, .co-small, .cmp tbody th small, .cmp .cmp-price small, .pf-billing-fine, .nl-consent, .dr-hint { font-size: 13px; }
 /* numbers that animate or line up don't jump around */
 .stat-num, .plan-price b, .pack-price, .pf-facts dd, .cmp-price td, .bill-kpi b, .lf-cnt, .co-terms dd { font-variant-numeric: tabular-nums; }
+.cmp-note { margin-top: 16px; text-align: center; font-size: 14px; color: var(--muted); }
+.cmp td b { font-weight: 600; }
+
+/* AI packs: same motion as the plan cards (rise in, count up, lift + cursor light, best value highlighted) */
+.pack-card { position: relative; box-shadow: var(--inset-glow); transition: transform 0.4s cubic-bezier(.2, .8, .2, 1), border-color 0.3s, box-shadow 0.3s; }
+.pack-card::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity 0.3s;
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 20%), rgba(240, 184, 74, 0.1), transparent 65%); }
+.pack-card:hover { transform: translateY(-6px); border-color: rgba(240, 184, 74, 0.45); box-shadow: var(--inset-glow), 0 24px 50px rgba(0, 0, 0, 0.4); }
+.pack-card:hover::after { opacity: 1; }
+.pack-card > * { position: relative; z-index: 1; }
+.pack-card .plan-flag { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); z-index: 3; white-space: nowrap; }
+.pack-card.is-best { border-color: rgba(240, 184, 74, 0.7); background: linear-gradient(170deg, rgba(240, 184, 74, 0.14), transparent 45%), var(--surface); box-shadow: 0 0 50px rgba(240, 184, 74, 0.16); }
+.pack-card.is-best .btn { background: var(--gold); color: var(--on-gold); border-color: var(--gold); }
+.pack-units b, .pack-price { font-variant-numeric: tabular-nums; }
+.packs[data-fx="wait"] .pack-card { opacity: 0; transform: translateY(28px); }
+.packs[data-fx="in"] .pack-card { animation: planIn 0.8s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(var(--ci, 0) * 0.12s); }
+@media (prefers-reduced-motion: reduce) { .pack-card, .pack-card::after { animation: none !important; transition: none !important; } .packs[data-fx] .pack-card { opacity: 1 !important; transform: none !important; } }

@@ -60,14 +60,22 @@
     </article>`;
   }
 
-  // Comparison table: one row per permission, ✓ / – per plan
+  // Comparison table: a few rows that say what you get (from each plan's permissions and AI quota)
   function compareHtml(plans) {
     if (!plans.length) return "";
-    const rows = (data.entitlements || []).map((e) => `<tr><th scope="row">${esc(e.label)}${e.description ? `<small>${esc(e.description)}</small>` : ""}</th>${plans.map((p) => `<td>${p.entitlements.includes(e.key) ? '<span class="cmp-yes" aria-label="Included">✓</span>' : '<span class="cmp-no" aria-label="Not included">–</span>'}</td>`).join("")}</tr>`).join("");
-    const ai = `<tr><th scope="row">AI analyses per month</th>${plans.map((p) => `<td>${p.ai_unlimited ? "Unlimited" : p.ai_monthly_units || "–"}</td>`).join("")}</tr>`;
-    const trial = `<tr><th scope="row">Free trial (card required)</th>${plans.map((p) => `<td>${p.trial_days ? tx("{n} days", { n: p.trial_days }) : "–"}</td>`).join("")}</tr>`;
-    const price = `<tr class="cmp-price"><th scope="row">Price</th>${plans.map((p) => { const x = priceOf(p); return `<td>${x ? `${fmt(x.amount, currency)}<small>/ ${per(x.interval)}</small>` : "–"}</td>`; }).join("")}</tr>`;
-    return `<div class="cmp-wrap"><table class="cmp"><thead><tr><th></th>${plans.map((p) => `<th scope="col"${p.highlighted ? ' class="is-best"' : ""}>${esc(p.name)}</th>`).join("")}</tr></thead><tbody>${price}${rows}${ai}${trial}</tbody></table></div>`;
+    const yes = `<span class="cmp-yes" aria-label="${esc(tx("Included"))}">✓</span>`, no = `<span class="cmp-no" aria-label="${esc(tx("Not included"))}">–</span>`;
+    const has = (p, k) => p.entitlements.includes(k);
+    const row = (label, sub, cell) => `<tr><th scope="row">${tx(label)}${sub ? `<small>${tx(sub)}</small>` : ""}</th>${plans.map((p) => `<td>${cell(p)}</td>`).join("")}</tr>`;
+    const rows = [
+      row("Content Library", "Every post, filter and category, updated daily", (p) => (has(p, "library.access") ? yes : no)),
+      row("Save posts to boards", "", (p) => (has(p, "library.save_posts") ? yes : no)),
+      row("Content Plan", "Weekly and monthly calendars, drag and drop, PDF / Excel / calendar export", (p) => (has(p, "planner.access") ? yes : no)),
+      row("AI analyses per month", "Hook, why it works, format and how to adapt it", (p) => (!has(p, "ai.analyze_posts") ? no : p.ai_unlimited ? tx("Unlimited") : `<b>${p.ai_monthly_units || "–"}</b>`)),
+    ].join("");
+    const price = `<tr class="cmp-price"><th scope="row">${tx("Price")}</th>${plans.map((p) => { const x = priceOf(p); return `<td>${x ? `${fmt(x.amount * seats, currency)}<small>/ ${per(x.interval)}</small>` : "–"}</td>`; }).join("")}</tr>`;
+    const trialDays = Math.min(...plans.map((p) => p.trial_days || 0));
+    const note = trialDays > 0 ? `<p class="cmp-note">${tx("{n}-day free trial on every plan · card required · cancel anytime", { n: trialDays })}</p>` : "";
+    return `<div class="cmp-wrap"><table class="cmp"><thead><tr><th></th>${plans.map((p) => `<th scope="col"${p.highlighted ? ' class="is-best"' : ""}>${esc(p.name)}</th>`).join("")}</tr></thead><tbody>${price}${rows}</tbody></table></div>${note}`;
   }
 
   function switches(plans) {
@@ -176,14 +184,43 @@
     try {
       const r = await fetch(`${cfg.supabaseUrl}/rest/v1/ai_packs?select=*&active=eq.true&order=sort`, { headers: { apikey: cfg.supabaseAnonKey, Authorization: `Bearer ${cfg.supabaseAnonKey}` } });
       const rows = r.ok ? await r.json() : [];
-      packBox.innerHTML = rows.map((k) => `<article class="pack-card">
-        <p class="pack-units"><b>${k.units}</b> AI analyses</p>
-        <p class="pack-price">${fmt(k.price, "eur")}</p>
+      const best = rows.reduce((m, k) => (!m || k.price / k.units < m.price / m.units ? k : m), null);
+      packBox.innerHTML = rows.map((k, i) => `<article class="pack-card${rows.length > 1 && k === best ? " is-best" : ""}" style="--ci:${i}">
+        ${rows.length > 1 && k === best ? `<span class="plan-flag">${tx("Best value")}</span>` : ""}
+        <p class="pack-units"><b data-count-to="${k.units}">${k.units}</b> AI analyses</p>
+        <p class="pack-price" data-price="${k.price}" data-cur="eur">${fmt(k.price, "eur")}</p>
         <p class="pack-each">${fmt(k.price / k.units, "eur")} per analysis · never expire</p>
         <button class="btn btn-outline" type="button" data-checkout-pack="${esc(k.key)}">Buy this pack</button>
       </article>`).join("");
       if (!rows.length) packBox.closest(".packs-wrap")?.setAttribute("hidden", "");
+      else packFx();
     } catch { packBox.closest(".packs-wrap")?.setAttribute("hidden", ""); }
+  }
+
+  // Packs: same motion as the plan cards — rise in one by one when on screen, numbers count up, light follows the cursor
+  function packFx() {
+    if (reduced || !("IntersectionObserver" in window)) { packBox.dataset.fx = "done"; return; }
+    packBox.dataset.fx = "wait";
+    const obs = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      obs.disconnect();
+      packBox.dataset.fx = "in";
+      packBox.querySelectorAll("[data-price]").forEach((el, i) => countUp(el, 250 + i * 120));
+      packBox.querySelectorAll("[data-count-to]").forEach((el, i) => {
+        const to = Number(el.dataset.countTo), start = performance.now() + 200 + i * 120;
+        const step = (now) => { const t = Math.min(1, Math.max(0, (now - start) / 900)); el.textContent = Math.round(to * (1 - Math.pow(1 - t, 3))); if (t < 1) requestAnimationFrame(step); };
+        el.textContent = "0"; requestAnimationFrame(step);
+      });
+      setTimeout(() => { packBox.dataset.fx = "done"; }, 2000);
+    }, { threshold: 0.25 });
+    obs.observe(packBox);
+    packBox.addEventListener("pointermove", (e) => {
+      const card = e.target.closest(".pack-card");
+      if (!card) return;
+      const r = card.getBoundingClientRect();
+      card.style.setProperty("--mx", `${e.clientX - r.left}px`);
+      card.style.setProperty("--my", `${e.clientY - r.top}px`);
+    });
   }
 
   (async () => {
