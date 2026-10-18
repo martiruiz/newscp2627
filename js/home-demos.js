@@ -61,6 +61,54 @@
     });
   }
 
+  // ---------- Content Library: a cursor picks filters (real crests); the grid shows that filter's top posts ----------
+  const lib = document.querySelector("[data-lib-demo]");
+  if (lib && !reduce) {
+    const grid = lib.querySelector("[data-lib-grid]"), countEl = lib.querySelector("[data-lib-count]"), cursor = lib.querySelector("[data-lib-cursor]");
+    const crests = [...lib.querySelectorAll("[data-lib-f]")];
+    const loc = () => window.SCP_LOC || "en-GB";
+    const views = (n) => `${n >= 1e6 ? `${(n / 1e6).toLocaleString(loc(), { maximumFractionDigits: 1 })}M` : `${Math.round(n / 1e3).toLocaleString(loc())}K`} ${t("views")}`;
+    const initial = grid.innerHTML, initialCount = countEl.innerHTML;
+    fetch("js/lib-filters-data.json").then((r) => r.json()).then((filters) => {
+      // preload the covers so each change is instant
+      filters.forEach((f) => f.posts.forEach((p) => { const im = new Image(); im.src = `assets/lib/${p.id}.jpg`; }));
+      const moveCursor = (el) => {
+        const a = lib.getBoundingClientRect(), b = el.getBoundingClientRect();
+        cursor.style.transform = `translate(${b.left - a.left + b.width * 0.6}px, ${b.top - a.top + b.height * 0.55}px)`;
+      };
+      const countTo = (to) => {
+        const from = 0, t0 = performance.now();
+        const step = (now) => { const k = Math.min(1, (now - t0) / 700); countEl.textContent = Math.round(from + (to - from) * (1 - Math.pow(1 - k, 3))).toLocaleString(loc()); if (k < 1) requestAnimationFrame(step); };
+        requestAnimationFrame(step);
+      };
+      whileVisible(lib, async (isOn) => {
+        lib.classList.add("is-live");
+        while (isOn()) {
+          for (let i = 0; i < crests.length && isOn(); i++) {
+            const c = crests[i], f = filters[Number(c.dataset.libF)];
+            moveCursor(c);
+            await sleep(750);
+            cursor.classList.add("is-click"); c.classList.add("is-press");
+            await sleep(180);
+            cursor.classList.remove("is-click"); c.classList.remove("is-press");
+            crests.forEach((x) => x.classList.toggle("is-on", x === c));
+            countTo(f.count);
+            grid.classList.add("is-swap");
+            await sleep(260);
+            grid.innerHTML = f.posts.map((p) => `<figure style="background:url(assets/lib/${p.id}.jpg) 50% 35% / cover no-repeat, #0b0f1c"><figcaption><b>${t(f.name)}</b><small>${views(p.views)}</small></figcaption></figure>`).join("");
+            grid.classList.remove("is-swap");
+            await sleep(2600);
+          }
+          crests.forEach((x) => x.classList.remove("is-on"));
+          grid.innerHTML = initial; countEl.innerHTML = initialCount;
+          cursor.style.transform = "";
+          await sleep(1800);
+        }
+        lib.classList.remove("is-live");
+      });
+    }).catch(() => {});
+  }
+
   // ---------- Content Plan ----------
   const cp = document.querySelector("[data-cp-demo]");
   if (cp && !reduce) {

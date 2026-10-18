@@ -1611,4 +1611,9 @@ window.SCP_ES = {
   "Player · Messi": "Jugador · Messi",
   "Celebration": "Celebración",
   "Inter Miami kit": "Equipación Inter Miami",
+  "Search filters": "Buscar filtros",
+  "Showing": "Mostrando",
+  "posts": "posts",
+  "Premier League": "Premier League",
+  "FC Barcelona": "FC Barcelona",
 };
