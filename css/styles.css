@@ -5677,3 +5677,6 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 .lib-card.is-embed .lib-media { background: #000; }
 .lib-card.is-embed .lib-media.is-sized .lib-zoom, .lib-card.is-embed .lib-media.is-sized .lib-frame { height: 100%; }
 .lib-card.is-embed .lib-rail { top: 50px; }
+/* embeds have a light colour scheme: matching it keeps the iframe transparent (no white band), the card colour shows behind */
+.lib-card.is-embed .lib-frame { color-scheme: light; background: transparent; }
+.lib-card.is-embed .lib-media { background: var(--surface); }
