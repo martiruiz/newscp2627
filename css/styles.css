@@ -5585,3 +5585,14 @@ body:has(.dock) .sf-mark { padding-bottom: 110px; }
 @keyframes tbSpin { to { --tb-a: 360deg; } }
 @media (max-width: 960px) { .trust-badge::after { display: block; } }
 @media (prefers-reduced-motion: reduce) { .trust-badge::before, .trust-badge::after, .rating::before, .rating::after { animation: none; } }
+
+/* Logo intro on the first page of a visit (js/theme.js adds html.logo-intro for 2.8 s) */
+.site-nav .brand { position: relative; }
+html.logo-intro .site-nav .brand img.brand-logo { animation: logoIn 1s cubic-bezier(.2, .8, .2, 1) 0.15s both; }
+html.logo-intro .site-nav .brand::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  -webkit-mask: url(../assets/logo-scp.png) left center / auto 100% no-repeat; mask: url(../assets/logo-scp.png) left center / auto 100% no-repeat;
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 248, 225, 0.95) 50%, transparent 62%); background-size: 300% 100%;
+  animation: logoShine 1.1s ease-in-out 1.05s both; }
+@keyframes logoIn { from { clip-path: inset(0 100% 0 0); opacity: 0.3; filter: blur(3px); transform: translateX(-6px); } to { clip-path: inset(0 0 0 0); opacity: 1; filter: none; transform: none; } }
+@keyframes logoShine { from { background-position: 100% 0; opacity: 1; } 90% { opacity: 1; } to { background-position: 0% 0; opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { html.logo-intro .site-nav .brand img.brand-logo, html.logo-intro .site-nav .brand::after { animation: none; } html.logo-intro .site-nav .brand::after { display: none; } }

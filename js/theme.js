@@ -1,3 +1,11 @@
+// First page of the visit: the SCP wordmark draws in and a shine runs across it (css: html.logo-intro).
+try {
+  if (!sessionStorage.getItem("scp-logo-intro")) {
+    sessionStorage.setItem("scp-logo-intro", "1");
+    document.documentElement.classList.add("logo-intro");
+    setTimeout(() => document.documentElement.classList.remove("logo-intro"), 2800);
+  }
+} catch {}
 // Day / night colours. Loaded in <head> on every page so the saved theme applies before the first paint.
 // Night (the original dark design) is the default; the choice is remembered per browser.
 (() => {
