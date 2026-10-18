@@ -60,17 +60,17 @@
     const who = hasAi && cp ? "Everything, for teams" : hasAi ? "To know what works" : cp ? "To plan your week" : "To find ideas fast";
     // with more than one user the big number is the total; the price per user goes underneath
     // the line under the price always fits on one line: users or the yearly saving, then VAT
-    const sub = !price ? "" : [
-      seats > 1 ? tx("{n} users × {price}", { n: seats, price: fmt(price.amount, currency) })
-        : iv === "year" && monthsFree(p) > 0 ? `${fmt(price.amount / 12, currency)}/${per("month")} · <b class="plan-free">${tx("save {amount}", { amount: fmt(yearSave(p), currency) })}</b>` : "",
-      tx("VAT incl."),
-    ].filter(Boolean).join(" · ");
+    // (with more users, "VAT incl." moves next to the price so the saving for all of them fits)
+    const save = iv === "year" && monthsFree(p) > 0 ? `<b class="plan-free">${tx("save {amount}", { amount: fmt(yearSave(p) * seats, currency) })}</b>` : "";
+    const sub = !price ? "" : seats > 1
+      ? [tx("{n} users × {price}", { n: seats, price: fmt(price.amount, currency) }), save].filter(Boolean).join(" · ")
+      : [save ? `${fmt(price.amount / 12, currency)}/${per("month")}` : "", save, tx("VAT incl.")].filter(Boolean).join(" · ");
     const tool = (on, cls, label, extra = "") => `<li class="pt ${cls}${on ? "" : " is-off"}"><i></i><span>${label}</span>${extra ? `<em>${extra}</em>` : ""}</li>`;
     return `<article class="plan-card v2${p.highlighted ? " is-best" : ""}${isCurrent ? " is-current" : ""}">
       ${flag}
       <h3>${esc(p.name)}</h3>
       <p class="plan-blurb">${tx(who)}</p>
-      <p class="plan-price">${price ? `<b data-price="${price.amount * seats}" data-cur="${currency}">${fmt(price.amount * seats, currency)}</b><span>${seats > 1 ? `/ ${per(iv)}` : tx("/ {per} per user", { per: per(iv) })}</span>` : `<b>—</b>`}</p>
+      <p class="plan-price">${price ? `<b data-price="${price.amount * seats}" data-cur="${currency}">${fmt(price.amount * seats, currency)}</b><span>${seats > 1 ? `/ ${per(iv)} · ${tx("VAT incl.")}` : tx("/ {per} per user", { per: per(iv) })}</span>` : `<b>—</b>`}</p>
       <p class="plan-sub">${sub || "&nbsp;"}</p>
       ${cta}
       <p class="plan-note">${note || (trial && price?.ready && !cur ? tx("Cancel anytime") : "")}</p>
