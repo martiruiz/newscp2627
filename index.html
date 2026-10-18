@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Caveat:wght@500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20261019h">
+  <link rel="stylesheet" href="css/styles.css?v=20261019i">
   <script src="js/theme.js?v=20261018p"></script>
   <script src="js/i18n.js?v=20261019c"></script>
 </head>
@@ -235,73 +235,24 @@
     </section>
 
     <!-- Magic behind SCP -->
-    <section class="magic container" id="how-it-works" data-steps>
-      <div class="sec-head"><span class="hx-eyebrow">How it works</span><h2 class="section-title section-title-md">The <span class="gold">magic</span> behind SCP</h2></div>
-      <div class="magic-grid">
-        <ol class="steps">
-          <li><button class="step is-active" type="button" data-step-btn="1">
-            <span class="step-num">STEP 01</span>
-            <span class="step-title">We track the best sports accounts</span>
-            <span class="step-text">Every day we collect the posts of the sports accounts that perform best, as soon as they go live.</span>
-            <span class="step-progress"><i></i></span>
-          </button></li>
-          <li><button class="step" type="button" data-step-btn="2">
-            <span class="step-num">STEP 02</span>
-            <span class="step-title">AI analyzes every post</span>
-            <span class="step-text">Our AI reads the image, audio, caption and engagement of every post and tags it with filters, Top Picks and Replicable ideas.</span>
-            <span class="step-progress"><i></i></span>
-          </button></li>
-          <li><button class="step" type="button" data-step-btn="3">
-            <span class="step-num">STEP 03</span>
-            <span class="step-title">Fresh content, updated daily</span>
-            <span class="step-text">Each post lands in your library the same day, so you see trends while they still matter.</span>
-            <span class="step-progress"><i></i></span>
-          </button></li>
+    <section class="magic container" id="how-it-works">
+      <div class="sec-head"><span class="hx-eyebrow">How it works</span><h2 class="section-title section-title-md">The <span class="gold">magic</span> behind SCP</h2>
+        <p class="hx-lead">Every day, new posts from the best sports accounts land in the library, already analysed and tagged so you can filter them in seconds.</p></div>
+      <div class="live-grid">
+        <ol class="live-steps" data-live-steps>
+          <li class="is-on"><span class="live-n">01</span><div><b>We track the best sports accounts</b><p>Every day we collect the posts of the sports accounts that perform best, as soon as they go live.</p></div></li>
+          <li><span class="live-n">02</span><div><b>AI analyzes every post</b><p>Our AI reads the image, audio, caption and engagement of every post and tags it with filters, Top Picks and Replicable ideas.</p></div></li>
+          <li><span class="live-n">03</span><div><b>Fresh content, updated daily</b><p>Each post lands in your library the same day, so you see trends while they still matter.</p></div></li>
         </ol>
-
-        <div class="magic-visuals">
-          <div class="magic-visual is-active" data-step="1">
-            <div class="radar" data-radar role="img" aria-label="SCP tracking sports accounts like FC Barcelona, NBA, 433, Manchester City, ESPN, Chicago Bulls, MotoGP, the Patriots and MLB">
-              <svg class="radar-rings" viewBox="0 0 644 600" aria-hidden="true">
-                <defs><radialGradient id="radar-glow"><stop offset="0" stop-color="#f0b84a" stop-opacity=".22"/><stop offset="1" stop-color="#f0b84a" stop-opacity="0"/></radialGradient></defs>
-                <circle cx="322" cy="300" r="150" fill="url(#radar-glow)" class="radar-glow"/>
-                <g class="radar-wave"><circle cx="322" cy="300" r="30" style="--i:0"/><circle cx="322" cy="300" r="58" style="--i:1"/><circle cx="322" cy="300" r="86" style="--i:2"/><circle cx="322" cy="300" r="114" style="--i:3"/><circle cx="322" cy="300" r="142" style="--i:4"/><circle cx="322" cy="300" r="170" style="--i:5"/><circle cx="322" cy="300" r="198" style="--i:6"/><circle cx="322" cy="300" r="226" style="--i:7"/><circle cx="322" cy="300" r="254" style="--i:8"/><circle cx="322" cy="300" r="282" style="--i:9"/></g>
-              </svg>
-              <span class="radar-center"><i></i>Tracking</span>
-              <div class="radar-chips" data-radar-chips></div>
-            </div>
+        <div class="live-lib" data-live aria-hidden="true">
+          <div class="live-top">
+            <span class="live-search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span data-live-q>Search captions…</span></span>
+            <span class="live-count"><b data-stat="posts">500,000+</b> posts</span>
           </div>
-          <div class="magic-visual" data-step="2">
-            <div class="scan" data-scan role="img" aria-label="AI analysis of a PSG post: visual analysis, filters applied and a 97.83% confidence score">
-              <img class="scan-base" src="assets/scan/psg-post.webp" alt="" width="960" height="1556">
-              <div class="scan-photo" aria-hidden="true"><i class="scan-beam"></i></div>
-              <div class="scan-line" aria-hidden="true"><span class="scan-pill"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 2.5l1.6 4.9 4.9 1.6-4.9 1.6L10 15.5 8.4 10.6 3.5 9l4.9-1.6zM18 13l.9 2.6 2.6.9-2.6.9L18 20l-.9-2.6-2.6-.9 2.6-.9z"/></svg>AI analysis</span></div>
-              <section class="scan-panel scan-visual" aria-hidden="true">
-                <p class="scan-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Visual analysis</p>
-                <div class="scan-visual-body">
-                  <span class="scan-thumb"><img src="assets/scan/psg-thumb.webp" alt=""><i></i></span>
-                  <ul class="scan-checks"><li>Player focus</li><li>Celebration</li><li>Stadium</li><li>High energy</li><li class="scan-more">…</li></ul>
-                </div>
-              </section>
-              <section class="scan-panel scan-filters" aria-hidden="true">
-                <p class="scan-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 4h18l-7 8.5V19l-4 2v-8.5z"/></svg>Filters applied</p>
-                <div class="scan-chips"><span>Football</span><span>Matchday</span><span>PSG</span><span>Champions League</span><span>Instagram</span><span>Image</span></div>
-              </section>
-              <section class="scan-panel scan-score" aria-hidden="true">
-                <div><p class="scan-label">AI confidence score</p><p class="scan-pct"><b data-scan-pct>97.83</b>%</p><p class="scan-sub">Smarter everyday</p></div>
-                <svg class="scan-brain" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/><path d="M17.599 6.5a3 3 0 0 0 .399-1.375"/><path d="M6.003 5.125A3 3 0 0 0 6.401 6.5"/><path d="M3.477 10.896a4 4 0 0 1 .585-.396"/><path d="M19.938 10.5a4 4 0 0 1 .585.396"/><path d="M6 18a4 4 0 0 1-1.967-.516"/><path d="M19.967 17.484A4 4 0 0 1 18 18"/></svg>
-              </section>
-            </div>
-          </div>
-          <div class="magic-visual" data-step="3">
-            <div class="import" data-import role="img" aria-label="Grid of freshly imported posts labelled Top Picks, Replicable ideas and Overperforming. Daily upload complete: 5.248 new posts imported">
-              <div class="import-grid"><img class="import-frame" src="assets/import/frame.webp" alt="" width="1340" height="1604"><img class="import-card" src="assets/import/card-1.webp" alt="" style="left:2.0896%;top:2.7431%;width:29.7015%;height:47.0075%;--n:0"><img class="import-card" src="assets/import/card-2.webp" alt="" style="left:34.9254%;top:2.7431%;width:29.7015%;height:47.0075%;--n:1"><img class="import-card" src="assets/import/card-3.webp" alt="" style="left:67.7612%;top:2.7431%;width:30.0746%;height:47.0075%;--n:2"><img class="import-card" src="assets/import/card-4.webp" alt="" style="left:2.0896%;top:50.9975%;width:29.7015%;height:49.0025%;--n:3"><img class="import-card" src="assets/import/card-5.webp" alt="" style="left:34.9254%;top:50.9975%;width:29.7015%;height:49.0025%;--n:4"><img class="import-card" src="assets/import/card-6.webp" alt="" style="left:67.7612%;top:50.9975%;width:30.0746%;height:49.0025%;--n:5"></div>
-              <div class="import-badge" aria-hidden="true">
-                <span class="import-dot"><i></i></span>
-                <span><small data-import-label>Daily upload complete</small><b><span data-import-count>5.248</span> new posts imported</b></span>
-              </div>
-            </div>
-          </div>
+          <div class="live-chips" data-live-chips><span class="is-on" data-f="all">All sports</span><span data-f="Football">Football</span><span data-f="Basketball">Basketball</span><span data-f="American football">NFL</span><span data-f="Motor">MotoGP</span><span data-f="Ice Hockey">NHL</span></div>
+          <div class="live-cols" data-live-cols></div>
+          <div class="live-beam" data-live-beam><span><svg viewBox="0 0 24 24"><path d="M10 2.5l1.6 4.9 4.9 1.6-4.9 1.6L10 15.5 8.4 10.6 3.5 9l4.9-1.6zM18 13l.9 2.6 2.6.9-2.6.9L18 20l-.9-2.6-2.6-.9 2.6-.9z"/></svg>AI analysis</span></div>
+          <div class="live-toast" data-live-toast><i></i><span><small>Daily import</small><b>New posts added to the library</b></span></div>
         </div>
       </div>
     </section>
@@ -484,10 +435,9 @@
 
   <script src="js/config.js?v=20261018p"></script>
   <script src="js/dock.js?v=20261018q" defer></script>
-  <script src="js/radar.js?v=20261018p" defer></script>
-  <script src="js/scan.js?v=20261018p" defer></script>
   <script src="js/import.js?v=20261018p" defer></script>
   <script src="js/site-stats.js?v=20261018zc" defer></script>
+  <script src="js/live-library.js?v=20261019i" defer></script>
   <script src="js/stats.js?v=20261018p" defer></script>
   <script src="js/features-fx.js?v=20261018p" defer></script>
   <script src="js/typewriter.js?v=20261018p" defer></script>
