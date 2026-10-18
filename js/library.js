@@ -399,7 +399,9 @@
     return `
       <article class="lib-card" data-id="${esc(p.id)}">
         <div class="lib-media${sh.zoom ? " is-reel" : ""}" style="aspect-ratio: 1 / ${sh.ratio.toFixed(4)}">
-          ${src ? `<div class="lib-zoom"${zoomStyle}><iframe class="lib-frame${pf === "instagram" ? " is-ig" : ""}" src="${esc(src)}" loading="lazy" title="${esc(who || "Post")}" scrolling="no" allow="encrypted-media; picture-in-picture; fullscreen"></iframe></div>` : `<span class="lib-noimg"></span>`}
+          ${pf === "tiktok" && p.url
+            ? `<div class="lib-cover" data-cover-box><img data-oembed="${esc(p.url)}" alt="${esc(who || "TikTok video")}"><span class="lib-play" aria-hidden="true"></span></div>`
+            : src ? `<div class="lib-zoom"${zoomStyle}><iframe class="lib-frame${pf === "instagram" ? " is-ig" : ""}" src="${esc(src)}" loading="lazy" title="${esc(who || "Post")}" scrolling="no" allow="encrypted-media; picture-in-picture; fullscreen"></iframe></div>` : `<span class="lib-noimg"></span>`}
           ${sh.zoom ? "" : `<button class="lib-hit" type="button" data-open="${esc(p.id)}" aria-label="Details${who ? ` · ${esc(who)}` : ""}"></button>`}
           <div class="lib-top">
             <button class="lib-grip" type="button" data-pp-grip="${esc(p.id)}" title="Drag to your Content Plan · click to select several" aria-label="Select to drag into the Content Plan">${icon("grip-vertical")}</button>
@@ -477,6 +479,7 @@
       placed.push({ el, ratio });
       place(el, ratio);
     });
+    window.SCP_COVERS?.observe(grid);
   }
   // Re-flow only when the number of columns changes (moving iframes reloads them)
   new ResizeObserver(() => {

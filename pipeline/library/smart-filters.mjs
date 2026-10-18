@@ -37,7 +37,7 @@ const SCHEMA = {
 const SYSTEM = `You classify social media posts from sports clubs, leagues, athletes and sports brands for a content research platform.
 For each post you get its caption, publication date and existing tags. Return the labels that clearly apply, using ONLY the allowed values.
 - moment: the campaign moment(s) the post belongs to.
-- goal: the business goal(s) the post serves (Awareness and Engagement are fine defaults for generic content).
+- goal: the business goal the post clearly serves (tickets, merchandise, memberships, sponsor value, app, community, recruitment…). Use Awareness / Engagement / Fan growth only when the post is explicitly built for that (e.g. a poll is Engagement); leave the list empty for ordinary content.
 - sponsor: brand names of commercial partners mentioned or tagged in the caption (not the club, league, broadcaster of the club itself or the athlete). Empty if none.
 - sponsor_sector: the sector of each sponsor.
 - comms: the communication type, only if it clearly is one.
