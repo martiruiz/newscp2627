@@ -5512,3 +5512,6 @@ body:has(.dock) .sf-mark { padding-bottom: 110px; }
 .book-cal-alt { justify-self: start; padding: 0; border: 0; background: none; color: var(--gold); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
 .book-cal + form:not([hidden]) { margin-top: 18px; }
 .faq-form-pane .book-cal-head { display: none; }
+/* Cal.com inline booking (dark, SCP gold) */
+.book-cal-box { min-height: 560px; border-radius: 16px; overflow: hidden; background: #121a2e; border: 0.5px solid var(--line); }
+.book-cal.is-cal .book-cal-box iframe { width: 100% !important; }

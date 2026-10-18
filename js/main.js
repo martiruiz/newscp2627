@@ -467,11 +467,42 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString(window.SCP_LO
   // Book a demo with a real calendar: Google Calendar appointment schedule (config.demoBookingUrl). The request form
   // folds under "Prefer that we contact you?" so nobody is left without a way in.
   const bookingUrl = (window.SCP_CONFIG || {}).demoBookingUrl;
+  // Cal.com (cal.com/<user>/<event>): inline embed in SCP's dark theme and gold; Google Calendar: its own page in an iframe
+  const calLink = (bookingUrl || "").match(/^https:\/\/(?:app\.)?cal\.com\/(.+?)\/?$/)?.[1];
+  const loadCal = () => {
+    if (window.Cal) return;
+    (function (C, A, L) { const p = (a, ar) => a.q.push(ar); const d = C.document; C.Cal = C.Cal || function () { const cal = C.Cal; const ar = arguments;
+      if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; d.head.appendChild(d.createElement("script")).src = A; cal.loaded = true; }
+      if (ar[0] === L) { const api = function () { p(api, arguments); }; const ns = ar[1]; api.q = api.q || [];
+        if (typeof ns === "string") { cal.ns[ns] = cal.ns[ns] || api; p(cal.ns[ns], ar); p(cal, ["initNamespace", ns]); } else p(cal, ar); return; }
+      p(cal, ar); }; })(window, "https://app.cal.com/embed/embed.js", "init");
+  };
+  let calN = 0;
   if (bookingUrl) $$("form.book-form").forEach((form) => {
+    const id = `scp-cal-${++calN}`;
     const src = /calendar\.google\.com/.test(bookingUrl) && !/[?&]gv=true/.test(bookingUrl) ? `${bookingUrl}${bookingUrl.includes("?") ? "&" : "?"}gv=true` : bookingUrl;
-    form.insertAdjacentHTML("beforebegin", `<div class="book-cal"><p class="book-cal-head"><b>${tx("Pick a time that suits you")}</b><span>${tx("30 min · video call · you get the invite straight away")}</span></p>
-      <iframe src="${src}" title="${tx("Book a demo")}" loading="lazy"></iframe>
+    form.insertAdjacentHTML("beforebegin", `<div class="book-cal${calLink ? " is-cal" : ""}"><p class="book-cal-head"><b>${tx("Pick a time that suits you")}</b><span>${tx("30 min · video call · you get the invite straight away")}</span></p>
+      ${calLink ? `<div class="book-cal-box" id="${id}"></div>` : `<iframe src="${src}" title="${tx("Book a demo")}" loading="lazy"></iframe>`}
       <button class="book-cal-alt" type="button" aria-expanded="false">${tx("No time fits? Ask us to contact you →")}</button></div>`);
+    if (calLink) {
+      loadCal();
+      const ns = `scp${calN}`;
+      window.Cal("init", ns, { origin: "https://cal.com" });
+      window.Cal.ns[ns]("inline", { elementOrSelector: `#${id}`, calLink, config: { layout: "month_view", theme: "dark" } });
+      window.Cal.ns[ns]("ui", { theme: "dark", layout: "month_view", hideEventTypeDetails: false,
+        cssVarsPerTheme: { dark: { "cal-brand": "#f0b84a", "cal-brand-emphasis": "#f8cc75", "cal-brand-text": "#0b0f1c", "cal-bg": "#121a2e", "cal-bg-muted": "#17213b", "cal-bg-emphasis": "#1f2b48", "cal-border": "rgba(180,192,211,0.18)", "cal-border-subtle": "rgba(180,192,211,0.12)", "cal-text": "#ffffff", "cal-text-subtle": "#b4c0d3", "cal-text-muted": "#8b98ae" } } });
+      // a booking made in the calendar also lands in Admin → Requests, with the CTA it came from
+      window.Cal.ns[ns]("on", { action: "bookingSuccessful", callback: (e) => {
+        const b = e?.detail?.data?.booking || {}, att = (b.attendees || b.responses ? [b.responses || {}] : [])[0] || {};
+        const cfg = window.SCP_CONFIG || {}; let src = ""; try { src = sessionStorage.getItem("scp-cta") || ""; } catch {}
+        const email = att.email || e?.detail?.data?.eventType?.email || "", name = att.name?.firstName ? `${att.name.firstName} ${att.name.lastName || ""}`.trim() : att.name || "";
+        if (!email || !name || !cfg.supabaseUrl) return;
+        fetch(`${cfg.supabaseUrl}/rest/v1/rpc/submit_contact_request`, { method: "POST",
+          headers: { apikey: cfg.supabaseAnonKey, Authorization: `Bearer ${cfg.supabaseAnonKey}`, "Content-Type": "application/json" },
+          body: JSON.stringify({ p: { kind: "demo", name, email, day: String(b.startTime || "").slice(0, 10), time: String(b.startTime || "").slice(11, 16), message: "Booked in Cal.com", lang: window.SCP_LANG || "en",
+            page: `${location.pathname.split("/").pop() || "index.html"}${src ? ` ← ${src}` : ""} (Cal.com)`.slice(0, 200) } }) }).catch(() => {});
+      } });
+    }
     form.hidden = true;
     form.previousElementSibling.querySelector(".book-cal-alt").addEventListener("click", (e) => {
       form.hidden = !form.hidden; e.currentTarget.setAttribute("aria-expanded", String(!form.hidden));
