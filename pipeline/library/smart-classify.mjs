@@ -206,23 +206,38 @@ if (argv.includes("--prepare")) {
 
 // ---------- --submit: prepared posts → Batch API ----------
 if (argv.includes("--submit")) {
+  // Read and send a little at a time: the cached images add up to many GB, and a batch may not exceed 256 MB,
+  // so each batch holds as many posts as fit in ~200 MB (and at most 2,000).
   const files = fs.readdirSync(CACHE).filter((f) => /^\d+\.json$/.test(f));
-  const prepared = files.map((f) => JSON.parse(fs.readFileSync(path.join(CACHE, f), "utf8")));
-  if (!prepared.length) { console.log("Nothing prepared. Run --prepare first."); process.exit(0); }
-  const posts = new Map((await loadPosts(prepared.map((p) => p.id))).map((p) => [p.id, p]));
+  if (!files.length) { console.log("Nothing prepared. Run --prepare first."); process.exit(0); }
+  const MAX_BYTES = 200 * 1024 * 1024, MAX_POSTS = 2000;
   const batches = [];
-  for (let i = 0; i < prepared.length; i += 2000) {
-    const requests = prepared.slice(i, i + 2000).filter((p) => posts.has(p.id))
+  let i = 0, sent = 0;
+  while (i < files.length) {
+    const chunk = [];
+    let bytes = 0;
+    while (i < files.length && chunk.length < MAX_POSTS) {
+      const size = fs.statSync(path.join(CACHE, files[i])).size;
+      if (chunk.length && bytes + size > MAX_BYTES) break;
+      chunk.push(files[i]); bytes += size; i++;
+    }
+    const prepared = chunk.map((f) => JSON.parse(fs.readFileSync(path.join(CACHE, f), "utf8")));
+    const posts = new Map((await loadPosts(prepared.map((p) => p.id))).map((p) => [p.id, p]));
+    const requests = prepared.filter((p) => posts.has(p.id))
       .map((p) => ({ custom_id: String(p.id), params: requestParams({ ...posts.get(p.id), media_type: p.media_type }, p.image) }));
-    const b = await claude.messages.batches.create({ requests });
-    batches.push(b.id);
-    for (const p of prepared.slice(i, i + 2000)) fs.renameSync(path.join(CACHE, `${p.id}.json`), path.join(CACHE, `${p.id}.sent`));
-    console.log(`Batch ${b.id}: ${requests.length} posts`);
+    if (requests.length) {
+      const b = await claude.messages.batches.create({ requests });
+      batches.push(b.id);
+      sent += requests.length;
+      console.log(`Batch ${b.id}: ${requests.length} posts (${Math.round(bytes / 1048576)} MB) · ${sent} sent · ${files.length - i} left`);
+    }
+    for (const p of prepared) fs.renameSync(path.join(CACHE, `${p.id}.json`), path.join(CACHE, `${p.id}.sent`));
+    // keep a record after every batch, so an interruption never loses track of what was sent
+    const log = path.join(CACHE, "batches.json");
+    const all = fs.existsSync(log) ? JSON.parse(fs.readFileSync(log, "utf8")) : [];
+    if (requests.length) fs.writeFileSync(log, JSON.stringify([...all, { id: batches.at(-1), at: new Date().toISOString(), collected: false }], null, 2));
   }
-  const log = path.join(CACHE, "batches.json");
-  const all = fs.existsSync(log) ? JSON.parse(fs.readFileSync(log, "utf8")) : [];
-  fs.writeFileSync(log, JSON.stringify([...all, ...batches.map((id) => ({ id, at: new Date().toISOString(), collected: false }))], null, 2));
-  console.log("Submitted. Run --collect later (most batches finish within an hour, at most 24 h).");
+  console.log(`Submitted ${sent} posts in ${batches.length} batches. Run --collect later (most batches finish within an hour, at most 24 h).`);
   process.exit(0);
 }
 
