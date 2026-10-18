@@ -467,6 +467,8 @@ window.SCP_ES = {
   "billed yearly": "facturación anual",
   "or {price}/year": "o {price}/año",
   "Recommended": "Recomendado",
+  "Drag to your Content Plan": "Arrastra a tu Content Plan",
+  "Open on {pf}": "Abrir en {pf}",
   "Following": "Sigues",
   "{club} is one of your favourite profiles, so its posts come first in “For you”. Change them in Profile → Favourites.": "{club} es uno de tus perfiles favoritos, por eso sus posts salen primero en «Para ti». Puedes cambiarlos en Perfil → Favoritos.",
   "How the demo goes": "Así es la demo",

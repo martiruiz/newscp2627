@@ -777,60 +777,74 @@
   const isVideo = (p) => (p.media_type ? /^(reel|video)$/.test(p.media_type) : /^(reels?|shorts?|video)$/i.test(first(p, "format")) || /\/(reel|shorts)\/|tiktok\.com|youtu/.test(p.url || ""));
   const mmss = (s) => { s = Math.round(Number(s) || 0); return s ? `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}` : ""; };
   // Card shape from the cover: the post's real proportion, kept between 16:9 and 9:16
-  // Every cover has the same shape (4:5, like an Instagram grid), whatever the platform: the image fills it (object-fit: cover)
-  const coverRatio = () => 1.25;
 
+  // Real shape of each post (height / width): reels, TikToks and Shorts vertical, YouTube videos horizontal,
+  // Instagram photos and carousels as posted (4:5 to 1:1)
+  function mediaRatio(p) {
+    const pf = platformOf(p), shorts = /\/shorts\//.test(p.url || "");
+    if (pf === "tiktok" || shorts || (pf === "instagram" && isReel(p))) return 16 / 9;
+    if (pf === "youtube") return 9 / 16;
+    if (pf === "instagram") return Math.min(1.25, Math.max(1, Number(p.media_ratio) || 1.25));
+    return Number(p.media_ratio) || 1.25;
+  }
+  const coverRatio = mediaRatio;
+  const compact = (n) => Number(n).toLocaleString(window.SCP_LOC || "en-GB", { notation: "compact", maximumFractionDigits: 1 });
+
+  // Card = the post (clean cover, or the embed for X / LinkedIn / Facebook) + a footer joined to it (who, when, views).
+  // On the cover, always: the network and the format / length, and "Following" (which folds into a star).
+  // On hover: a rail on the right with Save · Add to Content Plan · AI analysis · Open original.
   function card(p) {
     const pf = platformOf(p);
     const who = first(p, "club") || first(p, "competition") || first(p, "entity");
+    const whoTag = (p.tags?.club || p.tags?.competition || p.tags?.entity || [])[0];
+    const crest = whoTag ? catalog.byId.get(Number(whoTag.id)) : null;
     const video = isVideo(p);
     const favClub = (p.tags?.club || []).find((v) => me.fav.has(Number(v.id)));
-    const fav = !!favClub;
-    const top = `
-          <div class="lib-top">
-            <button class="lib-grip" type="button" data-pp-grip="${esc(p.id)}" title="Drag to your Content Plan · click to select several" aria-label="Select to drag into the Content Plan">${icon("grip-vertical")}</button>
-            ${fav ? `<span class="lib-badge lib-badge-fav" tabindex="0">${tx("Following")}<span class="lib-tip" role="tooltip">${tx("{club} is one of your favourite profiles, so its posts come first in “For you”. Change them in Profile → Favourites.", { club: esc(favClub.name || "") })}</span></span>` : ""}
-            <span class="lib-save">${saveBtn(p.id)}</span>
-            ${me.isSuper ? `<button class="lib-remove" type="button" data-remove="${esc(p.id)}" title="Remove from the library (superadmin)" aria-label="Remove from the library">${icon("trash-2")}</button>` : ""}
+    const fmt = pretty(first(p, "format"));
+    const name = PLATFORM_NAMES[pf] || "the platform";
+    const fav = favClub ? `<span class="lib-badge lib-badge-fav" tabindex="0">${icon("star")}<span class="lib-fav-lbl">${tx("Following")}</span><span class="lib-tip" role="tooltip">${tx("{club} is one of your favourite profiles, so its posts come first in “For you”. Change them in Profile → Favourites.", { club: esc(favClub.name || "") })}</span></span>` : "";
+    const corner = `<div class="lib-corner">${pf ? `<span class="lib-pfchip" title="${esc(PLATFORM_NAMES[pf] || pf)}"><i class="lf-pfi is-brand lf-pf-${esc(pf)}" style="-webkit-mask-image:url(assets/pf-${esc(pf)}.svg);mask-image:url(assets/pf-${esc(pf)}.svg)"></i></span>` : ""}${fav}</div>`;
+    const rail = `
+          <div class="lib-rail">
+            <button class="lib-grip" type="button" data-pp-grip="${esc(p.id)}" data-tip="${esc(tx("Drag to your Content Plan"))}" aria-label="${esc(tx("Drag to your Content Plan"))}">${icon("grip-vertical")}</button>
+            ${saveBtn(p.id)}
+            <button class="lib-plan-add" type="button" data-plan-add="${esc(p.id)}" data-tip="${esc(tx("Add to Content Plan"))}" aria-label="${esc(tx("Add to Content Plan"))}">${icon("calendar-plus")}</button>
+            <button class="lib-ai" type="button" data-open="${esc(p.id)}" data-tip="${esc(tx("AI analysis"))}" aria-label="${esc(tx("AI analysis"))}">${icon("sparkles")}</button>
+            ${p.url ? `<a class="lib-out" href="${esc(p.url)}" target="_blank" rel="noopener" data-tip="${esc(tx("Open on {pf}", { pf: name }))}" aria-label="${esc(tx("Open on {pf}", { pf: name }))}">${icon("arrow-up-right")}</a>` : ""}
+            ${me.isSuper ? `<button class="lib-remove" type="button" data-remove="${esc(p.id)}" data-tip="Remove (superadmin)" aria-label="Remove from the library">${icon("trash-2")}</button>` : ""}
           </div>`;
-    const bottom = `
-          <div class="lib-bottom">
-            <div class="lib-tags">${tagChips(p, ["sport", "competition"])}</div>
-            <p class="lib-who">${pf ? `<img class="lib-pf" src="assets/pf-${pf}.svg" alt="${esc(pf)}">` : ""}${esc(who)}</p>
-            <p class="lib-when">${date(p.published_at)}${p.views ? ` · ${Number(p.views).toLocaleString(window.SCP_LOC || "en-GB", { notation: "compact" })} views` : ""}</p>
-          </div>`;
-    const actions = `<div class="lib-actions">${aiButton(p.id)}<button class="lib-plan-add" type="button" data-plan-add="${esc(p.id)}" title="Add to your Content Plan" aria-label="Add to your Content Plan">${icon("calendar-plus")}</button></div>`;
+    const foot = `
+        <div class="lib-foot">
+          ${crest ? crestImg(crest, "lib-crest") : `<span class="lib-crest"><b>${esc((who || "?").slice(0, 2).toUpperCase())}</b></span>`}
+          <span class="lib-foot-who"><b>${esc(who || name)}</b><small>${date(p.published_at)}</small></span>
+          ${p.views ? `<span class="lib-foot-views"><b>${compact(p.views)}</b><small>${tx("views")}</small></span>` : ""}
+        </div>`;
 
-    // Clean card: the cover, a play button for videos, controls only on hover
     if (p.cover_url) {
       return `
       <article class="lib-card has-cover" data-id="${esc(p.id)}">
-        <div class="lib-media" style="aspect-ratio: 1 / ${coverRatio(p).toFixed(4)}">
+        <div class="lib-media" style="aspect-ratio: 1 / ${mediaRatio(p).toFixed(4)}">
           <img class="lib-cover-img" src="${esc(p.cover_url)}" alt="${esc(who || "Post")}" loading="lazy" decoding="async">
           <button class="lib-hit" type="button" data-open="${esc(p.id)}" aria-label="Details${who ? ` · ${esc(who)}` : ""}"></button>
-          ${video ? `<button class="lib-playbtn" type="button" data-play="${esc(p.id)}" aria-label="Play video">${icon("play")}</button>${p.duration_s ? `<span class="lib-dur">${mmss(p.duration_s)}</span>` : ""}` : ""}
-          ${top}${bottom}
-        </div>
-        ${actions}
+          ${video ? `<button class="lib-playbtn" type="button" data-play="${esc(p.id)}" aria-label="Play video">${icon("play")}</button>` : ""}
+          ${fmt || p.duration_s ? `<span class="lib-fmt">${video ? icon("play") : ""}${esc([fmt, p.duration_s ? mmss(p.duration_s) : ""].filter(Boolean).join(" · "))}</span>` : ""}
+          ${corner}${rail}
+        </div>${foot}
       </article>`;
     }
 
-    // No cover yet: the platform's embed (as before)
+    // No cover (X, LinkedIn, Facebook…): the post itself, as the platform shows it
     const src = previewSrc(p);
-    const fmt = pretty(first(p, "format"));
     const sh = shape(p);
     const zoomStyle = sh.zoom ? ` style="--zoom:${sh.zoom.toFixed(4)};--inset:${((1 - sh.boxFrac) / 2 * 100).toFixed(3)}%"` : "";
     return `
-      <article class="lib-card" data-id="${esc(p.id)}">
-        <div class="lib-media is-fixed${sh.zoom ? " is-reel" : ""}" style="aspect-ratio: 1 / 1.25">
+      <article class="lib-card is-embed" data-id="${esc(p.id)}">
+        <div class="lib-media${sh.zoom ? " is-reel" : ""}" style="aspect-ratio: 1 / ${sh.ratio.toFixed(4)}">
           ${pf === "tiktok" && p.url
             ? `<div class="lib-cover" data-cover-box><img data-oembed="${esc(p.url)}" alt="${esc(who || "TikTok video")}"><span class="lib-play" aria-hidden="true"></span></div>`
             : src ? `<div class="lib-zoom"${zoomStyle}><iframe class="lib-frame${pf === "instagram" ? " is-ig" : ""}" src="${esc(src)}" loading="lazy" title="${esc(who || "Post")}" scrolling="no" allow="encrypted-media; picture-in-picture; fullscreen"></iframe></div>` : `<span class="lib-noimg"></span>`}
-          ${sh.zoom ? "" : `<button class="lib-hit" type="button" data-open="${esc(p.id)}" aria-label="Details${who ? ` · ${esc(who)}` : ""}"></button>`}
-          ${top.replace('<span class="lib-save">', `${pf ? `<span class="lib-badge lib-badge-pf"><img src="assets/pf-${pf}.svg" alt="${esc(pf)}"></span>` : ""}${fmt ? `<span class="lib-badge">${esc(fmt)}</span>` : ""}<span class="lib-save">`)}
-          ${bottom}
-        </div>
-        ${actions}
+          ${rail}
+        </div>${foot}
       </article>`;
   }
 
@@ -896,7 +910,9 @@
   function columnCount() {
     const w = grid.clientWidth - parseFloat(getComputedStyle(grid).paddingLeft) - parseFloat(getComputedStyle(grid).paddingRight);
     // as many ~240px columns as fit (with or without the filters column), up to 6 on very wide screens
-    const MAX = 6, MIN = 240;
+    const pfs = [...(selected.platform || [])].map((id) => catalog.byId.get(id)?.name.toLowerCase());
+    const ytOnly = pfs.length === 1 && pfs[0] === "youtube";
+    const MAX = ytOnly ? 2 : 6, MIN = ytOnly ? 380 : 240;
     return Math.max(1, Math.min(MAX, Math.floor((w + GAP) / (MIN + GAP))));
   }
   function buildColumns(n) {
@@ -915,7 +931,7 @@
     const tpl = document.createElement("template");
     tpl.innerHTML = rows.map(card).join("");
     [...tpl.content.children].forEach((el, i) => {
-      const ratio = 1.25;   // every card has the same 4:5 shape, with or without a cover
+      const ratio = (rows[i].cover_url ? mediaRatio(rows[i]) : shape(rows[i]).ratio) + 0.2;   // + the footer
       placed.push({ el, ratio });
       place(el, ratio);
     });
