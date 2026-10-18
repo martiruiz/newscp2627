@@ -366,6 +366,9 @@
     if ((m = u.match(/instagram\.com\/(?:[\w.]+\/)?(p|reel|tv)\/([\w-]+)/))) return `https://www.instagram.com/${m[1]}/${m[2]}/embed/`;
     if ((m = u.match(/tiktok\.com\/.*video\/(\d+)/))) return `https://www.tiktok.com/embed/v2/${m[1]}`;
     if ((m = u.match(/(?:shorts\/|v=|youtu\.be\/)([\w-]{11})/))) return `https://www.youtube-nocookie.com/embed/${m[1]}`;
+    if ((m = u.match(/(?:twitter|x)\.com\/[^/]+\/status\/(\d+)/))) return `https://platform.twitter.com/embed/Tweet.html?id=${m[1]}&theme=dark&dnt=true&hideThread=true`;
+    if (/facebook\.com\//.test(u)) return `https://www.facebook.com/plugins/${/\/(reel|videos?)\//.test(u) ? "video" : "post"}.php?href=${encodeURIComponent(u)}&show_text=false&width=500`;
+    if ((m = u.match(/linkedin\.com\/(?:feed\/update|embed\/feed\/update)\/(urn:li:[\w:]+)/))) return `https://www.linkedin.com/embed/feed/update/${m[1]}?collapsed=1`;
     return "";
   }
 
@@ -376,7 +379,12 @@
   // the details pop-up, except on the carousel arrows (left / right, middle), which stay live to swipe in the card.
   const isReel = (p) => /^(reels?|shorts?|video)$/i.test(first(p, "format")) || /\/(reel|shorts)\//.test(p.url || "");
   // Instagram's embed shows reels (9:16) letterboxed inside its media box (usually 4:5): the card is 9:16 and the box is zoomed to fill it.
+  // Default card shapes (height / width) for platforms without a measured media ratio
+  const PLATFORM_RATIO = { tiktok: 1.78, x: 1.25, facebook: 1.2, linkedin: 1.2 };
   function shape(p) {
+    const pf = platformOf(p);
+    if (pf === "youtube") return { ratio: /\/shorts\//.test(p.url || "") ? 1.78 : 0.5625 };
+    if (PLATFORM_RATIO[pf]) return { ratio: PLATFORM_RATIO[pf] };
     const box = Number(p.media_ratio) || 1.25;
     if (!isReel(p) || box >= 16 / 9) return { ratio: box };
     return { ratio: 16 / 9, zoom: 1 / (box * 9 / 16), boxFrac: box / (16 / 9) };

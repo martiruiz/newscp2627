@@ -19,7 +19,19 @@
   const first = (p, cat) => p.tags?.[cat]?.[0]?.name || "";
   const isReel = (p) => /^(reels?|shorts?|video)$/i.test(first(p, "format")) || /\/(reel|shorts)\//.test(p.url || "");
   const igSrc = (p) => { const m = /instagram\.com\/(?:[\w.]+\/)?(p|reel|tv)\/([\w-]+)/.exec(p.url || ""); return m ? `https://www.instagram.com/${m[1]}/${m[2]}/embed/` : ""; };
+  // Other platforms (TikTok, YouTube, X, Facebook, LinkedIn): their own player
+  const otherSrc = (p) => {
+    const u = p.url || ""; let m;
+    if ((m = /tiktok\.com\/.*video\/(\d+)/.exec(u))) return `https://www.tiktok.com/embed/v2/${m[1]}`;
+    if ((m = /(?:shorts\/|v=|youtu\.be\/)([\w-]{11})/.exec(u))) return `https://www.youtube-nocookie.com/embed/${m[1]}`;
+    if ((m = /(?:twitter|x)\.com\/[^/]+\/status\/(\d+)/.exec(u))) return `https://platform.twitter.com/embed/Tweet.html?id=${m[1]}&theme=dark&dnt=true&hideThread=true`;
+    if (/facebook\.com\//.test(u)) return `https://www.facebook.com/plugins/${/\/(reel|videos?)\//.test(u) ? "video" : "post"}.php?href=${encodeURIComponent(u)}&show_text=false&width=500`;
+    if ((m = /linkedin\.com\/feed\/update\/(urn:li:[\w:]+)/.exec(u))) return `https://www.linkedin.com/embed/feed/update/${m[1]}?collapsed=1`;
+    return "";
+  };
+  const OTHER_RATIO = (p) => { const u = p.url || ""; return /tiktok/.test(u) ? 1.78 : /youtu/.test(u) ? (/shorts/.test(u) ? 1.78 : 0.5625) : 1.25; };
   function shape(p) {
+    if (!igSrc(p) && otherSrc(p)) return { ratio: OTHER_RATIO(p) };
     const box = Number(p.media_ratio) || 1.25;
     if (!isReel(p) || box >= 16 / 9) return { ratio: box };
     return { ratio: 16 / 9, zoom: 1 / (box * 9 / 16), boxFrac: box / (16 / 9) };
@@ -106,11 +118,13 @@
   function cardHtml(p) {
     const sh = shape(p);
     const src = igSrc(p);
+    const other = !src && otherSrc(p);
     const zoom = sh.zoom ? ` style="--zoom:${sh.zoom.toFixed(4)};--inset:${((1 - sh.boxFrac) / 2 * 100).toFixed(3)}%"` : "";
     return `
       <article class="pin" data-pin="${p.id}">
         <div class="lib-media${sh.zoom ? " is-reel" : ""}" style="aspect-ratio: 1 / ${sh.ratio.toFixed(4)}">
-          ${src ? `<div class="lib-zoom"${zoom}><iframe class="lib-frame is-ig" src="${esc(src)}" loading="lazy" title="${esc(who(p))}" scrolling="no" allow="encrypted-media; picture-in-picture; fullscreen"></iframe></div>` : `<span class="lib-noimg"></span>`}
+          ${src ? `<div class="lib-zoom"${zoom}><iframe class="lib-frame is-ig" src="${esc(src)}" loading="lazy" title="${esc(who(p))}" scrolling="no" allow="encrypted-media; picture-in-picture; fullscreen"></iframe></div>`
+            : other ? `<div class="lib-zoom"><iframe class="lib-frame" src="${esc(other)}" loading="lazy" title="${esc(who(p))}" scrolling="no" allow="encrypted-media; picture-in-picture; fullscreen"></iframe></div>` : `<span class="lib-noimg"></span>`}
           ${sh.zoom ? "" : `<a class="lib-hit" href="content-library.html#post=${p.id}" aria-label="Details · ${esc(who(p))}"></a>`}
           <div class="lib-top">
             ${first(p, "format") ? `<span class="lib-badge">${esc(pretty(first(p, "format")))}</span>` : ""}

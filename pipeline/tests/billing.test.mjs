@@ -296,5 +296,27 @@ const s4b = await snap();
 await db.exec(sql("performance-5.sql")); await db.exec(sql("performance-5.sql"));
 check("small selections: identical results", s4b === await snap());
 
+console.log("\n20. Post links from embed codes");
+await db.exec(sql("post-urls.sql"));
+const E = {
+  ig: `<blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/Decze7IivhX" data-instgrm-captioned></blockquote>`,
+  tt: `<blockquote class="tiktok-embed" cite="https://www.tiktok.com/@nfl/video/7696306986983378190" data-video-id="7696306986983378190"><section></section></blockquote>`,
+  x: `<blockquote class="twitter-tweet"><a href="https://twitter.com/ManUtd/status/2110152632920571992#m"></a></blockquote>`,
+  fb: `<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Freel%2F1787670255857411&width=500" width="500"></iframe>`,
+  yt: `<iframe width='560' height='315' src='https://www.youtube.com/embed/YJEbHmRnlOg' frameborder='0' allowfullscreen></iframe>`,
+  li: `<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:activity:7515867717803986944?collapsed=1" height="600"></iframe>`,
+};
+const U2 = {};
+for (const [k, e] of Object.entries(E)) U2[k] = (await db.query(`select public.url_from_embed($1) u`, [e])).rows[0].u;
+check("Instagram link", U2.ig === "https://www.instagram.com/p/Decze7IivhX/", U2.ig);
+check("TikTok link", U2.tt === "https://www.tiktok.com/@nfl/video/7696306986983378190", U2.tt);
+check("X link", U2.x === "https://x.com/ManUtd/status/2110152632920571992", U2.x);
+check("Facebook link", U2.fb === "https://www.facebook.com/reel/1787670255857411", U2.fb);
+check("YouTube link", U2.yt === "https://www.youtube.com/watch?v=YJEbHmRnlOg", U2.yt);
+check("LinkedIn link", U2.li === "https://www.linkedin.com/feed/update/urn:li:activity:7515867717803986944/", U2.li);
+await db.query(`insert into public.content_ideas (external_id, title, embed) values ('tt-new', 'x', $1)`, [E.tt]);
+check("new imports get their link automatically", (await db.query(`select url from public.content_ideas where external_id = 'tt-new'`)).rows[0].url === U2.tt);
+check("an existing link is kept", (await db.query(`select url from public.content_ideas where external_id = 'p1'`)).rows[0].url === "https://www.instagram.com/p/X1/");
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);
