@@ -855,7 +855,7 @@
         <div class="lib-media" style="aspect-ratio: 1 / ${mediaRatio(p).toFixed(4)}">
           <img class="lib-cover-img" src="${esc(p.cover_url)}" alt="${esc(who || "Post")}" loading="lazy" decoding="async">
           <button class="lib-hit" type="button" data-open="${esc(p.id)}" aria-label="Details${who ? ` · ${esc(who)}` : ""}"></button>
-          ${video ? `<span class="lib-playbtn" aria-hidden="true">${icon("play")}</span>` : ""}
+          ${video ? `<button class="lib-playbtn" type="button" data-play="${esc(p.id)}" aria-label="Play video">${icon("play")}</button>` : ""}
           ${fmt || p.duration_s ? `<span class="lib-fmt">${video ? icon("play") : ""}${esc([fmt, p.duration_s ? mmss(p.duration_s) : ""].filter(Boolean).join(" · "))}</span>` : ""}
           ${corner}${rail}
         </div>${foot}
