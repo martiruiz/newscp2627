@@ -177,7 +177,7 @@
   const countOf = (v) => (counts ? counts.get(v.id) ?? 0 : v.total);
   const isOn = (v) => selected[v.category].has(v.id);
   const byCount = (list) => [...list].sort((a, b) => (isOn(b) - isOn(a)) || ((countOf(b) > 0) - (countOf(a) > 0)) || countOf(b) - countOf(a) || a.name.localeCompare(b.name));
-  const ui = { open: null, more: new Set(), all: new Set(), q: {} }; // open dropdown, expanded "+N more" sections, "Show all" lists, list searches
+  const ui = { open: "views", more: new Set(), all: new Set(), q: {} };   // Views starts open; it can be folded // open dropdown, expanded "+N more" sections, "Show all" lists, list searches
   const has = (k) => catalog.byCat[k]?.length > 0;
 
   function rowHead(c, title = c.label, icoKey = c.ico) {
@@ -732,6 +732,8 @@
         await new Promise((res) => setTimeout(res, 600));
         r = await db.rpc("library_ideas", a);
       }
+      // "For you" with a filter on top can still be too slow for the database: show the same filters by date instead
+      if (r.error && r.error.code === "57014" && a.p_order === "foryou") r = await db.rpc("library_ideas", { ...a, p_order: "latest", p_boost: undefined, p_boost2: undefined });
       if (r.error) console.warn("[library] library_ideas failed", r.error.code, r.error.message, a);
       if (!r.error || !/schema cache|does not exist/i.test(r.error.message)) return r;
       useAdminSearch = true;

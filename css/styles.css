@@ -5700,3 +5700,17 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
   font-size: 12px; font-weight: 500; line-height: 1.4; color: var(--text); background: #0d1426; border: 0.5px solid rgba(240, 184, 74, 0.45); box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
   opacity: 0; visibility: hidden; transform: translateY(-4px); transition: opacity 0.18s, transform 0.18s, visibility 0.18s; pointer-events: none; text-align: left; }
 .lf-sp[data-sp-tip]:hover::after, .lf-sp[data-sp-tip]:focus-visible::after { opacity: 1; visibility: visible; transform: none; }
+
+/* ---------- Profile: more air between questions and sections ---------- */
+.pf-card { padding: 34px 36px 36px; }
+.pf-card header { margin-bottom: 28px; padding-bottom: 20px; border-bottom: 0.5px solid var(--line-soft); }
+.pf-card header p { margin-top: 6px; line-height: 1.5; }
+.pf-card .pf-q { margin-top: 0; padding: 18px 0; }
+.pf-card .pf-q + .pf-q, .pf-card .pf-q + .pf-grid, .pf-card .pf-grid + .pf-q { border-top: 0.5px solid var(--line-soft); }
+.pf-card .pf-q > span { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin-bottom: 12px; font-size: 14px; font-weight: 600; color: var(--text); }
+.pf-card .pf-q > span small { font-size: 12.5px; font-weight: 400; color: var(--muted); }
+.pf-card .pf-grid { gap: 20px; margin: 4px 0 0; padding-top: 18px; }
+.pf-card .pf-row { margin-top: 16px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+/* Account: language, then password with its button underneath */
+#security .pf-grid { grid-template-columns: minmax(0, 420px); border-top: 0.5px solid var(--line-soft); }
+#security .pf-field { gap: 10px; font-size: 14px; color: var(--text); }
