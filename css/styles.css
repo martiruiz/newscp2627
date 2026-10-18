@@ -5511,3 +5511,4 @@ body:has(.dock) .sf-mark { padding-bottom: 110px; }
 .book-cal iframe { width: 100%; height: 620px; border: 0; border-radius: 16px; background: #fff; }
 .book-cal-alt { justify-self: start; padding: 0; border: 0; background: none; color: var(--gold); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
 .book-cal + form:not([hidden]) { margin-top: 18px; }
+.faq-form-pane .book-cal-head { display: none; }
