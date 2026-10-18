@@ -20,6 +20,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@supabase/supabase-js";
 import { loadEnv } from "./env.mjs";
 import { igMeta } from "./instagram.mjs";
+import { storeCover } from "./covers.mjs";
 import { AI_CATEGORIES } from "./taxonomy.mjs";
 import { VERSION, MODEL, requestParams, parseAnswer, fetchImage, cost } from "./smart-ai.mjs";
 
@@ -185,7 +186,10 @@ if (argv.includes("--prepare")) {
       const meta = await igMeta(r.url);
       if (meta.status === "broken") { broken++; await db.from("content_ideas").update({ unavailable_at: new Date().toISOString() }).eq("id", r.id); continue; }
       if (meta.status !== "ok") { await sleep(3000); continue; }
-      const image = await fetchImage(meta.image);
+      // the same image is the library cover (Storage) and the AI's input
+      const stored = meta.image ? await storeCover(r.id, meta.image).catch(() => null) : null;
+      const image = stored ? { data: stored.data, type: stored.type } : await fetchImage(meta.image);
+      if (stored) await db.from("content_ideas").update({ cover_url: stored.url, cover_at: new Date().toISOString() }).eq("id", r.id);
       fs.writeFileSync(path.join(CACHE, `${r.id}.json`), JSON.stringify({ id: r.id, media_type: meta.media_type, image }));
       metas.push({ id: r.id, media_type: meta.media_type, width: meta.width, height: meta.height, duration: meta.duration, views: meta.views });
       done++;

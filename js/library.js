@@ -389,10 +389,52 @@
     if (!isReel(p) || box >= 16 / 9) return { ratio: box };
     return { ratio: 16 / 9, zoom: 1 / (box * 9 / 16), boxFrac: box / (16 / 9) };
   }
+  // Is it a video? (Instagram data first, then the imported format / the link)
+  const isVideo = (p) => (p.media_type ? /^(reel|video)$/.test(p.media_type) : /^(reels?|shorts?|video)$/i.test(first(p, "format")) || /\/(reel|shorts)\/|tiktok\.com|youtu/.test(p.url || ""));
+  const mmss = (s) => { s = Math.round(Number(s) || 0); return s ? `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}` : ""; };
+  // Card shape from the cover: the post's real proportion, kept between 16:9 and 9:16
+  function coverRatio(p) {
+    const pf = platformOf(p);
+    const r = Number(p.media_ratio) || (pf === "tiktok" || /\/shorts\//.test(p.url || "") ? 16 / 9 : pf === "youtube" ? 9 / 16 : 1.25);
+    return Math.min(16 / 9, Math.max(9 / 16, r));
+  }
+
   function card(p) {
     const pf = platformOf(p);
-    const src = previewSrc(p);
     const who = first(p, "club") || first(p, "competition") || first(p, "entity");
+    const video = isVideo(p);
+    const fav = (p.tags?.club || []).some((v) => me.fav.has(Number(v.id)));
+    const top = `
+          <div class="lib-top">
+            <button class="lib-grip" type="button" data-pp-grip="${esc(p.id)}" title="Drag to your Content Plan · click to select several" aria-label="Select to drag into the Content Plan">${icon("grip-vertical")}</button>
+            ${fav ? `<span class="lib-badge lib-badge-fav" title="One of your favourite profiles">${icon("star")}</span>` : ""}
+            <span class="lib-save">${saveBtn(p.id)}</span>
+            ${me.isSuper ? `<button class="lib-remove" type="button" data-remove="${esc(p.id)}" title="Remove from the library (superadmin)" aria-label="Remove from the library">${icon("trash-2")}</button>` : ""}
+          </div>`;
+    const bottom = `
+          <div class="lib-bottom">
+            <div class="lib-tags">${tagChips(p, ["sport", "competition"])}</div>
+            <p class="lib-who">${pf ? `<img class="lib-pf" src="assets/pf-${pf}.svg" alt="${esc(pf)}">` : ""}${esc(who)}</p>
+            <p class="lib-when">${date(p.published_at)}${p.views ? ` · ${Number(p.views).toLocaleString("en-GB", { notation: "compact" })} views` : ""}</p>
+          </div>`;
+    const actions = `<div class="lib-actions">${aiButton(p.id)}<button class="lib-plan-add" type="button" data-plan-add="${esc(p.id)}" title="Add to your Content Plan" aria-label="Add to your Content Plan">${icon("calendar-plus")}</button></div>`;
+
+    // Clean card: the cover, a play button for videos, controls only on hover
+    if (p.cover_url) {
+      return `
+      <article class="lib-card has-cover" data-id="${esc(p.id)}">
+        <div class="lib-media" style="aspect-ratio: 1 / ${coverRatio(p).toFixed(4)}">
+          <img class="lib-cover-img" src="${esc(p.cover_url)}" alt="${esc(who || "Post")}" loading="lazy" decoding="async">
+          <button class="lib-hit" type="button" data-open="${esc(p.id)}" aria-label="Details${who ? ` · ${esc(who)}` : ""}"></button>
+          ${video ? `<button class="lib-playbtn" type="button" data-play="${esc(p.id)}" aria-label="Play video">${icon("play")}</button>${p.duration_s ? `<span class="lib-dur">${mmss(p.duration_s)}</span>` : ""}` : ""}
+          ${top}${bottom}
+        </div>
+        ${actions}
+      </article>`;
+    }
+
+    // No cover yet: the platform's embed (as before)
+    const src = previewSrc(p);
     const fmt = pretty(first(p, "format"));
     const sh = shape(p);
     const zoomStyle = sh.zoom ? ` style="--zoom:${sh.zoom.toFixed(4)};--inset:${((1 - sh.boxFrac) / 2 * 100).toFixed(3)}%"` : "";
@@ -403,22 +445,37 @@
             ? `<div class="lib-cover" data-cover-box><img data-oembed="${esc(p.url)}" alt="${esc(who || "TikTok video")}"><span class="lib-play" aria-hidden="true"></span></div>`
             : src ? `<div class="lib-zoom"${zoomStyle}><iframe class="lib-frame${pf === "instagram" ? " is-ig" : ""}" src="${esc(src)}" loading="lazy" title="${esc(who || "Post")}" scrolling="no" allow="encrypted-media; picture-in-picture; fullscreen"></iframe></div>` : `<span class="lib-noimg"></span>`}
           ${sh.zoom ? "" : `<button class="lib-hit" type="button" data-open="${esc(p.id)}" aria-label="Details${who ? ` · ${esc(who)}` : ""}"></button>`}
-          <div class="lib-top">
-            <button class="lib-grip" type="button" data-pp-grip="${esc(p.id)}" title="Drag to your Content Plan · click to select several" aria-label="Select to drag into the Content Plan">${icon("grip-vertical")}</button>
-            ${pf ? `<span class="lib-badge lib-badge-pf"><img src="assets/pf-${pf}.svg" alt="${esc(pf)}"></span>` : ""}
-            ${fmt ? `<span class="lib-badge">${esc(fmt)}</span>` : ""}
-            ${(p.tags?.club || []).some((v) => me.fav.has(Number(v.id))) ? `<span class="lib-badge lib-badge-fav" title="One of your favourite profiles">${icon("star")}Favourite</span>` : ""}
-            <span class="lib-save">${saveBtn(p.id)}</span>
-            ${me.isSuper ? `<button class="lib-remove" type="button" data-remove="${esc(p.id)}" title="Remove from the library (superadmin)" aria-label="Remove from the library">${icon("trash-2")}</button>` : ""}
-          </div>
-          <div class="lib-bottom">
-            <div class="lib-tags">${tagChips(p, ["sport", "competition"])}</div>
-            <p class="lib-who">${esc(who)}</p>
-            <p class="lib-when">${date(p.published_at)}${first(p, "entity") ? ` · ${esc(pretty(first(p, "entity")))}` : ""}</p>
-          </div>
+          ${top.replace('<span class="lib-save">', `${pf ? `<span class="lib-badge lib-badge-pf"><img src="assets/pf-${pf}.svg" alt="${esc(pf)}"></span>` : ""}${fmt ? `<span class="lib-badge">${esc(fmt)}</span>` : ""}<span class="lib-save">`)}
+          ${bottom}
         </div>
-        <div class="lib-actions">${aiButton(p.id)}<button class="lib-plan-add" type="button" data-plan-add="${esc(p.id)}" title="Add to your Content Plan" aria-label="Add to your Content Plan">${icon("calendar-plus")}</button></div>
+        ${actions}
       </article>`;
+  }
+
+  // ▶ on a cover: the platform's player inside the card (TikTok asks for its cookie consent the first time)
+  function playerSrc(p) {
+    const u = p.url || ""; let m;
+    if ((m = u.match(/instagram\.com\/(?:[\w.]+\/)?(p|reel|tv)\/([\w-]+)/))) return { src: `https://www.instagram.com/${m[1]}/${m[2]}/embed/`, ig: true };
+    if ((m = u.match(/tiktok\.com\/.*video\/(\d+)/))) return { src: `https://www.tiktok.com/player/v1/${m[1]}?autoplay=1&music_info=0&description=0&rel=0&controls=1` };
+    if ((m = u.match(/(?:shorts\/|v=|youtu\.be\/)([\w-]{11})/))) return { src: `https://www.youtube-nocookie.com/embed/${m[1]}?autoplay=1&playsinline=1` };
+    if ((m = u.match(/(?:twitter|x)\.com\/[^/]+\/status\/(\d+)/))) return { src: `https://platform.twitter.com/embed/Tweet.html?id=${m[1]}&theme=dark&dnt=true&hideThread=true` };
+    if (/facebook\.com\//.test(u)) return { src: `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(u)}&show_text=false&autoplay=true` };
+    if ((m = u.match(/linkedin\.com\/feed\/update\/(urn:li:[\w:]+)/))) return { src: `https://www.linkedin.com/embed/feed/update/${m[1]}?collapsed=1` };
+    return null;
+  }
+  function playInCard(id) {
+    const p = cache.get(String(id));
+    const media = $(`.lib-card[data-id="${CSS.escape(String(id))}"] .lib-media`);
+    const pl = p && playerSrc(p);
+    if (!media || !pl) return openPost(id);
+    media.classList.add("is-playing");
+    media.insertAdjacentHTML("beforeend", `<div class="lib-player${pl.ig ? " is-ig" : ""}"><iframe src="${esc(pl.src)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen scrolling="no" title="Video"></iframe>
+      <button class="lib-stop" type="button" data-stop="${esc(id)}" aria-label="Close the video">${icon("x")}</button></div>`);
+  }
+  function stopInCard(id) {
+    const media = $(`.lib-card[data-id="${CSS.escape(String(id))}"] .lib-media`);
+    media?.querySelector(".lib-player")?.remove();
+    media?.classList.remove("is-playing");
   }
 
   // ---------- AI analyses: credits & unlocks (supabase/billing.sql) ----------
@@ -475,7 +532,7 @@
     const tpl = document.createElement("template");
     tpl.innerHTML = rows.map(card).join("");
     [...tpl.content.children].forEach((el, i) => {
-      const ratio = shape(rows[i]).ratio;
+      const ratio = rows[i].cover_url ? coverRatio(rows[i]) : shape(rows[i]).ratio;
       placed.push({ el, ratio });
       place(el, ratio);
     });
@@ -739,6 +796,10 @@
     if (rm && me.isSuper) { e.preventDefault(); e.stopPropagation(); return askRemove(rm, rm.dataset.remove); }
     const tag = e.target.closest("[data-tag]");
     if (tag) return filterByTag(tag.dataset.tag);
+    const play = e.target.closest("[data-play]");
+    if (play) return playInCard(play.dataset.play);
+    const stop = e.target.closest("[data-stop]");
+    if (stop) return stopInCard(stop.dataset.stop);
     const open = e.target.closest("[data-open]");
     if (open) return openPost(open.dataset.open);
     const like = e.target.closest("[data-more-like]");

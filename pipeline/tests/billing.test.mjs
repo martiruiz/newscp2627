@@ -344,5 +344,13 @@ await db.query(`select public.apply_smart_labels($1::jsonb)`, [JSON.stringify([{
 check("re-labelling replaces only the AI's tags", (await tagsOf(13, "matchday_graphic")) === "Full-time" && (await fmtOf(13)) === "Reel");
 check("members can't write AI labels", await as(U.A, `select public.apply_smart_labels('[]'::jsonb)`).then(() => false, () => true));
 
+console.log("\n22. Covers");
+const s5 = await snap();
+await db.exec(sql("covers.sql")); await db.exec(sql("covers.sql"));
+check("library pages unchanged after covers.sql", s5 === await snap());
+await db.query(`update public.content_ideas set cover_url = 'https://x.supabase.co/storage/v1/object/public/covers/13.jpg' where id = 13`);
+const withCover = (await as(U.A, `select public.library_ideas('{}'::jsonb, 'Post 13', null, null, 'latest', '', null, 5) r`))[0].r.data.find((x) => x.id === 13);
+check("library returns cover, media type, duration and views", withCover?.cover_url?.endsWith("13.jpg") && withCover.media_type === "reel" && Number(withCover.views) === 226931, JSON.stringify(withCover && { c: withCover.cover_url, t: withCover.media_type }));
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);
