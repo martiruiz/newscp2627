@@ -5304,7 +5304,9 @@ main { position: relative; z-index: 0; }
   .faq-blocks { grid-template-columns: 1fr; }
 }
 .faq-split .faq-intro .hx-eyebrow { justify-self: start; }
-.faq-split .faq-intro .faq-back-intro { display: none !important; }
+/* the "Back to questions" button goes under Contact / Book a demo so the title stays on one line */
+.faq-split .faq-intro .actions { max-width: 340px; }
+.faq-split .faq-intro .faq-back-intro { order: 3; }
 /* footer: the logo mark at the bottom centre instead of the big wordmark (room for the home dock underneath) */
 .sf-word { display: none; }
 .sf-mark { display: flex; justify-content: center; padding: 8px 0 40px; }
