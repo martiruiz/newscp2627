@@ -5114,3 +5114,16 @@ main { position: relative; z-index: 0; }
 #content-plan .cp-e.has-img { grid-template-columns: 20px minmax(0, 1fr); }
 #content-plan .cp-e.has-img b { width: 20px; height: 27px; }
 .cp-tray .cp-thumb { width: 34px; height: 46px; }
+
+/* ---------- Pricing cards: what you gain, months free, reassurance ---------- */
+.plan-sub b { color: var(--text); font-weight: 600; }
+.plan-sub .plan-free { color: var(--gold); }
+.plan-edge { margin: -0.3rem 0 1rem; text-align: center; padding: 0.45rem 0.7rem; border-radius: 10px; font-size: 0.82rem; font-weight: 600; line-height: 1.35; color: var(--gold); background: var(--gold-tint); border: 1px solid var(--gold-dim); }
+.plan-price span { font-size: 0.85rem; }
+.plan-assure { max-width: 860px; margin: 1.6rem auto 0; text-align: center; }
+.plan-assure-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem 1.4rem; margin: 0; font-size: 0.92rem; color: var(--muted); }
+.plan-assure-row span { white-space: nowrap; }
+.plan-quote { margin: 1.1rem auto 0; max-width: 620px; }
+.plan-quote blockquote { margin: 0; font-size: 0.98rem; font-style: italic; color: var(--text); line-height: 1.5; }
+.plan-quote figcaption { margin-top: 0.4rem; font-size: 0.8rem; color: var(--muted); letter-spacing: 0.02em; }
+.plan-cta { white-space: normal; text-align: center; line-height: 1.25; }

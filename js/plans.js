@@ -26,6 +26,9 @@
 
   const priceOf = (p, cur = currency, iv = interval) => p.prices.find((x) => x.currency === cur && x.interval === iv);
   const hasYear = (p) => !!priceOf(p, currency, "year");
+  // yearly = how many months free (12 × monthly − yearly) and how much that is
+  const monthsFree = (p) => { const m = priceOf(p, currency, "month"), y = priceOf(p, currency, "year"); return m && y ? Math.round((m.amount * 12 - y.amount) / m.amount) : 0; };
+  const yearSave = (p) => { const m = priceOf(p, currency, "month"), y = priceOf(p, currency, "year"); return m && y ? m.amount * 12 - y.amount : 0; };
   const saving = (p) => { const m = priceOf(p, currency, "month"), y = priceOf(p, currency, "year"); return m && y ? Math.round((1 - y.amount / (m.amount * 12)) * 100) : 0; };
   const currentSub = () => mine?.subscription && ["active", "trialing", "past_due", "unpaid"].includes(mine.subscription.status) && mine.subscription.source === "stripe" ? mine.subscription : null;
 
@@ -35,15 +38,27 @@
     const cur = currentSub();
     const isCurrent = cur?.plan === p.key;
     const trial = p.trial_days > 0 && (!mine || mine.trial_eligible) ? p.trial_days : 0;
-    const ai = p.ai_unlimited ? `<b>${tx("Unlimited AI analyses")}</b>` : p.ai_monthly_units ? tx("<b>{n} AI analyses</b> every month", { n: p.ai_monthly_units }) : "";
-    const features = (p.features?.length ? p.features : []).map((f) => tick(esc(f))).join("") + (ai && !(p.features || []).some((f) => /AI analys/i.test(f) && /\d/.test(f)) ? tick(ai) : "");
+    // the same five lines on every plan: ✓ included, greyed out when not, so the difference is visible at a glance
+    const has = (k) => (p.entitlements || []).includes(k);
+    const hasAi = has("ai.analyze_posts");
+    const aiLine = !hasAi ? tx("AI analysis of any post") : p.ai_unlimited ? `<b>${tx("Unlimited AI analyses")}</b>` : tx("<b>{n} AI analyses</b> every month", { n: p.ai_monthly_units });
+    const features = [
+      [tx("Full Content Library"), has("library.access")],
+      [tx("Smart filters & saved boards"), has("library.save_posts")],
+      [tx("Content Plan: calendars & exports"), has("planner.access")],
+      [aiLine, hasAi],
+      [tx("Up to {n} users", { n: MAX_SEATS }), true],
+    ].map(([f, on]) => tick(f, on)).join("");
+    // the plan with the most AI analyses says what it adds over the next one
+    const otherAi = Math.max(0, ...(data?.plans || []).filter((x) => x.key !== p.key && (x.entitlements || []).includes("ai.analyze_posts")).map((x) => x.ai_monthly_units || 0));
+    const edge = hasAi && !p.ai_unlimited && p.ai_monthly_units > otherAi && otherAi > 0 ? `<p class="plan-edge">${tx("{n} AI analyses (vs {m}) · Best for teams", { n: p.ai_monthly_units, m: otherAi })}</p>` : "";
     let cta;
     if (isCurrent) cta = `<a class="btn btn-outline plan-cta" href="profile.html#billing">${tx("Manage your plan")}</a>`;
     else if (!price) cta = `<span class="btn btn-outline plan-cta is-current">${tx("Not available in {cur}", { cur: currency.toUpperCase() })}</span>`;
     else if (!price.ready) cta = `<a class="btn btn-outline plan-cta" href="contact.html">${tx("Coming soon — contact us")}</a>`;
     else if (cur) cta = `<a class="btn btn-outline plan-cta" href="profile.html?change=${encodeURIComponent(p.key)}&interval=${iv}#billing">${tx("Switch to {plan}", { plan: esc(p.name) })}</a>`;
     else cta = `<button class="btn ${p.highlighted || solo ? "btn-gold" : "btn-outline"} plan-cta" type="button" data-checkout-plan="${esc(p.key)}" data-interval="${iv}" data-currency="${currency}" data-seats="${seats}"${privateToken && p.key === privatePlan?.key ? ` data-link="${esc(privateToken)}"` : ""}><span>${trial ? tx("Start {n}-day free trial", { n: trial }) : tx("Get {plan}", { plan: esc(p.name) })}</span><i class="plan-cta-arrow" aria-hidden="true">→</i></button>`;
-    const flag = isCurrent ? `<span class="plan-flag is-current">${tx(cur.status === "trialing" ? "Your trial" : "Your plan")}</span>` : p.badge || p.highlighted ? `<span class="plan-flag">${esc(p.badge || "Most complete")}</span>` : "";
+    const flag = isCurrent ? `<span class="plan-flag is-current">${tx(cur.status === "trialing" ? "Your trial" : "Your plan")}</span>` : p.badge || p.highlighted ? `<span class="plan-flag">${esc(tx(p.badge || "Recommended"))}</span>` : "";
     const note = isCurrent
       ? (cur.status === "trialing" && cur.trial_end ? tx("Free trial until {date}", { date: new Date(cur.trial_end).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" }) }) : cur.cancel_at_period_end ? tx("Ends on {date}", { date: new Date(cur.current_period_end).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" }) }) : "&nbsp;")
       : trial && price?.ready ? tx(iv === "month" ? "Card required · {zero} today · then {price}/{per} · billed on the 1st" : "Card required · {zero} today · then {price}/{per}", { zero: fmt(0, currency), price: fmt(price.amount * seats, currency), per: per(iv) })
@@ -52,9 +67,12 @@
       ${flag}
       <h3>${esc(p.name)}</h3>
       <p class="plan-blurb">${esc(p.tagline || p.description || "")}</p>
-      <p class="plan-price">${price ? `<b data-price="${price.amount * seats}" data-cur="${currency}">${fmt(price.amount * seats, currency)}</b><span>/ ${per(iv)}</span>` : `<b>—</b>`}</p>
-      <p class="plan-sub">${price && seats > 1 ? tx("{n} users × {price}", { n: seats, price: fmt(price.amount, currency) }) : price && iv === "year" ? `${fmt(price.amount / 12, currency)}/${per("month")} · ${saving(p) > 0 ? tx("save {n}%", { n: saving(p) }) : tx("billed yearly")}` : hasYear(p) ? `${tx("or {price}/year", { price: fmt(priceOf(p, currency, "year").amount, currency) })}${saving(p) > 0 ? ` (${tx("save {n}%", { n: saving(p) })})` : ""}` : "&nbsp;"}</p>
+      <p class="plan-price">${price ? `<b data-price="${price.amount}" data-cur="${currency}">${fmt(price.amount, currency)}</b><span>${tx("/ {per} per user", { per: per(iv) })}</span>` : `<b>—</b>`}</p>
+      <p class="plan-sub">${price && seats > 1 ? tx("Total for {n} users: <b>{total}</b>/{per}", { n: seats, total: fmt(price.amount * seats, currency), per: per(iv) })
+        : price && iv === "year" ? `${fmt(price.amount / 12, currency)}/${per("month")} · ${monthsFree(p) > 0 ? `<b class="plan-free">${tx("{n} months free", { n: monthsFree(p) })}</b> · ${tx("save {amount}", { amount: fmt(yearSave(p), currency) })}` : tx("billed yearly")}`
+        : hasYear(p) ? `${tx("or {price}/year", { price: fmt(priceOf(p, currency, "year").amount, currency) })}${monthsFree(p) > 0 ? ` · <b class="plan-free">${tx("{n} months free", { n: monthsFree(p) })}</b>` : ""}` : "&nbsp;"}</p>
       <ul class="plan-features">${features}</ul>
+      ${edge}
       ${cta}
       <p class="plan-note">${note}</p>
     </article>`;
@@ -85,7 +103,7 @@
     return `<div class="plan-switches">
       ${anyYear ? `<div class="plan-interval" role="tablist" aria-label="Billing period">
         <button type="button" role="tab" aria-selected="${interval === "month"}" data-interval-pick="month">Monthly</button>
-        <button type="button" role="tab" aria-selected="${interval === "year"}" data-interval-pick="year">Yearly${best ? `<em>${tx("save {n}%", { n: best })}</em>` : ""}</button>
+        <button type="button" role="tab" aria-selected="${interval === "year"}" data-interval-pick="year">Yearly${plans.some((p) => monthsFree(p) > 0) ? `<em>${tx("{n} months free", { n: Math.max(...plans.map(monthsFree)) })}</em>` : ""}</button>
       </div>` : ""}
       ${privatePlan ? "" : `<div class="plan-seats" role="group" aria-label="${esc(tx("Users"))}">
         <span>${tx("Users")}</span>
@@ -153,6 +171,13 @@
       b.classList.toggle("is-solo", plans.length === 1);
       b.innerHTML = plans.length ? plans.map((p) => planCard(p, { solo: plans.length === 1 })).join("") : `<p class="plans-empty">Plans will be published here soon. <a class="link-gold" href="contact.html">Contact us</a> in the meantime.</p>`;
       decorate(b, swap);
+      if (!privatePlan && plans.length > 1 && !b.nextElementSibling?.matches?.(".plan-assure")) {
+        const td = Math.max(0, ...plans.map((p) => p.trial_days || 0));
+        b.insertAdjacentHTML("afterend", `<div class="plan-assure">
+          <p class="plan-assure-row">${td ? `<span>✓ ${tx("{n} days free", { n: td })}</span>` : ""}<span>✓ ${tx("Cancel in 2 clicks")}</span><span>✓ ${tx("No charge until the trial ends")}</span><span>✓ ${tx("VAT included")}</span></p>
+          <figure class="plan-quote"><blockquote>“${tx("In minutes I review fresh creative inspo, align posts, and schedule—freeing hours every week.")}”</blockquote><figcaption>Gastón Acosta · World Football Summit</figcaption></figure>
+        </div>`);
+      }
       const prev = b.previousElementSibling?.matches?.(".plan-switches") ? b.previousElementSibling : null;
       if (prev) prev.outerHTML = switches(plans); else b.insertAdjacentHTML("beforebegin", switches(plans));
     });
