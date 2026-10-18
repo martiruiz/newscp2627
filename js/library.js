@@ -242,9 +242,12 @@
         <span class="lf-sp-n">${zero ? "No matches" : kfmt(n)}</span>${svg("check", "lf-sp-ck")}</button>`;
     }).join("");
     const vOpen = ui.open === "views";
-    const viewsRow = views.hist ? `<div class="lf-row${vOpen ? " is-open" : ""}" data-lf-rowbox="views">
+    // Views exist only on Instagram, TikTok and YouTube (Shorts too): with only X / Facebook / LinkedIn chosen, no Views filter
+    const pfSel = [...(selected.platform || [])].map((id) => catalog.byId.get(id)?.name.toLowerCase());
+    const noViews = pfSel.length > 0 && pfSel.every((n) => ["x", "facebook", "linkedin"].includes(n));
+    const viewsRow = views.hist && !noViews ? `<div class="lf-row${vOpen ? " is-open" : ""}" data-lf-rowbox="views">
         <button class="lf-rh" type="button" aria-expanded="${vOpen}" data-lf-row="views">${svg("eye")}<span class="lf-t">Views</span><span class="lf-v${viewsSet() ? " is-set" : ""}" data-views-v>${viewsLabel()}</span>${svg("chev", "lf-chev")}</button>
-        <div class="lf-rb"${vOpen ? "" : " hidden"} data-lf-body-of="views">${viewsHtml()}</div></div>` : "";
+        <div class="lf-rb"${vOpen ? "" : " hidden"} data-lf-body-of="views">${viewsHtml()}<p class="lf-views-note">${tx("Only Instagram, TikTok and YouTube")}</p></div></div>` : "";
     return rows + viewsRow;
   }
   // Specials keep the catalog order (Top Picks, Replicable ideas, Overperforming) so they don't jump around

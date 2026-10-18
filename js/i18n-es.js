@@ -467,6 +467,7 @@ window.SCP_ES = {
   "billed yearly": "facturación anual",
   "or {price}/year": "o {price}/año",
   "Recommended": "Recomendado",
+  "Only Instagram, TikTok and YouTube": "Solo Instagram, TikTok y YouTube",
   "See the carousel": "Ver el carrusel",
   "Favourite social network": "Red social favorita",
   "its posts come first in your Content Library": "sus posts salen primero en tu Biblioteca de contenido",
