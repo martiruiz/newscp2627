@@ -44,7 +44,7 @@ permissions: user_entitlements() → entitlements() / has_feature() / has_entitl
 | Edge Functions | `supabase/functions/stripe-checkout` (rewritten), `stripe-webhook` (rewritten), `stripe-manage` (new), `stripe-admin` (new), `send-emails` (new), `billing-cron` (new), `stripe-portal` (unchanged); shared: `_shared/stripe.ts`, `_shared/sync.ts`, `_shared/reconcile.ts`, `_shared/billing-dates.js`, `_shared/email-render.js` |
 | Website | `pricing.html`, `js/plans.js`, `js/checkout.js`, `js/profile-billing.js`, `profile.html`, `css/styles.css` |
 | Admin | `admin/memberships.html`, `admin/js/memberships.js`, `admin/js/core.js` (menu), `admin/js/billing.js` (now "AI & packs"), `admin/css/admin.css` |
-| Tools | `pipeline/stripe/setup.mjs` (packs, VAT, portal, webhook), `pipeline/stripe/test-clocks.mjs` (Stripe validation) |
+| Tools | `pipeline/stripe/setup.mjs` (packs, VAT, portal, webhook), `pipeline/stripe/sync-plans.mjs` (same as "Sync with Stripe"), `pipeline/stripe/test-clocks.mjs` (Stripe validation) |
 | Tests | `pipeline/tests/memberships.test.mjs`, `pipeline/tests/billing-dates.test.mjs`, `pipeline/tests/billing.test.mjs` |
 | Ops | `.github/workflows/billing-daily.yml` |
 
@@ -216,8 +216,16 @@ webhook with real Stripe events, Resend delivery, and an end-to-end checkout in 
    Billing events and e-mails.
 7. GitHub secrets `SUPABASE_URL`, `BILLING_CRON_SECRET`.
 8. MemberPress migration in test mode (section 10).
-9. Go live only with explicit approval: `sk_live_` secrets, `node stripe/setup.mjs --live`, live webhook secret, sync
-   plans again in live mode.
+9. Go live only with explicit approval. Test-mode Stripe ids are stored in the database, so first clear them (SQL
+   editor): `update plans set stripe_product_id = null, stripe_price_month = null, stripe_price_year = null;
+   update membership_prices set stripe_price_id = null where not legacy; update ai_packs set stripe_price = null;
+   update billing_discounts set stripe_coupon_id = null, stripe_promotion_code_id = null; delete from stripe_config;`
+   and remove test customers/subscriptions (`stripe_customers`, `subscriptions` with source 'stripe' created in test).
+   Then `sk_live_` in `pipeline/.env` and the Supabase secrets, `node stripe/setup.mjs --live`,
+   `node stripe/sync-plans.mjs --live`, the live webhook secret, and re-create discounts in Stripe.
+
+Done on 18 Oct 2026 (test mode): SQL run; `node stripe/setup.mjs` (packs, IVA 21 % included, portal, webhook — secret
+saved in `pipeline/.env`); `node stripe/sync-plans.mjs` (4 plans, EUR monthly + yearly).
 
 **Rollback:** the website falls back to the previous plan data if the new RPCs are missing; to roll back the code,
 revert the commits and redeploy the previous functions (`git checkout <commit> -- supabase/functions && supabase

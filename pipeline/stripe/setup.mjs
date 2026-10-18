@@ -12,6 +12,7 @@
 //   cd pipeline && node stripe/setup.mjs            (test mode: STRIPE_SECRET_KEY=sk_test_… in pipeline/.env)
 //   node stripe/setup.mjs --live                    (only after testing; needs sk_live_…)
 // Needs in pipeline/.env: STRIPE_SECRET_KEY, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY. Optional: SITE_URL.
+import fs from "node:fs";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 import { loadEnv } from "../library/env.mjs";
@@ -119,7 +120,12 @@ if (existing) {
 } else {
   const created = await stripe.webhookEndpoints.create({ url: hook, enabled_events: events, description: "SCP → Supabase stripe-webhook" });
   console.log(`✓ Webhook created → ${hook}`);
-  console.log(`\n  Signing secret (shown only now — save it as a Supabase secret):\n  supabase secrets set STRIPE_WEBHOOK_SECRET=${created.secret}\n`);
+  // The signing secret is written to pipeline/.env (never printed); from there it goes to the Supabase secrets.
+  const envPath = new URL("../.env", import.meta.url);
+  const cur = fs.existsSync(envPath) ? fs.readFileSync(envPath, "utf8") : "";
+  const line = `STRIPE_WEBHOOK_SECRET=${created.secret}`;
+  fs.writeFileSync(envPath, /^STRIPE_WEBHOOK_SECRET=.*$/m.test(cur) ? cur.replace(/^STRIPE_WEBHOOK_SECRET=.*$/m, line) : `${cur.replace(/\n?$/, "\n")}${line}\n`);
+  console.log("  Signing secret saved to pipeline/.env as STRIPE_WEBHOOK_SECRET (not shown). Copy it to the Supabase secrets.");
 }
 
 console.log(`\nDone (${mode}). Next: Super Admin → Memberships → Plans → "Sync all plans with Stripe".\n`);
