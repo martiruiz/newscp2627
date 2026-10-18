@@ -467,6 +467,8 @@ window.SCP_ES = {
   "billed yearly": "facturación anual",
   "or {price}/year": "o {price}/año",
   "Recommended": "Recomendado",
+  "You get 7 days with full access.": "Tienes 7 días con acceso completo.",
+  "We ask for a card to start, but nothing is charged if you cancel before the trial ends.": "Te pedimos una tarjeta para empezar, pero no se cobra nada si cancelas antes de que termine la prueba.",
   "Yes. Each plan can have up to 5 users, each with their own account, boards and AI analyses.": "Sí. Cada plan puede tener hasta 5 usuarios, cada uno con su cuenta, sus tableros y sus análisis con IA.",
   "For bigger teams": "Para equipos más grandes",
   "Three steps, straight from any post in the library:": "Tres pasos, desde cualquier post de la biblioteca:",
