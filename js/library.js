@@ -140,15 +140,17 @@
   async function loadCatalog() {
     const [{ data, error }, logos] = await Promise.all([
       db.rpc("catalog_with_counts"),
-      db.from("idea_catalog").select("id,logo_url").not("logo_url", "is", null).then((r) => r.data || [], () => []),
+      db.from("idea_catalog").select("id,logo_url,logo_source").not("logo_url", "is", null).then((r) => r.data || [], () => []),
     ]);
     if (error) throw error;
     const logo = new Map(logos.map((l) => [Number(l.id), l.logo_url]));
+    // Instagram profile pictures (pipeline/library/ig-avatars.mjs) fill their circle; Wikimedia crests sit inside one
+    const igHandle = new Map(logos.map((l) => [Number(l.id), (/instagram\.com\/([\w.]+)/.exec(l.logo_source || "") || [])[1] || null]));
     const byCat = {};
     const byId = new Map();
     for (const r of data || []) {
       if (!CAT[r.category]) continue;
-      const v = { id: Number(r.id), category: r.category, name: r.name, total: Number(r.ideas), logo: logo.get(Number(r.id)) || null };
+      const v = { id: Number(r.id), category: r.category, name: r.name, total: Number(r.ideas), logo: logo.get(Number(r.id)) || null, ig: igHandle.get(Number(r.id)) || null };
       if (!v.total) continue;
       (byCat[v.category] ||= []).push(v);
       byId.set(v.id, v);
@@ -810,6 +812,15 @@
   // Card = the post (clean cover, or the embed for X / LinkedIn / Facebook) + a footer joined to it (who, when, views).
   // On the cover, always: the network and the format / length, and "Following" (which folds into a star).
   // On hover: a rail on the right with Save · Add to Content Plan · AI analysis · Open original.
+  // Footer avatar: Instagram profile picture (fills the circle) › crest (inside a neutral circle) › initials (gold on dark)
+  function footCrest(v, who) {
+    const name = v?.name || who || "";
+    const tip = v?.ig ? `@${v.ig}` : name;
+    const ini = name.replace(/\b(FC|CF|AFC|SC|AC|CD|UD|RC|SL)\b/g, "").trim().split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase() || "?";
+    if (v?.logo) return `<span class="lib-crest${v.ig ? " is-photo" : ""}" title="${esc(tip)}"><img src="${esc(v.logo)}" alt="" loading="lazy"></span>`;
+    return `<span class="lib-crest is-initials" title="${esc(tip)}"><b>${esc(ini)}</b></span>`;
+  }
+
   function card(p) {
     const pf = platformOf(p);
     const who = first(p, "club") || first(p, "competition") || first(p, "entity");
@@ -831,7 +842,7 @@
           </div>`;
     const foot = `
         <div class="lib-foot">
-          ${crest ? crestImg(crest, "lib-crest") : `<span class="lib-crest"><b>${esc((who || "?").slice(0, 2).toUpperCase())}</b></span>`}
+          ${footCrest(crest, who)}
           <span class="lib-foot-who"><b>${esc(who || name)}</b><small>${date(p.published_at)}</small></span>
           ${p.views ? `<span class="lib-foot-views"><b>${compact(p.views)}</b><small>${tx("views")}</small></span>` : ""}
         </div>`;
