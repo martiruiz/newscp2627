@@ -1418,4 +1418,5 @@ window.SCP_ES = {
   "Request received": "Solicitud recibida",
   "Thanks! We’ll get back to you with a time and a video call link.": "¡Gracias! Te responderemos con una hora y un enlace de videollamada.",
   "Explore the Content Library": "Explora la Biblioteca de contenido",
+  "Google sign-in isn't available yet. Please continue with your email.": "Entrar con Google aún no está disponible. Continúa con tu email.",
 };

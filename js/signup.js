@@ -37,13 +37,26 @@
     if (session && mode === "login") location.href = redirectUrl;
   });
 
-  // Google
-  document.querySelector("[data-google-signup]").addEventListener("click", async () => {
+  // Google. Supabase only accepts it once the provider is switched on (Authentication → Providers → Google);
+  // until then, say so here instead of sending people to Supabase's raw error page.
+  const googleBtn = document.querySelector("[data-google-signup]");
+  const cfg = window.SCP_CONFIG || {};
+  const googleOn = fetch(`${cfg.supabaseUrl}/auth/v1/settings`, { headers: { apikey: cfg.supabaseAnonKey } })
+    .then((r) => r.json()).then((j) => j?.external?.google === true).catch(() => true);
+  googleBtn.addEventListener("click", async () => {
     if (!auth?.ready) return;
+    googleBtn.disabled = true;
+    if (!(await googleOn)) {
+      googleBtn.disabled = false;
+      setStatus(tx("Google sign-in isn't available yet. Please continue with your email."), "err");
+      document.querySelector("[data-signup-form]")?.email?.focus();
+      return;
+    }
     const { error } = await auth.client.auth.signInWithOAuth({
       provider: "google",
       options: { redirectTo: redirectUrl },
     });
+    googleBtn.disabled = false;
     if (error) setStatus(error.message, "err");
   });
 
