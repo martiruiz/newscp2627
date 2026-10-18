@@ -281,5 +281,15 @@ await as(U.SUPER, `select public.remove_content_idea(4, 'x')`);
 check("removed post excluded from tag totals", (await libq({ sport: { ids: [FB, BK] } })).total === after2.either.total - 1);
 await as(U.SUPER, `select public.restore_content_idea('p4')`);
 
+console.log("\n18. Performance part 4: sampled shuffle and counts");
+const s3b = await snap();
+await db.exec(sql("performance-4.sql")); await db.exec(sql("performance-4.sql"));
+const s4 = await snap();
+check("small selections: identical results (exact)", s3b === s4);
+const full = (await as(U.A, `select array_agg(x order by x) a from public.ideas_matching_tags($1::jsonb) x`, [JSON.stringify({ sport: { ids: [FB, BK] } })]))[0].a;
+const half = (await as(U.A, `select array_agg(x order by x) a from public.ideas_matching_tags_sample($1::jsonb, 2, 1) x`, [JSON.stringify({ sport: { ids: [FB, BK] } })]))[0].a;
+check("sample = 1 in k of the matches", JSON.stringify(half) === JSON.stringify(full.filter((x) => x % 2 === 1)));
+check("shuffle step ≈ 5,000 posts per shuffle", (await db.query(`select public.shuffle_step(367692) k`)).rows[0].k === 74);
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);
