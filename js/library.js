@@ -880,6 +880,7 @@
           <img class="lib-cover-img" src="${esc(p.cover_url)}" alt="${esc(who || "Post")}" loading="lazy" decoding="async">
           <button class="lib-hit" type="button" data-open="${esc(p.id)}" aria-label="Details${who ? ` · ${esc(who)}` : ""}"></button>
           ${video ? `<button class="lib-playbtn" type="button" data-play="${esc(p.id)}" aria-label="Play video">${icon("play")}</button>` : ""}
+          ${!video && pf === "instagram" && (/carousel/i.test(fmt) || /carousel|sidecar/i.test(p.media_type || "")) ? `<button class="lib-carbtn" type="button" data-play="${esc(p.id)}" aria-label="${esc(tx("See the carousel"))}" title="${esc(tx("See the carousel"))}">${icon("chevron-right")}</button><span class="lib-cardots" aria-hidden="true"><i></i><i></i><i></i></span>` : ""}
           ${fmt || p.duration_s ? `<span class="lib-fmt">${video ? icon("play") : ""}${esc([fmt, p.duration_s ? mmss(p.duration_s) : ""].filter(Boolean).join(" · "))}</span>` : ""}
           ${corner}${rail}
         </div>${foot}
