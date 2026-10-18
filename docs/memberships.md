@@ -127,7 +127,12 @@ can redirect to `pricing.html#private=:token`.)
 
 ## 8. Free trials
 
-- Card always required (`payment_method_collection: "always"`); nothing is charged during the trial.
+- Card always required; nothing is charged during the trial. Stripe Checkout can't combine a trial with the day-1
+  anchor ("You may only specify one of billing_cycle_anchor, trial_end"), so for trials Checkout runs in **setup mode**
+  (saves and verifies the card, 3-D Secure if the bank asks, nothing charged) and the webhook creates the
+  subscription server-side with the trial end + anchor (the exact path validated by the test clocks; idempotent per
+  Checkout session). Without a trial: a normal subscription Checkout with the anchor.
+- During the trial a plan change applies at once with no charge; the first charge uses the new price.
 - Trial length per plan (none, 3, 7, 14, 30 or custom days); trial AI allowance per plan.
 - Eligibility (`billing_trial_eligible`): one trial per member — no trial if they ever had a trial or a Stripe
   subscription, or their Stripe customer used one; a superadmin can grant an exception per member.
@@ -195,6 +200,15 @@ node stripe/test-clocks.mjs → 23 passed, 0 failed    (real Stripe invoices in 
 ```
 Edge Functions type-check with Deno (`deno check`), no errors. **Not executed yet** (need the SQL + deployment): the
 webhook with real Stripe events, Resend delivery, and an end-to-end checkout in the browser.
+
+**End-to-end test in Stripe test mode (18 Oct 2026, superadmin account, test card 4242):** pricing → terms dialog →
+Checkout (setup) → webhook created the subscription (trialing until 25 Oct, anchor 1 Nov 12:00 Madrid) → Stripe's
+next invoice €2.32 (7 days of €9.99) → Account → Billing shows it live (card, next charge, invoice) → change to
+Library + AI during the trial (no charge, first charge €4.65) → cancel (access until 25 Oct, no more charges) →
+reactivate → Stripe portal opens. 12 webhook events processed, 0 failed; history trial_started · plan_changed ·
+cancel_scheduled · reactivated; e-mails queued (no Resend key yet). Fixed on the way: Checkout + trial + anchor
+(setup mode), "billing details updated" e-mails right after checkout, trial plan-change preview showing a charge today.
+That test subscription is left running to see the real trial-end invoice and e-mails on 25 Oct (test mode, test card).
 
 ## 12. Pending
 

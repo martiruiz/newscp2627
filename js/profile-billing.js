@@ -142,10 +142,12 @@
         t.innerHTML = `<p class="pf-billing-note">Checking the exact amount…</p>`;
         try {
           const pv = await manage({ action: "preview_change", plan: pick.dataset.pick, interval: iv });
-          t.innerHTML = `<div class="pf-change-terms">${pv.upgrade
+          t.innerHTML = `<div class="pf-change-terms">${pv.trial
+            ? `<p>Applies <b>now</b> and you're still in your free trial: <b>nothing is charged today</b>. Your first charge, on ${day(pv.first_charge_at)}, will be <b>${money(pv.first_charge, pv.currency)}</b> (the days until the 1st), then ${money(pv.new_price, pv.currency)} / ${pv.interval === "year" ? "year" : "month"}.</p>`
+            : pv.upgrade
             ? `<p>Applies <b>now</b>. You pay <b>${money(pv.charge_now, pv.currency)}</b> today for the rest of this period, then ${money(pv.new_price, pv.currency)} / ${pv.interval === "year" ? "year" : "month"}. ${esc(pv.note || "")}</p>`
             : `<p>Applies on <b>${day(pv.applies_at)}</b>, at the end of the period you've paid. Nothing is charged today; then ${money(pv.new_price, pv.currency)} / ${pv.interval === "year" ? "year" : "month"}. You keep your current features until then.</p>`}
-            <div class="pf-billing-actions"><button class="btn btn-gold" type="button" data-confirm="${esc(pick.dataset.pick)}" data-civ="${iv}">${pv.upgrade ? `Pay ${money(pv.charge_now, pv.currency)} and switch` : "Schedule the change"}</button><button class="btn btn-outline" type="button" data-bill="close">Cancel</button></div></div>`;
+            <div class="pf-billing-actions"><button class="btn btn-gold" type="button" data-confirm="${esc(pick.dataset.pick)}" data-civ="${iv}">${pv.trial ? "Switch plan" : pv.upgrade ? `Pay ${money(pv.charge_now, pv.currency)} and switch` : "Schedule the change"}</button><button class="btn btn-outline" type="button" data-bill="close">Cancel</button></div></div>`;
         } catch (err) { t.innerHTML = `<p class="pf-billing-note is-err">${esc(err.message)}</p>`; }
         return;
       }

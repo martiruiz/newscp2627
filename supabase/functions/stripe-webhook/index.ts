@@ -8,7 +8,7 @@
 //   subscription_schedule.*               → scheduled downgrades / interval changes
 //   customer.updated                      → "billing details updated" e-mail
 // Deploy with --no-verify-jwt.
-import { env, isoOf, json, kickEmails, rest, rpc, Stripe, stripe } from "../_shared/stripe.ts";
+import { config, env, isoOf, json, kickEmails, rest, rpc, Stripe, stripe } from "../_shared/stripe.ts";
 import { syncInvoice, syncSubscription, userOf } from "../_shared/sync.ts";
 
 async function grantPack(session: Stripe.Checkout.Session) {
@@ -19,20 +19,60 @@ async function grantPack(session: Stripe.Checkout.Session) {
   await rpc("grant_pack", { p_user: user, p_pack_key: session.metadata.pack_key, p_price: (session.amount_total ?? 0) / 100, p_source: "stripe", p_ref: session.id });
 }
 
+// Free trial: Checkout saved the card (setup mode) → create the subscription with the day-1 dates chosen at checkout.
+// Idempotent (Stripe idempotency key per Checkout session), and never a second live subscription for the member.
+async function createTrialSubscription(s: Stripe.Checkout.Session, event: Stripe.Event) {
+  const m = s.metadata || {};
+  if (m.kind !== "trial_subscription" || !m.price) return;
+  const customer = typeof s.customer === "string" ? s.customer : s.customer?.id || "";
+  const user = await userOf(customer, m.user_id || s.client_reference_id || undefined);
+  if (!user) throw new Error(`No member for checkout ${s.id}`);
+  const [live] = await rest(`subscriptions?select=status,stripe_subscription_id&user_id=eq.${user}&source=eq.stripe&status=in.(active,trialing,past_due,unpaid,incomplete)`);
+  if (live && live.stripe_subscription_id) { console.log(`member ${user} already has ${live.stripe_subscription_id}`); return; }
+  const si = await stripe.setupIntents.retrieve(typeof s.setup_intent === "string" ? s.setup_intent : s.setup_intent!.id);
+  const pm = typeof si.payment_method === "string" ? si.payment_method : si.payment_method?.id;
+  if (!pm) throw new Error(`No card on setup ${si.id}`);
+  await stripe.customers.update(customer, { invoice_settings: { default_payment_method: pm } });
+  const trialEnd = Number(m.trial_end), anchor = m.anchor ? Number(m.anchor) : null;
+  // a session completed very late (trial end already past) starts without a trial rather than failing
+  const now = Math.floor(Date.now() / 1000);
+  const taxRate = m.tax_mode === "fixed_rate" ? await config("tax_rate") : null;
+  const sub = await stripe.subscriptions.create({
+    customer, items: [{ price: m.price }], default_payment_method: pm,
+    ...(trialEnd > now + 3600 ? { trial_end: trialEnd } : {}),
+    ...(anchor && anchor > Math.max(now, trialEnd || 0) ? { billing_cycle_anchor: anchor, proration_behavior: m.prorate === "1" ? "create_prorations" : "none" } : {}),
+    ...(m.promotion_code ? { discounts: [{ promotion_code: m.promotion_code }] } : {}),
+    ...(m.tax_mode === "stripe_tax" ? { automatic_tax: { enabled: true } } : {}),
+    ...(taxRate ? { default_tax_rates: [taxRate] } : {}),
+    payment_behavior: "allow_incomplete",
+    off_session: true,
+    metadata: { user_id: user, plan_key: m.plan_key, interval: m.interval, currency: m.currency,
+      ...(m.private_link ? { private_link: m.private_link } : {}), ...(m.discount_code ? { discount_code: m.discount_code } : {}) },
+  }, { idempotencyKey: `scp-trial-sub-${s.id}` });
+  await syncSubscription(sub.id, { eventId: event.id, eventCreated: event.created, extra: { checkout_session: s.id } });
+  return sub.id;
+}
+
 async function checkoutCompleted(s: Stripe.Checkout.Session, event: Stripe.Event) {
   if (s.mode === "payment") return grantPack(s);
+  if (s.mode === "setup") {
+    const subId = await createTrialSubscription(s, event);
+    if (subId && s.metadata?.discount_id) await redeem(s, subId);
+    return;
+  }
   if (s.mode !== "subscription" || !s.subscription) return;
   const subId = typeof s.subscription === "string" ? s.subscription : s.subscription.id;
   await syncSubscription(subId, { eventId: event.id, eventCreated: event.created, extra: { checkout_session: s.id } });
-  // discount redemption (one row per checkout)
-  if (s.metadata?.discount_id) {
-    const user = s.metadata.user_id || s.client_reference_id;
-    await rest("billing_discount_redemptions", { method: "POST", headers: { Prefer: "resolution=ignore-duplicates" },
-      body: JSON.stringify({ discount_id: s.metadata.discount_id, user_id: user, subscription_id: subId, checkout_session: s.id }) });
-    const [d] = await rest(`billing_discounts?select=times_redeemed&id=eq.${s.metadata.discount_id}`);
-    const n = (await rest(`billing_discount_redemptions?select=id&discount_id=eq.${s.metadata.discount_id}`)).length;
-    if (d) await rest(`billing_discounts?id=eq.${s.metadata.discount_id}`, { method: "PATCH", body: JSON.stringify({ times_redeemed: n }) });
-  }
+  if (s.metadata?.discount_id) await redeem(s, subId);
+}
+
+// discount redemption (one row per checkout)
+async function redeem(s: Stripe.Checkout.Session, subId: string) {
+  const id = s.metadata!.discount_id;
+  await rest("billing_discount_redemptions", { method: "POST", headers: { Prefer: "resolution=ignore-duplicates" },
+    body: JSON.stringify({ discount_id: id, user_id: s.metadata!.user_id || s.client_reference_id, subscription_id: subId, checkout_session: s.id }) });
+  const n = (await rest(`billing_discount_redemptions?select=id&discount_id=eq.${id}`)).length;
+  await rest(`billing_discounts?id=eq.${id}`, { method: "PATCH", body: JSON.stringify({ times_redeemed: n }) });
 }
 
 async function trialWillEnd(sub: Stripe.Subscription, event: Stripe.Event) {
@@ -52,9 +92,15 @@ async function trialWillEnd(sub: Stripe.Subscription, event: Stripe.Event) {
 async function customerUpdated(c: Stripe.Customer, event: Stripe.Event) {
   // deno-lint-ignore no-explicit-any
   const prev = (event.data as any).previous_attributes || {};
-  if (!["address", "name", "email", "tax_exempt", "invoice_settings", "shipping"].some((k) => k in prev)) return;
+  // only changes the member makes themselves (not the card being saved at checkout)
+  if (!["address", "name", "email", "tax_exempt", "shipping"].some((k) => k in prev)) return;
   const user = await userOf(c.id, c.metadata?.user_id);
-  if (user) await rpc("billing_enqueue_email", { p_template: "billing_details_updated", p_user: user, p_vars: {}, p_dedupe: `billing_details:${event.id}` });
+  if (!user) return;
+  // Checkout fills in the name / address of a new customer: that isn't an "update" worth an e-mail
+  const [sub] = await rest(`subscriptions?select=started_at,updated_at&user_id=eq.${user}`);
+  const recent = (iso?: string) => iso && Date.now() - new Date(iso).getTime() < 60 * 60 * 1000;
+  if (Date.now() - c.created * 1000 < 60 * 60 * 1000 || recent(sub?.started_at)) return;
+  await rpc("billing_enqueue_email", { p_template: "billing_details_updated", p_user: user, p_vars: {}, p_dedupe: `billing_details:${event.id}` });
 }
 
 async function handle(event: Stripe.Event) {

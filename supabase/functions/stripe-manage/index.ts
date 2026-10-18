@@ -92,7 +92,16 @@ Deno.serve(async (req) => {
       const anySub = sub as any;
       const periodEnd = anySub.current_period_end ?? (item as any).current_period_end;
 
+      const trialing = sub.status === "trialing";
       if (body.action === "preview_change") {
+        // In the free trial any change applies now and nothing is charged today; the first charge (at the end of the
+        // trial, prorated to the 1st) is calculated by Stripe with the new price
+        if (trialing) {
+          const inv = await preview({ customer: sub.customer, subscription: sub.id,
+            subscription_details: { items: [{ id: item.id, price: target.stripe_price_id }], proration_behavior: "none" } });
+          return json({ upgrade: true, trial: true, applies_at: new Date().toISOString(), charge_now: 0, currency, new_price: Number(target.amount), interval,
+            first_charge: inv.amount_due / 100, first_charge_at: new Date(((inv.next_payment_attempt || inv.period_end) as number) * 1000).toISOString() });
+        }
         if (!upgrade) return json({ upgrade: false, applies_at: new Date(periodEnd * 1000).toISOString(), charge_now: 0, currency, new_price: Number(target.amount), interval });
         const inv = await preview({ customer: sub.customer, subscription: sub.id,
           subscription_details: { items: [{ id: item.id, price: target.stripe_price_id }], proration_behavior: "always_invoice", proration_date: Math.floor(Date.now() / 1000) } });
@@ -100,6 +109,13 @@ Deno.serve(async (req) => {
           note: current.interval !== interval ? "Switching to yearly starts a new yearly period today." : "Your renewal date stays the same (the 1st)." });
       }
 
+      if (trialing) {
+        if (sub.schedule && typeof sub.schedule === "object") await stripe.subscriptionSchedules.release((sub.schedule as Stripe.SubscriptionSchedule).id);
+        await stripe.subscriptions.update(sub.id, { items: [{ id: item.id, price: target.stripe_price_id }], proration_behavior: "none", metadata: { ...sub.metadata, plan_key: plan.key, interval } });
+        await audit(user.id, "member.change_in_trial", user.id, sub.id, { to: plan.key, interval });
+        await syncSubscription(sub.id);
+        return json({ ok: true, applied: "now" });
+      }
       if (upgrade) {
         if (sub.schedule && typeof sub.schedule === "object") await stripe.subscriptionSchedules.release((sub.schedule as Stripe.SubscriptionSchedule).id);
         // applied only if the prorated invoice is paid (otherwise Stripe keeps the old plan and returns the invoice)

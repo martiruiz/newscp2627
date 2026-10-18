@@ -94,31 +94,54 @@ Deno.serve(async (req) => {
         ? `Free until ${fmt(dates.trialEnd)}. No charge before then — cancel any time.${interval === "month" ? ` Then a prorated charge until ${fmt(dates.anchor || dates.trialEnd)} and the full price on the 1st of every month.` : " Then billed yearly."}`
         : interval === "month" && dates.prorate ? `Today you pay the days until ${fmt(dates.anchor!)}. Then the full price on the 1st of every month.` : "";
 
-      const session = await stripe.checkout.sessions.create({
-        mode: "subscription",
+      // With a free trial: Stripe Checkout can't combine a trial with the day-1 anchor, so Checkout only saves and verifies
+      // the card (setup mode, 3-D Secure if the bank asks, nothing charged) and the webhook creates the subscription with
+      // exactly these dates (validated with Stripe test clocks: pipeline/stripe/test-clocks.mjs).
+      // Without a trial: a normal subscription Checkout with the anchor (first invoice prorated to the 1st).
+      const plan_meta = {
+        ...meta, price: price.stripe_price_id,
+        ...(dates.trialEnd ? { trial_end: String(unix(dates.trialEnd)) } : {}),
+        ...(dates.anchor ? { anchor: String(unix(dates.anchor)) } : {}),
+        prorate: dates.prorate ? "1" : "0",
+        ...(discount ? { promotion_code: discount.promotion_code } : {}),
+        tax_mode: taxMode,
+      };
+      const common = {
         customer: customer.customer_id,
         client_reference_id: user.id,
-        line_items: [{ price: price.stripe_price_id, quantity: 1 }],
-        subscription_data: {
-          ...(dates.trialEnd ? { trial_end: unix(dates.trialEnd) } : {}),
-          ...(dates.anchor ? { billing_cycle_anchor: unix(dates.anchor) } : {}),
-          proration_behavior: dates.prorate ? "create_prorations" : "none",
-          ...(taxRate ? { default_tax_rates: [taxRate] } : {}),
-          metadata: meta,
-        },
-        ...(discount ? { discounts: [{ promotion_code: discount.promotion_code }] } : { allow_promotion_codes: false }),
-        payment_method_collection: "always",          // card required, also for the trial
-        ...(taxMode === "stripe_tax" ? { automatic_tax: { enabled: true }, billing_address_collection: "required" } : { billing_address_collection: "auto" }),
-        ...(checkoutCfg.collect_tax_id !== false ? { tax_id_collection: { enabled: true } } : {}),
-        ...(checkoutCfg.require_terms_consent ? { consent_collection: { terms_of_service: "required" } } : {}),
-        customer_update: { name: "auto", address: "auto" },
-        locale: "auto",
+        ...(checkoutCfg.require_terms_consent ? { consent_collection: { terms_of_service: "required" as const } } : {}),
+        customer_update: { name: "auto" as const, address: "auto" as const },
+        locale: "auto" as const,
         expires_at: Math.floor(Date.now() / 1000) + 60 * 60,   // the dates above stay accurate
         ...(note ? { custom_text: { submit: { message: note.slice(0, 1200) } } } : {}),
-        metadata: meta,
         success_url: `${site}/profile.html?checkout=success#billing`,
         cancel_url: `${site}/pricing.html?checkout=cancel`,
-      });
+      };
+      const session = dates.trialEnd
+        ? await stripe.checkout.sessions.create({
+            ...common,
+            mode: "setup",
+            currency,
+            payment_method_types: ["card"],
+            billing_address_collection: taxMode === "stripe_tax" ? "required" : "auto",
+            setup_intent_data: { metadata: plan_meta },
+            metadata: { ...plan_meta, kind: "trial_subscription" },
+          })
+        : await stripe.checkout.sessions.create({
+            ...common,
+            mode: "subscription",
+            line_items: [{ price: price.stripe_price_id, quantity: 1 }],
+            subscription_data: {
+              ...(dates.anchor ? { billing_cycle_anchor: unix(dates.anchor), proration_behavior: dates.prorate ? "create_prorations" as const : "none" as const } : {}),
+              ...(taxRate ? { default_tax_rates: [taxRate] } : {}),
+              metadata: meta,
+            },
+            ...(discount ? { discounts: [{ promotion_code: discount.promotion_code }] } : { allow_promotion_codes: false }),
+            payment_method_collection: "always",
+            ...(taxMode === "stripe_tax" ? { automatic_tax: { enabled: true }, billing_address_collection: "required" as const } : { billing_address_collection: "auto" as const }),
+            ...(checkoutCfg.collect_tax_id !== false ? { tax_id_collection: { enabled: true } } : {}),
+            metadata: meta,
+          });
       return json({ url: session.url, terms });
     }
 
