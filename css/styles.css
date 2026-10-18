@@ -2843,7 +2843,8 @@ a.blog-img { display: block; }
 .dock-btn { position: relative; display: grid; place-items: center; width: 50px; height: 50px; border-radius: 50%; color: #fff; transition: background 0.2s, color 0.2s; }
 .dock-btn:hover { background: rgba(255, 255, 255, 0.08); color: var(--gold); }
 .dock-btn > svg:not(.dock-ring) { width: 19px; height: 19px; }
-.dock-ring { position: absolute; inset: 3px; width: calc(100% - 6px); height: calc(100% - 6px); transform: rotate(-90deg); }
+.dock .dock-ring { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); pointer-events: none; }
+.dock-top:hover .dock-ring-bg { stroke: rgba(240, 184, 74, 0.25); }
 .dock-ring-bg { fill: none; stroke: rgba(255, 255, 255, 0.12); stroke-width: 2; }
 .dock-ring-fg { fill: none; stroke: var(--gold); stroke-width: 2; stroke-linecap: round; transition: stroke-dashoffset 0.1s linear; }
 .dock-app { background: rgba(240, 184, 74, 0.14); color: var(--gold); }

@@ -1,5 +1,5 @@
 // Floating dock on the home page: appears after the first scroll down.
-// Newsletter (pop-up with a free resource) · LinkedIn · back to top (with scroll progress ring) · Content Library.
+// Newsletter (pop-up with a free resource) · back to top (with scroll progress ring) · Content Library.
 (() => {
   const cfg = window.SCP_CONFIG || {};
   const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
@@ -16,7 +16,6 @@
     trend: '<path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/>',
     zap: '<path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>',
   };
-  const LINKEDIN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>';
   const RESOURCE = "Sports Content Idea Kit";
   const CONSENT = "I want the free kit and the SCP newsletter (sports digital marketing news and examples). I can unsubscribe at any time.";
   const R = 19, C = 2 * Math.PI * R;
@@ -28,7 +27,6 @@
   dock.innerHTML = `
     <button class="dock-news" type="button" data-dock-news>${svg(I.mail)}<span>Newsletter</span>${svg(I.out)}</button>
     <span class="dock-sep" aria-hidden="true"></span>
-    ${cfg.linkedinUrl ? `<a class="dock-btn" href="${esc(cfg.linkedinUrl)}" target="_blank" rel="noopener" aria-label="Sports Content Playbook on LinkedIn" title="LinkedIn">${LINKEDIN}</a>` : ""}
     <button class="dock-btn dock-top" type="button" aria-label="Back to top" title="Back to top" data-dock-top>
       <svg class="dock-ring" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="${R}" class="dock-ring-bg"/><circle cx="22" cy="22" r="${R}" class="dock-ring-fg" style="stroke-dasharray:${C};stroke-dashoffset:${C}" data-dock-ring/></svg>
       ${svg(I.up)}
