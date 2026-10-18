@@ -110,6 +110,18 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString(window.SCP_LO
     }
   });
 
+  // Footer logo: the same draw-in + shine as the header logo, when it comes into view
+  $$(".footer-brand").forEach((el) => {
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    el.classList.add("is-waiting");
+    new IntersectionObserver(([e], io) => {
+      if (!e.isIntersecting) return;
+      io.disconnect();
+      el.classList.remove("is-waiting"); el.classList.add("is-intro");
+      setTimeout(() => el.classList.remove("is-intro"), 2800);
+    }, { threshold: 0.6 }).observe(el);
+  });
+
   // Footer newsletter (same list as the home dock: newsletter_signups, source "footer")
   $$("[data-footer-news]").forEach((form) => {
     const msg = $("[data-footer-news-msg]", form);
