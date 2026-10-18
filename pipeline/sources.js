@@ -4,8 +4,8 @@ export const SOURCES = [
   { name: "SocialGeek News", type: "sitemap", url: "https://socialgeekpro.beehiiv.com/sitemap.xml", match: "/p/" },
 ];
 
-// Only articles published in the last 24 hours are reviewed
-export const MAX_AGE_HOURS = 24;
+// Articles published in the last 48 hours are reviewed (runs are every 30 h; duplicates are skipped by URL)
+export const MAX_AGE_HOURS = Number(process.env.NEWS_MAX_AGE_HOURS) || 48;   // NEWS_MAX_AGE_HOURS=720 for a one-off backfill
 
 // Safety cap per source and run (the 24h window is the real limit)
-export const ITEMS_PER_SOURCE = 40;
+export const ITEMS_PER_SOURCE = Number(process.env.NEWS_ITEMS_PER_SOURCE) || 40;

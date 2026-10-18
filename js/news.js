@@ -16,7 +16,7 @@
     threads: "Threads", ai: "IA", other: "Sports marketing",
   };
 
-  const state = { platform: "all", days: 7, q: "", offset: 0, token: 0 };
+  const state = { platform: "all", days: 31, q: "", offset: 0, token: 0 };
 
   const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
   const fmtDate = (iso) =>
