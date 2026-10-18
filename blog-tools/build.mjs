@@ -216,7 +216,7 @@ if (CHECK_ONLY) process.exit(0);
 const blogHtml = read("blog.html");
 const header = blogHtml.slice(blogHtml.indexOf('<header class="site-nav"'), blogHtml.indexOf("</header>") + "</header>".length)
   .replace(' aria-current="page"', "");
-const footer = blogHtml.slice(blogHtml.indexOf('<footer class="site-footer"'), blogHtml.indexOf("</footer>", blogHtml.indexOf('<footer class="site-footer"')) + "</footer>".length);
+const footer = blogHtml.slice(blogHtml.indexOf('<footer class="site-footer'), blogHtml.indexOf("</footer>", blogHtml.indexOf('<footer class="site-footer')) + "</footer>".length);
 const typeLabel = (t) => cfg.types[t]?.label ?? t;
 
 // ---------- Post pages ----------

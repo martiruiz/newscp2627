@@ -5305,3 +5305,8 @@ main { position: relative; z-index: 0; }
 }
 .faq-split .faq-intro .hx-eyebrow { justify-self: start; }
 .faq-split .faq-intro .faq-back-intro { display: none !important; }
+/* footer: the logo mark at the bottom centre instead of the big wordmark (room for the home dock underneath) */
+.sf-word { display: none; }
+.sf-mark { display: flex; justify-content: center; padding: 8px 0 40px; }
+.sf-mark img { width: 46px; height: 46px; opacity: 0.85; filter: drop-shadow(0 0 18px rgba(240, 184, 74, 0.35)); }
+body:has(.dock) .sf-mark { padding-bottom: 110px; }
