@@ -11,7 +11,7 @@
   const T = window.SCP_SMART;
   const CATS = T.categories.filter((c) => !c.meta); // aspect ratio & duration come from Instagram, not the AI
 
-  let items = [], posts = new Map(), idx = 0, view = "review";
+  let items = [], all = [], batches = [], batch = null, posts = new Map(), idx = 0, view = "review";
   const setOf = (v) => new Set([].concat(v || []).map((x) => String(x).trim()).filter(Boolean));
 
   async function load() {
@@ -20,8 +20,16 @@
       main.innerHTML = `<div class="page-head"><div><h1>Smart filters</h1></div></div><p class="error-text">${/does not exist|schema cache/i.test(error.message) ? "Run supabase/smart-review.sql in Supabase first." : esc(A.errMsg(error))}</p>`;
       return false;
     }
-    items = data || [];
-    const ids = items.map((r) => r.post_id);
+    all = data || [];
+    // Review sets ("batches"): the latest one by default
+    batches = [...new Set(all.map((r) => r.batch || "—"))].sort((a, b) => {
+      const at = (x) => Math.max(...all.filter((r) => (r.batch || "—") === x).map((r) => Date.parse(r.created_at)));
+      return at(b) - at(a);
+    });
+    try { batch = localStorage.getItem("scp-smart-batch"); } catch {}
+    if (!batches.includes(batch)) batch = batches[0];
+    items = all.filter((r) => (r.batch || "—") === batch);
+    const ids = all.map((r) => r.post_id);
     for (const part of A.chunk(ids, 100)) {
       const { data: ps } = await A.db.from("content_ideas").select("id,url,title,published_at,embed,content_idea_tags(idea_catalog(category,name))").in("id", part);
       for (const p of ps || []) {
@@ -63,12 +71,20 @@
       <div class="page-head">
         <div><h1>Smart filters · Review</h1><p>Check the AI's labels. What you confirm becomes the reference to measure and improve each filter.</p></div>
         <div class="head-actions">
+          ${batches.length > 1 ? `<select class="select" data-batch aria-label="Review set">${batches.map((b) => `<option${b === batch ? " selected" : ""}>${esc(b)}</option>`).join("")}</select>` : ""}
           <div class="sr-progress"><b>${done}</b> / ${items.length} reviewed${skipped ? ` · ${skipped} skipped` : ""}<i><span style="width:${items.length ? (done / items.length) * 100 : 0}%"></span></i></div>
           <div class="seg"><button type="button" class="${view === "review" ? "on" : ""}" data-view="review">Review</button><button type="button" class="${view === "accuracy" ? "on" : ""}" data-view="accuracy">Accuracy</button>${items.some((r) => r.ai_b) ? `<button type="button" class="${view === "compare" ? "on" : ""}" data-view="compare">Compare</button>` : ""}</div>
         </div>
       </div>
       <div data-body></div>`;
     $$("[data-view]").forEach((b) => b.addEventListener("click", () => { view = b.dataset.view; render(); }));
+    $("[data-batch]")?.addEventListener("change", (e) => {
+      batch = e.target.value;
+      try { localStorage.setItem("scp-smart-batch", batch); } catch {}
+      items = all.filter((r) => (r.batch || "—") === batch);
+      const first = items.findIndex((r) => r.status === "todo");
+      idx = first >= 0 ? first : 0; view = "review"; render();
+    });
     if (!items.length) { $("[data-body]").innerHTML = `<div class="panel panel-pad"><p>No posts to review yet. Run <span class="mono">node library/smart-review-seed.mjs --size 100</span> in the pipeline folder.</p></div>`; return; }
     view === "accuracy" ? renderAccuracy() : view === "compare" ? renderCompare() : renderReview();
   }
@@ -209,7 +225,7 @@
           <details class="sr-caption" open><summary>Caption</summary><p>${esc(p.title || "(no caption)")}</p></details>
         </section>
         <section class="panel sr-form">
-          <p class="hint" style="margin:0 0 10px"><span class="sr-dot"></span> = suggested by the AI. Click to turn a label on or off.</p>
+          <p class="hint" style="margin:0 0 10px">${Object.keys(ai).length ? `<span class="sr-dot"></span> = suggested by the AI. Click to turn a label on or off.` : `<b>Blind review:</b> nothing is pre-selected. Mark the labels that apply to this post (leave a filter empty if none applies).`}</p>
           ${CATS.map(catRow).join("")}
           <label class="sr-note">Note (optional)<input class="input" data-note value="${esc(r.note || "")}" placeholder="Anything odd about this post?"></label>
         </section>

@@ -14,6 +14,23 @@ const args = process.argv.slice(2);
 const SIZE = Number(args[args.indexOf("--size") + 1]) || 100;
 const BATCH = args.includes("--batch") ? args[args.indexOf("--batch") + 1] : new Date().toISOString().slice(0, 10);
 const db = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
+// --blind --from 2026-10-01: new random Instagram posts, no AI labels shown (unbiased review set)
+if (args.includes("--blind")) {
+  const FROM = args.includes("--from") ? args[args.indexOf("--from") + 1] : null;
+  const { data: ig } = await db.from("idea_catalog").select("id").eq("category", "platform").eq("name", "Instagram").single();
+  const { data: existing } = await db.from("smart_review").select("post_id");
+  const taken = new Set((existing || []).map((r) => r.post_id));
+  const picked = [];
+  for (let i = 0; picked.length < SIZE && i < 20; i++) {
+    const { data: page, error } = await db.rpc("library_ideas", { p_order: "random", p_seed: `${Date.now()}-${i}`, p_limit: 100, p_from: FROM, p_filters: { platform: { ids: [ig.id] } } });
+    if (error) throw error;
+    for (const p of page.data || []) if (picked.length < SIZE && !taken.has(p.id) && (p.title || "").trim().length > 15) { taken.add(p.id); picked.push(p.id); }
+  }
+  const { error } = await db.from("smart_review").insert(picked.map((id) => ({ post_id: id, ai: {}, batch: BATCH, status: "todo" })));
+  if (error) { console.error(error.message); process.exit(1); }
+  console.log(`Blind review set "${BATCH}": ${picked.length} new Instagram posts (no AI labels shown).`);
+  process.exit(0);
+}
 const sample = JSON.parse(fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), "smart-filters-sample.json"), "utf8"));
 const rows = sample.rows.filter((r) => r.ai && r.id);
 

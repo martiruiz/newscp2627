@@ -95,8 +95,7 @@ window.SCP_SMART = {
   "values": {
     "moment": [
       "Matchday preview",
-      "Live match",
-      "Post-match",
+      "Match coverage",
       "Milestone / record",
       "Award",
       "Tribute",
@@ -104,13 +103,7 @@ window.SCP_SMART = {
       "Throwback",
       "Training",
       "Preseason / tour",
-      "Travel",
-      "Ticketing",
       "Season tickets / membership",
-      "Merchandise drop",
-      "Fan engagement",
-      "Community / CSR",
-      "Partnership announcement",
       "Christmas",
       "Halloween",
       "Black Friday",
@@ -192,17 +185,14 @@ window.SCP_SMART = {
       "Sponsor value",
       "App / digital product",
       "Community / CSR",
-      "Recruitment / grassroots",
-      "Fan growth",
-      "Engagement"
+      "Recruitment / grassroots"
     ],
     "comms": [
       "Official announcement",
       "Press conference",
       "Statement",
       "Injury / medical update",
-      "Ticket info",
-      "Schedule change"
+      "Ticket info"
     ],
     "crisis": [
       "Apology",
@@ -218,20 +208,15 @@ window.SCP_SMART = {
       "Academy / youth",
       "Legends",
       "Esports",
-      "Fans",
-      "Staff / coaches",
-      "Other sport section"
+      "Staff / coaches"
     ],
     "angle": [
       "Player-focused",
-      "Fan-focused",
       "Humour / meme",
       "Emotional",
       "Data & stats",
       "Behind the scenes",
       "Skills / tutorial",
-      "Hype / cinematic",
-      "Informative",
       "Celebration"
     ],
     "collab": [
@@ -267,8 +252,7 @@ window.SCP_SMART = {
       "Media / streaming",
       "Health",
       "Retail",
-      "Gaming",
-      "Other"
+      "Gaming"
     ],
     "sponsor_integration": [
       "Logo on graphic",

@@ -50,7 +50,9 @@ async function loadPosts(ids) {
 
 // ---------- --eval: reviewed posts, before vs after ----------
 if (argv.includes("--eval")) {
-  const { data: gold, error } = await db.from("smart_review").select("post_id,ai,gold,ai_b,ai_b_version,verdicts").eq("status", "done");
+  let q = db.from("smart_review").select("post_id,ai,gold,ai_b,ai_b_version,verdicts,batch").eq("status", "done");
+  if (arg("--batch")) q = q.eq("batch", arg("--batch"));
+  const { data: gold, error } = await q;
   if (error) throw error;
   const posts = new Map((await loadPosts(gold.map((g) => g.post_id))).map((p) => [p.id, p]));
   console.log(`Re-labelling ${gold.length} reviewed posts with ${MODEL} (${VERSION}: image + caption)…`);
