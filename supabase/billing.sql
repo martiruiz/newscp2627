@@ -10,6 +10,9 @@
 --     plans) are used first, then purchased pack units (separate balance, no expiry).
 --   • Every balance movement is in ai_credit_ledger. Unlocks are atomic (per user+post advisory lock) and
 --     idempotent (unique keys); a failed generation refunds the credit.
+--
+-- Naming: internally a "credit" is one AI analysis (1 credit = 1 analysis). Tables, functions and statuses keep
+-- "credit" (ai_credit_ledger, no_credits…); everything the user sees says "analyses" (never "credits" or "tokens").
 -- ============================================================================================
 
 

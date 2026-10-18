@@ -864,6 +864,7 @@
 
   // ---------- AI analyses: credits & unlocks (supabase/billing.sql) ----------
   // Unlocking spends 1 credit (monthly units first, then packs); re-opening an unlocked analysis is free.
+  // 1 credit = 1 AI analysis. "credit" is the internal name only: on screen it is always "analyses".
   const ai = { ent: null, unlocked: new Set() };
   async function loadAi() {
     const [{ data: ent }, { data: ids }] = await Promise.all([db.rpc("my_entitlements"), db.rpc("my_unlocked_posts")]);
