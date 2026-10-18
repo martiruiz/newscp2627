@@ -805,6 +805,8 @@
   // (newest first only; saved posts are filtered from the page).
   let useAdminSearch = false;
   async function fetchIdeas(a) {
+    // always name the Views parameters: that picks the right library_ideas() even if an older overload is still there
+    a = { p_min_views: null, p_max_views: null, ...a };
     if (!useAdminSearch) {
       let r = await db.rpc("library_ideas", a);
       // a heavy filter combination can hit the database's time limit once (cold cache): try again before giving up
