@@ -5535,7 +5535,7 @@ body:has(.dock) .sf-mark { padding-bottom: 110px; }
 .ext-gate .btn { margin-top: 6px; }
 .ext-gate-link { font-size: 13px; color: var(--muted); }
 /* the open calendar takes the full width of the demo page: month and times side by side, much shorter */
-.book .book-card.is-wide { grid-column: 1 / -1; max-width: 920px; width: 100%; justify-self: center; }
+.book .book-card.is-wide { width: 100%; }
 .book-cal.is-cal .book-cal-box.is-open { min-height: 0; }
 /* the calendar shows straight away, without an inner frame */
 .book-cal.is-cal .book-cal-box { border: 0; background: none; border-radius: 0; }
@@ -5553,3 +5553,9 @@ body:has(.dock) .sf-mark { padding-bottom: 110px; }
 .footer-brand img.brand-logo, .sf-brand .footer-brand img.brand-logo { width: auto; height: 72px; }
 .auth-logo img.brand-logo { width: auto; height: 64px; }
 @media (max-width: 600px) { .brand img.brand-logo { height: 30px; } .sf-brand .footer-brand img.brand-logo { height: 58px; } }
+
+/* demo page: intro on the left, the calendar on the right (wide enough for month + times side by side) */
+.contact.book:has(.book-card.is-wide) { grid-template-columns: minmax(0, 1fr) minmax(0, 800px); gap: 40px; align-items: start; }
+.book .book-card.is-wide .book-cal-head { text-align: left; }
+.book .book-card.is-wide .book-cal-alt { justify-self: start; }
+@media (max-width: 1260px) { .contact.book:has(.book-card.is-wide) { grid-template-columns: 1fr; } }
