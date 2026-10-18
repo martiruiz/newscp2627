@@ -96,7 +96,7 @@ window.SCP_ES = {
   "Next testimonial": "Testimonio siguiente",
 
   // ---------- Testimonials (shared) ----------
-  "4.7 / 5 Rating": "Valoración 4,7 / 5",
+  "5 / 5 Rating": "Valoración 5 / 5",
   "Trusted by": "La confianza de",
   "clubs & sports organizations worldwide": "clubes y organizaciones deportivas de todo el mundo",
   "I think it’s a brilliant idea! A platform like this can really help small and mid-sized clubs with limited resources get inspired and create engaging, functional content for social media. It makes it easier to see what works across Europe and adapt it in a way that fits each club’s identity and budget.": "¡Me parece una idea brillante! Una plataforma así puede ayudar de verdad a los clubes pequeños y medianos con pocos recursos a inspirarse y crear contenido atractivo y útil para redes sociales. Facilita ver qué funciona en toda Europa y adaptarlo a la identidad y al presupuesto de cada club.",
