@@ -53,7 +53,8 @@
   let catalog = {};
   async function loadCatalog() {
     try {
-      const { data } = await db.rpc("catalog_with_counts");
+      const data = [];   // more than 1,000 values: read page by page
+      for (let from = 0; ; from += 1000) { const r = await db.rpc("catalog_with_counts").range(from, from + 999); data.push(...(r.data || [])); if (r.error || !r.data || r.data.length < 1000) break; }
       for (const v of data || []) if (Number(v.ideas)) (catalog[v.category] ||= []).push({ id: Number(v.id), name: v.name, n: Number(v.ideas) });
       for (const k in catalog) catalog[k].sort((a, b) => b.n - a.n);
     } catch {}

@@ -24,7 +24,7 @@
 
   // Catalog names for sport / competition ids
   const names = new Map();
-  try { const { data: cat } = await A.db.rpc("catalog_with_counts"); for (const v of cat || []) names.set(Number(v.id), v.name); } catch {}
+  try { for (let from = 0; ; from += 1000) { const { data: cat } = await A.db.rpc("catalog_with_counts").range(from, from + 999); for (const v of cat || []) names.set(Number(v.id), v.name); if (!cat || cat.length < 1000) break; } } catch {}
   const nameOf = (id) => names.get(Number(id)) || `#${id}`;
 
   // ---------- Filters (segments) ----------

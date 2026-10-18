@@ -204,7 +204,8 @@
   let catalogCache = null;
   async function loadCatalog(force = false) {
     if (catalogCache && !force) return catalogCache;
-    const rows = await rpc("catalog_with_counts");
+    const rows = [];   // more than 1,000 values: read page by page
+    for (let from = 0; ; from += 1000) { const r = await db.rpc("catalog_with_counts").range(from, from + 999); if (r.error) throw r.error; rows.push(...(r.data || [])); if (!r.data || r.data.length < 1000) break; }
     const byCat = Object.fromEntries(CATEGORIES.map((c) => [c.key, []]));
     const byId = new Map();
     for (const r of rows || []) {

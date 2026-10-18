@@ -138,8 +138,18 @@
 
   // ---------- Catalog (values + totals; logos from library-filters.sql) ----------
   async function loadCatalog() {
+    // The catalog is bigger than the 1,000 rows the API returns per request: read it page by page
+    const allCatalog = async () => {
+      const out = [];
+      for (let from = 0; ; from += 1000) {
+        const r = await db.rpc("catalog_with_counts").range(from, from + 999);
+        if (r.error) return { data: out.length ? out : null, error: out.length ? null : r.error };
+        out.push(...(r.data || []));
+        if (!r.data || r.data.length < 1000) return { data: out, error: null };
+      }
+    };
     const [{ data, error }, logos] = await Promise.all([
-      db.rpc("catalog_with_counts"),
+      allCatalog(),
       db.from("idea_catalog").select("id,logo_url,logo_source").not("logo_url", "is", null).then((r) => r.data || [], () => []),
     ]);
     if (error) throw error;
