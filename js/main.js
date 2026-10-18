@@ -33,6 +33,23 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString(window.SCP_LO
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 
+  // Home sections fade up as they come into view; cards follow the cursor with a soft light
+  const reveal = $$("[data-reveal]");
+  if (reveal.length) {
+    if (!("IntersectionObserver" in window)) reveal.forEach((el) => el.classList.add("is-in"));
+    else {
+      const io = new IntersectionObserver((entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); } }), { threshold: 0.15 });
+      reveal.forEach((el) => io.observe(el));
+    }
+    document.addEventListener("pointermove", (e) => {
+      const card = e.target.closest?.(".tool, .quote-grid .quote-card");
+      if (!card) return;
+      const r = card.getBoundingClientRect();
+      card.style.setProperty("--mx", `${e.clientX - r.left}px`);
+      card.style.setProperty("--my", `${e.clientY - r.top}px`);
+    });
+  }
+
   // Mobile nav
   $$("[data-nav]").forEach((nav) => {
     const toggle = $("[data-nav-toggle]", nav);
