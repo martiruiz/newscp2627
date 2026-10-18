@@ -5279,3 +5279,4 @@ main { position: relative; z-index: 0; }
   .faq-steps { grid-template-columns: 1fr; padding-left: 37px; }
   .faq-steps li:not(:last-child)::after { content: "↓"; right: auto; left: 22px; top: auto; bottom: -13px; }
 }
+.faq-home .acc-panel p:has(+ .faq-after) { padding-bottom: 0; }
