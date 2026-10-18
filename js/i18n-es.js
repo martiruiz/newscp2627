@@ -1536,4 +1536,8 @@ window.SCP_ES = {
   "Two legends in one line, framed as a combo fans already love. Short, rhythmic and easy to share.": "Dos leyendas en una sola línea, presentadas como la dupla que la afición ya adora. Corto, con ritmo y fácil de compartir.",
   "A 17-second Reel: the goal, the celebration, real stadium sound. No graphics needed.": "Un Reel de 17 segundos: el gol, la celebración y el sonido real del estadio. Sin gráficos.",
   "Post every goal within minutes with a “[assist] serves, [scorer] scores” caption and make it your matchday format.": "Publica cada gol en minutos con un texto tipo «[asistente] la sirve, [goleador] la mete» y conviértelo en tu formato de día de partido.",
+  "All sports": "Todos los deportes",
+  "876K views": "876 K visualizaciones",
+  "20.6M views": "20,6 M visualizaciones",
+  "463K views": "463 K visualizaciones",
 };

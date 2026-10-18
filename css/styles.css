@@ -4896,3 +4896,7 @@ main { position: relative; z-index: 0; }
 }
 @media (prefers-reduced-motion: reduce) { .click-ripple { display: none; } .is-pressed { transform: none !important; } }
 .ai-demo-post { background: url(../assets/ai-example-messi.jpg) 40% 50% / cover no-repeat, #111; aspect-ratio: 9 / 16; }
+/* library mock-up: real top posts from the library (NFL, Champions League, MotoGP) */
+.lib-demo-grid .lib-ex-nfl { background: url(../assets/lib-example-nfl.jpg) 50% 4% / 125% auto no-repeat, #0b0f1c; }
+.lib-demo-grid .lib-ex-ucl { background: url(../assets/lib-example-ucl.jpg) 50% 45% / cover no-repeat, #0b0f1c; }
+.lib-demo-grid .lib-ex-motogp { background: url(../assets/lib-example-motogp.jpg) 50% 35% / cover no-repeat, #0b0f1c; }
