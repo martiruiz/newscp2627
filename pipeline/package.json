@@ -6,7 +6,10 @@
   "scripts": {
     "start": "node index.js",
     "dry-run": "node index.js --dry-run",
-    "test:billing": "node tests/billing.test.mjs"
+    "test:billing": "node tests/billing.test.mjs",
+    "test:memberships": "node tests/memberships.test.mjs",
+    "test:billing-dates": "node tests/billing-dates.test.mjs",
+    "test:all": "node tests/billing.test.mjs && node tests/memberships.test.mjs && node tests/billing-dates.test.mjs"
   },
   "engines": {
     "node": ">=20"

@@ -48,3 +48,31 @@ export async function customerFor(user: { id: string; email?: string; user_metad
   const again = await rest(`stripe_customers?select=customer_id,trial_used&user_id=eq.${user.id}`);
   return again[0] as { customer_id: string; trial_used: boolean };
 }
+
+// ---------- Memberships helpers ----------
+// Superadmin check for the billing back-end (same rule as public.billing_admin())
+export async function superadmin(req: Request) {
+  const user = await currentUser(req);
+  if (!user?.id) return null;
+  const [p] = await rest(`profiles?select=role&id=eq.${user.id}`);
+  return p?.role === "superadmin" ? user : null;
+}
+// Daily jobs (billing-cron) authenticate with a shared secret
+export const cronAllowed = (req: Request) => !!env("CRON_SECRET") && req.headers.get("x-cron-secret") === env("CRON_SECRET");
+
+export async function audit(actor: string | null, action: string, targetUser: string | null, target: string | null, details: unknown = {}) {
+  await rest("billing_audit_logs", { method: "POST", body: JSON.stringify({ actor, action, target_user: targetUser, target, details }) }).catch((e) => console.error("audit", e));
+}
+export async function setting(key: string) {
+  const [row] = await rest(`billing_settings?select=value&key=eq.${encodeURIComponent(key)}`);
+  return row?.value ?? null;
+}
+const cents = (n: number | null | undefined) => (n == null ? null : Math.round(n) / 100);
+export { cents };
+export const isoOf = (unix?: number | null) => (unix ? new Date(unix * 1000).toISOString() : null);
+
+// Ask send-emails to deliver the queue now (fire and forget; the daily job retries anything left)
+export function kickEmails() {
+  fetch(`${env("SUPABASE_URL")}/functions/v1/send-emails`, { method: "POST", headers: { "x-cron-secret": env("CRON_SECRET"), "Content-Type": "application/json" }, body: "{}" })
+    .catch(() => {});
+}
