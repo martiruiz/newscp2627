@@ -722,7 +722,13 @@
   let useAdminSearch = false;
   async function fetchIdeas(a) {
     if (!useAdminSearch) {
-      const r = await db.rpc("library_ideas", a);
+      let r = await db.rpc("library_ideas", a);
+      // a heavy filter combination can hit the database's time limit once (cold cache): try again before giving up
+      if (r.error && (r.error.code === "57014" || /timeout|timed out|canceling statement|Failed to fetch|NetworkError/i.test(r.error.message || ""))) {
+        await new Promise((res) => setTimeout(res, 600));
+        r = await db.rpc("library_ideas", a);
+      }
+      if (r.error) console.warn("[library] library_ideas failed", r.error.code, r.error.message, a);
       if (!r.error || !/schema cache|does not exist/i.test(r.error.message)) return r;
       useAdminSearch = true;
     }
@@ -856,7 +862,7 @@
             ? `<div class="lib-cover" data-cover-box><img data-oembed="${esc(p.url)}" alt="${esc(who || "TikTok video")}"><span class="lib-play" aria-hidden="true"></span></div>`
             : src ? `<div class="lib-zoom"${zoomStyle}><iframe class="lib-frame${pf === "instagram" ? " is-ig" : ""}" src="${esc(src)}" loading="lazy" title="${esc(who || "Post")}" scrolling="no" allow="encrypted-media; picture-in-picture; fullscreen"></iframe></div>` : `<span class="lib-noimg"></span>`}
           ${rail}
-        </div>${foot}
+        </div>${asPosted ? "" : foot}
       </article>`;
   }
 
@@ -924,7 +930,7 @@
     // as many ~240px columns as fit (with or without the filters column), up to 6 on very wide screens
     const pfs = [...(selected.platform || [])].map((id) => catalog.byId.get(id)?.name.toLowerCase());
     const ytOnly = pfs.length === 1 && pfs[0] === "youtube";
-    const MAX = ytOnly ? 2 : 6, MIN = ytOnly ? 380 : 240;
+    const MAX = ytOnly ? 3 : 6, MIN = ytOnly ? 260 : 240;
     return Math.max(1, Math.min(MAX, Math.floor((w + GAP) / (MIN + GAP))));
   }
   function buildColumns(n) {
@@ -944,7 +950,8 @@
     tpl.innerHTML = rows.map(card).join("");
     [...tpl.content.children].forEach((el, i) => {
       const pfi = platformOf(rows[i]);
-      const ratio = (rows[i].cover_url && !["x", "linkedin", "facebook"].includes(pfi) ? mediaRatio(rows[i]) : shape(rows[i]).ratio) + 0.2;   // + the footer
+      const asPosted = ["x", "linkedin", "facebook"].includes(pfi);
+      const ratio = (rows[i].cover_url && !asPosted ? mediaRatio(rows[i]) : shape(rows[i]).ratio) + (asPosted ? 0 : 0.2);   // + the footer
       placed.push({ el, ratio });
       place(el, ratio);
     });
