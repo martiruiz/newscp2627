@@ -457,3 +457,45 @@ body { background: radial-gradient(60% 40% at 50% 0%, rgba(240, 184, 74, 0.06), 
 .tl-err { color: #ff5555; font-weight: 600; }
 .term-cursor { display: inline-block; width: 8px; height: 14px; vertical-align: -2px; background: #39ff88; box-shadow: 0 0 8px #39ff88; animation: termBlink 1s steps(1) infinite; }
 @keyframes termBlink { 50% { opacity: 0; } }
+
+/* Smart filters → Review */
+.sr-progress { display: grid; gap: 4px; font-size: 13px; color: var(--muted); min-width: 180px; }
+.sr-progress b { color: var(--text); }
+.sr-progress i { display: block; height: 5px; border-radius: 5px; background: var(--panel-3); overflow: hidden; }
+.sr-progress i span { display: block; height: 100%; background: var(--accent); }
+.head-actions .seg { display: inline-flex; padding: 3px; border-radius: 9px; background: var(--panel-2, #17213b); border: 1px solid var(--border-2); }
+.head-actions .seg button { height: 30px; padding: 0 12px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); font: 600 13px var(--font, inherit); cursor: pointer; }
+.head-actions .seg button.on { background: var(--accent); color: #121b33; }
+.sr-grid { display: grid; grid-template-columns: minmax(320px, 420px) minmax(0, 1fr); gap: 16px; align-items: start; padding-bottom: 80px; }
+.sr-post { position: sticky; top: 16px; padding: 14px; }
+.sr-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.sr-meta b { color: var(--text); }
+.sr-meta .link { margin-left: auto; color: var(--accent); }
+.sr-tags { display: flex; flex-wrap: wrap; gap: 4px; margin: 10px 0; }
+.sr-media { border-radius: 12px; overflow: hidden; background: #fff; }
+.sr-frame { display: block; width: 100%; height: 560px; border: 0; }
+.sr-frame.sr-wide { height: 240px; }
+.sr-cover { background: #000; }
+.sr-cover img { display: block; width: 100%; max-height: 560px; object-fit: contain; }
+.sr-caption { margin-top: 10px; font-size: 13px; }
+.sr-caption summary { cursor: pointer; color: var(--muted); }
+.sr-caption p { margin: 6px 0 0; white-space: pre-line; max-height: 200px; overflow: auto; }
+.sr-form { padding: 16px 18px; display: grid; gap: 14px; }
+.sr-cat-h { display: flex; align-items: baseline; gap: 8px; font-weight: 600; font-size: 13px; margin-bottom: 6px; }
+.sr-cat-h span { font-weight: 400; font-size: 11px; color: var(--muted); }
+.sr-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.sr-chip { position: relative; height: 28px; padding: 0 11px; border-radius: 100px; border: 1px solid var(--border-2); background: transparent; color: var(--muted); font: 500 12.5px inherit; font-family: inherit; cursor: pointer; transition: background 0.12s, color 0.12s, border-color 0.12s; }
+.sr-chip:hover { color: var(--text); border-color: rgba(240, 184, 74, 0.5); }
+.sr-chip.on { background: var(--accent); border-color: var(--accent); color: #121b33; font-weight: 600; }
+.sr-chip.ai::after, .sr-dot { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #7aa7ff; }
+.sr-chip.ai::after { position: absolute; top: -2px; right: -2px; box-shadow: 0 0 0 2px var(--panel, #121b33); }
+.sr-free { width: 100%; }
+.sr-ai { margin: 4px 0 0; font-size: 12px; color: #7aa7ff; }
+.sr-note { display: grid; gap: 6px; font-size: 13px; color: var(--muted); }
+.sr-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: flex; align-items: center; gap: 10px; justify-content: flex-end; padding: 12px 28px; background: rgba(13, 19, 36, 0.92); backdrop-filter: blur(10px); border-top: 1px solid var(--border-2); }
+.sr-bar [data-prev] { margin-right: auto; }
+.sr-pct { display: inline-block; min-width: 46px; padding: 2px 8px; border-radius: 6px; font-weight: 700; text-align: center; }
+.sr-pct.good { background: var(--green-soft); color: var(--green); }
+.sr-pct.mid { background: var(--amber-soft); color: var(--amber); }
+.sr-pct.bad { background: var(--red-soft); color: var(--red); }
+@media (max-width: 1000px) { .sr-grid { grid-template-columns: 1fr; } .sr-post { position: static; } }

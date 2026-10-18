@@ -13,12 +13,13 @@ import { fileURLToPath } from "node:url";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@supabase/supabase-js";
 import { loadEnv } from "./env.mjs";
-import { CATEGORIES, VALUES, SPONSORS, applyRules } from "./taxonomy.mjs";
+import { CATEGORIES, VALUES, applyRules, canonicalBrand } from "./taxonomy.mjs";
 
 loadEnv();
 const env = (k) => process.env[k] || "";
 const args = process.argv.slice(2);
 const SAMPLE = Number(args[args.indexOf("--sample") + 1]) || 0;
+const FROM = args.includes("--from") ? args[args.indexOf("--from") + 1] : null; // e.g. 2026-10-01
 if (!SAMPLE) { console.error("Usage: node library/smart-filters.mjs --sample 50"); process.exit(1); }
 for (const k of ["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY", "ANTHROPIC_API_KEY"]) if (!env(k)) { console.error(`Missing ${k} in pipeline/.env`); process.exit(1); }
 
@@ -31,21 +32,31 @@ const claude = new Anthropic({ apiKey: env("ANTHROPIC_API_KEY") });
 const arr = (values) => ({ type: "array", items: values ? { type: "string", enum: values } : { type: "string" } });
 const SCHEMA = {
   type: "object", additionalProperties: false,
-  properties: Object.fromEntries(CATEGORIES.map((c) => [c.key, c.key === "language" ? { type: "string", enum: VALUES.language } : arr(VALUES[c.key])])),
+  properties: Object.fromEntries(CATEGORIES.map((c) => [c.key, c.single ? { type: "string", enum: VALUES[c.key] } : arr(c.free ? null : VALUES[c.key])])),
   required: CATEGORIES.map((c) => c.key),
 };
-const SYSTEM = `You classify social media posts from sports clubs, leagues, athletes and sports brands for a content research platform.
-For each post you get its caption, publication date and existing tags. Return the labels that clearly apply, using ONLY the allowed values.
-- moment: the campaign moment(s) the post belongs to.
-- goal: the business goal the post clearly serves (tickets, merchandise, memberships, sponsor value, app, community, recruitment…). Use Awareness / Engagement / Fan growth only when the post is explicitly built for that (e.g. a poll is Engagement); leave the list empty for ordinary content.
-- sponsor: brand names of commercial partners mentioned or tagged in the caption (not the club, league, broadcaster of the club itself or the athlete). Empty if none.
-- sponsor_sector: the sector of each sponsor.
-- comms: the communication type, only if it clearly is one.
+const SYSTEM = `You label social media posts from sports clubs, leagues, federations, athletes and sports brands for a content research platform used by social media managers, designers, press officers, marketing and sponsorship teams.
+You get the caption, the publication date, the format (image, carousel, video…) and the post's existing tags. Return the labels that clearly apply, using ONLY the allowed values. An empty list is better than a guess; usually 0-2 values per list.
+
+- moment: the campaign moment(s) of the post.
+- matchday_graphic: only for designed graphics (template images, not plain photos or videos) of a match: poster, countdown, squad list (call-up / convocatoria / convocats), starting XI (line-up / alineación / onze), half-time score, goal graphic, full-time / final score, MOTM vote, fixture or schedule, weekly recap, standings, stats card, quote card, birthday graphic, signing graphic. Use the format and the caption ("XI", "FT", "HT", "convocatoria", a score…) to judge; if it is clearly a video or a photo, leave it empty.
+- kit: only when a kit is being announced or promoted (launch, reveal, "available now", jersey drop). Not when players just wear the kit.
+- transfer: signings, contract renewals/extensions, loans and departures of players or coaches. NOT in-match substitutions (🔄, "change", "sustitución").
+- outcome: the result for the posting team when the post is about a finished match (win / draw / loss).
+- season_moment: opening day, derby (big local or historic rivalry), cup final, title celebration, promotion, relegation, European qualification, last game, pre-season.
+- opponent: the rival team's usual name when the post is about a specific match (e.g. "Real Madrid", "AC Milan"). Empty otherwise.
+- location: "Away city" when the content is about the city where an away match is played (sightseeing, landmarks, the team's arrival, local culture); "Home city", "Stadium", "Training ground" when the place is the clear focus.
+- goal: the business goal the post clearly serves (tickets, merchandise, memberships, sponsor value, app, community, recruitment). "Engagement" only for posts built to get interactions (polls, questions, contests); "Fan growth" only for explicit follow / subscribe asks. Leave it empty for ordinary match content.
+- comms: official press-type communication only.
+- crisis: sensitive communication (apologies, racism or abuse, sanctions, serious injuries, incidents, condolences).
 - team: which team or audience the post is about.
 - angle: the storytelling angle(s).
-- cta: the call(s) to action in the caption, only if explicit.
-- language: the main language of the caption.
-Be precise: an empty list is better than a guess. Usually 1-2 values per list.`;
+- collab: collaborations (with players, other clubs, creators or brands; athlete takeovers; reposted fan content).
+- cta: calls to action written in the caption.
+- sponsor: commercial brands promoted, thanked or tagged (official brand name, e.g. "Spotify", "Emirates"). Not the club, the league, broadcasters' sports accounts, players or media.
+- sponsor_sector: the sector of each sponsor.
+- sponsor_integration: how the sponsor appears (logo on the graphic, "presented by" segment, co-branded post, product placement, activation / event, giveaway).
+- language: the main language of the caption ("Emoji only" if there are no words).`;
 
 async function classify(post) {
   const tags = Object.entries(post.tags || {}).map(([k, v]) => `${k}: ${v.map((x) => x.name).join(", ")}`).join("; ");
@@ -55,18 +66,27 @@ async function classify(post) {
     thinking: { type: "disabled" },
     output_config: { format: { type: "json_schema", schema: SCHEMA } },
     system: SYSTEM,
-    messages: [{ role: "user", content: `Date: ${String(post.published_at || "").slice(0, 10)}\nExisting tags: ${tags || "none"}\nCaption:\n${(post.title || "(no caption)").slice(0, 1500)}` }],
+    messages: [{ role: "user", content: `Date: ${String(post.published_at || "").slice(0, 10)}\nPlatform / format: ${(post.tags?.platform || []).map((x) => x.name).join(", ") || "?"} / ${(post.tags?.format || []).map((x) => x.name).join(", ") || "?"}\nExisting tags: ${tags || "none"}\nCaption:\n${(post.title || "(no caption)").slice(0, 1500)}` }],
   });
   if (res.stop_reason === "refusal" || res.stop_reason === "max_tokens") throw new Error(`stopped: ${res.stop_reason}`);
   const text = res.content.find((b) => b.type === "text")?.text || "{}";
-  return { out: JSON.parse(text), usage: res.usage };
+  const out = JSON.parse(text);
+  out.sponsor = [...new Set((out.sponsor || []).map(canonicalBrand).filter(Boolean))];
+  out.opponent = [...new Set((out.opponent || []).map((x) => String(x).trim()).filter(Boolean))];
+  return { out, usage: res.usage };
 }
 
 // ---------- Sample ----------
-const seed = String(Date.now());
-const { data: page, error } = await db.rpc("library_ideas", { p_order: "random", p_seed: seed, p_limit: Math.min(100, SAMPLE * 2) });
-if (error) throw error;
-const posts = (page.data || []).filter((p) => (p.title || "").trim().length > 20).slice(0, SAMPLE);
+// Random posts with a caption, several shuffles of 100 until the sample is complete (no duplicates)
+const posts = [], seen = new Set();
+for (let i = 0; posts.length < SAMPLE && i < 30; i++) {
+  const { data: page, error } = await db.rpc("library_ideas", { p_order: "random", p_seed: `${Date.now()}-${i}`, p_limit: 100, p_from: FROM });
+  if (error) throw error;
+  for (const p of page.data || []) {
+    if (posts.length >= SAMPLE || seen.has(p.id) || (p.title || "").trim().length <= 20) continue;
+    seen.add(p.id); posts.push(p);
+  }
+}
 console.log(`Classifying ${posts.length} posts with rules + ${MODEL}…`);
 
 const rows = [];
@@ -113,7 +133,7 @@ const html = `<!doctype html><meta charset="utf-8"><title>Smart filters · sampl
 table{border-collapse:collapse;width:100%;background:#fff;border:1px solid #e3e7ef;border-radius:12px;overflow:hidden}td,th{border-top:1px solid #eef1f6;padding:8px 10px;vertical-align:top;text-align:left}
 th{background:#f0f2f7;font-size:12px;text-transform:uppercase;letter-spacing:.04em}.cap{max-width:340px;color:#3b4660;font-size:12.5px}.c{display:inline-block;margin:1px 3px 1px 0;padding:1px 7px;border-radius:10px;font-size:12px}
 .r{background:#e7eefc;color:#2a4fb3}.a{background:#e6f7ee;color:#137a43}.none{color:#b0b8c8}.cat{font-weight:600;font-size:12px;color:#5b6680;white-space:nowrap}a{color:#2a4fb3}</style>
-<h1>Smart filters · test on ${rows.length} random posts</h1>
+<h1>Smart filters · test on ${rows.length} random posts${FROM ? ` since ${esc(FROM)}` : ""}</h1>
 <p>Blue = keyword rules (free). Green = AI (${esc(MODEL)}). Nothing has been written to the database.</p>
 <div class="k">
 <div>Posts analysed<b>${rows.length}</b>${failed ? `${failed} AI errors` : ""}</div>
@@ -126,6 +146,14 @@ th{background:#f0f2f7;font-size:12px;text-transform:uppercase;letter-spacing:.04
 <table><tr><th>Category</th>${CATEGORIES.map((c) => `<th>${c.label}</th>`).join("")}</tr>
 <tr><td class="cat">Posts with a label · rules</td>${CATEGORIES.map((c) => `<td>${covRules[c.key]}/${rows.length}</td>`).join("")}</tr>
 <tr><td class="cat">Posts with a label · AI</td>${CATEGORIES.map((c) => `<td>${covAi[c.key]}/${rows.length}</td>`).join("")}</tr></table>
+<h2 style="margin-top:28px">What the AI found (values × number of posts)</h2>
+<table>${CATEGORIES.map((c) => {
+  const m = {};
+  for (const r of ok) for (const v of [].concat(r.ai[c.key] || []).filter(Boolean)) m[v] = (m[v] || 0) + 1;
+  const n = ok.filter((r) => [].concat(r.ai[c.key] || []).filter(Boolean).length).length;
+  return `<tr><td class="cat">${c.label}<br><span style="font-weight:400">${n}/${ok.length} posts</span></td><td>${Object.entries(m).sort((a, b) => b[1] - a[1]).map(([v, k]) => `<span class="c a">${esc(v)} · ${k}</span>`).join("") || `<span class="none">—</span>`}</td></tr>`;
+}).join("")}
+<tr><td class="cat">Hashtags (rules, free)</td><td>${(() => { const m = {}; for (const r of rows) for (const h of r.rules.hashtags || []) m[h] = (m[h] || 0) + 1; return Object.entries(m).sort((a, b) => b[1] - a[1]).slice(0, 40).map(([h, k]) => `<span class="c r">${esc(h)} · ${k}</span>`).join(""); })()}</td></tr></table>
 <h2 style="margin-top:28px">Post by post</h2>
 <table><tr><th>Post</th>${CATEGORIES.map((c) => `<th>${c.label}</th>`).join("")}</tr>
 ${rows.map((r) => `<tr><td class="cap"><a href="${esc(r.p.url)}" target="_blank">${esc(String(r.p.published_at || "").slice(0, 10))}</a> · ${esc((r.p.tags?.club || r.p.tags?.competition || [])[0]?.name || "")}<br>${esc((r.p.title || "").slice(0, 220))}${(r.p.title || "").length > 220 ? "…" : ""}${r.err ? `<br><b style="color:#c33">AI error: ${esc(r.err)}</b>` : ""}</td>

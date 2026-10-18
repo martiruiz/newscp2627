@@ -4,16 +4,54 @@
 // Rule syntax: an array of regular expressions (case-insensitive); `months` limits a value to some months (1–12).
 
 export const CATEGORIES = [
-  { key: "moment", label: "Campaign moment", multi: true },
-  { key: "goal", label: "Business goal", multi: true },
-  { key: "sponsor", label: "Sponsor", multi: true, free: true },
-  { key: "sponsor_sector", label: "Sponsor sector", multi: true },
-  { key: "comms", label: "Comms type", multi: true },
-  { key: "team", label: "Team / audience", multi: true },
-  { key: "angle", label: "Storytelling angle", multi: true },
-  { key: "cta", label: "Call to action", multi: true },
-  { key: "language", label: "Language", multi: false },
+  // what the post is about
+  { key: "moment", label: "Campaign moment" },
+  { key: "matchday_graphic", label: "Matchday graphics" },
+  { key: "kit", label: "New kit" },
+  { key: "transfer", label: "Transfers" },
+  { key: "outcome", label: "Match outcome" },
+  { key: "season_moment", label: "Season moment" },
+  { key: "opponent", label: "Opponent", free: true },
+  { key: "location", label: "Location" },
+  // who it's for / how it's told
+  { key: "goal", label: "Business goal" },
+  { key: "comms", label: "Comms type" },
+  { key: "crisis", label: "Sensitive comms" },
+  { key: "team", label: "Team / audience" },
+  { key: "angle", label: "Storytelling angle" },
+  { key: "collab", label: "Collabs & creators" },
+  { key: "cta", label: "Call to action" },
+  // brands
+  { key: "sponsor", label: "Sponsor", free: true },
+  { key: "sponsor_sector", label: "Sponsor sector" },
+  { key: "sponsor_integration", label: "Sponsor integration" },
+  { key: "language", label: "Language", single: true },
 ];
+
+// Allowed values for the AI (free categories: any name, normalised afterwards)
+export const AI_VALUES = {
+  moment: ["Matchday preview", "Live match", "Post-match", "Milestone / record", "Award", "Tribute", "Birthday", "Throwback", "Training", "Preseason / tour", "Travel",
+    "Ticketing", "Season tickets / membership", "Merchandise drop", "Fan engagement", "Community / CSR", "Partnership announcement",
+    "Christmas", "Halloween", "Black Friday", "Valentine's Day", "New Year", "Pride", "International Women's Day", "Ramadan / Eid", "Lunar New Year"],
+  matchday_graphic: ["Matchday poster", "Countdown", "Squad list", "Starting XI", "Half-time", "Goal", "Full-time", "MOTM vote", "Fixture / schedule", "Weekly recap",
+    "Standings", "Stats card", "Quote card", "Birthday graphic", "Signing graphic"],
+  kit: ["Home kit", "Away kit", "Third kit", "Goalkeeper kit", "Special edition kit", "Training wear", "Retro / heritage"],
+  transfer: ["Signing", "Renewal", "Loan", "Departure"],
+  outcome: ["Win", "Draw", "Loss"],
+  season_moment: ["Opening day", "Derby", "Cup final", "Title celebration", "Promotion", "Relegation", "European qualification", "Last game of the season", "Pre-season"],
+  location: ["Away city", "Home city", "Stadium", "Training ground"],
+  goal: ["Ticket sales", "Merchandise sales", "Memberships", "Sponsor value", "App / digital product", "Community / CSR", "Recruitment / grassroots", "Fan growth", "Engagement"],
+  comms: ["Official announcement", "Press conference", "Statement", "Injury / medical update", "Ticket info", "Schedule change"],
+  crisis: ["Apology", "Racism / abuse", "Sanction / disciplinary", "Serious injury", "Security / incident", "Condolences"],
+  team: ["First team", "Women's team", "Academy / youth", "Legends", "Esports", "Fans", "Staff / coaches", "Other sport section"],
+  angle: ["Player-focused", "Fan-focused", "Humour / meme", "Emotional", "Data & stats", "Behind the scenes", "Skills / tutorial", "Hype / cinematic", "Informative", "Celebration"],
+  collab: ["Player collab", "Athlete takeover", "Fan content (UGC)", "Influencer / creator", "Club collab", "Brand collab"],
+  cta: ["Link in bio", "Buy tickets", "Shop now", "Vote / poll", "Comment", "Tag a friend", "Giveaway / contest", "Watch / stream", "Download app"],
+  sponsor_sector: ["Apparel / sportswear", "Airline / travel", "Bank / finance", "Telecom / tech", "Beverage", "Food", "Automotive", "Energy", "Betting", "Crypto / fintech", "Media / streaming", "Health", "Retail", "Gaming", "Other"],
+  sponsor_integration: ["Logo on graphic", "Presented-by segment", "Brand collab post", "Product placement", "Sponsor activation / event", "Sponsor giveaway"],
+  language: ["English", "Spanish", "Catalan", "French", "Italian", "Portuguese", "German", "Dutch", "Turkish", "Arabic", "Polish", "Greek", "Japanese", "Korean", "Chinese",
+    "Indonesian", "Russian", "Ukrainian", "Swedish", "Danish", "Norwegian", "Croatian", "Serbian", "Czech", "Romanian", "Hebrew", "Hindi", "Thai", "Vietnamese", "Emoji only", "Other"],
+};
 
 const W = (s) => new RegExp(s, "iu");
 
@@ -21,11 +59,11 @@ export const RULES = {
   moment: {
     "Matchday preview": [W("#?match ?day|#?gameday|#?jornada|dia de partit|día de partido|jour de match|matchday|game day|preview|previa|avant-match|pre-?match|kick-?off|ko \\d|this (?:afternoon|evening|tonight)'s game|tonight we|hoy jugamos|avui juguem|ce soir|stasera|hoje jogamos")],
     "Live match": [W("\\bht\\b|half-?time|\\bft\\b(?!\\w)|descanso|mitja part|mi-temps|intervallo|\\d+'\\s|goo+a+l|gol+a+z+o|⚽️?\\s*\\d|live now|en directo|en directe|en direct|in diretta|ao vivo")],
-    "Match result": [W("full-?time|final score|resultado final|resultat final|score final|risultato finale|we win|victory|victoria|victòria|victoire|vittoria|vitória|\\b3 points\\b|tres puntos|3 punts|derrota|defeat|\\b\\d+\\s?[-–]\\s?\\d+\\b")],
-    "Signing": [W("welcome to|bienvenid[oa]|benvingut|bienvenue|benvenut[oa]|bem-vind[oa]|herzlich willkommen|new signing|nuevo fichaje|nou fitxatge|officially joins|signs (?:for|with)|ha firmado|ha fitxat|#?herewego|it'?s official|es oficial|és oficial")],
-    "Contract renewal": [W("renew|renueva|renova|renouvelle|rinnova|extends (?:his|her) contract|contract extension|until 20\\d\\d|hasta 20\\d\\d|fins al 20\\d\\d|jusqu'en 20\\d\\d")],
-    "Farewell": [W("farewell|goodbye|thank you for everything|gracias por todo|gràcies per tot|merci pour tout|grazie di tutto|obrigado por tudo|adiós|adéu|leaves the club|deja el club")],
-    "Kit launch": [W("new kit|home kit|away kit|third kit|nueva camiseta|nova samarreta|nouveau maillot|nuova maglia|nova camisa|trikot|#?newkit|equipación|equipació|jersey reveal|kit reveal")],
+    "Post-match": [W("full-?time|final score|resultado final|resultat final|score final|risultato finale|we win|victory|victoria|victòria|victoire|vittoria|vitória|\\b3 points\\b|tres puntos|3 punts|derrota|defeat|\\b\\d+\\s?[-–]\\s?\\d+\\b")],
+    "_Signing": [W("welcome to|bienvenid[oa]|benvingut|bienvenue|benvenut[oa]|bem-vind[oa]|herzlich willkommen|new signing|nuevo fichaje|nou fitxatge|officially joins|signs (?:for|with)|ha firmado|ha fitxat|#?herewego|it'?s official|es oficial|és oficial")],
+    "_Contract renewal": [W("renew|renueva|renova|renouvelle|rinnova|extends (?:his|her) contract|contract extension|until 20\\d\\d|hasta 20\\d\\d|fins al 20\\d\\d|jusqu'en 20\\d\\d")],
+    "_Farewell": [W("farewell|goodbye|thank you for everything|gracias por todo|gràcies per tot|merci pour tout|grazie di tutto|obrigado por tudo|adiós|adéu|leaves the club|deja el club")],
+    "_Kit launch": [W("new kit|home kit|away kit|third kit|nueva camiseta|nova samarreta|nouveau maillot|nuova maglia|nova camisa|trikot|#?newkit|equipación|equipació|jersey reveal|kit reveal")],
     "Ticketing": [W("🎟|tickets?|entradas|entrades|billets|biglietti|ingressos|bilhetes|sold out|agotad[oa]s|exhaurides|box office|taquilla")],
     "Season tickets / membership": [W("season tickets?|abonament|abono|socios?|socis|membership|members|abbonament|sócio|carnet")],
     "Birthday": [W("happy birthday|feliz cumpleaños|feliç aniversari|joyeux anniversaire|buon compleanno|feliz aniversário|alles gute zum geburtstag|🎂|🎉 .*birthday|#hbd")],
@@ -136,8 +174,10 @@ export function applyRules(post) {
   const text = `${post.title || ""}`;
   const month = post.published_at ? new Date(post.published_at).getUTCMonth() + 1 : null;
   const out = Object.fromEntries(CATEGORIES.map((c) => [c.key, new Set()]));
+  out.hashtags = new Set((text.match(/#[\p{L}\p{N}_]{2,40}/gu) || []).map((h) => h.toLowerCase()));
   for (const [cat, values] of Object.entries(RULES)) {
     for (const [value, rule] of Object.entries(values)) {
+      if (value.startsWith("_") || !out[cat]) continue;
       const [re, opts] = rule;
       if (opts?.months && month && !opts.months.includes(month)) continue;
       if (re.test(text)) out[cat].add(value);
@@ -160,6 +200,14 @@ export function applyRules(post) {
   return out;
 }
 
-export const VALUES = Object.fromEntries(CATEGORIES.map((c) => [c.key,
-  c.key === "sponsor" ? null : c.key === "sponsor_sector" ? SPONSOR_SECTORS : c.key === "language" ? LANGUAGES
-    : [...Object.keys(RULES[c.key] || {}), ...(c.key === "team" ? ["First team"] : c.key === "angle" ? ["Player-focused", "Informative"] : c.key === "goal" ? ["Awareness", "Engagement", "Fan growth"] : [])]]));
+export const VALUES = AI_VALUES;
+
+// Brand names as one canonical spelling ("EA SPORTS FC" → "EA Sports FC"); unknown brands keep the AI's spelling
+const CANON = new Map(Object.keys(SPONSORS).map((b) => [b.toLowerCase().replace(/[^\p{L}\p{N}]/gu, ""), b]));
+CANON.set("easportsfc", "EA Sports FC"); CANON.set("eafc", "EA Sports FC"); CANON.set("easports", "EA Sports"); CANON.set("cocacola", "Coca-Cola");
+export function canonicalBrand(name) {
+  const raw = String(name || "").replace(/^@/, "").trim();
+  if (!raw) return null;
+  const key = raw.toLowerCase().replace(/[^\p{L}\p{N}]/gu, "");
+  return CANON.get(key) || raw.replace(/_/g, " ");
+}
