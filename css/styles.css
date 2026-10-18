@@ -5543,3 +5543,8 @@ body:has(.dock) .sf-mark { padding-bottom: 110px; }
 .book-cal-box.is-open .book-cal-loading { display: none; }
 .book-cal.is-cal .book-cal-box > * { width: 100% !important; }
 .sf-tm { margin: 0; padding: 0 0 20px; font-size: 11.5px; color: var(--muted-dim); }
+/* open calendar: no outer card, the calendar sits on the page */
+.book .book-card.is-wide { background: none; border: 0; box-shadow: none; padding: 0; animation: none; }
+.book .book-card.is-wide::before, .book .book-card.is-wide::after { display: none; }
+.book .book-card.is-wide .book-cal-head { text-align: center; }
+.book .book-card.is-wide .book-cal-alt { justify-self: center; }
