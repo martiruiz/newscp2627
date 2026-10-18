@@ -5188,3 +5188,4 @@ main { position: relative; z-index: 0; }
 .plan-card.v2 .plan-note:empty { margin: 0; }
 .plan-card.v2 .plan-note { margin: 8px 0 0; text-align: center; }
 .plan-card.v2 .plan-tools { margin-top: 18px; }
+.plan-card.v2 .plan-price span, .plan-card.v2 .plan-sub { white-space: nowrap; }

@@ -467,6 +467,8 @@ window.SCP_ES = {
   "billed yearly": "facturación anual",
   "or {price}/year": "o {price}/año",
   "Recommended": "Recomendado",
+  "{n} users × {price}": "{n} usuarios × {price}",
+  "VAT incl.": "IVA incl.",
   "{price} per user × {n} users": "{price} por usuario × {n} usuarios",
   "/ {per} · {n} users · VAT incl.": "/ {per} · {n} usuarios · IVA incl.",
   "/ {per} per user · VAT incl.": "/ {per} por usuario · IVA incl.",
