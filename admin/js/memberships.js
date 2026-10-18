@@ -8,7 +8,7 @@
   try { me = await A.boot("memberships"); } catch { return; }
   const main = $("[data-main]");
   const cfg = window.SCP_CONFIG || {};
-  const SYM = { eur: "€", usd: "$" };
+  const SYM = { eur: "€", usd: "$" };   // USD only for history (old test prices); new prices are EUR only
   const money = (n, cur = "eur") => (n == null || n === "" ? "—" : `${SYM[cur] || ""}${Number(n).toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
   const day = (v) => (v ? new Date(v).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "Europe/Madrid" }) : "—");
   const dt = (v) => (v ? new Date(v).toLocaleString("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "Europe/Madrid" }) : "—");
@@ -105,7 +105,7 @@
             <p class="muted"><code>${esc(p.key)}</code> · ${p.visibility === "hidden" ? "Hidden (private links)" : "Public"} · ${p.archived_at ? "Archived" : p.active ? "On sale" : "Not on sale"} · trial ${p.trial_days ? `${p.trial_days} days` : "off"} · AI ${p.ai_unlimited ? "unlimited" : `${p.ai_monthly_units}/month`}</p></div>
             <div class="ms-plan-stats"><b>${num(p.subscribers)}</b><span>subscribers</span><b>${num(p.trialing)}</b><span>in trial</span></div></div>
           <table class="data ms-prices"><thead><tr><th></th><th>Monthly</th><th>Yearly</th></tr></thead><tbody>
-            <tr><th>EUR</th><td>${cell("eur", "month")}</td><td>${cell("eur", "year")}</td></tr><tr><th>USD</th><td>${cell("usd", "month")}</td><td>${cell("usd", "year")}</td></tr></tbody></table>
+            <tr><th>EUR</th><td>${cell("eur", "month")}</td><td>${cell("eur", "year")}</td></tr></tbody></table>
           <p class="ms-perms">${p.entitlements.map((e) => `<span class="chip">${esc(e)}</span>`).join("")}</p>
           <div class="ms-plan-actions">
             <button class="btn btn-sm" type="button" data-edit="${esc(p.key)}">${icon("edit")}Edit</button>
@@ -183,33 +183,13 @@
         <div class="ms-perms-edit">${keys.map((k) => `<label class="ms-check"><input type="checkbox" name="ent" value="${esc(k.key)}" ${p?.entitlements?.includes(k.key) ? "checked" : ""}> <span><b>${esc(k.label)}</b><small>${esc(k.key)}</small></span></label>`).join("")}</div>
         <h3>Prices (VAT included) <small class="muted">Each change creates a new price; customers on the old one keep it. Then press “Sync with Stripe”.</small></h3>
         <div class="ms-grid4">
-          <label>EUR / month<input class="input" type="number" step="0.01" min="0" name="eur_month" value="${esc(price("eur", "month"))}"></label>
-          <label>EUR / year<input class="input" type="number" step="0.01" min="0" name="eur_year" value="${esc(price("eur", "year"))}"></label>
-          <label>USD / month<input class="input" type="number" step="0.01" min="0" name="usd_month" value="${esc(price("usd", "month"))}"></label>
-          <label>USD / year<input class="input" type="number" step="0.01" min="0" name="usd_year" value="${esc(price("usd", "year"))}"></label>
+          <label>€ / month<input class="input" type="number" step="0.01" min="0" name="eur_month" value="${esc(price("eur", "month"))}"></label>
+          <label>€ / year<input class="input" type="number" step="0.01" min="0" name="eur_year" value="${esc(price("eur", "year"))}"></label>
         </div>
-        <p class="muted ms-small" data-fx-note>Leave a price empty to not sell the plan in that currency / period.</p>
+        <p class="muted ms-small">Prices are in euros only (banks convert for cards in other currencies). Leave a price empty to not sell the plan monthly or yearly.</p>
       </form>`,
       foot: `<button class="btn btn-ghost" type="button" data-x>Cancel</button><button class="btn btn-primary" type="button" data-save>Save plan</button>` });
     $("[data-x]", m.el).onclick = () => m.close();
-    // USD follows EUR (Settings → Currencies): recalculated at the ECB rate of the day, rounded to .99 — editable before saving
-    const sett = await rpc("admin_billing_settings").catch(() => ({}));
-    if (sett.fx?.usd_follows_eur !== false) {
-      const form = $("[data-f]", m.el);
-      const fxRate = await fetch("https://api.frankfurter.dev/v1/latest?base=EUR&symbols=USD").then((r) => r.json()).catch(() => null);
-      const rate = fxRate?.rates?.USD;
-      const nice = (x) => Math.max(0.99, Math.round(x + 0.01) - 0.01);
-      if (rate) {
-        $("[data-fx-note]", m.el).textContent = `USD follows EUR at the ECB rate of ${fxRate.date} (1 € = $${rate}), rounded to .99 and yearly = 10 × monthly when EUR is too. You can still edit the USD prices.`;
-        const recalc = () => {
-          const em = Number(form.eur_month.value), ey = Number(form.eur_year.value);
-          if (em > 0) form.usd_month.value = nice(em * rate).toFixed(2);
-          if (ey > 0) form.usd_year.value = (em > 0 && Math.abs(ey - em * 10) < 0.02 ? Number(form.usd_month.value) * 10 : nice(ey * rate)).toFixed(2);
-        };
-        form.eur_month.addEventListener("input", recalc);
-        form.eur_year.addEventListener("input", recalc);
-      }
-    }
     $("[data-save]", m.el).onclick = async (ev) => {
       const f = $("[data-f]", m.el);
       if (!f.reportValidity()) return;
@@ -223,7 +203,7 @@
       await busy(ev.target, async () => {
         try {
           await rpc("admin_save_plan", { p: payload });
-          for (const [c, i] of [["eur", "month"], ["eur", "year"], ["usd", "month"], ["usd", "year"]]) {
+          for (const [c, i] of [["eur", "month"], ["eur", "year"]]) {
             const nv = v[`${c}_${i}`], ov = price(c, i);
             if (nv !== "" && Number(nv) > 0 && Number(nv) !== Number(ov)) await rpc("admin_set_price", { p_plan: payload.key, p_currency: c, p_interval: i, p_amount: Number(nv) });
             if (nv === "" && ov !== "") await rpc("admin_remove_price", { p_plan: payload.key, p_currency: c, p_interval: i });
@@ -374,12 +354,12 @@
       <div class="ms-grid2"><label>Code customers type<input class="input" name="code" required pattern="[A-Za-z0-9_-]{3,40}" placeholder="BLACKFRIDAY26"></label><label>Internal campaign name<input class="input" name="name" required placeholder="Black Friday 2026"></label></div>
       <div class="ms-grid3"><label>Type<select class="select" name="kind"><option value="percent">Percentage</option><option value="amount">Fixed amount</option></select></label>
         <label>% off<input class="input" type="number" name="percent_off" min="1" max="100" step="0.01" placeholder="30 (100 = free)"></label>
-        <label>Amount off EUR / USD<span class="ms-pair"><input class="input" type="number" name="amount_off_eur" step="0.01" placeholder="€"><input class="input" type="number" name="amount_off_usd" step="0.01" placeholder="$"></span></label></div>
+        <label>Amount off (€)<input class="input" type="number" name="amount_off_eur" step="0.01" placeholder="€"></label></div>
       <div class="ms-grid3"><label>Duration<select class="select" name="duration"><option value="once">First charge only</option><option value="repeating">Several months</option><option value="forever">Forever</option></select></label>
         <label>Months<input class="input" type="number" name="duration_months" min="1" placeholder="3"></label></div>
       <h3>Applies to</h3><div class="ms-perms-edit">${pl.filter((p) => !p.archived_at).map((p) => `<label class="ms-check"><input type="checkbox" name="plan" value="${esc(p.key)}"> ${esc(p.name)}</label>`).join("")}</div>
-      <div class="ms-grid3"><label class="ms-check"><input type="checkbox" name="cur" value="eur"> EUR</label><label class="ms-check"><input type="checkbox" name="cur" value="usd"> USD</label><label class="ms-check"><input type="checkbox" name="iv" value="month"> Monthly</label><label class="ms-check"><input type="checkbox" name="iv" value="year"> Yearly</label></div>
-      <p class="muted ms-small">Leave unticked = all plans / currencies / periods.</p>
+      <div class="ms-grid3"><label class="ms-check"><input type="checkbox" name="iv" value="month"> Monthly</label><label class="ms-check"><input type="checkbox" name="iv" value="year"> Yearly</label></div>
+      <p class="muted ms-small">Leave unticked = all plans / periods.</p>
       <div class="ms-grid4"><label>Starts<input class="input" type="date" name="starts_at"></label><label>Expires<input class="input" type="date" name="expires_at"></label>
         <label>Total uses<input class="input" type="number" name="max_redemptions" min="1"></label><label>Uses per customer<input class="input" type="number" name="max_per_customer" min="1" value="1"></label></div>
     </form>`, foot: `<button class="btn btn-ghost" type="button" data-x>Cancel</button><button class="btn btn-primary" type="button" data-save>Save (then “Create in Stripe”)</button>` });
@@ -388,7 +368,7 @@
       const f = $("[data-f]", m.el);
       if (!f.reportValidity()) return;
       const v = Object.fromEntries(new FormData(f));
-      const p = { ...v, plan_keys: $$("[name=plan]:checked", f).map((x) => x.value), currencies: $$("[name=cur]:checked", f).map((x) => x.value), intervals: $$("[name=iv]:checked", f).map((x) => x.value),
+      const p = { ...v, plan_keys: $$("[name=plan]:checked", f).map((x) => x.value), intervals: $$("[name=iv]:checked", f).map((x) => x.value),
         starts_at: v.starts_at ? new Date(`${v.starts_at}T00:00:00`).toISOString() : "", expires_at: v.expires_at ? new Date(`${v.expires_at}T23:59:59`).toISOString() : "" };
       try { await rpc("admin_save_discount", { p }); A.toast("Saved. Now press “Create in Stripe”."); m.close(); done(); } catch (err) { fail(err); }
     };
@@ -594,15 +574,13 @@
       <section class="panel panel-pad"><h2>Stripe</h2><p class="panel-sub">Keys are Supabase secrets (STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET) — never stored here. Mode: <span data-m2>…</span></p>
         <div class="ms-grid3"><label>Business time zone<input class="input" name="timezone" value="${esc(s.timezone)}"></label>
           <label>Monthly renewal day<input class="input" name="monthly_anchor_day" type="number" min="1" max="1" value="${esc(s.monthly_anchor_day)}" readonly title="Fixed: the 1st"></label>
-          <label>Default currency<select class="select" name="default_currency">${["eur", "usd"].map((c) => `<option value="${c}"${s.default_currency === c ? " selected" : ""}>${c.toUpperCase()}</option>`).join("")}</select></label></div>
-        <div class="ms-row"><label class="ms-check"><input type="checkbox" name="cur_eur" ${s.currencies?.includes("eur") ? "checked" : ""}> Sell in EUR</label><label class="ms-check"><input type="checkbox" name="cur_usd" ${s.currencies?.includes("usd") ? "checked" : ""}> Sell in USD</label></div></section>
-      <section class="panel panel-pad"><h2>Taxes and currencies</h2>
+          <label>Currency<input class="input" value="EUR (€) only" readonly title="Banks convert for cards in other currencies"></label></div></section>
+      <section class="panel panel-pad"><h2>Taxes</h2>
         <label>How taxes are charged<select class="select" name="tax_mode">
           <option value="none"${(s.tax?.mode || "none") === "none" ? " selected" : ""}>No tax line (prices as shown)</option>
           <option value="stripe_tax"${s.tax?.mode === "stripe_tax" ? " selected" : ""}>Stripe Tax — VAT / sales tax by customer location (needs registrations in Stripe → Tax)</option>
           <option value="fixed_rate"${s.tax?.mode === "fixed_rate" ? " selected" : ""}>One fixed rate (the rate created by setup.mjs)</option></select></label>
-        <p class="muted ms-small">EUR prices include tax; USD prices are before tax (US convention). Ask your accountant which registrations your company needs (EU VAT for consumers, US states, LatAm countries).</p>
-        <label class="ms-check"><input type="checkbox" name="usd_follows_eur" ${s.fx?.usd_follows_eur !== false ? "checked" : ""}> When a EUR price changes, recalculate the USD price at the ECB rate of the day (editable before saving)</label></section>
+        <p class="muted ms-small">Prices are in euros, tax included. Ask your accountant which registrations your company needs (EU VAT for consumers and other countries).</p></section>
       <section class="panel panel-pad"><h2>Trials and payment problems</h2>
         <label class="ms-check"><input type="checkbox" name="one_trial" ${s.trial_policy?.one_per_user !== false ? "checked" : ""}> One free trial per member (exceptions per member in Subscribers)</label>
         <label class="ms-check"><input type="checkbox" name="keep_access" ${s.dunning?.keep_access_while_retrying !== false ? "checked" : ""}> Keep access while Stripe retries a failed payment (past due). Access stops when Stripe gives up (unpaid / canceled). Retry schedule: Stripe → Settings → Billing → Subscriptions.</label></section>
@@ -624,8 +602,8 @@
       const save = (k, val) => rpc("admin_save_billing_setting", { p_key: k, p_value: val });
       try {
         await save("timezone", v.timezone);
-        await save("default_currency", v.default_currency);
-        await save("currencies", [f.cur_eur.checked && "eur", f.cur_usd.checked && "usd"].filter(Boolean));
+        await save("default_currency", "eur");
+        await save("currencies", ["eur"]);
         await save("trial_policy", { one_per_user: f.one_trial.checked });
         await save("dunning", { keep_access_while_retrying: f.keep_access.checked });
         if (f.enforce_library.checked !== (s.enforce_library_access === true)) {
@@ -636,7 +614,7 @@
         await save("legal", { terms_url: v.terms_url, privacy_url: v.privacy_url, cancellation_url: v.cancellation_url });
         await save("checkout", { require_terms_consent: f.consent.checked, collect_tax_id: f.tax_id.checked });
         await save("tax", { mode: f.tax_mode.value });
-        await save("fx", { usd_follows_eur: f.usd_follows_eur.checked });
+        await save("fx", { usd_follows_eur: false });
         A.toast("Settings saved.");
       } catch (err) { fail(err); }
     };
