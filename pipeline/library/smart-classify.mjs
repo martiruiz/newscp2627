@@ -50,7 +50,7 @@ async function loadPosts(ids) {
 
 // ---------- --eval: reviewed posts, before vs after ----------
 if (argv.includes("--eval")) {
-  const { data: gold, error } = await db.from("smart_review").select("post_id,ai,gold").eq("status", "done");
+  const { data: gold, error } = await db.from("smart_review").select("post_id,ai,gold,ai_b,ai_b_version,verdicts").eq("status", "done");
   if (error) throw error;
   const posts = new Map((await loadPosts(gold.map((g) => g.post_id))).map((p) => [p.id, p]));
   console.log(`Re-labelling ${gold.length} reviewed posts with ${MODEL} (${VERSION}: image + caption)…`);
@@ -96,6 +96,24 @@ if (argv.includes("--eval")) {
     if (c.key === "city") continue; // new filter: not in the reviewed set yet
     const b = score((g) => g.ai, c.key), a = score((g) => after.get(g.post_id), c.key);
     console.log(`${c.label.padEnd(22)} ${f(b.p)} → ${f(a.p)}            ${f(b.r)} → ${f(a.r)}`);
+  }
+  // Against your blind decisions (Compare): for each decided filter, does this run give the answer you picked?
+  const decided = gold.filter((g) => g.verdicts && g.ai_b);
+  if (decided.length) {
+    const nn = (v) => [].concat(v || []).map(norm).filter(Boolean).sort().join("|");
+    console.log(`\nAgainst your Compare decisions (old vs ${decided[0].ai_b_version}) — share of decided filters where each version gives your answer:`);
+    console.log(`${"Filter".padEnd(22)} old    ${String(decided[0].ai_b_version).padEnd(7)} this run   (decisions)`);
+    for (const c of AI_CATEGORIES) {
+      let n = 0, okOld = 0, okB = 0, okNow = 0;
+      for (const g of decided) {
+        const pick = g.verdicts?.[c.key]?.pick;
+        if (!pick || pick === "none" || !after.has(g.post_id)) continue;
+        const right = pick === "old" ? [g.ai[c.key]] : pick === "new" ? [g.ai_b[c.key]] : [g.ai[c.key], g.ai_b[c.key]];
+        const ok = (v) => right.some((r) => nn(r) === nn(v));
+        n++; okOld += ok(g.ai[c.key]); okB += ok(g.ai_b[c.key]); okNow += ok(after.get(g.post_id)[c.key]);
+      }
+      if (n) console.log(`${c.label.padEnd(22)} ${String(Math.round(100 * okOld / n)).padStart(3)}%   ${String(Math.round(100 * okB / n)).padStart(3)}%    ${String(Math.round(100 * okNow / n)).padStart(3)}%      (${n})`);
+    }
   }
   const cities = [...after.values()].flatMap((x) => x.city || []);
   console.log(`\nCity (new): ${cities.length} found — ${[...new Set(cities)].slice(0, 20).join(", ")}`);
