@@ -97,6 +97,19 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString(window.SCP_LO
     });
   });
 
+  // Social posts embedded in blog articles: a gate until the reader asks for them (blog-tools/build.mjs)
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-ext-open]");
+    if (!btn) return;
+    const gate = btn.closest(".ext-gate"), src = gate.dataset.extScript;
+    gate.outerHTML = gate.dataset.extHtml;
+    if (src) {
+      if (/instagram/.test(src) && window.instgrm) return window.instgrm.Embeds.process();
+      if (/twitter/.test(src) && window.twttr?.widgets) return window.twttr.widgets.load();
+      const sc = document.createElement("script"); sc.async = true; sc.src = src; document.body.append(sc);
+    }
+  });
+
   // Footer newsletter (same list as the home dock: newsletter_signups, source "footer")
   $$("[data-footer-news]").forEach((form) => {
     const msg = $("[data-footer-news-msg]", form);
@@ -482,15 +495,25 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString(window.SCP_LO
     const id = `scp-cal-${++calN}`;
     const src = /calendar\.google\.com/.test(bookingUrl) && !/[?&]gv=true/.test(bookingUrl) ? `${bookingUrl}${bookingUrl.includes("?") ? "&" : "?"}gv=true` : bookingUrl;
     form.insertAdjacentHTML("beforebegin", `<div class="book-cal${calLink ? " is-cal" : ""}"><p class="book-cal-head"><b>${tx("Pick a time that suits you")}</b><span>${tx("30 min · video call · you get the invite straight away")}</span></p>
-      ${calLink ? `<div class="book-cal-box" id="${id}"></div>` : `<iframe src="${src}" title="${tx("Book a demo")}" loading="lazy"></iframe>`}
+      <div class="book-cal-box" id="${id}"><p class="book-cal-loading">${tx("Loading the calendar…")}</p></div>
       <button class="book-cal-alt" type="button" aria-expanded="false">${tx("No time fits? Ask us to contact you →")}</button></div>`);
-    if (calLink) {
+    const box = form.previousElementSibling.querySelector(".book-cal-box");
+    // loads as soon as it's on screen: on the demo page, or when "Book a demo" opens the FAQ demo form
+    // (the visitor asked to book, so the booking tool is part of what they requested)
+    const start = () => {
+      if (box.classList.contains("is-open")) return;
+      box.classList.add("is-open");
+      form.closest(".book-card")?.classList.add("is-wide");   // room for the calendar and the times side by side
+      if (calLink) openCal(); else box.innerHTML = `<iframe src="${src}" title="${tx("Book a demo")}"></iframe>`;
+    };
+    new IntersectionObserver((en, io) => { if (en[0].isIntersecting) { io.disconnect(); start(); } }, { rootMargin: "200px" }).observe(box);
+    const openCal = () => {
       loadCal();
-      const ns = `scp${calN}`;
+      const ns = id.replace(/-/g, "");
       window.Cal("init", ns, { origin: "https://cal.com" });
       window.Cal.ns[ns]("inline", { elementOrSelector: `#${id}`, calLink, config: { layout: "month_view", theme: "dark" } });
-      window.Cal.ns[ns]("ui", { theme: "dark", layout: "month_view", hideEventTypeDetails: false,
-        cssVarsPerTheme: { dark: { "cal-brand": "#f0b84a", "cal-brand-emphasis": "#f8cc75", "cal-brand-text": "#0b0f1c", "cal-bg": "#121a2e", "cal-bg-muted": "#17213b", "cal-bg-emphasis": "#1f2b48", "cal-border": "rgba(180,192,211,0.18)", "cal-border-subtle": "rgba(180,192,211,0.12)", "cal-text": "#ffffff", "cal-text-subtle": "#b4c0d3", "cal-text-muted": "#8b98ae" } } });
+      window.Cal.ns[ns]("ui", { theme: "dark", layout: "month_view", hideEventTypeDetails: true,
+        cssVarsPerTheme: { dark: { "cal-brand": "#f0b84a", "cal-brand-emphasis": "#f8cc75", "cal-brand-text": "#0b0f1c", "cal-bg": "transparent", "cal-bg-muted": "#17213b", "cal-bg-emphasis": "#1f2b48", "cal-border-booker": "transparent", "cal-border-booker-width": "0px", "cal-border": "rgba(180,192,211,0.18)", "cal-border-subtle": "rgba(180,192,211,0.12)", "cal-text": "#ffffff", "cal-text-subtle": "#b4c0d3", "cal-text-muted": "#8b98ae" } } });
       // a booking made in the calendar also lands in Admin → Requests, with the CTA it came from
       window.Cal.ns[ns]("on", { action: "bookingSuccessful", callback: (e) => {
         const b = e?.detail?.data?.booking || {}, att = (b.attendees || b.responses ? [b.responses || {}] : [])[0] || {};
@@ -502,7 +525,7 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString(window.SCP_LO
           body: JSON.stringify({ p: { kind: "demo", name, email, day: String(b.startTime || "").slice(0, 10), time: String(b.startTime || "").slice(11, 16), message: "Booked in Cal.com", lang: window.SCP_LANG || "en",
             page: `${location.pathname.split("/").pop() || "index.html"}${src ? ` ← ${src}` : ""} (Cal.com)`.slice(0, 200) } }) }).catch(() => {});
       } });
-    }
+    };
     form.hidden = true;
     form.previousElementSibling.querySelector(".book-cal-alt").addEventListener("click", (e) => {
       form.hidden = !form.hidden; e.currentTarget.setAttribute("aria-expanded", String(!form.hidden));

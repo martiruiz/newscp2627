@@ -133,9 +133,18 @@ function renderEmbeds(html) {
     } else {
       inner = `<blockquote class="twitter-tweet" data-theme="dark"><a href="${e.url}">View this post on X</a></blockquote>`;
     }
-    return `<figure class="post-embed post-embed-${e.platform}">${inner}${cap}</figure>`;
+    // nothing loads from the platform until the reader asks for it (no third-party cookies by default):
+    // js/main.js swaps the gate for the embed and loads the platform's script on click
+    const NAME = { instagram: "Instagram", tiktok: "TikTok", youtube: "YouTube", x: "X" }[e.platform];
+    const script = (EMBED_SCRIPTS[e.platform] || "").match(/src="([^"]+)"/)?.[1] || "";
+    const gate = `<div class="ext-gate" data-ext-html="${inner.replace(/&/g, "&amp;").replace(/"/g, "&quot;")}"${script ? ` data-ext-script="${script}"` : ""}>
+      <span class="ext-gate-logo"><i class="lf-pfi is-brand lf-pf-${e.platform}" style="-webkit-mask-image:url(assets/pf-${e.platform}.svg);mask-image:url(assets/pf-${e.platform}.svg)"></i></span>
+      <b>${NAME} post</b><span>This post is shown by ${NAME}, which may set its own cookies. It loads only when you open it.</span>
+      <button class="btn btn-gold" type="button" data-ext-open>Load the post</button>
+      <a class="ext-gate-link" href="${e.url}" target="_blank" rel="noopener nofollow">or open it on ${NAME} ↗</a></div>`;
+    return `<figure class="post-embed post-embed-${e.platform}">${gate}${cap}</figure>`;
   });
-  return { html: out, scripts: [...used].map((p) => EMBED_SCRIPTS[p]).filter(Boolean).join("\n  ") };
+  return { html: out, scripts: "" };
 }
 
 // CTA card inserted after ~40% of the article's paragraphs
@@ -287,9 +296,7 @@ ${(p.keywords || []).map((k) => `  <meta property="article:tag" content="${esc(k
   <script type="application/ld+json">${JSON.stringify(ld)}</script>
   <script type="application/ld+json">${JSON.stringify(breadcrumbs)}</script>
   <link rel="icon" href="assets/icon-logo.svg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/fonts.css?v=1">
   <link rel="stylesheet" href="css/styles.css">
   <script src="js/theme.js"></script>
   <script src="js/i18n.js?v=20261018a"></script>

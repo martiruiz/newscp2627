@@ -5516,3 +5516,30 @@ body:has(.dock) .sf-mark { padding-bottom: 110px; }
 .book-cal-box { min-height: 560px; border-radius: 16px; overflow: hidden; background: #121a2e; border: 0.5px solid var(--line); }
 .book-cal.is-cal .book-cal-box > * { width: calc(100% + 14px) !important; max-width: none !important; }
 .book-cal.is-cal .book-cal-box iframe { width: 100% !important; }
+/* calendar behind a click (no third-party request until the visitor asks for it) */
+.book-cal-box:not(.is-open) { min-height: 0; }
+.book-cal-gate { display: grid; justify-items: center; gap: 8px; padding: 34px 22px; text-align: center; }
+.book-cal-gate b { font-size: 17px; color: var(--text); }
+.book-cal-gate span:not(.book-cal-gate-ic) { max-width: 340px; font-size: 13px; color: var(--muted); line-height: 1.5; }
+.book-cal-gate .btn { margin-top: 8px; }
+.book-cal-gate-ic { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 14px; background: var(--gold-tint); }
+.book-cal-gate-ic svg { width: 24px; height: 24px; fill: none; stroke: var(--gold); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.book-cal:not(.is-cal) .book-cal-box iframe { width: 100%; height: 640px; border: 0; background: #fff; }
+.book-cal.is-cal .book-cal-box iframe { background: transparent; border: 0; }
+/* blog: embedded posts behind a click */
+.ext-gate { display: grid; justify-items: center; gap: 8px; max-width: 420px; margin: 0 auto; padding: 30px 22px; border-radius: 18px; text-align: center; background: var(--surface); border: 0.5px solid var(--line); }
+.ext-gate-logo { width: 46px; height: 46px; display: grid; place-items: center; border-radius: 14px; background: rgba(var(--fg), 0.06); }
+.ext-gate-logo .lf-pfi { width: 24px; height: 24px; } .ext-gate-logo .lf-pfi.lf-pf-instagram { width: 30px; height: 30px; margin: -3px; }
+.ext-gate b { font-size: 16px; color: var(--text); }
+.ext-gate > span:not(.ext-gate-logo) { font-size: 13px; color: var(--muted); line-height: 1.5; }
+.ext-gate .btn { margin-top: 6px; }
+.ext-gate-link { font-size: 13px; color: var(--muted); }
+/* the open calendar takes the full width of the demo page: month and times side by side, much shorter */
+.book .book-card.is-wide { grid-column: 1 / -1; max-width: 920px; width: 100%; justify-self: center; }
+.book-cal.is-cal .book-cal-box.is-open { min-height: 0; }
+/* the calendar shows straight away, without an inner frame */
+.book-cal.is-cal .book-cal-box { border: 0; background: none; border-radius: 0; }
+.book-cal-loading { margin: 0; padding: 40px 0; text-align: center; font-size: 13px; color: var(--muted); }
+.book-cal-box.is-open .book-cal-loading { display: none; }
+.book-cal.is-cal .book-cal-box > * { width: 100% !important; }
+.sf-tm { margin: 0; padding: 0 0 20px; font-size: 11.5px; color: var(--muted-dim); }

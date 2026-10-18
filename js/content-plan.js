@@ -673,7 +673,7 @@
     const shownDays = view === "week" ? days : days.filter((d) => dated.some((e) => e.entry_date === d));
     const counts = Object.entries(STATUS).map(([k, v]) => `<span style="--c:${COLORS[k]}"><i></i>${v} ${dated.filter((e) => e.status === k).length}</span>`).join("");
     win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${esc(slug)}</title>
-      <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+      <link href="${new URL("css/fonts.css", location.href).href}" rel="stylesheet">
       <style>
         @page { size: A4; margin: 14mm 12mm; }
         * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
