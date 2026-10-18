@@ -340,7 +340,7 @@ ${related.map(card).join("\n")}
 
   ${footer}
 
-  <script src="js/config.js?v=20261020b"></script>
+  <script src="js/config.js?v=20261020d"></script>
   <script src="js/main.js"></script>
   <script src="js/site-stats.js" defer></script>
   ${embeds.scripts}

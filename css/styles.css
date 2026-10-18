@@ -5514,4 +5514,5 @@ body:has(.dock) .sf-mark { padding-bottom: 110px; }
 .faq-form-pane .book-cal-head { display: none; }
 /* Cal.com inline booking (dark, SCP gold) */
 .book-cal-box { min-height: 560px; border-radius: 16px; overflow: hidden; background: #121a2e; border: 0.5px solid var(--line); }
+.book-cal.is-cal .book-cal-box > * { width: calc(100% + 14px) !important; max-width: none !important; }
 .book-cal.is-cal .book-cal-box iframe { width: 100% !important; }
