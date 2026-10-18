@@ -633,7 +633,7 @@
       $("[data-req]").innerHTML = list.length ? `<table class="data"><thead><tr><th>Date</th><th>Type</th><th>From</th><th>Details</th><th>Message</th><th></th></tr></thead><tbody>
         ${list.map((r) => `<tr><td>${dt(r.created_at)}</td><td>${st(KIND[r.kind] || r.kind)}${r.users ? `<br><small>${num(r.users)}+ users</small>` : ""}</td>
           <td><b>${esc(r.name)}</b><br><a href="mailto:${esc(r.email)}">${esc(r.email)}</a></td>
-          <td><small>${[r.company, r.country, r.role, r.team_size && `team ${r.team_size}`, r.preferred_day && `${r.preferred_day} ${r.preferred_time || ""}`, r.lang && r.lang.toUpperCase()].filter(Boolean).map(esc).join(" · ")}</small></td>
+          <td><small>${[r.company, r.country, r.role, r.team_size && `team ${r.team_size}`, r.preferred_day && `${r.preferred_day} ${r.preferred_time || ""}`, r.lang && r.lang.toUpperCase(), r.page && `from ${r.page}`].filter(Boolean).map(esc).join(" · ")}</small></td>
           <td style="max-width:420px;white-space:pre-wrap">${esc(r.message || "")}</td>
           <td><button class="btn btn-sm" type="button" data-req-toggle="${r.id}" data-to="${r.status === "new" ? "done" : "new"}">${r.status === "new" ? "Mark done" : "Reopen"}</button></td></tr>`).join("")}</tbody></table>`
         : `<p class="panel-sub">No requests here.</p>`;

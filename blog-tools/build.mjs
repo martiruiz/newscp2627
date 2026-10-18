@@ -144,7 +144,10 @@ const midCta = (post) => `
             <p class="post-cta-kicker">Sports Content Playbook</p>
             <p class="post-cta-title">${esc(post.cta_title || "Find your next winning post in seconds")}</p>
             <p>${esc(post.cta_text || "Browse thousands of proven sports posts filtered by sport, format, platform and performance — updated every day.")}</p>
-            <a class="btn btn-gold" href="signup.html">Try It For Free</a>
+            <div class="post-cta-actions">
+              <a class="btn btn-gold" href="signup.html" data-cta="blog-mid">Try It For Free</a>
+              <a class="btn btn-outline" href="book-a-call.html" data-cta="blog-mid">Book a 30-min demo</a>
+            </div>
           </aside>`;
 
 function insertMidCta(html, post) {
@@ -315,9 +318,10 @@ ${body}
           <p class="post-cta-title">Every idea in this article is already in the Content Library</p>
           <p>Filter by sport, platform and format, save the posts that inspire you and build your sports content calendar in minutes.</p>
           <div class="post-cta-actions">
-            <a class="btn btn-gold" href="pricing.html">See plans and pricing</a>
-            <a class="btn btn-outline" href="signup.html">Try It For Free</a>
+            <a class="btn btn-gold" href="signup.html" data-cta="blog-end">Try It For Free</a>
+            <a class="btn btn-outline" href="book-a-call.html" data-cta="blog-end">Book a 30-min demo</a>
           </div>
+          <p class="post-cta-more"><a class="link-gold" href="pricing.html">See plans and pricing →</a></p>
         </aside>
 ${(p.sources || []).length ? `        <section class="post-sources">
           <h2>Sources</h2>

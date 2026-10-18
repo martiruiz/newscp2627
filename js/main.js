@@ -446,6 +446,24 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString(window.SCP_LO
       return `<label><input type="radio" name="day" value="${iso}"><small>${x.toLocaleDateString(loc, { weekday: "short" })}</small><b>${x.getDate()}</b><small>${x.toLocaleDateString(loc, { month: "short" })}</small></label>`; }).join("");
   });
 
+  // Which button brought the visitor to a form: data-cta, or the section / nav / footer it sits in. Kept for the
+  // session and sent with the request (column "page"), so Admin → Requests shows which CTAs work.
+  document.addEventListener("click", (e) => {
+    const el = e.target.closest('[data-cta], a[href*="book-a-call"], a[href*="contact.html"], [data-faq-open]');
+    if (!el) return;
+    const where = el.dataset.cta || el.closest("section[id]")?.id || (el.closest("footer") ? "footer" : el.closest(".site-nav") ? "nav" : el.closest("section")?.className.split(" ")[0]) || "page";
+    try { sessionStorage.setItem("scp-cta", `${(location.pathname.split("/").pop() || "index.html").replace(".html", "")}:${where}`); } catch {}
+  }, true);
+  // Signed-in members don't type their name and email again (the Supabase session kept in localStorage, no extra library)
+  try {
+    const ref = (window.SCP_CONFIG?.supabaseUrl || "").match(/https:\/\/([^.]+)\./)?.[1];
+    const u = ref && JSON.parse(localStorage.getItem(`sb-${ref}-auth-token`) || "null")?.user;
+    if (u?.email) $$("[data-contact-form]").forEach((f) => {
+      if (f.email && !f.email.value) f.email.value = u.email;
+      if (f.name && !f.name.value) f.name.value = u.user_metadata?.full_name || u.user_metadata?.name || "";
+    });
+  } catch {}
+
   $$("[data-contact-form]").forEach((form) => {
     const status = $("[data-form-status]", form);
     const q = new URLSearchParams(location.search);
@@ -468,7 +486,7 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString(window.SCP_LO
       const cfg = window.SCP_CONFIG || {};
       const fd = new FormData(form);
       const body = { kind: form.classList.contains("book-form") ? "demo" : custom ? "custom_plan" : "contact", users,
-        lang: window.SCP_LANG || "en", page: location.pathname.split("/").pop() || "index.html" };
+        lang: window.SCP_LANG || "en", page: (() => { const pg = location.pathname.split("/").pop() || "index.html"; let src = ""; try { src = sessionStorage.getItem("scp-cta") || ""; } catch {} return `${pg}${src ? ` ← ${src}` : ""}${form.closest("[data-faq-pane]") ? " (FAQ form)" : ""}`.slice(0, 200); })() };
       for (const k of ["name", "email", "company", "country", "role", "team_size", "day", "time", "message"]) if (fd.get(k)) body[k] = String(fd.get(k)).trim();
       const btn = form.querySelector('[type="submit"]'); if (btn) btn.disabled = true;
       try {

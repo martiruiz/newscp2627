@@ -177,6 +177,11 @@
       b.innerHTML = plans.length ? plans.map((p) => planCard(p, { solo: plans.length === 1 })).join("") : `<p class="plans-empty">Plans will be published here soon. <a class="link-gold" href="contact.html">Contact us</a> in the meantime.</p>`;
       decorate(b, swap);
       b.classList.toggle("is-v2", !privatePlan && plans.length > 1);
+      // not sure which plan? one line under the cards opens the demo form (FAQ) or the demo page
+      if (!privatePlan && plans.length > 1 && !b.nextElementSibling?.matches?.(".plan-help")) {
+        const inPage = document.querySelector('[data-faq-pane="demo"]');
+        b.insertAdjacentHTML("afterend", `<p class="plan-help">${tx("Not sure which plan fits your team?")} <a class="link-gold" href="book-a-call.html" data-cta="pricing-cards"${inPage ? ' data-faq-open="demo"' : ""}>${tx("Talk to us for 30 minutes →")}</a></p>`);
+      }
       const prev = b.previousElementSibling?.matches?.(".plan-switches") ? b.previousElementSibling : null;
       if (prev) prev.outerHTML = switches(plans); else b.insertAdjacentHTML("beforebegin", switches(plans));
     });

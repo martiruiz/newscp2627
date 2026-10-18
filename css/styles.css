@@ -5495,3 +5495,12 @@ body:has(.dock) .sf-mark { padding-bottom: 110px; }
 .team-tiles .tm-vis { height: 178px; }
 .tm-news2 { gap: 5px; } .tn-row, .tn-mail { padding: 5px 9px; }
 .ty-card { height: 112px; }
+
+/* CTAs: "Book a demo" in the nav, help line under the plans, actions after a demo request, blog CTA */
+.nav-demo { font-size: 14px; font-weight: 500; color: var(--muted); padding: 0 6px; white-space: nowrap; transition: color 0.2s; }
+.nav-demo:hover { color: var(--gold); }
+.plan-help { margin: 26px 0 0; text-align: center; font-size: 15px; color: var(--muted); }
+.plan-help a { font-weight: 600; }
+.book-done-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 18px; }
+.post-cta .post-cta-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.post-cta-more { margin-top: 12px; font-size: 14px; }
