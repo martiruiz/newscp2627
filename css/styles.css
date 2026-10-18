@@ -5145,3 +5145,11 @@ main { position: relative; z-index: 0; }
 #content-plan .cp-e.is-ghost::before { display: none; }
 #content-plan .cp-demo-legend { margin-top: 16px; }
 #content-plan .cp-demo-legend span::before { border-radius: 50%; }
+/* statuses as in the real Content Plan (planned blue, in production gold) + hover preview affordance */
+#content-plan .cp-e.is-plan { --st: #7aa7ff; } #content-plan .cp-e.is-prod { --st: #f8cc75; }
+#content-plan .cp-demo-legend .is-plan::before { background: #7aa7ff; } #content-plan .cp-demo-legend .is-prod::before { background: #f8cc75; }
+#content-plan .cp-e[data-k] { cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, background 0.2s; }
+#content-plan .cp-e[data-k]:hover { transform: translateY(-2px); background: rgba(var(--fg), 0.1); box-shadow: inset 0 0 0 1px rgba(61, 220, 151, 0.55), 0 8px 18px rgba(0, 0, 0, 0.35); }
+#content-plan .cp-demo-legend { align-items: center; }
+#content-plan .cp-hint { margin-left: auto; font-style: normal; font-size: 11.5px; color: var(--muted-dim); }
+@media (hover: none) { #content-plan .cp-hint { display: none; } }

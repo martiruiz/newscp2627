@@ -2,7 +2,7 @@
 // post itself (live embed: carousels can be swiped, reels played) and the entry's details. Moving into the card keeps it
 // open; leaving, clicking, scrolling or dragging closes it.
 // SCP_PREVIEW.attach(root, selector, getData, delay) — getData(el) → { post, title, lines: [], status, statusLabel, copy, href } | null
-// post: { id, url, media_ratio, reel } (as for SCP_THUMB).
+// post: { id, url, media_ratio, reel } (as for SCP_THUMB) — or img + ratio for a plain picture (home demo).
 window.SCP_PREVIEW = (() => {
   const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
   const icon = (n) => (window.SCP_ICONS ? window.SCP_ICONS(n) : "");
@@ -33,6 +33,7 @@ window.SCP_PREVIEW = (() => {
     pop.className = "pv";
     pop.innerHTML = `
       ${d.post && T ? `<div class="pv-media" style="width:${size.w}px;height:${size.h}px">${T.html(d.post, "pv-thumb")}</div>` : ""}
+      ${!d.post && d.img ? (() => { const z = mediaSize({ media_ratio: d.ratio }); return `<div class="pv-media" style="width:${z.w}px;height:${z.h}px"><img class="pv-thumb" src="${esc(d.img)}" alt="" style="object-fit:cover"></div>`; })() : ""}
       <div class="pv-body">
         ${d.statusLabel ? `<span class="pv-status org-s-${esc(d.status)}"><i></i>${esc(d.statusLabel)}</span>` : ""}
         <b class="pv-title">${esc(d.title || "Untitled")}</b>
