@@ -4456,7 +4456,7 @@ html.theme-anim, html.theme-anim body, html.theme-anim *, html.theme-anim *::bef
 .co-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
 .co-actions .btn { height: 46px; font-size: 16px; padding: 0 20px; }
 @media (max-width: 520px) { .co-terms div { grid-template-columns: 1fr; gap: 2px; } .co-actions { flex-direction: column-reverse; } .co-actions .btn { width: 100%; } }
-.plan-switches { margin: 0 auto 28px; }
+.plan-switches { margin: 36px auto 28px; }
 
 /* ---------- Account → Billing & membership (js/profile-billing.js) ---------- */
 .pf-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; margin: 16px 0 0; border-radius: 14px; overflow: hidden; border: 0.5px solid var(--line); }
