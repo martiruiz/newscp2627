@@ -4584,3 +4584,14 @@ html.theme-anim, html.theme-anim body, html.theme-anim *, html.theme-anim *::bef
 .nl-panel.is-simple .nl-done { justify-items: center; padding-top: 4px; }
 @media (max-width: 480px) { .nl-row { flex-direction: column; } .nl-panel.is-simple .nl-cta { width: 100%; } }
 .plan-switches .plan-seats-more { flex-basis: 100%; margin: 0; }
+/* Short newsletter pop-up with the photo on the left (form on the right, centred) */
+.nl-panel.is-simple.has-photo { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); width: min(840px, 100%); text-align: left; }
+.nl-panel.has-photo .nl-visual { min-height: 360px; }
+.nl-panel.has-photo .nl-body { display: flex; flex-direction: column; justify-content: center; padding: 44px 36px 36px; }
+.nl-panel.has-photo h2 { padding: 0 24px 0 0; }
+.nl-panel.has-photo .nl-consent { justify-content: flex-start; }
+.nl-panel.has-photo .nl-done { justify-items: start; }
+@media (max-width: 820px) {
+  .nl-panel.is-simple.has-photo { grid-template-columns: minmax(0, 1fr); width: min(480px, 100%); }
+  .nl-panel.has-photo .nl-visual { min-height: 170px; }
+}

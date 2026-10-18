@@ -51,8 +51,11 @@
   modal.setAttribute("aria-modal", "true");
   modal.setAttribute("aria-labelledby", "nl-title");
   modal.innerHTML = `
-    <div class="nl-panel is-simple">
+    <div class="nl-panel is-simple has-photo">
       <button class="nl-close" type="button" aria-label="Close" data-nl-close>${svg(I.x)}</button>
+      <div class="nl-visual" aria-hidden="true">
+        <img class="nl-photo" src="assets/newsletter-phones.webp" alt="" width="1400" height="875" decoding="async">
+      </div>
       <div class="nl-body" data-nl-body>
         <span class="nl-icon">${svg(I.mail)}</span>
         <h2 id="nl-title">The sports posts that work, <span class="gold">every Monday</span></h2>
