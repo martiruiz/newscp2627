@@ -115,7 +115,7 @@ window.SCP_ES = {
 
   // ---------- Home ----------
   "Sports Content Ideas & Sports Social Media Tools | SCP": "Ideas de contenido deportivo y herramientas para redes sociales | SCP",
-  "Find proven sports content ideas, analyze competitors and plan your sports content calendar with 540,000+ posts from 770+ clubs and 114 competitions.": "Encuentra ideas de contenido deportivo que ya funcionan, analiza a tu competencia y planifica tu calendario con más de 540.000 posts de más de 770 clubes y 114 competiciones.",
+  "Find proven sports content ideas, analyze competitors and plan your sports content calendar with 500,000+ posts from 770+ clubs and 110+ competitions.": "Encuentra ideas de contenido deportivo que ya funcionan, analiza a tu competencia y planifica tu calendario con más de 500.000 posts de más de 770 clubes y 110 competiciones.",
   "The Sports Content Playbook content library with filters and saved posts": "La biblioteca de contenido de Sports Content Playbook con filtros y posts guardados",
   "The Sports Content Playbook content library": "La biblioteca de contenido de Sports Content Playbook",
   "SCP tracking sports accounts like FC Barcelona, NBA, 433, Manchester City, ESPN, Chicago Bulls, MotoGP, the Patriots and MLB": "SCP sigue cuentas deportivas como FC Barcelona, NBA, 433, Manchester City, ESPN, Chicago Bulls, MotoGP, los Patriots y MLB",
@@ -1474,4 +1474,12 @@ window.SCP_ES = {
   "The whole platform in your language, switch any time from the menu or your profile.": "Toda la plataforma en tu idioma: cámbialo cuando quieras desde el menú o tu perfil.",
   "Follow 770+ clubs and 114 competitions: pick a crest and see what they post, when, and how it performs.": "Sigue a más de 770 clubes y 114 competiciones: elige un escudo y mira qué publican, cuándo y cómo funciona.",
   "540,000+ posts filtered by sport, competition, format, campaign moment, matchday graphic, kit, sponsor and more.": "Más de 540.000 posts filtrados por deporte, competición, formato, momento de campaña, gráfico de partido, equipación, patrocinador y más.",
+  // live numbers (js/site-stats.js) split these sentences
+  "posts from": "posts de",
+  "clubs &": "clubes y",
+  "competitions": "competiciones",
+  "Follow": "Sigue a",
+  "clubs and": "clubes y",
+  "competitions: pick a crest and see what they post, when, and how it performs.": "competiciones: elige un escudo y mira qué publican, cuándo y cómo funciona.",
+  "posts filtered by sport, competition, format, campaign moment, matchday graphic, kit, sponsor and more.": "posts filtrados por deporte, competición, formato, momento de campaña, gráfico de partido, equipación, patrocinador y más.",
 };

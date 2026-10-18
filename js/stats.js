@@ -6,8 +6,8 @@
   const stats = [...box.querySelectorAll(".stat")];
   const bar = box.querySelector(".stats-bar");
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const fmt = (n, el) => {
-    if (el.dataset.format === "compact") return n >= 1e6 ? "1M" : n >= 1000 ? `${Math.floor(n / 1000)}K` : String(Math.floor(n));
+  const fmt = window.SCP_STAT_FMT = (n, el) => {
+    if (el.dataset.format === "compact") return n >= 1e6 ? `${+(n / 1e6).toFixed(1)}M` : n >= 1000 ? `${Math.floor(n / 1000)}K` : String(Math.floor(n));
     return String(Math.round(n));
   };
 
@@ -17,14 +17,14 @@
     if (counted) return;
     counted = true;
     box.querySelectorAll("[data-count]").forEach((el, i) => {
-      const to = Number(el.dataset.count), suffix = el.dataset.suffix || "";
+      const suffix = el.dataset.suffix || "";   // data-count can be updated with the live total (js/site-stats.js) while counting
       if (reduce) return;
       const dur = 1600, start = performance.now() + i * 120;
       const tick = (now) => {
         const t = Math.min(1, Math.max(0, (now - start) / dur));
         const e = 1 - Math.pow(1 - t, 4); // ease-out
-        el.textContent = fmt(to * e, el) + (t >= 1 ? suffix : "");
-        if (t < 1) requestAnimationFrame(tick);
+        el.textContent = fmt(Number(el.dataset.count) * e, el) + (t >= 1 ? suffix : "");
+        if (t < 1) requestAnimationFrame(tick); else el.dataset.done = "1";
       };
       el.textContent = fmt(0, el);
       requestAnimationFrame(tick);
