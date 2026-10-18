@@ -86,7 +86,7 @@ console.log(`✓ VAT: IVA 21% included (${rate.id})`);
 // ---------- Customer portal: change plan / monthly ↔ yearly, card, invoices, cancel at period end ----------
 const site = (env("SITE_URL") || "https://sportscontentplaybook.com").split(",")[0].replace(/\/$/, "");
 const portal = {
-  business_profile: { headline: "Sports Content Playbook · manage your plan", privacy_policy_url: `${site}/`, terms_of_service_url: `${site}/` },
+  business_profile: { headline: "Sports Content Playbook · manage your plan", privacy_policy_url: `${site}/privacy.html`, terms_of_service_url: `${site}/terms.html` },
   default_return_url: `${site}/profile.html#billing`,
   features: {
     customer_update: { enabled: true, allowed_updates: ["email", "address", "tax_id", "name"] },

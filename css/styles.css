@@ -4506,3 +4506,22 @@ html.theme-anim, html.theme-anim body, html.theme-anim *, html.theme-anim *::bef
 .pf-inv-st.is-open { background: rgba(255, 104, 92, 0.14); color: #ff685c; }
 .pf-billing-note.is-err { color: #ff685c; }
 @media (max-width: 640px) { .pf-facts, .pf-included { grid-template-columns: 1fr; } .pf-cancel { margin-left: 0; } .pf-invoices table th:nth-child(2), .pf-invoices table td:nth-child(2) { display: none; } }
+
+/* ---------- Legal pages (terms.html, privacy.html) ---------- */
+.legal-page { width: min(780px, 100% - 2 * var(--gutter)); padding: 120px 0 96px; color: var(--muted); line-height: 1.7; font-size: 16px; }
+.legal-eyebrow { color: var(--gold); font-size: 13px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; margin: 0 0 10px; }
+.legal-page h1 { color: var(--text); font-size: clamp(34px, 5vw, 52px); line-height: 1.1; margin: 0 0 12px; }
+.legal-updated { margin: 0 0 32px; font-size: 14px; color: var(--muted-dim); }
+.legal-toc { display: flex; flex-wrap: wrap; gap: 8px; padding: 18px; margin: 0 0 48px; border: 1px solid var(--line); border-radius: 14px; background: rgba(var(--fg), .02); }
+.legal-toc a { font-size: 13px; color: var(--muted); text-decoration: none; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line-soft); transition: color .2s, border-color .2s, background .2s; }
+.legal-toc a:hover { color: var(--gold); border-color: var(--gold-dim); background: var(--gold-tint); }
+.legal-page section { scroll-margin-top: 100px; padding: 0 0 8px; }
+.legal-page h2 { color: var(--text); font-size: 22px; margin: 40px 0 12px; }
+.legal-page h3 { color: var(--text); font-size: 16px; margin: 24px 0 6px; }
+.legal-page p { margin: 0 0 14px; }
+.legal-page ul { margin: 0 0 16px; padding-left: 20px; }
+.legal-page li { margin: 0 0 8px; }
+.legal-page li::marker { color: var(--gold); }
+.legal-page b { color: var(--text); font-weight: 600; }
+.legal-page a:not(.legal-toc a) { color: var(--gold); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--gold-dim); }
+@media (max-width: 640px) { .legal-page { padding-top: 96px; font-size: 15px; } .legal-toc { padding: 12px; } }
