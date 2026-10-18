@@ -1,5 +1,5 @@
 // SCP Admin — Memberships (supabase/memberships.sql + Edge Functions stripe-admin, send-emails, billing-cron).
-// Tabs: Dashboard · Plans · Subscribers · Discounts · Hidden memberships · Emails · Billing events · Migration · Settings.
+// Tabs: Dashboard · Plans · Subscribers · Discounts · Hidden memberships · Emails · Billing events · Migration · Requests · Settings.
 // Every economic change goes through Stripe (Edge Functions); the database only mirrors what Stripe confirms.
 (async () => {
   const A = window.SCPA;
@@ -39,7 +39,7 @@
 
   const TABS = [
     ["dashboard", "Dashboard"], ["plans", "Plans"], ["subscribers", "Subscribers"], ["discounts", "Discounts"],
-    ["hidden", "Hidden memberships"], ["emails", "Emails"], ["events", "Billing events"], ["migration", "Migration"], ["settings", "Settings"],
+    ["hidden", "Hidden memberships"], ["emails", "Emails"], ["events", "Billing events"], ["migration", "Migration"], ["requests", "Requests"], ["settings", "Settings"],
   ];
   main.innerHTML = `
     <div class="page-head"><div><h1>Memberships</h1><p>Plans, prices, subscribers, discounts, private links, e-mails and the MemberPress migration. Stripe is the source of truth for payments.</p></div>
@@ -643,7 +643,34 @@
   }
 
   // ---------- Router ----------
-  const VIEWS = { dashboard, plans, subscribers, discounts, hidden, emails, events, migration, settings };
+  // ============================================================================================ Requests
+  // Contact, demo and custom-plan requests from the website (supabase/contact-requests.sql)
+  async function requests() {
+    view.innerHTML = `<div class="ms-row"><select class="select" data-req-status><option value="new">New</option><option value="">All</option><option value="done">Done</option></select></div><div data-req>Loading…</div>`;
+    const KIND = { custom_plan: "Custom plan", demo: "Demo", contact: "Contact" };
+    const draw = async () => {
+      let list;
+      try { list = await A.db.rpc("admin_contact_requests", { p_status: $("[data-req-status]").value || null }).then((r) => { if (r.error) throw r.error; return r.data; }); }
+      catch (e) { $("[data-req]").innerHTML = `<p class="panel-sub">${esc(/does not exist|schema cache|Could not find/i.test(e.message) ? "Run supabase/contact-requests.sql in Supabase first." : e.message)}</p>`; return; }
+      $("[data-req]").innerHTML = list.length ? `<table class="data"><thead><tr><th>Date</th><th>Type</th><th>From</th><th>Details</th><th>Message</th><th></th></tr></thead><tbody>
+        ${list.map((r) => `<tr><td>${dt(r.created_at)}</td><td>${st(KIND[r.kind] || r.kind)}${r.users ? `<br><small>${num(r.users)}+ users</small>` : ""}</td>
+          <td><b>${esc(r.name)}</b><br><a href="mailto:${esc(r.email)}">${esc(r.email)}</a></td>
+          <td><small>${[r.company, r.country, r.role, r.team_size && `team ${r.team_size}`, r.preferred_day && `${r.preferred_day} ${r.preferred_time || ""}`, r.lang && r.lang.toUpperCase()].filter(Boolean).map(esc).join(" · ")}</small></td>
+          <td style="max-width:420px;white-space:pre-wrap">${esc(r.message || "")}</td>
+          <td><button class="btn btn-sm" type="button" data-req-toggle="${r.id}" data-to="${r.status === "new" ? "done" : "new"}">${r.status === "new" ? "Mark done" : "Reopen"}</button></td></tr>`).join("")}</tbody></table>`
+        : `<p class="panel-sub">No requests here.</p>`;
+    };
+    $("[data-req-status]").addEventListener("change", draw);
+    view.addEventListener("click", async (e) => {
+      const b = e.target.closest("[data-req-toggle]");
+      if (!b) return;
+      await busy(b, async () => { const { error } = await A.db.rpc("admin_set_contact_request", { p_id: Number(b.dataset.reqToggle), p_status: b.dataset.to }); if (error) throw error; }).catch(fail);
+      draw();
+    });
+    draw();
+  }
+
+  const VIEWS = { dashboard, plans, subscribers, discounts, hidden, emails, events, migration, requests, settings };
   async function route() {
     const [tab, qs] = (location.hash.slice(1) || "dashboard").split("?");
     const k = VIEWS[tab] ? tab : "dashboard";

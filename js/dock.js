@@ -1,10 +1,10 @@
 // Floating dock on the home page: appears after the first scroll down.
-// Newsletter (pop-up with a free resource) · back to top (with scroll progress ring) · Content Library.
+// Newsletter (short sign-up pop-up) · back to top (with scroll progress ring) · Content Library.
 (() => {
   const cfg = window.SCP_CONFIG || {};
   const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
   const svg = (paths, cls = "") => `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
-  // Lucide (ISC): mail, arrow-up-right, arrow-up, smartphone, check, x, sparkles, trending-up, zap
+  // Lucide (ISC): mail, arrow-up-right, arrow-up, smartphone, check, x
   const I = {
     mail: '<path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/>',
     out: '<path d="M7 7h10v10"/><path d="M7 17 17 7"/>',
@@ -12,12 +12,7 @@
     phone: '<rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/>',
     check: '<path d="M20 6 9 17l-5-5"/>',
     x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
-    spark: '<path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/>',
-    trend: '<path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/>',
-    zap: '<path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>',
   };
-  const RESOURCE = "Sports Content Idea Kit";
-  const CONSENT = "I want the free kit and the SCP newsletter (sports digital marketing news and examples). I can unsubscribe at any time.";
   const R = 19, C = 2 * Math.PI * R;
 
   // ---------- Dock ----------
@@ -46,7 +41,9 @@
   onScroll();
   dock.querySelector("[data-dock-top]").addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 
+
   // ---------- Newsletter pop-up ----------
+  const CONSENT = "I want the SCP newsletter. I can unsubscribe at any time.";
   const modal = document.createElement("div");
   modal.className = "nl-modal";
   modal.hidden = true;
@@ -54,32 +51,19 @@
   modal.setAttribute("aria-modal", "true");
   modal.setAttribute("aria-labelledby", "nl-title");
   modal.innerHTML = `
-    <div class="nl-panel">
+    <div class="nl-panel is-simple">
       <button class="nl-close" type="button" aria-label="Close" data-nl-close>${svg(I.x)}</button>
-      <div class="nl-visual" aria-hidden="true">
-        <img class="nl-photo" src="assets/newsletter-phones.webp" alt="" width="1400" height="875" decoding="async">
-        <div class="nl-badge"><span>FREE</span>Sports Content Idea Kit<small>50 proven post formats</small></div>
-        <div class="nl-chip nl-chip-1">${svg(I.trend)}What's working this week</div>
-        <div class="nl-chip nl-chip-2">${svg(I.zap)}Ready-to-copy hooks</div>
-      </div>
       <div class="nl-body" data-nl-body>
-        <p class="nl-eyebrow">${svg(I.spark)}Free resource + weekly newsletter</p>
-        <h2 id="nl-title">Steal the content ideas <span class="gold">top sports teams</span> are using right now</h2>
-        <p class="nl-lead">Get the <b>${RESOURCE}</b> free, today. Then every week we send you the latest in sports digital marketing, with real examples of the sports posts that are working across the industry.</p>
-        <ul class="nl-list">
-          <li>${svg(I.check)}<span><b>50 proven post ideas</b> you can adapt to your club today</span></li>
-          <li>${svg(I.check)}<span><b>The posts going viral</b> in sport each week, and why they work</span></li>
-          <li>${svg(I.check)}<span><b>Platform updates &amp; AI tools</b>, explained for sports social teams</span></li>
-        </ul>
+        <span class="nl-icon">${svg(I.mail)}</span>
+        <h2 id="nl-title">The sports posts that work, <span class="gold">every Monday</span></h2>
+        <p class="nl-lead">A short weekly email for sports social media teams. Free.</p>
         <form class="nl-form" novalidate data-nl-form>
-          <div class="nl-fields">
-            <input type="text" name="first_name" placeholder="First name" autocomplete="given-name" maxlength="80" aria-label="First name">
-            <input type="email" name="email" placeholder="Your work email" autocomplete="email" required maxlength="254" aria-label="Email">
+          <div class="nl-row">
+            <input type="email" name="email" placeholder="Your email" autocomplete="email" required maxlength="254" aria-label="Email">
+            <button class="btn btn-gold nl-cta" type="submit">Subscribe</button>
           </div>
           <label class="nl-consent"><input type="checkbox" name="consent" required><span>${CONSENT}</span></label>
-          <button class="btn btn-gold nl-cta" type="submit">Send me the free kit ${svg(I.out)}</button>
           <p class="nl-error" role="alert" hidden data-nl-error></p>
-          <p class="nl-trust">Free forever · No spam · Used by social teams at +100 clubs</p>
         </form>
       </div>
     </div>`;
@@ -105,15 +89,12 @@
   // Any link to #newsletter on the page opens it too
   document.addEventListener("click", (e) => { const a = e.target.closest('a[href="#newsletter"]'); if (a) { e.preventDefault(); open(); } });
 
-  function success(email) {
-    const dl = cfg.newsletterResourceUrl;
+  function success() {
     modal.querySelector("[data-nl-body]").innerHTML = `
       <div class="nl-done">
-        <span class="nl-done-icon">${svg(I.check)}</span>
-        <h2>${form.first_name.value.trim() ? tx("You're in, {name}!", { name: esc(form.first_name.value.trim()) }) : tx("You're in!")}</h2>
-        <p>${dl ? tx("Your <b>{kit}</b> is ready.", { kit: RESOURCE }) : tx("We'll send your <b>{kit}</b> to <b>{email}</b> within 24 hours.", { kit: RESOURCE, email: esc(email) })} ${tx("After that, look out for our weekly newsletter with the sports content that's working right now.")}</p>
-        ${dl ? `<a class="btn btn-gold nl-cta" href="${esc(dl)}" target="_blank" rel="noopener" download>Download the kit ${svg(I.out)}</a>` : ""}
-        <a class="nl-more" href="content-library.html">Meanwhile, explore the Content Library →</a>
+        <span class="nl-icon">${svg(I.check)}</span>
+        <h2>${tx("You're in!")}</h2>
+        <p class="nl-lead">${tx("See you on Monday. Every email has a one-click unsubscribe link.")}</p>
       </div>`;
   }
 
@@ -121,21 +102,21 @@
     e.preventDefault();
     err.hidden = true;
     const email = form.email.value.trim();
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { err.textContent = "Please enter a valid email."; err.hidden = false; return form.email.focus(); }
-    if (!form.consent.checked) { err.textContent = "Please tick the box so we can send you the kit and the newsletter."; err.hidden = false; return; }
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { err.textContent = tx("Please enter a valid email."); err.hidden = false; return form.email.focus(); }
+    if (!form.consent.checked) { err.textContent = tx("Please tick the box so we can send you the newsletter."); err.hidden = false; return; }
     const btn = form.querySelector("button[type=submit]");
     btn.disabled = true;
     try {
       const res = await fetch(`${cfg.supabaseUrl}/rest/v1/newsletter_signups`, {
         method: "POST",
         headers: { apikey: cfg.supabaseAnonKey, Authorization: `Bearer ${cfg.supabaseAnonKey}`, "Content-Type": "application/json", Prefer: "return=minimal" },
-        body: JSON.stringify({ email, first_name: form.first_name.value.trim() || null, source: "home-dock", resource: RESOURCE, consent: true, consent_text: CONSENT }),
+        body: JSON.stringify({ email, source: "home-dock", consent: true, consent_text: CONSENT }),
       });
       // 409 = already subscribed: treat as success
       if (!res.ok && res.status !== 409) throw new Error(String(res.status));
-      success(email);
+      success();
     } catch {
-      err.textContent = "Something went wrong. Please try again in a moment.";
+      err.textContent = tx("Something went wrong. Please try again in a moment.");
       err.hidden = false;
     } finally { btn.disabled = false; }
   });

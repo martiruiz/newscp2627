@@ -248,6 +248,12 @@ $27.99 / $44.99 a month. When a EUR price changes in the admin, USD is recalcula
 (Settings → "USD follows EUR"); it isn't re-converted daily (that would create a new price every day). Visitors see EUR
 in Europe and USD elsewhere (from their time zone) and can switch.
 
+**Prices from 18 Oct 2026** (approved by the owner, set in Memberships → Plans and synced to Stripe **test** mode):
+Library €19 · Library + Content Plan €29 · Library + AI €39 · All Access €59 a month per user; yearly = 10 × monthly
+(€190 / €290 / €390 / €590). USD at the ECB rate of 16 Oct (1.1253), rounded to .99: $20.99 / $32.99 / $43.99 / $65.99
+a month ($209.90 / $329.90 / $439.90 / $659.90 a year). The previous prices stay on existing subscriptions (Stripe keeps
+the old price; they are retired for new sign-ups). Live mode: run `node stripe/sync-plans.mjs --live` only at go-live.
+
 Done on 18 Oct 2026 (test mode): SQL run; `node stripe/setup.mjs` (packs, IVA 21 % included, portal, webhook — secret
 saved in `pipeline/.env`); `node stripe/sync-plans.mjs` (4 plans, EUR monthly + yearly).
 

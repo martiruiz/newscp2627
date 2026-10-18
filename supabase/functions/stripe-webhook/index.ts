@@ -38,7 +38,7 @@ async function createTrialSubscription(s: Stripe.Checkout.Session, event: Stripe
   const now = Math.floor(Date.now() / 1000);
   const taxRate = m.tax_mode === "fixed_rate" ? await config("tax_rate") : null;
   const sub = await stripe.subscriptions.create({
-    customer, items: [{ price: m.price }], default_payment_method: pm,
+    customer, items: [{ price: m.price, quantity: Math.max(1, Number(m.seats) || 1) }], default_payment_method: pm,
     ...(trialEnd > now + 3600 ? { trial_end: trialEnd } : {}),
     ...(anchor && anchor > Math.max(now, trialEnd || 0) ? { billing_cycle_anchor: anchor, proration_behavior: m.prorate === "1" ? "create_prorations" : "none" } : {}),
     ...(m.promotion_code ? { discounts: [{ promotion_code: m.promotion_code }] } : {}),
@@ -46,7 +46,7 @@ async function createTrialSubscription(s: Stripe.Checkout.Session, event: Stripe
     ...(taxRate ? { default_tax_rates: [taxRate] } : {}),
     payment_behavior: "allow_incomplete",
     off_session: true,
-    metadata: { user_id: user, plan_key: m.plan_key, interval: m.interval, currency: m.currency,
+    metadata: { user_id: user, plan_key: m.plan_key, interval: m.interval, currency: m.currency, seats: m.seats || "1",
       ...(m.private_link ? { private_link: m.private_link } : {}), ...(m.discount_code ? { discount_code: m.discount_code } : {}) },
   }, { idempotencyKey: `scp-trial-sub-${s.id}` });
   await syncSubscription(sub.id, { eventId: event.id, eventCreated: event.created, extra: { checkout_session: s.id } });

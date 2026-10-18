@@ -330,5 +330,49 @@ const evil = render({ subject: "Hi {{name}}", body: "Hello {{name}}" }, { name: 
 check("values are HTML-escaped", !evil.html.includes("<script>") && evil.html.includes("&lt;script&gt;"));
 check("dates in Madrid time, localised (ca)", day("2026-11-30T23:30:00Z", "ca") === "1 de desembre de 2026" || day("2026-11-30T23:30:00Z", "ca").startsWith("1 "), day("2026-11-30T23:30:00Z", "ca"));
 
+console.log("\n15. Team seats (one subscription, up to 5 users) and website language");
+const T = { F: "ffffffff-0000-0000-0000-000000000006", G: "11111111-0000-0000-0000-000000000007", H: "22222222-0000-0000-0000-000000000008", I: "33333333-0000-0000-0000-000000000010" };
+for (const [k, id] of Object.entries(T)) await db.query(`insert into auth.users (id, email) values ($1, $2)`, [id, `${k.toLowerCase()}@team.dev`]);
+await db.exec(`insert into public.stripe_customers (user_id, customer_id) values ('${T.F}', 'cus_F')`);
+await apply({ user: T.F, plan: "all_access", interval: "month", status: "active", customer: "cus_F", subscription: "sub_F", price: "price_aa", currency: "eur", amount: 39.99,
+  started: T0, period_end: "2026-11-01T11:00:00Z", stripe_updated: T0, event_id: "evt_team_1" });
+await db.exec(`update public.subscriptions set seats = 3 where user_id = '${T.F}'`);
+check("someone not added has no access", !(await ent(T.G)).has_library);
+r = await one(T.F, `select public.team_add('G@Team.dev') r`);
+check("buyer adds a person by e-mail (any case)", r.ok === true, JSON.stringify(r));
+let eg = await ent(T.G);
+check("…who gets the buyer's plan", eg.plan === "all_access" && eg.has_ai && eg.has_planner && eg.source === "team" && eg.team_owner === T.F, JSON.stringify(eg));
+check("…with their own AI quota", eg.monthly_left === eg.monthly_limit && eg.monthly_limit > 0);
+check("the same person can't be added twice", (await one(T.F, `select public.team_add('g@team.dev') r`)).ok === false);
+check("the buyer can't add themselves", (await one(T.F, `select public.team_add('f@team.dev') r`)).ok === false);
+check("invalid e-mail refused", (await one(T.F, `select public.team_add('not-an-email') r`)).ok === false);
+check("second person added (3 seats = buyer + 2)", (await one(T.F, `select public.team_add('h@team.dev') r`)).ok === true && (await ent(T.H)).has_library);
+r = await one(T.F, `select public.team_add('i@team.dev') r`);
+check("no more people than seats", r.ok === false && r.full === true);
+check("someone else can't add people to a team they don't own", (await one(T.G, `select public.team_add('i@team.dev') r`)).ok === false);
+let ts = await one(T.F, `select public.my_membership() r`);
+check("buyer sees seats and who is on them", ts.team.role === "owner" && ts.team.seats === 3 && ts.team.members.length === 2 && ts.team.members.every((m) => m.joined && m.active) && ts.subscription.seats === 3, JSON.stringify(ts.team));
+ts = await one(T.G, `select public.my_membership() r`);
+check("member sees whose plan they're on", ts.team.role === "member" && ts.team.owner_email === "f@team.dev" && ts.team.plan_name === "All Access", JSON.stringify(ts.team));
+check("members can't read the seats table", (await as(T.G, `select * from public.team_seats`)).length === 0);
+await db.exec(`update public.subscriptions set seats = 2 where user_id = '${T.F}'`);
+check("fewer seats → the newest person loses access, the first keeps it", (await ent(T.G)).has_library && !(await ent(T.H)).has_library);
+await db.exec(`update public.subscriptions set seats = 3 where user_id = '${T.F}'`);
+const seatH = (await db.query(`select id from public.team_seats where lower(email) = 'h@team.dev' and removed_at is null`)).rows[0].id;
+check("buyer removes a person → access ends", (await one(T.F, `select public.team_remove('${seatH}') r`)).ok === true && !(await ent(T.H)).has_library);
+await db.exec(`insert into public.stripe_customers (user_id, customer_id) values ('${T.G}', 'cus_G')`);
+await apply({ user: T.G, plan: "library", interval: "month", status: "active", customer: "cus_G", subscription: "sub_G", price: "price_l", currency: "eur", amount: 9.99,
+  started: T0, period_end: "2026-11-01T11:00:00Z", stripe_updated: T0, event_id: "evt_team_2" });
+check("a member's own live subscription wins over the team plan", (await ent(T.G)).plan === "library");
+await db.exec(`delete from public.subscriptions where user_id = '${T.G}'`);
+const m2 = await one(U.SUPER, `select public.admin_membership_metrics(30) r`);
+check("MRR counts every seat (3 × 39.99 in it)", Number(m2.mrr.eur) >= 119.97, JSON.stringify(m2.mrr));
+await apply({ user: T.F, plan: "all_access", interval: "month", status: "canceled", customer: "cus_F", subscription: "sub_F", price: "price_aa", currency: "eur", amount: 39.99,
+  started: T0, period_end: "2026-11-01T11:00:00Z", ended_at: T2, stripe_updated: T2, event_id: "evt_team_3" });
+check("buyer's membership ends → the team loses access too", !(await ent(T.G)).has_library);
+await db.exec(`update public.profiles set preferences = '{"language": "ca", "ui_language": "es"}' where id = '${U.B}'`);
+await db.query(`select public.billing_enqueue_email('plan_changed', '${U.B}', '{}'::jsonb, 'lang-test-2')`);
+check("e-mails use the website language first (es over content language ca)", (await db.query(`select locale from public.email_delivery_logs where dedupe_key = 'lang-test-2'`)).rows[0].locale === "es");
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

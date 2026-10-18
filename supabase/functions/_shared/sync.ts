@@ -55,7 +55,7 @@ export async function syncSubscription(subOrId: string | Stripe.Subscription, op
     }
   }
 
-  return await rpc("billing_apply_subscription", { p: {
+  const applied = await rpc("billing_apply_subscription", { p: {
     user, plan, interval: price?.recurring?.interval === "year" ? "year" : "month", status,
     customer, subscription: sub.id, price: price?.id, product: typeof price?.product === "string" ? price?.product : price?.product?.id,
     currency: sub.currency || price?.currency, amount: cents(price?.unit_amount ?? null),
@@ -69,6 +69,9 @@ export async function syncSubscription(subOrId: string | Stripe.Subscription, op
     stripe_updated: isoOf(opts.eventCreated ?? Math.floor(Date.now() / 1000)), event_id: opts.eventId || null,
     ...(opts.extra || {}),
   } });
+  // team seats = Stripe quantity (1 for single-user memberships)
+  if (user) await rest(`subscriptions?user_id=eq.${user}&stripe_subscription_id=eq.${sub.id}`, { method: "PATCH", body: JSON.stringify({ seats: Math.max(1, item?.quantity || 1) }) }).catch((e) => console.error("seats", e));
+  return applied;
 }
 
 export async function syncInvoice(inv: Stripe.Invoice, event: "paid" | "payment_failed" | "action_required" | "update", eventId?: string) {

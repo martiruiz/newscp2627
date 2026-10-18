@@ -94,7 +94,7 @@ update public.plans set
     when 'library' then '["Full Content Library", "Search, smart filters and categories", "Save posts to boards"]'
     when 'library_ai' then '["Everything in Library", "AI analysis: hook, why it works, format, angle", "Visual breakdown and scroll stoppers", "How to adapt it to your club"]'
     when 'library_planner' then '["Everything in Library", "Content Plan: weekly and monthly calendars", "Drag saved posts into your plan", "Organise by date, campaign and status"]'
-    when 'all_access' then '["Everything in Library + AI", "Everything in Library + Content Plan", "The most AI analyses per month"]' end::jsonb
+    when 'all_access' then '["Everything in Library + Content Plan", "Everything in Library + AI", "The most AI analyses per month"]' end::jsonb
     else features end,
   highlighted = highlighted or key = 'all_access'
 where key in ('library', 'library_ai', 'library_planner', 'all_access');
@@ -522,6 +522,40 @@ create table if not exists public.billing_notes (
 alter table public.billing_notes enable row level security;
 
 -- ============================================================================================
+-- Team seats: one subscription for up to 5 users (Stripe quantity = seats). The buyer adds the others by e-mail;
+-- whoever signs in with one of those e-mails gets the buyer's plan (each with their own AI quota). Seats beyond the
+-- number paid for (after reducing seats) stop giving access, newest first. A member's own live subscription wins.
+-- ============================================================================================
+alter table public.subscriptions add column if not exists seats int not null default 1;
+alter table public.subscriptions drop constraint if exists subscriptions_seats_check;
+alter table public.subscriptions add constraint subscriptions_seats_check check (seats between 1 and 50);
+
+create table if not exists public.team_seats (
+  id         uuid primary key default gen_random_uuid(),
+  owner_id   uuid not null references auth.users (id) on delete cascade,
+  email      text not null check (email ~* '^[^@\s]+@[^@\s]+\.[^@\s]+$'),
+  created_at timestamptz not null default now(),
+  removed_at timestamptz
+);
+create unique index if not exists team_seats_owner_email_idx on public.team_seats (owner_id, lower(email)) where removed_at is null;
+create index if not exists team_seats_email_idx on public.team_seats (lower(email)) where removed_at is null;
+alter table public.team_seats enable row level security;   -- no direct access: team_* functions only
+
+-- The buyer whose plan this member uses (null = none)
+create or replace function public.seat_owner(p_user uuid)
+returns uuid language sql stable security definer set search_path = public as $$
+  select x.owner_id from (
+    select t.owner_id, t.email, s.seats, row_number() over (partition by t.owner_id order by t.created_at) as rn
+    from public.team_seats t join public.subscriptions s on s.user_id = t.owner_id
+    where t.removed_at is null and s.status in ('active', 'trialing', 'past_due')
+  ) x join auth.users u on lower(u.email) = lower(x.email)
+  where u.id = p_user and x.owner_id <> p_user and x.rn <= x.seats - 1
+    and not exists (select 1 from public.subscriptions m where m.user_id = p_user and m.status in ('active', 'trialing', 'past_due'))
+  order by x.rn limit 1;
+$$;
+revoke execute on function public.seat_owner(uuid) from public, anon, authenticated;
+
+-- ============================================================================================
 -- Entitlements (replaces billing.sql / stripe.sql versions; same keys + permissions list + grants + AI quota)
 -- Access by subscription status: active, trialing → yes; past_due → yes while Stripe retries (setting "dunning");
 -- unpaid, paused, canceled, incomplete, incomplete_expired → no. A scheduled cancellation keeps access until the end.
@@ -533,7 +567,7 @@ begin
   if p_user is null then return '{}'; end if;
   if public.is_staff(p_user) then return array(select key from public.entitlement_keys order by sort); end if;
   keep_past_due := coalesce((public.billing_setting('dunning') ->> 'keep_access_while_retrying')::boolean, true);
-  select s.plan_key, s.status into plan, st from public.subscriptions s where s.user_id = p_user;
+  select s.plan_key, s.status into plan, st from public.subscriptions s where s.user_id = coalesce(public.seat_owner(p_user), p_user);
   select array_agg(distinct e) into res from (
     select pe.entitlement as e from public.plan_entitlements pe
     where plan is not null and pe.plan_key = plan
@@ -560,15 +594,16 @@ returns jsonb language plpgsql stable security definer set search_path = public 
 declare
   staff boolean; perms text[]; v_plan text; v_started timestamptz; v_name text; v_limit int := 0; v_unlimited boolean := false;
   cyc timestamptz; used int := 0; packs int := 0; v_status text; v_interval text; v_end timestamptz; v_source text;
-  v_trial_units int; v_grant_plan text; has_ai boolean;
+  v_trial_units int; v_grant_plan text; has_ai boolean; v_owner uuid;
 begin
   if p_user is null then return jsonb_build_object('signed_in', false); end if;
   staff := public.is_staff(p_user);
   perms := public.user_entitlements(p_user);
+  v_owner := public.seat_owner(p_user);   -- on someone's team plan
   select s.plan_key, s.started_at, p.name, p.ai_monthly_units, p.ai_unlimited, s.status, s.billing_interval, s.current_period_end, s.source, p.trial_ai_units
     into v_plan, v_started, v_name, v_limit, v_unlimited, v_status, v_interval, v_end, v_source, v_trial_units
   from public.subscriptions s join public.plans p on p.key = s.plan_key
-  where s.user_id = p_user;
+  where s.user_id = coalesce(v_owner, p_user);
   -- a granted plan counts as the plan (AI quota included) when there is no paying one
   if not coalesce(v_status in ('active', 'trialing', 'past_due') and 'library.access' = any (perms), false) then
     select g.plan_key, p.name, p.ai_monthly_units, p.ai_unlimited, g.starts_at into v_grant_plan, v_name, v_limit, v_unlimited, v_started
@@ -597,7 +632,8 @@ begin
     'status', v_status,
     'billing_interval', v_interval,
     'current_period_end', v_end,
-    'source', v_source,
+    'source', case when v_owner is not null then 'team' else v_source end,
+    'team_owner', v_owner,
     'entitlements', to_jsonb(perms),
     'has_library', staff or 'library.access' = any (perms),
     'has_ai', has_ai,
@@ -836,7 +872,8 @@ begin
       'canceled_at', s.canceled_at, 'ended_at', s.ended_at, 'source', s.source, 'origin', s.origin,
       'pending_plan', s.pending_plan_key, 'pending_plan_name', (select name from public.plans where key = s.pending_plan_key),
       'pending_interval', s.pending_interval, 'pending_change_at', s.pending_change_at, 'discount_code', s.discount_code,
-      'features', (select features from public.plans where key = s.plan_key)) end,
+      'features', (select features from public.plans where key = s.plan_key), 'seats', coalesce(s.seats, 1)) end,
+    'team', public.team_summary(uid),
     'entitlements', public.entitlements(uid),
     'has_customer', c.user_id is not null,
     'currency', c.currency,
@@ -851,6 +888,61 @@ begin
     'timezone', public.billing_setting('timezone'));
 end $$;
 revoke execute on function public.my_membership() from public, anon;
+
+-- Team seats for the signed-in member: as the buyer (seats and who is on them) or as a member (whose plan)
+create or replace function public.team_summary(p_user uuid)
+returns jsonb language plpgsql stable security definer set search_path = public as $$
+declare s public.subscriptions; v_owner uuid;
+begin
+  select * into s from public.subscriptions where user_id = p_user;
+  v_owner := public.seat_owner(p_user);
+  if v_owner is not null then
+    return jsonb_build_object('role', 'member', 'owner_email', (select email from auth.users where id = v_owner),
+      'owner_name', (select nullif(trim(coalesce(first_name, '') || ' ' || coalesce(last_name, '')), '') from public.profiles where id = v_owner),
+      'plan_name', (select p.name from public.subscriptions x join public.plans p on p.key = x.plan_key where x.user_id = v_owner));
+  end if;
+  if s.user_id is null or s.source <> 'stripe' then return null; end if;
+  return jsonb_build_object('role', 'owner', 'seats', coalesce(s.seats, 1),
+    'members', coalesce((select jsonb_agg(jsonb_build_object('id', t.id, 'email', t.email, 'added_at', t.created_at,
+        'joined', exists (select 1 from auth.users u where lower(u.email) = lower(t.email)),
+        'active', t.rn <= coalesce(s.seats, 1) - 1) order by t.created_at)
+      from (select *, row_number() over (order by created_at) rn from public.team_seats where owner_id = p_user and removed_at is null) t), '[]'::jsonb));
+end $$;
+revoke execute on function public.team_summary(uuid) from public, anon, authenticated;
+
+-- The buyer adds / removes people on their seats (the buyer uses one seat)
+create or replace function public.team_add(p_email text)
+returns jsonb language plpgsql volatile security definer set search_path = public as $$
+declare uid uuid := auth.uid(); s public.subscriptions; used int; v_email text := lower(trim(coalesce(p_email, '')));
+begin
+  if uid is null then raise exception 'Not signed in'; end if;
+  select * into s from public.subscriptions where user_id = uid;
+  if s.user_id is null or s.status not in ('active', 'trialing', 'past_due') then return jsonb_build_object('ok', false, 'error', 'You need an active membership to add people.'); end if;
+  if v_email !~* '^[^@\s]+@[^@\s]+\.[^@\s]+$' then return jsonb_build_object('ok', false, 'error', 'Please enter a valid email.'); end if;
+  if v_email = lower((select email from auth.users where id = uid)) then return jsonb_build_object('ok', false, 'error', 'You already have a seat.'); end if;
+  if exists (select 1 from public.team_seats where owner_id = uid and lower(email) = v_email and removed_at is null) then return jsonb_build_object('ok', false, 'error', 'That person is already on your team.'); end if;
+  select count(*) into used from public.team_seats where owner_id = uid and removed_at is null;
+  if used >= coalesce(s.seats, 1) - 1 then return jsonb_build_object('ok', false, 'error', 'All your seats are taken. Add more users to your plan first.', 'full', true); end if;
+  insert into public.team_seats (owner_id, email) values (uid, v_email);
+  insert into public.billing_audit_logs (actor, action, target_user, details) values (uid, 'team.member_added', uid, jsonb_build_object('email', v_email));
+  return jsonb_build_object('ok', true);
+end $$;
+revoke execute on function public.team_add(text) from public, anon;
+grant execute on function public.team_add(text) to authenticated;
+
+create or replace function public.team_remove(p_id uuid)
+returns jsonb language plpgsql volatile security definer set search_path = public as $$
+declare uid uuid := auth.uid(); v_email text;
+begin
+  if uid is null then raise exception 'Not signed in'; end if;
+  update public.team_seats set removed_at = now() where id = p_id and owner_id = uid and removed_at is null returning email into v_email;
+  if v_email is null then return jsonb_build_object('ok', false, 'error', 'Not found'); end if;
+  insert into public.billing_audit_logs (actor, action, target_user, details) values (uid, 'team.member_removed', uid, jsonb_build_object('email', v_email));
+  return jsonb_build_object('ok', true);
+end $$;
+revoke execute on function public.team_remove(uuid) from public, anon;
+grant execute on function public.team_remove(uuid) to authenticated;
+
 grant execute on function public.my_membership() to authenticated;
 
 -- One free trial per member: no trial if the member (or their Stripe customer) ever had a trial or a subscription,
@@ -1166,7 +1258,7 @@ begin
   perform public.billing_require_admin();
   return jsonb_build_object(
     'window_days', p_days,
-    'mrr', coalesce((select jsonb_object_agg(cur, v) from (select coalesce(currency, 'eur') cur, round(sum(case when billing_interval = 'year' then amount / 12 else amount end), 2) v
+    'mrr', coalesce((select jsonb_object_agg(cur, v) from (select coalesce(currency, 'eur') cur, round(sum((case when billing_interval = 'year' then amount / 12 else amount end) * coalesce(seats, 1)), 2) v
       from public.subscriptions where status in ('active', 'past_due') and amount is not null group by 1) x), '{}'::jsonb),
     'active', (select count(*) from public.subscriptions where status in ('active', 'past_due')),
     'trialing', (select count(*) from public.subscriptions where status = 'trialing'),

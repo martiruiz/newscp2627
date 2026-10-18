@@ -1,12 +1,12 @@
 // Supabase Edge Function: welcome email for new newsletter sign-ups (home pop-up).
 // Triggered by a Database Webhook on INSERT into public.newsletter_signups.
 //   1. adds the person to Resend (contact in the newsletter segment)
-//   2. sends the welcome email with the free kit
+//   2. sends the welcome email
 //   3. marks the sign-up as welcomed
 //
 // Secrets (Supabase → Edge Functions → Secrets):
 //   RESEND_API_KEY, RESEND_SEGMENT_ID, NEWSLETTER_FROM (e.g. "SCP Newsletter <newsletter@sportscontentplaybook.com>"),
-//   WEBHOOK_SECRET (same value as the webhook's "x-webhook-secret" header), KIT_URL (optional: link to the free kit)
+//   WEBHOOK_SECRET (same value as the webhook's "x-webhook-secret" header)
 // SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are provided by Supabase automatically.
 
 const RESEND = "https://api.resend.com";
@@ -14,11 +14,8 @@ const SITE = "https://sportscontentplaybook.com";
 const env = (k: string) => Deno.env.get(k) ?? "";
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 
-function welcomeHtml(firstName: string, kitUrl: string) {
+function welcomeHtml(firstName: string) {
   const hi = firstName ? `Hi ${esc(firstName)},` : "Hi there,";
-  const kit = kitUrl
-    ? `<tr><td style="padding:8px 0 24px"><a href="${esc(kitUrl)}" style="display:inline-block;padding:16px 28px;border-radius:100px;background:#f0b84a;color:#121b33;font-weight:700;font-size:16px;text-decoration:none">Download the Sports Content Idea Kit →</a></td></tr>`
-    : `<tr><td style="padding:0 0 24px;color:#b4c0d3;font-size:15px;line-height:1.6">We're putting the finishing touches to your <b style="color:#fff">Sports Content Idea Kit</b>, it'll be in your inbox very soon.</td></tr>`;
   return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Welcome to SCP</title></head>
 <body style="margin:0;padding:0;background:#0e1529">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0e1529"><tr><td align="center" style="padding:32px 16px">
@@ -26,9 +23,8 @@ function welcomeHtml(firstName: string, kitUrl: string) {
     <tr><td style="padding:32px 32px 8px"><a href="${SITE}" style="color:#fff;text-decoration:none;font-weight:700;font-size:16px"><img src="${SITE}/assets/icon-logo-lg.png" width="28" height="27" alt="" style="vertical-align:middle;margin-right:8px">Sports Content Playbook</a></td></tr>
     <tr><td style="padding:16px 32px 0"><table role="presentation" width="100%">
       <tr><td style="color:#f0b84a;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;padding-bottom:10px">Welcome to the newsletter</td></tr>
-      <tr><td style="color:#fff;font-size:28px;line-height:1.2;font-weight:700;padding-bottom:16px">${hi} you're in. Here's your free kit.</td></tr>
+      <tr><td style="color:#fff;font-size:28px;line-height:1.2;font-weight:700;padding-bottom:16px">${hi} you're in.</td></tr>
       <tr><td style="color:#b4c0d3;font-size:15px;line-height:1.6;padding-bottom:20px">Thanks for joining. Every Monday you'll get the latest in sports digital marketing, with real examples of the sports posts that are working right now and why they work.</td></tr>
-      ${kit}
       <tr><td style="padding:20px;background:#121b33;border-radius:14px;color:#b4c0d3;font-size:14px;line-height:1.6">
         <b style="color:#fff">While you wait for Monday:</b> browse thousands of posts from clubs, leagues and brands, filtered by sport, format and competition, in the <a href="${SITE}/content-library.html" style="color:#f0b84a">Content Library</a>.
       </td></tr>
@@ -58,8 +54,8 @@ Deno.serve(async (req) => {
     body: JSON.stringify({
       from: env("NEWSLETTER_FROM"),
       to: [record.email],
-      subject: firstName ? `${firstName}, here's your Sports Content Idea Kit` : "Here's your Sports Content Idea Kit",
-      html: welcomeHtml(firstName, env("KIT_URL")),
+      subject: "Welcome to the SCP newsletter",
+      html: welcomeHtml(firstName),
     }),
   });
   if (!sent.ok) return new Response(`Resend error ${sent.status}: ${await sent.text()}`, { status: 502 });

@@ -19,6 +19,8 @@
 
   let data = null;          // { plans, entitlements, currencies, legal }
   let interval = "month", currency = "eur";
+  const MAX_SEATS = 5;      // more users → custom plan (contact form)
+  let seats = Math.min(MAX_SEATS, Math.max(1, Number(store.get("scp-seats")) || 1));
   let mine = null;          // my_membership() for signed-in members
   let privateToken = null, privatePlan = null;
 
@@ -40,18 +42,18 @@
     else if (!price) cta = `<span class="btn btn-outline plan-cta is-current">${tx("Not available in {cur}", { cur: currency.toUpperCase() })}</span>`;
     else if (!price.ready) cta = `<a class="btn btn-outline plan-cta" href="contact.html">${tx("Coming soon — contact us")}</a>`;
     else if (cur) cta = `<a class="btn btn-outline plan-cta" href="profile.html?change=${encodeURIComponent(p.key)}&interval=${iv}#billing">${tx("Switch to {plan}", { plan: esc(p.name) })}</a>`;
-    else cta = `<button class="btn ${p.highlighted || solo ? "btn-gold" : "btn-outline"} plan-cta" type="button" data-checkout-plan="${esc(p.key)}" data-interval="${iv}" data-currency="${currency}"${privateToken && p.key === privatePlan?.key ? ` data-link="${esc(privateToken)}"` : ""}><span>${trial ? tx("Start {n}-day free trial", { n: trial }) : tx("Get {plan}", { plan: esc(p.name) })}</span><i class="plan-cta-arrow" aria-hidden="true">→</i></button>`;
+    else cta = `<button class="btn ${p.highlighted || solo ? "btn-gold" : "btn-outline"} plan-cta" type="button" data-checkout-plan="${esc(p.key)}" data-interval="${iv}" data-currency="${currency}" data-seats="${seats}"${privateToken && p.key === privatePlan?.key ? ` data-link="${esc(privateToken)}"` : ""}><span>${trial ? tx("Start {n}-day free trial", { n: trial }) : tx("Get {plan}", { plan: esc(p.name) })}</span><i class="plan-cta-arrow" aria-hidden="true">→</i></button>`;
     const flag = isCurrent ? `<span class="plan-flag is-current">${tx(cur.status === "trialing" ? "Your trial" : "Your plan")}</span>` : p.badge || p.highlighted ? `<span class="plan-flag">${esc(p.badge || "Most complete")}</span>` : "";
     const note = isCurrent
       ? (cur.status === "trialing" && cur.trial_end ? tx("Free trial until {date}", { date: new Date(cur.trial_end).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" }) }) : cur.cancel_at_period_end ? tx("Ends on {date}", { date: new Date(cur.current_period_end).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" }) }) : "&nbsp;")
-      : trial && price?.ready ? tx(iv === "month" ? "Card required · {zero} today · then {price}/{per} · billed on the 1st" : "Card required · {zero} today · then {price}/{per}", { zero: fmt(0, currency), price: fmt(price.amount, currency), per: per(iv) })
+      : trial && price?.ready ? tx(iv === "month" ? "Card required · {zero} today · then {price}/{per} · billed on the 1st" : "Card required · {zero} today · then {price}/{per}", { zero: fmt(0, currency), price: fmt(price.amount * seats, currency), per: per(iv) })
       : `${tx(currency === "usd" ? "Plus tax where applicable" : "VAT included")} · ${iv === "month" ? `${tx("billed on the 1st")} · ` : ""}${tx("cancel anytime")}`;
     return `<article class="plan-card${p.highlighted ? " is-best" : ""}${isCurrent ? " is-current" : ""}">
       ${flag}
       <h3>${esc(p.name)}</h3>
       <p class="plan-blurb">${esc(p.tagline || p.description || "")}</p>
-      <p class="plan-price">${price ? `<b data-price="${price.amount}" data-cur="${currency}">${fmt(price.amount, currency)}</b><span>/ ${per(iv)}</span>` : `<b>—</b>`}</p>
-      <p class="plan-sub">${price && iv === "year" ? `${fmt(price.amount / 12, currency)}/${per("month")} · ${saving(p) > 0 ? tx("save {n}%", { n: saving(p) }) : tx("billed yearly")}` : hasYear(p) ? `${tx("or {price}/year", { price: fmt(priceOf(p, currency, "year").amount, currency) })}${saving(p) > 0 ? ` (${tx("save {n}%", { n: saving(p) })})` : ""}` : "&nbsp;"}</p>
+      <p class="plan-price">${price ? `<b data-price="${price.amount * seats}" data-cur="${currency}">${fmt(price.amount * seats, currency)}</b><span>/ ${per(iv)}</span>` : `<b>—</b>`}</p>
+      <p class="plan-sub">${price && seats > 1 ? tx("{n} users × {price}", { n: seats, price: fmt(price.amount, currency) }) : price && iv === "year" ? `${fmt(price.amount / 12, currency)}/${per("month")} · ${saving(p) > 0 ? tx("save {n}%", { n: saving(p) }) : tx("billed yearly")}` : hasYear(p) ? `${tx("or {price}/year", { price: fmt(priceOf(p, currency, "year").amount, currency) })}${saving(p) > 0 ? ` (${tx("save {n}%", { n: saving(p) })})` : ""}` : "&nbsp;"}</p>
       <ul class="plan-features">${features}</ul>
       ${cta}
       <p class="plan-note">${note}</p>
@@ -77,7 +79,14 @@
         <button type="button" role="tab" aria-selected="${interval === "month"}" data-interval-pick="month">Monthly</button>
         <button type="button" role="tab" aria-selected="${interval === "year"}" data-interval-pick="year">Yearly${best ? `<em>${tx("save {n}%", { n: best })}</em>` : ""}</button>
       </div>` : ""}
+      ${privatePlan ? "" : `<div class="plan-seats" role="group" aria-label="${esc(tx("Users"))}">
+        <span>${tx("Users")}</span>
+        <button type="button" data-seats-step="-1" aria-label="${esc(tx("Fewer users"))}" ${seats <= 1 ? "disabled" : ""}>−</button>
+        <b aria-live="polite">${seats}</b>
+        <button type="button" data-seats-step="1" aria-label="${esc(tx("More users"))}">+</button>
+      </div>`}
       ${curs.length > 1 ? `<div class="plan-interval plan-currency" role="tablist" aria-label="Currency">${curs.map((c) => `<button type="button" role="tab" aria-selected="${currency === c}" data-currency-pick="${c}">${c.toUpperCase()}</button>`).join("")}</div>` : ""}
+      <p class="plan-seats-more" ${seats >= MAX_SEATS && !privatePlan ? "" : "hidden"} data-seats-more>${tx("More than {n} users?", { n: MAX_SEATS })} <a class="link-gold" href="contact.html?topic=custom-plan&users=${MAX_SEATS + 1}">${tx("Request a custom plan")}</a></p>
     </div>`;
   }
 
@@ -212,6 +221,12 @@
     document.addEventListener("click", (e) => {
       const iv = e.target.closest("[data-interval-pick]");
       if (iv && iv.dataset.intervalPick !== interval) { interval = iv.dataset.intervalPick; store.set("scp-interval", interval); draw(true); }
+      const st = e.target.closest("[data-seats-step]");
+      if (st) {
+        const next = seats + Number(st.dataset.seatsStep);
+        if (next > MAX_SEATS) { document.querySelector("[data-seats-more]")?.removeAttribute("hidden"); document.querySelector("[data-seats-more] a")?.focus(); return; }
+        if (next >= 1 && next !== seats) { seats = next; store.set("scp-seats", String(seats)); draw(true); }
+      }
       const c = e.target.closest("[data-currency-pick]");
       if (c && c.dataset.currencyPick !== currency) { currency = c.dataset.currencyPick; store.set("scp-currency", currency); draw(true); }
     });

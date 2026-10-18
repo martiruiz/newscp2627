@@ -23,6 +23,10 @@ Deno.serve(async (req) => {
     if (body.kind === "plan") {
       const interval = body.interval === "year" ? "year" : "month";
       const currency = body.currency === "usd" ? "usd" : "eur";
+      // number of users (team seats = Stripe quantity); more than the maximum → custom plan
+      const maxSeats = Number(((await setting("team")) || {}).max_seats) || 5;
+      const seats = Math.max(1, Math.round(Number(body.seats) || 1));
+      if (seats > maxSeats) return json({ error: `For more than ${maxSeats} users, ask us for a custom plan.`, custom: true }, 400);
       const [plan] = await rest(`plans?select=key,name,active,archived_at,visibility,trial_enabled,trial_days,stripe_product_id&key=eq.${encodeURIComponent(body.plan || "")}`);
       if (!plan || plan.archived_at) return json({ error: "This plan isn't available" }, 404);
 
@@ -67,7 +71,7 @@ Deno.serve(async (req) => {
           // deno-lint-ignore no-explicit-any
           const inv: any = await (stripe.invoices as any).createPreview({
             customer: customer.customer_id,
-            subscription_details: { items: [{ price: price.stripe_price_id }], ...(dates.anchor ? { billing_cycle_anchor: unix(dates.anchor) } : {}), proration_behavior: dates.prorate ? "create_prorations" : "none" },
+            subscription_details: { items: [{ price: price.stripe_price_id, quantity: seats }], ...(dates.anchor ? { billing_cycle_anchor: unix(dates.anchor) } : {}), proration_behavior: dates.prorate ? "create_prorations" : "none" },
             ...(discount ? { discounts: [{ promotion_code: discount.promotion_code }] } : {}),
             ...(taxMode === "stripe_tax" ? { automatic_tax: { enabled: true } } : {}),
           });
@@ -75,7 +79,7 @@ Deno.serve(async (req) => {
         } catch (e) { console.error("preview", e); }
       }
       const terms = {
-        plan: plan.name, interval, currency, price: Number(price.amount), trial_days: trialDays,
+        plan: plan.name, interval, currency, price: Number(price.amount) * seats, unit_price: Number(price.amount), seats, trial_days: trialDays,
         trial_end: dates.trialEnd?.toISOString() || null,
         first_charge_at: (dates.trialEnd || now).toISOString(),
         first_charge: firstCharge,                        // trial: Stripe calculates it at the end of the trial (e-mailed 3 days before)
@@ -88,7 +92,7 @@ Deno.serve(async (req) => {
 
       const taxRate = taxMode === "fixed_rate" ? await config("tax_rate") : null;
       const checkoutCfg = (await setting("checkout")) || {};
-      const meta = { user_id: user.id, plan_key: plan.key, interval, currency, ...(linkId ? { private_link: linkId } : {}), ...(discount ? { discount_id: discount.id, discount_code: discount.code } : {}) };
+      const meta = { user_id: user.id, plan_key: plan.key, interval, currency, seats: String(seats), ...(linkId ? { private_link: linkId } : {}), ...(discount ? { discount_id: discount.id, discount_code: discount.code } : {}) };
       const fmt = (d: Date) => d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: tz });
       const note = dates.trialEnd
         ? `Free until ${fmt(dates.trialEnd)}. No charge before then — cancel any time.${interval === "month" ? ` Then a prorated charge until ${fmt(dates.anchor || dates.trialEnd)} and the full price on the 1st of every month.` : " Then billed yearly."}`
@@ -130,7 +134,7 @@ Deno.serve(async (req) => {
         : await stripe.checkout.sessions.create({
             ...common,
             mode: "subscription",
-            line_items: [{ price: price.stripe_price_id, quantity: 1 }],
+            line_items: [{ price: price.stripe_price_id, quantity: seats }],
             subscription_data: {
               ...(dates.anchor ? { billing_cycle_anchor: unix(dates.anchor), proration_behavior: dates.prorate ? "create_prorations" as const : "none" as const } : {}),
               ...(taxRate ? { default_tax_rates: [taxRate] } : {}),

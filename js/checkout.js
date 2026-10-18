@@ -86,6 +86,7 @@ window.SCP_CHECKOUT = (() => {
     } else {
       rows.push(["Today", t.first_charge ? `${money(t.first_charge.amount, t.first_charge.currency)}${t.prorated_until ? ` · ${tx("until {date} (prorated)", { date: dayOf(t.prorated_until) })}` : ""}` : price]);
     }
+    if (t.seats > 1) rows.push(["Users", tx("{n} users × {price}", { n: t.seats, price: money(t.unit_price, t.currency) })]);
     rows.push(["Then", `${price} / ${per}, ${tx(t.interval === "month" ? "on the 1st of every month" : "renews every year")} · ${tx(t.tax_included === false ? "plus tax where applicable" : "VAT included")}`]);
     if (t.discount) rows.push(["Discount", `${esc(t.discount.code)}: ${tx("{amount} off", { amount: t.discount.kind === "percent" ? `${Number(t.discount.percent_off)}%` : money(t.discount.amount_off, t.currency) })} ${t.discount.duration === "repeating" ? tx("for {n} months", { n: t.discount.duration_months }) : tx(t.discount.duration === "once" ? "on the first charge" : "for as long as you stay")}`]);
     return `<dl class="co-terms">${rows.map(([k, v]) => `<div><dt>${tx(k)}</dt><dd>${v}</dd></div>`).join("")}</dl>`;
@@ -188,7 +189,7 @@ window.SCP_CHECKOUT = (() => {
   // Buttons anywhere: data-checkout-plan="all_access" data-interval="year" · data-checkout-pack="pack_30" · data-billing-portal
   document.addEventListener("click", (e) => {
     const p = e.target.closest("[data-checkout-plan]");
-    if (p) { e.preventDefault(); return api.plan(p.dataset.checkoutPlan, p.dataset.interval || "month", p, { currency: p.dataset.currency || "eur", ...(p.dataset.link ? { link: p.dataset.link } : {}) }); }
+    if (p) { e.preventDefault(); return api.plan(p.dataset.checkoutPlan, p.dataset.interval || "month", p, { currency: p.dataset.currency || "eur", ...(Number(p.dataset.seats) > 1 ? { seats: Number(p.dataset.seats) } : {}), ...(p.dataset.link ? { link: p.dataset.link } : {}) }); }
     const k = e.target.closest("[data-checkout-pack]");
     if (k) { e.preventDefault(); return api.pack(k.dataset.checkoutPack, k); }
     const b = e.target.closest("[data-billing-portal]");

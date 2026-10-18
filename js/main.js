@@ -343,10 +343,17 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString(window.SCP_LO
     });
   });
 
-  // Contact form: client-side validation (no backend connected yet)
+  // Contact, demo and custom-plan forms → Supabase (submit_contact_request, supabase/contact-requests.sql).
+  // contact.html?topic=custom-plan&users=6 comes from "Request a custom plan" (pricing / account).
   $$("[data-contact-form]").forEach((form) => {
     const status = $("[data-form-status]", form);
-    form.addEventListener("submit", (e) => {
+    const q = new URLSearchParams(location.search);
+    const custom = q.get("topic") === "custom-plan";
+    const users = Number(q.get("users")) || null;
+    if (custom && form.message && !form.message.value) {
+      form.message.value = tx("We'd like a custom plan for {n} or more users.", { n: users || 6 });
+    }
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
       let ok = true;
       $$("input[required]", form).forEach((input) => {
@@ -355,11 +362,25 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString(window.SCP_LO
         target.classList.toggle("is-invalid", !valid);
         if (!valid) ok = false;
       });
-      status.className = `form-status ${ok ? "ok" : "err"}`;
-      status.textContent = ok
-        ? "Thanks! We’ll get back to you as soon as possible."
-        : "Please fill in your name, a valid email and accept the privacy policy.";
-      if (ok) form.reset();
+      const say = (good, text) => { status.className = `form-status ${good ? "ok" : "err"}`; status.textContent = tx(text); };
+      if (!ok) return say(false, "Please fill in your name, a valid email and accept the privacy policy.");
+      const cfg = window.SCP_CONFIG || {};
+      const fd = new FormData(form);
+      const body = { kind: form.classList.contains("book-form") ? "demo" : custom ? "custom_plan" : "contact", users,
+        lang: window.SCP_LANG || "en", page: location.pathname.split("/").pop() || "index.html" };
+      for (const k of ["name", "email", "company", "country", "role", "team_size", "day", "time", "message"]) if (fd.get(k)) body[k] = String(fd.get(k)).trim();
+      const btn = form.querySelector('[type="submit"]'); if (btn) btn.disabled = true;
+      try {
+        if (!cfg.supabaseUrl) throw new Error("Not connected.");
+        const r = await fetch(`${cfg.supabaseUrl}/rest/v1/rpc/submit_contact_request`, { method: "POST",
+          headers: { apikey: cfg.supabaseAnonKey, Authorization: `Bearer ${cfg.supabaseAnonKey}`, "Content-Type": "application/json" }, body: JSON.stringify({ p: body }) });
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok || !d.ok) throw new Error(d.error || d.message || "Something went wrong. Please try again in a moment.");
+        say(true, "Thanks! We’ll get back to you as soon as possible.");
+        form.reset();
+      } catch (err) {
+        say(false, /schema cache|does not exist|Could not find/i.test(err.message) ? "Something went wrong. Please try again in a moment." : err.message);
+      } finally { if (btn) btn.disabled = false; }
     });
     form.addEventListener("input", (e) => e.target.classList.remove("is-invalid"));
     form.addEventListener("change", (e) => e.target.closest(".check")?.classList.remove("is-invalid"));

@@ -8,7 +8,7 @@
 //   { action: "undo_change" }                   → drop a scheduled downgrade
 //   { action: "portal", flow? }                 → Stripe customer portal (card, billing details, invoices)
 // The database is updated by the webhook from what Stripe confirms, never directly here.
-import { audit, config, CORS, currentUser, json, rest, siteUrl, stripe, Stripe } from "../_shared/stripe.ts";
+import { audit, config, CORS, currentUser, json, rest, setting, siteUrl, stripe, Stripe } from "../_shared/stripe.ts";
 import { syncSubscription } from "../_shared/sync.ts";
 
 // deno-lint-ignore no-explicit-any
@@ -98,20 +98,20 @@ Deno.serve(async (req) => {
         // trial, prorated to the 1st) is calculated by Stripe with the new price
         if (trialing) {
           const inv = await preview({ customer: sub.customer, subscription: sub.id,
-            subscription_details: { items: [{ id: item.id, price: target.stripe_price_id }], proration_behavior: "none" } });
+            subscription_details: { items: [{ id: item.id, price: target.stripe_price_id, quantity: item.quantity || 1 }], proration_behavior: "none" } });
           return json({ upgrade: true, trial: true, applies_at: new Date().toISOString(), charge_now: 0, currency, new_price: Number(target.amount), interval,
             first_charge: inv.amount_due / 100, first_charge_at: new Date(((inv.next_payment_attempt || inv.period_end) as number) * 1000).toISOString() });
         }
         if (!upgrade) return json({ upgrade: false, applies_at: new Date(periodEnd * 1000).toISOString(), charge_now: 0, currency, new_price: Number(target.amount), interval });
         const inv = await preview({ customer: sub.customer, subscription: sub.id,
-          subscription_details: { items: [{ id: item.id, price: target.stripe_price_id }], proration_behavior: "always_invoice", proration_date: Math.floor(Date.now() / 1000) } });
+          subscription_details: { items: [{ id: item.id, price: target.stripe_price_id, quantity: item.quantity || 1 }], proration_behavior: "always_invoice", proration_date: Math.floor(Date.now() / 1000) } });
         return json({ upgrade: true, applies_at: new Date().toISOString(), charge_now: inv.amount_due / 100, currency: inv.currency, new_price: Number(target.amount), interval,
           note: current.interval !== interval ? "Switching to yearly starts a new yearly period today." : "Your renewal date stays the same (the 1st)." });
       }
 
       if (trialing) {
         if (sub.schedule && typeof sub.schedule === "object") await stripe.subscriptionSchedules.release((sub.schedule as Stripe.SubscriptionSchedule).id);
-        await stripe.subscriptions.update(sub.id, { items: [{ id: item.id, price: target.stripe_price_id }], proration_behavior: "none", metadata: { ...sub.metadata, plan_key: plan.key, interval } });
+        await stripe.subscriptions.update(sub.id, { items: [{ id: item.id, price: target.stripe_price_id, quantity: item.quantity || 1 }], proration_behavior: "none", metadata: { ...sub.metadata, plan_key: plan.key, interval } });
         await audit(user.id, "member.change_in_trial", user.id, sub.id, { to: plan.key, interval });
         await syncSubscription(sub.id);
         return json({ ok: true, applied: "now" });
@@ -120,7 +120,7 @@ Deno.serve(async (req) => {
         if (sub.schedule && typeof sub.schedule === "object") await stripe.subscriptionSchedules.release((sub.schedule as Stripe.SubscriptionSchedule).id);
         // applied only if the prorated invoice is paid (otherwise Stripe keeps the old plan and returns the invoice)
         const updated = await stripe.subscriptions.update(sub.id, {
-          items: [{ id: item.id, price: target.stripe_price_id }],
+          items: [{ id: item.id, price: target.stripe_price_id, quantity: item.quantity || 1 }],
           proration_behavior: "always_invoice",
           payment_behavior: "pending_if_incomplete",
           metadata: { ...sub.metadata, plan_key: plan.key, interval },
@@ -143,13 +143,52 @@ Deno.serve(async (req) => {
       await stripe.subscriptionSchedules.update(schedule.id, {
         end_behavior: "release",
         phases: [
-          { items: [{ price: item.price.id, quantity: 1 }], start_date: cur.start_date, end_date: periodEnd, proration_behavior: "none" },
-          { items: [{ price: target.stripe_price_id, quantity: 1 }], start_date: periodEnd, proration_behavior: "none", metadata: { plan_key: plan.key, interval } },
+          { items: [{ price: item.price.id, quantity: item.quantity || 1 }], start_date: cur.start_date, end_date: periodEnd, proration_behavior: "none" },
+          { items: [{ price: target.stripe_price_id, quantity: item.quantity || 1 }], start_date: periodEnd, proration_behavior: "none", metadata: { plan_key: plan.key, interval } },
         ],
       });
       await audit(user.id, "member.downgrade_scheduled", user.id, sub.id, { to: plan.key, interval, at: new Date(periodEnd * 1000).toISOString() });
       await syncSubscription(sub.id);
       return json({ ok: true, applied: "period_end", at: new Date(periodEnd * 1000).toISOString() });
+    }
+
+    // Number of users (team seats, Stripe quantity): 1–5; more → custom plan. More seats apply now (the prorated
+    // difference is charged today, nothing during the free trial); fewer apply now with a credit on the next invoice.
+    if (body.action === "preview_seats" || body.action === "seats") {
+      const seats = Math.round(Number(body.seats));
+      const max = Number(((await setting("team")) || {}).max_seats) || 5;
+      if (!(seats >= 1)) return json({ error: "Choose how many users you need." }, 400);
+      if (seats > max) return json({ error: `For more than ${max} users, ask us for a custom plan.`, custom: true }, 400);
+      if (!["active", "trialing", "past_due"].includes(sub.status)) return json({ error: "Your membership can't be changed right now." }, 409);
+      if (sub.cancel_at_period_end) return json({ error: "Reactivate your membership first, then change the plan." }, 409);
+      const now = item.quantity || 1;
+      if (seats === now) return json({ error: "That's already your number of users." }, 409);
+      const more = seats > now, trialing = sub.status === "trialing";
+      const behavior = trialing ? "none" : more ? "always_invoice" : "create_prorations";
+      const unit = (item.price.unit_amount || 0) / 100;
+      if (body.action === "preview_seats") {
+        let charge = 0, credit = 0;
+        if (!trialing) {
+          const inv = await preview({ customer: sub.customer, subscription: sub.id,
+            subscription_details: { items: [{ id: item.id, quantity: seats }], proration_behavior: behavior, proration_date: Math.floor(Date.now() / 1000) } });
+          if (more) charge = inv.amount_due / 100;
+          // deno-lint-ignore no-explicit-any
+          else credit = Math.abs(((inv as any).lines?.data || []).filter((l: any) => l.amount < 0).reduce((t: number, l: any) => t + l.amount, 0)) / 100;
+        }
+        return json({ seats, from: now, more, trial: trialing, charge_now: charge, credit, currency: sub.currency, unit, interval: item.price.recurring?.interval || "month", new_total: Math.round(unit * seats * 100) / 100 });
+      }
+      const updated = await stripe.subscriptions.update(sub.id, {
+        items: [{ id: item.id, quantity: seats }], proration_behavior: behavior,
+        ...(more && !trialing ? { payment_behavior: "pending_if_incomplete" as const } : {}),
+        metadata: { ...sub.metadata, seats: String(seats) }, expand: ["latest_invoice"],
+      });
+      await audit(user.id, "member.seats", user.id, sub.id, { from: now, to: seats });
+      await syncSubscription(sub.id);
+      // deno-lint-ignore no-explicit-any
+      const pending = (updated as any).pending_update;
+      const inv = updated.latest_invoice as Stripe.Invoice | null;
+      if (pending && inv?.hosted_invoice_url) return json({ ok: false, action_required: true, url: inv.hosted_invoice_url, error: "Your bank needs you to confirm the payment to finish the change." });
+      return json({ ok: true, seats });
     }
 
     return json({ error: "Unknown action" }, 400);

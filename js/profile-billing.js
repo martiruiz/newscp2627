@@ -30,7 +30,8 @@
     trialing: ["Free trial", "is-trial"], active: ["Active", "is-active"], past_due: ["Payment issue", "is-warn"], unpaid: ["Unpaid", "is-warn"],
     paused: ["Paused", "is-warn"], canceled: ["Ended", ""], incomplete: ["Payment pending", "is-warn"], incomplete_expired: ["Not completed", ""], granted: ["Granted", "is-active"],
   };
-  let m = null, live = null, plans = null;
+  let m = null, live = null, plans = null, myEmail = "";
+  const MAX_SEATS = 5;
 
   function invoicesHtml(list) {
     if (!list?.length) return "";
@@ -57,6 +58,12 @@
       box.innerHTML = `<div class="pf-plan"><div class="pf-plan-top"><span class="pf-plan-badge is-active">Team access</span><b>SCP team</b></div><p class="pf-billing-note">You have full access as part of the SCP team. No billing needed.</p></div>`;
       return;
     }
+    if (m?.team?.role === "member" && !(sub && ["active", "trialing", "past_due"].includes(sub.status))) {
+      const who = esc(m.team.owner_name ? `${m.team.owner_name} (${m.team.owner_email})` : m.team.owner_email);
+      box.innerHTML = `<div class="pf-plan"><div class="pf-plan-top"><span class="pf-plan-badge is-active">${tx("Team access")}</span><b>${esc(tx(m.team.plan_name || ""))}</b></div>
+        <p class="pf-billing-note">${tx("You're on {who}'s plan. They manage the billing; you have your own account, boards and AI quota.", { who: `<b>${who}</b>` })}</p>${quotaHtml(ent)}</div>`;
+      return;
+    }
     const st = ent?.status === "granted" ? "granted" : sub?.status;
     const liveSub = sub && ["active", "trialing", "past_due", "unpaid", "paused", "incomplete"].includes(sub.status);
     if (!liveSub && st !== "granted") {
@@ -78,7 +85,8 @@
     const next = live?.next;
     const facts = [
       ["Plan", `${esc(sub.plan_name)}`],
-      ["Price", sub.amount != null ? `${money(sub.amount, sub.currency)} / ${per} · ${tx(sub.currency === "usd" ? "plus tax where applicable" : "VAT included")}` : "—"],
+      ["Price", sub.amount != null ? `${money(sub.amount * (sub.seats || 1), sub.currency)} / ${per}${(sub.seats || 1) > 1 ? ` (${tx("{n} users × {price}", { n: sub.seats, price: money(sub.amount, sub.currency) })})` : ""} · ${tx(sub.currency === "usd" ? "plus tax where applicable" : "VAT included")}` : "—"],
+      ["Users", String(sub.seats || 1)],
       ["Billing", sub.interval === "year" ? "Yearly, on the anniversary" : "Monthly, on the 1st of every month"],
       ["Member since", day(sub.started_at)],
     ];
@@ -99,6 +107,7 @@
       <dl class="pf-facts">${facts.map(([k, v]) => `<div><dt>${tx(k)}</dt><dd>${v}</dd></div>`).join("")}</dl>
       ${Array.isArray(sub.features) && sub.features.length ? `<ul class="pf-included">${sub.features.map((f) => `<li>${icon("check")}${esc(f)}</li>`).join("")}</ul>` : ""}
       ${quotaHtml(ent)}
+      ${teamHtml(sub)}
       <div class="pf-billing-actions">
         ${sub.cancel_at_period_end
           ? `<button class="btn btn-gold" type="button" data-bill="reactivate">Keep my membership</button>`
@@ -111,6 +120,84 @@
       ${invoicesHtml(m?.invoices)}
     </div>`;
   }
+
+  // ---------- Team: who is on the seats, add / remove people, number of users ----------
+  function teamHtml(sub) {
+    if (sub.source !== "stripe" || ["canceled", "incomplete_expired"].includes(sub.status)) return "";
+    const seats = sub.seats || 1, members = m?.team?.members || [];
+    const free = seats - 1 - members.filter((x) => x.active).length;
+    const row = (x) => `<li class="${x.active ? (x.joined ? "" : "is-waiting") : "is-off"}"><span>${esc(x.email)}</span><small>${tx(!x.active ? "No seat — add users" : x.joined ? "Has access" : "Waiting for them to sign up")}</small>
+      <button class="link-gold" type="button" data-team-remove="${esc(x.id)}">${tx("Remove")}</button></li>`;
+    return `<div class="pf-team">
+      <div class="pf-team-head"><b>${tx("Your team · {used} of {seats} users", { used: Math.min(seats, 1 + members.filter((x) => x.active).length), seats })}</b></div>
+      <ul class="pf-team-list"><li><span>${esc(myEmail)}</span><small>${tx("You · pays the plan")}</small></li>${members.map(row).join("")}</ul>
+      ${free > 0 ? `<form class="pf-team-add" data-team-add><input name="email" type="email" required placeholder="${esc(tx("Colleague's email"))}" aria-label="${esc(tx("Colleague's email"))}"><button class="btn btn-outline" type="submit">${tx("Add user")}</button></form>
+        <p class="pf-billing-note">${tx("They get the same plan, with their own account and AI quota, as soon as they sign in to SCP with this email.")}</p>` : ""}
+      <div class="pf-team-seats">${tx(seats > 1 ? "Your plan includes {n} users." : "Your plan includes 1 user.", { n: seats })}
+        <div class="plan-seats"><span>${tx("Users")}</span><button type="button" data-seats-step="-1" ${seats <= 1 ? "disabled" : ""} aria-label="${esc(tx("Fewer users"))}">−</button><b data-seats-pick>${seats}</b><button type="button" data-seats-step="1" aria-label="${esc(tx("More users"))}">+</button></div>
+        <span data-seats-custom ${seats >= MAX_SEATS ? "" : "hidden"}>${tx("More than {n} users?", { n: MAX_SEATS })} <a class="link-gold" href="contact.html?topic=custom-plan&users=${MAX_SEATS + 1}">${tx("Request a custom plan")}</a></span></div>
+      <div data-seats-terms></div>
+    </div>`;
+  }
+  async function seatsPreview(n) {
+    const t = box.querySelector("[data-seats-terms]");
+    if (!t) return;
+    if (n === (m.subscription.seats || 1)) { t.innerHTML = ""; return; }
+    t.innerHTML = `<p class="pf-billing-note">${tx("Checking the exact amount…")}</p>`;
+    try {
+      const pv = await manage({ action: "preview_seats", seats: n });
+      const total = `${money(pv.new_total, pv.currency)} / ${perOf(pv.interval)}`;
+      const text = pv.trial ? tx("<b>{n} users</b>: nothing is charged during your free trial; then {total}.", { n, total })
+        : pv.more ? tx("<b>{n} users</b>: you pay <b>{amount}</b> today for the rest of this period, then {total}.", { n, amount: money(pv.charge_now, pv.currency), total })
+        : tx("<b>{n} users</b>: from now on {total}. The unused part ({amount}) is credited on your next invoice.", { n, total, amount: money(pv.credit, pv.currency) });
+      const lost = (m.team?.members || []).filter((x) => x.active).length - (n - 1);
+      t.innerHTML = `<div class="pf-change-terms"><p>${text}</p>${lost > 0 ? `<p class="pf-billing-note is-err">${tx("The last {n} people you added will lose access. Remove someone first to choose who.", { n: lost })}</p>` : ""}
+        <div class="pf-billing-actions"><button class="btn btn-gold" type="button" data-seats-confirm="${n}">${pv.more && !pv.trial ? tx("Pay {amount} and update", { amount: money(pv.charge_now, pv.currency) }) : tx("Update users")}</button><button class="btn btn-outline" type="button" data-seats-cancel>${tx("Cancel")}</button></div></div>`;
+    } catch (err) { t.innerHTML = `<p class="pf-billing-note is-err">${esc(err.message)}</p>`; }
+  }
+  box.addEventListener("click", async (e) => {
+    const step = e.target.closest(".pf-team [data-seats-step]");
+    if (step) {
+      const b = box.querySelector("[data-seats-pick]"), next = Number(b.textContent) + Number(step.dataset.seatsStep);
+      if (next > MAX_SEATS) { box.querySelector("[data-seats-custom]")?.removeAttribute("hidden"); return; }
+      if (next < 1) return;
+      b.textContent = next;
+      step.parentElement.querySelector('[data-seats-step="-1"]').disabled = next <= 1;
+      clearTimeout(box._seatsT); box._seatsT = setTimeout(() => seatsPreview(next), 350);
+      return;
+    }
+    if (e.target.closest("[data-seats-cancel]")) { box.querySelector("[data-seats-terms]").innerHTML = ""; box.querySelector("[data-seats-pick]").textContent = m.subscription.seats || 1; return; }
+    const conf = e.target.closest("[data-seats-confirm]");
+    if (conf) {
+      conf.disabled = true; conf.textContent = tx("Updating…");
+      try {
+        const r = await manage({ action: "seats", seats: Number(conf.dataset.seatsConfirm) });
+        if (r.action_required && r.url) { location.href = r.url; return; }
+        notify(tx("Your plan now has {n} users.", { n: r.seats }), "is-ok");
+        await load();
+      } catch (err) { conf.disabled = false; notify(err.message, "is-err"); }
+      return;
+    }
+    const rm = e.target.closest("[data-team-remove]");
+    if (rm) {
+      rm.disabled = true;
+      const { data, error } = await db.rpc("team_remove", { p_id: rm.dataset.teamRemove });
+      if (error || !data?.ok) { rm.disabled = false; notify(tx(error?.message || data?.error || "Something went wrong"), "is-err"); return; }
+      notify(tx("Removed from your team."), "is-ok");
+      await load();
+    }
+  });
+  box.addEventListener("submit", async (e) => {
+    const f = e.target.closest("[data-team-add]");
+    if (!f) return;
+    e.preventDefault();
+    const btn = f.querySelector("button"); btn.disabled = true;
+    const { data, error } = await db.rpc("team_add", { p_email: f.email.value.trim() });
+    btn.disabled = false;
+    if (error || !data?.ok) { notify(tx(error?.message || data?.error || "Something went wrong"), "is-err"); return; }
+    notify(tx("Added. They get access when they sign in with {email}.", { email: f.email.value.trim() }), "is-ok");
+    await load();
+  });
 
   // ---------- Change plan: pick → see Stripe's numbers → confirm ----------
   async function loadPlans() {
@@ -196,6 +283,7 @@
   });
 
   async function load() {
+    myEmail = (await db.auth.getSession()).data.session?.user?.email || "";
     const r = await db.rpc("my_membership");
     if (r.error) {
       // older database (before memberships.sql): basic view
