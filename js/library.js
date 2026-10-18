@@ -810,7 +810,6 @@
             ${saveBtn(p.id)}
             <button class="lib-plan-add" type="button" data-plan-add="${esc(p.id)}" data-tip="${esc(tx("Add to Content Plan"))}" aria-label="${esc(tx("Add to Content Plan"))}">${icon("calendar-plus")}</button>
             <button class="lib-ai" type="button" data-open="${esc(p.id)}" data-tip="${esc(tx("AI analysis"))}" aria-label="${esc(tx("AI analysis"))}">${icon("sparkles")}</button>
-            ${p.url ? `<a class="lib-out" href="${esc(p.url)}" target="_blank" rel="noopener" data-tip="${esc(tx("Open on {pf}", { pf: name }))}" aria-label="${esc(tx("Open on {pf}", { pf: name }))}">${icon("arrow-up-right")}</a>` : ""}
             ${me.isSuper ? `<button class="lib-remove" type="button" data-remove="${esc(p.id)}" data-tip="Remove (superadmin)" aria-label="Remove from the library">${icon("trash-2")}</button>` : ""}
           </div>`;
     const foot = `
