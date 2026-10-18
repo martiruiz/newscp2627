@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20261019f">
+  <link rel="stylesheet" href="css/styles.css?v=20261020a">
   <script src="js/theme.js?v=20261019a"></script>
 </head>
 <body>
@@ -47,13 +47,25 @@
         <p>Used by 100+ clubs &amp; sports organizations worldwide</p>
       </div>
 
-      <h1 class="section-title">Pick the plan that <span class="gold">fits your team</span></h1>
-      <p class="lead">Start with the Content Library, then add AI analyses, the Content Plan, or both. Cancel anytime.</p>
+      <div data-public-only>
+        <h1 class="section-title">Pick the plan that <span class="gold">fits your team</span></h1>
+        <p class="lead">Start with the Content Library, then add AI analyses, the Content Plan, or both. Cancel anytime.</p>
+      </div>
+      <div class="private-intro" hidden data-private-intro>
+        <p class="eyebrow">Private membership</p>
+        <h1 class="section-title"><span class="gold" data-private-title>Your membership</span></h1>
+        <p class="lead">A membership prepared for you. This page is only reachable through your private link.</p>
+      </div>
 
       <div class="plans" data-plans></div>
-      <p class="plans-team">Need SCP for your whole club or agency? <a class="link-gold" href="contact.html">Ask for a team proposal</a>.</p>
+      <p class="plans-team" data-public-only>Need SCP for your whole club or agency? <a class="link-gold" href="contact.html">Ask for a team proposal</a>.</p>
 
-      <div class="packs-wrap" id="packs">
+      <div class="compare-wrap" data-public-only>
+        <h2 class="section-title section-title-md">Compare <span class="gold">plans</span></h2>
+        <div data-compare></div>
+      </div>
+
+      <div class="packs-wrap" id="packs" data-public-only>
         <h2 class="section-title section-title-md">Need more <span class="gold">AI analyses</span>?</h2>
         <p class="lead">Extra analysis packs for Library + AI and All Access. Your monthly analyses are used first; pack analyses never expire.</p>
         <div class="packs" data-packs></div>
@@ -62,7 +74,7 @@
 
     <div class="container" aria-hidden="true"><hr class="section-rule"></div>
 
-    <section class="faq pricing-faq container">
+    <section class="faq pricing-faq container" id="faq">
       <div class="faq-grid">
         <div class="faq-intro">
           <h2 class="section-title">Questions?<br>We've got answers.</h2>
@@ -70,28 +82,45 @@
         </div>
         <div class="accordion" data-accordion>
           <div class="acc-item is-open">
-            <button class="acc-trigger" type="button" aria-expanded="true">How many devices can I use?<span class="acc-icon"></span></button>
-            <div class="acc-panel"><div><p>Each user account includes access on up to two devices, allowing you to work seamlessly across your preferred devices.</p></div></div>
+            <button class="acc-trigger" type="button" aria-expanded="true">What happens after my free trial ends?<span class="acc-icon"></span></button>
+            <div class="acc-panel"><div><p>We ask for a card to start the trial, but nothing is charged until it ends. Cancel from your account before then and you pay nothing. On monthly plans your first charge covers only the days until the 1st of the month; from then on you pay the full price on the 1st of every month. Yearly plans renew on the same date each year.</p></div></div>
+          </div>
+          <div class="acc-item">
+            <button class="acc-trigger" type="button" aria-expanded="false">Why am I billed on the 1st of the month?<span class="acc-icon"></span></button>
+            <div class="acc-panel"><div><p>All monthly memberships renew on the 1st (Madrid time), so your invoices are easy to track. When you join mid-month you only pay the days left until the 1st, calculated exactly by our payment provider, Stripe.</p></div></div>
           </div>
           <div class="acc-item">
             <button class="acc-trigger" type="button" aria-expanded="false">Can I cancel my subscription at any time?<span class="acc-icon"></span></button>
-            <div class="acc-panel"><div><p>Yes. You can cancel at any time and keep access until the end of your current billing period.</p></div></div>
+            <div class="acc-panel"><div><p>Yes. Cancel from Account → Billing in two clicks. You keep access until the end of the period you've paid and you won't be charged again. Your saved boards and content plans stay in your account if you come back.</p></div></div>
+          </div>
+          <div class="acc-item">
+            <button class="acc-trigger" type="button" aria-expanded="false">Can I change plan or switch to yearly?<span class="acc-icon"></span></button>
+            <div class="acc-panel"><div><p>Yes. Upgrades apply straight away and you only pay the difference for the rest of the period; downgrades apply at the end of the period you've paid. You'll see the exact amount before confirming.</p></div></div>
+          </div>
+          <div class="acc-item">
+            <button class="acc-trigger" type="button" aria-expanded="false">Which currencies can I pay in?<span class="acc-icon"></span></button>
+            <div class="acc-panel"><div><p>Euros or US dollars, with a price set for each currency. The currency you choose stays the same for your whole subscription. VAT is included.</p></div></div>
+          </div>
+          <div class="acc-item">
+            <button class="acc-trigger" type="button" aria-expanded="false">Where are my invoices?<span class="acc-icon"></span></button>
+            <div class="acc-panel"><div><p>Every invoice is in Account → Billing, ready to download. Companies can add their VAT number at checkout.</p></div></div>
+          </div>
+          <div class="acc-item">
+            <button class="acc-trigger" type="button" aria-expanded="false">How many devices can I use?<span class="acc-icon"></span></button>
+            <div class="acc-panel"><div><p>Each user account includes access on up to two devices, so you can work across your preferred devices.</p></div></div>
           </div>
           <div class="acc-item">
             <button class="acc-trigger" type="button" aria-expanded="false">Can I request new accounts to be tracked?<span class="acc-icon"></span></button>
             <div class="acc-panel"><div><p>Yes. Custom account tracking requests are included in every plan.</p></div></div>
           </div>
           <div class="acc-item">
-            <button class="acc-trigger" type="button" aria-expanded="false">What happens after my free trial ends?<span class="acc-icon"></span></button>
-            <div class="acc-panel"><div><p>Every plan starts with a 7-day free trial. We ask for a card, but you aren't charged until the trial ends — cancel from your profile before then and you pay nothing. After the trial your plan renews monthly or yearly, VAT included.</p></div></div>
-          </div>
-          <div class="acc-item">
             <button class="acc-trigger" type="button" aria-expanded="false">Do you offer plans for larger teams?<span class="acc-icon"></span></button>
-            <div class="acc-panel"><div><p>Yes. Choose <b>Team</b> above and we'll prepare a personalized commercial proposal for your organization, or <a class="link-gold" href="contact.html">contact our team</a>.</p></div></div>
+            <div class="acc-panel"><div><p>Yes. <a class='link-gold' href='contact.html'>Contact our team</a> and we'll prepare a proposal for your organization.</p></div></div>
           </div>
         </div>
       </div>
     </section>
+    <p class="pricing-legal container"><span data-legal></span></p>
   </main>
 
 
@@ -134,8 +163,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.0/dist/umd/supabase.min.js"></script>
   <script src="js/config.js?v=20261019a"></script>
   <script src="js/auth.js?v=20261019a"></script>
-  <script src="js/checkout.js?v=20261019a"></script>
-  <script src="js/plans.js?v=20261019a" defer></script>
+  <script src="js/checkout.js?v=20261020a"></script>
+  <script src="js/plans.js?v=20261020a" defer></script>
   <script src="js/main.js?v=20261019a"></script>
 </body>
 </html>

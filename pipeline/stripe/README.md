@@ -1,5 +1,8 @@
 # Stripe payments — setup
 
+> Memberships (plans, EUR/USD prices, trials, day-1 billing, hidden plans, discounts, e-mails, MemberPress
+> migration) are documented in **docs/memberships.md** — start there. This page covers the original setup script.
+
 How it works: the website opens **Stripe Checkout** (Edge Function `stripe-checkout`); Stripe tells Supabase what happened
 (`stripe-webhook`), and only then the member gets access. Members manage their plan, card, invoices and cancellation in
 the **Stripe customer portal** (`stripe-portal`, button in Profile → Plan & billing).

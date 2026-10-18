@@ -39,7 +39,11 @@ window.SCP_CHECKOUT = (() => {
       body: JSON.stringify(body),
     }).catch(() => null);
     const data = r ? await r.json().catch(() => ({})) : {};
-    if (!r || !r.ok || !data.url) throw new Error(data.error || (r?.status === 404 ? "Payments aren't switched on yet." : "We couldn't open the payment. Please try again."));
+    if (!r || !r.ok || (!data.url && !body.preview)) {
+      const err = new Error(data.error || (r?.status === 404 ? "Payments aren't switched on yet." : "We couldn't open the payment. Please try again."));
+      err.manage = !!data.manage;
+      throw err;
+    }
     return data;
   }
 
@@ -51,6 +55,7 @@ window.SCP_CHECKOUT = (() => {
         : `login.html?next=pricing.html`;
       return;
     }
+    if (req.kind === "plan" && !req.confirmed) return confirmTerms(req, btn);
     busy(btn, true);
     try {
       const { url } = await call("stripe-checkout", req);
@@ -59,8 +64,75 @@ window.SCP_CHECKOUT = (() => {
     } catch (e) {
       store.clear();
       busy(btn, false);
+      if (e.manage) { location.href = "profile.html#billing"; return; }
       notify(e.message, { kind: "is-err" });
     }
+  }
+
+  // ---------- Before paying: the exact terms (from the server / Stripe), discount code, renewal and cancellation ----------
+  const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+  const money = (n, cur) => new Intl.NumberFormat("en-GB", { style: "currency", currency: String(cur || "eur").toUpperCase() }).format(Number(n));
+  const dayOf = (iso) => new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Madrid" });
+  function termsHtml(t) {
+    const per = t.interval === "year" ? "year" : "month";
+    const price = money(t.price, t.currency);
+    const rows = [];
+    if (t.trial_days) {
+      rows.push(["Today", `${money(0, t.currency)} — ${t.trial_days}-day free trial`]);
+      rows.push(["Trial ends", dayOf(t.trial_end)]);
+      rows.push(["First charge", t.interval === "month" && t.prorated_until
+        ? `${dayOf(t.first_charge_at)} · the days until ${dayOf(t.prorated_until)} (prorated; exact amount e-mailed 3 days before)`
+        : `${dayOf(t.first_charge_at)} · ${price}`]);
+    } else {
+      rows.push(["Today", t.first_charge ? `${money(t.first_charge.amount, t.first_charge.currency)}${t.prorated_until ? ` · until ${dayOf(t.prorated_until)} (prorated)` : ""}` : price]);
+    }
+    rows.push(["Then", `${price} / ${per}${t.interval === "month" ? ", on the 1st of every month" : `, renews every year`} · VAT included`]);
+    if (t.discount) rows.push(["Discount", `${esc(t.discount.code)}: ${t.discount.kind === "percent" ? `${Number(t.discount.percent_off)}% off` : `${money(t.discount.amount_off, t.currency)} off`}${t.discount.duration === "repeating" ? ` for ${t.discount.duration_months} months` : t.discount.duration === "once" ? " on the first charge" : " for as long as you stay"}`]);
+    return `<dl class="co-terms">${rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}</dl>`;
+  }
+  async function confirmTerms(req, btn) {
+    busy(btn, true);
+    let terms;
+    try {
+      const r = await call("stripe-checkout", { ...req, preview: true });
+      // an older stripe-checkout (before memberships) ignores "preview" and returns the payment page directly
+      if (!r.terms) { if (r.url) { store.clear(); location.href = r.url; } else busy(btn, false); return; }
+      terms = r.terms;
+    }
+    catch (e) { busy(btn, false); if (e.manage) { location.href = "profile.html#billing"; return; } notify(e.message, { kind: "is-err" }); return; }
+    busy(btn, false);
+    document.querySelector(".co-modal")?.remove();
+    const m = document.createElement("div");
+    m.className = "co-modal";
+    m.setAttribute("role", "dialog"); m.setAttribute("aria-modal", "true"); m.setAttribute("aria-labelledby", "co-title");
+    const draw = () => {
+      m.innerHTML = `<div class="co-card">
+        <button class="co-x" type="button" aria-label="Close" data-co-close>×</button>
+        <p class="co-eyebrow">${terms.trial_days ? `${terms.trial_days}-day free trial` : "Secure payment with Stripe"}</p>
+        <h2 id="co-title">${esc(terms.plan)} <span>${terms.interval === "year" ? "yearly" : "monthly"} · ${terms.currency.toUpperCase()}</span></h2>
+        ${termsHtml(terms)}
+        <form class="co-code" data-co-code><input name="code" placeholder="Discount code" autocomplete="off" value="${esc(req.code || "")}" aria-label="Discount code"><button class="btn btn-outline" type="submit">Apply</button></form>
+        <p class="co-small">Renews automatically until you cancel. Cancel any time in Account → Billing — you keep access until the end of the period you've paid${terms.trial_days ? ", and nothing is charged if you cancel during the trial" : ""}. Your card is handled by Stripe; SCP never sees it.</p>
+        <div class="co-actions"><button class="btn btn-outline" type="button" data-co-close>Not now</button><button class="btn btn-gold" type="button" data-co-go>${terms.trial_days ? "Start free trial" : "Continue to payment"}</button></div>
+      </div>`;
+    };
+    draw();
+    document.body.append(m);
+    document.body.style.overflow = "hidden";
+    const close = () => { m.remove(); document.body.style.overflow = ""; };
+    m.addEventListener("click", async (e) => {
+      if (e.target === m || e.target.closest("[data-co-close]")) return close();
+      const go = e.target.closest("[data-co-go]");
+      if (go) { close(); start({ ...req, confirmed: true }, btn); }
+    });
+    m.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const code = new FormData(e.target).get("code")?.toString().trim();
+      const b = e.target.querySelector("button"); b.disabled = true;
+      try { terms = (await call("stripe-checkout", { ...req, code, preview: true })).terms; req = { ...req, code }; draw(); }
+      catch (err) { b.disabled = false; notify(err.message, { kind: "is-err" }); }
+    });
+    m.querySelector("[data-co-go]")?.focus();
   }
   async function portal(btn) {
     busy(btn, true);
@@ -86,13 +158,13 @@ window.SCP_CHECKOUT = (() => {
     const clean = () => { ["checkout", "plan", "pack"].forEach((k) => q.delete(k)); history.replaceState(null, "", location.pathname + (q.toString() ? `?${q}` : "") + location.hash); };
     if (result === "cancel") { clean(); notify("Payment cancelled — you haven't been charged."); return; }
     if (result !== "success" || !auth?.client) return clean();
-    const wantPlan = q.get("plan");
+    const wantPlan = q.get("plan") || (location.pathname.endsWith("profile.html") ? "*" : null);
     const t = notify(`<span class="co-spin"></span><span><b>Payment received.</b> Activating your ${wantPlan ? "plan" : "AI credits"}…</span>`, { sticky: true, html: true, kind: "is-ok" });
     let first = null;
     for (let i = 0; i < 15; i++) {
       const { data: ent } = await auth.client.rpc("my_entitlements");
       if (first === null) first = ent?.pack_balance ?? 0;
-      const ready = wantPlan ? ent?.plan === wantPlan : (ent?.pack_balance ?? 0) > first || i >= 4;
+      const ready = wantPlan ? (wantPlan === "*" ? !!ent?.plan : ent?.plan === wantPlan) : (ent?.pack_balance ?? 0) > first || i >= 4;
       if (ready) {
         clean();
         const trialEnd = ent?.status === "trialing" && ent.current_period_end ? new Date(ent.current_period_end).toLocaleDateString("en-GB", { day: "numeric", month: "long" }) : "";
@@ -109,14 +181,14 @@ window.SCP_CHECKOUT = (() => {
   }
 
   const api = {
-    plan: (plan, interval = "month", btn) => start({ kind: "plan", plan, interval }, btn),
+    plan: (plan, interval = "month", btn, extra = {}) => start({ kind: "plan", plan, interval, ...extra }, btn),
     pack: (pack, btn) => start({ kind: "pack", pack }, btn),
     portal, notify,
   };
   // Buttons anywhere: data-checkout-plan="all_access" data-interval="year" · data-checkout-pack="pack_30" · data-billing-portal
   document.addEventListener("click", (e) => {
     const p = e.target.closest("[data-checkout-plan]");
-    if (p) { e.preventDefault(); return api.plan(p.dataset.checkoutPlan, p.dataset.interval || "month", p); }
+    if (p) { e.preventDefault(); return api.plan(p.dataset.checkoutPlan, p.dataset.interval || "month", p, { currency: p.dataset.currency || "eur", ...(p.dataset.link ? { link: p.dataset.link } : {}) }); }
     const k = e.target.closest("[data-checkout-pack]");
     if (k) { e.preventDefault(); return api.pack(k.dataset.checkoutPack, k); }
     const b = e.target.closest("[data-billing-portal]");

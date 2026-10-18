@@ -9,7 +9,7 @@
   const usd = (n) => (n == null ? "—" : `$${Number(n).toFixed(n < 1 ? 4 : 2)}`);
 
   main.innerHTML = `
-    <div class="page-head"><div><h1>Plans &amp; AI</h1><p>AI analyses economics, prices and member plans. Payments run through Stripe; nothing here charges money.</p></div>
+    <div class="page-head"><div><h1>AI &amp; packs</h1><p>AI analyses economics, AI packs and manual plan assignment. Plans and prices: Memberships.</p></div>
       <div class="head-actions"><select class="select" data-period><option value="30">Last 30 days</option><option value="90">Last 90 days</option><option value="365">Last 12 months</option></select></div></div>
     <p class="error-text" hidden data-err></p>
     <section data-metrics></section>
@@ -32,8 +32,7 @@
       <section class="panel"><div class="values-head" style="justify-content:space-between"><h2 style="font-size:16px">Members with a plan</h2><span class="muted" data-sub-count></span></div>
         <div class="table-wrap"><table class="data"><thead><tr><th>Member</th><th>Plan</th><th>AI credits</th><th>Unlocks</th><th>Since</th></tr></thead><tbody data-subs></tbody></table></div></section>
     </div>
-    <section class="panel" style="margin-top:16px"><div class="values-head"><h2 style="font-size:16px">Plans</h2><span class="muted">Prices shown on the website and charged by Stripe. After changing a price, run <code>node stripe/setup.mjs</code> so Stripe gets the new price (current subscribers keep theirs).</span></div>
-      <div class="table-wrap"><table class="data"><thead><tr><th>Plan</th><th>€ / month</th><th>€ / year</th><th>AI / month</th><th>AI</th><th>Content Plan</th><th>Trial days</th><th>AI in trial</th><th>Stripe</th><th>Active</th><th></th></tr></thead><tbody data-plans></tbody></table></div></section>
+    <section class="panel panel-pad" style="margin-top:16px"><h2>Plans and prices moved</h2><p class="panel-sub">Plans, EUR / USD prices, permissions, trials and Stripe sync are in <a class="link" href="memberships.html#plans">Memberships → Plans</a>.</p></section>
     <section class="panel" style="margin-top:16px"><div class="values-head"><h2 style="font-size:16px">AI packs</h2></div>
       <div class="table-wrap"><table class="data"><thead><tr><th>Pack</th><th>Analyses</th><th>Price €</th><th>Stripe price</th><th>Active</th><th></th></tr></thead><tbody data-packs></tbody></table></div></section>`;
 
@@ -70,18 +69,6 @@
     plans = p; packs = k;
     $("[data-plan-options]").innerHTML = plans.map((x) => `<option value="${x.key}">${esc(x.name)}</option>`).join("") + `<option value="">No plan (cancel)</option>`;
     $("[data-pack-options]").innerHTML = packs.map((x) => `<option value="${x.key}">${esc(x.name)} · €${x.price}</option>`).join("");
-    $("[data-plans]").innerHTML = plans.map((x) => `<tr data-plan="${x.key}">
-      <td><input class="input input-sm" name="name" value="${esc(x.name)}"><div class="muted mono">${x.key}</div></td>
-      <td><input class="input input-sm" name="price_month" type="number" step="0.01" min="0" value="${x.price_month}"></td>
-      <td><input class="input input-sm" name="price_year" type="number" step="0.01" min="0" value="${x.price_year ?? ""}" placeholder="—"></td>
-      <td><input class="input input-sm" name="ai_monthly_units" type="number" min="0" value="${x.ai_monthly_units}"></td>
-      <td><input class="check" type="checkbox" name="has_ai" ${x.has_ai ? "checked" : ""}></td>
-      <td><input class="check" type="checkbox" name="has_planner" ${x.has_planner ? "checked" : ""}></td>
-      <td><input class="input input-sm" name="trial_days" type="number" min="0" max="60" value="${x.trial_days ?? 7}"></td>
-      <td><input class="input input-sm" name="trial_ai_units" type="number" min="0" value="${x.trial_ai_units ?? 5}"></td>
-      <td class="muted" title="${esc([x.stripe_price_month, x.stripe_price_year].filter(Boolean).join(" · "))}">${x.stripe_price_month ? `<span class="status status-completed">Linked</span>${x.stripe_price_year ? "" : " <small>monthly only</small>"}` : `<span class="status status-reverted">Not linked</span>`}</td>
-      <td><input class="check" type="checkbox" name="active" ${x.active ? "checked" : ""}></td>
-      <td><button class="btn btn-sm" type="button" data-save-plan>Save</button></td></tr>`).join("");
     $("[data-packs]").innerHTML = packs.map((x) => `<tr data-pack="${x.key}">
       <td><input class="input input-sm" name="name" value="${esc(x.name)}"></td>
       <td><input class="input input-sm" name="units" type="number" min="1" value="${x.units}"></td>
@@ -92,7 +79,7 @@
   }
   const rowValues = (tr) => Object.fromEntries([...tr.querySelectorAll("input")].map((i) => [i.name, i.type === "checkbox" ? i.checked : i.type === "number" ? (i.value === "" ? null : Number(i.value)) : i.value.trim() || null]));
   main.addEventListener("click", async (e) => {
-    const sp = e.target.closest("[data-save-plan]");
+    const sp = null;
     const sk = e.target.closest("[data-save-pack]");
     if (!sp && !sk) return;
     const tr = e.target.closest("tr");

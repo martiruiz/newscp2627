@@ -4415,3 +4415,94 @@ button.plan-cta { width: 100%; cursor: pointer; font: inherit; }
 :root[data-theme="light"] .theme-toggle .tt-sun { transform: none; opacity: 1; }
 :root[data-theme="light"] .theme-toggle .tt-moon { transform: translateY(-120%) rotate(90deg); opacity: 0; }
 html.theme-anim, html.theme-anim body, html.theme-anim *, html.theme-anim *::before, html.theme-anim *::after { transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease, fill 0.35s ease !important; }
+
+/* ---------- Memberships: pricing switches, comparison, private plans, terms before paying ---------- */
+.plan-switches { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 12px; }
+.plan-switches .plan-interval { margin: 0; }
+.plans.is-solo { grid-template-columns: minmax(0, 420px); justify-content: center; }
+.plans-empty { grid-column: 1 / -1; text-align: center; color: var(--muted); padding: 40px 0; }
+.private-intro .eyebrow { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: 10px; }
+.compare-wrap { margin-top: 80px; }
+.cmp-wrap { margin-top: 30px; overflow-x: auto; border-radius: 18px; border: 0.5px solid var(--line); background: var(--surface); }
+.cmp { width: 100%; min-width: 640px; border-collapse: collapse; text-align: center; font-size: 14px; }
+.cmp th, .cmp td { padding: 14px 16px; border-bottom: 0.5px solid var(--line-soft); }
+.cmp thead th { font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--text); background: var(--surface-2); }
+.cmp thead th.is-best { color: var(--gold); }
+.cmp tbody th { text-align: left; font-weight: 600; color: var(--text); }
+.cmp tbody th small { display: block; font-weight: 400; color: var(--muted-dim); font-size: 12px; margin-top: 2px; }
+.cmp tr:last-child td, .cmp tr:last-child th { border-bottom: 0; }
+.cmp .cmp-yes { color: #00d85b; font-weight: 700; font-size: 16px; }
+.cmp .cmp-no { color: var(--muted-dim); }
+.cmp .cmp-price td { font-family: var(--font-display); font-weight: 700; font-size: 17px; color: var(--text); }
+.cmp .cmp-price small { font-weight: 400; font-size: 12px; color: var(--muted); margin-left: 2px; }
+.pricing-legal { text-align: center; margin: 10px auto 60px; color: var(--muted); font-size: 13px; }
+.pricing-legal a { color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
+
+.co-modal { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; padding: 20px; background: rgba(5, 10, 25, 0.62); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); animation: coIn 0.2s ease; }
+@keyframes coIn { from { opacity: 0; } }
+.co-card { position: relative; width: min(520px, 100%); max-height: 92vh; overflow: auto; padding: 28px 26px 22px; border-radius: 22px; background: var(--surface); border: 0.5px solid var(--line); box-shadow: var(--shadow-soft); }
+.co-x { position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; border-radius: 50%; border: 0.5px solid var(--line); background: var(--surface-2); color: var(--muted); font-size: 20px; line-height: 1; cursor: pointer; }
+.co-eyebrow { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); font-weight: 700; }
+.co-card h2 { margin: 6px 0 18px; font-family: var(--font-display); font-size: 26px; }
+.co-card h2 span { font-size: 14px; font-weight: 500; color: var(--muted); }
+.co-terms { margin: 0; display: grid; gap: 1px; border-radius: 14px; overflow: hidden; border: 0.5px solid var(--line); }
+.co-terms div { display: grid; grid-template-columns: 110px 1fr; gap: 12px; padding: 11px 14px; background: var(--surface-2); }
+.co-terms dt { color: var(--muted); font-size: 13px; }
+.co-terms dd { margin: 0; color: var(--text); font-size: 14px; font-weight: 500; }
+.co-code { display: flex; gap: 8px; margin-top: 14px; }
+.co-code input { flex: 1; min-width: 0; height: 42px; padding: 0 14px; border-radius: 12px; border: 0.5px solid var(--line); background: var(--surface-2); color: var(--text); font: inherit; text-transform: uppercase; }
+.co-code .btn { height: 42px; padding: 0 18px; font-size: 15px; }
+.co-small { margin-top: 14px; font-size: 12.5px; line-height: 1.5; color: var(--muted); }
+.co-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
+.co-actions .btn { height: 46px; font-size: 16px; padding: 0 20px; }
+@media (max-width: 520px) { .co-terms div { grid-template-columns: 1fr; gap: 2px; } .co-actions { flex-direction: column-reverse; } .co-actions .btn { width: 100%; } }
+.plan-switches { margin: 0 auto 28px; }
+
+/* ---------- Account → Billing & membership (js/profile-billing.js) ---------- */
+.pf-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; margin: 16px 0 0; border-radius: 14px; overflow: hidden; border: 0.5px solid var(--line); }
+.pf-facts div { padding: 11px 14px; background: var(--surface); }
+.pf-facts dt { font-size: 12px; color: var(--muted); }
+.pf-facts dd { margin: 3px 0 0; font-size: 14px; color: var(--text); font-weight: 500; }
+.pf-facts .link-gold { margin-left: 6px; font-size: 13px; background: none; border: 0; cursor: pointer; padding: 0; }
+.pf-included { list-style: none; margin: 14px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 14px; font-size: 13.5px; color: var(--muted); }
+.pf-included li { display: flex; gap: 8px; align-items: flex-start; }
+.pf-included svg { width: 15px; height: 15px; color: #00d85b; flex: none; margin-top: 2px; }
+.pf-quota { margin-top: 14px; padding: 12px 14px; border-radius: 14px; background: var(--gold-tint); }
+.pf-quota-top { display: flex; gap: 8px; align-items: center; font-size: 14px; color: var(--text); }
+.pf-quota-top svg { width: 16px; height: 16px; color: var(--gold); }
+.pf-quota-bar { height: 6px; margin-top: 8px; border-radius: 6px; background: rgba(var(--fg), 0.1); overflow: hidden; }
+.pf-quota-bar i { display: block; height: 100%; border-radius: 6px; background: var(--gold); }
+.pf-quota small { display: block; margin-top: 6px; color: var(--muted); font-size: 12px; }
+.pf-alert { display: flex; gap: 12px; margin-top: 14px; padding: 14px 16px; border-radius: 14px; background: rgba(255, 104, 92, 0.12); border: 0.5px solid rgba(255, 104, 92, 0.45); color: var(--text); font-size: 14px; }
+.pf-alert > svg { width: 18px; height: 18px; color: #ff685c; flex: none; margin-top: 2px; }
+.pf-alert-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.pf-cancel { margin-left: auto; background: none; border: 0; color: var(--muted); font-size: 13px; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.pf-cancel:hover { color: #ff685c; }
+.pf-danger { background: #d9434b; color: #fff; border: 0; }
+.pf-change { margin-top: 16px; padding: 16px; border-radius: 16px; border: 0.5px solid var(--line); background: var(--surface); }
+.pf-change-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.pf-iv { margin: 0; }
+.pf-iv button { height: 32px; padding: 0 14px; font-size: 13px; }
+.pf-change-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin-top: 12px; }
+.pf-change-opt { position: relative; display: flex; flex-direction: column; gap: 4px; padding: 12px; border-radius: 12px; border: 0.5px solid var(--line); background: var(--surface); color: var(--text); text-align: left; cursor: pointer; }
+.pf-change-opt span { color: var(--muted); font-size: 13px; }
+.pf-change-opt em { position: absolute; top: 8px; right: 8px; font-style: normal; font-size: 10px; color: var(--gold); }
+.pf-change-opt.is-on { border-color: var(--gold); background: var(--gold-tint); }
+.pf-change-opt:disabled { opacity: 0.55; cursor: default; }
+.pf-change-terms { margin-top: 12px; font-size: 14px; color: var(--text); }
+.pf-cancel-why { display: block; margin-top: 10px; font-size: 13px; color: var(--muted); }
+.pf-cancel-why textarea { display: block; width: 100%; margin-top: 6px; padding: 10px; border-radius: 10px; border: 0.5px solid var(--line); background: var(--surface); color: var(--text); font: inherit; }
+.pf-invoices { margin-top: 18px; border-top: 0.5px solid var(--line); padding-top: 14px; }
+.pf-invoices summary { display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 600; color: var(--text); list-style: none; }
+.pf-invoices summary::-webkit-details-marker { display: none; }
+.pf-invoices summary svg { width: 16px; height: 16px; color: var(--gold); }
+.pf-invoices summary span { color: var(--muted); font-weight: 400; font-size: 13px; }
+.pf-invoices table { width: 100%; margin-top: 10px; border-collapse: collapse; font-size: 13.5px; }
+.pf-invoices th { text-align: left; color: var(--muted); font-weight: 500; font-size: 12px; padding: 6px 8px; }
+.pf-invoices td { padding: 8px; border-top: 0.5px solid var(--line-soft); color: var(--text); }
+.pf-invoices a { color: var(--gold); }
+.pf-inv-st { padding: 2px 8px; border-radius: 100px; font-size: 11.5px; background: var(--surface-3); color: var(--muted); }
+.pf-inv-st.is-paid { background: rgba(0, 216, 91, 0.14); color: #00b34b; }
+.pf-inv-st.is-open { background: rgba(255, 104, 92, 0.14); color: #ff685c; }
+.pf-billing-note.is-err { color: #ff685c; }
+@media (max-width: 640px) { .pf-facts, .pf-included { grid-template-columns: 1fr; } .pf-cancel { margin-left: 0; } .pf-invoices table th:nth-child(2), .pf-invoices table td:nth-child(2) { display: none; } }

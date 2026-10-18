@@ -1,11 +1,13 @@
 #!/usr/bin/env node
-// Sets up Stripe for SCP from the plans and packs in Supabase (Admin → Plans & AI). Safe to re-run.
-//   • one product per plan with a monthly and a yearly price, one product per AI pack (one-time price)
-//     — all in EUR, VAT included (tax_behavior "inclusive"); the price IDs are saved back into plans / ai_packs
-//   • the VAT rate shown on invoices (IVA 21% included), the customer portal (change plan, card, invoices, cancel)
-//   • the webhook endpoint → Supabase Edge Function "stripe-webhook" (prints its signing secret the first time)
-// A price change in Admin → Plans & AI needs a new run: Stripe prices can't be edited, so a new price is created.
-// Existing subscribers keep their price until they change plan.
+// Sets up the Stripe account for SCP. Safe to re-run.
+//   • AI packs: one product per pack (one-time price, EUR, VAT included); price IDs saved into ai_packs
+//   • the VAT rate shown on invoices (IVA 21% included)
+//   • the customer portal: card, billing details, invoices and cancellation at period end. Plan changes are made in
+//     Account → Billing (Edge Function stripe-manage) so the day-1 renewal and downgrade rules always apply.
+//   • the webhook endpoint → Supabase Edge Function "stripe-webhook" with every event it handles (prints its signing
+//     secret the first time)
+// Membership plans and their EUR / USD prices are created from Super Admin → Memberships → "Sync with Stripe"
+// (Edge Function stripe-admin), not here.
 //
 //   cd pipeline && node stripe/setup.mjs            (test mode: STRIPE_SECRET_KEY=sk_test_… in pipeline/.env)
 //   node stripe/setup.mjs --live                    (only after testing; needs sk_live_…)
@@ -58,20 +60,8 @@ async function setConfig(k, value) {
   if (error) throw new Error(`stripe_config: ${error.message} — run supabase/stripe.sql first`);
 }
 
-// ---------- Plans ----------
-const { data: plans, error: pe } = await db.from("plans").select("*").order("sort");
-if (pe) throw new Error(`plans: ${pe.message}`);
-const portalProducts = [];
-for (const p of plans) {
-  if (!p.active) { console.log(`· ${p.name}: inactive, skipped`); continue; }
-  const prodId = await product(`scp_plan_${p.key}`, `SCP · ${p.name}`, p.description || null);
-  const month = await price(prodId, `scp_${p.key}_month_${cents(p.price_month)}`, cents(p.price_month), "month");
-  const year = p.price_year ? await price(prodId, `scp_${p.key}_year_${cents(p.price_year)}`, cents(p.price_year), "year") : null;
-  const { error } = await db.from("plans").update({ stripe_price_month: month, stripe_price_year: year, updated_at: new Date().toISOString() }).eq("key", p.key);
-  if (error) throw error;
-  portalProducts.push({ product: prodId, prices: [month, year].filter(Boolean) });
-  console.log(`✓ ${p.name}: €${p.price_month}/month${year ? ` · €${p.price_year}/year` : ""}`);
-}
+// ---------- Plans: created from Super Admin → Memberships → Sync with Stripe (stripe-admin) ----------
+console.log("· Membership plans and prices: use Super Admin → Memberships → Plans → \"Sync with Stripe\".");
 
 // ---------- AI packs ----------
 const { data: packs, error: ke } = await db.from("ai_packs").select("*").order("sort");
@@ -102,7 +92,7 @@ const portal = {
     invoice_history: { enabled: true },
     payment_method_update: { enabled: true },
     subscription_cancel: { enabled: true, mode: "at_period_end", cancellation_reason: { enabled: true, options: ["too_expensive", "missing_features", "unused", "switched_service", "other"] } },
-    subscription_update: { enabled: true, default_allowed_updates: ["price", "promotion_code"], proration_behavior: "create_prorations", products: portalProducts },
+    subscription_update: { enabled: false },   // plan changes: Account → Billing (keeps the day-1 rule)
   },
   metadata: { scp: "1" },
 };
@@ -114,8 +104,13 @@ console.log(`✓ Customer portal (${portalConfig.id})`);
 
 // ---------- Webhook → Supabase Edge Function ----------
 const hook = `${env("SUPABASE_URL").replace(/\/$/, "")}/functions/v1/stripe-webhook`;
-const events = ["checkout.session.completed", "checkout.session.async_payment_succeeded", "customer.subscription.created", "customer.subscription.updated",
-  "customer.subscription.deleted", "customer.subscription.paused", "customer.subscription.resumed"];
+const events = ["checkout.session.completed", "checkout.session.async_payment_succeeded",
+  "customer.subscription.created", "customer.subscription.updated", "customer.subscription.deleted", "customer.subscription.paused",
+  "customer.subscription.resumed", "customer.subscription.pending_update_applied", "customer.subscription.pending_update_expired",
+  "customer.subscription.trial_will_end", "invoice.created", "invoice.finalized", "invoice.updated", "invoice.paid", "invoice.payment_succeeded",
+  "invoice.payment_failed", "invoice.payment_action_required", "invoice.voided", "invoice.marked_uncollectible",
+  "subscription_schedule.created", "subscription_schedule.updated", "subscription_schedule.released", "subscription_schedule.canceled",
+  "subscription_schedule.completed", "customer.updated"];
 const { data: hooks } = await stripe.webhookEndpoints.list({ limit: 100 });
 const existing = hooks.find((h) => h.url === hook);
 if (existing) {
@@ -127,4 +122,4 @@ if (existing) {
   console.log(`\n  Signing secret (shown only now — save it as a Supabase secret):\n  supabase secrets set STRIPE_WEBHOOK_SECRET=${created.secret}\n`);
 }
 
-console.log(`\nDone (${mode}). Prices are saved in Supabase; the website reads them automatically.\n`);
+console.log(`\nDone (${mode}). Next: Super Admin → Memberships → Plans → "Sync all plans with Stripe".\n`);

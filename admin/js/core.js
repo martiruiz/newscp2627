@@ -151,7 +151,8 @@
     { href: "import.html", label: "Import", icon: "import", key: "import" },
     { href: "audience.html", label: "Audience", icon: "audience", key: "audience" },
     { href: "smart-review.html", label: "Smart filters", icon: "smart", key: "smart" },
-    { href: "billing.html", label: "Plans & AI", icon: "billing", key: "billing" },
+    { href: "memberships.html", label: "Memberships", icon: "billing", key: "memberships" },
+    { href: "billing.html", label: "AI & packs", icon: "smart", key: "billing" },
     { href: "users.html", label: "Users", icon: "users", key: "users" },
   ];
   const here = () => location.pathname.split("/").pop() || "content-ideas.html";

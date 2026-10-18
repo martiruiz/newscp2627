@@ -1,0 +1,26 @@
+name: Billing daily
+
+# Every day at 07:00 UTC: calls the Supabase Edge Function "billing-cron" (memberships housekeeping):
+# "access ending" and "card expiring" e-mails, reconciliation with Stripe, and the e-mail queue.
+# Does nothing until the repository secrets SUPABASE_URL and BILLING_CRON_SECRET (= the CRON_SECRET Supabase secret) exist.
+on:
+  schedule:
+    - cron: "0 7 * * *"
+  workflow_dispatch: {}
+
+concurrency:
+  group: billing-daily
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Call billing-cron
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          CRON_SECRET: ${{ secrets.BILLING_CRON_SECRET }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$CRON_SECRET" ]; then echo "Billing secrets not configured yet — skipping."; exit 0; fi
+          curl -sS --fail-with-body -X POST "$SUPABASE_URL/functions/v1/billing-cron" -H "x-cron-secret: $CRON_SECRET" -H "Content-Type: application/json" -d '{}'

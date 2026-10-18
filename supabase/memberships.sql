@@ -32,7 +32,7 @@ insert into public.billing_settings (key, value) values
   ('dunning',               '{"keep_access_while_retrying": true}'),
   ('enforce_library_access','false'),    -- turn on once MemberPress members are linked (see Migration)
   ('emails',                '{"from_name": "Sports Content Playbook", "from_email": "hello@sportscontentplaybook.com", "reply_to": "", "trial_reminder_days": 3, "access_end_reminder_days": 3}'),
-  ('legal',                 '{"terms_url": "/legal/terms.html", "privacy_url": "/legal/privacy.html", "cancellation_url": "/pricing.html#faq"}'),
+  ('legal',                 '{"terms_url": "", "privacy_url": "", "cancellation_url": "pricing.html#faq"}'),   -- set the real pages before going live
   ('checkout',              '{"require_terms_consent": false, "collect_tax_id": true}')
 on conflict (key) do nothing;
 create or replace function public.billing_setting(p_key text)
@@ -1168,8 +1168,7 @@ begin
     'past_due', (select count(*) from public.subscriptions where status in ('past_due', 'unpaid')),
     'canceling', (select count(*) from public.subscriptions where cancel_at_period_end and status in ('active', 'trialing', 'past_due')),
     'canceled_in_window', (select count(*) from public.subscription_events where kind = 'canceled' and created_at >= since),
-    'trials_ended', (select count(*) from public.subscription_events where kind = 'trial_started' and created_at < now() - interval '1 day'
-                     and stripe_subscription_id in (select stripe_subscription_id from public.subscriptions where trial_end between since and now())),
+    'trials_ended', (select count(*) from public.subscriptions where trial_end between since and now()),
     'trials_converted', (select count(*) from public.subscriptions where trial_end between since and now() and status in ('active', 'past_due')),
     'paying_at_start', (select count(*) from public.subscription_events e where e.kind in ('activated', 'trial_converted') and e.created_at < since)
                        - (select count(*) from public.subscription_events e where e.kind = 'canceled' and e.created_at < since),
