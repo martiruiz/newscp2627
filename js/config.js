@@ -10,7 +10,7 @@ window.SCP_CONFIG = {
 
   // Demo bookings: the Google Calendar booking page (Calendar → Create → Appointment schedule → Share → link).
   // When set, the demo forms show the calendar so visitors pick a time themselves; the request form stays below.
-  demoBookingUrl: "",
+  demoBookingUrl: "https://calendar.google.com/calendar/appointments/schedules/AcZssZ31zRhkRnQXgh5tm_fYcQhJXz3PNRy-3dGao9A9J4gBade1OSriQ4rUyDPp9QR2AQ_5QXwFidza",
 
   // Home dock: company LinkedIn page (the LinkedIn button is hidden while this is empty)
   linkedinUrl: "https://www.linkedin.com/company/sportscontentplaybook",

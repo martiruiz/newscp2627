@@ -467,6 +467,8 @@ window.SCP_ES = {
   "billed yearly": "facturación anual",
   "or {price}/year": "o {price}/año",
   "Recommended": "Recomendado",
+  "A live tour with filters set up for your sport. Pick a time and get the invite straight away.": "Un recorrido en directo con los filtros preparados para tu deporte. Elige una hora y recibe la invitación al momento.",
+  "Pick a time in the calendar and get the video call invite straight away. We’ll show you the platform set up for your sport.": "Elige una hora en el calendario y recibe la invitación a la videollamada al momento. Te enseñaremos la plataforma preparada para tu deporte.",
   "Pick a time that suits you": "Elige la hora que te vaya bien",
   "30 min · video call · you get the invite straight away": "30 min · videollamada · recibes la invitación al momento",
   "No time fits? Ask us to contact you →": "¿Ninguna hora te va bien? Pídenos que te contactemos →",
