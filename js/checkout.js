@@ -160,7 +160,7 @@ window.SCP_CHECKOUT = (() => {
     if (result === "cancel") { clean(); notify("Payment cancelled — you haven't been charged."); return; }
     if (result !== "success" || !auth?.client) return clean();
     const wantPlan = q.get("plan") || (location.pathname.endsWith("profile.html") ? "*" : null);
-    const t = notify(`<span class="co-spin"></span><span>${tx(wantPlan ? "<b>Payment received.</b> Activating your plan…" : "<b>Payment received.</b> Activating your AI credits…")}</span>`, { sticky: true, html: true, kind: "is-ok" });
+    const t = notify(`<span class="co-spin"></span><span>${tx(wantPlan ? "<b>Payment received.</b> Activating your plan…" : "<b>Payment received.</b> Adding your AI analyses…")}</span>`, { sticky: true, html: true, kind: "is-ok" });
     let first = null;
     for (let i = 0; i < 15; i++) {
       const { data: ent } = await auth.client.rpc("my_entitlements");
@@ -171,7 +171,7 @@ window.SCP_CHECKOUT = (() => {
         const trialEnd = ent?.status === "trialing" && ent.current_period_end ? new Date(ent.current_period_end).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "long" }) : "";
         t.innerHTML = wantPlan
           ? `<span>${"✓"}</span><span>${tx("<b>Welcome to {plan}!</b>", { plan: ent.plan_name })} ${trialEnd ? tx("Your free trial runs until {date}.", { date: trialEnd }) : tx("Your plan is active.")}</span>`
-          : `<span>${"✓"}</span><span>${tx("<b>AI credits added.</b> Enjoy your analyses.")}</span>`;
+          : `<span>${"✓"}</span><span>${tx("<b>AI analyses added.</b> Enjoy them.")}</span>`;
         setTimeout(() => location.reload(), 1800);
         return;
       }

@@ -878,13 +878,13 @@
     if (!ai.ent?.has_ai) { el.hidden = true; return; }
     el.hidden = false;
     el.innerHTML = ai.ent.is_staff ? `${icon("sparkles")}AI · team access`
-      : `${icon("sparkles")}<b>${credits()}</b> ${tx(credits() === 1 ? "AI credit" : "AI credits")}${ai.ent.pack_left ? `<small>${tx("{m} monthly + {p} pack", { m: ai.ent.monthly_left, p: ai.ent.pack_left })}</small>` : `<small>${tx("renews {date}", { date: new Date(ai.ent.cycle_end).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" }) })}</small>`}`;
+      : `${icon("sparkles")}<b>${credits()}</b> ${tx(credits() === 1 ? "AI analysis left" : "AI analyses left")}${ai.ent.pack_left ? `<small>${tx("{m} monthly + {p} pack", { m: ai.ent.monthly_left, p: ai.ent.pack_left })}</small>` : `<small>${tx("renews {date}", { date: new Date(ai.ent.cycle_end).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" }) })}</small>`}`;
   }
   function aiButton(id) {
     const n = Number(id);
     if (ai.ent && !ai.ent.has_ai) return `<button class="lib-analysis is-locked" type="button" data-open="${esc(id)}">${icon("lock")}<span>AI Analysis</span>${icon("arrow-up-right")}</button>`;
     if (ai.unlocked.has(n)) return `<button class="lib-analysis is-ready" type="button" data-open="${esc(id)}">${icon("sparkles")}<span>View AI Analysis</span>${icon("arrow-up-right")}</button>`;
-    return `<button class="lib-analysis" type="button" data-open="${esc(id)}">${icon("sparkles")}<span>Unlock AI Analysis <small>· 1 credit</small></span>${icon("arrow-up-right")}</button>`;
+    return `<button class="lib-analysis" type="button" data-open="${esc(id)}">${icon("sparkles")}<span>Unlock AI Analysis</span>${icon("arrow-up-right")}</button>`;
   }
   const refreshAiButtons = (id) => $$(`.lib-card[data-id="${CSS.escape(String(id))}"] .lib-analysis`).forEach((b) => (b.outerHTML = aiButton(id)));
 
@@ -1009,9 +1009,9 @@
   }
 
   const area = () => body.querySelector("[data-analysis]");
-  const balanceLine = () => ai.ent?.is_staff ? tx("Team access: no credits used.")
-    : ai.ent?.pack_left ? tx(credits() === 1 ? "You have <b>{n} credit</b> left ({m} monthly + {p} from packs)." : "You have <b>{n} credits</b> left ({m} monthly + {p} from packs).", { n: credits(), m: ai.ent.monthly_left, p: ai.ent.pack_left })
-    : tx(credits() === 1 ? "You have <b>{n} credit</b> left this month." : "You have <b>{n} credits</b> left this month.", { n: credits() });
+  const balanceLine = () => ai.ent?.is_staff ? tx("Team access: unlimited analyses.")
+    : ai.ent?.pack_left ? tx(credits() === 1 ? "You have <b>{n} analysis</b> left ({m} monthly + {p} from packs)." : "You have <b>{n} analyses</b> left ({m} monthly + {p} from packs).", { n: credits(), m: ai.ent.monthly_left, p: ai.ent.pack_left })
+    : tx(credits() === 1 ? "You have <b>{n} analysis</b> left this month." : "You have <b>{n} analyses</b> left this month.", { n: credits() });
   async function showAnalysisArea(id) {
     const n = Number(id);
     if (!ai.ent) await loadAi().catch(() => {});
@@ -1026,13 +1026,13 @@
     area().innerHTML = `<div class="ai-unlock">
       <div class="ai-unlock-top">${icon("sparkles")}<div><b>AI analysis of this post</b><p>Hook, why it works, format, angle, visual breakdown and how to adapt it to your club.</p></div></div>
       ${credits() > 0 || ai.ent.is_staff
-        ? `<button class="btn btn-gold ai-unlock-btn" type="button" data-unlock="${n}">${icon("sparkles")}Unlock AI Analysis — 1 credit</button>
+        ? `<button class="btn btn-gold ai-unlock-btn" type="button" data-unlock="${n}">${icon("sparkles")}Unlock AI Analysis</button>
            <p class="ai-balance">${balanceLine()} ${tx("Once unlocked, you can open it again for free.")}</p>`
         : noCreditsHtml()}
     </div>`;
   }
-  const noCreditsHtml = () => `<div class="ai-empty"><b>You've used all your AI credits</b>
-    <p>${tx("Your monthly credits renew on {date}. Need more now?", { date: ai.ent?.cycle_end ? new Date(ai.ent.cycle_end).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "long" }) : tx("your next billing date") })}</p>
+  const noCreditsHtml = () => `<div class="ai-empty"><b>You've used all your AI analyses</b>
+    <p>${tx("Your monthly analyses renew on {date}. Need more now?", { date: ai.ent?.cycle_end ? new Date(ai.ent.cycle_end).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "long" }) : tx("your next billing date") })}</p>
     <div class="ai-empty-actions"><a class="btn btn-gold" href="pricing.html#packs">Buy an analysis pack</a><a class="btn btn-outline" href="pricing.html">Upgrade your plan</a></div></div>`;
   function generating(text = "Unlocking the analysis…") {
     area().innerHTML = `<div class="ai-working"><span class="ai-spinner"></span><div><b>${text}</b><p>Reading the post, the hook and the format. This can take up to a minute.</p></div></div>`;
@@ -1063,8 +1063,8 @@
       if (data?.status === "unlocked") { area().innerHTML = analysisHtml(data.analysis); return; }
       if (data?.status === "failed") {
         ai.unlocked.delete(n); refreshAiButtons(n); await loadAi();
-        area().innerHTML = `<div class="ai-empty"><b>We couldn't generate this analysis</b><p>Your credit has been refunded. Please try again in a few minutes.</p>
-          <div class="ai-empty-actions"><button class="btn btn-gold" type="button" data-unlock="${n}">Try again — 1 credit</button></div></div>`;
+        area().innerHTML = `<div class="ai-empty"><b>We couldn't generate this analysis</b><p>It hasn't counted towards your analyses. Please try again in a few minutes.</p>
+          <div class="ai-empty-actions"><button class="btn btn-gold" type="button" data-unlock="${n}">Try again</button></div></div>`;
         return;
       }
     }

@@ -113,7 +113,7 @@
           ? `<button class="btn btn-gold" type="button" data-bill="reactivate">Keep my membership</button>`
           : `<button class="btn btn-outline" type="button" data-bill="change">Change plan</button>${sub.interval === "month" ? `<button class="btn btn-outline" type="button" data-bill="yearly">Switch to yearly</button>` : ""}`}
         <button class="btn btn-outline" type="button" data-bill="portal">${icon("external-link")}Billing details &amp; invoices</button>
-        ${ent?.has_ai ? `<a class="btn btn-outline" href="pricing.html#packs">Buy AI credits</a>` : ""}
+        ${ent?.has_ai ? `<a class="btn btn-outline" href="pricing.html#packs">${tx("Buy more AI analyses")}</a>` : ""}
         ${!sub.cancel_at_period_end ? `<button class="pf-cancel" type="button" data-bill="cancel">Cancel membership</button>` : ""}
       </div>
       <div data-bill-panel></div>

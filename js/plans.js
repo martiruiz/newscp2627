@@ -19,8 +19,7 @@
 
   let data = null;          // { plans, entitlements, currencies, legal }
   let interval = "month", currency = "eur";
-  const MAX_SEATS = 5;
-  const V2 = new URLSearchParams(location.search).has("after");   // simpler cards, preview for review      // more users → custom plan (contact form)
+  const MAX_SEATS = 5;      // more users → custom plan (contact form)
   let seats = Math.min(MAX_SEATS, Math.max(1, Number(store.get("scp-seats")) || 1));
   let mine = null;          // my_membership() for signed-in members
   let privateToken = null, privatePlan = null;
@@ -39,42 +38,31 @@
     const cur = currentSub();
     const isCurrent = cur?.plan === p.key;
     const trial = p.trial_days > 0 && (!mine || mine.trial_eligible) ? p.trial_days : 0;
-    // the same five lines on every plan: ✓ included, greyed out when not, so the difference is visible at a glance
     const has = (k) => (p.entitlements || []).includes(k);
-    const hasAi = has("ai.analyze_posts");
-    const aiLine = !hasAi ? tx("AI analysis of any post") : p.ai_unlimited ? `<b>${tx("Unlimited AI analyses")}</b>` : tx("<b>{n} AI analyses</b> every month", { n: p.ai_monthly_units });
-    const features = [
-      [tx("Full Content Library"), has("library.access")],
-      [tx("Smart filters & saved boards"), has("library.save_posts")],
-      [tx("Content Plan: calendars & exports"), has("planner.access")],
-      [aiLine, hasAi],
-      [tx("Up to {n} users", { n: MAX_SEATS }), true],
-    ].map(([f, on]) => tick(f, on)).join("");
-    // the plan with the most AI analyses says what it adds over the next one
+    const hasAi = has("ai.analyze_posts"), lib = has("library.access"), cp = has("planner.access");
+    // the plan with the most AI analyses says how many times more it has than the next one
     const otherAi = Math.max(0, ...(data?.plans || []).filter((x) => x.key !== p.key && (x.entitlements || []).includes("ai.analyze_posts")).map((x) => x.ai_monthly_units || 0));
-    const edge = hasAi && !p.ai_unlimited && p.ai_monthly_units > otherAi && otherAi > 0 ? `<p class="plan-edge">${tx("{n} AI analyses (vs {m}) · Best for teams", { n: p.ai_monthly_units, m: otherAi })}</p>` : "";
+    const times = hasAi && !p.ai_unlimited && otherAi > 0 && p.ai_monthly_units > otherAi ? Math.floor(p.ai_monthly_units / otherAi) : 0;
     let cta;
     if (isCurrent) cta = `<a class="btn btn-outline plan-cta" href="profile.html#billing">${tx("Manage your plan")}</a>`;
     else if (!price) cta = `<span class="btn btn-outline plan-cta is-current">${tx("Not available in {cur}", { cur: currency.toUpperCase() })}</span>`;
     else if (!price.ready) cta = `<a class="btn btn-outline plan-cta" href="contact.html">${tx("Coming soon — contact us")}</a>`;
     else if (cur) cta = `<a class="btn btn-outline plan-cta" href="profile.html?change=${encodeURIComponent(p.key)}&interval=${iv}#billing">${tx("Switch to {plan}", { plan: esc(p.name) })}</a>`;
     else cta = `<button class="btn ${p.highlighted || solo ? "btn-gold" : "btn-outline"} plan-cta" type="button" data-checkout-plan="${esc(p.key)}" data-interval="${iv}" data-currency="${currency}" data-seats="${seats}"${privateToken && p.key === privatePlan?.key ? ` data-link="${esc(privateToken)}"` : ""}><span>${trial ? tx("Start {n}-day free trial", { n: trial }) : tx("Get {plan}", { plan: esc(p.name) })}</span><i class="plan-cta-arrow" aria-hidden="true">→</i></button>`;
-    const flag = isCurrent ? `<span class="plan-flag is-current">${tx(cur.status === "trialing" ? "Your trial" : "Your plan")}</span>` : p.badge || p.highlighted ? `<span class="plan-flag">${esc(tx(p.badge || "Recommended"))}</span>` : "";
+    const flag = isCurrent ? `<span class="plan-flag is-current">${tx(cur.status === "trialing" ? "Your trial" : "Your plan")}</span>`
+      : p.highlighted ? `<span class="plan-flag">${tx("Recommended")}${times > 1 ? ` · ${tx("{n}× more AI", { n: times })}` : ""}</span>` : "";
+    // the trial / billing note only where it isn't said below the cards: your current plan, or a private plan on its own
     const note = isCurrent
-      ? (cur.status === "trialing" && cur.trial_end ? tx("Free trial until {date}", { date: new Date(cur.trial_end).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" }) }) : cur.cancel_at_period_end ? tx("Ends on {date}", { date: new Date(cur.current_period_end).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" }) }) : "&nbsp;")
-      : trial && price?.ready ? tx(iv === "month" ? "Card required · {zero} today · then {price}/{per} · billed on the 1st" : "Card required · {zero} today · then {price}/{per}", { zero: fmt(0, currency), price: fmt(price.amount * seats, currency), per: per(iv) })
-      : `${tx(currency === "usd" ? "Plus tax where applicable" : "VAT included")} · ${iv === "month" ? `${tx("billed on the 1st")} · ` : ""}${tx("cancel anytime")}`;
-    if (V2) {
-      // only what differs between plans: who it's for, price, the button, and the three tools lit or dimmed
-      const lib = has("library.access"), cp = has("planner.access");
-      const who = hasAi && cp ? "Everything, for teams" : hasAi ? "To know what works" : cp ? "To plan your week" : "To find ideas fast";
-      const times = hasAi && otherAi > 0 && p.ai_monthly_units > otherAi ? Math.floor(p.ai_monthly_units / otherAi) : 0;
-      const flag2 = isCurrent ? flag : p.highlighted ? `<span class="plan-flag">${tx("Recommended")}${times > 1 ? ` · ${tx("{n}× more AI", { n: times })}` : ""}</span>` : "";
-      const sub = price && seats > 1 ? tx("Total for {n} users: <b>{total}</b>/{per}", { n: seats, total: fmt(price.amount * seats, currency), per: per(iv) })
-        : price && iv === "year" && monthsFree(p) > 0 ? `${fmt(price.amount / 12, currency)}/${per("month")} · <b class="plan-free">${tx("save {amount}", { amount: fmt(yearSave(p), currency) })}</b>` : "";
-      const tool = (on, cls, label, extra = "") => `<li class="pt ${cls}${on ? "" : " is-off"}"><i></i><span>${label}</span>${extra ? `<em>${extra}</em>` : ""}</li>`;
-      return `<article class="plan-card v2${p.highlighted ? " is-best" : ""}${isCurrent ? " is-current" : ""}">
-      ${flag2}
+      ? (cur.status === "trialing" && cur.trial_end ? tx("Free trial until {date}", { date: new Date(cur.trial_end).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" }) }) : cur.cancel_at_period_end ? tx("Ends on {date}", { date: new Date(cur.current_period_end).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" }) }) : "")
+      : solo && trial && price?.ready ? tx(iv === "month" ? "Card required · {zero} today · then {price}/{per} · billed on the 1st" : "Card required · {zero} today · then {price}/{per}", { zero: fmt(0, currency), price: fmt(price.amount * seats, currency), per: per(iv) })
+      : "";
+    // only what differs between plans: who it's for, the price, the button and the three tools (✓ or –)
+    const who = hasAi && cp ? "Everything, for teams" : hasAi ? "To know what works" : cp ? "To plan your week" : "To find ideas fast";
+    const sub = price && seats > 1 ? tx("Total for {n} users: <b>{total}</b>/{per}", { n: seats, total: fmt(price.amount * seats, currency), per: per(iv) })
+      : price && iv === "year" && monthsFree(p) > 0 ? `${fmt(price.amount / 12, currency)}/${per("month")} · <b class="plan-free">${tx("save {amount}", { amount: fmt(yearSave(p), currency) })}</b>` : "";
+    const tool = (on, cls, label, extra = "") => `<li class="pt ${cls}${on ? "" : " is-off"}"><i></i><span>${label}</span>${extra ? `<em>${extra}</em>` : ""}</li>`;
+    return `<article class="plan-card v2${p.highlighted ? " is-best" : ""}${isCurrent ? " is-current" : ""}">
+      ${flag}
       <h3>${esc(p.name)}</h3>
       <p class="plan-blurb">${tx(who)}</p>
       <p class="plan-price">${price ? `<b data-price="${price.amount}" data-cur="${currency}">${fmt(price.amount, currency)}</b><span>${tx("/ {per} per user", { per: per(iv) })}</span>` : `<b>—</b>`}</p>
@@ -85,20 +73,7 @@
         ${tool(cp, "pt-cp", tx("Content Plan"))}
         ${tool(hasAi, "pt-ai", tx("AI analysis"), hasAi ? (p.ai_unlimited ? tx("Unlimited") : tx("{n}/month", { n: p.ai_monthly_units })) : "")}
       </ul>
-    </article>`;
-    }
-    return `<article class="plan-card${p.highlighted ? " is-best" : ""}${isCurrent ? " is-current" : ""}">
-      ${flag}
-      <h3>${esc(p.name)}</h3>
-      <p class="plan-blurb">${esc(p.tagline || p.description || "")}</p>
-      <p class="plan-price">${price ? `<b data-price="${price.amount}" data-cur="${currency}">${fmt(price.amount, currency)}</b><span>${tx("/ {per} per user", { per: per(iv) })}</span>` : `<b>—</b>`}</p>
-      <p class="plan-sub">${price && seats > 1 ? tx("Total for {n} users: <b>{total}</b>/{per}", { n: seats, total: fmt(price.amount * seats, currency), per: per(iv) })
-        : price && iv === "year" ? `${fmt(price.amount / 12, currency)}/${per("month")} · ${monthsFree(p) > 0 ? `<b class="plan-free">${tx("{n} months free", { n: monthsFree(p) })}</b> · ${tx("save {amount}", { amount: fmt(yearSave(p), currency) })}` : tx("billed yearly")}`
-        : hasYear(p) ? `${tx("or {price}/year", { price: fmt(priceOf(p, currency, "year").amount, currency) })}${monthsFree(p) > 0 ? ` · <b class="plan-free">${tx("{n} months free", { n: monthsFree(p) })}</b>` : ""}` : "&nbsp;"}</p>
-      <ul class="plan-features">${features}</ul>
-      ${edge}
-      ${cta}
-      <p class="plan-note">${note}</p>
+      ${note ? `<p class="plan-note">${note}</p>` : ""}
     </article>`;
   }
 
@@ -136,7 +111,7 @@
         <button type="button" data-seats-step="1" aria-label="${esc(tx("More users"))}">+</button>
       </div>`}
       ${curs.length > 1 ? `<div class="plan-interval plan-currency" role="tablist" aria-label="Currency">${curs.map((c) => `<button type="button" role="tab" aria-selected="${currency === c}" data-currency-pick="${c}">${c.toUpperCase()}</button>`).join("")}</div>` : ""}
-      ${V2 && !privatePlan ? `<p class="plan-common">${tx("Every plan: the full library with filters and saved boards · up to {n} users", { n: MAX_SEATS })}</p>` : ""}
+      ${!privatePlan ? `<p class="plan-common">${tx("Every plan: the full library with filters and saved boards · up to {n} users", { n: MAX_SEATS })}</p>` : ""}
       <p class="plan-seats-more" ${seats >= MAX_SEATS && !privatePlan ? "" : "hidden"} data-seats-more>${tx("More than {n} users?", { n: MAX_SEATS })} <a class="link-gold" href="contact.html?topic=custom-plan&users=${MAX_SEATS + 1}">${tx("Request a custom plan")}</a></p>
     </div>`;
   }
@@ -198,12 +173,10 @@
       decorate(b, swap);
       if (!privatePlan && plans.length > 1 && !b.nextElementSibling?.matches?.(".plan-assure")) {
         const td = Math.max(0, ...plans.map((p) => p.trial_days || 0));
-        b.insertAdjacentHTML("afterend", `<div class="plan-assure">
-          <p class="plan-assure-row">${td ? `<span>✓ ${tx("{n} days free", { n: td })}</span>` : ""}<span>✓ ${tx("Cancel in 2 clicks")}</span><span>✓ ${tx("No charge until the trial ends")}</span><span>✓ ${tx("VAT included")}</span></p>
-          <figure class="plan-quote"><blockquote>“${tx("In minutes I review fresh creative inspo, align posts, and schedule—freeing hours every week.")}”</blockquote><figcaption>Gastón Acosta · World Football Summit</figcaption></figure>
-        </div>`);
+        // one short line: the trial, cancelling, VAT and the team proposal
+        b.insertAdjacentHTML("afterend", `<p class="plan-assure">${td ? `<span>✓ ${tx("{n} days free", { n: td })}</span>` : ""}<span>✓ ${tx("Cancel in 2 clicks")}</span><span>✓ ${tx("VAT included")}</span><span>${tx("More than {n} users?", { n: MAX_SEATS })} <a class="link-gold" href="contact.html?topic=custom-plan&users=${MAX_SEATS + 1}">${tx("Ask for a proposal")}</a></span></p>`);
       }
-      if (V2 && !privatePlan && plans.length > 1) b.classList.add("is-v2");
+      b.classList.toggle("is-v2", !privatePlan && plans.length > 1);
       const prev = b.previousElementSibling?.matches?.(".plan-switches") ? b.previousElementSibling : null;
       if (prev) prev.outerHTML = switches(plans); else b.insertAdjacentHTML("beforebegin", switches(plans));
     });
