@@ -4884,7 +4884,7 @@ main { position: relative; z-index: 0; }
 .team-tiles p { margin-top: 8px; font-size: 15.5px; line-height: 1.6; }
 
 /* click feedback: a gold ripple from the click point + a small press, on clickable things only */
-.btn, .tool, .quote-grid .quote-card, .hx-list li, .plan-card, .pack-card, .team-tiles article, .acc-trigger { position: relative; overflow: hidden; }
+.btn, .tool, .quote-grid .quote-card, .hx-list li, .team-tiles article, .acc-trigger { position: relative; overflow: hidden; }
 .is-pressed { transform: scale(0.975) !important; transition: transform 0.12s ease !important; }
 .click-ripple { position: absolute; border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%) scale(0); z-index: 5;
   background: radial-gradient(circle, rgba(240, 184, 74, 0.45) 0%, rgba(240, 184, 74, 0.18) 45%, transparent 70%); animation: clickRipple 0.6s ease-out forwards; }
@@ -5101,3 +5101,16 @@ main { position: relative; z-index: 0; }
 @media (max-width: 600px) { .lib-crests { grid-template-columns: repeat(3, minmax(0, 1fr)); } .lib-showing { display: none; } }
 .lib-crest img { width: 36px; height: 36px; padding: 5px; border-radius: 50%; background: #f4f6fb; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35); filter: none; }
 .lib-credit { margin: 10px 2px 0; font-size: 11px; color: var(--muted-dim); text-align: right; }
+
+/* Content Plan demo: week progress bar, a fuller week */
+.cp-demo-top { align-items: center; gap: 16px; }
+.cp-progress { flex: 1; max-width: 300px; display: grid; gap: 6px; justify-items: end; }
+.cp-progress small { font-size: 12.5px; color: #3ddc97; font-weight: 600; font-variant-numeric: tabular-nums; }
+.cp-progress small.is-bump { animation: cpBump 0.5s ease; }
+.cp-progress i { width: 100%; height: 8px; border-radius: 8px; background: rgba(var(--fg), 0.08); overflow: hidden; }
+.cp-progress em { display: block; height: 100%; border-radius: 8px; background: linear-gradient(90deg, #1fae74, #3ddc97); box-shadow: 0 0 12px rgba(61, 220, 151, 0.55); transition: width 0.6s cubic-bezier(.2, .8, .2, 1); }
+.cp-progress em.is-full { background: linear-gradient(90deg, #3ddc97, #b5f5d8); }
+#content-plan .cp-day { min-height: 268px; gap: 5px; }
+#content-plan .cp-e.has-img { grid-template-columns: 20px minmax(0, 1fr); }
+#content-plan .cp-e.has-img b { width: 20px; height: 27px; }
+.cp-tray .cp-thumb { width: 34px; height: 46px; }

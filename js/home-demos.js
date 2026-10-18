@@ -113,13 +113,16 @@
   const cp = document.querySelector("[data-cp-demo]");
   if (cp && !reduce) {
     const grid = cp.querySelector("[data-cp-grid]");
-    const counter = cp.querySelector("[data-cp-count]");
+    const label = cp.querySelector("[data-cp-label]"), bar = cp.querySelector("[data-cp-bar]");
     const thumbs = [...cp.querySelectorAll("[data-cp-post]")];
     const initial = grid.innerHTML;
-    const planned = () => [...grid.querySelectorAll(".cp-day")].filter((d) => d.querySelector(".cp-e:not(.is-ghost)")).length;
+    const GOAL = 24;   // posts the club wants this week
     const count = (bump) => {
-      counter.textContent = t("{n} / 7 days planned").replace("{n}", planned());
-      if (bump) { counter.classList.remove("is-bump"); void counter.offsetWidth; counter.classList.add("is-bump"); }
+      const n = grid.querySelectorAll(".cp-e:not(.is-ghost)").length;
+      label.textContent = t("{n} / {goal} posts planned").replace("{n}", n).replace("{goal}", GOAL);
+      bar.style.width = `${Math.min(100, (n / GOAL) * 100)}%`;
+      bar.classList.toggle("is-full", n >= GOAL);
+      if (bump) { label.classList.remove("is-bump"); void label.offsetWidth; label.classList.add("is-bump"); }
     };
     whileVisible(cp, async (isOn) => {
       while (isOn()) {
@@ -133,18 +136,19 @@
           const a = th.getBoundingClientRect(), b = day.getBoundingClientRect();
           const fly = document.createElement("div");
           fly.className = "cp-fly";
-          fly.style.cssText = `left:${a.left}px;top:${a.top}px;background-image:${th.style.backgroundImage}`;
+          fly.style.cssText = `left:${a.left}px;top:${a.top}px`;
+          fly.style.backgroundImage = `url(${th.dataset.img})`;
           document.body.appendChild(fly);
           th.classList.add("is-gone"); day.classList.add("is-target");
           await sleep(30);
           fly.style.transform = `translate(${b.left + b.width / 2 - a.left - 19}px, ${b.top + 34 - a.top}px) rotate(-4deg)`;
-          await sleep(950);
+          await sleep(800);
           fly.style.opacity = "0"; setTimeout(() => fly.remove(), 300);
           day.classList.remove("is-target");
           day.querySelectorAll(".cp-e.is-ghost").forEach((g) => g.remove());
-          day.querySelector("small").insertAdjacentHTML("afterend", `<i class="cp-e is-idea has-img is-new" data-flown><b style="background-image:${th.style.backgroundImage}"></b>${t(th.dataset.title)}</i>`);
+          day.querySelector("small").insertAdjacentHTML("afterend", `<i class="cp-e is-idea has-img is-new" data-flown><b style="background-image:url(${th.dataset.img})"></b>${t(th.dataset.title)}</i>`);
           count(true);
-          await sleep(450);
+          await sleep(300);
         }
         for (const cls of ["is-plan", "is-prod", "is-pub"]) {
           if (!isOn()) break;

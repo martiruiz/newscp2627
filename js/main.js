@@ -52,7 +52,7 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString(window.SCP_LO
 
   // Click feedback on clickable things: a gold ripple from the pointer + a small press (not with reduced motion)
   if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    const CLICKABLE = ".btn, .tool, .quote-grid .quote-card, .hx-list li, .plan-card, .pack-card, .team-tiles article, .acc-trigger";
+    const CLICKABLE = ".btn, .tool, .quote-grid .quote-card, .hx-list li, .team-tiles article, .acc-trigger";   // not the plan / pack cards: their badges sit outside the card
     document.addEventListener("pointerdown", (e) => {
       const el = e.target.closest?.(CLICKABLE);
       if (!el || el.disabled) return;
