@@ -5605,3 +5605,16 @@ html.logo-intro .site-nav .brand::after { content: ""; position: absolute; inset
   background: linear-gradient(105deg, transparent 38%, rgba(255, 248, 225, 0.95) 50%, transparent 62%); background-size: 300% 100%;
   animation: logoShine 1.1s ease-in-out 1s both; }
 body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
+
+/* Library: "Following" badge (a post from one of your favourite profiles) with an explanation on hover */
+.lib-card .lib-badge-fav, .lib-card.has-cover .lib-badge-fav { position: relative; width: auto; height: 26px; padding: 0 10px 0 22px; justify-content: center; gap: 0;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.02em; color: var(--on-gold); background: var(--gold); border-radius: 100px; cursor: help; opacity: 1; transform: none; }
+.lib-badge-fav::before { content: ""; position: absolute; left: 9px; top: 50%; width: 6px; height: 6px; margin-top: -3px; border-radius: 50%; background: var(--on-gold); box-shadow: 0 0 0 3px rgba(11, 15, 28, 0.15); }
+.lib-tip { position: absolute; top: calc(100% + 8px); left: 0; z-index: 20; width: 230px; padding: 10px 12px; border-radius: 12px; text-align: left; white-space: normal;
+  font-size: 12px; font-weight: 500; letter-spacing: 0; line-height: 1.45; color: var(--text); background: #0d1426; border: 0.5px solid rgba(240, 184, 74, 0.45);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.45); opacity: 0; visibility: hidden; transform: translateY(-4px); transition: opacity 0.2s, transform 0.2s, visibility 0.2s; pointer-events: none; }
+.lib-badge-fav:hover .lib-tip, .lib-badge-fav:focus .lib-tip { opacity: 1; visibility: visible; transform: none; }
+/* posts without a cover (X, LinkedIn, Facebook…): the same 4:5 card, the embed fills it and is cut at the bottom */
+.lib-media.is-fixed { overflow: hidden; }
+.lib-media.is-fixed .lib-zoom, .lib-media.is-fixed .lib-frame { height: 100%; }
+.lib-media.is-fixed::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 22%; pointer-events: none; background: linear-gradient(180deg, transparent, rgba(13, 20, 38, 0.85)); }

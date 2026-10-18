@@ -777,21 +777,19 @@
   const isVideo = (p) => (p.media_type ? /^(reel|video)$/.test(p.media_type) : /^(reels?|shorts?|video)$/i.test(first(p, "format")) || /\/(reel|shorts)\/|tiktok\.com|youtu/.test(p.url || ""));
   const mmss = (s) => { s = Math.round(Number(s) || 0); return s ? `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}` : ""; };
   // Card shape from the cover: the post's real proportion, kept between 16:9 and 9:16
-  function coverRatio(p) {
-    const pf = platformOf(p);
-    const r = Number(p.media_ratio) || (pf === "tiktok" || /\/shorts\//.test(p.url || "") ? 16 / 9 : pf === "youtube" ? 9 / 16 : 1.25);
-    return Math.min(16 / 9, Math.max(9 / 16, r));
-  }
+  // Every cover has the same shape (4:5, like an Instagram grid), whatever the platform: the image fills it (object-fit: cover)
+  const coverRatio = () => 1.25;
 
   function card(p) {
     const pf = platformOf(p);
     const who = first(p, "club") || first(p, "competition") || first(p, "entity");
     const video = isVideo(p);
-    const fav = (p.tags?.club || []).some((v) => me.fav.has(Number(v.id)));
+    const favClub = (p.tags?.club || []).find((v) => me.fav.has(Number(v.id)));
+    const fav = !!favClub;
     const top = `
           <div class="lib-top">
             <button class="lib-grip" type="button" data-pp-grip="${esc(p.id)}" title="Drag to your Content Plan · click to select several" aria-label="Select to drag into the Content Plan">${icon("grip-vertical")}</button>
-            ${fav ? `<span class="lib-badge lib-badge-fav" title="One of your favourite profiles">${icon("star")}</span>` : ""}
+            ${fav ? `<span class="lib-badge lib-badge-fav" tabindex="0">${tx("Following")}<span class="lib-tip" role="tooltip">${tx("{club} is one of your favourite profiles, so its posts come first in “For you”. Change them in Profile → Favourites.", { club: esc(favClub.name || "") })}</span></span>` : ""}
             <span class="lib-save">${saveBtn(p.id)}</span>
             ${me.isSuper ? `<button class="lib-remove" type="button" data-remove="${esc(p.id)}" title="Remove from the library (superadmin)" aria-label="Remove from the library">${icon("trash-2")}</button>` : ""}
           </div>`;
@@ -824,7 +822,7 @@
     const zoomStyle = sh.zoom ? ` style="--zoom:${sh.zoom.toFixed(4)};--inset:${((1 - sh.boxFrac) / 2 * 100).toFixed(3)}%"` : "";
     return `
       <article class="lib-card" data-id="${esc(p.id)}">
-        <div class="lib-media${sh.zoom ? " is-reel" : ""}" style="aspect-ratio: 1 / ${sh.ratio.toFixed(4)}">
+        <div class="lib-media is-fixed${sh.zoom ? " is-reel" : ""}" style="aspect-ratio: 1 / 1.25">
           ${pf === "tiktok" && p.url
             ? `<div class="lib-cover" data-cover-box><img data-oembed="${esc(p.url)}" alt="${esc(who || "TikTok video")}"><span class="lib-play" aria-hidden="true"></span></div>`
             : src ? `<div class="lib-zoom"${zoomStyle}><iframe class="lib-frame${pf === "instagram" ? " is-ig" : ""}" src="${esc(src)}" loading="lazy" title="${esc(who || "Post")}" scrolling="no" allow="encrypted-media; picture-in-picture; fullscreen"></iframe></div>` : `<span class="lib-noimg"></span>`}
@@ -917,7 +915,7 @@
     const tpl = document.createElement("template");
     tpl.innerHTML = rows.map(card).join("");
     [...tpl.content.children].forEach((el, i) => {
-      const ratio = rows[i].cover_url ? coverRatio(rows[i]) : shape(rows[i]).ratio;
+      const ratio = 1.25;   // every card has the same 4:5 shape, with or without a cover
       placed.push({ el, ratio });
       place(el, ratio);
     });

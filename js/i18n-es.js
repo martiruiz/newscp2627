@@ -467,6 +467,8 @@ window.SCP_ES = {
   "billed yearly": "facturación anual",
   "or {price}/year": "o {price}/año",
   "Recommended": "Recomendado",
+  "Following": "Sigues",
+  "{club} is one of your favourite profiles, so its posts come first in “For you”. Change them in Profile → Favourites.": "{club} es uno de tus perfiles favoritos, por eso sus posts salen primero en «Para ti». Puedes cambiarlos en Perfil → Favoritos.",
   "How the demo goes": "Así es la demo",
   "Logos and trademarks belong to their owners. SCP is not affiliated with the clubs, competitions or platforms shown.": "Los logos y las marcas pertenecen a sus titulares. SCP no está afiliado a los clubes, competiciones o plataformas que aparecen.",
   "Loading the calendar…": "Cargando el calendario…",
