@@ -295,7 +295,9 @@ ${(p.keywords || []).map((k) => `  <meta property="article:tag" content="${esc(k
   <meta name="twitter:image" content="${img}">
   <script type="application/ld+json">${JSON.stringify(ld)}</script>
   <script type="application/ld+json">${JSON.stringify(breadcrumbs)}</script>
-  <link rel="icon" href="assets/icon-logo.svg">
+  <link rel="icon" type="image/svg+xml" href="assets/icon-logo.svg">
+  <link rel="icon" type="image/png" sizes="256x256" href="assets/icon-logo-lg.png">
+  <link rel="apple-touch-icon" href="assets/icon-logo-lg.png">
   <link rel="stylesheet" href="css/fonts.css?v=1">
   <link rel="stylesheet" href="css/styles.css">
   <script src="js/theme.js"></script>
