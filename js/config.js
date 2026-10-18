@@ -8,6 +8,10 @@ window.SCP_CONFIG = {
   // Where users land after signing up or logging in
   afterLoginPath: "content-library.html",
 
+  // Demo bookings: the Google Calendar booking page (Calendar → Create → Appointment schedule → Share → link).
+  // When set, the demo forms show the calendar so visitors pick a time themselves; the request form stays below.
+  demoBookingUrl: "",
+
   // Home dock: company LinkedIn page (the LinkedIn button is hidden while this is empty)
   linkedinUrl: "https://www.linkedin.com/company/sportscontentplaybook",
   // Newsletter lead magnet: if a file / page URL is set, the pop-up offers it to download right after signing up

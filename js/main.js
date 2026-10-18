@@ -464,6 +464,20 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString(window.SCP_LO
     });
   } catch {}
 
+  // Book a demo with a real calendar: Google Calendar appointment schedule (config.demoBookingUrl). The request form
+  // folds under "Prefer that we contact you?" so nobody is left without a way in.
+  const bookingUrl = (window.SCP_CONFIG || {}).demoBookingUrl;
+  if (bookingUrl) $$("form.book-form").forEach((form) => {
+    const src = /calendar\.google\.com/.test(bookingUrl) && !/[?&]gv=true/.test(bookingUrl) ? `${bookingUrl}${bookingUrl.includes("?") ? "&" : "?"}gv=true` : bookingUrl;
+    form.insertAdjacentHTML("beforebegin", `<div class="book-cal"><p class="book-cal-head"><b>${tx("Pick a time that suits you")}</b><span>${tx("30 min · video call · you get the invite straight away")}</span></p>
+      <iframe src="${src}" title="${tx("Book a demo")}" loading="lazy"></iframe>
+      <button class="book-cal-alt" type="button" aria-expanded="false">${tx("No time fits? Ask us to contact you →")}</button></div>`);
+    form.hidden = true;
+    form.previousElementSibling.querySelector(".book-cal-alt").addEventListener("click", (e) => {
+      form.hidden = !form.hidden; e.currentTarget.setAttribute("aria-expanded", String(!form.hidden));
+    });
+  });
+
   $$("[data-contact-form]").forEach((form) => {
     const status = $("[data-form-status]", form);
     const q = new URLSearchParams(location.search);
