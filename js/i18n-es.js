@@ -115,7 +115,7 @@ window.SCP_ES = {
 
   // ---------- Home ----------
   "Sports Content Ideas & Sports Social Media Tools | SCP": "Ideas de contenido deportivo y herramientas para redes sociales | SCP",
-  "Find proven sports content ideas, analyze competitors and plan your sports content calendar with the sports social media tool used by 100+ clubs.": "Encuentra ideas de contenido deportivo que ya funcionan, analiza a tu competencia y planifica tu calendario con la herramienta de redes sociales que usan más de 100 clubes.",
+  "Find proven sports content ideas, analyze competitors and plan your sports content calendar with 540,000+ posts from 770+ clubs and 114 competitions.": "Encuentra ideas de contenido deportivo que ya funcionan, analiza a tu competencia y planifica tu calendario con más de 540.000 posts de más de 770 clubes y 114 competiciones.",
   "The Sports Content Playbook content library with filters and saved posts": "La biblioteca de contenido de Sports Content Playbook con filtros y posts guardados",
   "The Sports Content Playbook content library": "La biblioteca de contenido de Sports Content Playbook",
   "SCP tracking sports accounts like FC Barcelona, NBA, 433, Manchester City, ESPN, Chicago Bulls, MotoGP, the Patriots and MLB": "SCP sigue cuentas deportivas como FC Barcelona, NBA, 433, Manchester City, ESPN, Chicago Bulls, MotoGP, los Patriots y MLB",
@@ -125,7 +125,9 @@ window.SCP_ES = {
   "Sports Content Playbook content library": "Biblioteca de contenido de Sports Content Playbook",
   "Daily upload complete: 5.248 new posts imported": "Carga diaria completada: 5.248 posts nuevos importados",
   "Close video": "Cerrar vídeo",
-  "Used by 100+ clubs & sports organizations worldwide": "Lo usan más de 100 clubes y organizaciones deportivas de todo el mundo",
+  "540,000+ posts from 770+ clubs & 114 competitions": "Más de 540.000 posts de más de 770 clubes y 114 competiciones",
+  "What sports marketing teams": "Lo que dicen los equipos de marketing deportivo",
+  "say about SCP": "sobre SCP",
   "Stop wasting hours searching for": "Deja de perder horas buscando",
   "content ideas": "ideas de contenido",
   "Use advanced filters to navigate thousands of posts and save the ones that matter into your own collections.": "Usa filtros avanzados para explorar miles de posts y guarda los que te interesan en tus propias colecciones.",
@@ -1318,7 +1320,6 @@ window.SCP_ES = {
   "in sport each week, and why they work": "en el deporte cada semana, y por qué funcionan",
   ", explained for sports social teams": ", explicadas para equipos de redes del deporte",
   "Send me the free kit": "Envíame el kit gratis",
-  "Free forever · No spam · Used by social teams at +100 clubs": "Gratis para siempre · Sin spam · Lo usan los equipos de redes de más de 100 clubes",
   "Download the kit": "Descargar el kit",
   "I want the free kit and the SCP newsletter (sports digital marketing news and examples). I can unsubscribe at any time.": "Quiero el kit gratuito y la newsletter de SCP (noticias y ejemplos de marketing digital deportivo). Puedo darme de baja cuando quiera.",
 
