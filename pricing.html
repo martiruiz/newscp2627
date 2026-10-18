@@ -18,7 +18,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css?v=20261020c">
   <script src="js/theme.js?v=20261018p"></script>
-  <script src="js/i18n.js?v=20261020b"></script>
+  <script src="js/i18n.js?v=20261020c"></script>
 </head>
 <body>
 
@@ -74,48 +74,82 @@
 
     <div class="container" aria-hidden="true"><hr class="section-rule"></div>
 
-    <section class="faq pricing-faq container" id="faq">
+    <section class="faq faq-home pricing-faq container" id="faq">
       <div class="faq-grid">
         <div class="faq-intro">
-          <h2 class="section-title">Questions?<br>We've got answers.</h2>
-          <p>Everything you need to know about pricing, access, billing, and how Sports Content Playbook works. If you have any other questions, feel free to contact our team.</p>
+          <span class="hx-eyebrow">FAQ</span>
+          <h2 class="section-title section-title-md">Questions about<br>your plan?</h2>
+          <p>Trial, billing, users and AI analyses, explained. Anything else? Write to us or book a 30-minute demo, right here.</p>
+          <div class="actions">
+            <button class="btn btn-outline" type="button" data-faq-open="contact">Contact us</button>
+            <button class="btn btn-gold" type="button" data-faq-open="demo">Book a demo</button>
+          </div>
         </div>
-        <div class="accordion" data-accordion>
-          <div class="acc-item is-open">
-            <button class="acc-trigger" type="button" aria-expanded="true">What happens after my free trial ends?<span class="acc-icon"></span></button>
-            <div class="acc-panel"><div><p>We ask for a card to start the trial, but nothing is charged until it ends. Cancel from your account before then and you pay nothing. On monthly plans your first charge covers only the days until the 1st of the month; from then on you pay the full price on the 1st of every month. Yearly plans renew on the same date each year.</p></div></div>
+        <div class="faq-stage" data-faq-stage>
+          <div class="accordion faq-pane is-on" data-accordion data-faq-pane="faq">
+            <div class="acc-item is-open">
+              <button class="acc-trigger" type="button" aria-expanded="true"><span class="faq-n">01</span><span class="faq-q">How does the free trial work?</span><span class="acc-icon"></span></button>
+              <div class="acc-panel"><div><p>You get 7 days free with full access to your plan. We ask for a card to start, but nothing is charged until the trial ends, and if you cancel before then you pay nothing. On monthly plans the first charge covers only the days until the 1st of the month; after that you're billed on the 1st.</p></div></div>
+            </div>
+            <div class="acc-item">
+              <button class="acc-trigger" type="button" aria-expanded="false"><span class="faq-n">02</span><span class="faq-q">Can I cancel at any time?</span><span class="acc-icon"></span></button>
+              <div class="acc-panel"><div><p>Yes, from Account → Billing in two clicks. You keep access until the end of the period you've paid and you won't be charged again. Your saved boards and content plans stay in your account if you come back.</p></div></div>
+            </div>
+            <div class="acc-item">
+              <button class="acc-trigger" type="button" aria-expanded="false"><span class="faq-n">03</span><span class="faq-q">Can I change plan, add users or switch to yearly?</span><span class="acc-icon"></span></button>
+              <div class="acc-panel"><div><p>Yes, whenever you want. Upgrades and new users apply straight away and you only pay the difference for the rest of the period; downgrades apply at the end of the period you've paid. You'll always see the exact amount before confirming. Yearly plans give you 2 months free.</p></div></div>
+            </div>
+            <div class="acc-item">
+              <button class="acc-trigger" type="button" aria-expanded="false"><span class="faq-n">04</span><span class="faq-q">How do payments and invoices work?</span><span class="acc-icon"></span></button>
+              <div class="acc-panel"><div><p>Prices are in euros, VAT included; if your card is in another currency, your bank converts it. Monthly plans renew on the 1st of each month and yearly plans on the same date each year. Every invoice is in Account → Billing, and companies can add their VAT number at checkout.</p></div></div>
+            </div>
+            <div class="acc-item">
+              <button class="acc-trigger" type="button" aria-expanded="false"><span class="faq-n">05</span><span class="faq-q">What if I run out of AI analyses?</span><span class="acc-icon"></span></button>
+              <div class="acc-panel"><div><p>Your analyses renew every month. If you need more before then, you can buy an extra pack: it's a one-time payment and the analyses never expire. Opening an analysis you've already unlocked is always free.</p></div></div>
+            </div>
+            <div class="acc-item">
+              <button class="acc-trigger" type="button" aria-expanded="false"><span class="faq-n">06</span><span class="faq-q">Do you have plans for bigger teams?</span><span class="acc-icon"></span></button>
+              <div class="acc-panel"><div><p>Every plan works for up to 5 users, and each user can sign in on up to two devices. For more users, or for a club or agency with several teams, write to us and we'll prepare a custom plan.</p></div></div>
+            </div>
           </div>
-          <div class="acc-item">
-            <button class="acc-trigger" type="button" aria-expanded="false">Why am I billed on the 1st of the month?<span class="acc-icon"></span></button>
-            <div class="acc-panel"><div><p>All monthly memberships renew on the 1st (Madrid time), so your invoices are easy to track. When you join mid-month you only pay the days left until the 1st, calculated exactly by our payment provider, Stripe.</p></div></div>
+
+          <div class="faq-pane faq-form-pane" data-faq-pane="contact" hidden>
+            <button class="faq-back" type="button" data-faq-back>← Back to questions</button>
+            <h3>Send us a message</h3>
+            <p class="faq-form-sub">We'll get back to you as soon as possible.</p>
+            <form class="contact-form faq-form" novalidate data-contact-form>
+              <div class="book-grid">
+                <label class="book-field"><span>Name*</span><input name="name" type="text" placeholder="Your name" autocomplete="name" required></label>
+                <label class="book-field"><span>Email*</span><input name="email" type="email" placeholder="you@club.com" autocomplete="email" required></label>
+              </div>
+              <label class="book-field"><span>Club or organization</span><input name="company" type="text" placeholder="e.g. Real Sociedad" autocomplete="organization"></label>
+              <label class="book-field"><span>Message</span><textarea name="message" rows="3" placeholder="How can we help?"></textarea></label>
+              <label class="check"><input name="privacy" type="checkbox" required><span>I accept the <a class="link-gold" href="privacy.html" target="_blank">privacy policy</a></span></label>
+              <p class="form-status" role="status" data-form-status></p>
+              <button class="btn btn-gold book-submit" type="submit">Send message <span aria-hidden="true">→</span></button>
+            </form>
+            <div class="book-done" hidden data-form-done><span class="book-done-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><h2>Message sent</h2><p>Thanks! We’ll get back to you as soon as possible.</p><button class="btn btn-outline" type="button" data-faq-back>Back to questions</button></div>
           </div>
-          <div class="acc-item">
-            <button class="acc-trigger" type="button" aria-expanded="false">Can I cancel my subscription at any time?<span class="acc-icon"></span></button>
-            <div class="acc-panel"><div><p>Yes. Cancel from Account → Billing in two clicks. You keep access until the end of the period you've paid and you won't be charged again. Your saved boards and content plans stay in your account if you come back.</p></div></div>
-          </div>
-          <div class="acc-item">
-            <button class="acc-trigger" type="button" aria-expanded="false">Can I change plan or switch to yearly?<span class="acc-icon"></span></button>
-            <div class="acc-panel"><div><p>Yes. Upgrades apply straight away and you only pay the difference for the rest of the period; downgrades apply at the end of the period you've paid. You'll see the exact amount before confirming.</p></div></div>
-          </div>
-          <div class="acc-item">
-            <button class="acc-trigger" type="button" aria-expanded="false">Which currencies can I pay in?<span class="acc-icon"></span></button>
-            <div class="acc-panel"><div><p>All prices are in euros, VAT included. If your card is in another currency, your bank converts the amount automatically.</p></div></div>
-          </div>
-          <div class="acc-item">
-            <button class="acc-trigger" type="button" aria-expanded="false">Where are my invoices?<span class="acc-icon"></span></button>
-            <div class="acc-panel"><div><p>Every invoice is in Account → Billing, ready to download. Companies can add their VAT number at checkout.</p></div></div>
-          </div>
-          <div class="acc-item">
-            <button class="acc-trigger" type="button" aria-expanded="false">How many devices can I use?<span class="acc-icon"></span></button>
-            <div class="acc-panel"><div><p>Each user account includes access on up to two devices, so you can work across your preferred devices.</p></div></div>
-          </div>
-          <div class="acc-item">
-            <button class="acc-trigger" type="button" aria-expanded="false">Can I request new accounts to be tracked?<span class="acc-icon"></span></button>
-            <div class="acc-panel"><div><p>Yes. Custom account tracking requests are included in every plan.</p></div></div>
-          </div>
-          <div class="acc-item">
-            <button class="acc-trigger" type="button" aria-expanded="false">Do you offer plans for larger teams?<span class="acc-icon"></span></button>
-            <div class="acc-panel"><div><p>Yes. <a class='link-gold' href='contact.html'>Contact our team</a> and we'll prepare a proposal for your organization.</p></div></div>
+
+          <div class="faq-pane faq-form-pane" data-faq-pane="demo" hidden>
+            <button class="faq-back" type="button" data-faq-back>← Back to questions</button>
+            <h3>Book a 30-minute demo</h3>
+            <p class="faq-form-sub">A live tour with filters set up for your sport. We'll confirm a time by email.</p>
+            <form class="contact-form book-form faq-form" novalidate data-contact-form>
+              <div class="book-grid">
+                <label class="book-field"><span>Name*</span><input name="name" type="text" placeholder="Your name" autocomplete="name" required></label>
+                <label class="book-field"><span>Work email*</span><input name="email" type="email" placeholder="you@club.com" autocomplete="email" required></label>
+                <label class="book-field"><span>Club or organization</span><input name="company" type="text" placeholder="e.g. Real Sociedad" autocomplete="organization"></label>
+                <label class="book-field"><span>Your role</span><input name="role" type="text" placeholder="e.g. Social Media Manager" autocomplete="organization-title"></label>
+              </div>
+              <fieldset class="book-pick"><legend>Preferred day</legend><div class="book-options book-days" data-book-days></div></fieldset>
+              <fieldset class="book-pick"><legend>Preferred time <small>(CET)</small></legend><div class="book-options book-times">
+                <label><input type="radio" name="time" value="morning">Morning · 9–13h</label><label><input type="radio" name="time" value="afternoon">Afternoon · 15–19h</label></div></fieldset>
+              <label class="check"><input name="privacy" type="checkbox" required><span>I accept the <a class="link-gold" href="privacy.html" target="_blank">privacy policy</a></span></label>
+              <p class="form-status" role="status" data-form-status></p>
+              <button class="btn btn-gold book-submit" type="submit">Request my demo <span aria-hidden="true">→</span></button>
+            </form>
+            <div class="book-done" hidden data-form-done><span class="book-done-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><h2>Request received</h2><p>Thanks! We’ll get back to you with a time and a video call link.</p><button class="btn btn-outline" type="button" data-faq-back>Back to questions</button></div>
           </div>
         </div>
       </div>
