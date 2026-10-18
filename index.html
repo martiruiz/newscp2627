@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Caveat:wght@500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20261019j">
+  <link rel="stylesheet" href="css/styles.css?v=20261019l">
   <script src="js/theme.js?v=20261018p"></script>
   <script src="js/i18n.js?v=20261019c"></script>
 </head>
@@ -104,17 +104,6 @@
           <p class="stat-label">Fresh content added daily</p>
         </div>
       </div>
-    </section>
-
-    <!-- Clubs using SCP -->
-    <section class="clients container" aria-label="Clubs using SCP">
-      <p class="clients-label">Used by social media teams at</p>
-      <ul class="clients-row">
-        <li><span class="clients-name">UD Las Palmas</span></li>
-        <li><img src="assets/logo-cagliari-2.png" alt=""><span class="clients-name">Cagliari Calcio</span></li>
-        <li><img class="wide" src="assets/logo-wfs.png" alt=""><span class="clients-name">World Football Summit</span></li>
-        <li><span class="clients-name">Lech Poznań</span></li>
-      </ul>
     </section>
 
     <section class="band magic container" id="how-it-works">
@@ -212,10 +201,12 @@
         <p class="hx-note">30 analyses a month in Library + AI · 100 in All Access</p>
       </div>
       <div class="hx-visual" aria-hidden="true">
-        <div class="ai-demo">
+        <div class="ai-demo" data-ai-demo>
           <div class="ai-demo-post"><span class="ai-demo-tag">Reel · 9.1M views</span></div>
           <div class="ai-demo-card">
             <div class="ai-demo-head"><span class="ai-demo-spark">✦</span><b>AI analysis</b><small>Example</small></div>
+            <div class="ai-unlock-mock" data-ai-unlock hidden><span class="ai-unlock-btn-mock">✦ Unlock AI analysis — 1 credit</span><small>You have 29 credits left this month</small></div>
+            <div class="ai-reading" data-ai-reading hidden><i></i>Reading the post, the hook and the format…</div>
             <div class="ai-demo-row"><span>Hook</span><p>The caption tells the whole story before the video starts: “SUÁREZ SERVES. MESSI SCORES. 3-0!”</p></div>
             <div class="ai-demo-row"><span>Why it works</span><p>Two legends in one line, framed as a combo fans already love. Short, rhythmic and easy to share.</p></div>
             <div class="ai-demo-row"><span>Format</span><p>A 17-second Reel: the goal, the celebration, real stadium sound. No graphics needed.</p></div>
@@ -240,16 +231,17 @@
         <p class="hx-note">In Library + Content Plan and All Access</p>
       </div>
       <div class="hx-visual" aria-hidden="true">
-        <div class="cp-demo">
-          <div class="cp-demo-top"><b>This week</b><span>5 / 7 days planned</span></div>
-          <div class="cp-demo-grid">
-            <div class="cp-day"><small>Mon</small><i class="cp-e is-pub">Training clip</i></div>
-            <div class="cp-day"><small>Tue</small><i class="cp-e is-pub">Ticket push</i><i class="cp-e is-prod">Kit teaser</i></div>
-            <div class="cp-day"><small>Wed</small><i class="cp-e is-plan">Matchday poster</i></div>
-            <div class="cp-day"><small>Thu</small><i class="cp-e is-ghost">Weekly base · Q&amp;A</i></div>
-            <div class="cp-day is-drop"><small>Fri</small><i class="cp-e is-idea cp-drag">Fan noise challenge</i></div>
-            <div class="cp-day is-match"><small>Sat</small><i class="cp-e is-plan">Starting XI</i><i class="cp-e is-plan">Full-time</i></div>
-            <div class="cp-day"><small>Sun</small></div>
+        <div class="cp-demo" data-cp-demo>
+          <div class="cp-tray"><small>Saved posts</small><span class="cp-thumb" data-cp-post="2805" data-day="Mon" data-title="Derby day teaser" style="background-image:url(assets/live/2805.jpg)"></span><span class="cp-thumb" data-cp-post="4219" data-day="Thu" data-title="Highlights reel" style="background-image:url(assets/live/4219.jpg)"></span><span class="cp-thumb" data-cp-post="3649" data-day="Fri" data-title="Pre-match hype" style="background-image:url(assets/live/3649.jpg)"></span><span class="cp-thumb" data-cp-post="5080" data-day="Sun" data-title="Weekly recap" style="background-image:url(assets/live/5080.jpg)"></span></div>
+          <div class="cp-demo-top"><b>This week</b><span data-cp-count>5 / 7 days planned</span></div>
+          <div class="cp-demo-grid" data-cp-grid>
+            <div class="cp-day" data-day="Mon"><small>Mon</small><i class="cp-e is-pub has-img"><b style="background-image:url(assets/live/3712.jpg)"></b>Training clip</i></div>
+            <div class="cp-day" data-day="Tue"><small>Tue</small><i class="cp-e is-pub has-img"><b style="background-image:url(assets/live/9099.jpg)"></b>Ticket push</i><i class="cp-e is-prod has-img"><b style="background-image:url(assets/live/11690.jpg)"></b>Kit teaser</i></div>
+            <div class="cp-day" data-day="Wed"><small>Wed</small><i class="cp-e is-plan has-img"><b style="background-image:url(assets/live/3760.jpg)"></b>Matchday poster</i><i class="cp-e is-plan has-img"><b style="background-image:url(assets/live/8146.jpg)"></b>Player Q&amp;A</i></div>
+            <div class="cp-day" data-day="Thu"><small>Thu</small><i class="cp-e is-ghost">Weekly base · Q&amp;A</i><i class="cp-e is-idea has-img"><b style="background-image:url(assets/live/2804.jpg)"></b>Fan cam</i></div>
+            <div class="cp-day" data-day="Fri"><small>Fri</small><i class="cp-e is-plan has-img"><b style="background-image:url(assets/live/11453.jpg)"></b>Press conference</i></div>
+            <div class="cp-day is-match" data-day="Sat"><small>Sat</small><i class="cp-e is-plan has-img"><b style="background-image:url(assets/live/3661.jpg)"></b>Starting XI</i><i class="cp-e is-plan has-img"><b style="background-image:url(assets/live/6526.jpg)"></b>Goal clip</i><i class="cp-e is-plan has-img"><b style="background-image:url(assets/live/9094.jpg)"></b>Full-time</i></div>
+            <div class="cp-day" data-day="Sun"><small>Sun</small></div>
           </div>
           <div class="cp-demo-legend"><span class="is-idea">Idea</span><span class="is-plan">Planned</span><span class="is-prod">In production</span><span class="is-pub">Published</span></div>
         </div>
@@ -268,6 +260,7 @@
           <span>5 / 5 Rating</span>
         </div>
         <h2 class="section-title">What sports marketing teams <span class="gold">say about SCP</span></h2>
+        <p class="quote-clubs">Social media teams at <b>UD Las Palmas</b>, <b>Cagliari Calcio</b>, <b>World Football Summit</b> and <b>Lech Poznań</b> plan their content with SCP.</p>
       </div>
 
       <div class="quote-grid container">
@@ -496,6 +489,7 @@
   <script src="js/dock.js?v=20261018q" defer></script>
   <script src="js/import.js?v=20261018p" defer></script>
   <script src="js/site-stats.js?v=20261018zc" defer></script>
+  <script src="js/home-demos.js?v=20261019k" defer></script>
   <script src="js/live-library.js?v=20261019i" defer></script>
   <script src="js/stats.js?v=20261018p" defer></script>
   <script src="js/features-fx.js?v=20261018p" defer></script>
