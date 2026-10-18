@@ -11,6 +11,9 @@ window.SCP_CONFIG = {
   // Demo bookings: the Google Calendar booking page (Calendar → Create → Appointment schedule → Share → link).
   // When set, the demo forms show the calendar so visitors pick a time themselves; the request form stays below.
   demoBookingUrl: "https://cal.com/sports-content-playbook/30min",
+  // Optional: the same demo as a second Cal.com event with its interface language set to Spanish
+  // (Cal.com → event → Advanced → Interface language). Used when the website is in Spanish.
+  demoBookingUrlEs: "",
 
   // Home dock: company LinkedIn page (the LinkedIn button is hidden while this is empty)
   linkedinUrl: "https://www.linkedin.com/company/sportscontentplaybook",

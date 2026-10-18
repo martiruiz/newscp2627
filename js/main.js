@@ -491,7 +491,7 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString(window.SCP_LO
 
   // Book a demo with a real calendar: Google Calendar appointment schedule (config.demoBookingUrl). The request form
   // folds under "Prefer that we contact you?" so nobody is left without a way in.
-  const bookingUrl = (window.SCP_CONFIG || {}).demoBookingUrl;
+  const bookingUrl = (window.SCP_LANG === "es" && (window.SCP_CONFIG || {}).demoBookingUrlEs) || (window.SCP_CONFIG || {}).demoBookingUrl;
   // Cal.com (cal.com/<user>/<event>): inline embed in SCP's dark theme and gold; Google Calendar: its own page in an iframe
   const calLink = (bookingUrl || "").match(/^https:\/\/(?:app\.)?cal\.com\/(.+?)\/?$/)?.[1];
   const loadCal = () => {
@@ -523,7 +523,7 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString(window.SCP_LO
       loadCal();
       const ns = id.replace(/-/g, "");
       window.Cal("init", ns, { origin: "https://cal.com" });
-      window.Cal.ns[ns]("inline", { elementOrSelector: `#${id}`, calLink, config: { layout: "month_view", theme: "dark" } });
+      window.Cal.ns[ns]("inline", { elementOrSelector: `#${id}`, calLink, config: { layout: "month_view", theme: "dark", locale: window.SCP_LANG === "es" ? "es" : "en", lng: window.SCP_LANG === "es" ? "es" : "en" } });
       window.Cal.ns[ns]("ui", { theme: "dark", layout: "month_view", hideEventTypeDetails: true,
         cssVarsPerTheme: { dark: { "cal-brand": "#f0b84a", "cal-brand-emphasis": "#f8cc75", "cal-brand-text": "#0b0f1c", "cal-bg": "transparent", "cal-bg-muted": "#17213b", "cal-bg-emphasis": "#1f2b48", "cal-border-booker": "transparent", "cal-border-booker-width": "0px", "cal-border": "rgba(180,192,211,0.18)", "cal-border-subtle": "rgba(180,192,211,0.12)", "cal-text": "#ffffff", "cal-text-subtle": "#b4c0d3", "cal-text-muted": "#8b98ae" } } });
       // a booking made in the calendar also lands in Admin → Requests, with the CTA it came from
