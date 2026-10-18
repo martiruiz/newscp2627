@@ -330,6 +330,39 @@
     }).join("");
   }
 
+  // ---------- Top Picks / Replicable Ideas: a short explanation on hover, which can be closed for good ----------
+  {
+    let tipFor = null, hideT = null;
+    const tip = document.createElement("div");
+    tip.className = "lf-sp-pop"; tip.hidden = true; tip.setAttribute("role", "tooltip");
+    document.body.append(tip);
+    const closedKey = (id) => `scp-sp-tip-${id}`;
+    const isClosed = (id) => { try { return localStorage.getItem(closedKey(id)) === "1"; } catch { return false; } };
+    const hide = () => { tip.hidden = true; tipFor = null; };
+    document.addEventListener("mouseover", (e) => {
+      const b = e.target.closest(".lf-sp[data-sp-tip]");
+      if (b && !isClosed(b.dataset.id)) {
+        clearTimeout(hideT);
+        if (tipFor === b) return;
+        tipFor = b;
+        tip.innerHTML = `<p>${esc(b.dataset.spTip)}</p><button type="button" aria-label="${esc(tx("Close"))}" data-sp-close="${esc(b.dataset.id)}">${icon("x")}</button>`;
+        const r = b.getBoundingClientRect();
+        tip.style.left = `${r.left + scrollX}px`; tip.style.top = `${r.bottom + scrollY + 6}px`; tip.style.width = `${Math.max(220, r.width)}px`;
+        tip.hidden = false;
+      } else if (tipFor && !e.target.closest(".lf-sp-pop")) {
+        clearTimeout(hideT); hideT = setTimeout(hide, 250);
+      }
+    });
+    tip.addEventListener("mouseenter", () => clearTimeout(hideT));
+    tip.addEventListener("click", (e) => {
+      const x = e.target.closest("[data-sp-close]");
+      if (!x) return;
+      try { localStorage.setItem(closedKey(x.dataset.spClose), "1"); } catch {}
+      hide();
+    });
+    addEventListener("scroll", hide, { passive: true, capture: true });
+  }
+
   // ---------- Interaction ----------
   function toggleValue(cat, id, force) {
     const set = selected[cat];
