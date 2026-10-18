@@ -4844,3 +4844,54 @@ html.theme-anim, html.theme-anim body, html.theme-anim *, html.theme-anim *::bef
   .hero-actions .btn { min-width: 0; flex: 1; }
 }
 .lib-demo-grid figure { aspect-ratio: 4 / 5; background: var(--img) 50% var(--y, 17%) / 105% auto no-repeat, #0b0f1c; }
+
+/* ---------- Home v2.1: sections you can tell apart ---------- */
+/* soft full-width bands on every other section (no hard lines: they fade in and out) */
+main { position: relative; z-index: 0; }
+.hx, .home-sec, .magic, .testimonials, .team-strip, .home-pricing, .faq { position: relative; padding-bottom: 110px; }
+.band::before { content: ""; position: absolute; z-index: -1; top: -40px; bottom: -40px; left: calc(50% - 50vw); right: calc(50% - 50vw); pointer-events: none;
+  background: linear-gradient(180deg, rgba(var(--surface-rgb), 0.8), rgba(var(--surface-rgb), 0.55));
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 120px, #000 calc(100% - 120px), transparent 100%);
+          mask-image: linear-gradient(180deg, transparent 0, #000 120px, #000 calc(100% - 120px), transparent 100%); }
+#what-is-scp { margin-top: 70px; }
+.home-pricing { padding-top: 140px; }
+
+/* one accent per tool: Library gold, AI blue, Content Plan green */
+#library, .tool:nth-child(1) { --acc: 240, 184, 74; }
+#ai-analysis, .tool:nth-child(2) { --acc: 122, 162, 255; }
+#content-plan, .tool:nth-child(3) { --acc: 61, 220, 151; }
+:is(#library, #ai-analysis, #content-plan) .hx-eyebrow { background: rgba(var(--acc), 0.16); color: rgb(var(--acc)); }
+:is(#library, #ai-analysis, #content-plan) .hx-list b::before { background: rgb(var(--acc)); }
+:is(#library, #ai-analysis, #content-plan) .hx-note { color: rgb(var(--acc)); }
+:is(#library, #ai-analysis, #content-plan) .hx-list li:hover { border-color: rgba(var(--acc), 0.5); }
+:is(#library, #ai-analysis, #content-plan) .hx-visual::before { background: radial-gradient(closest-side, rgba(var(--acc), 0.24), transparent); }
+.tool .tool-ic { background: rgba(var(--acc), 0.16); }
+.tool .tool-ic svg { stroke: rgb(var(--acc)); }
+.tool .tool-tag { color: rgb(var(--acc)); }
+.tool:hover { border-color: rgba(var(--acc), 0.55); }
+.tool::after { background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 0%), rgba(var(--acc), 0.14), transparent 65%); }
+#ai-analysis .ai-demo-card { border-color: rgba(122, 162, 255, 0.55); box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5), 0 0 60px rgba(122, 162, 255, 0.14); }
+#ai-analysis .ai-demo-spark, #ai-analysis .ai-demo-row.is-gold span { color: rgb(122, 162, 255); }
+#ai-analysis .ai-demo-row.is-gold p { color: #c9d8ff; }
+:root[data-theme="light"] #ai-analysis .ai-demo-row.is-gold p { color: #3557b7; }
+
+/* Built for your team: 2 × 2, roomy */
+.team-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; max-width: 1040px; margin: 48px auto 0; }
+.team-tiles article { display: grid; grid-template-columns: 56px 1fr; column-gap: 20px; align-items: start; padding: 30px 32px; border-radius: 22px; }
+.team-tiles .tt-ic { width: 56px; height: 56px; border-radius: 16px; grid-row: span 2; }
+.team-tiles .tt-ic svg { width: 26px; height: 26px; }
+.team-tiles h3 { margin-top: 2px; font-size: 21px; }
+.team-tiles p { margin-top: 8px; font-size: 15.5px; line-height: 1.6; }
+
+/* click feedback: a gold ripple from the click point + a small press, on clickable things only */
+.btn, .tool, .quote-grid .quote-card, .hx-list li, .plan-card, .pack-card, .team-tiles article, .acc-trigger { position: relative; overflow: hidden; }
+.is-pressed { transform: scale(0.975) !important; transition: transform 0.12s ease !important; }
+.click-ripple { position: absolute; border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%) scale(0); z-index: 5;
+  background: radial-gradient(circle, rgba(240, 184, 74, 0.45) 0%, rgba(240, 184, 74, 0.18) 45%, transparent 70%); animation: clickRipple 0.6s ease-out forwards; }
+@keyframes clickRipple { to { transform: translate(-50%, -50%) scale(1); opacity: 0; } }
+@media (max-width: 760px) {
+  .team-tiles { grid-template-columns: minmax(0, 1fr); }
+  .team-tiles article { padding: 24px; grid-template-columns: 48px 1fr; column-gap: 16px; }
+  .team-tiles .tt-ic { width: 48px; height: 48px; }
+}
+@media (prefers-reduced-motion: reduce) { .click-ripple { display: none; } .is-pressed { transform: none !important; } }

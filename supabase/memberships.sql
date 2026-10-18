@@ -25,7 +25,7 @@ create table if not exists public.billing_settings (
 alter table public.billing_settings enable row level security;
 insert into public.billing_settings (key, value) values
   ('timezone',              '"Europe/Madrid"'),
-  ('currencies',            '["eur", "usd"]'),
+  ('currencies',            '["eur"]'),
   ('default_currency',      '"eur"'),
   ('monthly_anchor_day',    '1'),
   ('trial_policy',          '{"one_per_user": true}'),

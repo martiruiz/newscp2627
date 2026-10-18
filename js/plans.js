@@ -1,7 +1,7 @@
 // Plans & AI packs (pricing page and home). Everything comes from Supabase (Super Admin → Memberships):
-// public_membership_plans() → plans on sale, their EUR / USD monthly / yearly prices, features and permissions.
+// public_membership_plans() → plans on sale, their monthly / yearly prices in euros, features and permissions.
 // A hidden membership opens with pricing.html#private=<token> (checked on the server, private_membership()).
-// Monthly / yearly and EUR / USD switches, comparison table, the member's current plan, and Stripe Checkout with a
+// Monthly / yearly and number-of-users switches, comparison table, the member's current plan, and Stripe Checkout with a
 // confirmation of the terms first (js/checkout.js). Nothing is hard-coded: when the database can't be reached the
 // page says so instead of showing made-up prices.
 (() => {
@@ -245,12 +245,7 @@
       } catch { /* show public plans */ }
     }
     const plans = privatePlan ? [privatePlan] : data.plans;
-    const curs = data.currencies || ["eur"];
-    // EUR in Europe, USD everywhere else (from the visitor's time zone — no location lookup), unless they chose
-    const tz = (() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch { return ""; } })();
-    const byPlace = /^Europe\/|^Atlantic\/(Canary|Madeira|Azores)|^Africa\/Ceuta/.test(tz) ? "eur" : "usd";
-    currency = (q.get("currency") || store.get("scp-currency") || byPlace || data.default_currency || "eur").toLowerCase();
-    if (!curs.includes(currency) || !plans.some((p) => p.prices.some((x) => x.currency === currency))) currency = data.default_currency || "eur";
+    currency = "eur";   // prices are in euros only; banks convert for other card currencies
     interval = q.get("interval") === "year" || store.get("scp-interval") === "year" ? "year" : "month";
     if (!plans.some((p) => priceOf(p))) interval = interval === "year" ? "month" : "year";
     draw();

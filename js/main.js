@@ -50,6 +50,24 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString(window.SCP_LO
     });
   }
 
+  // Click feedback on clickable things: a gold ripple from the pointer + a small press (not with reduced motion)
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const CLICKABLE = ".btn, .tool, .quote-grid .quote-card, .hx-list li, .plan-card, .pack-card, .team-tiles article, .acc-trigger";
+    document.addEventListener("pointerdown", (e) => {
+      const el = e.target.closest?.(CLICKABLE);
+      if (!el || el.disabled) return;
+      const r = el.getBoundingClientRect(), size = Math.max(r.width, r.height) * 2.2;
+      const dot = document.createElement("span");
+      dot.className = "click-ripple";
+      dot.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX - r.left}px;top:${e.clientY - r.top}px`;
+      el.appendChild(dot);
+      setTimeout(() => dot.remove(), 650);
+      el.classList.add("is-pressed");
+      const up = () => { el.classList.remove("is-pressed"); removeEventListener("pointerup", up); removeEventListener("pointercancel", up); };
+      addEventListener("pointerup", up); addEventListener("pointercancel", up);
+    });
+  }
+
   // Mobile nav
   $$("[data-nav]").forEach((nav) => {
     const toggle = $("[data-nav-toggle]", nav);

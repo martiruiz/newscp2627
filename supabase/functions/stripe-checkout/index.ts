@@ -1,5 +1,5 @@
 // Supabase Edge Function "stripe-checkout": starts a Stripe Checkout for the signed-in member.
-//   { kind: "plan", plan, interval: "month"|"year", currency: "eur"|"usd", link?: private token, code?: promo code, preview?: true }
+//   { kind: "plan", plan, interval: "month"|"year", link?: private token, code?: promo code, preview?: true }
 //       → subscription. Card always required (also for the free trial). Monthly plans renew on the 1st (Europe/Madrid):
 //         the first invoice is prorated to the 1st by Stripe (see _shared/billing-dates.js). preview: true returns the
 //         terms shown before paying (trial end, first charge, renewals) without creating anything.
@@ -22,7 +22,7 @@ Deno.serve(async (req) => {
   try {
     if (body.kind === "plan") {
       const interval = body.interval === "year" ? "year" : "month";
-      const currency = body.currency === "usd" ? "usd" : "eur";
+      const currency = "eur";   // euros only (banks convert for cards in other currencies)
       // number of users (team seats = Stripe quantity); more than the maximum → custom plan
       const maxSeats = Number(((await setting("team")) || {}).max_seats) || 5;
       const seats = Math.max(1, Math.round(Number(body.seats) || 1));

@@ -420,7 +420,7 @@ window.SCP_ES = {
   "Can I change plan or switch to yearly?": "¿Puedo cambiar de plan o pasarme al anual?",
   "Yes. Upgrades apply straight away and you only pay the difference for the rest of the period; downgrades apply at the end of the period you've paid. You'll see the exact amount before confirming.": "Sí. Las mejoras se aplican al momento y solo pagas la diferencia del resto del periodo; los cambios a un plan inferior se aplican al final del periodo pagado. Verás el importe exacto antes de confirmar.",
   "Which currencies can I pay in?": "¿En qué monedas puedo pagar?",
-  "Euros or US dollars, with a price set for each currency. The currency you choose stays the same for your whole subscription. VAT is included.": "En euros o en dólares estadounidenses, con un precio fijado para cada moneda. La moneda que elijas se mantiene durante toda la suscripción. El IVA está incluido.",
+  "All prices are in euros, VAT included. If your card is in another currency, your bank converts the amount automatically.": "Todos los precios están en euros, IVA incluido. Si tu tarjeta está en otra moneda, tu banco convierte el importe automáticamente.",
   "Where are my invoices?": "¿Dónde están mis facturas?",
   "Every invoice is in Account → Billing, ready to download. Companies can add their VAT number at checkout.": "Todas las facturas están en Cuenta → Facturación, listas para descargar. Las empresas pueden añadir su NIF/CIF al pagar.",
   "How many devices can I use?": "¿En cuántos dispositivos puedo usarlo?",
@@ -1529,4 +1529,5 @@ window.SCP_ES = {
   "Pricing": "Precios",
   "FAQ": "Preguntas frecuentes",
   "For a team managing multiple accounts, consistency is everything. With SCP we’ve tripled the volume of quality posts while maintaining the creativity our clients expect.": "Para un equipo que gestiona varias cuentas, la constancia lo es todo. Con SCP hemos triplicado el volumen de posts de calidad sin perder la creatividad que esperan nuestros clientes.",
+  "Whether you post alone or run a whole social team, SCP adapts to how you work.": "Tanto si publicas solo como si diriges todo un equipo de redes, SCP se adapta a tu forma de trabajar.",
 };
