@@ -1530,4 +1530,10 @@ window.SCP_ES = {
   "FAQ": "Preguntas frecuentes",
   "For a team managing multiple accounts, consistency is everything. With SCP we’ve tripled the volume of quality posts while maintaining the creativity our clients expect.": "Para un equipo que gestiona varias cuentas, la constancia lo es todo. Con SCP hemos triplicado el volumen de posts de calidad sin perder la creatividad que esperan nuestros clientes.",
   "Whether you post alone or run a whole social team, SCP adapts to how you work.": "Tanto si publicas solo como si diriges todo un equipo de redes, SCP se adapta a tu forma de trabajar.",
+  // AI analysis example (Inter Miami)
+  "Reel · 9.1M views": "Reel · 9,1 M visualizaciones",
+  "The caption tells the whole story before the video starts: “SUÁREZ SERVES. MESSI SCORES. 3-0!”": "El texto cuenta toda la historia antes de que empiece el vídeo: «SUÁREZ SERVES. MESSI SCORES. 3-0!»",
+  "Two legends in one line, framed as a combo fans already love. Short, rhythmic and easy to share.": "Dos leyendas en una sola línea, presentadas como la dupla que la afición ya adora. Corto, con ritmo y fácil de compartir.",
+  "A 17-second Reel: the goal, the celebration, real stadium sound. No graphics needed.": "Un Reel de 17 segundos: el gol, la celebración y el sonido real del estadio. Sin gráficos.",
+  "Post every goal within minutes with a “[assist] serves, [scorer] scores” caption and make it your matchday format.": "Publica cada gol en minutos con un texto tipo «[asistente] la sirve, [goleador] la mete» y conviértelo en tu formato de día de partido.",
 };
