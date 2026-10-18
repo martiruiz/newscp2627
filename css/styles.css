@@ -5280,3 +5280,28 @@ main { position: relative; z-index: 0; }
   .faq-steps li:not(:last-child)::after { content: "↓"; right: auto; left: 22px; top: auto; bottom: -13px; }
 }
 .faq-home .acc-panel p:has(+ .faq-after) { padding-bottom: 0; }
+
+/* ---------- Home FAQ: title on top, questions in two blocks ---------- */
+.faq-split .faq-grid { grid-template-columns: 1fr; gap: 36px; }
+.faq-split .faq-intro { position: static; display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 40px; align-items: end; }
+.faq-split .faq-intro > :not(.actions) { grid-column: 1; }
+.faq-split .faq-intro .actions { grid-column: 2; grid-row: 1 / span 3; align-self: end; justify-content: flex-end; margin: 0; }
+.faq-split .faq-intro h2 br { display: none; }
+.faq-split .faq-intro p { margin-top: 14px; max-width: 640px; }
+.faq-split .faq-stage { min-height: 0; }
+.faq-blocks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; align-items: start; }
+.faq-block-h { display: flex; align-items: center; gap: 10px; margin: 0 0 14px; font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.faq-block-h::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, rgba(240, 184, 74, 0.45), transparent); }
+.faq-split .faq-form-pane { max-width: 760px; margin: 0 auto; }
+.faq-split .faq-steps { grid-template-columns: 1fr; }
+.faq-split .faq-steps li:not(:last-child)::after { content: "↓"; right: auto; left: 22px; top: auto; bottom: -13px; }
+.faq-split .faq-steps li { flex-direction: row; flex-wrap: wrap; align-items: center; column-gap: 10px; }
+.faq-split .faq-steps .fs-ico { margin: 0; }
+.faq-split .faq-steps small, .faq-split .faq-steps .fs-tags { flex-basis: 100%; padding-left: 40px; margin-top: -4px; }
+@media (max-width: 960px) {
+  .faq-split .faq-intro { grid-template-columns: 1fr; }
+  .faq-split .faq-intro .actions { grid-column: 1; grid-row: auto; justify-content: flex-start; margin-top: 18px; }
+  .faq-blocks { grid-template-columns: 1fr; }
+}
+.faq-split .faq-intro .hx-eyebrow { justify-self: start; }
+.faq-split .faq-intro .faq-back-intro { display: none !important; }

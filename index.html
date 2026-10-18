@@ -16,9 +16,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Caveat:wght@500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20261020i">
+  <link rel="stylesheet" href="css/styles.css?v=20261020l">
   <script src="js/theme.js?v=20261018p"></script>
-  <script src="js/i18n.js?v=20261020j"></script>
+  <script src="js/i18n.js?v=20261020m"></script>
 </head>
 <body>
 
@@ -305,11 +305,11 @@
     </section>
 
     <!-- FAQ -->
-    <section class="faq faq-home container" id="faq" data-reveal>
+    <section class="faq faq-home faq-split container" id="faq" data-reveal>
       <div class="faq-grid">
         <div class="faq-intro">
           <span class="hx-eyebrow">FAQ</span>
-          <h2 class="section-title section-title-md">Questions?<br>We've got answers.</h2>
+          <h2 class="section-title section-title-md">Questions? We've got answers.</h2>
           <p>Still have questions? Write to us or book a 30-minute demo with our team, right here.</p>
           <div class="actions">
             <button class="btn btn-outline" type="button" data-faq-open="contact">Contact us</button>
@@ -317,7 +317,10 @@
           </div>
         </div>
         <div class="faq-stage" data-faq-stage>
-          <div class="accordion faq-pane is-on" data-accordion data-faq-pane="faq">
+          <div class="faq-pane faq-blocks is-on" data-faq-pane="faq">
+            <div class="faq-block">
+              <h3 class="faq-block-h">The platform</h3>
+              <div class="accordion" data-accordion>
             <div class="acc-item is-open">
               <button class="acc-trigger" type="button" aria-expanded="true"><span class="faq-n">01</span><span class="faq-q">What exactly do I get with SCP?</span><span class="acc-icon"></span></button>
               <div class="acc-panel"><div><p>Three tools in one place: the <b>Content Library</b> (every plan), <b>AI analysis</b> of any post (Library + AI and All Access) and the <b>Content Plan</b> to organise your week (Library + Content Plan and All Access).</p></div></div>
@@ -331,7 +334,11 @@
               <div class="acc-panel"><div><p>No. You'll find 17 sports: <b>football</b>, <b>basketball</b>, <b>handball</b>, <b>American football (NFL)</b>, <b>MotoGP</b>, <b>ice hockey (NHL)</b>, <b>cycling</b>, <b>baseball</b>, <b>tennis</b> and more.</p></div></div>
             </div>
             <div class="acc-item">
-              <button class="acc-trigger" type="button" aria-expanded="false"><span class="faq-n">04</span><span class="faq-q">How does the AI analysis work?</span><span class="acc-icon"></span></button>
+              <button class="acc-trigger" type="button" aria-expanded="false"><span class="faq-n">04</span><span class="faq-q">Why not just search Instagram and TikTok myself?</span><span class="acc-icon"></span></button>
+              <div class="acc-panel"><div><p>You could, but it takes hours, and the feed shows you what the algorithm wants, not what worked. SCP brings together the posts of <span data-stat="clubs">770+</span> clubs in one place, with their real results (views and engagement), filters by sport, competition and format, the AI analysis of why each one works and a calendar to plan yours.</p><p class="faq-after"><b>Hours of searching become minutes.</b></p></div></div>
+            </div>
+            <div class="acc-item">
+              <button class="acc-trigger" type="button" aria-expanded="false"><span class="faq-n">05</span><span class="faq-q">How does the AI analysis work?</span><span class="acc-icon"></span></button>
               <div class="acc-panel"><div><p>Three steps, straight from any post in the library:</p>
                 <ol class="faq-steps">
                   <li><span class="fs-ico"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span><b>Open a post</b><small>Any post in the library</small></li>
@@ -340,17 +347,32 @@
                 </ol>
                 <p class="faq-after">Library + AI includes 30 analyses a month and All Access 100, and you can add extra packs.</p></div></div>
             </div>
-            <div class="acc-item">
-              <button class="acc-trigger" type="button" aria-expanded="false"><span class="faq-n">05</span><span class="faq-q">Can my whole team use it?</span><span class="acc-icon"></span></button>
+              </div>
+            </div>
+            <div class="faq-block">
+              <h3 class="faq-block-h">Plans &amp; your account</h3>
+              <div class="accordion" data-accordion>
+            <div class="acc-item is-open">
+              <button class="acc-trigger" type="button" aria-expanded="true"><span class="faq-n">06</span><span class="faq-q">Can my whole team use it?</span><span class="acc-icon"></span></button>
               <div class="acc-panel"><div><p>Yes. Each plan can have up to 5 users, each with their own account, boards and AI analyses. <b>For bigger teams <a class="link-gold" href="book-a-call.html" data-faq-open="demo">we prepare a custom plan</a>.</b></p></div></div>
             </div>
             <div class="acc-item">
-              <button class="acc-trigger" type="button" aria-expanded="false"><span class="faq-n">06</span><span class="faq-q">How does the free trial work?</span><span class="acc-icon"></span></button>
+              <button class="acc-trigger" type="button" aria-expanded="false"><span class="faq-n">07</span><span class="faq-q">How does the free trial work?</span><span class="acc-icon"></span></button>
               <div class="acc-panel"><div><p><b>You get 7 days with full access.</b> We ask for a card to start, but nothing is charged if you cancel before the trial ends.</p></div></div>
             </div>
             <div class="acc-item">
-              <button class="acc-trigger" type="button" aria-expanded="false"><span class="faq-n">07</span><span class="faq-q">Can you add clubs or accounts that aren't in the library yet?</span><span class="acc-icon"></span></button>
+              <button class="acc-trigger" type="button" aria-expanded="false"><span class="faq-n">08</span><span class="faq-q">Can I cancel at any time?</span><span class="acc-icon"></span></button>
+              <div class="acc-panel"><div><p><b>Yes, from your account in two clicks.</b> You keep access until the end of the period you've paid and you won't be charged again. Your saved boards and content plans stay in your account if you come back.</p></div></div>
+            </div>
+            <div class="acc-item">
+              <button class="acc-trigger" type="button" aria-expanded="false"><span class="faq-n">09</span><span class="faq-q">Do I need to connect my club's accounts? Is our data safe?</span><span class="acc-icon"></span></button>
+              <div class="acc-panel"><div><p><b>No, you don't need to connect any social media account.</b> SCP works only with public posts, and your boards, content plans and analyses are private to your account. We handle your data in line with the GDPR: <a class="link-gold" href="privacy.html">see our privacy policy</a>.</p></div></div>
+            </div>
+            <div class="acc-item">
+              <button class="acc-trigger" type="button" aria-expanded="false"><span class="faq-n">10</span><span class="faq-q">Can you add clubs or accounts that aren't in the library yet?</span><span class="acc-icon"></span></button>
               <div class="acc-panel"><div><p>Yes. Tell us which clubs, leagues or creators you want to follow (your own club, your rivals or anyone who inspires you). We'll go through exactly what you need together and work with you to add their posts to the library. <a class="link-gold" href="contact.html" data-faq-open="contact">Request it through the contact form →</a></p><p class="faq-after"><b>It's included in every plan.</b></p></div></div>
+            </div>
+              </div>
             </div>
           </div>
 
