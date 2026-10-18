@@ -499,3 +499,14 @@ body { background: radial-gradient(60% 40% at 50% 0%, rgba(240, 184, 74, 0.06), 
 .sr-pct.mid { background: var(--amber-soft); color: var(--amber); }
 .sr-pct.bad { background: var(--red-soft); color: var(--red); }
 @media (max-width: 1000px) { .sr-grid { grid-template-columns: 1fr; } .sr-post { position: static; } }
+.cmp-row { padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+.cmp-opts { display: grid; grid-template-columns: 1fr 1fr auto auto; gap: 8px; align-items: stretch; }
+.cmp-opt { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; min-height: 44px; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--border-2); background: transparent; color: var(--text); text-align: left; cursor: pointer; font-family: inherit; }
+.cmp-opt:hover { border-color: rgba(240, 184, 74, 0.5); }
+.cmp-opt.on { border-color: var(--accent); background: rgba(240, 184, 74, 0.1); box-shadow: 0 0 0 1px var(--accent); }
+.cmp-opt .sr-chip { pointer-events: none; height: 24px; }
+.cmp-l { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 6px; background: var(--panel-3); font-weight: 700; font-size: 12px; margin-right: 4px; }
+.cmp-opt.on .cmp-l { background: var(--accent); color: #121b33; }
+.cmp-mini { padding: 0 10px; border-radius: 10px; border: 1px solid var(--border-2); background: transparent; color: var(--muted); font: 600 12px inherit; font-family: inherit; cursor: pointer; white-space: nowrap; }
+.cmp-mini.on { border-color: var(--accent); color: var(--accent); }
+@media (max-width: 900px) { .cmp-opts { grid-template-columns: 1fr 1fr; } }

@@ -17,3 +17,8 @@ alter table public.smart_review enable row level security;
 drop policy if exists "Admins manage smart review" on public.smart_review;
 create policy "Admins manage smart review" on public.smart_review for all to authenticated
   using ((select public.is_admin())) with check ((select public.is_admin()));
+
+-- Blind A/B comparison of two AI versions on the reviewed posts (Admin → Smart filters → Compare)
+alter table public.smart_review add column if not exists ai_b jsonb;          -- labels from the version being tested
+alter table public.smart_review add column if not exists ai_b_version text;
+alter table public.smart_review add column if not exists verdicts jsonb;      -- {category: {pick: "old"|"new"|"both"|"none"}}

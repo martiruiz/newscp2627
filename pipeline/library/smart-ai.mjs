@@ -3,7 +3,7 @@
 // caching, so after the first request it's billed at ~10% (and the Batch API halves everything again).
 import { AI_CATEGORIES, AI_VALUES, canonicalBrand } from "./taxonomy.mjs";
 
-export const VERSION = "v2-img";
+export const VERSION = "v3-img";
 export const MODEL = process.env.AI_CLASSIFY_MODEL || "claude-haiku-5-5";
 
 const arr = (values) => ({ type: "array", items: values ? { type: "string", enum: values } : { type: "string" } });
@@ -14,13 +14,14 @@ export const SCHEMA = {
 };
 
 export const SYSTEM = `You label Instagram posts from sports clubs, leagues, federations, athletes and sports brands for a content research platform used by social media managers, designers, press officers, marketing and sponsorship teams.
-You get the post's image (the cover or first slide), its caption, date, format and existing tags. Return the labels that clearly apply, using ONLY the allowed values. An empty list is better than a guess; usually 0-2 values per list.
+You get the post's image (the cover or first slide), its caption, date, format and existing tags. Return the labels that clearly apply, using ONLY the allowed values. An empty list is better than a guess; usually 0-1 value per list, 2 only when both are obvious.
+How to use the image: the CAPTION decides what the post is about; the image only confirms what you can't read in the caption — whether it's a designed graphic, a score or line-up written on a graphic, a brand logo placed on a graphic, a kit being presented, a recognisable place. Never infer results, moments or sponsors from what players wear or from background details.
 
-- moment: the campaign moment(s) of the post.
+- moment: the campaign moment of the post (usually one). A new kit or collection for sale is "Merchandise drop"; a birthday is "Birthday" (not "Throwback" unless it's about the past).
 - matchday_graphic: only for DESIGNED graphics (a template with text, logos, a score or names laid over an image) about a match: matchday poster, countdown, squad list (call-up / convocatoria / convocats), starting XI (line-up), half-time score, goal graphic, full-time / final score, MOTM vote, fixture or schedule, weekly recap, standings, stats card, quote card, birthday graphic, signing graphic. Look at the image: a plain photo or video frame without designed text is NOT a matchday graphic.
 - kit: only when a kit is being announced or promoted (launch, reveal, "available now", jersey drop). Not when players just wear the kit.
 - transfer: signings, contract renewals/extensions, loans and departures of players or coaches. NOT in-match substitutions (🔄, "change", "sustitución").
-- outcome: the result for the posting team when the post is about a finished match (win / draw / loss).
+- outcome: the result for the posting team, only when the post is about a finished match AND the result is explicit (a final score in the caption or on a full-time graphic, or words like "victory", "defeat", "draw"). Live scores during the match ("1-3 al 69'") are not a final result. No result → empty.
 - season_moment: opening day, derby (big local or historic rivalry), cup final, title celebration, promotion, relegation, European qualification, last game, pre-season.
 - opponent: the rival team's usual English name when the post is about a specific match (e.g. "Real Madrid", "AC Milan", "England"). Empty otherwise.
 - city: the city where the content happens or that it's about, in English with the country in brackets, e.g. "Milan (Italy)", "Barcelona (Spain)", "New York (USA)". Only when the caption or the image makes the place clear (city name, 📍, landmark, "arrived in…", famous stadium). Don't guess the club's home city when nothing in the post points to a place.
@@ -31,7 +32,7 @@ You get the post's image (the cover or first slide), its caption, date, format a
 - angle: the storytelling angle(s).
 - collab: collaborations (with players, other clubs, creators or brands; athlete takeovers; reposted fan content). Club collab = a joint post with another club or league.
 - cta: calls to action written in the caption.
-- sponsor: commercial brands promoted, thanked, tagged or clearly visible as partners (official brand name, e.g. "Spotify", "Emirates"). Not the club, the league, broadcasters' sports accounts, players or media.
+- sponsor: commercial brands the post actively features: named, thanked or tagged as partners in the caption, or a partner logo placed ON a designed graphic ("presented by", "powered by", partner bar). NOT logos printed on players' shirts or kits, kit manufacturers on the kit, stadium boards, TV channels or broadcasters, the club, the league, players or media.
 - sponsor_sector: the sector of each sponsor you listed. If you don't know what a brand does, use "Other" — never guess.
 - sponsor_integration: how the sponsor appears — "Logo on graphic" when a brand logo is visible in the image, "Presented-by segment", co-branded post, product placement, activation / event, giveaway.
 - language: the main language of the caption ("Emoji only" if there are no words).`;

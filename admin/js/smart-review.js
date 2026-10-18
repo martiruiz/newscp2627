@@ -64,13 +64,97 @@
         <div><h1>Smart filters · Review</h1><p>Check the AI's labels. What you confirm becomes the reference to measure and improve each filter.</p></div>
         <div class="head-actions">
           <div class="sr-progress"><b>${done}</b> / ${items.length} reviewed${skipped ? ` · ${skipped} skipped` : ""}<i><span style="width:${items.length ? (done / items.length) * 100 : 0}%"></span></i></div>
-          <div class="seg"><button type="button" class="${view === "review" ? "on" : ""}" data-view="review">Review</button><button type="button" class="${view === "accuracy" ? "on" : ""}" data-view="accuracy">Accuracy</button></div>
+          <div class="seg"><button type="button" class="${view === "review" ? "on" : ""}" data-view="review">Review</button><button type="button" class="${view === "accuracy" ? "on" : ""}" data-view="accuracy">Accuracy</button>${items.some((r) => r.ai_b) ? `<button type="button" class="${view === "compare" ? "on" : ""}" data-view="compare">Compare</button>` : ""}</div>
         </div>
       </div>
       <div data-body></div>`;
     $$("[data-view]").forEach((b) => b.addEventListener("click", () => { view = b.dataset.view; render(); }));
     if (!items.length) { $("[data-body]").innerHTML = `<div class="panel panel-pad"><p>No posts to review yet. Run <span class="mono">node library/smart-review-seed.mjs --size 100</span> in the pipeline folder.</p></div>`; return; }
-    view === "accuracy" ? renderAccuracy() : renderReview();
+    view === "accuracy" ? renderAccuracy() : view === "compare" ? renderCompare() : renderReview();
+  }
+
+  // ---------- Compare: blind A/B between the stored labels (old) and version B (new), only where they differ ----------
+  const normV = (x) => String(x).normalize("NFD").replace(/\p{M}/gu, "").trim().toLowerCase();
+  const same = (a, b) => { const A = [...setOf(a)].map(normV).sort(), B = [...setOf(b)].map(normV).sort(); return A.join("|") === B.join("|"); };
+  const diffsOf = (r) => (r.ai_b ? CATS.filter((c) => c.key !== "city" && !same(r.ai?.[c.key], r.ai_b?.[c.key])) : []);
+  // A or B is random per post and filter, but stable (so reopening shows the same order)
+  const flip = (id, key) => { let h = 0; for (const ch of `${id}:${key}`) h = (h * 31 + ch.charCodeAt(0)) | 0; return h & 1; };
+  let cmpIdx = 0;
+  function cmpQueue() { return items.filter((r) => diffsOf(r).length); }
+  function renderCompare() {
+    const queue = cmpQueue();
+    const pending = queue.filter((r) => diffsOf(r).some((c) => !r.verdicts?.[c.key]));
+    const total = queue.reduce((n, r) => n + diffsOf(r).length, 0);
+    const decided = queue.reduce((n, r) => n + diffsOf(r).filter((c) => r.verdicts?.[c.key]).length, 0);
+    if (!pending.length) return renderCompareResults(queue);
+    const r = pending[Math.min(cmpIdx, pending.length - 1)];
+    const p = posts.get(r.post_id) || { tags: {} };
+    const chip = (vals) => [...setOf(vals)].map((v) => `<span class="sr-chip on">${esc(v)}</span>`).join("") || `<span class="muted">— nothing —</span>`;
+    $("[data-body]").innerHTML = `
+      <p class="hint" style="margin:0 0 12px"><b>${decided}</b> of ${total} decisions · ${pending.length} posts left. For each filter, pick the better option. A and B are shuffled: you don't know which version is which.</p>
+      <div class="sr-grid">
+        <section class="panel sr-post">
+          <div class="sr-meta"><b>${esc(String(p.published_at || "").slice(0, 10))}</b>${p.url ? `<a class="link" href="${esc(p.url)}" target="_blank" rel="noopener">Open original ↗</a>` : ""}</div>
+          <div class="sr-tags">${["platform", "format", "sport", "competition", "club"].flatMap((k) => (p.tags[k] || []).map((v) => `<span class="tag">${esc(v)}</span>`)).join("")}</div>
+          <div class="sr-media">${preview(p)}</div>
+          <details class="sr-caption" open><summary>Caption</summary><p>${esc(p.title || "(no caption)")}</p></details>
+        </section>
+        <section class="panel sr-form">
+          ${diffsOf(r).map((c) => {
+            const f = flip(r.post_id, c.key);
+            const A = f ? r.ai_b?.[c.key] : r.ai?.[c.key], B = f ? r.ai?.[c.key] : r.ai_b?.[c.key];
+            const v = r.verdicts?.[c.key]?.pick;
+            const isOn = (side) => v && ((side === "a" && v === (f ? "new" : "old")) || (side === "b" && v === (f ? "old" : "new")));
+            return `<div class="cmp-row" data-cmp="${c.key}" data-flip="${f}">
+              <div class="sr-cat-h">${esc(c.label)}</div>
+              <div class="cmp-opts">
+                <button type="button" class="cmp-opt${isOn("a") ? " on" : ""}" data-pick="a"><span class="cmp-l">A</span>${chip(A)}</button>
+                <button type="button" class="cmp-opt${isOn("b") ? " on" : ""}" data-pick="b"><span class="cmp-l">B</span>${chip(B)}</button>
+                <button type="button" class="cmp-mini${v === "both" ? " on" : ""}" data-pick="both" title="Both are right">Both OK</button>
+                <button type="button" class="cmp-mini${v === "none" ? " on" : ""}" data-pick="none" title="Both are wrong">Neither</button>
+              </div></div>`;
+          }).join("")}
+        </section>
+      </div>
+      <div class="sr-bar">
+        <span class="muted">1 = A · 2 = B · 3 = both · 4 = neither (first open filter)</span>
+        <button class="btn btn-primary" type="button" data-cmp-next>${icon("check")}Next post</button>
+      </div>`;
+    $$("img[data-tt]").forEach((img) => fetch(`https://www.tiktok.com/oembed?url=${encodeURIComponent(img.dataset.tt)}`).then((x) => x.json()).then((j) => { if (j.thumbnail_url) img.src = j.thumbnail_url; }).catch(() => {}));
+    const pick = async (row, side) => {
+      const f = Number(row.dataset.flip);
+      const choice = side === "a" ? (f ? "new" : "old") : side === "b" ? (f ? "old" : "new") : side;
+      r.verdicts = { ...(r.verdicts || {}), [row.dataset.cmp]: { pick: choice } };
+      $$("[data-pick]", row).forEach((b) => b.classList.toggle("on", b.dataset.pick === side));
+      const { error } = await A.db.from("smart_review").update({ verdicts: r.verdicts }).eq("post_id", r.post_id);
+      if (error) A.toast(A.errMsg(error), "err");
+    };
+    $$(".cmp-row").forEach((row) => row.addEventListener("click", (e) => { const b = e.target.closest("[data-pick]"); if (b) pick(row, b.dataset.pick); }));
+    $("[data-cmp-next]").addEventListener("click", () => {
+      if (diffsOf(r).some((c) => !r.verdicts?.[c.key])) return A.toast("Pick an option for every filter of this post first.", "err");
+      cmpIdx = 0; renderCompare(); window.scrollTo({ top: 0 });
+    });
+    compareKeys = (e) => {
+      const row = $$(".cmp-row").find((x) => !$(".on", x)) || $$(".cmp-row").pop();
+      const map = { 1: "a", 2: "b", 3: "both", 4: "none" };
+      if (map[e.key] && row) pick(row, map[e.key]);
+      if (e.key === "Enter") $("[data-cmp-next]")?.click();
+    };
+  }
+  let compareKeys = null;
+  function renderCompareResults(queue) {
+    const rows = CATS.filter((c) => c.key !== "city").map((c) => {
+      const v = queue.map((r) => r.verdicts?.[c.key]?.pick).filter(Boolean);
+      const n = (k) => v.filter((x) => x === k).length;
+      return { label: c.label, old: n("old"), neu: n("new"), both: n("both"), none: n("none"), total: v.length };
+    }).filter((x) => x.total);
+    const version = items.find((r) => r.ai_b_version)?.ai_b_version || "new";
+    const verdict = (x) => (x.neu > x.old ? `<span class="sr-pct good">New better</span>` : x.old > x.neu ? `<span class="sr-pct bad">Old better</span>` : `<span class="sr-pct mid">Tie</span>`);
+    $("[data-body]").innerHTML = `
+      <section class="panel"><div class="values-head" style="justify-content:space-between"><h2 style="font-size:16px">Blind comparison · old vs ${esc(version)}</h2><span class="muted">${rows.reduce((n, x) => n + x.total, 0)} decisions on the filters where the two versions disagreed</span></div>
+      <div class="table-wrap"><table class="data"><thead><tr><th>Filter</th><th>Old wins</th><th>New wins</th><th>Both OK</th><th>Neither</th><th>Result</th></tr></thead>
+      <tbody>${rows.map((x) => `<tr><td><b>${esc(x.label)}</b></td><td>${x.old}</td><td>${x.neu}</td><td>${x.both}</td><td>${x.none}</td><td>${verdict(x)}</td></tr>`).join("")}</tbody></table></div></section>
+      <p class="hint" style="margin-top:12px">"Neither" means both versions were wrong on that post: those cases show what the next prompt must fix.</p>`;
   }
 
   function renderAccuracy() {
@@ -173,6 +257,7 @@
     window.scrollTo({ top: 0 });
   }
   document.addEventListener("keydown", (e) => {
+    if (view === "compare" && compareKeys && !e.target.matches("input, textarea")) return compareKeys(e);
     if (view !== "review" || e.target.matches("input, textarea")) return;
     if (e.key === "Enter") { e.preventDefault(); $("[data-save]")?.click(); }
     if (e.key.toLowerCase() === "s") $("[data-skip]")?.click();

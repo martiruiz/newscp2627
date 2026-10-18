@@ -63,7 +63,7 @@ if (argv.includes("--eval")) {
       const p = posts.get(g.post_id);
       if (!p) continue;
       const meta = await igMeta(p.url);
-      const image = meta.status === "ok" ? await fetchImage(meta.image) : null;
+      const image = meta.status === "ok" && !argv.includes("--no-image") ? await fetchImage(meta.image) : null;
       if (image) withImg++;
       try {
         const msg = await claude.messages.create(requestParams({ ...p, media_type: meta.media_type }, image));
@@ -75,14 +75,18 @@ if (argv.includes("--eval")) {
     }
   }));
   console.log(`\n${after.size} labelled · ${withImg} with image · $${usd.toFixed(4)} · cache read ${cacheRead.toLocaleString()} tokens (${inTok.toLocaleString()} uncached)`);
-  const S = (v) => new Set([].concat(v || []).map((x) => String(x).trim().toLowerCase()).filter(Boolean));
+  const norm = (x) => String(x).normalize("NFD").replace(/\p{M}/gu, "").trim().toLowerCase();
+  const S = (v) => new Set([].concat(v || []).map(norm).filter(Boolean));
   const score = (pred, key) => {
     let tp = 0, fp = 0, fn = 0;
     for (const g of gold) {
       if (!after.has(g.post_id)) continue;
       const a = S(pred(g)[key]), t = S(g.gold[key]);
-      for (const x of a) t.has(x) ? tp++ : fp++;
-      for (const x of t) if (!a.has(x)) fn++;
+      // free-text names (opponent, sponsor, city): "Spurs" = "San Antonio Spurs"
+      const free = AI_CATEGORIES.find((c) => c.key === key)?.free;
+      const match = (x, set) => set.has(x) || (free && [...set].some((y) => y.includes(x) || x.includes(y)));
+      for (const x of a) match(x, t) ? tp++ : fp++;
+      for (const x of t) if (!match(x, a)) fn++;
     }
     return { p: tp + fp ? tp / (tp + fp) : null, r: tp + fn ? tp / (tp + fn) : null };
   };
@@ -96,6 +100,15 @@ if (argv.includes("--eval")) {
   const cities = [...after.values()].flatMap((x) => x.city || []);
   console.log(`\nCity (new): ${cities.length} found — ${[...new Set(cities)].slice(0, 20).join(", ")}`);
   fs.writeFileSync(path.join(HERE, "smart-eval-after.json"), JSON.stringify(Object.fromEntries(after), null, 2));
+  // --save-b: keep these labels as version B for the blind comparison in Admin → Smart filters → Compare
+  if (argv.includes("--save-b")) {
+    const tag = `${VERSION}${argv.includes("--no-image") ? "-text" : ""}`;
+    for (const [id, labels] of after) {
+      const { error: e } = await db.from("smart_review").update({ ai_b: labels, ai_b_version: tag, verdicts: null }).eq("post_id", id);
+      if (e) { console.log(/ai_b/.test(e.message) ? "Run the new lines of supabase/smart-review.sql first." : e.message); break; }
+    }
+    console.log(`Saved as version B (${tag}) for Admin → Smart filters → Compare.`);
+  }
   process.exit(0);
 }
 
