@@ -59,6 +59,7 @@ Deno.serve(async (req) => {
         discount = d;
       }
 
+      const taxMode = ((await setting("tax")) || {}).mode || "none";
       // What the member sees before paying. Without a trial, Stripe calculates the exact first invoice (prorated to the 1st).
       let firstCharge: { amount: number; currency: string; exact: boolean } | null = null;
       if (!dates.trialEnd) {
@@ -68,6 +69,7 @@ Deno.serve(async (req) => {
             customer: customer.customer_id,
             subscription_details: { items: [{ price: price.stripe_price_id }], ...(dates.anchor ? { billing_cycle_anchor: unix(dates.anchor) } : {}), proration_behavior: dates.prorate ? "create_prorations" : "none" },
             ...(discount ? { discounts: [{ promotion_code: discount.promotion_code }] } : {}),
+            ...(taxMode === "stripe_tax" ? { automatic_tax: { enabled: true } } : {}),
           });
           firstCharge = { amount: inv.amount_due / 100, currency: inv.currency, exact: true };
         } catch (e) { console.error("preview", e); }
@@ -84,7 +86,7 @@ Deno.serve(async (req) => {
       };
       if (body.preview) return json({ terms });
 
-      const taxRate = await config("tax_rate");
+      const taxRate = taxMode === "fixed_rate" ? await config("tax_rate") : null;
       const checkoutCfg = (await setting("checkout")) || {};
       const meta = { user_id: user.id, plan_key: plan.key, interval, currency, ...(linkId ? { private_link: linkId } : {}), ...(discount ? { discount_id: discount.id, discount_code: discount.code } : {}) };
       const fmt = (d: Date) => d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: tz });
@@ -106,7 +108,7 @@ Deno.serve(async (req) => {
         },
         ...(discount ? { discounts: [{ promotion_code: discount.promotion_code }] } : { allow_promotion_codes: false }),
         payment_method_collection: "always",          // card required, also for the trial
-        billing_address_collection: "auto",
+        ...(taxMode === "stripe_tax" ? { automatic_tax: { enabled: true }, billing_address_collection: "required" } : { billing_address_collection: "auto" }),
         ...(checkoutCfg.collect_tax_id !== false ? { tax_id_collection: { enabled: true } } : {}),
         ...(checkoutCfg.require_terms_consent ? { consent_collection: { terms_of_service: "required" } } : {}),
         customer_update: { name: "auto", address: "auto" },
@@ -122,7 +124,8 @@ Deno.serve(async (req) => {
 
     if (body.kind === "pack") {
       const customer = await customerFor(user);
-      const taxRate = await config("tax_rate");
+      const taxMode = ((await setting("tax")) || {}).mode || "none";
+      const taxRate = taxMode === "fixed_rate" ? await config("tax_rate") : null;
       const [pack] = await rest(`ai_packs?select=key,name,active,stripe_price&key=eq.${encodeURIComponent(body.pack || "")}`);
       if (!pack?.active) return json({ error: "This pack isn't available" }, 404);
       if (!pack.stripe_price) return json({ error: "Payments for packs aren't set up yet" }, 409);
@@ -133,6 +136,7 @@ Deno.serve(async (req) => {
         customer: customer.customer_id,
         client_reference_id: user.id,
         line_items: [{ price: pack.stripe_price, quantity: 1, ...(taxRate ? { tax_rates: [taxRate] } : {}) }],
+        ...(taxMode === "stripe_tax" ? { automatic_tax: { enabled: true }, billing_address_collection: "required" } : {}),
         invoice_creation: { enabled: true },
         tax_id_collection: { enabled: true },
         customer_update: { name: "auto", address: "auto" },

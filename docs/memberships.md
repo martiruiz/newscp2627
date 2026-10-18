@@ -99,8 +99,12 @@ GitHub repository secrets: `SUPABASE_URL`, `BILLING_CRON_SECRET` (= `CRON_SECRET
 3. Settings → Billing → Subscriptions and emails: **Smart Retries** schedule (e.g. 4 attempts over 2 weeks) and what
    happens after the last attempt (**mark the subscription unpaid** or cancel). Optionally Stripe's own receipts.
 4. Settings → Payments → enable cards (3-D Secure is automatic), and optionally SEPA / wallets.
-5. Tax: prices are VAT-inclusive with a fixed 21 % rate. For EU OSS / US sales tax consider **Stripe Tax** (a business
-   decision, not done here).
+5. Tax: the Stripe account is a **US** account (US company, payouts in USD to Mercury). EUR prices are shown tax
+   included (EU consumer rule), USD prices before tax (US convention). Memberships → Settings → *How taxes are
+   charged*: "none" (current), "Stripe Tax" (VAT / sales tax by customer location — needs the registrations your
+   accountant confirms in Stripe → Tax: e.g. EU VAT for consumers via the non-Union OSS scheme, US states once you
+   reach their thresholds, some LatAm countries) or one fixed rate. The fixed IVA 21 % rate from setup.mjs is only
+   used in "fixed rate" mode.
 6. Super Admin → Memberships → Plans → **Sync all plans with Stripe** (creates products and the EUR prices; add USD
    prices first if you want to sell in dollars).
 7. Discounts → **Create in Stripe** for each code.
@@ -199,7 +203,8 @@ webhook with real Stripe events, Resend delivery, and an end-to-end checkout in 
 - Legal pages (terms, privacy, cancellation) — footer links are `#` today; required before live payments.
 - An end-to-end test-mode checkout in the browser; review the trial / proration texts with real numbers.
 - The MemberPress export (and which Stripe account MemberPress uses).
-- Decide Stripe retry policy and Stripe Tax; USD prices (none are set: no automatic conversion).
+- Decide Stripe retry policy and the tax mode / registrations with an accountant (US company selling to the EU,
+  the US and LatAm).
 - Translations of the pricing / billing pages (e-mails are already en / ca / es).
 
 ## 13. Deployment checklist
@@ -223,6 +228,11 @@ webhook with real Stripe events, Resend delivery, and an end-to-end checkout in 
    and remove test customers/subscriptions (`stripe_customers`, `subscriptions` with source 'stripe' created in test).
    Then `sk_live_` in `pipeline/.env` and the Supabase secrets, `node stripe/setup.mjs --live`,
    `node stripe/sync-plans.mjs --live`, the live webhook secret, and re-create discounts in Stripe.
+
+USD prices (18 Oct 2026): EUR × 1.1253 (ECB, 16 Oct), rounded to .99, yearly = 10 × monthly — $10.99 / $22.99 /
+$27.99 / $44.99 a month. When a EUR price changes in the admin, USD is recalculated at the ECB rate of the day
+(Settings → "USD follows EUR"); it isn't re-converted daily (that would create a new price every day). Visitors see EUR
+in Europe and USD elsewhere (from their time zone) and can switch.
 
 Done on 18 Oct 2026 (test mode): SQL run; `node stripe/setup.mjs` (packs, IVA 21 % included, portal, webhook — secret
 saved in `pipeline/.env`); `node stripe/sync-plans.mjs` (4 plans, EUR monthly + yearly).

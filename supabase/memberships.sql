@@ -33,7 +33,12 @@ insert into public.billing_settings (key, value) values
   ('enforce_library_access','false'),    -- turn on once MemberPress members are linked (see Migration)
   ('emails',                '{"from_name": "Sports Content Playbook", "from_email": "hello@sportscontentplaybook.com", "reply_to": "", "trial_reminder_days": 3, "access_end_reminder_days": 3}'),
   ('legal',                 '{"terms_url": "", "privacy_url": "", "cancellation_url": "pricing.html#faq"}'),   -- set the real pages before going live
-  ('checkout',              '{"require_terms_consent": false, "collect_tax_id": true}')
+  ('checkout',              '{"require_terms_consent": false, "collect_tax_id": true}'),
+  -- taxes: "none" (no tax line), "stripe_tax" (Stripe Tax calculates VAT / sales tax per customer; needs registrations
+  -- in Stripe), "fixed_rate" (the single rate created by setup.mjs). EUR prices include tax, USD prices exclude it.
+  ('tax',                   '{"mode": "none"}'),
+  -- USD prices follow EUR prices when a superadmin changes them (ECB reference rate on that day, rounded to .99)
+  ('fx',                    '{"usd_follows_eur": true}')
 on conflict (key) do nothing;
 create or replace function public.billing_setting(p_key text)
 returns jsonb language sql stable security definer set search_path = public as $$

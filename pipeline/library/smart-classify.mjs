@@ -170,7 +170,7 @@ if (argv.includes("--seed-verify")) {
 if (argv.includes("--prepare")) {
   const from = arg("--from"), to = arg("--to"), limit = Number(arg("--limit") || 1e9);
   const { data: cat } = await db.from("idea_catalog").select("id").eq("category", "platform").eq("name", "Instagram").single();
-  let done = 0, broken = 0, offset = 0;
+  let done = 0, broken = 0, offset = 0, misses = 0;
   while (done < limit) {
     const { data: page, error } = await db.rpc("library_ideas", { p_filters: { platform: { ids: [cat.id] } }, p_from: from, p_to: to, p_limit: 100, p_offset: offset });
     if (error) throw error;
@@ -185,7 +185,9 @@ if (argv.includes("--prepare")) {
       if (done >= limit) break;
       const meta = await igMeta(r.url);
       if (meta.status === "broken") { broken++; await db.from("content_ideas").update({ unavailable_at: new Date().toISOString() }).eq("id", r.id); continue; }
-      if (meta.status !== "ok") { await sleep(3000); continue; }
+      // Instagram answering badly several times in a row = slow down a lot (avoid a block)
+      if (meta.status !== "ok") { misses++; if (misses >= 5) { console.log(`Instagram isn't answering (${misses} in a row) — pausing 10 minutes`); await sleep(600000); misses = 0; } else await sleep(3000); continue; }
+      misses = 0;
       // the same image is the library cover (Storage) and the AI's input
       const stored = meta.image ? await storeCover(r.id, meta.image).catch(() => null) : null;
       const image = stored ? { data: stored.data, type: stored.type } : await fetchImage(meta.image);
@@ -196,7 +198,7 @@ if (argv.includes("--prepare")) {
       await sleep(1200);
     }
     if (metas.length) { const { error: e2 } = await db.rpc("apply_ig_meta", { p_rows: metas }); if (e2) throw e2; }
-    console.log(`prepared ${done}${broken ? ` · ${broken} removed from Instagram` : ""}`);
+    console.log(`${new Date().toISOString().slice(11, 16)} prepared ${done}${broken ? ` · ${broken} removed from Instagram` : ""} · checked ${offset}`);
   }
   console.log(`Done: ${done} posts ready for --submit.`);
   process.exit(0);

@@ -44,7 +44,7 @@
     const note = isCurrent
       ? (cur.status === "trialing" && cur.trial_end ? `Free trial until ${new Date(cur.trial_end).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}` : cur.cancel_at_period_end ? `Ends on ${new Date(cur.current_period_end).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}` : "&nbsp;")
       : trial && price?.ready ? `Card required · ${SYM[currency]}0 today · then ${fmt(price.amount, currency)}/${iv === "year" ? "year" : "month"}${iv === "month" ? " · billed on the 1st" : ""}`
-      : `VAT included · ${iv === "month" ? "billed on the 1st · " : ""}cancel anytime`;
+      : `${currency === "usd" ? "Plus tax where applicable" : "VAT included"} · ${iv === "month" ? "billed on the 1st · " : ""}cancel anytime`;
     return `<article class="plan-card${p.highlighted ? " is-best" : ""}${isCurrent ? " is-current" : ""}">
       ${flag}
       <h3>${esc(p.name)}</h3>
@@ -199,7 +199,10 @@
     }
     const plans = privatePlan ? [privatePlan] : data.plans;
     const curs = data.currencies || ["eur"];
-    currency = (q.get("currency") || store.get("scp-currency") || data.default_currency || "eur").toLowerCase();
+    // EUR in Europe, USD everywhere else (from the visitor's time zone — no location lookup), unless they chose
+    const tz = (() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch { return ""; } })();
+    const byPlace = /^Europe\/|^Atlantic\/(Canary|Madeira|Azores)|^Africa\/Ceuta/.test(tz) ? "eur" : "usd";
+    currency = (q.get("currency") || store.get("scp-currency") || byPlace || data.default_currency || "eur").toLowerCase();
     if (!curs.includes(currency) || !plans.some((p) => p.prices.some((x) => x.currency === currency))) currency = data.default_currency || "eur";
     interval = q.get("interval") === "year" || store.get("scp-interval") === "year" ? "year" : "month";
     if (!plans.some((p) => priceOf(p))) interval = interval === "year" ? "month" : "year";

@@ -86,7 +86,7 @@ window.SCP_CHECKOUT = (() => {
     } else {
       rows.push(["Today", t.first_charge ? `${money(t.first_charge.amount, t.first_charge.currency)}${t.prorated_until ? ` · until ${dayOf(t.prorated_until)} (prorated)` : ""}` : price]);
     }
-    rows.push(["Then", `${price} / ${per}${t.interval === "month" ? ", on the 1st of every month" : `, renews every year`} · VAT included`]);
+    rows.push(["Then", `${price} / ${per}${t.interval === "month" ? ", on the 1st of every month" : `, renews every year`} · ${t.tax_included === false ? "plus tax where applicable" : "VAT included"}`]);
     if (t.discount) rows.push(["Discount", `${esc(t.discount.code)}: ${t.discount.kind === "percent" ? `${Number(t.discount.percent_off)}% off` : `${money(t.discount.amount_off, t.currency)} off`}${t.discount.duration === "repeating" ? ` for ${t.discount.duration_months} months` : t.discount.duration === "once" ? " on the first charge" : " for as long as you stay"}`]);
     return `<dl class="co-terms">${rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}</dl>`;
   }

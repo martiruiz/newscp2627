@@ -34,7 +34,7 @@ for (const plan of plans) {
   for (const p of prices) {
     if (p.active && !p.stripe_price_id) {
       const sp = await stripe.prices.create({ product, currency: p.currency, unit_amount: Math.round(Number(p.amount) * 100), recurring: { interval: p.interval },
-        tax_behavior: "inclusive", nickname: `${plan.name} · ${p.interval === "year" ? "yearly" : "monthly"} · ${p.currency.toUpperCase()}`,
+        tax_behavior: p.currency === "usd" ? "exclusive" : "inclusive", nickname: `${plan.name} · ${p.interval === "year" ? "yearly" : "monthly"} · ${p.currency.toUpperCase()}`,
         metadata: { plan_key: plan.key, scp_price_id: String(p.id) } }, { idempotencyKey: `scp-price-${live ? "live" : "test"}-${p.id}` });
       await db.from("membership_prices").update({ stripe_price_id: sp.id }).eq("id", p.id);
       if (p.currency === "eur") await db.from("plans").update(p.interval === "year" ? { stripe_price_year: sp.id } : { stripe_price_month: sp.id }).eq("key", plan.key);

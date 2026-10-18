@@ -77,7 +77,7 @@
     const next = live?.next;
     const facts = [
       ["Plan", `${esc(sub.plan_name)}`],
-      ["Price", sub.amount != null ? `${money(sub.amount, sub.currency)} / ${per} · VAT included` : "—"],
+      ["Price", sub.amount != null ? `${money(sub.amount, sub.currency)} / ${per} · ${sub.currency === "usd" ? "plus tax where applicable" : "VAT included"}` : "—"],
       ["Billing", sub.interval === "year" ? "Yearly, on the anniversary" : "Monthly, on the 1st of every month"],
       ["Member since", day(sub.started_at)],
     ];
