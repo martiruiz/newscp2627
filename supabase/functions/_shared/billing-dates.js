@@ -8,7 +8,9 @@
 //   start = end of the free trial, or now when there is no trial
 //   • start on any day but the 1st → billing_cycle_anchor = next 1st 12:00, prorations: a first invoice for the days
 //     from start to the 1st (Stripe calculates it), then the full price every 1st
-//   • start on the 1st before 12:00 → anchor = that same day 12:00, no prorations (a few hours free, full price at noon)
+//   • start on the 1st before 12:00 → no trial: anchor = that same day 12:00, no prorations (a few hours free, full
+//     price at noon). With a trial: the trial is extended to 12:00 that day (Stripe requires the invoice after a trial
+//     to be prorated when an anchor follows it), so the full price is charged at noon, with no tiny invoice
 //   • start on the 1st from 12:00   → no anchor (Stripe anchors at the start, already the 1st), full price now
 //   Yearly subscriptions renew on their anniversary (start date); the day-1 rule doesn't apply.
 export const BUSINESS_TZ = "Europe/Madrid";
@@ -46,12 +48,16 @@ export function nextMonthlyAnchor(from, tz = BUSINESS_TZ, day = 1) {
 // What to send to Stripe for a new subscription.
 //   → { trialEnd: Date|null, anchor: Date|null, prorate: boolean, start: Date }
 export function planBilling({ interval, trialDays = 0, now = new Date(), tz = BUSINESS_TZ, day = 1 }) {
-  const trialEnd = trialDays > 0 ? new Date(now.getTime() + trialDays * DAY) : null;
+  let trialEnd = trialDays > 0 ? new Date(now.getTime() + trialDays * DAY) : null;
   const start = trialEnd || now;
   if (interval !== "month") return { trialEnd, anchor: null, prorate: false, start };
   const z = zoned(start, tz);
   if (z.d === day) {
-    if (z.h < ANCHOR_HOUR) return { trialEnd, anchor: zonedTime(z.y, z.m, day, ANCHOR_HOUR, 0, tz), prorate: false, start };
+    if (z.h < ANCHOR_HOUR) {
+      const noon = zonedTime(z.y, z.m, day, ANCHOR_HOUR, 0, tz);
+      if (trialEnd) { trialEnd = noon; return { trialEnd, anchor: null, prorate: false, start: noon }; }
+      return { trialEnd, anchor: noon, prorate: false, start };
+    }
     return { trialEnd, anchor: null, prorate: false, start };
   }
   return { trialEnd, anchor: nextMonthlyAnchor(start, tz, day), prorate: true, start };

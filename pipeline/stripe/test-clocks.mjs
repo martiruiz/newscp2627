@@ -100,12 +100,25 @@ try {
     const inv2 = await invoices(s.customer.id);
     check("1 Feb and 1 Mar: full price (February handled)", inv2.slice(-2).every((i) => i.amount_due === PRICE_M), inv2.map((i) => `${local(i.created)}:${i.amount_due}`).join(" "));
   }
-  // 4. Trial ends on the 1st in the morning → full price at noon, no tiny invoice
+  // 4. Trial would end on the 1st in the morning → trial runs until noon, full price then, no tiny invoice
   {
     const s = await scenario("4. Trial ending on 1 Dec at 09:00", { start: madrid("2026-11-24 09:00"), trialDays: 7 });
-    await advance(s.clock, unix(s.b.anchor) + 3600);
+    check("trial extended to 1 Dec 12:00", local(s.sub.trial_end) === "2026-12-01 12:00", local(s.sub.trial_end));
+    await advance(s.clock, unix(s.b.trialEnd) + 3600);
     const inv = await invoices(s.customer.id);
     check("no prorated invoice, full €39.99 on 1 Dec", inv.filter((i) => i.amount_due > 0).length === 1 && inv[inv.length - 1].amount_due === PRICE_M, inv.map((i) => i.amount_due).join());
+    const sub = await stripe.subscriptions.retrieve(s.sub.id);
+    const end = sub.current_period_end ?? sub.items.data[0].current_period_end;
+    check("renews on 1 Jan", local(end).startsWith("2027-01-01"), local(end));
+  }
+  // 4b. No trial, subscribing on the 1st in the morning → a few free hours, full price at noon
+  {
+    const s = await scenario("4b. Subscribe on 1 Dec at 08:00, no trial", { start: madrid("2026-12-01 08:00") });
+    let inv = await invoices(s.customer.id);
+    check("nothing charged before noon", inv.every((i) => i.amount_due === 0), inv.map((i) => i.amount_due).join());
+    await advance(s.clock, unix(s.b.anchor) + 3600);
+    inv = await invoices(s.customer.id);
+    check("full €39.99 at noon on the 1st", inv[inv.length - 1].amount_due === PRICE_M, inv.map((i) => i.amount_due).join());
   }
   // 5. Starting on the 1st in the afternoon → full now, renews on the 1st
   {

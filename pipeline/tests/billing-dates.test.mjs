@@ -33,7 +33,8 @@ check("…and Stripe's own anchor (start) keeps renewing on the 1st", stripeMont
 
 console.log("\nTrial ending on the 1st");
 b = planBilling({ interval: "month", trialDays: 7, now: at("2026-11-24 09:00") });
-check("trial ends 1 Dec 09:00 → full charge at 12:00 that day, no proration", local(b.trialEnd) === "2026-12-01 09:00" && local(b.anchor) === "2026-12-01 12:00" && !b.prorate);
+check("trial would end 1 Dec 09:00 → extended to 12:00, full charge then, no proration (Stripe rule)", local(b.trialEnd) === "2026-12-01 12:00" && b.anchor === null && !b.prorate);
+check("…and renewals stay on the 1st", stripeMonthlyRenewals(b.trialEnd, 14).every((d) => zoned(d).d === 1));
 b = planBilling({ interval: "month", trialDays: 7, now: at("2026-11-24 15:00") });
 check("trial ends 1 Dec 15:00 → no anchor, full charge at trial end", b.anchor === null && !b.prorate);
 b = planBilling({ interval: "month", trialDays: 14, now: at("2026-11-30 10:00") });

@@ -138,7 +138,9 @@ Monthly subscriptions renew on the **1st of every month, Europe/Madrid**. Dates 
 
 - Start = end of the trial (or now). If the start isn't the 1st: `billing_cycle_anchor` = next **1st at 12:00
   Madrid** and `proration_behavior: create_prorations` → Stripe invoices the days until the 1st, then the full price
-  every 1st. If the start is the 1st before noon: anchor at noon that day without prorations; after noon: no anchor.
+  every 1st. If the start is the 1st before noon: without a trial, anchor at noon that day without prorations; with a
+  trial, the trial is extended to noon that day (Stripe rejects a non-prorated anchor right after a trial — found by
+  the test clocks); after noon: no anchor.
 - **Why noon, not midnight:** Stripe renews on the same UTC day-of-month and time. Midnight in Madrid is the previous
   day in UTC (22:00/23:00), which drifts to the last day of the month across summer/winter time. Noon is the 1st in UTC
   all year (`billing-dates.test.mjs` checks 24 consecutive renewals for several start dates, February, leap years and
@@ -152,8 +154,10 @@ Monthly subscriptions renew on the **1st of every month, Europe/Madrid**. Dates 
   change). Known limitation: a yearly → monthly switch renews monthly on the date the year ends, not the 1st.
 - Existing (MemberPress) subscriptions keep their own calendar until a migration policy is approved and communicated.
 
-**Validated by:** `billing-dates.test.mjs` (dates, 26 checks, passing) and `pipeline/stripe/test-clocks.mjs` (Stripe's
-real invoices with test clocks — **not run yet**, needs `sk_test_`).
+**Validated by:** `billing-dates.test.mjs` (dates, 27 checks, passing) and `pipeline/stripe/test-clocks.mjs` — run
+against Stripe test mode on 18 Oct 2026: **23 passed, 0 failed** (7-day trial → €0, prorated €18.80 to 1 Dec, €39.99 on
+1 Dec and 1 Jan; day 15 → €20.99 then full; 31 Jan; trial ending on the 1st; subscribing on the 1st morning/afternoon;
+29 Feb 2028; yearly anniversary; declined card → past_due; 3-D Secure → incomplete).
 
 ## 10. MemberPress migration
 
@@ -182,18 +186,18 @@ npm run test:billing        → 111 passed, 0 failed   (existing AI credits / pl
 npm run test:memberships    → 120 passed, 0 failed   (plans, prices, statuses, quotas, grants, links, discounts,
                                                       webhook idempotency / out-of-order, invoices, e-mails, RLS,
                                                       metrics, MemberPress importer, 33 e-mail templates)
-npm run test:billing-dates  → 26 passed, 0 failed    (day-1 rule, DST, February, leap year, yearly)
+npm run test:billing-dates  → 27 passed, 0 failed    (day-1 rule, DST, February, leap year, yearly)
+node stripe/test-clocks.mjs → 23 passed, 0 failed    (real Stripe invoices in test mode, simulated time)
 ```
-Edge Functions type-check with Deno (`deno check`), no errors. **Not executed yet** (need keys / deployment):
-`node stripe/test-clocks.mjs` (Stripe test clocks: trial, proration, renewals, failed card, 3-D Secure), the webhook
-with real Stripe events, Resend delivery, and an end-to-end checkout in the browser.
+Edge Functions type-check with Deno (`deno check`), no errors. **Not executed yet** (need the SQL + deployment): the
+webhook with real Stripe events, Resend delivery, and an end-to-end checkout in the browser.
 
 ## 12. Pending
 
-- Stripe test key (`sk_test_…`; `pipeline/.env` currently holds a publishable `pk_` key), then the checklist below.
+- Run the SQL and deploy the functions (checklist below).
 - Resend account + verified sender domain, `RESEND_API_KEY`.
 - Legal pages (terms, privacy, cancellation) — footer links are `#` today; required before live payments.
-- Run `test-clocks.mjs` and an end-to-end test-mode checkout; review the trial / proration texts with real numbers.
+- An end-to-end test-mode checkout in the browser; review the trial / proration texts with real numbers.
 - The MemberPress export (and which Stripe account MemberPress uses).
 - Decide Stripe retry policy and Stripe Tax; USD prices (none are set: no automatic conversion).
 - Translations of the pricing / billing pages (e-mails are already en / ca / es).
