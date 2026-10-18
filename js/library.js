@@ -756,6 +756,17 @@
     return "";
   }
 
+  // X's embed tells the page how tall the tweet is: the card takes exactly that height (no cut text)
+  addEventListener("message", (e) => {
+    if (!/^https:\/\/platform\.twitter\.com$/.test(e.origin)) return;
+    let d = e.data;
+    try { if (typeof d === "string") d = JSON.parse(d); } catch { return; }
+    const h = d?.["twttr.embed"]?.method === "twttr.private.resize" && Number(d["twttr.embed"].params?.[0]?.height);
+    if (!h) return;
+    const frame = [...document.querySelectorAll(".lib-card.is-embed iframe")].find((f) => f.contentWindow === e.source);
+    const media = frame?.closest(".lib-media");
+    if (media) { media.style.aspectRatio = "auto"; media.style.height = `${Math.ceil(h)}px`; media.classList.add("is-sized"); }
+  });
   const saveBtn = (id) => boards.button(id);
   const tagChips = (p, cats) => cats.flatMap((c) => (p.tags?.[c] || []).map((v) => `<button type="button" class="lib-tag" data-tag="${c}:${v.id}" title="${esc(CAT_LABEL[c])}">${esc(pretty(v.name))}</button>`)).join("");
 
@@ -819,7 +830,9 @@
           ${p.views ? `<span class="lib-foot-views"><b>${compact(p.views)}</b><small>${tx("views")}</small></span>` : ""}
         </div>`;
 
-    if (p.cover_url) {
+    // X, LinkedIn and Facebook: always the post itself, so the text can be read and videos played in place
+    const asPosted = pf === "x" || pf === "linkedin" || pf === "facebook";
+    if (p.cover_url && !asPosted) {
       return `
       <article class="lib-card has-cover" data-id="${esc(p.id)}">
         <div class="lib-media" style="aspect-ratio: 1 / ${mediaRatio(p).toFixed(4)}">
@@ -930,7 +943,8 @@
     const tpl = document.createElement("template");
     tpl.innerHTML = rows.map(card).join("");
     [...tpl.content.children].forEach((el, i) => {
-      const ratio = (rows[i].cover_url ? mediaRatio(rows[i]) : shape(rows[i]).ratio) + 0.2;   // + the footer
+      const pfi = platformOf(rows[i]);
+      const ratio = (rows[i].cover_url && !["x", "linkedin", "facebook"].includes(pfi) ? mediaRatio(rows[i]) : shape(rows[i]).ratio) + 0.2;   // + the footer
       placed.push({ el, ratio });
       place(el, ratio);
     });

@@ -5673,3 +5673,7 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 .lib-rail .save-btn:hover::after { opacity: 1; }
 /* the old controls are gone */
 .lib-card .lib-top, .lib-card .lib-bottom, .lib-card .lib-actions { display: none; }
+/* X / LinkedIn / Facebook as posted: the embed is fully interactive (text, video), sized to the post */
+.lib-card.is-embed .lib-media { background: #000; }
+.lib-card.is-embed .lib-media.is-sized .lib-zoom, .lib-card.is-embed .lib-media.is-sized .lib-frame { height: 100%; }
+.lib-card.is-embed .lib-rail { top: 50px; }
