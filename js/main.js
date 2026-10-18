@@ -68,6 +68,24 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString(window.SCP_LO
     });
   }
 
+  // Home FAQ: "Contact us" / "Book a demo" open the form in place of the questions (no page change)
+  $$("[data-faq-stage]").forEach((stage) => {
+    const panes = $$("[data-faq-pane]", stage);
+    const show = (name) => {
+      panes.forEach((p) => { const on = p.dataset.faqPane === name; p.hidden = !on; p.classList.toggle("is-on", on); });
+      if (name !== "faq") $("[data-faq-pane=\"" + name + "\"] input", stage)?.focus({ preventScroll: true });
+      stage.closest("section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    };
+    document.addEventListener("click", (e) => {
+      const open = e.target.closest("[data-faq-open]");
+      if (open) { e.preventDefault(); show(open.dataset.faqOpen); return; }
+      if (e.target.closest("[data-faq-back]") && stage.contains(e.target)) {
+        show("faq");
+        $$("[data-form-done]", stage).forEach((d) => { d.hidden = true; d.previousElementSibling.hidden = false; });
+      }
+    });
+  });
+
   // Mobile nav
   $$("[data-nav]").forEach((nav) => {
     const toggle = $("[data-nav-toggle]", nav);

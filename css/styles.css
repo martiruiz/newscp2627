@@ -4966,3 +4966,35 @@ main { position: relative; z-index: 0; }
   .live-col:nth-child(3) { display: none; }
   .live-count { display: none; }
 }
+
+/* ---------- Home FAQ: numbered questions; contact / demo forms open in the same place ---------- */
+.faq-home .faq-grid { align-items: start; }
+.faq-home .faq-intro { position: sticky; top: 110px; }
+.faq-home .faq-intro p { margin-top: 22px; }
+.faq-stage { position: relative; min-height: 520px; }
+.faq-pane { animation: faqIn 0.45s cubic-bezier(.2, .8, .2, 1); }
+.faq-pane[hidden] { display: none !important; }
+@keyframes faqIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.faq-home .acc-item { border-radius: 16px; border: 0.5px solid var(--line); transition: background 0.3s, border-color 0.3s, box-shadow 0.3s; }
+.faq-home .acc-item:hover { border-color: rgba(240, 184, 74, 0.35); }
+.faq-home .acc-item.is-open { border-color: rgba(240, 184, 74, 0.55); background: linear-gradient(170deg, rgba(240, 184, 74, 0.08), transparent 55%), var(--surface); box-shadow: var(--inset-glow), 0 18px 40px rgba(0, 0, 0, 0.25); }
+.faq-home .acc-trigger { gap: 16px; }
+.faq-n { flex: none; font-family: var(--font-display); font-weight: 700; font-size: 14px; color: var(--muted-dim); transition: color 0.3s; }
+.faq-home .acc-item.is-open .faq-n { color: var(--gold); }
+.faq-q { flex: 1; text-align: left; }
+.faq-home .acc-panel p { padding-left: 67px; line-height: 1.65; }
+.faq-home .acc-panel b { color: var(--text); font-weight: 600; }
+.faq-form-pane { padding: 30px; border-radius: 24px; background: linear-gradient(170deg, rgba(240, 184, 74, 0.1), transparent 40%), var(--surface);
+  border: 0.5px solid rgba(240, 184, 74, 0.55); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4), 0 0 70px rgba(240, 184, 74, 0.1); }
+.faq-form-pane h3 { margin-top: 14px; font-family: var(--font-display); font-weight: 600; font-size: 26px; letter-spacing: -0.02em; }
+.faq-form-sub { margin-top: 6px; color: var(--muted); font-size: 15px; }
+.faq-form { padding-top: 22px; gap: 14px; }
+.faq-back { font-size: 14px; color: var(--muted); transition: color 0.2s; }
+.faq-back:hover { color: var(--gold); }
+.faq-form-pane .book-days { display: grid; grid-template-columns: repeat(5, 1fr); }
+.faq-form-pane .book-options label { height: 40px; border-radius: 12px; justify-content: center; }
+.faq-form-pane .book-days label { flex-direction: column; height: 60px; gap: 0; }
+.faq-form-pane .book-options label:has(input:checked) { background: var(--gold); color: var(--on-gold); }
+.faq-form-pane .book-times { display: grid; grid-template-columns: 1fr 1fr; }
+@media (max-width: 960px) { .faq-home .faq-intro { position: static; } .faq-stage { min-height: 0; } }
+@media (max-width: 520px) { .faq-form-pane { padding: 22px 16px; } .faq-home .acc-panel p { padding-left: 37px; } }
