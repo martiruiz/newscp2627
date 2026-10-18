@@ -5396,3 +5396,59 @@ body:has(.dock) .sf-mark { padding-bottom: 110px; }
 .tv-bar i { display: block; height: 100%; border-radius: 6px; background: linear-gradient(90deg, #1fae74, #3ddc97); animation: tvFill 7s ease-out infinite; }
 @keyframes tvFill { 0% { width: 0; } 70%, 88% { width: 100%; } 100% { width: 100%; opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .tool-vis * { animation: none !important; } .tv-week i { opacity: 1; } .tv-bar i { width: 100%; } }
+
+/* ---------- Home "Built for your team": 2×2 bento, each card with a small live visual ---------- */
+.team-strip .team-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; max-width: 1040px; margin-inline: auto; }
+.team-tiles article { position: relative; display: grid; grid-template-columns: auto 1fr; column-gap: 14px; align-items: start; padding: 14px 14px 22px; border-radius: 22px; overflow: hidden; }
+.team-tiles article:nth-child(1) { --acc: 240, 184, 74; } .team-tiles article:nth-child(2) { --acc: 122, 162, 255; }
+.team-tiles article:nth-child(3) { --acc: 61, 220, 151; } .team-tiles article:nth-child(4) { --acc: 196, 155, 255; }
+.team-tiles article:hover { border-color: rgba(var(--acc), 0.55); box-shadow: var(--inset-glow), 0 22px 46px -18px rgba(var(--acc), 0.5); }
+.team-tiles .tt-ic { grid-row: 2 / span 2; margin: 0 0 0 8px; background: rgba(var(--acc), 0.16); }
+.team-tiles .tt-ic svg { stroke: rgb(var(--acc)); }
+.team-tiles h3 { grid-column: 2; margin-top: 2px; }
+.team-tiles p { grid-column: 2; padding-right: 8px; }
+.tm-vis { grid-column: 1 / -1; position: relative; display: block; height: 150px; margin-bottom: 18px; border-radius: 16px; overflow: hidden;
+  background: radial-gradient(120% 120% at 50% 0%, rgba(var(--acc), 0.16), transparent 60%), rgba(var(--fg), 0.03); border: 0.5px solid rgba(var(--acc), 0.25); }
+/* For you: pinned clubs, their posts first */
+.tm-pins { position: absolute; top: 14px; left: 14px; display: flex; gap: 8px; }
+.tm-pins > span { position: relative; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; background: #fff; box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35); }
+.tm-pins img { width: 28px; height: 28px; object-fit: contain; }
+.tm-pins b { position: absolute; right: -4px; top: -4px; width: 18px; height: 18px; display: grid; place-items: center; border-radius: 50%; font-size: 10px; color: var(--on-gold); background: var(--gold); transform: scale(0); animation: tmStar 6s ease-out infinite; }
+.tm-pins > span:nth-child(2) b { animation-delay: 0.4s; } .tm-pins > span:nth-child(3) b { animation-delay: 0.8s; }
+@keyframes tmStar { 0% { transform: scale(0); } 8%, 90% { transform: scale(1); } 100% { transform: scale(0); } }
+.tm-first { position: absolute; right: 14px; bottom: 14px; left: 14px; display: flex; align-items: flex-end; gap: 6px; }
+.tm-first em { position: absolute; top: -26px; right: 0; font-style: normal; font-size: 11px; font-weight: 600; color: var(--gold); }
+.tm-first i { flex: 1; height: 62px; border-radius: 9px; background-size: cover; background-position: 50% 30%; animation: tmRise 6s ease-out infinite; }
+.tm-first i:nth-of-type(2) { animation-delay: 0.25s; } .tm-first i:nth-of-type(3) { animation-delay: 0.5s; }
+@keyframes tmRise { 0%, 12% { opacity: 0; transform: translateY(14px); } 22%, 90% { opacity: 1; transform: none; } 100% { opacity: 0; } }
+/* Up to 5 users: avatars join, the seat stepper */
+.tm-avatars { position: absolute; top: 34px; left: 0; right: 0; display: flex; justify-content: center; }
+.tm-avatars i { width: 46px; height: 46px; margin-left: -10px; display: grid; place-items: center; border-radius: 50%; font-style: normal; font-size: 13px; font-weight: 700; color: #0b0f1c; background: var(--c); box-shadow: 0 0 0 3px var(--surface); opacity: 0; animation: tmJoin 6s ease-out infinite; animation-delay: calc(var(--k) * 0.35s); }
+.tm-avatars i:first-child { margin-left: 0; }
+@keyframes tmJoin { 0% { opacity: 0; transform: scale(0.6); } 6%, 90% { opacity: 1; transform: none; } 100% { opacity: 0; } }
+.tm-seats { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 12px; padding: 6px 14px; border-radius: 100px; background: rgba(var(--fg), 0.06); border: 0.5px solid var(--line); font-size: 12px; color: var(--muted); }
+.tm-seats strong { color: var(--text); font-size: 14px; }
+.tm-seats b { color: rgb(var(--acc)); font-weight: 600; }
+/* Social News: headlines from each network, the Monday newsletter */
+.tm-news { padding: 14px; display: grid; align-content: start; gap: 8px; }
+.tm-n { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 10px; background: rgba(var(--fg), 0.05); animation: tmSlide 6s ease-out infinite; }
+.tm-n:nth-child(2) { animation-delay: 0.3s; } .tm-n:nth-child(3) { animation-delay: 0.6s; }
+@keyframes tmSlide { 0% { opacity: 0; transform: translateX(-12px); } 8%, 90% { opacity: 1; transform: none; } 100% { opacity: 0; } }
+.tm-nl .lf-pfi { width: 16px; height: 16px; }
+.tm-nl .lf-pfi.lf-pf-instagram { width: 20px; height: 20px; margin: -2px; }
+.tm-n i { flex: 1; height: 6px; border-radius: 6px; background: linear-gradient(90deg, rgba(var(--fg), 0.35), rgba(var(--fg), 0.08)); }
+.tm-n em { font-style: normal; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 6px; color: #0b0f1c; background: rgb(var(--acc)); }
+.tm-mail { position: absolute; right: 14px; bottom: 12px; font-size: 11px; font-weight: 600; color: rgb(var(--acc)); }
+/* English & Español: the switch flips and the words change language */
+.tm-switch { position: absolute; top: 18px; left: 50%; transform: translateX(-50%); display: inline-flex; padding: 3px; border-radius: 100px; background: rgba(var(--fg), 0.06); border: 0.5px solid var(--line); }
+.tm-switch b { position: relative; z-index: 1; width: 40px; text-align: center; font-size: 12px; line-height: 24px; color: var(--text); }
+.tm-switch i { position: absolute; top: 3px; left: 3px; width: 40px; height: 24px; border-radius: 100px; background: rgba(var(--acc), 0.55); animation: tmFlip 6s ease-in-out infinite; }
+@keyframes tmFlip { 0%, 40% { transform: none; } 50%, 90% { transform: translateX(40px); } 100% { transform: none; } }
+.tm-words { position: absolute; left: 14px; right: 14px; bottom: 16px; display: grid; gap: 8px; }
+.tm-words > span { position: relative; height: 34px; border-radius: 10px; background: rgba(var(--fg), 0.05); overflow: hidden; }
+.tm-words em { position: absolute; inset: 0; display: grid; place-items: center; font-style: normal; font-size: 13px; font-weight: 600; color: var(--text); animation: tmWordA 6s ease-in-out infinite; }
+.tm-words em + em { animation-name: tmWordB; color: rgb(var(--acc)); }
+@keyframes tmWordA { 0%, 42% { transform: none; opacity: 1; } 50%, 92% { transform: translateY(-100%); opacity: 0; } 100% { transform: none; opacity: 1; } }
+@keyframes tmWordB { 0%, 42% { transform: translateY(100%); opacity: 0; } 50%, 92% { transform: none; opacity: 1; } 100% { transform: translateY(100%); opacity: 0; } }
+@media (max-width: 760px) { .team-strip .team-tiles { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .tm-vis * { animation: none !important; } .tm-avatars i, .tm-pins b { opacity: 1; transform: none; } .tm-words em + em { display: none; } }
