@@ -97,6 +97,33 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString(window.SCP_LO
     });
   });
 
+  // Footer newsletter (same list as the home dock: newsletter_signups, source "footer")
+  $$("[data-footer-news]").forEach((form) => {
+    const msg = $("[data-footer-news-msg]", form);
+    const t = (x) => (window.tx ? window.tx(x) : x);
+    const say = (text, ok) => { msg.textContent = t(text); msg.classList.toggle("is-ok", !!ok); msg.hidden = false; };
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const cfg = window.SCP_CONFIG || {};
+      const email = form.email.value.trim();
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { say("Please enter a valid email."); return form.email.focus(); }
+      if (!form.consent.checked) return say("Please tick the box so we can send you the newsletter.");
+      const btn = $("button[type=submit]", form);
+      btn.disabled = true;
+      try {
+        const res = await fetch(`${cfg.supabaseUrl}/rest/v1/newsletter_signups`, {
+          method: "POST",
+          headers: { apikey: cfg.supabaseAnonKey, Authorization: `Bearer ${cfg.supabaseAnonKey}`, "Content-Type": "application/json", Prefer: "return=minimal" },
+          body: JSON.stringify({ email, source: "footer", consent: true, consent_text: "I want the SCP newsletter. I can unsubscribe at any time." }),
+        });
+        if (!res.ok && res.status !== 409) throw new Error(String(res.status));   // 409 = already subscribed
+        form.reset();
+        say("You're in! See you on Monday.", true);
+      } catch { say("Something went wrong. Please try again in a moment."); }
+      finally { btn.disabled = false; }
+    });
+  });
+
   // Mobile nav
   $$("[data-nav]").forEach((nav) => {
     const toggle = $("[data-nav-toggle]", nav);
