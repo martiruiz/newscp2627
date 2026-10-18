@@ -185,7 +185,7 @@
     const side = $("[data-side]");
     if (!side) return;
     side.innerHTML = `
-      <div class="side-brand"><img src="../assets/icon-logo-lg.svg" alt=""><div><b>SCP Admin</b><span>Sports Content Playbook</span></div></div>
+      <div class="side-brand"><img class="side-wordmark" src="../assets/logo-scp.png" alt="Sports Content Playbook"><div><b>Admin</b></div></div>
       <nav aria-label="Admin">${NAV.map((n) => `<a href="${n.href}"${n.key === pageKey ? ' aria-current="page"' : ""}>${icon(n.icon)}${n.label}</a>`).join("")}</nav>
       <a class="side-cta" href="../content-library.html">Open Content Library<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg></a>
       <div class="side-foot">

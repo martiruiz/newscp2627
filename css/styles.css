@@ -5548,3 +5548,8 @@ body:has(.dock) .sf-mark { padding-bottom: 110px; }
 .book .book-card.is-wide::before, .book .book-card.is-wide::after { display: none; }
 .book .book-card.is-wide .book-cal-head { text-align: center; }
 .book .book-card.is-wide .book-cal-alt { justify-self: center; }
+/* Brand: the SCP wordmark (assets/logo-scp.png) */
+.brand img.brand-logo { width: auto; height: 36px; display: block; }
+.footer-brand img.brand-logo, .sf-brand .footer-brand img.brand-logo { width: auto; height: 72px; }
+.auth-logo img.brand-logo { width: auto; height: 64px; }
+@media (max-width: 600px) { .brand img.brand-logo { height: 30px; } .sf-brand .footer-brand img.brand-logo { height: 58px; } }

@@ -103,7 +103,7 @@ export function renderWeekly({ subject, preheader, intro, topStory, news, posts 
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
       <tr><td><a href="${SITE}"><img src="${SITE}/assets/email/header.jpg" width="600" alt="Sports Content Playbook" style="display:block;width:100%;max-width:600px;height:auto;border-radius:24px 24px 0 0;border:0"></a></td></tr>
       <tr><td class="pad" align="center" style="padding:6px 40px 36px">
-        <img src="${SITE}/assets/icon-logo-lg.png" width="40" height="40" alt="" style="display:block;margin:0 auto 14px;border:0">
+        <img src="${SITE}/assets/logo-scp.png" width="140" height="57" alt="Sports Content Playbook" style="display:block;margin:0 auto 14px;border:0">
         <p style="margin:0;${SANS};font-size:12px;font-weight:700;letter-spacing:2.4px;text-transform:uppercase;color:${GOLD}">${issue ? `Issue #${esc(issue)}&nbsp;&nbsp;·&nbsp;&nbsp;` : ""}${esc(dateLabel)}</p>
         <p class="hero-title" style="margin:12px 0 0;${SANS};font-size:34px;line-height:1.15;font-weight:700;letter-spacing:-0.8px;color:#ffffff">${esc(subject)}</p>
         <p style="margin:18px 0 0;${BODY};font-size:16px;line-height:1.7;color:#c9d2e0">Hi {{{contact.first_name|there}}}, welcome to this week's SCP. ${rich(intro)}</p>
@@ -164,7 +164,7 @@ export function renderWeekly({ subject, preheader, intro, topStory, news, posts 
 
   <!-- Footer -->
   <tr><td align="center" style="padding:34px 20px 0">
-    <img src="${SITE}/assets/icon-logo-lg.png" width="30" height="30" alt="" style="display:block;margin:0 auto 10px;border:0;opacity:0.9">
+    <img src="${SITE}/assets/logo-scp.png" width="90" height="37" alt="Sports Content Playbook" style="display:block;margin:0 auto 10px;border:0;opacity:0.9">
     <p style="margin:0;${SANS};font-size:15px;font-weight:700;color:#ffffff">Sports Content Playbook</p>
     ${socials.length ? `<p style="margin:16px 0 0">${socials.map(([name, url]) => `<a href="${esc(url)}" style="display:inline-block;margin:0 6px;text-decoration:none"><img src="${SITE}/assets/email/social-${name.toLowerCase()}.png" width="40" height="40" alt="${esc(name)}" style="display:block;border:0"></a>`).join("")}</p>` : ""}
     <p style="margin:20px 0 0;${BODY};font-size:12px;line-height:1.7;color:#6f7d95">You're receiving this because you subscribed at sportscontentplaybook.com.<br>

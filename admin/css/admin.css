@@ -587,3 +587,4 @@ body { background: radial-gradient(60% 40% at 50% 0%, rgba(240, 184, 74, 0.06), 
 .ms-sim { margin: 10px 0; padding: 10px 12px; border-radius: 10px; background: var(--panel-2); font-size: 13px; }
 .ms-settings .panel { margin-bottom: 14px; }
 .ms-settings .ms-check { margin-top: 8px; }
+.side-brand .side-wordmark { display: block; width: auto; height: 46px; margin-bottom: 8px; }

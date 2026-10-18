@@ -701,7 +701,7 @@
         a { color: #4d7fe0; }
         footer { margin-top: 16px; font-size: 9px; color: #98a2b3; text-align: center; }
       </style></head><body>
-      <header><div><div class="brand">Sports Content Playbook · Content Plan</div><h1>${esc(plan)}</h1><div class="period">${esc(period)} · ${dated.length} post${dated.length === 1 ? "" : "s"} planned</div></div><div class="legend">${counts}</div></header>
+      <header><div><div class="brand"><img src="${new URL("assets/logo-scp.png", location.href).href}" alt="Sports Content Playbook" style="height:34px;display:block;margin-bottom:6px">Content Plan</div><h1>${esc(plan)}</h1><div class="period">${esc(period)} · ${dated.length} post${dated.length === 1 ? "" : "s"} planned</div></div><div class="legend">${counts}</div></header>
       ${shownDays.map((d) => { const list = dated.filter((e) => e.entry_date === d); return `<section class="day"><h2>${longDay(d)}</h2>${list.length ? list.map(item).join("") : `<div class="empty">Nothing planned</div>`}</section>`; }).join("")}
       ${ideas.length ? `<section class="day"><h2>No date · ideas for later (${ideas.length})</h2>${ideas.map(item).join("")}</section>` : ""}
       <footer>Downloaded ${new Date().toLocaleString(window.SCP_LOC || "en-GB", { dateStyle: "medium", timeStyle: "short" })} · sportscontentplaybook</footer>

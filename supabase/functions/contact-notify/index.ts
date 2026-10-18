@@ -53,7 +53,7 @@ const T = {
 const shell = (inner: string) => `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;padding:0;background:#0e1529"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0e1529"><tr><td align="center" style="padding:32px 16px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#17213b;border:1px solid rgba(240,184,74,0.35);border-radius:20px;font-family:Arial,Helvetica,sans-serif">
-<tr><td style="padding:28px 32px 4px"><a href="${SITE}" style="color:#fff;text-decoration:none;font-weight:700;font-size:16px"><img src="${SITE}/assets/icon-logo-lg.png" width="28" height="28" alt="" style="vertical-align:middle;margin-right:8px">Sports Content Playbook</a></td></tr>
+<tr><td style="padding:28px 32px 4px"><a href="${SITE}" style="color:#fff;text-decoration:none;font-weight:700;font-size:16px"><img src="${SITE}/assets/logo-scp.png" width="110" height="45" alt="Sports Content Playbook" style="display:block;border:0"></a></td></tr>
 <tr><td style="padding:18px 32px 32px;color:#b4c0d3;font-size:15px;line-height:1.6">${inner}</td></tr>
 </table></td></tr></table></body></html>`;
 

@@ -20,7 +20,7 @@ function welcomeHtml(firstName: string) {
 <body style="margin:0;padding:0;background:#0e1529">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0e1529"><tr><td align="center" style="padding:32px 16px">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#17213b;border:1px solid rgba(240,184,74,0.35);border-radius:20px;font-family:Arial,Helvetica,sans-serif">
-    <tr><td style="padding:32px 32px 8px"><a href="${SITE}" style="color:#fff;text-decoration:none;font-weight:700;font-size:16px"><img src="${SITE}/assets/icon-logo-lg.png" width="28" height="28" alt="" style="vertical-align:middle;margin-right:8px">Sports Content Playbook</a></td></tr>
+    <tr><td style="padding:32px 32px 8px"><a href="${SITE}" style="color:#fff;text-decoration:none;font-weight:700;font-size:16px"><img src="${SITE}/assets/logo-scp.png" width="110" height="45" alt="Sports Content Playbook" style="display:block;border:0"></a></td></tr>
     <tr><td style="padding:16px 32px 0"><table role="presentation" width="100%">
       <tr><td style="color:#f0b84a;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;padding-bottom:10px">Welcome to the newsletter</td></tr>
       <tr><td style="color:#fff;font-size:28px;line-height:1.2;font-weight:700;padding-bottom:16px">${hi} you're in.</td></tr>
