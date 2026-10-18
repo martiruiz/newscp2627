@@ -1537,7 +1537,7 @@ window.SCP_ES = {
   "A 17-second Reel: the goal, the celebration, real stadium sound. No graphics needed.": "Un Reel de 17 segundos: el gol, la celebración y el sonido real del estadio. Sin gráficos.",
   "Post every goal within minutes with a “[assist] serves, [scorer] scores” caption and make it your matchday format.": "Publica cada gol en minutos con un texto tipo «[asistente] la sirve, [goleador] la mete» y conviértelo en tu formato de día de partido.",
   "All sports": "Todos los deportes",
-  "876K views": "876 K visualizaciones",
+  "15.5M views": "15,5 M visualizaciones",
+  "10.6M views": "10,6 M visualizaciones",
   "20.6M views": "20,6 M visualizaciones",
-  "463K views": "463 K visualizaciones",
 };
