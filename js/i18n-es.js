@@ -467,6 +467,8 @@ window.SCP_ES = {
   "billed yearly": "facturación anual",
   "or {price}/year": "o {price}/año",
   "Recommended": "Recomendado",
+  "/ {per} per user · VAT incl.": "/ {per} por usuario · IVA incl.",
+  "Cancel anytime": "Cancela cuando quieras",
   "Ask for a proposal": "Pide una propuesta",
   "Buy more AI analyses": "Comprar más análisis con IA",
   "<b>Payment received.</b> Adding your AI analyses…": "<b>Pago recibido.</b> Añadiendo tus análisis con IA…",

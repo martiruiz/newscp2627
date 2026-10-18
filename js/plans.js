@@ -65,15 +65,15 @@
       ${flag}
       <h3>${esc(p.name)}</h3>
       <p class="plan-blurb">${tx(who)}</p>
-      <p class="plan-price">${price ? `<b data-price="${price.amount}" data-cur="${currency}">${fmt(price.amount, currency)}</b><span>${tx("/ {per} per user", { per: per(iv) })}</span>` : `<b>—</b>`}</p>
+      <p class="plan-price">${price ? `<b data-price="${price.amount}" data-cur="${currency}">${fmt(price.amount, currency)}</b><span>${tx("/ {per} per user · VAT incl.", { per: per(iv) })}</span>` : `<b>—</b>`}</p>
       <p class="plan-sub">${sub || "&nbsp;"}</p>
       ${cta}
+      <p class="plan-note">${note || (trial && price?.ready && !cur ? tx("Cancel anytime") : "")}</p>
       <ul class="plan-tools">
         ${tool(lib, "pt-lib", tx("Content Library"))}
         ${tool(cp, "pt-cp", tx("Content Plan"))}
         ${tool(hasAi, "pt-ai", tx("AI analysis"), hasAi ? (p.ai_unlimited ? tx("Unlimited") : tx("{n}/month", { n: p.ai_monthly_units })) : "")}
       </ul>
-      ${note ? `<p class="plan-note">${note}</p>` : ""}
     </article>`;
   }
 
@@ -171,11 +171,6 @@
       b.classList.toggle("is-solo", plans.length === 1);
       b.innerHTML = plans.length ? plans.map((p) => planCard(p, { solo: plans.length === 1 })).join("") : `<p class="plans-empty">Plans will be published here soon. <a class="link-gold" href="contact.html">Contact us</a> in the meantime.</p>`;
       decorate(b, swap);
-      if (!privatePlan && plans.length > 1 && !b.nextElementSibling?.matches?.(".plan-assure")) {
-        const td = Math.max(0, ...plans.map((p) => p.trial_days || 0));
-        // one short line: the trial, cancelling, VAT and the team proposal
-        b.insertAdjacentHTML("afterend", `<p class="plan-assure">${td ? `<span>✓ ${tx("{n} days free", { n: td })}</span>` : ""}<span>✓ ${tx("Cancel in 2 clicks")}</span><span>✓ ${tx("VAT included")}</span><span>${tx("More than {n} users?", { n: MAX_SEATS })} <a class="link-gold" href="contact.html?topic=custom-plan&users=${MAX_SEATS + 1}">${tx("Ask for a proposal")}</a></span></p>`);
-      }
       b.classList.toggle("is-v2", !privatePlan && plans.length > 1);
       const prev = b.previousElementSibling?.matches?.(".plan-switches") ? b.previousElementSibling : null;
       if (prev) prev.outerHTML = switches(plans); else b.insertAdjacentHTML("beforebegin", switches(plans));
