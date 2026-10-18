@@ -5452,3 +5452,46 @@ body:has(.dock) .sf-mark { padding-bottom: 110px; }
 @keyframes tmWordB { 0%, 42% { transform: translateY(100%); opacity: 0; } 50%, 92% { transform: none; opacity: 1; } 100% { transform: translateY(100%); opacity: 0; } }
 @media (max-width: 760px) { .team-strip .team-tiles { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .tm-vis * { animation: none !important; } .tm-avatars i, .tm-pins b { opacity: 1; transform: none; } .tm-words em + em { display: none; } }
+/* team v2 visuals: look like the product */
+/* For you: the "For you" feed, posts from the clubs you follow, newest first */
+.tm-you2 { padding: 12px; }
+.ty-tabs { display: flex; gap: 6px; margin-bottom: 10px; font-size: 11.5px; }
+.ty-tabs b, .ty-tabs span { padding: 4px 10px; border-radius: 100px; }
+.ty-tabs b { color: var(--on-gold); background: var(--gold); font-weight: 600; }
+.ty-tabs span { color: var(--muted); background: rgba(var(--fg), 0.05); }
+.ty-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.ty-card { position: relative; height: 92px; border-radius: 10px; overflow: hidden; opacity: 0; animation: tyIn 6.5s ease-out infinite; animation-delay: calc(var(--k) * 0.22s); }
+.ty-card i { position: absolute; inset: 0; background-size: cover; background-position: 50% 30%; }
+.ty-card img { position: absolute; left: 6px; bottom: 6px; width: 22px; height: 22px; padding: 3px; border-radius: 50%; background: #fff; object-fit: contain; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4); }
+.ty-card em { position: absolute; top: 6px; right: 6px; font-style: normal; font-size: 9.5px; font-weight: 700; padding: 2px 6px; border-radius: 6px; color: var(--on-gold); background: var(--gold); }
+.ty-card.is-new { box-shadow: inset 0 0 0 2px var(--gold); }
+@keyframes tyIn { 0% { opacity: 0; transform: translateX(16px); } 7%, 90% { opacity: 1; transform: none; } 100% { opacity: 0; } }
+/* Up to 5 users: the team panel from Account → Billing */
+.tm-team { padding: 10px 12px; }
+.tt-head { display: grid; grid-template-columns: 1fr auto; align-items: center; row-gap: 5px; margin-bottom: 7px; }
+.tt-head b { font-size: 12px; } .tt-head small { font-size: 11px; color: var(--muted); }
+.tt-bar { grid-column: 1 / -1; height: 4px; border-radius: 4px; background: rgba(var(--fg), 0.08); overflow: hidden; }
+.tt-bar i { display: block; width: 80%; height: 100%; border-radius: 4px; background: rgb(var(--acc)); }
+.tt-list { display: grid; gap: 4px; }
+.tt-m { display: flex; align-items: center; gap: 8px; height: 19px; font-size: 11px; color: var(--text); opacity: 0; animation: tyIn 6.5s ease-out infinite; animation-delay: calc(var(--k) * 0.2s); }
+.tt-m i { width: 19px; height: 19px; flex: none; display: grid; place-items: center; border-radius: 50%; font-style: normal; font-size: 8.5px; font-weight: 700; color: #0b0f1c; background: var(--c); }
+.tt-m span { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tt-m em { font-style: normal; font-size: 10px; color: #3ddc97; }
+.tt-m em::before { content: "● "; font-size: 8px; }
+.tt-add { color: rgb(var(--acc)); }
+.tt-add i { background: none; border: 1px dashed rgba(var(--acc), 0.7); color: rgb(var(--acc)); font-size: 12px; }
+/* Social News: stories by network and topic, the Monday newsletter */
+.tm-news2 { padding: 10px 12px; display: grid; align-content: start; gap: 6px; }
+.tn-row, .tn-mail { display: flex; align-items: center; gap: 9px; padding: 6px 9px; border-radius: 10px; background: rgba(var(--fg), 0.05); opacity: 0; animation: tyIn 6.5s ease-out infinite; animation-delay: calc(var(--k) * 0.22s); }
+.tn-logo .lf-pfi { width: 16px; height: 16px; } .tn-logo .lf-pfi.lf-pf-instagram { width: 20px; height: 20px; margin: -2px; }
+.tn-txt { flex: 1; display: grid; gap: 4px; }
+.tn-txt em { font-style: normal; font-size: 9.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: rgb(var(--acc)); }
+.tn-txt i { display: block; height: 5px; border-radius: 5px; background: rgba(var(--fg), 0.25); }
+.tn-txt i + i { width: 60%; background: rgba(var(--fg), 0.12); }
+.tn-row small { font-size: 10px; color: var(--muted); }
+.tn-mail { background: rgba(var(--acc), 0.12); border: 0.5px solid rgba(var(--acc), 0.35); font-size: 11px; }
+.tn-mail b { flex: 1; font-weight: 600; } .tn-mail small { font-size: 10px; color: var(--muted); } .tn-mail > span { color: rgb(var(--acc)); }
+@media (prefers-reduced-motion: reduce) { .ty-card, .tt-m, .tn-row, .tn-mail { opacity: 1; } }
+.team-tiles .tm-vis { height: 178px; }
+.tm-news2 { gap: 5px; } .tn-row, .tn-mail { padding: 5px 9px; }
+.ty-card { height: 112px; }
