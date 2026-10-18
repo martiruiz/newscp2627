@@ -227,8 +227,8 @@
     const sp = byCountStable(catalog.byCat.trend || []);
     const rows = sp.map((v) => {
       const s = special(v), n = countOf(v), on = isOn(v), zero = n === 0 && !on;
-      return `<button type="button" class="lf-sp ${s.cls}${on ? " is-on" : ""}${zero ? " is-zero" : ""}" aria-pressed="${on}" ${zero ? 'aria-disabled="true" ' : ""}data-facet="trend" data-id="${v.id}">
-        <span class="lf-sp-ic">${svg(s.ico)}</span><span class="lf-sp-tx"><b>${esc(pretty(v.name))}</b>${s.desc ? `<small>${esc(s.desc)}</small>` : ""}</span>
+      return `<button type="button" class="lf-sp ${s.cls}${on ? " is-on" : ""}${zero ? " is-zero" : ""}" aria-pressed="${on}" ${zero ? 'aria-disabled="true" ' : ""}data-facet="trend" data-id="${v.id}"${s.desc ? ` data-sp-tip="${esc(tx(s.desc))}"` : ""}>
+        <span class="lf-sp-ic">${svg(s.ico)}</span><span class="lf-sp-tx"><b>${esc(pretty(v.name))}</b></span>
         <span class="lf-sp-n">${zero ? "No matches" : kfmt(n)}</span>${svg("check", "lf-sp-ck")}</button>`;
     }).join("");
     const vOpen = ui.open === "views";
