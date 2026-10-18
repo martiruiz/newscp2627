@@ -467,6 +467,7 @@ window.SCP_ES = {
   "billed yearly": "facturación anual",
   "or {price}/year": "o {price}/año",
   "Recommended": "Recomendado",
+  "competitions, plus leagues, athletes and brands, on these networks:": "competiciones, además de ligas, deportistas y marcas, en estas redes:",
   "No. You'll find 17 sports:": "No. Encontrarás 17 deportes:",
   "football": "fútbol",
   "basketball": "baloncesto",
