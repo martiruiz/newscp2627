@@ -58,14 +58,15 @@
       : "";
     // only what differs between plans: who it's for, the price, the button and the three tools (✓ or –)
     const who = hasAi && cp ? "Everything, for teams" : hasAi ? "To know what works" : cp ? "To plan your week" : "To find ideas fast";
-    const sub = price && seats > 1 ? tx("Total for {n} users: <b>{total}</b>/{per}", { n: seats, total: fmt(price.amount * seats, currency), per: per(iv) })
+    // with more than one user the big number is the total; the price per user goes underneath
+    const sub = price && seats > 1 ? tx("{price} per user × {n} users", { price: fmt(price.amount, currency), n: seats })
       : price && iv === "year" && monthsFree(p) > 0 ? `${fmt(price.amount / 12, currency)}/${per("month")} · <b class="plan-free">${tx("save {amount}", { amount: fmt(yearSave(p), currency) })}</b>` : "";
     const tool = (on, cls, label, extra = "") => `<li class="pt ${cls}${on ? "" : " is-off"}"><i></i><span>${label}</span>${extra ? `<em>${extra}</em>` : ""}</li>`;
     return `<article class="plan-card v2${p.highlighted ? " is-best" : ""}${isCurrent ? " is-current" : ""}">
       ${flag}
       <h3>${esc(p.name)}</h3>
       <p class="plan-blurb">${tx(who)}</p>
-      <p class="plan-price">${price ? `<b data-price="${price.amount}" data-cur="${currency}">${fmt(price.amount, currency)}</b><span>${tx("/ {per} per user · VAT incl.", { per: per(iv) })}</span>` : `<b>—</b>`}</p>
+      <p class="plan-price">${price ? `<b data-price="${price.amount * seats}" data-cur="${currency}">${fmt(price.amount * seats, currency)}</b><span>${seats > 1 ? tx("/ {per} · {n} users · VAT incl.", { per: per(iv), n: seats }) : tx("/ {per} per user · VAT incl.", { per: per(iv) })}</span>` : `<b>—</b>`}</p>
       <p class="plan-sub">${sub || "&nbsp;"}</p>
       ${cta}
       <p class="plan-note">${note || (trial && price?.ready && !cur ? tx("Cancel anytime") : "")}</p>
