@@ -492,8 +492,18 @@
   async function refreshCounts(args) {
     const my = ++countToken;
     const active = CATEGORIES.filter((c) => selected[c.key].size).map((c) => c.key);
+    // one row per filter value: more than the API's 1,000 rows per request, so read page by page
+    const pages = async (fn, params) => {
+      const out = [];
+      for (let from = 0; ; from += 1000) {
+        const r = await db.rpc(fn, params).range(from, from + 999);
+        if (r.error) return out.length ? { data: out } : r;
+        out.push(...(r.data || []));
+        if (!r.data || r.data.length < 1000) return { data: out };
+      }
+    };
     const call = async (filters) => {
-      const r = useAdminSearch ? { error: { message: "schema cache" } } : await db.rpc("library_filter_counts", { ...args, p_filters: filters });
+      const r = useAdminSearch ? { error: { message: "schema cache" } } : await pages("library_filter_counts", { ...args, p_filters: filters });
       return r.error && /schema cache|does not exist/i.test(r.error.message) ? db.rpc("available_filter_counts", { ...args, p_filters: filters }) : r;
     };
     const safe = (p) => p.then((r) => r, () => ({ error: true }));

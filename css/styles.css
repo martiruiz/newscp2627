@@ -5714,3 +5714,6 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 /* Account: language, then password with its button underneath */
 #security .pf-grid { grid-template-columns: minmax(0, 420px); border-top: 0.5px solid var(--line-soft); }
 #security .pf-field { gap: 10px; font-size: 14px; color: var(--text); }
+/* filters: values with no post for the current selection are hidden in lists, chips and crests
+   (the format and network tiles stay, dimmed, so their grid doesn't jump) */
+.lf-li.is-zero, .lf-chip.is-zero, .lf-shp.is-zero, .lf-cr.is-zero { display: none; }
