@@ -71,15 +71,26 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString(window.SCP_LO
   // Home FAQ: "Contact us" / "Book a demo" open the form in place of the questions (no page change)
   $$("[data-faq-stage]").forEach((stage) => {
     const panes = $$("[data-faq-pane]", stage);
+    const section = stage.closest("section");
+    // while a form is open: the button that opened it is marked, clicking it again goes back, and a
+    // "Back to questions" button appears next to the others
+    const actions = section && $(".faq-intro .actions", section);
+    if (actions && !$("[data-faq-back]", actions)) actions.insertAdjacentHTML("beforeend", `<button class="btn btn-outline faq-back-intro" type="button" data-faq-back hidden>${window.tx ? window.tx("← Back to questions") : "← Back to questions"}</button>`);
+    let current = "faq";
     const show = (name) => {
+      current = name;
       panes.forEach((p) => { const on = p.dataset.faqPane === name; p.hidden = !on; p.classList.toggle("is-on", on); });
+      section && $$("[data-faq-open]", section).forEach((b) => { const on = b.dataset.faqOpen === name; b.classList.toggle("is-active", on); b.setAttribute("aria-pressed", String(on)); });
+      const back = actions && $("[data-faq-back]", actions);
+      if (back) back.hidden = name === "faq";
       if (name !== "faq") $("[data-faq-pane=\"" + name + "\"] input", stage)?.focus({ preventScroll: true });
       stage.closest("section")?.scrollIntoView({ behavior: "smooth", block: "start" });
     };
     document.addEventListener("click", (e) => {
       const open = e.target.closest("[data-faq-open]");
+      if (open && section?.contains(open)) { e.preventDefault(); show(current === open.dataset.faqOpen ? "faq" : open.dataset.faqOpen); return; }
       if (open) { e.preventDefault(); show(open.dataset.faqOpen); return; }
-      if (e.target.closest("[data-faq-back]") && stage.contains(e.target)) {
+      if (e.target.closest("[data-faq-back]") && section?.contains(e.target)) {
         show("faq");
         $$("[data-form-done]", stage).forEach((d) => { d.hidden = true; d.previousElementSibling.hidden = false; });
       }
