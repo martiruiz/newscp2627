@@ -113,6 +113,12 @@
       ...active.map((k) => { const f = { ...args.p_filters }; delete f[k]; return call(f); }),
     ]);
     if (my !== countToken) return;
+    // Very big selections with several filters: the server doesn't count them (value_id -1) → hide the numbers
+    const unknown = (r) => (r.data || []).some((x) => Number(x.value_id) === -1);
+    if (unknown(base) || own.some(unknown)) {
+      $$("[data-count]").forEach((el) => { el.textContent = ""; el.closest("button").classList.remove("is-zero"); });
+      return;
+    }
     const counts = new Map((base.data || []).map((r) => [Number(r.value_id), Number(r.ideas)]));
     active.forEach((k, i) => {
       const m = new Map((own[i].data || []).map((r) => [Number(r.value_id), Number(r.ideas)]));

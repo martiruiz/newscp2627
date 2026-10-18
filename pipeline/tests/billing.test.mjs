@@ -291,5 +291,10 @@ const half = (await as(U.A, `select array_agg(x order by x) a from public.ideas_
 check("sample = 1 in k of the matches", JSON.stringify(half) === JSON.stringify(full.filter((x) => x % 2 === 1)));
 check("shuffle step ≈ 5,000 posts per shuffle", (await db.query(`select public.shuffle_step(367692) k`)).rows[0].k === 74);
 
+console.log("\n19. Performance part 5");
+const s4b = await snap();
+await db.exec(sql("performance-5.sql")); await db.exec(sql("performance-5.sql"));
+check("small selections: identical results", s4b === await snap());
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);
