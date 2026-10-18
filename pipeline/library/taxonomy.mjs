@@ -48,7 +48,7 @@ export const AI_VALUES = {
   goal: ["Ticket sales", "Merchandise sales", "Memberships", "Sponsor value", "App / digital product", "Community / CSR", "Recruitment / grassroots"],
   comms: ["Official announcement", "Press conference", "Statement", "Injury / medical update", "Ticket info"],
   crisis: ["Apology", "Racism / abuse", "Sanction / disciplinary", "Serious injury", "Security / incident", "Condolences"],
-  team: ["First team", "Women's team", "Academy / youth", "Legends", "Esports", "Staff / coaches"],
+  team: ["Women's team", "Academy / youth", "Legends", "Esports", "Staff / coaches"],
   angle: ["Player-focused", "Humour / meme", "Emotional", "Data & stats", "Behind the scenes", "Skills / tutorial", "Celebration"],
   collab: ["Player collab", "Athlete takeover", "Fan content (UGC)", "Influencer / creator", "Club collab", "Brand collab"],
   cta: ["Link in bio", "Buy tickets", "Shop now", "Vote / poll", "Comment", "Tag a friend", "Giveaway / contest", "Watch / stream", "Download app"],
@@ -201,7 +201,7 @@ export function applyRules(post) {
     if (best) out.language.add(best);
   }
   // Team default: first team when it's a club post and no other team matched
-  if (!out.team.size && (post.tags?.club?.length)) out.team.add("First team");
+  // (no "First team" default: the Team filter only marks teams other than the senior first team)
   return out;
 }
 

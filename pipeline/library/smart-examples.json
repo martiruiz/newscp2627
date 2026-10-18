@@ -130,29 +130,6 @@
     }
   },
   {
-    "caption": "Had to rep the new @pwhl_sanjose unis 🔥⁣ ⁣ 📺: @edmontonoilers vs. @sanjosesharks TODAY at 4 PM ET on @sportsnet",
-    "format": "Carousel",
-    "labels": {
-      "moment": [
-        "Matchday preview",
-        "Match coverage"
-      ],
-      "kit": [
-        "Home kit"
-      ],
-      "opponent": [
-        "Edmonton Oilers"
-      ],
-      "team": [
-        "First team"
-      ],
-      "angle": [
-        "Player-focused"
-      ],
-      "collab": []
-    }
-  },
-  {
     "caption": "New looks 👑 Our new NBA Cup court debuts on Nov. 6 vs Spurs, see you there 🤩",
     "format": "Carousel",
     "labels": {
@@ -255,25 +232,23 @@
     }
   },
   {
-    "caption": "🎉 𝙋𝙀𝙍 𝙈𝙊𝙇𝙏𝙎 𝘼𝙉𝙔𝙎 𝘿𝘼𝙑𝙄𝘿! 🤩 ✍️ El teu missatge de felicitació!👇",
-    "format": "Images",
+    "caption": "Had to rep the new @pwhl_sanjose unis 🔥⁣ ⁣ 📺: @edmontonoilers vs. @sanjosesharks TODAY at 4 PM ET on @sportsnet",
+    "format": "Carousel",
     "labels": {
-      "team": [
-        "First team"
+      "moment": [
+        "Matchday preview",
+        "Match coverage"
+      ],
+      "kit": [
+        "Home kit"
+      ],
+      "opponent": [
+        "Edmonton Oilers"
       ],
       "angle": [
-        "Player-focused",
-        "Celebration"
+        "Player-focused"
       ],
-      "sponsor": [
-        "Etihad Airways"
-      ],
-      "sponsor_sector": [
-        "Airline / travel"
-      ],
-      "sponsor_integration": [
-        "Logo on graphic"
-      ]
+      "collab": []
     }
   },
   {
@@ -331,26 +306,6 @@
     }
   },
   {
-    "caption": "14 goals from Reichert weren’t enough to stop Győr, Šošo’s 17 G/A powered Podravka to their first win, while Metz delivered another big performance 🔥 #ehfcl #CLW #handball",
-    "format": "Carousel",
-    "labels": {
-      "matchday_graphic": [
-        "Full-time",
-        "Stats card",
-        "Starting XI"
-      ],
-      "opponent": [
-        "Gloria Bistrita"
-      ],
-      "team": [
-        "First team"
-      ],
-      "angle": [
-        "Data & stats"
-      ]
-    }
-  },
-  {
     "caption": "📸 𝗫𝗜 𝗜𝗡𝗜𝗖𝗜𝗔𝗟 0-0 I #BilbaoAthleticRealUnión #AthleticLezama 🦁",
     "format": "Carousel",
     "labels": {
@@ -385,20 +340,21 @@
     }
   },
   {
-    "caption": "Two teams, one trophy🏆 Save the date 🗓️ #EASPORTSFCSupercup",
+    "caption": "🎉 𝙋𝙀𝙍 𝙈𝙊𝙇𝙏𝙎 𝘼𝙉𝙔𝙎 𝘿𝘼𝙑𝙄𝘿! 🤩 ✍️ El teu missatge de felicitació!👇",
     "format": "Images",
     "labels": {
-      "moment": [
-        "Matchday preview"
+      "angle": [
+        "Player-focused",
+        "Celebration"
       ],
-      "season_moment": [
-        "Cup final"
+      "sponsor": [
+        "Etihad Airways"
       ],
-      "opponent": [
-        "Lazio"
+      "sponsor_sector": [
+        "Airline / travel"
       ],
-      "team": [
-        "First team"
+      "sponsor_integration": [
+        "Logo on graphic"
       ]
     }
   },
@@ -518,6 +474,23 @@
     }
   },
   {
+    "caption": "14 goals from Reichert weren’t enough to stop Győr, Šošo’s 17 G/A powered Podravka to their first win, while Metz delivered another big performance 🔥 #ehfcl #CLW #handball",
+    "format": "Carousel",
+    "labels": {
+      "matchday_graphic": [
+        "Full-time",
+        "Stats card",
+        "Starting XI"
+      ],
+      "opponent": [
+        "Gloria Bistrita"
+      ],
+      "angle": [
+        "Data & stats"
+      ]
+    }
+  },
+  {
     "caption": "⚠️ A causa de l’alerta vermella climatològica i després de rebre la notificació oficial, el partit d’aquesta tarda entre l’Espanyol B i el @naxaracd queda suspès. #RCDE #La21",
     "format": "Images",
     "labels": {
@@ -551,10 +524,23 @@
       "matchday_graphic": [
         "Birthday graphic"
       ],
-      "team": [
-        "First team"
-      ],
+      "team": [],
       "language": "English"
+    }
+  },
+  {
+    "caption": "Two teams, one trophy🏆 Save the date 🗓️ #EASPORTSFCSupercup",
+    "format": "Images",
+    "labels": {
+      "moment": [
+        "Matchday preview"
+      ],
+      "season_moment": [
+        "Cup final"
+      ],
+      "opponent": [
+        "Lazio"
+      ]
     }
   },
   {

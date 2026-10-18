@@ -510,3 +510,7 @@ body { background: radial-gradient(60% 40% at 50% 0%, rgba(240, 184, 74, 0.06), 
 .cmp-mini { padding: 0 10px; border-radius: 10px; border: 1px solid var(--border-2); background: transparent; color: var(--muted); font: 600 12px inherit; font-family: inherit; cursor: pointer; white-space: nowrap; }
 .cmp-mini.on { border-color: var(--accent); color: var(--accent); }
 @media (max-width: 900px) { .cmp-opts { grid-template-columns: 1fr 1fr; } }
+.sr-chip.pend { border: 1.5px dashed var(--accent); color: var(--accent); background: rgba(240, 184, 74, 0.06); }
+.sr-chip.rej { border-color: var(--red); color: var(--red); text-decoration: line-through; background: var(--red-soft); }
+.sr-chip.rej::after, .sr-chip.pend::after { display: none; }
+.sr-chip.ai.on::before { content: "✓ "; }

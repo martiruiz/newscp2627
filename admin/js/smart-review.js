@@ -198,18 +198,30 @@
     return `<p class="muted">No preview</p>`;
   }
 
+  // Verify mode (review sets named "… verify …"): every AI label must be confirmed (✓) or rejected (✗) before saving
+  const isVerify = () => /verify/i.test(batch || "");
   function renderReview() {
     const r = items[idx];
+    const verify = isVerify() && r.status !== "done";
     const p = posts.get(r.post_id) || { tags: {} };
     const cur = r.gold || r.ai || {};
     const ai = r.ai || {};
     const catRow = (c) => {
       const selected = setOf(cur[c.key]);
       const suggested = setOf(ai[c.key]);
+      if (c.free && verify) {
+        return `<div class="sr-cat" data-cat="${c.key}" data-free-verify="1"><div class="sr-cat-h">${esc(c.label)}<span>confirm or reject · add missing names below</span></div>
+          <div class="sr-chips">${[...suggested].map((v) => `<button type="button" class="sr-chip ai pend" data-v="${esc(v)}">${esc(v)}</button>`).join("") || `<span class="muted">AI: none</span>`}</div>
+          <input class="input sr-free" data-free="${c.key}" value="" placeholder="Missing? ${c.key === "opponent" ? "e.g. Real Madrid" : c.key === "city" ? "e.g. Milan (Italy)" : "e.g. Spotify"}"></div>`;
+      }
       if (c.free) {
         return `<div class="sr-cat"><div class="sr-cat-h">${esc(c.label)}<span>names, separated by commas</span></div>
           <input class="input sr-free" data-free="${c.key}" value="${esc([...selected].join(", "))}" placeholder="${c.key === "opponent" ? "e.g. Real Madrid" : c.key === "city" ? "e.g. Milan (Italy)" : "e.g. Spotify, Emirates"}">
           ${suggested.size ? `<p class="sr-ai">AI: ${esc([...suggested].join(", "))}</p>` : ""}</div>`;
+      }
+      if (verify) {
+        return `<div class="sr-cat" data-cat="${c.key}" data-single="${c.single ? 1 : ""}"><div class="sr-cat-h">${esc(c.label)}${c.single ? "<span>one</span>" : ""}</div>
+          <div class="sr-chips">${(T.values[c.key] || []).map((v) => `<button type="button" class="sr-chip${suggested.has(v) ? " ai pend" : ""}" data-v="${esc(v)}">${esc(v)}</button>`).join("")}</div></div>`;
       }
       return `<div class="sr-cat" data-cat="${c.key}" data-single="${c.single ? 1 : ""}"><div class="sr-cat-h">${esc(c.label)}${c.single ? "<span>one</span>" : ""}</div>
         <div class="sr-chips">${(T.values[c.key] || []).map((v) => `<button type="button" class="sr-chip${selected.has(v) ? " on" : ""}${suggested.has(v) ? " ai" : ""}" data-v="${esc(v)}" title="${suggested.has(v) ? "Suggested by the AI" : ""}">${esc(v)}</button>`).join("")}</div></div>`;
@@ -225,7 +237,7 @@
           <details class="sr-caption" open><summary>Caption</summary><p>${esc(p.title || "(no caption)")}</p></details>
         </section>
         <section class="panel sr-form">
-          <p class="hint" style="margin:0 0 10px">${Object.keys(ai).length ? `<span class="sr-dot"></span> = suggested by the AI. Click to turn a label on or off.` : `<b>Blind review:</b> nothing is pre-selected. Mark the labels that apply to this post (leave a filter empty if none applies).`}</p>
+          <p class="hint" style="margin:0 0 10px">${verify ? `<b>Verify:</b> the dashed labels are the AI's. Click once to confirm (✓), twice to reject (✗). Click any other value to add a missing one. You can save when no dashed label is left.` : Object.keys(ai).length ? `<span class="sr-dot"></span> = suggested by the AI. Click to turn a label on or off.` : `<b>Blind review:</b> nothing is pre-selected. Mark the labels that apply to this post (leave a filter empty if none applies).`}</p>
           ${CATS.map(catRow).join("")}
           <label class="sr-note">Note (optional)<input class="input" data-note value="${esc(r.note || "")}" placeholder="Anything odd about this post?"></label>
         </section>
@@ -241,9 +253,20 @@
     $$(".sr-cat[data-cat]").forEach((box) => box.addEventListener("click", (e) => {
       const b = e.target.closest(".sr-chip");
       if (!b) return;
-      if (box.dataset.single) $$(".sr-chip", box).forEach((x) => x !== b && x.classList.remove("on"));
-      b.classList.toggle("on");
+      if (b.classList.contains("ai") && verify) {
+        // pending → confirmed → rejected → confirmed …
+        if (b.classList.contains("pend")) { b.classList.remove("pend"); b.classList.add("on"); }
+        else if (b.classList.contains("on")) { b.classList.remove("on"); b.classList.add("rej"); }
+        else { b.classList.remove("rej"); b.classList.add("on"); }
+      } else {
+        if (box.dataset.single) $$(".sr-chip", box).forEach((x) => x !== b && !x.classList.contains("pend") && x.classList.remove("on"));
+        b.classList.toggle("on");
+      }
+      const left = $$(".sr-chip.pend").length;
+      const btn = $("[data-save]");
+      if (btn) btn.innerHTML = left ? `${left} to check` : `${icon("check")}Save &amp; next`;
     }));
+    if (verify) { const left = $$(".sr-chip.pend").length; if (left) $("[data-save]").innerHTML = `${left} to check`; }
     $("[data-prev]").addEventListener("click", () => { idx = Math.max(0, idx - 1); renderReview(); });
     $("[data-skip]").addEventListener("click", () => save("skipped"));
     $("[data-save]").addEventListener("click", () => save("done"));
@@ -252,7 +275,12 @@
   function collect() {
     const gold = {};
     for (const c of CATS) {
-      if (c.free) { gold[c.key] = ($(`[data-free="${c.key}"]`)?.value || "").split(",").map((x) => x.trim()).filter(Boolean); continue; }
+      if (c.free) {
+        const typed = ($(`[data-free="${c.key}"]`)?.value || "").split(",").map((x) => x.trim()).filter(Boolean);
+        const confirmed = $$(`.sr-cat[data-cat="${c.key}"] .sr-chip.on`).map((b) => b.dataset.v);
+        gold[c.key] = [...new Set([...confirmed, ...typed])];
+        continue;
+      }
       const on = $$(`.sr-cat[data-cat="${c.key}"] .sr-chip.on`).map((b) => b.dataset.v);
       gold[c.key] = c.single ? (on[0] || "") : on;
     }
@@ -260,6 +288,7 @@
   }
   async function save(status) {
     const r = items[idx];
+    if (status === "done" && $$(".sr-chip.pend").length) return A.toast("Confirm (✓) or reject (✗) every dashed label first.", "err");
     const btn = $("[data-save]");
     btn.disabled = true;
     const patch = { status, gold: status === "done" ? collect() : r.gold, note: $("[data-note]")?.value.trim() || null, reviewed_at: new Date().toISOString(), reviewed_by: (await A.db.auth.getUser()).data.user?.id };

@@ -203,7 +203,6 @@ window.SCP_SMART = {
       "Condolences"
     ],
     "team": [
-      "First team",
       "Women's team",
       "Academy / youth",
       "Legends",

@@ -132,6 +132,39 @@ if (argv.includes("--eval")) {
   process.exit(0);
 }
 
+// ---------- --seed-verify 30 --batch "2026-10 verify v6" --from 2026-10-01: new posts labelled by the current AI,
+// to confirm / reject label by label in Admin → Smart filters ----------
+if (argv.includes("--seed-verify")) {
+  const N = Number(arg("--seed-verify")) || 30, BATCH = arg("--batch") || `verify ${VERSION}`, FROM = arg("--from");
+  const { data: ig } = await db.from("idea_catalog").select("id").eq("category", "platform").eq("name", "Instagram").single();
+  const { data: existing } = await db.from("smart_review").select("post_id");
+  const taken = new Set((existing || []).map((r) => r.post_id));
+  const ids = [];
+  for (let i = 0; ids.length < N && i < 20; i++) {
+    const { data: page, error } = await db.rpc("library_ideas", { p_order: "random", p_seed: `${Date.now()}-${i}`, p_limit: 100, p_from: FROM, p_filters: { platform: { ids: [ig.id] } } });
+    if (error) throw error;
+    for (const p of page.data || []) if (ids.length < N && !taken.has(p.id) && (p.title || "").trim().length > 15) { taken.add(p.id); ids.push(p.id); }
+  }
+  const posts = await loadPosts(ids);
+  let usd = 0;
+  const rows = [];
+  for (const p of posts) {
+    const meta = await igMeta(p.url);
+    const image = meta.status === "ok" ? await fetchImage(meta.image) : null;
+    try {
+      const msg = await claude.messages.create(requestParams({ ...p, media_type: meta.media_type }, image));
+      rows.push({ post_id: p.id, ai: parseAnswer(msg), batch: BATCH, status: "todo" });
+      usd += cost(msg.usage);
+    } catch (e) { console.log(`  ✗ ${p.id}: ${e.message}`); }
+    process.stdout.write(".");
+    await sleep(900);
+  }
+  const { error } = await db.from("smart_review").insert(rows);
+  if (error) throw error;
+  console.log(`\nVerify set "${BATCH}": ${rows.length} posts labelled by ${VERSION} · $${usd.toFixed(4)}`);
+  process.exit(0);
+}
+
 // ---------- --prepare: Instagram data + images, slowly ----------
 if (argv.includes("--prepare")) {
   const from = arg("--from"), to = arg("--to"), limit = Number(arg("--limit") || 1e9);
