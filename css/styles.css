@@ -179,7 +179,7 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
   letter-spacing: -0.02em;
   white-space: nowrap;
 }
-.brand img { width: 33px; height: 31px; }
+.brand img { width: 32px; height: 32px; }
 .nav-links {
   margin-left: auto;
   display: flex;
@@ -830,7 +830,7 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
 .site-footer .container { width: min(1300px, 100% - 2 * var(--gutter)); }
 .footer-top { display: flex; justify-content: space-between; gap: 48px; flex-wrap: wrap; }
 .footer-brand { font-size: 40px; gap: 20px; letter-spacing: -0.02em; }
-.footer-brand img { width: 66px; height: 62px; }
+.footer-brand img { width: 62px; height: 62px; }
 .footer-about p { margin-top: 25px; max-width: 692px; color: var(--muted); }
 .footer-about .actions { display: flex; gap: 10px; margin-top: 22px; }
 .footer-cols { display: grid; grid-template-columns: repeat(2, auto); column-gap: 47px; padding-top: 30px; padding-right: 66px; }
@@ -1292,7 +1292,7 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
   .acc-trigger { padding-inline: 22px; }
   .acc-panel p { padding-inline: 22px; }
   .footer-brand { font-size: 28px; }
-  .footer-brand img { width: 44px; height: 41px; }
+  .footer-brand img { width: 42px; height: 42px; }
   .footer-cols { padding-right: 0; }
   .footer-bottom nav { padding-right: 0; gap: 16px 24px; }
   .filters { padding-inline: var(--gutter); }
@@ -1855,7 +1855,7 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
   text-align: center;
 }
 .auth-logo { display: inline-grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; background: var(--surface); border: 0.5px solid var(--line); box-shadow: 0 0 40px rgba(240, 184, 74, 0.3); }
-.auth-logo img { width: 34px; height: 32px; }
+.auth-logo img { width: 36px; height: 36px; }
 .auth h1 {
   margin-top: 22px;
   font-family: var(--font-display);
