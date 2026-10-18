@@ -182,7 +182,7 @@
     toggleBtn.setAttribute("aria-pressed", "true");
     store.set("scp-pp-open", "1");
     // On laptop screens, make room for the posts by folding the filters (restored on close)
-    if (innerWidth > 960 && innerWidth < 1900 && !lib.classList.contains("filters-collapsed")) { $("[data-collapse]")?.click(); collapsedByUs = true; }
+    if (innerWidth > 960 && innerWidth < 1320 && !lib.classList.contains("filters-collapsed")) { $("[data-collapse]")?.click(); collapsedByUs = true; }
     syncCards();
     panel.innerHTML = `<div class="pp-loading"><span class="ai-spinner"></span></div>`;
     try { await ready(); if (allowed()) await loadEntries(); render(); }

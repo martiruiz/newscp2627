@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Library filters mockup</title>
+<link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#121b33;--surface:#17213b;--surface-2:#1d2845;--surface-3:#213050;--gold:#f0b84a;--gold-tint:rgba(240,184,74,.2);--text:#fff;--muted:#b4c0d3;--dim:rgba(180,192,211,.45);--line:rgba(255,255,255,.1);--soft:rgba(255,255,255,.05);--fd:"Host Grotesk",system-ui,sans-serif;--fb:"Inter",system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:var(--fb)}
+.wrap{max-width:1280px;margin:0 auto;padding:28px 24px 60px}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.k{font-family:var(--fd);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:0 0 10px}
+
+/* 1. search + period + sort */
+.top{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.search{flex:1;min-width:260px;display:flex;align-items:center;gap:10px;height:52px;padding:0 18px;border-radius:100px;background:var(--surface-2);border:.5px solid var(--line);color:var(--muted)}
+.search input{flex:1;background:none;border:0;color:var(--text);font:inherit;font-size:15px;outline:none}
+.seg{display:flex;background:var(--surface);border:.5px solid var(--line);border-radius:100px;padding:4px}
+.seg button{height:42px;padding:0 16px;border-radius:100px;color:var(--muted);font-size:14px}
+.seg button.on{background:var(--gold-tint);color:var(--gold)}
+
+/* 2. spotlight pills (same as home) */
+.spot{display:flex;gap:18px;flex-wrap:wrap;margin:30px 0 8px}
+.sp{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:10px;height:54px;padding:0 24px;border-radius:100px;font-family:var(--fd);font-weight:600;font-size:17px;color:#fff;opacity:.55;filter:saturate(.6);transition:opacity .25s,filter .25s,transform .25s,box-shadow .35s}
+.sp:hover{opacity:.9;filter:none;transform:translateY(-2px)}
+.sp.on{opacity:1;filter:none}
+.sp svg{width:20px;height:20px}
+.sp .n{font-family:var(--fb);font-weight:500;font-size:13px;background:rgba(0,0,0,.18);padding:3px 8px;border-radius:100px}
+.sp-top{background:linear-gradient(90deg,#f32f71,#ff685c)}.sp-top.on{animation:gT 3.6s ease-in-out infinite}
+.sp-rep{background:linear-gradient(90deg,#00d85b,#00ccdd)}.sp-rep.on{animation:gR 3.6s ease-in-out infinite}
+.sp-over{background:linear-gradient(90deg,#4d5bff,#7a5cff)}.sp-over.on{animation:gO 3.6s ease-in-out infinite}
+.sp.on::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:45%;transform:skewX(-20deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);animation:sh 3.6s ease-in-out infinite}
+@keyframes sh{0%,55%{left:-60%}85%,100%{left:130%}}
+@keyframes gT{0%,100%{box-shadow:0 0 30px 0 rgba(255,104,92,.55)}50%{box-shadow:0 0 55px 6px rgba(255,104,92,.8)}}
+@keyframes gR{0%,100%{box-shadow:0 0 30px 0 rgba(0,216,91,.5)}50%{box-shadow:0 0 55px 6px rgba(0,216,91,.75)}}
+@keyframes gO{0%,100%{box-shadow:0 0 30px 0 rgba(122,92,255,.55)}50%{box-shadow:0 0 55px 6px rgba(122,92,255,.8)}}
+
+/* 3. the filter deck */
+.deck{display:grid;grid-template-columns:auto 1fr auto;gap:0;margin-top:26px;background:var(--surface);border:.5px solid var(--line);border-radius:22px;box-shadow:inset 0 0 25px rgba(255,255,255,.05)}
+.cell{padding:18px 22px}.cell+.cell{border-left:.5px solid var(--line)}
+.pf{display:flex;gap:10px}
+.pf button{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:var(--surface-2);border:.5px solid var(--soft);transition:.2s;opacity:.45}
+
+.pf button:hover{opacity:.9}
+.pf button.on{filter:none;opacity:1;border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-tint)}
+.fm{display:flex;gap:8px;flex-wrap:nowrap}
+.ft{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;width:66px;height:68px;border-radius:14px;background:var(--surface-2);border:.5px solid var(--soft);color:var(--muted);font-size:12px;transition:.2s}
+.ft svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.ft:hover{color:#fff;transform:translateY(-2px)}
+.ft.on{color:var(--gold);border-color:var(--gold);background:linear-gradient(180deg,rgba(240,184,74,.16),rgba(240,184,74,.04))}
+.ft .shape{border:1.6px solid currentColor;border-radius:3px}
+.sep{width:.5px;background:var(--line);margin:0 6px}
+.dur{display:flex;flex-direction:column;gap:6px}
+.dur button{height:31px;padding:0 12px;border-radius:100px;background:var(--surface-2);border:.5px solid var(--soft);color:var(--muted);font-size:12px;text-align:left;white-space:nowrap}
+.dur button.on{color:var(--gold);border-color:var(--gold)}
+
+/* 4. crests */
+.rail-wrap{margin-top:26px}
+.rail{display:flex;gap:14px;overflow-x:auto;padding:6px 2px 14px;scrollbar-width:thin}
+.crest{flex:none;width:92px;display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--muted);font-size:12px;text-align:center;transition:.2s}
+.crest .disc{width:68px;height:68px;border-radius:50%;background:#fff;display:grid;place-items:center;overflow:hidden;border:2px solid transparent;transition:.25s;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.crest .disc img{width:46px;height:46px;object-fit:contain}
+.crest .disc b{font-family:var(--fd);font-size:15px;color:#121b33}
+.crest:hover .disc{transform:translateY(-3px) scale(1.04)}
+.crest.on{color:var(--gold)}.crest.on .disc{border-color:var(--gold);box-shadow:0 0 0 4px var(--gold-tint),0 6px 18px rgba(0,0,0,.25)}
+.crest small{color:var(--dim);font-size:11px;margin-top:-4px}
+.clubs .disc{width:54px;height:54px}.clubs .disc img{width:38px;height:38px}.clubs .crest{width:76px}
+.drop{display:flex;align-items:center;gap:10px;margin:4px 0 0;color:var(--muted);font-size:13px}
+.drop:before{content:"";width:18px;height:18px;border-left:1.5px solid var(--line);border-bottom:1.5px solid var(--line);border-bottom-left-radius:8px;margin:-10px 0 0 32px}
+
+/* 5. smart idea tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:12px;margin-top:26px}
+.tile{position:relative;height:96px;border-radius:18px;padding:14px;text-align:left;background:var(--surface-2);border:.5px solid var(--soft);overflow:hidden;transition:.25s;display:flex;flex-direction:column;justify-content:space-between}
+.tile svg{width:26px;height:26px;stroke:var(--gold);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.tile b{font-family:var(--fd);font-weight:600;font-size:15px}
+.tile span{color:var(--dim);font-size:12px}
+.tile:hover{transform:translateY(-3px);border-color:var(--line)}
+.tile.on{border-color:var(--gold);background:linear-gradient(160deg,rgba(240,184,74,.18),var(--surface-2) 70%)}
+.tile.more{background:none;border:1px dashed var(--line);align-items:center;justify-content:center;gap:6px;color:var(--gold)}
+.tile.more svg{stroke:var(--gold)}
+
+/* 6. active bar */
+.active{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:26px 0 0;min-height:36px}
+.chip{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 8px 0 12px;border-radius:100px;background:var(--gold-tint);color:var(--gold);font-size:13px}
+.chip img{width:18px;height:18px;border-radius:50%;background:#fff;object-fit:contain}
+.chip i{font-style:normal;opacity:.7}
+.count{margin-left:auto;color:var(--muted);font-size:14px}.count b{color:#fff;font-family:var(--fd)}
+
+/* 7. drawer */
+.drawer{margin-top:20px;background:var(--surface);border:.5px solid var(--line);border-radius:22px;padding:22px;display:none}
+.drawer.open{display:block}
+.dg{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:22px}
+.dg h4{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-family:var(--fd);font-weight:600;font-size:15px}
+.dg h4 svg{width:18px;height:18px;stroke:var(--gold);fill:none;stroke-width:1.7}
+.dg .vals{display:flex;flex-wrap:wrap;gap:6px}
+.v{height:30px;padding:0 11px;border-radius:100px;background:var(--surface-2);border:.5px solid var(--soft);color:var(--muted);font-size:12px}
+.v em{font-style:normal;color:var(--dim);margin-left:5px}
+.v.on{color:var(--gold);border-color:var(--gold)}
+.brand{height:34px;padding:0 12px;border-radius:10px;background:#fff;color:#121b33;font-family:var(--fd);font-weight:700;font-size:13px;letter-spacing:-.01em}
+.ai{font-family:var(--fb);font-weight:500;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#a99bff;background:rgba(122,92,255,.16);padding:2px 7px;border-radius:6px}
+
+.grid{columns:4 240px;column-gap:16px;margin-top:22px}
+.card{break-inside:avoid;margin-bottom:16px;border-radius:16px;background:var(--surface-2);border:.5px solid var(--soft)}
+@media(max-width:900px){.deck{grid-template-columns:1fr}.cell+.cell{border-left:0;border-top:.5px solid var(--line)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <label class="search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input placeholder="Search posts, clubs, sponsors, moments…"></label>
+    <div class="seg" data-one><button>This week</button><button class="on">This month</button><button>Season</button><button>All time</button></div>
+    <div class="seg" data-one><button class="on">Latest</button><button>Most viewed</button><button>Surprise me</button></div>
+  </div>
+
+  <div class="spot">
+    <button class="sp sp-top on"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg>Top Picks<span class="n">1,240</span></button>
+    <button class="sp sp-rep"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>Replicable ideas<span class="n">3,610</span></button>
+    <button class="sp sp-over"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="m3 17 6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>Overperforming<span class="n">890</span></button>
+  </div>
+
+  <div class="deck">
+    <div class="cell">
+      <p class="k">Platform</p>
+      <div class="pf" data-many>
+        <button class="on" title="Instagram"><svg viewBox="0 0 24 24" width="26" height="26"><defs><radialGradient id="ig" cx="30%" cy="107%" r="150%"><stop offset="0" stop-color="#fdf497"/><stop offset=".1" stop-color="#fdf497"/><stop offset=".5" stop-color="#fd5949"/><stop offset=".68" stop-color="#d6249f"/><stop offset="1" stop-color="#285AEB"/></radialGradient></defs><rect width="24" height="24" rx="6" fill="url(#ig)"/><rect x="5.5" y="5.5" width="13" height="13" rx="4" fill="none" stroke="#fff" stroke-width="1.8"/><circle cx="12" cy="12" r="3.1" fill="none" stroke="#fff" stroke-width="1.8"/><circle cx="16.3" cy="7.7" r="1" fill="#fff"/></svg></button>
+        <button title="TikTok"><svg viewBox="0 0 24 24" width="26" height="26"><rect width="24" height="24" rx="6" fill="#000"/><path d="M13.5 5v9.2a2.6 2.6 0 1 1-2.6-2.6" fill="none" stroke="#25F4EE" stroke-width="2" transform="translate(-.6 -.4)"/><path d="M13.5 5v9.2a2.6 2.6 0 1 1-2.6-2.6" fill="none" stroke="#FE2C55" stroke-width="2" transform="translate(.6 .4)"/><path d="M13.5 5v9.2a2.6 2.6 0 1 1-2.6-2.6M13.5 5c.3 2 1.7 3.3 3.8 3.4" fill="none" stroke="#fff" stroke-width="2"/></svg></button>
+        <button title="YouTube"><svg viewBox="0 0 24 24" width="28" height="28"><rect x="1" y="5" width="22" height="14" rx="4.5" fill="#FF0000"/><path d="m10 9 5 3-5 3z" fill="#fff"/></svg></button>
+        <button title="X"><svg viewBox="0 0 24 24" width="26" height="26"><rect width="24" height="24" rx="6" fill="#000"/><path d="m6.5 6 11 12M17.5 6l-11 12" stroke="#fff" stroke-width="1.8"/></svg></button>
+        <button title="Facebook"><svg viewBox="0 0 24 24" width="26" height="26"><circle cx="12" cy="12" r="12" fill="#0866FF"/><path d="M13.3 24v-8.4h2.6l.4-3.1h-3V10.6c0-.9.3-1.5 1.6-1.5h1.6V6.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v2.2H7.7v3.1h2.6V24z" fill="#fff"/></svg></button>
+        <button title="LinkedIn"><svg viewBox="0 0 24 24" width="26" height="26"><rect width="24" height="24" rx="5" fill="#0A66C2"/><path d="M7 10v7M7 7v.01M11 17v-7M11 13.5c0-2 1-3.6 3-3.6s2.5 1.4 2.5 3.3V17" stroke="#fff" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg></button>
+      </div>
+    </div>
+    <div class="cell">
+      <p class="k">Format and shape</p>
+      <div class="fm" data-many>
+        <button class="ft on"><svg viewBox="0 0 24 24"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="m10.5 9.5 4 2.5-4 2.5z"/></svg>Reel</button>
+        <button class="ft"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="11" height="16" rx="2"/><path d="M19 6v12M22 8v8"/></svg>Carousel</button>
+        <button class="ft"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg>Image</button>
+        <button class="ft"><svg viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="3"/><path d="m10 9.5 5 2.5-5 2.5z"/></svg>Video</button>
+        <span class="sep"></span>
+        <button class="ft"><span class="shape" style="width:14px;height:25px"></span>9:16</button>
+        <button class="ft on"><span class="shape" style="width:20px;height:25px"></span>4:5</button>
+        <button class="ft"><span class="shape" style="width:22px;height:22px"></span>1:1</button>
+        <button class="ft"><span class="shape" style="width:30px;height:17px"></span>16:9</button>
+      </div>
+    </div>
+    <div class="cell">
+      <p class="k">Duration</p>
+      <div class="dur" data-one><button>Under 15s</button><button class="on">15–30s</button><button>30–60s</button></div>
+    </div>
+  </div>
+
+  <div class="rail-wrap">
+    <p class="k">Competitions</p>
+    <div class="rail" data-one>
+      <button class="crest on"><span class="disc"><b>LALIGA</b></span>LaLiga<small>12.4k</small></button>
+      <button class="crest"><span class="disc"><b>PL</b></span>Premier League<small>9.8k</small></button>
+      <button class="crest"><span class="disc"><b>UCL</b></span>Champions League<small>4.1k</small></button>
+      <button class="crest"><span class="disc"><b>SA</b></span>Serie A<small>5.6k</small></button>
+      <button class="crest"><span class="disc"><b>BL</b></span>Bundesliga<small>4.9k</small></button>
+      <button class="crest"><span class="disc"><b>L1</b></span>Ligue 1<small>3.2k</small></button>
+      <button class="crest"><span class="disc"><b>LF</b></span>Liga F<small>1.4k</small></button>
+      <button class="crest"><span class="disc"><b>NBA</b></span>NBA<small>3.0k</small></button>
+      <button class="crest"><span class="disc"><b>ACB</b></span>Liga ACB<small>800</small></button>
+    </div>
+    <p class="drop">Clubs in LaLiga</p>
+    <div class="rail clubs" data-many>
+      <button class="crest on"><span class="disc"><img src="../assets/logo-realmadrid.png" alt=""></span>Real Madrid</button>
+      <button class="crest"><span class="disc"><img src="../assets/logo-betis.png" alt=""></span>Real Betis</button>
+      <button class="crest"><span class="disc"><img src="../assets/logo-realsociedad.png" alt=""></span>Real Sociedad</button>
+      <button class="crest"><span class="disc"><b>FCB</b></span>Barcelona</button>
+      <button class="crest"><span class="disc"><b>ATM</b></span>Atlético</button>
+      <button class="crest"><span class="disc"><b>VCF</b></span>Valencia</button>
+      <button class="crest"><span class="disc"><b>ATH</b></span>Athletic</button>
+      <button class="crest"><span class="disc"><b>SEV</b></span>Sevilla</button>
+      <button class="crest"><span class="disc"><b>VIL</b></span>Villarreal</button>
+      <button class="crest"><span class="disc"><b>GIR</b></span>Girona</button>
+    </div>
+  </div>
+
+  <p class="k" style="margin-top:26px">Find ideas by moment <span class="ai">AI</span></p>
+  <div class="tiles" data-many>
+    <button class="tile on"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg><div><b>Matchday</b><br><span>Previews, XI, full time</span></div></button>
+    <button class="tile"><svg viewBox="0 0 24 24"><path d="M17 3l4 4-4 4"/><path d="M3 7h18"/><path d="M7 21l-4-4 4-4"/><path d="M21 17H3"/></svg><div><b>Transfers</b><br><span>Signings, renewals</span></div></button>
+    <button class="tile"><svg viewBox="0 0 24 24"><path d="M8 3 4 6l2 4 2-1v12h8V9l2 1 2-4-4-3c-1 2-2.5 3-4 3s-3-1-4-3z"/></svg><div><b>New kit</b><br><span>Launches, reveals</span></div></button>
+    <button class="tile"><svg viewBox="0 0 24 24"><path d="M12 2 4 6v6c0 5 3.5 8.5 8 10 4.5-1.5 8-5 8-10V6z"/><path d="m9 12 2 2 4-4"/></svg><div><b>Sponsors</b><br><span>Brand integrations</span></div></button>
+    <button class="tile"><svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3a3 3 0 0 1-3 4M7 5H4a3 3 0 0 0 3 4"/></svg><div><b>Milestones</b><br><span>Records, awards</span></div></button>
+    <button class="tile"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg><div><b>Humour</b><br><span>Memes, trends</span></div></button>
+    <button class="tile"><svg viewBox="0 0 24 24"><path d="M23 7 16 12l7 5z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg><div><b>Behind the scenes</b><br><span>Training, travel</span></div></button>
+    <button class="tile more" data-more><svg viewBox="0 0 24 24" width="24" height="24"><path d="M4 6h16M7 12h10M10 18h4"/></svg><b>All filters</b><span>+18 more</span></button>
+  </div>
+
+  <div class="drawer" data-drawer>
+    <div class="dg">
+      <div><h4><svg viewBox="0 0 24 24"><path d="M12 2 4 6v6c0 5 3.5 8.5 8 10 4.5-1.5 8-5 8-10V6z"/></svg>Sponsor <span class="ai">AI</span></h4>
+        <div class="vals"><button class="brand">NIKE</button><button class="brand">Spotify</button><button class="brand">Emirates</button><button class="brand">adidas</button><button class="brand">Puma</button><button class="v">+42</button></div></div>
+      <div><h4><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Sponsor sector <span class="ai">AI</span></h4>
+        <div class="vals"><button class="v">Betting<em>88</em></button><button class="v">Airline<em>74</em></button><button class="v">Automotive<em>59</em></button><button class="v">Telecom<em>40</em></button></div></div>
+      <div><h4><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>Matchday graphic <span class="ai">AI</span></h4>
+        <div class="vals"><button class="v on">Starting XI<em>402</em></button><button class="v">Full time<em>377</em></button><button class="v">MOTM<em>121</em></button><button class="v">Countdown<em>90</em></button></div></div>
+      <div><h4><svg viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>Result <span class="ai">AI</span></h4>
+        <div class="vals"><button class="v">Win<em>905</em></button><button class="v">Draw<em>210</em></button><button class="v">Loss<em>330</em></button></div></div>
+      <div><h4><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Team <span class="ai">AI</span></h4>
+        <div class="vals"><button class="v">Women's team<em>700</em></button><button class="v">Academy<em>410</em></button><button class="v">Legends<em>120</em></button><button class="v">Esports<em>60</em></button></div></div>
+      <div><h4><svg viewBox="0 0 24 24"><path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>City and opponent <span class="ai">AI</span></h4>
+        <div class="vals"><button class="v">Madrid<em>210</em></button><button class="v">London<em>180</em></button><button class="v">vs Barcelona<em>44</em></button><button class="v">+ search</button></div></div>
+      <div><h4><svg viewBox="0 0 24 24"><path d="M3 11l18-8-8 18-2-8z"/></svg>Call to action <span class="ai">AI</span></h4>
+        <div class="vals"><button class="v">Buy tickets<em>190</em></button><button class="v">Shop now<em>160</em></button><button class="v">Watch live<em>120</em></button></div></div>
+      <div><h4><svg viewBox="0 0 24 24"><path d="M4 4h16v12H8l-4 4z"/></svg>Press and comms <span class="ai">AI</span></h4>
+        <div class="vals"><button class="v">Announcement<em>380</em></button><button class="v">Injury update<em>95</em></button><button class="v">Statement<em>40</em></button></div></div>
+      <div><h4><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>Language <span class="ai">AI</span></h4>
+        <div class="vals"><button class="v">English<em>12k</em></button><button class="v">Spanish<em>6k</em></button><button class="v">Catalan<em>1.1k</em></button><button class="v">+28</button></div></div>
+    </div>
+  </div>
+
+  <div class="active">
+    <span class="chip">Top Picks <i>×</i></span>
+    <span class="chip">Instagram <i>×</i></span>
+    <span class="chip"><img src="../assets/logo-realmadrid.png" alt="">Real Madrid <i>×</i></span>
+    <span class="chip">Matchday <i>×</i></span>
+    <span class="chip">4:5 <i>×</i></span>
+    <span class="count"><b>186</b> posts</span>
+  </div>
+
+  <div class="grid">
+    <div class="card" style="height:340px"></div><div class="card" style="height:260px"></div><div class="card" style="height:380px"></div><div class="card" style="height:300px"></div>
+    <div class="card" style="height:280px"></div><div class="card" style="height:360px"></div><div class="card" style="height:240px"></div><div class="card" style="height:320px"></div>
+  </div>
+</div>
+<script>
+document.querySelectorAll("[data-one]").forEach(g=>g.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;g.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b))}));
+document.querySelectorAll("[data-many], .dg .vals").forEach(g=>g.addEventListener("click",e=>{const b=e.target.closest("button");if(!b||b.hasAttribute("data-more"))return;b.classList.toggle("on")}));
+document.querySelectorAll(".sp").forEach(b=>b.addEventListener("click",()=>b.classList.toggle("on")));
+document.querySelector("[data-more]").addEventListener("click",()=>document.querySelector("[data-drawer]").classList.toggle("open"));
+</script>
+</body>
+</html>

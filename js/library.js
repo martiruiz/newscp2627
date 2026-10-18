@@ -17,25 +17,434 @@
   const more = $("[data-more]");
   const note = $("[data-feed-note]");
 
-  // ---------- Filter categories (same as the admin import columns) ----------
-  // Small categories show as pills; big ones as a searchable list. Empty categories are hidden.
+  // ---------- Filter categories ----------
+  // The filters column (supabase/library-filters.sql + smart-filters.sql). Sections, top to bottom:
+  //   Discover (Top Picks / Replicable ideas / Overperforming + Views) · Format · Platform · Explore by · Content · Brands.
+  // A category shows only when it has posts; `more` rows sit behind "+N more"; `ai` rows come from the smart filters.
   const CATEGORIES = [
-    { key: "platform", label: "Platform" },
-    { key: "format", label: "Format" },
-    { key: "sport", label: "Sport" },
-    { key: "entity", label: "Entity" },
-    { key: "competition", label: "Competition", list: true },
-    { key: "club", label: "Club", list: true },
-    { key: "trend", label: "Trend", list: true },
-    { key: "campaign", label: "Campaign", list: true },
+    { key: "trend", label: "Discover", sec: "discover" },
+    { key: "format", label: "Format", sec: "format" },
+    { key: "aspect_ratio", label: "Shape", sec: "format", extra: true },
+    { key: "duration", label: "Length", sec: "format", extra: true },
+    { key: "language", label: "Language", sec: "format", extra: true },
+    { key: "platform", label: "Platform", sec: "platform" },
+    { key: "sport", label: "Sport", sec: "explore", ico: "ball" },
+    { key: "entity", label: "Publisher type", sec: "explore", ico: "users" },
+    { key: "competition", label: "Competition", sec: "explore", ico: "trophy", crest: true },
+    { key: "club", label: "Club", sec: "explore", ico: "shield", crest: true },
+    { key: "campaign", label: "Campaign", sec: "content", ico: "megaphone" },
+    { key: "moment", label: "Campaign moment", sec: "content", ico: "calendar" },
+    { key: "matchday_graphic", label: "Matchday graphic", sec: "content", ico: "grid" },
+    { key: "transfer", label: "Transfers", sec: "content", ico: "swap" },
+    { key: "kit", label: "Kit", sec: "content", ico: "shirt" },
+    { key: "angle", label: "Angle and tone", sec: "content", ico: "smile" },
+    { key: "season_moment", label: "Season moment", sec: "content", ico: "flag", more: true },
+    { key: "outcome", label: "Result", sec: "content", ico: "pulse", more: true },
+    { key: "team", label: "Team", sec: "content", ico: "user", more: true },
+    { key: "opponent", label: "Opponent", sec: "content", ico: "versus", more: true, search: true },
+    { key: "city", label: "City", sec: "content", ico: "pin", more: true, search: true },
+    { key: "comms", label: "Press and comms", sec: "content", ico: "message", more: true },
+    { key: "crisis", label: "Sensitive topics", sec: "content", ico: "alert", more: true },
+    { key: "sponsor", label: "Sponsors", sec: "brands", ico: "tag", logo: true, search: true },
+    { key: "sponsor_sector", label: "Sponsor sector", sec: "brands", ico: "briefcase" },
+    { key: "sponsor_integration", label: "Integration", sec: "brands", ico: "badge", more: true },
+    { key: "collab", label: "Collaborations", sec: "brands", ico: "users", more: true },
+    { key: "goal", label: "Business goal", sec: "brands", ico: "target", more: true },
+    { key: "cta", label: "Call to action", sec: "brands", ico: "cursor", more: true },
   ];
+  const CAT = Object.fromEntries(CATEGORIES.map((c) => [c.key, c]));
   const CAT_LABEL = Object.fromEntries(CATEGORIES.map((c) => [c.key, c.label]));
-  const PLATFORM_ICONS = ["instagram", "tiktok", "youtube", "x", "facebook", "linkedin"];
+  const AI_TIP = "Detected by AI on Instagram posts from October 2026. Older posts are still being analysed.";
+  const SECTIONS = [
+    { key: "discover", label: "Discover" }, { key: "format", label: "Format" }, { key: "platform", label: "Platform" },
+    { key: "explore", label: "Explore by" }, { key: "content", label: "Content", ai: true }, { key: "brands", label: "Brands", ai: true },
+  ];
   const PERIODS = { 7: "This week", 31: "This month", season: "This season", custom: "Custom dates" };
   const pretty = (name) => (name && name[0] === name[0].toLowerCase() ? name[0].toUpperCase() + name.slice(1) : name);
+  const kfmt = (n) => (n >= 1e6 ? `${(n / 1e6).toFixed(n < 1e7 ? 1 : 0).replace(".0", "")}M` : n >= 1e4 ? `${Math.round(n / 1e3)}k` : n >= 1e3 ? `${(n / 1e3).toFixed(1).replace(".0", "")}k` : String(n));
 
   let catalog = { byCat: {}, byId: new Map() };
   const selected = Object.fromEntries(CATEGORIES.map((c) => [c.key, new Set()])); // category -> Set(value ids)
+  let counts = null; // value id -> posts with the other filters applied (null = not counted: show catalog totals)
+
+  // ---------- Icons (outline, currentColor) ----------
+  const P = {
+    ball: '<circle cx="12" cy="12" r="9"/><path d="M12 7.5l3.8 2.8-1.5 4.4H9.7l-1.5-4.4zM12 3v4.5M20.6 9.5l-4.8.8M17.5 19.5l-3.2-4.8M6.5 19.5l3.2-4.8M3.4 9.5l4.8.8"/>',
+    basket: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3v18M5.6 5.6c3 3 3 9.8 0 12.8M18.4 5.6c-3 3-3 9.8 0 12.8"/>',
+    tennis: '<circle cx="12" cy="12" r="9"/><path d="M5.5 5.5c3.5 3.5 3.5 9.5 0 13M18.5 5.5c-3.5 3.5-3.5 9.5 0 13"/>',
+    oval: '<ellipse cx="12" cy="12" rx="9.5" ry="6" transform="rotate(-35 12 12)"/><path d="m9 15 6-6M10.5 10.5l3 3"/>',
+    wheel: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2"/><path d="M12 3v7M4.2 16.5l6-3.5M19.8 16.5l-6-3.5"/>',
+    bike: '<circle cx="6" cy="16" r="3.5"/><circle cx="18" cy="16" r="3.5"/><path d="M6 16l4-7h5l3 7M10 9 8.5 6H7M15 9l-3 7"/>',
+    puck: '<path d="M4 10c0-1.7 3.6-3 8-3s8 1.3 8 3v4c0 1.7-3.6 3-8 3s-8-1.3-8-3z"/><path d="M4 10c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',
+    glove: '<path d="M7 11V7a3 3 0 0 1 6 0v1h2a3 3 0 0 1 3 3v3a6 6 0 0 1-6 6h-1a5 5 0 0 1-5-5z"/><path d="M7 13h8"/>',
+    run: '<circle cx="15" cy="4.5" r="2"/><path d="M5 21l4-6 3 2 3-5-4-3-4 3M14 12l3 3h3"/>',
+    flagc: '<path d="M4 21V4M4 4h14l-3 4 3 4H4"/>',
+    golf: '<path d="M12 18V3l6 3-6 3"/><ellipse cx="12" cy="19" rx="6" ry="2"/>',
+    racket: '<ellipse cx="10" cy="9" rx="6" ry="6.5"/><path d="M14 13.5 20 20"/>',
+    dots: '<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>',
+    users: '<circle cx="9" cy="8" r="3.5"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20a6 6 0 0 1 12 0M15 20a4 4 0 0 1 6-3.5"/>',
+    trophy: '<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3a3 3 0 0 1-3 4M7 5H4a3 3 0 0 0 3 4"/>',
+    shield: '<path d="M12 2 4 6v6c0 5 3.5 8.5 8 10 4.5-1.5 8-5 8-10V6z"/>',
+    megaphone: '<path d="M3 10v4h4l6 4V6L7 10z"/><path d="M17 8a5 5 0 0 1 0 8"/>',
+    calendar: '<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/>',
+    grid: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>',
+    swap: '<path d="M17 3l4 4-4 4"/><path d="M3 7h18"/><path d="M7 21l-4-4 4-4"/><path d="M21 17H3"/>',
+    shirt: '<path d="M8 3 4 6l2 4 2-1v12h8V9l2 1 2-4-4-3c-1 2-2.5 3-4 3s-3-1-4-3z"/>',
+    smile: '<circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/>',
+    flag: '<path d="M4 21V4M4 4h14l-3 4 3 4H4"/>',
+    pulse: '<path d="M3 12h4l3-8 4 16 3-8h4"/>',
+    user: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+    versus: '<path d="M4 5l4 10 4-10M20 6.5C19 5.6 17.9 5 16.5 5 15 5 14 5.9 14 7.2c0 3 6 2 6 5.4 0 1.4-1.2 2.4-3 2.4-1.4 0-2.6-.6-3.4-1.6"/><path d="M4 19h16"/>',
+    pin: '<path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>',
+    message: '<path d="M4 4h16v12H8l-4 4z"/>',
+    alert: '<path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17v.01"/>',
+    tag: '<path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/>',
+    briefcase: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+    badge: '<path d="M12 2 4 6v6c0 5 3.5 8.5 8 10 4.5-1.5 8-5 8-10V6z"/><path d="m9 12 2 2 4-4"/>',
+    target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+    cursor: '<path d="M3 11l18-8-8 18-2-8z"/>',
+    eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+    shape: '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16"/>',
+    chev: '<path d="m6 9 6 6 6-6"/>',
+    check: '<path d="m5 12 5 5 9-10"/>',
+    star: '<path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
+    copy: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>',
+    trend: '<path d="m3 17 6-6 4 4 8-8"/><path d="M14 7h7v7"/>',
+    reel: '<rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="m10.5 9.5 4 2.5-4 2.5z"/>',
+    carousel: '<rect x="5" y="4" width="11" height="16" rx="2"/><path d="M19 6v12M22 8v8"/>',
+    image: '<rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/>',
+    video: '<rect x="2.5" y="5" width="19" height="14" rx="3"/><path d="m10 9.5 5 2.5-5 2.5z"/>',
+    story: '<rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M12 7v10M7.5 12h9"/>',
+  };
+  const svg = (k, cls = "") => `<svg class="lf-i ${cls}" viewBox="0 0 24 24" aria-hidden="true">${P[k] || P.dots}</svg>`;
+  const FORMAT_ICON = { images: "image", image: "image", post: "image", photo: "image", reel: "reel", reels: "reel", shorts: "reel", carousel: "carousel", video: "video", story: "story", stories: "story" };
+  const SPORT_ICON = { football: "ball", soccer: "ball", basketball: "basket", tennis: "tennis", padel: "racket", "american football": "oval", rugby: "oval", baseball: "ball", motor: "wheel", f1: "wheel", motorsport: "wheel", cycling: "bike", "ice hockey": "puck", hockey: "puck", handball: "run", "martial arts": "glove", running: "run", golf: "golf", waterpolo: "ball", volleyball: "ball" };
+  // Official platform logos: monochrome at rest, brand colours when chosen or hovered
+  const PLATFORM = {
+    instagram: ['<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r=".6" fill="currentColor"/>',
+      '<defs><radialGradient id="lf-ig" cx="30%" cy="107%" r="150%"><stop offset=".1" stop-color="#fdf497"/><stop offset=".5" stop-color="#fd5949"/><stop offset=".68" stop-color="#d6249f"/><stop offset="1" stop-color="#285AEB"/></radialGradient></defs><rect width="24" height="24" rx="6" fill="url(#lf-ig)"/><rect x="5.5" y="5.5" width="13" height="13" rx="4" fill="none" stroke="#fff" stroke-width="1.8"/><circle cx="12" cy="12" r="3.1" fill="none" stroke="#fff" stroke-width="1.8"/><circle cx="16.3" cy="7.7" r="1" fill="#fff"/>'],
+    tiktok: ['<path d="M13.5 4v10.5a3 3 0 1 1-3-3M13.5 4c.3 2.3 2 3.8 4.5 4"/>',
+      '<rect width="24" height="24" rx="6" fill="#000"/><path d="M13.5 5v9.2a2.6 2.6 0 1 1-2.6-2.6" fill="none" stroke="#25F4EE" stroke-width="2" transform="translate(-.6 -.4)"/><path d="M13.5 5v9.2a2.6 2.6 0 1 1-2.6-2.6" fill="none" stroke="#FE2C55" stroke-width="2" transform="translate(.6 .4)"/><path d="M13.5 5v9.2a2.6 2.6 0 1 1-2.6-2.6M13.5 5c.3 2 1.7 3.3 3.8 3.4" fill="none" stroke="#fff" stroke-width="2"/>'],
+    youtube: ['<rect x="2" y="5" width="20" height="14" rx="4.5"/><path d="m10 9 5 3-5 3z" fill="currentColor"/>',
+      '<rect x="1" y="5" width="22" height="14" rx="4.5" fill="#FF0000"/><path d="m10 9 5 3-5 3z" fill="#fff"/>'],
+    x: ['<path d="m5 4 14 16M19 4 5 20"/>', '<rect width="24" height="24" rx="6" fill="#000"/><path d="m6.5 6 11 12M17.5 6l-11 12" stroke="#fff" stroke-width="1.8"/>'],
+    facebook: ['<circle cx="12" cy="12" r="9.5"/><path d="M13.5 21.5V14h2.5l.4-3h-2.9V9.5c0-.9.3-1.5 1.5-1.5h1.5V5.4"/>',
+      '<circle cx="12" cy="12" r="12" fill="#0866FF"/><path d="M13.3 24v-8.4h2.6l.4-3.1h-3V10.6c0-.9.3-1.5 1.6-1.5h1.6V6.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v2.2H7.7v3.1h2.6V24z" fill="#fff"/>'],
+    linkedin: ['<path d="M6 10v8M6 6v.01M10.5 18v-8M10.5 13.5c0-2 1.2-3.6 3.2-3.6s2.8 1.4 2.8 3.3V18"/>',
+      '<rect width="24" height="24" rx="5" fill="#0A66C2"/><path d="M7 10v7M7 7v.01M11 17v-7M11 13.5c0-2 1-3.6 3-3.6s2.5 1.4 2.5 3.3V17" stroke="#fff" stroke-width="2.2" stroke-linecap="round" fill="none"/>'],
+  };
+  // Top Picks / Replicable ideas / Overperforming (catalog "trend" values) — the home page badges
+  const SPECIAL = {
+    "top picks": { cls: "lf-sp-top", ico: "star", desc: "The best posts, picked by SCP" },
+    "replicable ideas": { cls: "lf-sp-rep", ico: "copy", desc: "Easy to copy with your own assets" },
+    overperforming: { cls: "lf-sp-over", ico: "trend", desc: "Beat their account's own average" },
+  };
+  const special = (v) => SPECIAL[v.name.toLowerCase()] || { cls: "lf-sp-top", ico: "star", desc: "" };
+  const shapeBox = (name) => {
+    const [w, h] = String(name).split(":").map(Number);
+    if (!w || !h) return "";
+    const s = 21 / Math.max(w, h);
+    return `<i class="lf-shape" style="width:${Math.round(w * s)}px;height:${Math.round(h * s)}px"></i>`;
+  };
+
+  // ---------- Catalog (values + totals; logos from library-filters.sql) ----------
+  async function loadCatalog() {
+    const [{ data, error }, logos] = await Promise.all([
+      db.rpc("catalog_with_counts"),
+      db.from("idea_catalog").select("id,logo_url").not("logo_url", "is", null).then((r) => r.data || [], () => []),
+    ]);
+    if (error) throw error;
+    const logo = new Map(logos.map((l) => [Number(l.id), l.logo_url]));
+    const byCat = {};
+    const byId = new Map();
+    for (const r of data || []) {
+      if (!CAT[r.category]) continue;
+      const v = { id: Number(r.id), category: r.category, name: r.name, total: Number(r.ideas), logo: logo.get(Number(r.id)) || null };
+      if (!v.total) continue;
+      (byCat[v.category] ||= []).push(v);
+      byId.set(v.id, v);
+    }
+    for (const k in byCat) byCat[k].sort((a, b) => b.total - a.total || a.name.localeCompare(b.name));
+    catalog = { byCat, byId };
+  }
+
+  // ---------- Views (supabase/library-filters.sql: views_histogram + p_min_views / p_max_views) ----------
+  const VB = 28; // buckets on a log scale from 1K to 50M
+  const vEdge = (i) => 1000 * Math.pow(50000, i / VB);
+  const views = { hist: null, a: 0, b: VB };
+  async function loadViews() {
+    const { data, error } = await db.rpc("views_histogram");
+    if (error || !data?.length) return;
+    const h = Array(VB).fill(0);
+    for (const r of data) h[Math.min(VB - 1, Math.max(0, Number(r.bucket)))] += Number(r.posts);
+    if (h.some(Boolean)) { views.hist = h; $("[data-views-order]").hidden = false; }
+  }
+  const viewsSet = () => views.a > 0 || views.b < VB;
+  const viewsLabel = () => (viewsSet() ? `${kfmt(Math.round(vEdge(views.a)))} – ${views.b === VB ? `${kfmt(Math.round(vEdge(VB)))}+` : kfmt(Math.round(vEdge(views.b)))}` : "Any");
+
+  // ---------- Rendering ----------
+  const countOf = (v) => (counts ? counts.get(v.id) ?? 0 : v.total);
+  const isOn = (v) => selected[v.category].has(v.id);
+  const byCount = (list) => [...list].sort((a, b) => (isOn(b) - isOn(a)) || ((countOf(b) > 0) - (countOf(a) > 0)) || countOf(b) - countOf(a) || a.name.localeCompare(b.name));
+  const ui = { open: null, more: new Set(), all: new Set(), q: {} }; // open dropdown, expanded "+N more" sections, "Show all" lists, list searches
+  const has = (k) => catalog.byCat[k]?.length > 0;
+
+  function rowHead(c, title = c.label, icoKey = c.ico) {
+    const sel = [...selected[c.key]].map((id) => catalog.byId.get(id)).filter(Boolean);
+    const first = sel[0];
+    const lead = first && (first.logo || c.crest) ? crestImg(first, "lf-mini") : "";
+    const val = sel.length ? `${lead}${esc(pretty(first.name))}${sel.length > 1 ? ` +${sel.length - 1}` : ""}` : "Any";
+    return `<button class="lf-rh" type="button" aria-expanded="${ui.open === c.key}" data-lf-row="${c.key}">${svg(icoKey)}<span class="lf-t">${esc(title)}</span>${sel.length ? `<span class="lf-badge">${sel.length}</span>` : ""}<span class="lf-v${sel.length ? " is-set" : ""}">${val}</span>${svg("chev", "lf-chev")}</button>`;
+  }
+  const initials = (name) => {
+    const words = String(name).replace(/[^\p{L}\p{N} ]/gu, " ").split(/\s+/).filter((w) => w && !/^(fc|cf|club|de|the|ac|as|sc|afc|cd|ud|rc)$/i.test(w));
+    return (words.length > 1 ? words.slice(0, 3).map((w) => w[0]).join("") : (words[0] || name).slice(0, 4)).toUpperCase();
+  };
+  const crestImg = (v, cls = "lf-crest") => `<span class="${cls}">${v.logo ? `<img src="${esc(v.logo)}" alt="" loading="lazy">` : `<b>${esc(initials(v.name))}</b>`}</span>`;
+
+  function listHtml(c) {
+    const all = catalog.byCat[c.key] || [];
+    const q = (ui.q[c.key] || "").toLowerCase();
+    const items = byCount(all.filter((v) => !q || v.name.toLowerCase().includes(q)));
+    const showAll = ui.all.has(c.key) || q;
+    const N = c.crest ? 12 : 7;
+    const shown = showAll ? items : items.slice(0, N);
+    const searchBox = c.crest || c.search || all.length > 12
+      ? `<input class="lf-lsearch" type="search" placeholder="Search ${all.length.toLocaleString("en")} ${esc(c.label.toLowerCase())}" value="${esc(ui.q[c.key] || "")}" aria-label="Search ${esc(c.label.toLowerCase())}" data-facet-search="${c.key}">` : "";
+    let body;
+    if (c.crest) {
+      body = `<div class="lf-crests">${shown.map((v) => `<button type="button" class="lf-cr${isOn(v) ? " is-on" : ""}${countOf(v) === 0 && !isOn(v) ? " is-zero" : ""}" aria-pressed="${isOn(v)}" data-facet="${c.key}" data-id="${v.id}" title="${esc(v.name)} · ${countOf(v).toLocaleString("en")} posts">${crestImg(v)}<span>${esc(pretty(v.name))}</span></button>`).join("")}</div>`;
+    } else if (c.key === "sport") {
+      body = `<div class="lf-tiles lf-tiles-3">${shown.map((v) => `<button type="button" class="lf-tile${isOn(v) ? " is-on" : ""}${countOf(v) === 0 && !isOn(v) ? " is-zero" : ""}" aria-pressed="${isOn(v)}" data-facet="${c.key}" data-id="${v.id}">${svg(SPORT_ICON[v.name.toLowerCase()] || "dots")}<span>${esc(pretty(v.name))}</span></button>`).join("")}</div>`;
+    } else {
+      body = `<div class="lf-list">${shown.map((v) => {
+        const n = countOf(v);
+        const lead = c.logo ? (v.logo ? `<span class="lf-lead lf-lead-logo"><img src="${esc(v.logo)}" alt="" loading="lazy"></span>` : `<span class="lf-lead lf-lead-logo"><b>${esc(v.name.slice(0, 7))}</b></span>`) : "";
+        return `<button type="button" class="lf-li${isOn(v) ? " is-on" : ""}${n === 0 && !isOn(v) ? " is-zero" : ""}" aria-pressed="${isOn(v)}" data-facet="${c.key}" data-id="${v.id}">${lead}<span class="lf-lab">${esc(pretty(v.name))}</span><span class="lf-cnt">${kfmt(n)}</span></button>`;
+      }).join("") || `<p class="lf-none">Nothing matches “${esc(ui.q[c.key])}”.</p>`}</div>`;
+    }
+    const moreBtn = !showAll && items.length > N ? `<button type="button" class="lf-showall" data-lf-all="${c.key}">Show all ${items.length.toLocaleString("en")}</button>` : "";
+    return searchBox + body + moreBtn;
+  }
+
+  function rowHtml(c, extraCls = "") {
+    const open = ui.open === c.key;
+    return `<div class="lf-row${open ? " is-open" : ""}${extraCls}" data-lf-rowbox="${c.key}">${rowHead(c)}<div class="lf-rb"${open ? "" : " hidden"} data-lf-body-of="${c.key}">${open ? listHtml(c) : ""}</div></div>`;
+  }
+
+  function discoverHtml() {
+    const sp = byCountStable(catalog.byCat.trend || []);
+    const rows = sp.map((v) => {
+      const s = special(v), n = countOf(v), on = isOn(v), zero = n === 0 && !on;
+      return `<button type="button" class="lf-sp ${s.cls}${on ? " is-on" : ""}${zero ? " is-zero" : ""}" aria-pressed="${on}" ${zero ? 'aria-disabled="true" ' : ""}data-facet="trend" data-id="${v.id}">
+        <span class="lf-sp-ic">${svg(s.ico)}</span><span class="lf-sp-tx"><b>${esc(pretty(v.name))}</b>${s.desc ? `<small>${esc(s.desc)}</small>` : ""}</span>
+        <span class="lf-sp-n">${zero ? "No matches" : kfmt(n)}</span>${svg("check", "lf-sp-ck")}</button>`;
+    }).join("");
+    const vOpen = ui.open === "views";
+    const viewsRow = views.hist ? `<div class="lf-row${vOpen ? " is-open" : ""}" data-lf-rowbox="views">
+        <button class="lf-rh" type="button" aria-expanded="${vOpen}" data-lf-row="views">${svg("eye")}<span class="lf-t">Views</span><span class="lf-v${viewsSet() ? " is-set" : ""}" data-views-v>${viewsLabel()}</span>${svg("chev", "lf-chev")}</button>
+        <div class="lf-rb"${vOpen ? "" : " hidden"} data-lf-body-of="views">${viewsHtml()}</div></div>` : "";
+    return rows + viewsRow;
+  }
+  // Specials keep the catalog order (Top Picks, Replicable ideas, Overperforming) so they don't jump around
+  const ORDER_SP = ["top picks", "replicable ideas", "overperforming"];
+  const byCountStable = (list) => [...list].sort((a, b) => ((ORDER_SP.indexOf(a.name.toLowerCase()) + 1 || 9) - (ORDER_SP.indexOf(b.name.toLowerCase()) + 1 || 9)));
+
+  function viewsHtml() {
+    const h = views.hist, mx = Math.max(...h);
+    const quick = [[0, "Any"], [6, "10K+"], [12, "100K+"], [18, "1M+"]];
+    return `<div class="lf-vq">${quick.map(([a, l]) => `<button type="button" class="${views.a === a && views.b === VB ? "is-on" : ""}" data-vq="${a}">${l}</button>`).join("")}</div>
+      <div class="lf-hist" aria-hidden="true">${h.map((n, i) => `<i class="${i >= views.a && i < views.b ? "is-in" : ""}" style="height:${Math.max(5, (n / mx) * 100)}%"></i>`).join("")}</div>
+      <div class="lf-rng"><div class="lf-tr"></div><div class="lf-fl" style="left:${(views.a / VB) * 100}%;right:${100 - (views.b / VB) * 100}%"></div>
+        <input type="range" min="0" max="${VB}" step="1" value="${views.a}" aria-label="Minimum views" data-views-lo><input type="range" min="0" max="${VB}" step="1" value="${views.b}" aria-label="Maximum views" data-views-hi></div>
+      <div class="lf-rl"><span data-views-lo-l>${kfmt(Math.round(vEdge(views.a)))}</span><span data-views-hi-l>${views.b === VB ? `${kfmt(Math.round(vEdge(VB)))}+` : kfmt(Math.round(vEdge(views.b)))}</span></div>`;
+  }
+
+  function formatHtml() {
+    const tiles = (catalog.byCat.format || []).map((v) => `<button type="button" class="lf-tile${isOn(v) ? " is-on" : ""}${countOf(v) === 0 && !isOn(v) ? " is-zero" : ""}" aria-pressed="${isOn(v)}" data-facet="format" data-id="${v.id}">${svg(FORMAT_ICON[v.name.toLowerCase()] || "image")}<span>${esc(pretty(v.name))}</span></button>`).join("");
+    const extras = ["aspect_ratio", "duration", "language"].filter(has);
+    let extra = "";
+    if (extras.length) {
+      const open = ui.open === "format-extra";
+      const sel = extras.flatMap((k) => [...selected[k]]).map((id) => catalog.byId.get(id)).filter(Boolean);
+      const inner = extras.map((k) => {
+        const vals = k === "language" ? byCount(catalog.byCat[k]).slice(0, ui.all.has(k) ? 99 : 8) : catalog.byCat[k];
+        const btns = vals.map((v) => k === "aspect_ratio"
+          ? `<button type="button" class="lf-shp${isOn(v) ? " is-on" : ""}${countOf(v) === 0 && !isOn(v) ? " is-zero" : ""}" aria-pressed="${isOn(v)}" data-facet="${k}" data-id="${v.id}">${shapeBox(v.name)}<span>${esc(v.name)}</span></button>`
+          : `<button type="button" class="lf-chip${isOn(v) ? " is-on" : ""}${countOf(v) === 0 && !isOn(v) ? " is-zero" : ""}" aria-pressed="${isOn(v)}" data-facet="${k}" data-id="${v.id}">${esc(pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`).join("");
+        const more = k === "language" && !ui.all.has(k) && catalog.byCat[k].length > 8 ? `<button type="button" class="lf-chip lf-chip-more" data-lf-all="language">+${catalog.byCat[k].length - 8}</button>` : "";
+        return `<div class="lf-sub">${esc(CAT_LABEL[k])}</div><div class="${k === "aspect_ratio" ? "lf-shapes" : "lf-chips"}">${btns}${more}</div>`;
+      }).join("");
+      extra = `<div class="lf-row lf-row-gap${open ? " is-open" : ""}" data-lf-rowbox="format-extra">
+        <button class="lf-rh" type="button" aria-expanded="${open}" data-lf-row="format-extra">${svg("shape")}<span class="lf-t">${esc(extras.map((k) => CAT_LABEL[k]).join(", ").replace(/, ([^,]*)$/, " and $1"))}</span>${sel.length ? `<span class="lf-badge">${sel.length}</span>` : ""}<span class="lf-v${sel.length ? " is-set" : ""}">${sel.length ? esc(pretty(sel[0].name)) + (sel.length > 1 ? ` +${sel.length - 1}` : "") : "Any"}</span>${svg("chev", "lf-chev")}</button>
+        <div class="lf-rb"${open ? "" : " hidden"}>${inner}</div></div>`;
+    }
+    return `<div class="lf-tiles">${tiles}</div>${extra}`;
+  }
+
+  function platformHtml() {
+    return `<div class="lf-tiles lf-tiles-3 lf-pf">${(catalog.byCat.platform || []).map((v) => {
+      const k = v.name.toLowerCase(), logo = PLATFORM[k];
+      const inner = logo ? `<svg class="lf-mono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">${logo[0]}</svg><svg class="lf-col" viewBox="0 0 24 24" aria-hidden="true">${logo[1]}</svg>` : `<span>${esc(v.name)}</span>`;
+      return `<button type="button" class="lf-tile${isOn(v) ? " is-on" : ""}${countOf(v) === 0 && !isOn(v) ? " is-zero" : ""}" aria-pressed="${isOn(v)}" aria-label="${esc(v.name)}" title="${esc(v.name)}" data-facet="platform" data-id="${v.id}">${inner}</button>`;
+    }).join("")}</div>`;
+  }
+
+  function groupHtml(sec) {
+    const cats = CATEGORIES.filter((c) => c.sec === sec && has(c.key));
+    const top = cats.filter((c) => !c.more), rest = cats.filter((c) => c.more);
+    // a hidden row with a selection (or open) stays reachable: the "+N more" group opens itself
+    const expanded = ui.more.has(sec) || rest.some((c) => selected[c.key].size || ui.open === c.key);
+    return `<div class="lf-stack">${top.map((c) => rowHtml(c)).join("")}${rest.length ? `<div class="lf-more-rows"${expanded ? "" : " hidden"}>${rest.map((c) => rowHtml(c)).join("")}</div><button type="button" class="lf-morebtn" data-lf-more="${sec}">${expanded ? "Show fewer" : `+${rest.length} more`}</button>` : ""}</div>`;
+  }
+
+  function renderFacets() {
+    const parts = {
+      discover: (has("trend") || views.hist) && discoverHtml(),
+      format: (has("format") || has("aspect_ratio") || has("duration") || has("language")) && formatHtml(),
+      platform: has("platform") && platformHtml(),
+      explore: CATEGORIES.some((c) => c.sec === "explore" && has(c.key)) && groupHtml("explore"),
+      content: CATEGORIES.some((c) => c.sec === "content" && has(c.key)) && groupHtml("content"),
+      brands: CATEGORIES.some((c) => c.sec === "brands" && has(c.key)) && groupHtml("brands"),
+    };
+    const ai = (s) => s.ai && CATEGORIES.some((c) => c.sec === s.key && c.key !== "campaign" && has(c.key))
+      ? ` <span class="lf-ai" tabindex="0" data-tip="${esc(AI_TIP)}">AI <b>?</b></span>` : "";
+    const secs = SECTIONS.filter((s) => parts[s.key]);
+    const box = $("[data-facets]");
+    const scroll = $("[data-lf-body]").scrollTop;
+    box.innerHTML = secs.map((s) => `<section class="lf-sec" data-lf-sec="${s.key}"><h2 class="lf-lbl">${esc(s.label)}${ai(s)}</h2>${parts[s.key]}</section>`).join("");
+    $("[data-lf-body]").scrollTop = scroll;
+    $("[data-lf-jump]").innerHTML = secs.map((s) => `<button type="button" data-lf-jump-to="${s.key}">${esc(s.label.replace(" by", ""))}</button>`).join("");
+    $("[data-lf-credit]").hidden = !catalog.byId.size || ![...catalog.byId.values()].some((v) => v.logo);
+    renderQuick();
+    fadeEdges();
+  }
+
+  // Mobile: the three specials as quick chips above the posts
+  function renderQuick() {
+    $("[data-lf-quick]").innerHTML = byCountStable(catalog.byCat.trend || []).map((v) => {
+      const s = special(v), on = isOn(v), zero = countOf(v) === 0 && !on;
+      return `<button type="button" class="lf-q ${s.cls}${on ? " is-on" : ""}${zero ? " is-zero" : ""}" aria-pressed="${on}" data-facet="trend" data-id="${v.id}">${svg(s.ico)}${esc(pretty(v.name))}</button>`;
+    }).join("");
+  }
+
+  // ---------- Interaction ----------
+  function toggleValue(cat, id, force) {
+    const set = selected[cat];
+    const on = force ?? !set.has(id);
+    on ? set.add(id) : set.delete(id);
+    renderFacets();
+    load(true);
+  }
+  function openRow(key, force) {
+    ui.open = force || ui.open !== key ? key : null;
+    const c = CAT[key];
+    if (c?.more) ui.more.add(c.sec);
+    renderFacets();
+    if (ui.open) $(`[data-lf-rowbox="${CSS.escape(ui.open)}"]`)?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
+  const column = $("[data-filters]");
+  column.addEventListener("click", (e) => {
+    const f = e.target.closest("[data-facet]");
+    if (f) { if (f.getAttribute("aria-disabled") === "true") return; return toggleValue(f.dataset.facet, Number(f.dataset.id)); }
+    const row = e.target.closest("[data-lf-row]");
+    if (row) return openRow(row.dataset.lfRow);
+    const all = e.target.closest("[data-lf-all]");
+    if (all) { ui.all.add(all.dataset.lfAll); return renderFacets(); }
+    const more = e.target.closest("[data-lf-more]");
+    if (more) { const s = more.dataset.lfMore; ui.more.has(s) ? ui.more.delete(s) : ui.more.add(s); return renderFacets(); }
+    const vq = e.target.closest("[data-vq]");
+    if (vq) { views.a = Number(vq.dataset.vq); views.b = VB; renderFacets(); return load(true); }
+    const jump = e.target.closest("[data-lf-jump-to]");
+    if (jump) { const t = $(`[data-lf-sec="${jump.dataset.lfJumpTo}"]`); const b = $("[data-lf-body]"); b.scrollTo({ top: t.offsetTop - b.offsetTop, behavior: "smooth" }); $$("[data-lf-jump-to]").forEach((x) => x.classList.toggle("is-on", x === jump)); }
+  });
+  $("[data-lf-quick]").addEventListener("click", (e) => { const f = e.target.closest("[data-facet]"); if (f && !f.classList.contains("is-zero")) toggleValue(f.dataset.facet, Number(f.dataset.id)); });
+  // list searches re-render only their own list (keeps the focus while typing)
+  column.addEventListener("input", (e) => {
+    const s = e.target.closest("[data-facet-search]");
+    if (s) {
+      const k = s.dataset.facetSearch, pos = s.selectionStart;
+      ui.q[k] = s.value;
+      const box = $(`[data-lf-body-of="${k}"]`);
+      box.innerHTML = listHtml(CAT[k]);
+      const again = $(`[data-facet-search="${k}"]`, box);
+      again.focus(); again.setSelectionRange(pos, pos);
+      return;
+    }
+    const lo = e.target.closest("[data-views-lo], [data-views-hi]");
+    if (lo) {
+      let a = Number($("[data-views-lo]").value), b = Number($("[data-views-hi]").value);
+      if (a > b - 1) { if (e.target.matches("[data-views-lo]")) a = b - 1; else b = a + 1; }
+      views.a = Math.max(0, a); views.b = Math.min(VB, b);
+      $("[data-views-lo]").value = views.a; $("[data-views-hi]").value = views.b;
+      $$(".lf-hist i").forEach((x, i) => x.classList.toggle("is-in", i >= views.a && i < views.b));
+      const fl = $(".lf-fl"); fl.style.left = `${(views.a / VB) * 100}%`; fl.style.right = `${100 - (views.b / VB) * 100}%`;
+      $("[data-views-lo-l]").textContent = kfmt(Math.round(vEdge(views.a)));
+      $("[data-views-hi-l]").textContent = views.b === VB ? `${kfmt(Math.round(vEdge(VB)))}+` : kfmt(Math.round(vEdge(views.b)));
+      const v = $("[data-views-v]"); v.textContent = viewsLabel(); v.classList.toggle("is-set", viewsSet());
+      $$(".lf-vq button").forEach((x) => x.classList.toggle("is-on", views.b === VB && Number(x.dataset.vq) === views.a));
+    }
+  });
+
+  // ---------- Search inside the filters: any value of any filter ----------
+  const fsearch = $("[data-lf-search]"), fresults = $("[data-lf-results]");
+  let hits = [];
+  function searchFilters() {
+    const q = fsearch.value.trim().toLowerCase();
+    if (q.length < 2) { fresults.hidden = true; return; }
+    hits = [];
+    for (const v of catalog.byId.values()) if (v.name.toLowerCase().includes(q)) hits.push(v);
+    hits.sort((a, b) => (b.name.toLowerCase().startsWith(q) - a.name.toLowerCase().startsWith(q)) || countOf(b) - countOf(a));
+    hits = hits.slice(0, 8);
+    const hl = (n) => { const i = n.toLowerCase().indexOf(q); return `${esc(n.slice(0, i))}<mark>${esc(n.slice(i, i + q.length))}</mark>${esc(n.slice(i + q.length))}`; };
+    fresults.hidden = false;
+    fresults.innerHTML = hits.length ? hits.map((v, i) => {
+      const c = CAT[v.category];
+      const lead = c.crest || v.logo ? crestImg(v, "lf-mini") : v.category === "platform" && PLATFORM[v.name.toLowerCase()] ? `<svg class="lf-pfi" viewBox="0 0 24 24" aria-hidden="true">${PLATFORM[v.name.toLowerCase()][1]}</svg>` : "";
+      return `<button type="button" class="lf-hit${isOn(v) ? " is-on" : ""}${i === 0 ? " is-kb" : ""}" role="option" data-hit="${i}">${lead}<span class="lf-hv">${hl(pretty(v.name))}</span><span class="lf-hc">${esc(c.sec === "discover" ? "Discover" : c.label)}</span><span class="lf-cnt">${kfmt(countOf(v))}</span></button>`;
+    }).join("") : `<p class="lf-none">No filter called “${esc(fsearch.value.trim())}”. The caption search above the posts looks inside the posts.</p>`;
+  }
+  function pickHit(i) {
+    const v = hits[i];
+    if (!v) return;
+    fsearch.value = ""; fresults.hidden = true;
+    const c = CAT[v.category];
+    if (!isOn(v)) selected[v.category].add(v.id);
+    if (c.sec === "discover" || c.key === "format" || c.key === "platform") ui.open = null;
+    else if (c.extra) ui.open = "format-extra";
+    else { ui.open = c.key; if (c.more) ui.more.add(c.sec); }
+    renderFacets();
+    ($(`[data-lf-rowbox="${CSS.escape(ui.open || "")}"]`) || $(`[data-facet="${v.category}"][data-id="${v.id}"]`))?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    load(true);
+  }
+  fsearch.addEventListener("input", searchFilters);
+  fsearch.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { e.preventDefault(); pickHit(0); }
+    if (e.key === "Escape") { fsearch.value = ""; fresults.hidden = true; }
+  });
+  fresults.addEventListener("click", (e) => { const b = e.target.closest("[data-hit]"); if (b) pickHit(Number(b.dataset.hit)); });
+
+  // ---------- Column scroll: thin gold bar while scrolling, edge fades when there's more ----------
+  const lfBody = $("[data-lf-body]");
+  let scrollTimer;
+  function fadeEdges() {
+    const t = lfBody.scrollTop, m = lfBody.scrollHeight - lfBody.clientHeight;
+    lfBody.style.setProperty("--fade-top", t > 4 ? "28px" : "0px");
+    lfBody.style.setProperty("--fade-bottom", t < m - 4 ? "36px" : "0px");
+  }
+  lfBody.addEventListener("scroll", () => {
+    lfBody.classList.add("is-scrolling");
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(() => lfBody.classList.remove("is-scrolling"), 900);
+    fadeEdges();
+  }, { passive: true });
+  if (window.ResizeObserver) new ResizeObserver(fadeEdges).observe(lfBody);
+
+  // ---------- Mobile: the column becomes a bottom sheet ----------
+  const mobile = () => matchMedia("(max-width: 960px)").matches;
+  const setSheet = (open) => { root.classList.toggle("sheet-open", open); document.body.style.overflow = open ? "hidden" : ""; };
+  $$("[data-sheet-close]").forEach((b) => b.addEventListener("click", () => setSheet(false)));
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && root.classList.contains("sheet-open")) setSheet(false); });
 
   // ---------- Show / hide the filters column (remembered) ----------
   const collapse = $("[data-collapse]");
@@ -45,58 +454,27 @@
     $("[data-collapse-label]").textContent = collapsed ? "Show filters" : "Hide filters";
     store.set("scp-filters-collapsed", collapsed ? "1" : "0");
   };
-  collapse.addEventListener("click", () => setCollapsed(!root.classList.contains("filters-collapsed")));
+  collapse.addEventListener("click", () => (mobile() ? setSheet(true) : setCollapsed(!root.classList.contains("filters-collapsed"))));
+  // on phones the button opens the filters sheet
+  const syncCollapseLabel = () => { if (mobile()) $("[data-collapse-label]").textContent = "Filters"; else $("[data-collapse-label]").textContent = root.classList.contains("filters-collapsed") ? "Show filters" : "Hide filters"; };
+  matchMedia("(max-width: 960px)").addEventListener("change", () => { syncCollapseLabel(); if (!mobile()) setSheet(false); });
   $("[data-hide-filters]").addEventListener("click", () => setCollapsed(true));
   if (store.get("scp-filters-collapsed") === "1") setCollapsed(true);
+  syncCollapseLabel();
 
-  // ---------- Facets ----------
-  async function loadCatalog() {
-    const { data, error } = await db.rpc("catalog_with_counts");
-    if (error) throw error;
-    const byCat = {};
-    const byId = new Map();
-    for (const r of data || []) {
-      const v = { id: Number(r.id), category: r.category, name: r.name, total: Number(r.ideas) };
-      if (!v.total) continue;
-      (byCat[v.category] ||= []).push(v);
-      byId.set(v.id, v);
-    }
-    for (const k in byCat) byCat[k].sort((a, b) => b.total - a.total || a.name.localeCompare(b.name));
-    catalog = { byCat, byId };
-  }
-
-  function renderFacets() {
-    $("[data-facets]").innerHTML = CATEGORIES.filter((c) => catalog.byCat[c.key]?.length).map((c) => {
-      const values = catalog.byCat[c.key];
-      const btn = (v) => {
-        const pf = c.key === "platform" && PLATFORM_ICONS.includes(v.name.toLowerCase()) ? `<img src="assets/pf-${v.name.toLowerCase()}.svg" alt="">` : "";
-        return `<button class="${c.list ? "" : "pill seg-btn"}" type="button" aria-pressed="${selected[c.key].has(v.id)}" data-facet="${c.key}" data-id="${v.id}">${pf}<span class="fv-name">${esc(pretty(v.name))}</span><span class="fv-count" data-count="${v.id}">${v.total}</span></button>`;
-      };
-      const body = c.list
-        ? `<div class="f-list">
-             <label class="search"><input type="search" placeholder="Search ${esc(c.label.toLowerCase())}…" aria-label="Search ${esc(c.label.toLowerCase())}" data-facet-search="${c.key}"><img src="assets/search.svg" alt=""></label>
-             <ul class="fv-list">${values.map((v) => `<li data-name="${esc(v.name.toLowerCase())}">${btn(v)}</li>`).join("")}</ul>
-           </div>`
-        : `<div class="f-row">${values.map(btn).join("")}</div>`;
-      return `<section class="fx" data-facet-section="${c.key}"><h2 class="fx-title">${esc(c.label)}</h2>${body}</section>`;
-    }).join("");
-  }
-
-  $("[data-facets]").addEventListener("click", (e) => {
-    const b = e.target.closest("[data-facet]");
-    if (!b) return;
-    const set = selected[b.dataset.facet];
-    const id = Number(b.dataset.id);
-    set.has(id) ? set.delete(id) : set.add(id);
-    b.setAttribute("aria-pressed", String(set.has(id)));
-    load(true);
+  // ---------- Period / sort dropdowns in the feed bar ----------
+  $$("[data-dd]").forEach((dd) => {
+    const btn = $("[data-dd-btn]", dd), menu = $("[data-dd-menu]", dd);
+    const set = (open) => { menu.hidden = !open; btn.setAttribute("aria-expanded", String(open)); };
+    btn.addEventListener("click", (e) => { e.stopPropagation(); const open = menu.hidden; $$("[data-dd-menu]").forEach((m) => (m.hidden = true)); set(open); });
+    // a choice closes the menu, except "Custom dates" (the date pickers live inside it)
+    menu.addEventListener("click", (e) => { const b = e.target.closest("[data-value]"); if (b && b.dataset.value !== "custom") setTimeout(() => set(false), 120); });
   });
-  $("[data-facets]").addEventListener("input", (e) => {
-    const input = e.target.closest("[data-facet-search]");
-    if (!input) return;
-    const q = input.value.trim().toLowerCase();
-    $$(`[data-facet-section="${input.dataset.facetSearch}"] li`).forEach((li) => (li.hidden = q && !li.dataset.name.includes(q)));
-  });
+  document.addEventListener("click", (e) => { if (!e.target.closest("[data-dd], .dp-pop")) $$("[data-dd-menu]").forEach((m) => { m.hidden = true; m.previousElementSibling.setAttribute("aria-expanded", "false"); }); });
+  function paintDropdowns(s) {
+    $("[data-period-label]").textContent = s.period === "all" ? "All time" : s.period === "custom" ? (s.from || s.to ? `${s.from || "…"} → ${s.to || "…"}` : "Custom dates") : PERIODS[s.period];
+    $("[data-order-label]").textContent = $(`[data-order] [data-value="${s.order}"]`)?.textContent.trim() || "Latest";
+  }
 
   // Live counts: how many posts each value would show with the other filters applied.
   // Categories with a selection are counted without their own filter (values within a category are OR'ed).
@@ -108,28 +486,23 @@
       const r = useAdminSearch ? { error: { message: "schema cache" } } : await db.rpc("library_filter_counts", { ...args, p_filters: filters });
       return r.error && /schema cache|does not exist/i.test(r.error.message) ? db.rpc("available_filter_counts", { ...args, p_filters: filters }) : r;
     };
+    const safe = (p) => p.then((r) => r, () => ({ error: true }));
     const [base, ...own] = await Promise.all([
-      call(args.p_filters),
-      ...active.map((k) => { const f = { ...args.p_filters }; delete f[k]; return call(f); }),
+      safe(call(args.p_filters)),
+      ...active.map((k) => { const f = { ...args.p_filters }; delete f[k]; return safe(call(f)); }),
     ]);
     if (my !== countToken) return;
-    // Very big selections with several filters: the server doesn't count them (value_id -1) → hide the numbers
-    const unknown = (r) => (r.data || []).some((x) => Number(x.value_id) === -1);
-    if (unknown(base) || own.some(unknown)) {
-      $$("[data-count]").forEach((el) => { el.textContent = ""; el.closest("button").classList.remove("is-zero"); });
-      return;
-    }
-    const counts = new Map((base.data || []).map((r) => [Number(r.value_id), Number(r.ideas)]));
+    // Very big selections with several filters: the server doesn't count them (value_id -1) → show the catalog totals
+    const unknown = (r) => r.error || (r.data || []).some((x) => Number(x.value_id) === -1);
+    if (unknown(base) || own.some(unknown)) { counts = null; return renderFacets(); }
+    const m = new Map((base.data || []).map((r) => [Number(r.value_id), Number(r.ideas)]));
     active.forEach((k, i) => {
-      const m = new Map((own[i].data || []).map((r) => [Number(r.value_id), Number(r.ideas)]));
-      for (const v of catalog.byCat[k] || []) counts.set(v.id, m.get(v.id) || 0);
+      const mk = new Map((own[i].data || []).map((r) => [Number(r.value_id), Number(r.ideas)]));
+      for (const v of catalog.byCat[k] || []) m.set(v.id, mk.get(v.id) || 0);
     });
-    $$("[data-count]").forEach((el) => {
-      const id = Number(el.dataset.count);
-      const n = counts.get(id) || 0;
-      el.textContent = n;
-      el.closest("button").classList.toggle("is-zero", n === 0 && !selected[catalog.byId.get(id)?.category]?.has(id));
-    });
+    counts = m;
+    renderFacets();
+    if (!fresults.hidden) searchFilters();
   }
 
   // ---------- Upcoming dates (seasonal ideas → caption search) ----------
@@ -193,15 +566,18 @@
     to: $("[data-to]").value,
     facets: Object.fromEntries(Object.entries(selected).filter(([, s]) => s.size).map(([k, s]) => [k, [...s]])),
     q: $("[data-q]").value.trim(),
+    ...(viewsSet() ? { views: [views.a, views.b] } : {}),
   });
 
   function applyState(f) {
     for (const c of CATEGORIES) selected[c.key] = new Set((f.facets?.[c.key] || []).map(Number).filter((id) => catalog.byId.has(id)));
-    $$("[data-facet]").forEach((b) => b.setAttribute("aria-pressed", String(selected[b.dataset.facet].has(Number(b.dataset.id)))));
+    [views.a, views.b] = Array.isArray(f.views) ? f.views.map(Number) : [0, VB];
+    ui.q = {};
     if (f.order) $$("[data-order] button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.value === f.order)));
     setPeriod(f.period || "all");
     for (const k of ["from", "to"]) { const el = $(`[data-${k}]`); el.value = f[k] || ""; el.dispatchEvent(new Event("input")); }
     $("[data-q]").value = f.q || "";
+    renderFacets();
   }
 
   function seasonStart() {
@@ -215,7 +591,10 @@
     if (s.period === "season") from = seasonStart();
     if (s.period === "custom") { from = s.from || null; to = s.to || null; }
     const filters = Object.fromEntries(Object.entries(s.facets).map(([k, ids]) => [k, { ids, mode: "any" }]));
-    return { p_filters: filters, p_q: s.q || null, p_from: from, p_to: to };
+    const args = { p_filters: filters, p_q: s.q || null, p_from: from, p_to: to };
+    // views range (only sent when used, so the page keeps working before library-filters.sql)
+    if (s.views) { const [a, b] = s.views; if (a > 0) args.p_min_views = Math.round(vEdge(a)); if (b < VB) args.p_max_views = Math.round(vEdge(b)); }
+    return args;
   }
 
   // ---------- Active filter chips ----------
@@ -223,8 +602,9 @@
     const c = [];
     for (const cat of CATEGORIES) for (const id of s.facets[cat.key] || []) {
       const v = catalog.byId.get(id);
-      if (v) c.push({ label: `${pretty(v.name)}`, title: cat.label, clear: () => { selected[cat.key].delete(id); $(`[data-facet="${cat.key}"][data-id="${id}"]`)?.setAttribute("aria-pressed", "false"); } });
+      if (v) c.push({ label: `${pretty(v.name)}`, title: cat.sec === "discover" ? "Discover" : cat.label, v, clear: () => { selected[cat.key].delete(id); renderFacets(); } });
     }
+    if (s.views) c.push({ label: `${viewsLabel()} views`, title: "Views", clear: () => { views.a = 0; views.b = VB; renderFacets(); } });
     if (s.period !== "all") c.push({ label: s.period === "custom" ? `${s.from || "…"} → ${s.to || "…"}` : PERIODS[s.period], clear: () => { setPeriod("all"); ["from", "to"].forEach((k) => { const el = $(`[data-${k}]`); el.value = ""; el.dispatchEvent(new Event("input")); }); } });
     if (s.q) c.push({ label: `“${s.q}”`, clear: () => ($("[data-q]").value = "") });
     return c;
@@ -234,12 +614,16 @@
     const chips = chipsFor(s);
     chipClears = chips.map((x) => x.clear);
     $("[data-active-bar]").hidden = chips.length === 0 && !savedSearches.length;
-    $("[data-active-chips]").innerHTML = chips.map((x, i) => `<button type="button" class="active-chip" data-chip="${i}"${x.title ? ` title="${esc(x.title)}"` : ""}>${esc(x.label)} <span aria-hidden="true">×</span><span class="sr-only">Remove</span></button>`).join("")
+    const chipLead = (v) => !v ? "" : v.category === "trend" ? `<span class="lf-chip-sp ${special(v).cls}"></span>`
+      : CAT[v.category]?.crest || v.logo ? crestImg(v, "lf-mini") : v.category === "platform" && PLATFORM[v.name.toLowerCase()] ? `<svg class="lf-pfi" viewBox="0 0 24 24" aria-hidden="true">${PLATFORM[v.name.toLowerCase()][1]}</svg>` : "";
+    $("[data-active-chips]").innerHTML = chips.map((x, i) => `<button type="button" class="active-chip" data-chip="${i}"${x.title ? ` title="${esc(x.title)}"` : ""}>${chipLead(x.v)}${esc(x.label)} <span aria-hidden="true">×</span><span class="sr-only">Remove</span></button>`).join("")
       + (chips.length > 1 ? `<button type="button" class="link-muted active-clear" data-chip-clear>Clear all</button>` : "");
     $("[data-save-search]").hidden = chips.length === 0;
     const sidebarCount = chips.length - (s.q ? 1 : 0);
     const badge = $("[data-filter-count]");
     badge.textContent = sidebarCount; badge.hidden = sidebarCount <= 0;
+    $("[data-lf-active]").textContent = sidebarCount > 0 ? `· ${sidebarCount} active` : "";
+    paintDropdowns(s);
     renderUpcoming();
   }
   $("[data-active-chips]").addEventListener("click", (e) => {
@@ -319,7 +703,10 @@
     grid.removeAttribute("aria-busy");
     if (error) return showNote(/schema cache|does not exist|function/i.test(error.message) ? "The library isn't connected yet (run supabase/library-ideas.sql in Supabase)." : "Couldn't load posts right now.");
     const rows = data?.data || [];
-    if (reset) $("[data-result-count]").textContent = `${Number(data.total).toLocaleString("en-GB")} post${data.total === 1 ? "" : "s"}`;
+    if (reset) {
+      $("[data-result-count]").textContent = `${Number(data.total).toLocaleString("en-GB")} post${data.total === 1 ? "" : "s"}`;
+      $("[data-lf-go]").textContent = data.total ? `Show ${Number(data.total).toLocaleString("en-GB")} results` : "No results — change the filters";
+    }
     if (!rows.length && offset === 0) {
       if (!chipsFor(s).length) return showEmpty("The library is empty for now — posts appear here after the first import.");
       return showEmpty("No posts match these filters.");
@@ -355,7 +742,7 @@
   const first = (p, cat) => p.tags?.[cat]?.[0]?.name || "";
   const platformOf = (p) => {
     const t = first(p, "platform").toLowerCase();
-    if (PLATFORM_ICONS.includes(t)) return t;
+    if (PLATFORM[t]) return t;
     const u = p.url || "";
     return /instagram\./.test(u) ? "instagram" : /tiktok\./.test(u) ? "tiktok" : /youtu/.test(u) ? "youtube" : /(twitter|x)\.com/.test(u) ? "x" : /facebook\./.test(u) ? "facebook" : /linkedin\./.test(u) ? "linkedin" : "";
   };
@@ -824,7 +1211,7 @@
 
   // ---------- Filter events ----------
   root.addEventListener("change", (e) => {
-    if (e.target.closest("[data-saved-searches], [data-facet-search]")) return;
+    if (e.target.closest("[data-saved-searches], [data-facet-search], [data-lf-search]")) return;
     if (e.target.closest("[data-order]")) seed = String(Math.random()).slice(2, 10); // new shuffle each "Surprise me"
     load(true);
   });
@@ -833,13 +1220,12 @@
   more.addEventListener("click", () => load(false));
   function clearAll() {
     applyState({ order: state().order });
-    $$("[data-facet-search]").forEach((i) => { i.value = ""; i.dispatchEvent(new Event("input", { bubbles: true })); });
     load(true);
   }
   $("[data-clear]").addEventListener("click", clearAll);
 
   if (!db) return load(true);
-  Promise.all([loadCatalog().then(renderFacets).catch(() => {}), boards.load(), loadSavedSearches(), loadMe().catch(() => {}), loadAi().catch(() => {})]).then(() => { load(true); openFromHash(); });
+  Promise.all([Promise.all([loadCatalog(), loadViews().catch(() => {})]).then(renderFacets).catch(() => {}), boards.load(), loadSavedSearches(), loadMe().catch(() => {}), loadAi().catch(() => {})]).then(() => { load(true); openFromHash(); });
 })();
 
 // Welcome offer shown when entering the platform (once per browser session)

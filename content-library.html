@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20261019a">
+  <link rel="stylesheet" href="css/styles.css?v=20261019b">
   <style>.auth-checking body { visibility: hidden; }</style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.0/dist/umd/supabase.min.js"></script>
   <script src="js/config.js?v=20261019a"></script>
@@ -36,59 +36,74 @@
   </header>
 
   <main class="library" data-library>
-    <aside class="filters" aria-label="Filters">
-      <div class="filters-head">
-        <h1>Filters</h1>
-        <div class="filters-head-actions">
-          <button class="link-gold" type="button" data-clear>Clear all</button>
-          <button class="filters-hide" type="button" aria-label="Hide filters" title="Hide filters" data-hide-filters><img src="assets/chevron-duo.svg" alt=""></button>
-        </div>
+    <!-- Filters column — sections and dropdowns are built by js/library.js from the catalog (empty filters are hidden) -->
+    <aside class="filters lf" aria-label="Filters" data-filters>
+      <div class="lf-head">
+        <h1>Filters</h1><span class="lf-act" data-lf-active></span>
+        <button class="lf-clear" type="button" data-clear>Clear all</button>
+        <button class="lf-icon filters-hide" type="button" aria-label="Hide filters" title="Hide filters" data-hide-filters><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button>
+        <button class="lf-icon lf-close" type="button" aria-label="Close filters" data-sheet-close><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
       </div>
-
-      <section class="fx">
-        <h2 class="fx-title">When</h2>
-        <div class="f-row" data-toggle-group="single" data-period>
-          <button class="pill seg-btn" type="button" aria-pressed="false" data-value="7">This week</button>
-          <button class="pill seg-btn" type="button" aria-pressed="false" data-value="31">This month</button>
-          <button class="pill seg-btn" type="button" aria-pressed="false" data-value="season">This season</button>
-          <button class="pill seg-btn" type="button" aria-pressed="true" data-value="all">All time</button>
-          <button class="pill seg-btn" type="button" aria-pressed="false" data-value="custom">Custom</button>
-        </div>
-        <div class="f-cols dp-wrap" hidden data-custom-dates>
-          <div class="dp" data-dp="from">
-            <div class="f-label">From</div>
-            <button class="f-select dp-trigger" type="button" aria-haspopup="dialog"><span data-dp-label>Select...</span><img class="cal" src="assets/calendar.svg" alt=""></button>
-            <input type="hidden" data-from>
-          </div>
-          <div class="dp" data-dp="to">
-            <div class="f-label">To</div>
-            <button class="f-select dp-trigger" type="button" aria-haspopup="dialog"><span data-dp-label>Select...</span><img class="cal" src="assets/calendar.svg" alt=""></button>
-            <input type="hidden" data-to>
-          </div>
-        </div>
-      </section>
-
-      <!-- One section per imported column (platform, format, sport, competition, club, entity, trend, campaign) — built by js/library.js -->
-      <div data-facets></div>
+      <label class="lf-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" placeholder="Search filters: derby, Nike, Starting XI…" aria-label="Search filters" autocomplete="off" data-lf-search></label>
+      <div class="lf-results" hidden data-lf-results role="listbox" aria-label="Matching filters"></div>
+      <nav class="lf-jump" aria-label="Filter sections" data-lf-jump></nav>
+      <div class="lf-body" data-lf-body>
+        <div data-facets></div>
+        <p class="lf-credit" hidden data-lf-credit>Logos: <a href="https://commons.wikimedia.org" target="_blank" rel="noopener">Wikimedia Commons</a></p>
+      </div>
+      <div class="lf-foot"><button class="btn btn-gold lf-go" type="button" data-sheet-close><span data-lf-go>Show results</span></button></div>
     </aside>
+    <div class="lf-scrim" data-sheet-close></div>
 
     <section class="feed" aria-label="Posts">
       <div class="feed-bar">
         <button class="pill pill-dark collapse" type="button" aria-expanded="true" data-collapse><img src="assets/chevron-duo.svg" alt=""><span data-collapse-label>Hide filters</span><b class="filter-count" hidden data-filter-count></b></button>
         <label class="feed-search"><img src="assets/search.svg" alt=""><input type="search" placeholder="Search captions…" aria-label="Search posts" data-q></label>
         <div class="spacer"></div>
+        <div class="lf-dd" data-dd>
+          <button class="pill pill-dark lf-dd-btn" type="button" aria-haspopup="true" aria-expanded="false" data-dd-btn><span data-icon="calendar-days"></span><span data-period-label>All time</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+          <div class="lf-menu" hidden data-dd-menu>
+            <div class="lf-menu-list" data-toggle-group="single" data-period>
+              <button type="button" aria-pressed="false" data-value="7">This week</button>
+              <button type="button" aria-pressed="false" data-value="31">This month</button>
+              <button type="button" aria-pressed="false" data-value="season">This season</button>
+              <button type="button" aria-pressed="true" data-value="all">All time</button>
+              <button type="button" aria-pressed="false" data-value="custom">Custom dates…</button>
+            </div>
+            <div class="f-cols dp-wrap" hidden data-custom-dates>
+              <div class="dp" data-dp="from">
+                <div class="f-label">From</div>
+                <button class="f-select dp-trigger" type="button" aria-haspopup="dialog"><span data-dp-label>Select...</span><img class="cal" src="assets/calendar.svg" alt=""></button>
+                <input type="hidden" data-from>
+              </div>
+              <div class="dp" data-dp="to">
+                <div class="f-label">To</div>
+                <button class="f-select dp-trigger" type="button" aria-haspopup="dialog"><span data-dp-label>Select...</span><img class="cal" src="assets/calendar.svg" alt=""></button>
+                <input type="hidden" data-to>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="lf-dd" data-dd>
+          <button class="pill pill-dark lf-dd-btn" type="button" aria-haspopup="true" aria-expanded="false" data-dd-btn><span class="lf-dd-k">Sort</span><span data-order-label>Latest</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+          <div class="lf-menu" hidden data-dd-menu>
+            <div class="lf-menu-list" data-toggle-group="single" data-order>
+              <button type="button" aria-pressed="true" data-value="latest">Latest</button>
+              <button type="button" aria-pressed="false" data-value="views" hidden data-views-order>Most viewed</button>
+              <button type="button" aria-pressed="false" data-value="random">Surprise me</button>
+            </div>
+          </div>
+        </div>
         <span class="ai-credits" hidden data-ai-credits></span>
-        <button class="pill plan-toggle" type="button" aria-pressed="false" data-plan-toggle><span data-icon="calendar-days"></span>Content Plan</button>
-        <a class="pill saved-link" href="saved.html" data-saved-link><span data-icon="bookmark"></span>Saved boards</a>
+        <button class="pill plan-toggle" type="button" aria-pressed="false" data-plan-toggle><span data-icon="calendar-days"></span><span class="lf-hide-sm">Content Plan</span></button>
+        <a class="pill saved-link" href="saved.html" data-saved-link><span data-icon="bookmark"></span><span class="lf-hide-sm">Saved boards</span></a>
       </div>
+
+      <div class="lf-quick" data-lf-quick></div>
 
       <div class="need">
         <div class="need-head">
           <h2>What do you need today?</h2>
-          <div class="need-order" data-toggle-group="single" data-order>
-            <button type="button" aria-pressed="true" data-value="latest">Latest</button>
-            <button type="button" aria-pressed="false" data-value="random">Surprise me</button>
-          </div>
         </div>
         <div class="upcoming" data-upcoming></div>
       </div>
@@ -138,8 +153,8 @@
   <script src="js/thumbs.js?v=20261019a"></script>
   <script src="js/covers.js?v=20261019a"></script>
   <script src="js/post-preview.js?v=20261019a"></script>
-  <script src="js/library.js?v=20261019a" defer></script>
-  <script src="js/plan-panel.js?v=20261019a" defer></script>
+  <script src="js/library.js?v=20261019b" defer></script>
+  <script src="js/plan-panel.js?v=20261019b" defer></script>
   <script src="js/checkout.js?v=20261019a"></script>
 
   <script src="js/main.js?v=20261019a"></script>
