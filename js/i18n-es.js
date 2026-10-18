@@ -467,6 +467,7 @@ window.SCP_ES = {
   "billed yearly": "facturación anual",
   "or {price}/year": "o {price}/año",
   "Recommended": "Recomendado",
+  "How the demo goes": "Así es la demo",
   "Logos and trademarks belong to their owners. SCP is not affiliated with the clubs, competitions or platforms shown.": "Los logos y las marcas pertenecen a sus titulares. SCP no está afiliado a los clubes, competiciones o plataformas que aparecen.",
   "Loading the calendar…": "Cargando el calendario…",
   "Load the post": "Cargar el post",

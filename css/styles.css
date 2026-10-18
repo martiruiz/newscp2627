@@ -5559,3 +5559,13 @@ body:has(.dock) .sf-mark { padding-bottom: 110px; }
 .book .book-card.is-wide .book-cal-head { text-align: left; }
 .book .book-card.is-wide .book-cal-alt { justify-self: start; }
 @media (max-width: 1260px) { .contact.book:has(.book-card.is-wide) { grid-template-columns: 1fr; } }
+/* demo page: the three steps as a step-by-step row under the intro and the calendar */
+.book-flow { grid-column: 1 / -1; margin-top: 20px; }
+.book-flow-head { margin: 0 0 16px; font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); text-align: center; }
+.book-steps.book-steps-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; max-width: none; margin: 0; counter-reset: none; position: relative; }
+.book-steps-row li { position: relative; }
+.book-steps-row li:not(:last-child)::after { content: "→"; position: absolute; right: -22px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; display: grid; place-items: center; border-radius: 50%; font-size: 11px; color: var(--gold); background: var(--surface); border: 0.5px solid rgba(240, 184, 74, 0.5); z-index: 1; }
+@media (max-width: 900px) {
+  .book-steps.book-steps-row { grid-template-columns: 1fr; gap: 14px; }
+  .book-steps-row li:not(:last-child)::after { content: "↓"; right: auto; left: 30px; top: auto; bottom: -16px; transform: none; }
+}
