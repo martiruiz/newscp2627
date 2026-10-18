@@ -345,6 +345,16 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString(window.SCP_LO
 
   // Contact, demo and custom-plan forms → Supabase (submit_contact_request, supabase/contact-requests.sql).
   // contact.html?topic=custom-plan&users=6 comes from "Request a custom plan" (pricing / account).
+  // Demo booking: the next five working days with their dates (value = ISO date)
+  $$("[data-book-days]").forEach((box) => {
+    const d = new Date(); d.setHours(12, 0, 0, 0);
+    const days = [];
+    while (days.length < 5) { d.setDate(d.getDate() + 1); if (d.getDay() % 6) days.push(new Date(d)); }
+    const loc = window.SCP_LOC || "en-GB";
+    box.innerHTML = days.map((x) => { const iso = x.toISOString().slice(0, 10);
+      return `<label><input type="radio" name="day" value="${iso}"><small>${x.toLocaleDateString(loc, { weekday: "short" })}</small><b>${x.getDate()}</b><small>${x.toLocaleDateString(loc, { month: "short" })}</small></label>`; }).join("");
+  });
+
   $$("[data-contact-form]").forEach((form) => {
     const status = $("[data-form-status]", form);
     const q = new URLSearchParams(location.search);
@@ -378,6 +388,8 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString(window.SCP_LO
         if (!r.ok || !d.ok) throw new Error(d.error || d.message || "Something went wrong. Please try again in a moment.");
         say(true, "Thanks! We’ll get back to you as soon as possible.");
         form.reset();
+        const done = form.parentElement?.querySelector("[data-form-done]");
+        if (done) { form.hidden = true; done.hidden = false; done.scrollIntoView({ behavior: "smooth", block: "center" }); }
       } catch (err) {
         say(false, /schema cache|does not exist|Could not find/i.test(err.message) ? "Something went wrong. Please try again in a moment." : err.message);
       } finally { if (btn) btn.disabled = false; }
