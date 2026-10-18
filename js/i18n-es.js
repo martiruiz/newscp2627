@@ -1607,4 +1607,8 @@ window.SCP_ES = {
   "Social media teams at": "Los equipos de redes de",
   "plan their content with SCP.": "planifican su contenido con SCP.",
   "and": "y",
+  "Crowd": "Afición",
+  "Player · Messi": "Jugador · Messi",
+  "Celebration": "Celebración",
+  "Inter Miami kit": "Equipación Inter Miami",
 };

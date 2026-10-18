@@ -5039,3 +5039,35 @@ main { position: relative; z-index: 0; }
 #content-plan { grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr); gap: 56px; }
 #content-plan .cp-e { font-size: 11px; padding: 5px 5px; }
 @media (max-width: 1080px) { #content-plan { grid-template-columns: minmax(0, 1fr); } }
+
+/* AI analysis: the photo is read (sweep + grid, detection boxes, progress) */
+.ai-demo-post { overflow: hidden; }
+.ai-demo-post::after { display: none; }
+.ai-vision { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; }
+.ai-grid { position: absolute; inset: 0; opacity: 0; transition: opacity 0.5s;
+  background-image: linear-gradient(rgba(122, 162, 255, 0.18) 1px, transparent 1px), linear-gradient(90deg, rgba(122, 162, 255, 0.18) 1px, transparent 1px); background-size: 22px 22px;
+  -webkit-mask-image: linear-gradient(180deg, #000 var(--sweep, 0%), transparent calc(var(--sweep, 0%) + 1%)); mask-image: linear-gradient(180deg, #000 var(--sweep, 0%), transparent calc(var(--sweep, 0%) + 1%)); }
+.ai-sweep { position: absolute; left: -10%; right: -10%; height: 3px; top: 0; opacity: 0; background: linear-gradient(90deg, transparent, #9cb8ff, #fff, #9cb8ff, transparent);
+  box-shadow: 0 0 22px 4px rgba(122, 162, 255, 0.75); }
+.ai-sweep::after { content: ""; position: absolute; left: 0; right: 0; bottom: 3px; height: 90px; background: linear-gradient(0deg, rgba(122, 162, 255, 0.28), transparent); }
+.ai-demo.is-reading .ai-grid { opacity: 1; animation: aiGrid 4.2s linear forwards; }
+.ai-demo.is-reading .ai-sweep { opacity: 1; animation: aiSweep 2.1s ease-in-out 2 alternate; }
+.ai-demo.is-read .ai-grid { opacity: 0.35; --sweep: 100%; }
+@property --sweep { syntax: "<percentage>"; inherits: true; initial-value: 0%; }
+@keyframes aiGrid { from { --sweep: 0%; } to { --sweep: 100%; } }
+@keyframes aiSweep { from { top: 0; } to { top: 100%; } }
+.ai-box { position: absolute; border: 1.5px solid #7aa2ff; border-radius: 6px; opacity: 0; transform: scale(1.25); transition: opacity 0.35s, transform 0.45s cubic-bezier(.2, 1.3, .4, 1);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25), 0 0 18px rgba(122, 162, 255, 0.45); background: rgba(122, 162, 255, 0.08); }
+.ai-box em { font-style: normal; position: absolute; left: -1.5px; bottom: 100%; margin-bottom: 4px; padding: 2px 7px; border-radius: 5px; white-space: nowrap;
+  background: #7aa2ff; color: #0b1020; font-size: 10.5px; font-weight: 700; letter-spacing: 0.01em; }
+.ai-box.is-on { opacity: 1; transform: none; }
+.ai-demo.is-read .ai-box.is-on { opacity: 0.85; }
+.ai-progress { position: absolute; left: 12px; right: 12px; bottom: 12px; display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 10px;
+  background: rgba(11, 16, 32, 0.78); backdrop-filter: blur(8px); opacity: 0; transform: translateY(8px); transition: opacity 0.3s, transform 0.3s; }
+.ai-progress b { font-size: 12px; color: #c9d8ff; min-width: 34px; font-variant-numeric: tabular-nums; }
+.ai-progress i { flex: 1; height: 4px; border-radius: 4px; background: rgba(255, 255, 255, 0.12); overflow: hidden; }
+.ai-progress em { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #7aa2ff, #c9d8ff); }
+.ai-demo.is-reading .ai-progress { opacity: 1; transform: none; }
+.ai-demo-card.is-live { min-height: 0; transition: transform 0.7s cubic-bezier(.2, .8, .2, 1); }
+.ai-demo.is-reading .ai-demo-card, .ai-demo:not(.is-read) .ai-demo-card.is-live { transform: translate(56px, 150px); }
+@media (max-width: 600px) { .ai-demo.is-reading .ai-demo-card, .ai-demo:not(.is-read) .ai-demo-card.is-live { transform: translateY(40px); } }

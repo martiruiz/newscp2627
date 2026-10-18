@@ -36,8 +36,14 @@
         await sleep(160); btn.classList.remove("is-press");
         await sleep(350); btn.querySelector(".rip")?.remove();
         unl.hidden = true; read.hidden = false; demo.classList.add("is-reading");
-        await sleep(1700);
-        read.hidden = true; demo.classList.remove("is-reading");
+        // the photo is "read": sweep + grid, detection boxes one by one, progress to 100 %
+        const boxes = [...demo.querySelectorAll(".ai-box")], pct = demo.querySelector("[data-ai-pct]"), bar = demo.querySelector("[data-ai-bar]");
+        const t0 = performance.now(), DUR = 4200;
+        const prog = () => { const k = Math.min(1, (performance.now() - t0) / DUR); pct.textContent = `${Math.round(k * 100)}%`; bar.style.width = `${k * 100}%`; if (k < 1 && demo.classList.contains("is-reading")) requestAnimationFrame(prog); };
+        requestAnimationFrame(prog);
+        for (const b of boxes) { await sleep(DUR / (boxes.length + 1)); b.classList.add("is-on"); }
+        await sleep(DUR / (boxes.length + 1) + 200);
+        read.hidden = true; demo.classList.remove("is-reading"); demo.classList.add("is-read");
         for (let i = 0; i < rows.length && isOn(); i++) {
           const p = rows[i].querySelector("p");
           rows[i].classList.add("is-shown");
@@ -46,6 +52,9 @@
           await sleep(260);
         }
         await sleep(5200);
+        demo.classList.remove("is-read");
+        demo.querySelectorAll(".ai-box").forEach((b) => b.classList.remove("is-on"));
+        await sleep(400);
       }
       rows.forEach((r, i) => { r.classList.add("is-shown"); r.querySelector("p").textContent = texts[i]; });
       unl.hidden = read.hidden = true;
