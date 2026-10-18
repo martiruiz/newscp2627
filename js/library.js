@@ -841,7 +841,7 @@
             ${me.isSuper ? `<button class="lib-remove" type="button" data-remove="${esc(p.id)}" data-tip="Remove (superadmin)" aria-label="Remove from the library">${icon("trash-2")}</button>` : ""}
           </div>`;
     const foot = `
-        <div class="lib-foot">
+        <div class="lib-foot" data-open="${esc(p.id)}" role="button" tabindex="-1">
           ${footCrest(crest, who)}
           <span class="lib-foot-who"><b>${esc(who || name)}</b><small>${date(p.published_at)}</small></span>
           ${p.views ? `<span class="lib-foot-views"><b>${compact(p.views)}</b><small>${tx("views")}</small></span>` : ""}
@@ -855,7 +855,7 @@
         <div class="lib-media" style="aspect-ratio: 1 / ${mediaRatio(p).toFixed(4)}">
           <img class="lib-cover-img" src="${esc(p.cover_url)}" alt="${esc(who || "Post")}" loading="lazy" decoding="async">
           <button class="lib-hit" type="button" data-open="${esc(p.id)}" aria-label="Details${who ? ` · ${esc(who)}` : ""}"></button>
-          ${video ? `<button class="lib-playbtn" type="button" data-play="${esc(p.id)}" aria-label="Play video">${icon("play")}</button>` : ""}
+          ${video ? `<span class="lib-playbtn" aria-hidden="true">${icon("play")}</span>` : ""}
           ${fmt || p.duration_s ? `<span class="lib-fmt">${video ? icon("play") : ""}${esc([fmt, p.duration_s ? mmss(p.duration_s) : ""].filter(Boolean).join(" · "))}</span>` : ""}
           ${corner}${rail}
         </div>${foot}
@@ -872,6 +872,7 @@
           ${pf === "tiktok" && p.url
             ? `<div class="lib-cover" data-cover-box><img data-oembed="${esc(p.url)}" alt="${esc(who || "TikTok video")}"><span class="lib-play" aria-hidden="true"></span></div>`
             : src ? `<div class="lib-zoom"${zoomStyle}><iframe class="lib-frame${pf === "instagram" ? " is-ig" : ""}" src="${esc(src)}" loading="lazy" title="${esc(who || "Post")}" scrolling="no" allow="encrypted-media; picture-in-picture; fullscreen"></iframe></div>` : `<span class="lib-noimg"></span>`}
+          <button class="lib-hit" type="button" data-open="${esc(p.id)}" aria-label="Details${who ? ` · ${esc(who)}` : ""}"></button>
           ${rail}
         </div>${asPosted ? "" : foot}
       </article>`;

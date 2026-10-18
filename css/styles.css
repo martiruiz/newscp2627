@@ -5688,3 +5688,7 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 .lib-foot .lib-crest.is-photo img { width: 100%; height: 100%; object-fit: cover; }
 .lib-foot .lib-crest.is-initials { background: #0d1426; box-shadow: inset 0 0 0 1px rgba(240, 184, 74, 0.55); }
 .lib-foot .lib-crest.is-initials b { font-size: 11px; font-weight: 700; color: var(--gold); letter-spacing: 0.02em; }
+/* the whole card opens the post's detail */
+.lib-card .lib-hit { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; border: 0; padding: 0; background: transparent; cursor: pointer; }
+.lib-card .lib-playbtn { pointer-events: none; z-index: 3; }
+.lib-foot { cursor: pointer; }
