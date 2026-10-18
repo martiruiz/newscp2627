@@ -16,9 +16,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Caveat:wght@500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20261020n">
+  <link rel="stylesheet" href="css/styles.css?v=20261020o">
   <script src="js/theme.js?v=20261018p"></script>
-  <script src="js/i18n.js?v=20261020n"></script>
+  <script src="js/i18n.js?v=20261020o"></script>
 </head>
 <body>
 
@@ -58,49 +58,25 @@
         <a class="play-btn" href="content-library.html"><img src="assets/play-triangle.svg" alt="">Play Now</a>
       </div>
 
-      <div class="stats" data-stats>
-        <span class="stats-bar" aria-hidden="true"></span>
-        <div class="stat is-active">
-          <div class="stat-head"><p class="stat-num" data-count="770" data-suffix="+" data-stat="clubs">770+</p>
-            <span class="stat-ico ico-target" aria-hidden="true"><svg viewBox="0 0 34 34" fill="none">
-              <circle class="t-ping" cx="17" cy="17" r="8" stroke="currentColor"/><circle class="t-ping t-ping-2" cx="17" cy="17" r="8" stroke="currentColor"/>
-              <circle cx="17" cy="17" r="12.5" stroke="currentColor" stroke-opacity=".75"/><circle cx="17" cy="17" r="16.5" stroke="currentColor" stroke-opacity=".5"/>
-              <circle class="t-core" cx="17" cy="17" r="7.5" fill="currentColor"/></svg></span></div>
+      <div class="stats stats-v2" data-stats>
+        <div class="stat sv-card sv-clubs is-active">
+          <div class="sv-vis" aria-hidden="true"><div class="sv-crests"><img src="assets/crests/fcb.png" alt=""><img src="assets/crests/pl.png" alt=""><img src="assets/crests/ucl.png" alt=""><img src="assets/crests/nba.png" alt=""><img src="assets/crests/nfl.png" alt=""><img src="assets/crests/motogp.png" alt=""><span>+</span></div></div>
+          <p class="stat-num" data-count="770" data-suffix="+" data-stat="clubs">770+</p>
           <p class="stat-label">Sports accounts tracked</p>
         </div>
-        <div class="stat">
-          <div class="stat-head"><p class="stat-num" data-count="20" data-suffix="+">20+</p>
-            <span class="stat-ico ico-filter" aria-hidden="true"><svg viewBox="0 -7 28.17 35.8" fill="none">
-              <circle class="f-dot f-dot-1" cx="8" cy="-4" r="1.5" fill="currentColor"/><circle class="f-dot f-dot-2" cx="14.1" cy="-4" r="1.5" fill="currentColor"/><circle class="f-dot f-dot-3" cx="20.2" cy="-4" r="1.5" fill="currentColor"/>
-              <path d="M27.4167 3.41683C27.4167 2.48342 27.4161 2.01635 27.2344 1.65983C27.0747 1.34623 26.8206 1.09145 26.5071 0.931651C26.1506 0.750001 25.6829 0.750001 24.7494 0.750001H3.41608C2.48267 0.750001 2.01642 0.750001 1.6599 0.931651C1.3463 1.09145 1.09152 1.34623 0.931718 1.65983C0.750068 2.01635 0.750068 2.48342 0.750068 3.41683V4.6456C0.750068 5.05325 0.750068 5.25722 0.796118 5.44903C0.836951 5.6191 0.904451 5.78155 0.995835 5.93067C1.09887 6.0988 1.24325 6.24319 1.53132 6.53125L9.96922 14.9692C10.2575 15.2573 10.4008 15.4007 10.5039 15.569C10.5952 15.718 10.6637 15.881 10.7045 16.0512C10.7501 16.241 10.7501 16.4425 10.7501 16.842V24.7683C10.7501 26.197 10.7501 26.9118 11.0509 27.342C11.3137 27.7177 11.7191 27.9683 12.1726 28.0353C12.6919 28.112 13.3312 27.7928 14.6091 27.154L15.9424 26.4873C16.4776 26.2198 16.7444 26.0855 16.9399 25.8858C17.1127 25.7093 17.2451 25.4975 17.3256 25.264C17.4167 24.9998 17.4167 24.7 17.4167 24.1017V16.8543C17.4167 16.4467 17.4167 16.243 17.4627 16.0512C17.5036 15.881 17.5711 15.718 17.6626 15.569C17.7649 15.4018 17.9079 15.2588 18.1922 14.9745L18.1981 14.9692L26.6359 6.53125C26.9241 6.243 27.0674 6.09887 27.1706 5.93067C27.2619 5.78155 27.3304 5.6191 27.3712 5.44903C27.4167 5.25918 27.4167 5.0574 27.4167 4.658V3.41683Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle class="f-out" cx="14.1" cy="23" r="1.5" fill="currentColor"/></svg></span></div>
+        <div class="stat sv-card sv-filters">
+          <div class="sv-vis" aria-hidden="true"><div class="sv-chips"><i>Sport</i><i>Competition</i><i>Club</i><i>Format</i><i>Platform</i><i>Views</i></div></div>
+          <p class="stat-num" data-count="20" data-suffix="+">20+</p>
           <p class="stat-label">Advanced and searchable filters</p>
         </div>
-        <div class="stat">
-          <div class="stat-head"><p class="stat-num" data-count="500000" data-format="compact" data-suffix="+" data-stat="posts">500K+</p>
-            <span class="stat-ico ico-carousel" aria-hidden="true"><svg viewBox="0 0 46 34" fill="none">
-              <defs>
-                <linearGradient id="stat-reel-fade" x1="0" x2="46" y1="0" y2="0" gradientUnits="userSpaceOnUse">
-                  <stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".3" stop-color="#fff" stop-opacity=".55"/>
-                  <stop offset=".5" stop-color="#fff"/><stop offset=".7" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
-                </linearGradient>
-                <mask id="stat-reel-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="46" height="34"><rect width="46" height="34" fill="url(#stat-reel-fade)"/><rect x="13.5" y="3.5" width="19" height="27" rx="4" fill="#000"/></mask>
-              </defs>
-              <g mask="url(#stat-reel-mask)"><g class="c-strip">
-                <rect x="-20" y="8" width="14" height="18" rx="2.5" stroke="currentColor" stroke-width="1.4"/>
-                <rect x="-2" y="8" width="14" height="18" rx="2.5" stroke="currentColor" stroke-width="1.4"/>
-                <rect x="16" y="8" width="14" height="18" rx="2.5" stroke="currentColor" stroke-width="1.4"/>
-                <rect x="34" y="8" width="14" height="18" rx="2.5" stroke="currentColor" stroke-width="1.4"/>
-                <rect x="52" y="8" width="14" height="18" rx="2.5" stroke="currentColor" stroke-width="1.4"/>
-              </g></g>
-              <rect class="c-frame" x="14.5" y="4.5" width="17" height="25" rx="3.5" stroke="currentColor" stroke-width="1.6"/>
-              <path class="c-play" d="M20.8 13.4v7.2l6-3.6-6-3.6Z" fill="currentColor"/></svg></span></div>
+        <div class="stat sv-card sv-posts">
+          <div class="sv-vis" aria-hidden="true"><div class="sv-mosaic"><div class="sv-track"><i style="background-image:url(assets/live/11453.jpg)"></i><i style="background-image:url(assets/live/11690.jpg)"></i><i style="background-image:url(assets/live/2805.jpg)"></i><i style="background-image:url(assets/live/3649.jpg)"></i><i style="background-image:url(assets/live/3661.jpg)"></i><i style="background-image:url(assets/live/3712.jpg)"></i><i style="background-image:url(assets/live/3760.jpg)"></i><i style="background-image:url(assets/live/24325.jpg)"></i><i style="background-image:url(assets/live/11453.jpg)"></i><i style="background-image:url(assets/live/11690.jpg)"></i><i style="background-image:url(assets/live/2805.jpg)"></i><i style="background-image:url(assets/live/3649.jpg)"></i><i style="background-image:url(assets/live/3661.jpg)"></i><i style="background-image:url(assets/live/3712.jpg)"></i><i style="background-image:url(assets/live/3760.jpg)"></i><i style="background-image:url(assets/live/24325.jpg)"></i></div></div></div>
+          <p class="stat-num" data-count="500000" data-format="compact" data-suffix="+" data-stat="posts">500K+</p>
           <p class="stat-label">Content examples imported</p>
         </div>
-        <div class="stat">
-          <div class="stat-head"><p class="stat-num" data-count="24" data-suffix="h">24h</p>
-            <span class="stat-ico ico-update" aria-hidden="true"><svg viewBox="0 0 30 30" fill="none">
-              <g class="u-spin"><path d="M2.19 20c2 5.12 6.98 8.75 12.81 8.75 7.59 0 13.75-6.16 13.75-13.75M27.81 10C25.81 4.88 20.83 1.25 15 1.25 7.41 1.25 1.25 7.41 1.25 15M18.75 10l9.06-.003.16-10M11.25 20l-9.22.003V30" stroke="currentColor" stroke-width="1.3"/></g></svg></span></div>
+        <div class="stat sv-card sv-fresh">
+          <div class="sv-vis" aria-hidden="true"><ul class="sv-feed"><li><i style="background-image:url(assets/live/2804.jpg)"></i><span>New post added</span><em>now</em></li><li><i style="background-image:url(assets/live/21174.jpg)"></i><span>New post added</span><em>now</em></li><li><i style="background-image:url(assets/live/18465.jpg)"></i><span>New post added</span><em>now</em></li><li><i style="background-image:url(assets/live/11462.jpg)"></i><span>New post added</span><em>now</em></li></ul></div>
+          <p class="stat-num" data-count="24" data-suffix="h">24h</p>
           <p class="stat-label">Fresh content added daily</p>
         </div>
       </div>

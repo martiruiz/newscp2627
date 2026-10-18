@@ -467,6 +467,8 @@ window.SCP_ES = {
   "billed yearly": "facturación anual",
   "or {price}/year": "o {price}/año",
   "Recommended": "Recomendado",
+  "New post added": "Nuevo post añadido",
+  "now": "ahora",
   "You could,": "Podrías,",
   "but it takes hours": "pero lleva horas",
   ", and the feed shows you what the algorithm wants, not what worked. SCP brings together the posts of": ", y el feed te enseña lo que quiere el algoritmo, no lo que funcionó. SCP reúne los posts de",
