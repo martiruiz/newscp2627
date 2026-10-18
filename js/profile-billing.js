@@ -11,15 +11,16 @@
   const icon = (n) => (window.SCP_ICONS ? window.SCP_ICONS(n) : "");
   const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
   const TZ = "Europe/Madrid";
-  const day = (v) => (v ? new Date(v).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: TZ }) : "");
-  const money = (n, cur) => (n == null ? "" : new Intl.NumberFormat("en-GB", { style: "currency", currency: String(cur || "eur").toUpperCase() }).format(Number(n)));
+  const day = (v) => (v ? new Date(v).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: TZ }) : "");
+  const money = (n, cur) => (n == null ? "" : new Intl.NumberFormat(window.SCP_LOC || "en-GB", { style: "currency", currency: String(cur || "eur").toUpperCase() }).format(Number(n)));
+  const perOf = (iv) => tx(iv === "year" ? "year" : "month");
   const daysLeft = (v) => Math.max(0, Math.ceil((new Date(v) - Date.now()) / 864e5));
   const notify = (t, kind) => window.SCP_CHECKOUT?.notify(t, { kind });
 
   async function manage(body) {
     const s = (await db.auth.getSession()).data.session;
     const r = await fetch(`${cfg.supabaseUrl}/functions/v1/stripe-manage`, { method: "POST",
-      headers: { "Content-Type": "application/json", apikey: cfg.supabaseAnonKey, Authorization: `Bearer ${s?.access_token}` }, body: JSON.stringify(body) }).catch(() => null);
+      headers: { "Content-Type": "application/json", apikey: cfg.supabaseAnonKey, Authorization: `Bearer ${s?.access_token}` }, body: JSON.stringify({ ...body, lang: window.SCP_LANG || "en" }) }).catch(() => null);
     const data = r ? await r.json().catch(() => ({})) : {};
     if (!r || !r.ok) throw new Error(data.error || "We couldn't reach the billing service. Please try again.");
     return data;
@@ -43,11 +44,11 @@
 
   function quotaHtml(ent) {
     if (!ent?.has_ai) return "";
-    if (ent.ai_unlimited) return `<p class="pf-billing-credits">${icon("sparkles")}<span><b>Unlimited</b> AI analyses</span></p>`;
+    if (ent.ai_unlimited) return `<p class="pf-billing-credits">${icon("sparkles")}<span>${tx("<b>Unlimited</b> AI analyses")}</span></p>`;
     const used = ent.monthly_used || 0, lim = ent.monthly_limit || 0;
     const pct = lim ? Math.min(100, Math.round((used / lim) * 100)) : 0;
-    return `<div class="pf-quota"><div class="pf-quota-top">${icon("sparkles")}<span><b>${ent.monthly_left}</b> of ${lim} AI analyses left this month${ent.pack_left ? ` · +${ent.pack_left} from packs` : ""}</span></div>
-      <div class="pf-quota-bar"><i style="width:${pct}%"></i></div>${ent.cycle_end ? `<small>Resets on ${day(ent.cycle_end)}</small>` : ""}</div>`;
+    return `<div class="pf-quota"><div class="pf-quota-top">${icon("sparkles")}<span>${tx("<b>{left}</b> of {limit} AI analyses left this month", { left: ent.monthly_left, limit: lim })}${ent.pack_left ? ` · ${tx("+{n} from packs", { n: ent.pack_left })}` : ""}</span></div>
+      <div class="pf-quota-bar"><i style="width:${pct}%"></i></div>${ent.cycle_end ? `<small>${tx("Resets on {date}", { date: day(ent.cycle_end) })}</small>` : ""}</div>`;
   }
 
   function render() {
@@ -60,7 +61,7 @@
     const liveSub = sub && ["active", "trialing", "past_due", "unpaid", "paused", "incomplete"].includes(sub.status);
     if (!liveSub && st !== "granted") {
       box.innerHTML = `<div class="pf-plan is-empty">
-        <p><b>${sub?.status === "canceled" ? `Your ${esc(sub.plan_name)} membership ended on ${day(sub.ended_at || sub.current_period_end)}.` : "You don't have a membership yet."}</b></p>
+        <p><b>${sub?.status === "canceled" ? tx("Your {plan} membership ended on {date}.", { plan: esc(sub.plan_name), date: day(sub.ended_at || sub.current_period_end) }) : tx("You don't have a membership yet.")}</b></p>
         <p class="pf-billing-note">${m?.trial_eligible ? "Every plan starts with a free trial — you're not charged until it ends." : "Choose a plan to get full access again. Your saved boards and content plans are still here."}</p>
         <div class="pf-billing-actions"><a class="btn btn-gold" href="pricing.html">${m?.trial_eligible ? "Start your free trial" : "See plans"}</a>${m?.has_customer ? `<button class="btn btn-outline" type="button" data-bill="portal">${icon("external-link")}Invoices and billing details</button>` : ""}</div>
         ${invoicesHtml(m?.invoices)}
@@ -73,29 +74,29 @@
       return;
     }
     const [label, cls] = STATUS[sub.status] || [sub.status, ""];
-    const per = sub.interval === "year" ? "year" : "month";
+    const per = perOf(sub.interval);
     const next = live?.next;
     const facts = [
       ["Plan", `${esc(sub.plan_name)}`],
-      ["Price", sub.amount != null ? `${money(sub.amount, sub.currency)} / ${per} · ${sub.currency === "usd" ? "plus tax where applicable" : "VAT included"}` : "—"],
+      ["Price", sub.amount != null ? `${money(sub.amount, sub.currency)} / ${per} · ${tx(sub.currency === "usd" ? "plus tax where applicable" : "VAT included")}` : "—"],
       ["Billing", sub.interval === "year" ? "Yearly, on the anniversary" : "Monthly, on the 1st of every month"],
       ["Member since", day(sub.started_at)],
     ];
-    if (sub.status === "trialing" && sub.trial_end) facts.push(["Trial ends", `${day(sub.trial_end)} · ${daysLeft(sub.trial_end)} days left`]);
-    if (sub.cancel_at_period_end) facts.push(["Access until", `<b>${day(sub.cancel_at || sub.current_period_end)}</b> · no more charges`]);
-    else if (next) facts.push(["Next charge", `<b>${money(next.amount, next.currency)}</b> on ${day(next.at)}`]);
+    if (sub.status === "trialing" && sub.trial_end) facts.push(["Trial ends", `${day(sub.trial_end)} · ${tx("{n} days left", { n: daysLeft(sub.trial_end) })}`]);
+    if (sub.cancel_at_period_end) facts.push(["Access until", `<b>${day(sub.cancel_at || sub.current_period_end)}</b> · ${tx("no more charges")}`]);
+    else if (next) facts.push(["Next charge", tx("<b>{amount}</b> on {date}", { amount: money(next.amount, next.currency), date: day(next.at) })]);
     else if (sub.current_period_end) facts.push(["Next renewal", day(sub.current_period_end)]);
-    if (sub.pending_plan) facts.push(["Scheduled change", `${esc(sub.pending_plan_name || sub.pending_plan)}${sub.pending_interval ? ` (${sub.pending_interval === "year" ? "yearly" : "monthly"})` : ""} from ${day(sub.pending_change_at)} <button class="link-gold" type="button" data-bill="undo">Undo</button>`]);
-    if (live?.card) facts.push(["Card", `${esc(live.card.brand.toUpperCase())} •••• ${esc(live.card.last4)} · expires ${String(live.card.exp_month).padStart(2, "0")}/${String(live.card.exp_year).slice(-2)} <button class="link-gold" type="button" data-bill="card">Update</button>`]);
+    if (sub.pending_plan) facts.push(["Scheduled change", `${esc(sub.pending_plan_name || sub.pending_plan)}${sub.pending_interval ? ` (${tx(sub.pending_interval === "year" ? "yearly" : "monthly")})` : ""} ${tx("from {date}", { date: day(sub.pending_change_at) })} <button class="link-gold" type="button" data-bill="undo">Undo</button>`]);
+    if (live?.card) facts.push(["Card", `${esc(live.card.brand.toUpperCase())} •••• ${esc(live.card.last4)} · ${tx("expires {date}", { date: `${String(live.card.exp_month).padStart(2, "0")}/${String(live.card.exp_year).slice(-2)}` })} <button class="link-gold" type="button" data-bill="card">Update</button>`]);
     if (sub.discount_code) facts.push(["Discount", esc(sub.discount_code)]);
 
     const problem = ["past_due", "unpaid", "incomplete"].includes(sub.status) || m?.open_problem;
     box.innerHTML = `<div class="pf-plan">
       <div class="pf-plan-top"><span class="pf-plan-badge ${cls}">${label}</span><b>${esc(sub.plan_name)}</b><span class="pf-plan-int">${sub.interval === "year" ? "Yearly" : "Monthly"} · ${String(sub.currency || "eur").toUpperCase()}</span></div>
-      ${problem ? `<div class="pf-alert">${icon("zap")}<div><b>We couldn't take your last payment${m?.open_problem ? ` of ${money(m.open_problem.amount_due, m.open_problem.currency)}` : ""}.</b> Update your card to keep your access${m?.open_problem?.next_attempt ? ` — we'll try again on ${day(m.open_problem.next_attempt)}` : ""}.
+      ${problem ? `<div class="pf-alert">${icon("zap")}<div><b>${m?.open_problem ? tx("We couldn't take your last payment of {amount}.", { amount: money(m.open_problem.amount_due, m.open_problem.currency) }) : tx("We couldn't take your last payment.")}</b> ${m?.open_problem?.next_attempt ? tx("Update your card to keep your access — we'll try again on {date}.", { date: day(m.open_problem.next_attempt) }) : tx("Update your card to keep your access.")}
         <div class="pf-alert-actions"><button class="btn btn-gold" type="button" data-bill="card">Update payment method</button>${m?.open_problem?.url || live?.open_invoice?.url ? `<a class="btn btn-outline" href="${esc(m?.open_problem?.url || live.open_invoice.url)}" target="_blank" rel="noopener">Pay the invoice</a>` : ""}</div></div></div>` : ""}
-      ${sub.status === "trialing" && !sub.cancel_at_period_end ? `<p class="pf-billing-note">Your free trial runs until <b>${day(sub.trial_end)}</b>. ${sub.interval === "month" ? "The first charge then covers the days until the 1st; after that you pay the full price on the 1st of every month." : "Then your yearly plan starts."} Cancel before and you pay nothing.</p>` : ""}
-      <dl class="pf-facts">${facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}</dl>
+      ${sub.status === "trialing" && !sub.cancel_at_period_end ? `<p class="pf-billing-note">${tx("Your free trial runs until <b>{date}</b>.", { date: day(sub.trial_end) })} ${tx(sub.interval === "month" ? "The first charge then covers the days until the 1st; after that you pay the full price on the 1st of every month." : "Then your yearly plan starts.")} ${tx("Cancel before and you pay nothing.")}</p>` : ""}
+      <dl class="pf-facts">${facts.map(([k, v]) => `<div><dt>${tx(k)}</dt><dd>${v}</dd></div>`).join("")}</dl>
       ${Array.isArray(sub.features) && sub.features.length ? `<ul class="pf-included">${sub.features.map((f) => `<li>${icon("check")}${esc(f)}</li>`).join("")}</ul>` : ""}
       ${quotaHtml(ent)}
       <div class="pf-billing-actions">
@@ -128,7 +129,7 @@
         <div class="pf-change-head"><b>Change your plan</b><div class="plan-interval pf-iv"><button type="button" aria-selected="${iv === "month"}" data-iv="month">Monthly</button><button type="button" aria-selected="${iv === "year"}" data-iv="year">Yearly</button></div></div>
         <div class="pf-change-list">${list.map((p) => { const pr = p.prices.find((x) => x.currency === sub.currency && x.interval === iv);
           const cur = p.key === sub.plan && iv === sub.interval;
-          return `<button type="button" class="pf-change-opt${cur ? " is-current" : ""}" ${cur || !pr?.ready ? "disabled" : ""} data-pick="${esc(p.key)}"><b>${esc(p.name)}</b><span>${pr ? `${money(pr.amount, sub.currency)} / ${iv === "year" ? "year" : "month"}` : "Not available"}</span>${cur ? "<em>Current</em>" : ""}</button>`; }).join("")}</div>
+          return `<button type="button" class="pf-change-opt${cur ? " is-current" : ""}" ${cur || !pr?.ready ? "disabled" : ""} data-pick="${esc(p.key)}"><b>${esc(p.name)}</b><span>${pr ? `${money(pr.amount, sub.currency)} / ${perOf(iv)}` : "Not available"}</span>${cur ? "<em>Current</em>" : ""}</button>`; }).join("")}</div>
         <div data-change-terms></div></div>`;
     };
     draw();
@@ -143,21 +144,21 @@
         try {
           const pv = await manage({ action: "preview_change", plan: pick.dataset.pick, interval: iv });
           t.innerHTML = `<div class="pf-change-terms">${pv.trial
-            ? `<p>Applies <b>now</b> and you're still in your free trial: <b>nothing is charged today</b>. Your first charge, on ${day(pv.first_charge_at)}, will be <b>${money(pv.first_charge, pv.currency)}</b> (the days until the 1st), then ${money(pv.new_price, pv.currency)} / ${pv.interval === "year" ? "year" : "month"}.</p>`
+            ? `<p>${tx("Applies <b>now</b> and you're still in your free trial: <b>nothing is charged today</b>. Your first charge, on {date}, will be <b>{first}</b> (the days until the 1st), then {price} / {per}.", { date: day(pv.first_charge_at), first: money(pv.first_charge, pv.currency), price: money(pv.new_price, pv.currency), per: perOf(pv.interval) })}</p>`
             : pv.upgrade
-            ? `<p>Applies <b>now</b>. You pay <b>${money(pv.charge_now, pv.currency)}</b> today for the rest of this period, then ${money(pv.new_price, pv.currency)} / ${pv.interval === "year" ? "year" : "month"}. ${esc(pv.note || "")}</p>`
-            : `<p>Applies on <b>${day(pv.applies_at)}</b>, at the end of the period you've paid. Nothing is charged today; then ${money(pv.new_price, pv.currency)} / ${pv.interval === "year" ? "year" : "month"}. You keep your current features until then.</p>`}
-            <div class="pf-billing-actions"><button class="btn btn-gold" type="button" data-confirm="${esc(pick.dataset.pick)}" data-civ="${iv}">${pv.trial ? "Switch plan" : pv.upgrade ? `Pay ${money(pv.charge_now, pv.currency)} and switch` : "Schedule the change"}</button><button class="btn btn-outline" type="button" data-bill="close">Cancel</button></div></div>`;
+            ? `<p>${tx("Applies <b>now</b>. You pay <b>{amount}</b> today for the rest of this period, then {price} / {per}.", { amount: money(pv.charge_now, pv.currency), price: money(pv.new_price, pv.currency), per: perOf(pv.interval) })} ${esc(pv.note ? tx(pv.note) : "")}</p>`
+            : `<p>${tx("Applies on <b>{date}</b>, at the end of the period you've paid. Nothing is charged today; then {price} / {per}. You keep your current features until then.", { date: day(pv.applies_at), price: money(pv.new_price, pv.currency), per: perOf(pv.interval) })}</p>`}
+            <div class="pf-billing-actions"><button class="btn btn-gold" type="button" data-confirm="${esc(pick.dataset.pick)}" data-civ="${iv}">${pv.trial ? tx("Switch plan") : pv.upgrade ? tx("Pay {amount} and switch", { amount: money(pv.charge_now, pv.currency) }) : tx("Schedule the change")}</button><button class="btn btn-outline" type="button" data-bill="close">Cancel</button></div></div>`;
         } catch (err) { t.innerHTML = `<p class="pf-billing-note is-err">${esc(err.message)}</p>`; }
         return;
       }
       const conf = e.target.closest("[data-confirm]");
       if (conf) {
-        conf.disabled = true; conf.textContent = "Updating…";
+        conf.disabled = true; conf.textContent = tx("Updating…");
         try {
           const r = await manage({ action: "change", plan: conf.dataset.confirm, interval: conf.dataset.civ });
           if (r.action_required && r.url) { location.href = r.url; return; }
-          notify(r.applied === "now" ? "Your plan has been changed." : `Done — your plan changes on ${day(r.at)}.`, "is-ok");
+          notify(r.applied === "now" ? tx("Your plan has been changed.") : tx("Done — your plan changes on {date}.", { date: day(r.at) }), "is-ok");
           await load();
         } catch (err) { conf.disabled = false; notify(err.message, "is-err"); }
       }
@@ -172,7 +173,7 @@
     const until = sub.status === "trialing" ? sub.trial_end : sub.current_period_end;
     panel.innerHTML = `<div class="pf-change pf-cancel-box">
       <b>Cancel your membership?</b>
-      <p class="pf-billing-note">${sub.status === "trialing" ? `Your trial ends on <b>${day(until)}</b> and you won't be charged.` : `You keep full access until <b>${day(until)}</b> and won't be charged again.`} Your saved boards and content plans stay in your account. You can change your mind before that date.</p>
+      <p class="pf-billing-note">${tx(sub.status === "trialing" ? "Your trial ends on <b>{date}</b> and you won't be charged." : "You keep full access until <b>{date}</b> and won't be charged again.", { date: day(until) })} Your saved boards and content plans stay in your account. You can change your mind before that date.</p>
       <label class="pf-cancel-why">Anything we could do better? <span>(optional)</span><textarea rows="2" maxlength="500" data-why></textarea></label>
       <div class="pf-billing-actions"><button class="btn btn-outline" type="button" data-bill="close">Keep my membership</button><button class="btn pf-danger" type="button" data-bill="confirm-cancel">Cancel membership</button></div></div>`;
     panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -188,9 +189,9 @@
       if (a === "yearly") return changePanel(null, "year");
       if (a === "cancel") return cancelPanel();
       if (a === "close") { box.querySelector("[data-bill-panel]").innerHTML = ""; return; }
-      if (a === "confirm-cancel") { b.disabled = true; await manage({ action: "cancel", reason: box.querySelector("[data-why]")?.value || "" }); notify("Your membership is cancelled. You keep access until the end of the period.", "is-ok"); return load(); }
-      if (a === "reactivate") { b.disabled = true; await manage({ action: "reactivate" }); notify("Great — your membership continues as usual.", "is-ok"); return load(); }
-      if (a === "undo") { b.disabled = true; await manage({ action: "undo_change" }); notify("The scheduled change was removed.", "is-ok"); return load(); }
+      if (a === "confirm-cancel") { b.disabled = true; await manage({ action: "cancel", reason: box.querySelector("[data-why]")?.value || "" }); notify(tx("Your membership is cancelled. You keep access until the end of the period."), "is-ok"); return load(); }
+      if (a === "reactivate") { b.disabled = true; await manage({ action: "reactivate" }); notify(tx("Great — your membership continues as usual."), "is-ok"); return load(); }
+      if (a === "undo") { b.disabled = true; await manage({ action: "undo_change" }); notify(tx("The scheduled change was removed."), "is-ok"); return load(); }
     } catch (err) { b.disabled = false; notify(err.message, "is-err"); }
   });
 

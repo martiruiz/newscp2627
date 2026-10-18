@@ -18,8 +18,8 @@
   const icon = (n) => (window.SCP_ICONS ? window.SCP_ICONS(n) : "");
   $$("[data-icon]").forEach((el) => (el.outerHTML = icon(el.dataset.icon)));
 
-  const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-  const DAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => tx(d));
+  const DAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((d) => tx(d));
   const hh = (h) => `${String(h).padStart(2, "0")}:00`;
   const TIMES = Array.from({ length: 24 }, (_, i) => hh(i));                                      // hour rows 00:00 → 23:00
   const MINUTES = TIMES.flatMap((t) => ["00", "15", "30", "45"].map((m) => `${t.slice(0, 2)}:${m}`)); // times a post can have
@@ -148,10 +148,10 @@
     if (view === "week") {
       const thisWeek = iso(mondayOf(anchor)) === iso(mondayOf(new Date()));
       const diff = Math.round((mondayOf(anchor) - mondayOf(new Date())) / (7 * 864e5));
-      $("[data-week-label]").textContent = thisWeek ? "This week" : diff === 1 ? "Next week" : diff === -1 ? "Last week" : `Week of ${from.toLocaleDateString("en-GB", { day: "numeric", month: "short" })}`;
-      $("[data-week-range]").textContent = `${from.toLocaleDateString("en-GB", { day: "numeric", month: "short" })} – ${to.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}`;
+      $("[data-week-label]").textContent = thisWeek ? "This week" : diff === 1 ? "Next week" : diff === -1 ? "Last week" : `Week of ${from.toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" })}`;
+      $("[data-week-range]").textContent = `${from.toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" })} – ${to.toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short", year: "numeric" })}`;
     } else {
-      $("[data-week-label]").textContent = anchor.toLocaleDateString("en-GB", { month: "long", year: "numeric" });
+      $("[data-week-label]").textContent = anchor.toLocaleDateString(window.SCP_LOC || "en-GB", { month: "long", year: "numeric" });
       $("[data-week-range]").textContent = `${entries.filter((e) => e.entry_date && parse(e.entry_date).getMonth() === anchor.getMonth()).length} posts planned`;
     }
     // Weekly base coverage (week view)
@@ -262,7 +262,7 @@
           <span class="org-mday-n">${d.getDate()}</span>
           ${list.slice(0, 4).map((e) => entryHtml(e, true)).join("")}
           ${list.length > 4 ? `<button type="button" class="org-more" data-goto-week="${date}">+${list.length - 4} more</button>` : ""}
-          <button type="button" class="org-add" data-add aria-label="Add a post on ${d.toLocaleDateString("en-GB")}">${icon("plus")}</button>
+          <button type="button" class="org-add" data-add aria-label="Add a post on ${d.toLocaleDateString(window.SCP_LOC || "en-GB")}">${icon("plus")}</button>
         </div>`;
       }).join("")}</div>`;
   }
@@ -363,7 +363,7 @@
     return {
       post: thumbPost(ref), title: e.label, status: e.status, statusLabel: STATUS[e.status],
       lines: [
-        d ? `${DAY_NAMES[dow(d)]} ${d.getDate()} ${d.toLocaleDateString("en-GB", { month: "short" })} · ${e.time_slot}` : "No date · idea",
+        d ? `${DAY_NAMES[dow(d)]} ${d.getDate()} ${d.toLocaleDateString(window.SCP_LOC || "en-GB", { month: "short" })} · ${e.time_slot}` : "No date · idea",
         [t?.label, ref ? `Reference: ${esc(ref.who)}` : ""].filter(Boolean).join(" · "),
       ],
       copy: e.copy, href: ref?.url,
@@ -560,7 +560,7 @@
       .map((it) => ({ p: inspiration.get(Number(it.post_id.replace(/^ci-/, ""))), added: it.added_at }))
       .filter(({ p }) => p && !seen.has(p.id) && seen.add(p.id));
   }
-  const shortDate = (v) => (v ? new Date(v).toLocaleDateString("en-GB", { day: "numeric", month: "short" }) : "");
+  const shortDate = (v) => (v ? new Date(v).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" }) : "");
   function renderInspiration() {
     const list = $("[data-insp-list]");
     if (!B.itemsOf().length) { list.innerHTML = `<p class="org-empty">Save posts in the <a href="content-library.html">Content Library</a> and drag them here to plan your version.</p>`; return; }
@@ -620,7 +620,7 @@
   const dlToggle = $("[data-dl-toggle]");
   const setDl = (open) => { dlMenu.hidden = !open; dlToggle.setAttribute("aria-expanded", String(open)); };
   dlToggle.addEventListener("click", () => {
-    $("[data-dl-scope]").textContent = `${view === "week" ? $("[data-week-label]").textContent : anchor.toLocaleDateString("en-GB", { month: "long", year: "numeric" })} · ${plans.find((p) => p.id === planId)?.name || "My plan"}`;
+    $("[data-dl-scope]").textContent = `${view === "week" ? $("[data-week-label]").textContent : anchor.toLocaleDateString(window.SCP_LOC || "en-GB", { month: "long", year: "numeric" })} · ${plans.find((p) => p.id === planId)?.name || "My plan"}`;
     setDl(dlMenu.hidden);
   });
   document.addEventListener("mousedown", (e) => { if (!dlMenu.hidden && !e.target.closest(".org-dl")) setDl(false); });
@@ -638,7 +638,7 @@
     const dated = entries.filter((e) => e.entry_date && e.entry_date >= iso(from) && e.entry_date <= iso(to)).sort(byTime);
     const ideas = withIdeas ? entries.filter((e) => !e.entry_date).sort((a, b) => String(a.created_at).localeCompare(String(b.created_at))) : [];
     const plan = plans.find((p) => p.id === planId)?.name || "My plan";
-    const period = view === "week" ? `${from.toLocaleDateString("en-GB", { day: "numeric", month: "short" })} – ${to.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}` : anchor.toLocaleDateString("en-GB", { month: "long", year: "numeric" });
+    const period = view === "week" ? `${from.toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" })} – ${to.toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short", year: "numeric" })}` : anchor.toLocaleDateString(window.SCP_LOC || "en-GB", { month: "long", year: "numeric" });
     const slug = `content-plan-${plan}-${iso(from)}`.toLowerCase().normalize("NFD").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
     return { from, to, dated, ideas, plan, period, slug };
   }
@@ -647,7 +647,7 @@
     const id = /^ci-\d+$/.test(e.inspiration || "") ? e.inspiration.slice(3) : null;
     return { who: r?.who || "", url: r?.url || "", library: id ? new URL(`content-library.html#post=${id}`, location.href).href : "" };
   };
-  const longDay = (date) => { const d = parse(date); return `${DAY_NAMES[dow(d)]} ${d.getDate()} ${d.toLocaleDateString("en-GB", { month: "long" })}`; };
+  const longDay = (date) => { const d = parse(date); return `${DAY_NAMES[dow(d)]} ${d.getDate()} ${d.toLocaleDateString(window.SCP_LOC || "en-GB", { month: "long" })}`; };
   function download(name, blob) {
     const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: name });
     document.body.append(a); a.click(); a.remove();
@@ -704,7 +704,7 @@
       <header><div><div class="brand">Sports Content Playbook · Content Plan</div><h1>${esc(plan)}</h1><div class="period">${esc(period)} · ${dated.length} post${dated.length === 1 ? "" : "s"} planned</div></div><div class="legend">${counts}</div></header>
       ${shownDays.map((d) => { const list = dated.filter((e) => e.entry_date === d); return `<section class="day"><h2>${longDay(d)}</h2>${list.length ? list.map(item).join("") : `<div class="empty">Nothing planned</div>`}</section>`; }).join("")}
       ${ideas.length ? `<section class="day"><h2>No date · ideas for later (${ideas.length})</h2>${ideas.map(item).join("")}</section>` : ""}
-      <footer>Downloaded ${new Date().toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" })} · sportscontentplaybook</footer>
+      <footer>Downloaded ${new Date().toLocaleString(window.SCP_LOC || "en-GB", { dateStyle: "medium", timeStyle: "short" })} · sportscontentplaybook</footer>
       <script>document.fonts.ready.then(() => setTimeout(() => print(), 250));<\/script>
     </body></html>`);
     win.document.close();

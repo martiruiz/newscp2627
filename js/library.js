@@ -199,10 +199,10 @@
     const N = c.crest ? 12 : 7;
     const shown = showAll ? items : items.slice(0, N);
     const searchBox = c.crest || c.search || all.length > 12
-      ? `<input class="lf-lsearch" type="search" placeholder="Search ${all.length.toLocaleString("en")} ${esc(c.label.toLowerCase())}" value="${esc(ui.q[c.key] || "")}" aria-label="Search ${esc(c.label.toLowerCase())}" data-facet-search="${c.key}">` : "";
+      ? `<input class="lf-lsearch" type="search" placeholder="${esc(tx("Search {n} {what}", { n: all.length.toLocaleString(window.SCP_LOC || "en-GB"), what: tx(c.label).toLowerCase() }))}" value="${esc(ui.q[c.key] || "")}" aria-label="${esc(tx("Search {what}", { what: tx(c.label).toLowerCase() }))}" data-facet-search="${c.key}">` : "";
     let body;
     if (c.crest) {
-      body = `<div class="lf-crests">${shown.map((v) => `<button type="button" class="lf-cr${isOn(v) ? " is-on" : ""}${countOf(v) === 0 && !isOn(v) ? " is-zero" : ""}" aria-pressed="${isOn(v)}" data-facet="${c.key}" data-id="${v.id}" title="${esc(v.name)} · ${countOf(v).toLocaleString("en")} posts">${crestImg(v)}<span>${esc(pretty(v.name))}</span></button>`).join("")}</div>`;
+      body = `<div class="lf-crests">${shown.map((v) => `<button type="button" class="lf-cr${isOn(v) ? " is-on" : ""}${countOf(v) === 0 && !isOn(v) ? " is-zero" : ""}" aria-pressed="${isOn(v)}" data-facet="${c.key}" data-id="${v.id}" title="${esc(v.name)} · ${countOf(v).toLocaleString(window.SCP_LOC || "en-GB")} posts">${crestImg(v)}<span>${esc(pretty(v.name))}</span></button>`).join("")}</div>`;
     } else if (c.key === "sport") {
       body = `<div class="lf-tiles lf-tiles-3">${shown.map((v) => `<button type="button" class="lf-tile${isOn(v) ? " is-on" : ""}${countOf(v) === 0 && !isOn(v) ? " is-zero" : ""}" aria-pressed="${isOn(v)}" data-facet="${c.key}" data-id="${v.id}">${svg(SPORT_ICON[v.name.toLowerCase()] || "dots")}<span>${esc(pretty(v.name))}</span></button>`).join("")}</div>`;
     } else {
@@ -212,7 +212,7 @@
         return `<button type="button" class="lf-li${isOn(v) ? " is-on" : ""}${n === 0 && !isOn(v) ? " is-zero" : ""}" aria-pressed="${isOn(v)}" data-facet="${c.key}" data-id="${v.id}">${lead}<span class="lf-lab">${esc(pretty(v.name))}</span><span class="lf-cnt">${kfmt(n)}</span></button>`;
       }).join("") || `<p class="lf-none">Nothing matches “${esc(ui.q[c.key])}”.</p>`}</div>`;
     }
-    const moreBtn = !showAll && items.length > N ? `<button type="button" class="lf-showall" data-lf-all="${c.key}">Show all ${items.length.toLocaleString("en")}</button>` : "";
+    const moreBtn = !showAll && items.length > N ? `<button type="button" class="lf-showall" data-lf-all="${c.key}">${tx("Show all {n}", { n: items.length.toLocaleString(window.SCP_LOC || "en-GB") })}</button>` : "";
     return searchBox + body + moreBtn;
   }
 
@@ -619,7 +619,7 @@
     const sidebarCount = chips.length - (s.q ? 1 : 0);
     const badge = $("[data-filter-count]");
     badge.textContent = sidebarCount; badge.hidden = sidebarCount <= 0;
-    $("[data-lf-active]").textContent = sidebarCount > 0 ? `· ${sidebarCount} active` : "";
+    $("[data-lf-active]").textContent = sidebarCount > 0 ? `· ${tx("{n} active", { n: sidebarCount })}` : "";
     paintDropdowns(s);
     renderUpcoming();
   }
@@ -701,8 +701,8 @@
     if (error) return showNote(/schema cache|does not exist|function/i.test(error.message) ? "The library isn't connected yet (run supabase/library-ideas.sql in Supabase)." : "Couldn't load posts right now.");
     const rows = data?.data || [];
     if (reset) {
-      $("[data-result-count]").textContent = `${Number(data.total).toLocaleString("en-GB")} post${data.total === 1 ? "" : "s"}`;
-      $("[data-lf-go]").textContent = data.total ? `Show ${Number(data.total).toLocaleString("en-GB")} results` : "No results — change the filters";
+      $("[data-result-count]").textContent = `${Number(data.total).toLocaleString(window.SCP_LOC || "en-GB")} post${data.total === 1 ? "" : "s"}`;
+      $("[data-lf-go]").textContent = data.total ? `Show ${Number(data.total).toLocaleString(window.SCP_LOC || "en-GB")} results` : "No results — change the filters";
     }
     if (!rows.length && offset === 0) {
       if (!chipsFor(s).length) return showEmpty("The library is empty for now — posts appear here after the first import.");
@@ -735,7 +735,7 @@
   }
 
   // ---------- Rendering ----------
-  const date = (d) => (d ? new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "");
+  const date = (d) => (d ? new Date(d).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short", year: "numeric" }) : "");
   const first = (p, cat) => p.tags?.[cat]?.[0]?.name || "";
   const platformOf = (p) => {
     const t = first(p, "platform").toLowerCase();
@@ -799,7 +799,7 @@
           <div class="lib-bottom">
             <div class="lib-tags">${tagChips(p, ["sport", "competition"])}</div>
             <p class="lib-who">${pf ? `<img class="lib-pf" src="assets/pf-${pf}.svg" alt="${esc(pf)}">` : ""}${esc(who)}</p>
-            <p class="lib-when">${date(p.published_at)}${p.views ? ` · ${Number(p.views).toLocaleString("en-GB", { notation: "compact" })} views` : ""}</p>
+            <p class="lib-when">${date(p.published_at)}${p.views ? ` · ${Number(p.views).toLocaleString(window.SCP_LOC || "en-GB", { notation: "compact" })} views` : ""}</p>
           </div>`;
     const actions = `<div class="lib-actions">${aiButton(p.id)}<button class="lib-plan-add" type="button" data-plan-add="${esc(p.id)}" title="Add to your Content Plan" aria-label="Add to your Content Plan">${icon("calendar-plus")}</button></div>`;
 
@@ -878,7 +878,7 @@
     if (!ai.ent?.has_ai) { el.hidden = true; return; }
     el.hidden = false;
     el.innerHTML = ai.ent.is_staff ? `${icon("sparkles")}AI · team access`
-      : `${icon("sparkles")}<b>${credits()}</b> AI credit${credits() === 1 ? "" : "s"}${ai.ent.pack_left ? `<small>${ai.ent.monthly_left} monthly + ${ai.ent.pack_left} pack</small>` : `<small>renews ${new Date(ai.ent.cycle_end).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</small>`}`;
+      : `${icon("sparkles")}<b>${credits()}</b> ${tx(credits() === 1 ? "AI credit" : "AI credits")}${ai.ent.pack_left ? `<small>${tx("{m} monthly + {p} pack", { m: ai.ent.monthly_left, p: ai.ent.pack_left })}</small>` : `<small>${tx("renews {date}", { date: new Date(ai.ent.cycle_end).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" }) })}</small>`}`;
   }
   function aiButton(id) {
     const n = Number(id);
@@ -1009,8 +1009,9 @@
   }
 
   const area = () => body.querySelector("[data-analysis]");
-  const balanceLine = () => ai.ent?.is_staff ? "Team access: no credits used."
-    : `You have <b>${credits()} credit${credits() === 1 ? "" : "s"}</b> left${ai.ent?.pack_left ? ` (${ai.ent.monthly_left} monthly + ${ai.ent.pack_left} from packs)` : " this month"}.`;
+  const balanceLine = () => ai.ent?.is_staff ? tx("Team access: no credits used.")
+    : ai.ent?.pack_left ? tx(credits() === 1 ? "You have <b>{n} credit</b> left ({m} monthly + {p} from packs)." : "You have <b>{n} credits</b> left ({m} monthly + {p} from packs).", { n: credits(), m: ai.ent.monthly_left, p: ai.ent.pack_left })
+    : tx(credits() === 1 ? "You have <b>{n} credit</b> left this month." : "You have <b>{n} credits</b> left this month.", { n: credits() });
   async function showAnalysisArea(id) {
     const n = Number(id);
     if (!ai.ent) await loadAi().catch(() => {});
@@ -1026,12 +1027,12 @@
       <div class="ai-unlock-top">${icon("sparkles")}<div><b>AI analysis of this post</b><p>Hook, why it works, format, angle, visual breakdown and how to adapt it to your club.</p></div></div>
       ${credits() > 0 || ai.ent.is_staff
         ? `<button class="btn btn-gold ai-unlock-btn" type="button" data-unlock="${n}">${icon("sparkles")}Unlock AI Analysis — 1 credit</button>
-           <p class="ai-balance">${balanceLine()} Once unlocked, you can open it again for free.</p>`
+           <p class="ai-balance">${balanceLine()} ${tx("Once unlocked, you can open it again for free.")}</p>`
         : noCreditsHtml()}
     </div>`;
   }
   const noCreditsHtml = () => `<div class="ai-empty"><b>You've used all your AI credits</b>
-    <p>Your monthly credits renew on ${ai.ent?.cycle_end ? new Date(ai.ent.cycle_end).toLocaleDateString("en-GB", { day: "numeric", month: "long" }) : "your next billing date"}. Need more now?</p>
+    <p>${tx("Your monthly credits renew on {date}. Need more now?", { date: ai.ent?.cycle_end ? new Date(ai.ent.cycle_end).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "long" }) : tx("your next billing date") })}</p>
     <div class="ai-empty-actions"><a class="btn btn-gold" href="pricing.html#packs">Buy an analysis pack</a><a class="btn btn-outline" href="pricing.html">Upgrade your plan</a></div></div>`;
   function generating(text = "Unlocking the analysis…") {
     area().innerHTML = `<div class="ai-working"><span class="ai-spinner"></span><div><b>${text}</b><p>Reading the post, the hook and the format. This can take up to a minute.</p></div></div>`;

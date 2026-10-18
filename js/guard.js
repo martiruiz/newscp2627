@@ -42,6 +42,7 @@
     auth.getProfile().then((r) => {
       setUser(r?.profile, session.user.email);
       setAvatar(r?.profile?.avatar_url || session.user.user_metadata?.avatar_url);
+      window.SCP_applyProfileLang?.(r?.profile?.preferences?.ui_language);   // website language saved in the profile (js/i18n.js)
       const role = r?.profile?.role;
       if (role === "superadmin") {
         document.querySelectorAll("[data-admin-link]").forEach((a) => (a.hidden = false));

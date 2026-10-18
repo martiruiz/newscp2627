@@ -5,12 +5,12 @@
 // Keyboard on the button: ← / → = ±1 day.
 window.SCP_DATE = (() => {
   const icon = (n) => (window.SCP_ICONS ? window.SCP_ICONS(n) : "");
-  const DAYS = ["M", "T", "W", "T", "F", "S", "S"];
+  const DAYS = (window.SCP_LANG === "es" ? ["L", "M", "X", "J", "V", "S", "D"] : ["M", "T", "W", "T", "F", "S", "S"]);
   const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
   const parse = (s) => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
   const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
   const mondayOf = (d) => addDays(new Date(d.getFullYear(), d.getMonth(), d.getDate()), -((d.getDay() + 6) % 7));
-  const label = (v) => (v ? parse(v).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }) : "No date");
+  const label = (v) => (v ? parse(v).toLocaleDateString(window.SCP_LOC || "en-GB", { weekday: "short", day: "numeric", month: "short" }) : "No date");
   const relative = (v) => {
     if (!v) return "idea";
     const diff = Math.round((parse(v) - parse(iso(new Date()))) / 864e5);
@@ -53,14 +53,14 @@ window.SCP_DATE = (() => {
       const cells = Array.from({ length: 42 }, (_, i) => addDays(start, i));
       const sel = btn.dataset.value || "";
       pop.innerHTML = `
-        <div class="tp-top"><div><span>Date</span><b class="dp2-big">${sel ? parse(sel).toLocaleDateString("en-GB", { day: "numeric", month: "short" }) : "No date"}</b></div><em>${sel ? parse(sel).toLocaleDateString("en-GB", { weekday: "long" }) : "Idea for later"}</em></div>
+        <div class="tp-top"><div><span>Date</span><b class="dp2-big">${sel ? parse(sel).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" }) : "No date"}</b></div><em>${sel ? parse(sel).toLocaleDateString(window.SCP_LOC || "en-GB", { weekday: "long" }) : "Idea for later"}</em></div>
         <div class="dp2-quick">${quick.map(([l, v]) => `<button type="button" data-dp2-pick="${v}" class="${v === sel ? "is-on" : ""}${v === "" ? " is-none" : ""}">${v === "" ? icon("inbox") : ""}${l}</button>`).join("")}</div>
         <div class="dp2-nav"><button type="button" data-dp2-month="-1" aria-label="Previous month">${icon("chevron-left")}</button>
-          <b>${month.toLocaleDateString("en-GB", { month: "long", year: "numeric" })}</b>
+          <b>${month.toLocaleDateString(window.SCP_LOC || "en-GB", { month: "long", year: "numeric" })}</b>
           <button type="button" data-dp2-month="1" aria-label="Next month">${icon("chevron-right")}</button></div>
         <div class="dp2-grid">${DAYS.map((d, i) => `<span class="dp2-h${i > 4 ? " is-we" : ""}">${d}</span>`).join("")}${cells.map((d) => {
           const v = iso(d), n = counts.get(v) || 0;
-          return `<button type="button" data-dp2-pick="${v}" class="${d.getMonth() !== month.getMonth() ? "is-out" : ""}${v === today ? " is-today" : ""}${v === sel ? " is-on" : ""}${v < today ? " is-past" : ""}" aria-label="${d.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" })}${n ? `, ${n} planned` : ""}">${d.getDate()}${n ? `<i>${"•".repeat(Math.min(n, 3))}</i>` : ""}</button>`;
+          return `<button type="button" data-dp2-pick="${v}" class="${d.getMonth() !== month.getMonth() ? "is-out" : ""}${v === today ? " is-today" : ""}${v === sel ? " is-on" : ""}${v < today ? " is-past" : ""}" aria-label="${d.toLocaleDateString(window.SCP_LOC || "en-GB", { weekday: "long", day: "numeric", month: "long" })}${n ? `, ${n} planned` : ""}">${d.getDate()}${n ? `<i>${"•".repeat(Math.min(n, 3))}</i>` : ""}</button>`;
         }).join("")}</div>
         <div class="tp-foot"><span>${icon("keyboard")}← → on the date: ±1 day</span>${month.getMonth() !== new Date().getMonth() || month.getFullYear() !== new Date().getFullYear() ? `<button type="button" class="dp2-link" data-dp2-today>This month</button>` : ""}</div>`;
     };

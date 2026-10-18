@@ -110,8 +110,8 @@
     modal.querySelector("[data-nl-body]").innerHTML = `
       <div class="nl-done">
         <span class="nl-done-icon">${svg(I.check)}</span>
-        <h2>You're in${form.first_name.value.trim() ? `, ${esc(form.first_name.value.trim())}` : ""}!</h2>
-        <p>${dl ? `Your <b>${RESOURCE}</b> is ready.` : `We'll send your <b>${RESOURCE}</b> to <b>${esc(email)}</b> within 24 hours.`} After that, look out for our weekly newsletter with the sports content that's working right now.</p>
+        <h2>${form.first_name.value.trim() ? tx("You're in, {name}!", { name: esc(form.first_name.value.trim()) }) : tx("You're in!")}</h2>
+        <p>${dl ? tx("Your <b>{kit}</b> is ready.", { kit: RESOURCE }) : tx("We'll send your <b>{kit}</b> to <b>{email}</b> within 24 hours.", { kit: RESOURCE, email: esc(email) })} ${tx("After that, look out for our weekly newsletter with the sports content that's working right now.")}</p>
         ${dl ? `<a class="btn btn-gold nl-cta" href="${esc(dl)}" target="_blank" rel="noopener" download>Download the kit ${svg(I.out)}</a>` : ""}
         <a class="nl-more" href="content-library.html">Meanwhile, explore the Content Library →</a>
       </div>`;

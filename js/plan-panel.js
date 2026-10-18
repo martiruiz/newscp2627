@@ -17,8 +17,8 @@
   const $$ = (s, el = document) => [...el.querySelectorAll(s)];
   const store = { get: (k) => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
 
-  const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-  const DAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => tx(d));
+  const DAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((d) => tx(d));
   const STATUS = { idea: "Idea", planned: "Planned", in_production: "In production", published: "Published" };
   const TYPE_ICON = { post: "image", carousel: "layers", reel: "film", story: "zap", video: "square-play", tiktok: "music-2" };
   const COLS = "id,plan_id,entry_date,time_slot,label,status,content_type,copy,notes,inspiration";
@@ -29,7 +29,7 @@
   const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
   const mondayOf = (d) => addDays(new Date(d.getFullYear(), d.getMonth(), d.getDate()), -((d.getDay() + 6) % 7));
   const dow = (d) => (d.getDay() + 6) % 7;
-  const fmtDay = (date) => { const d = parse(date); return `${DAY_NAMES[dow(d)]} ${d.getDate()} ${d.toLocaleDateString("en-GB", { month: "short" })}`; };
+  const fmtDay = (date) => { const d = parse(date); return `${DAY_NAMES[dow(d)]} ${d.getDate()} ${d.toLocaleDateString(window.SCP_LOC || "en-GB", { month: "short" })}`; };
   const monthGrid = (anchor) => { const start = mondayOf(new Date(anchor.getFullYear(), anchor.getMonth(), 1)); return Array.from({ length: 42 }, (_, i) => addDays(start, i)); };
 
   // ---------- State ----------
@@ -228,8 +228,8 @@
     const [from, to] = range();
     const today = iso(new Date());
     const label = S.view === "week"
-      ? (() => { const diff = Math.round((mondayOf(S.anchor) - mondayOf(new Date())) / (7 * 864e5)); return diff === 0 ? "This week" : diff === 1 ? "Next week" : diff === -1 ? "Last week" : `${from.toLocaleDateString("en-GB", { day: "numeric", month: "short" })} – ${to.toLocaleDateString("en-GB", { day: "numeric", month: "short" })}`; })()
-      : S.anchor.toLocaleDateString("en-GB", { month: "long", year: "numeric" });
+      ? (() => { const diff = Math.round((mondayOf(S.anchor) - mondayOf(new Date())) / (7 * 864e5)); return diff === 0 ? "This week" : diff === 1 ? "Next week" : diff === -1 ? "Last week" : `${from.toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" })} – ${to.toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" })}`; })()
+      : S.anchor.toLocaleDateString(window.SCP_LOC || "en-GB", { month: "long", year: "numeric" });
     const days = Array.from({ length: 7 }, (_, i) => addDays(mondayOf(S.anchor), i));
     const filled = new Set(dated().map((e) => e.entry_date));
     const covered = days.filter((d) => filled.has(iso(d))).length;
@@ -465,7 +465,7 @@
       pop.innerHTML = `
         <header class="pp-pop-head"><b>${icon("calendar-plus")}Add to Content Plan</b><span>${ids.length > 1 ? `${ids.length} posts selected` : esc([p?.who, p?.format].filter(Boolean).join(" · "))}</span></header>
         ${S.plans.length > 1 ? `<select class="pp-plan" data-qp-plan aria-label="Plan">${S.plans.map((x) => `<option value="${x.id}"${x.id === st.planId ? " selected" : ""}>${esc(x.name)}</option>`).join("")}</select>` : ""}
-        <div class="pp-cal-nav"><button type="button" data-qp-month="-1" aria-label="Previous month">${icon("chevron-left")}</button><b>${st.month.toLocaleDateString("en-GB", { month: "long", year: "numeric" })}</b><button type="button" data-qp-month="1" aria-label="Next month">${icon("chevron-right")}</button></div>
+        <div class="pp-cal-nav"><button type="button" data-qp-month="-1" aria-label="Previous month">${icon("chevron-left")}</button><b>${st.month.toLocaleDateString(window.SCP_LOC || "en-GB", { month: "long", year: "numeric" })}</b><button type="button" data-qp-month="1" aria-label="Next month">${icon("chevron-right")}</button></div>
         <div class="pp-cal">${DAYS.map((d) => `<span class="pp-cal-h">${d[0]}</span>`).join("")}${g.map((d) => {
           const date = iso(d), n = st.counts.get(date) || 0;
           return `<button type="button" class="${d.getMonth() !== st.month.getMonth() ? "is-out" : ""}${date === today ? " is-today" : ""}${date < today ? " is-past" : ""}" data-qp-day="${date}" title="${fmtDay(date)}${n ? ` · ${n} planned` : ""}">${d.getDate()}${n ? `<i>${"•".repeat(Math.min(n, 3))}</i>` : ""}</button>`;

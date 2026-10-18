@@ -450,7 +450,7 @@ returns bigint language plpgsql volatile security definer set search_path = publ
 declare v_email text; v_locale text; v_id bigint; v_enabled boolean;
 begin
   if not public.billing_admin() then raise exception 'Not allowed'; end if;
-  select u.email, coalesce(nullif(p.preferences ->> 'language', ''), 'en') into v_email, v_locale
+  select u.email, coalesce(nullif(p.preferences ->> 'ui_language', ''), nullif(p.preferences ->> 'language', ''), 'en') into v_email, v_locale
   from auth.users u left join public.profiles p on p.id = u.id where u.id = p_user;
   if v_email is null then return null; end if;
   v_locale := case when v_locale in ('ca', 'es', 'en') then v_locale when lower(v_locale) like 'catal%' then 'ca' when lower(v_locale) like 'span%' or lower(v_locale) like 'espa%' then 'es' else 'en' end;

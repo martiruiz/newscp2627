@@ -12,7 +12,8 @@
   const cfg = window.SCP_CONFIG || {};
   const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
   const SYM = { eur: "€", usd: "$" };
-  const fmt = (n, cur) => `${SYM[cur] || ""}${Number(n).toFixed(2).replace(/\.00$/, "")}`;
+  const fmt = (n, cur) => { const v = Number(n); return new Intl.NumberFormat(window.SCP_LOC || "en-GB", { style: "currency", currency: String(cur || "eur").toUpperCase(), minimumFractionDigits: Number.isInteger(v) ? 0 : 2, maximumFractionDigits: 2 }).format(v); };
+  const per = (iv) => tx(iv === "year" ? "year" : "month");
   const tick = (t, on = true) => `<li class="${on ? "" : "is-off"}"><img src="assets/tick.svg" alt=""><span>${t}</span></li>`;
   const store = { get: (k) => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
 
@@ -32,25 +33,25 @@
     const cur = currentSub();
     const isCurrent = cur?.plan === p.key;
     const trial = p.trial_days > 0 && (!mine || mine.trial_eligible) ? p.trial_days : 0;
-    const ai = p.ai_unlimited ? "<b>Unlimited AI analyses</b>" : p.ai_monthly_units ? `<b>${p.ai_monthly_units} AI analyses</b> every month` : "";
+    const ai = p.ai_unlimited ? `<b>${tx("Unlimited AI analyses")}</b>` : p.ai_monthly_units ? tx("<b>{n} AI analyses</b> every month", { n: p.ai_monthly_units }) : "";
     const features = (p.features?.length ? p.features : []).map((f) => tick(esc(f))).join("") + (ai && !(p.features || []).some((f) => /AI analys/i.test(f) && /\d/.test(f)) ? tick(ai) : "");
     let cta;
-    if (isCurrent) cta = `<a class="btn btn-outline plan-cta" href="profile.html#billing">Manage your plan</a>`;
-    else if (!price) cta = `<span class="btn btn-outline plan-cta is-current">Not available in ${currency.toUpperCase()}</span>`;
-    else if (!price.ready) cta = `<a class="btn btn-outline plan-cta" href="contact.html">Coming soon — contact us</a>`;
-    else if (cur) cta = `<a class="btn btn-outline plan-cta" href="profile.html?change=${encodeURIComponent(p.key)}&interval=${iv}#billing">Switch to ${esc(p.name)}</a>`;
-    else cta = `<button class="btn ${p.highlighted || solo ? "btn-gold" : "btn-outline"} plan-cta" type="button" data-checkout-plan="${esc(p.key)}" data-interval="${iv}" data-currency="${currency}"${privateToken && p.key === privatePlan?.key ? ` data-link="${esc(privateToken)}"` : ""}><span>${trial ? `Start ${trial}-day free trial` : `Get ${esc(p.name)}`}</span><i class="plan-cta-arrow" aria-hidden="true">→</i></button>`;
-    const flag = isCurrent ? `<span class="plan-flag is-current">${cur.status === "trialing" ? "Your trial" : "Your plan"}</span>` : p.badge || p.highlighted ? `<span class="plan-flag">${esc(p.badge || "Most complete")}</span>` : "";
+    if (isCurrent) cta = `<a class="btn btn-outline plan-cta" href="profile.html#billing">${tx("Manage your plan")}</a>`;
+    else if (!price) cta = `<span class="btn btn-outline plan-cta is-current">${tx("Not available in {cur}", { cur: currency.toUpperCase() })}</span>`;
+    else if (!price.ready) cta = `<a class="btn btn-outline plan-cta" href="contact.html">${tx("Coming soon — contact us")}</a>`;
+    else if (cur) cta = `<a class="btn btn-outline plan-cta" href="profile.html?change=${encodeURIComponent(p.key)}&interval=${iv}#billing">${tx("Switch to {plan}", { plan: esc(p.name) })}</a>`;
+    else cta = `<button class="btn ${p.highlighted || solo ? "btn-gold" : "btn-outline"} plan-cta" type="button" data-checkout-plan="${esc(p.key)}" data-interval="${iv}" data-currency="${currency}"${privateToken && p.key === privatePlan?.key ? ` data-link="${esc(privateToken)}"` : ""}><span>${trial ? tx("Start {n}-day free trial", { n: trial }) : tx("Get {plan}", { plan: esc(p.name) })}</span><i class="plan-cta-arrow" aria-hidden="true">→</i></button>`;
+    const flag = isCurrent ? `<span class="plan-flag is-current">${tx(cur.status === "trialing" ? "Your trial" : "Your plan")}</span>` : p.badge || p.highlighted ? `<span class="plan-flag">${esc(p.badge || "Most complete")}</span>` : "";
     const note = isCurrent
-      ? (cur.status === "trialing" && cur.trial_end ? `Free trial until ${new Date(cur.trial_end).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}` : cur.cancel_at_period_end ? `Ends on ${new Date(cur.current_period_end).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}` : "&nbsp;")
-      : trial && price?.ready ? `Card required · ${SYM[currency]}0 today · then ${fmt(price.amount, currency)}/${iv === "year" ? "year" : "month"}${iv === "month" ? " · billed on the 1st" : ""}`
-      : `${currency === "usd" ? "Plus tax where applicable" : "VAT included"} · ${iv === "month" ? "billed on the 1st · " : ""}cancel anytime`;
+      ? (cur.status === "trialing" && cur.trial_end ? tx("Free trial until {date}", { date: new Date(cur.trial_end).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" }) }) : cur.cancel_at_period_end ? tx("Ends on {date}", { date: new Date(cur.current_period_end).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" }) }) : "&nbsp;")
+      : trial && price?.ready ? tx(iv === "month" ? "Card required · {zero} today · then {price}/{per} · billed on the 1st" : "Card required · {zero} today · then {price}/{per}", { zero: fmt(0, currency), price: fmt(price.amount, currency), per: per(iv) })
+      : `${tx(currency === "usd" ? "Plus tax where applicable" : "VAT included")} · ${iv === "month" ? `${tx("billed on the 1st")} · ` : ""}${tx("cancel anytime")}`;
     return `<article class="plan-card${p.highlighted ? " is-best" : ""}${isCurrent ? " is-current" : ""}">
       ${flag}
       <h3>${esc(p.name)}</h3>
       <p class="plan-blurb">${esc(p.tagline || p.description || "")}</p>
-      <p class="plan-price">${price ? `<b data-price="${price.amount}" data-cur="${currency}">${fmt(price.amount, currency)}</b><span>/ ${iv === "year" ? "year" : "month"}</span>` : `<b>—</b>`}</p>
-      <p class="plan-sub">${price && iv === "year" ? `${fmt(price.amount / 12, currency)}/month · ${saving(p) > 0 ? `save ${saving(p)}%` : "billed yearly"}` : hasYear(p) ? `or ${fmt(priceOf(p, currency, "year").amount, currency)}/year${saving(p) > 0 ? ` (save ${saving(p)}%)` : ""}` : "&nbsp;"}</p>
+      <p class="plan-price">${price ? `<b data-price="${price.amount}" data-cur="${currency}">${fmt(price.amount, currency)}</b><span>/ ${per(iv)}</span>` : `<b>—</b>`}</p>
+      <p class="plan-sub">${price && iv === "year" ? `${fmt(price.amount / 12, currency)}/${per("month")} · ${saving(p) > 0 ? tx("save {n}%", { n: saving(p) }) : tx("billed yearly")}` : hasYear(p) ? `${tx("or {price}/year", { price: fmt(priceOf(p, currency, "year").amount, currency) })}${saving(p) > 0 ? ` (${tx("save {n}%", { n: saving(p) })})` : ""}` : "&nbsp;"}</p>
       <ul class="plan-features">${features}</ul>
       ${cta}
       <p class="plan-note">${note}</p>
@@ -62,8 +63,8 @@
     if (!plans.length) return "";
     const rows = (data.entitlements || []).map((e) => `<tr><th scope="row">${esc(e.label)}${e.description ? `<small>${esc(e.description)}</small>` : ""}</th>${plans.map((p) => `<td>${p.entitlements.includes(e.key) ? '<span class="cmp-yes" aria-label="Included">✓</span>' : '<span class="cmp-no" aria-label="Not included">–</span>'}</td>`).join("")}</tr>`).join("");
     const ai = `<tr><th scope="row">AI analyses per month</th>${plans.map((p) => `<td>${p.ai_unlimited ? "Unlimited" : p.ai_monthly_units || "–"}</td>`).join("")}</tr>`;
-    const trial = `<tr><th scope="row">Free trial (card required)</th>${plans.map((p) => `<td>${p.trial_days ? `${p.trial_days} days` : "–"}</td>`).join("")}</tr>`;
-    const price = `<tr class="cmp-price"><th scope="row">Price</th>${plans.map((p) => { const x = priceOf(p); return `<td>${x ? `${fmt(x.amount, currency)}<small>/ ${x.interval === "year" ? "year" : "month"}</small>` : "–"}</td>`; }).join("")}</tr>`;
+    const trial = `<tr><th scope="row">Free trial (card required)</th>${plans.map((p) => `<td>${p.trial_days ? tx("{n} days", { n: p.trial_days }) : "–"}</td>`).join("")}</tr>`;
+    const price = `<tr class="cmp-price"><th scope="row">Price</th>${plans.map((p) => { const x = priceOf(p); return `<td>${x ? `${fmt(x.amount, currency)}<small>/ ${per(x.interval)}</small>` : "–"}</td>`; }).join("")}</tr>`;
     return `<div class="cmp-wrap"><table class="cmp"><thead><tr><th></th>${plans.map((p) => `<th scope="col"${p.highlighted ? ' class="is-best"' : ""}>${esc(p.name)}</th>`).join("")}</tr></thead><tbody>${price}${rows}${ai}${trial}</tbody></table></div>`;
   }
 
@@ -74,7 +75,7 @@
     return `<div class="plan-switches">
       ${anyYear ? `<div class="plan-interval" role="tablist" aria-label="Billing period">
         <button type="button" role="tab" aria-selected="${interval === "month"}" data-interval-pick="month">Monthly</button>
-        <button type="button" role="tab" aria-selected="${interval === "year"}" data-interval-pick="year">Yearly${best ? `<em>save ${best}%</em>` : ""}</button>
+        <button type="button" role="tab" aria-selected="${interval === "year"}" data-interval-pick="year">Yearly${best ? `<em>${tx("save {n}%", { n: best })}</em>` : ""}</button>
       </div>` : ""}
       ${curs.length > 1 ? `<div class="plan-interval plan-currency" role="tablist" aria-label="Currency">${curs.map((c) => `<button type="button" role="tab" aria-selected="${currency === c}" data-currency-pick="${c}">${c.toUpperCase()}</button>`).join("")}</div>` : ""}
     </div>`;
@@ -89,7 +90,7 @@
     el.textContent = fmt(0, cur);
     const step = (now) => {
       const t = Math.min(1, Math.max(0, (now - start) / dur));
-      el.textContent = t >= 1 ? fmt(to, cur) : `${SYM[cur]}${(to * (1 - Math.pow(1 - t, 3))).toFixed(2)}`;
+      el.textContent = fmt(t >= 1 ? to : Math.round(to * (1 - Math.pow(1 - t, 3)) * 100) / 100, cur);
       if (t < 1) requestAnimationFrame(step);
     };
     requestAnimationFrame(step);

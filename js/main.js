@@ -27,7 +27,7 @@ window.SCP_PRICE = (users) => {
   };
 };
 // €39 · €1,500
-window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString("en-GB")}`;
+window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString(window.SCP_LOC || "en-GB")}`;
 
 (() => {
   const $ = (sel, root = document) => root.querySelector(sel);
@@ -47,6 +47,21 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString("en-GB")}`;
         toggle?.setAttribute("aria-expanded", "false");
       })
     );
+    // Use the menu button whenever the links and buttons don't fit on one line (longer Spanish labels, the signed-in
+    // nav with avatar + admin, narrower windows), not only below a fixed width.
+    const fit = () => {
+      if (nav.classList.contains("is-open")) return;
+      nav.classList.remove("is-tight");
+      const box = (sel) => nav.querySelector(sel)?.getBoundingClientRect();
+      const n = nav.getBoundingClientRect(), brand = box(".brand"), links = box(".nav-links"), acts = box(".nav-actions");
+      if (!links || !acts || !links.width) return;
+      const brandEnd = brand ? brand.left + nav.querySelector(".brand").scrollWidth : 0;
+      if (nav.scrollWidth > nav.clientWidth + 1 || acts.right > n.right - 4 || links.right > acts.left || brandEnd > links.left - 8) nav.classList.add("is-tight");
+    };
+    fit();
+    addEventListener("resize", fit);
+    document.fonts?.ready.then(fit);
+    new MutationObserver(() => requestAnimationFrame(fit)).observe(nav, { childList: true, subtree: true, characterData: true });
   });
 
   // Mark the current page in the nav

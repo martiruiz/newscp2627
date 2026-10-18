@@ -8,7 +8,7 @@
   const icon = (n) => (window.SCP_ICONS ? window.SCP_ICONS(n) : "");
   const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
   const pretty = (n) => (n && n[0] === n[0].toLowerCase() ? n[0].toUpperCase() + n.slice(1) : n || "");
-  const date = (d) => (d ? new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "");
+  const date = (d) => (d ? new Date(d).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short", year: "numeric" }) : "");
   const ago = (d) => {
     const days = Math.floor((Date.now() - new Date(d)) / 864e5);
     return days < 1 ? "today" : days === 1 ? "yesterday" : days < 30 ? `${days} days ago` : date(d);

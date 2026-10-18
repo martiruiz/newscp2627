@@ -289,6 +289,7 @@ ${(p.keywords || []).map((k) => `  <meta property="article:tag" content="${esc(k
   <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
   <script src="js/theme.js"></script>
+  <script src="js/i18n.js?v=20261018a"></script>
 </head>
 <body>
 
@@ -301,6 +302,7 @@ ${(p.keywords || []).map((k) => `  <meta property="article:tag" content="${esc(k
         <span class="eyebrow">${esc(typeLabel(p.type))}</span>
         <h1 class="section-title section-title-md">${esc(p.title)}</h1>
         <p class="post-meta">By ${esc(p.author || "Martí Ruiz")} · <time datetime="${p.date}">${fmtDate(p.date)}</time> · ${minutes} min read</p>
+        <p class="post-lang-note" data-lang-block="es" hidden>This article is only available in English.</p>
       </header>
       <figure class="post-cover">
         <img src="assets/blog/${esc(p.image.file)}" alt="${esc(p.image.alt)}" title="${esc(p.image.title || p.title)}" width="1200" height="630" fetchpriority="high">

@@ -29,7 +29,7 @@ Deno.serve(async (req) => {
       if (!cust) return json({ error: "You don't have any payments yet" }, 404);
       const portalConfig = await config("portal_config");
       const flow = body.flow === "payment_method" ? { flow_data: { type: "payment_method_update" as const } } : {};
-      const p = await stripe.billingPortal.sessions.create({ customer: cust.customer_id, return_url: `${site}/profile.html#billing`, ...(portalConfig ? { configuration: portalConfig } : {}), ...flow });
+      const p = await stripe.billingPortal.sessions.create({ customer: cust.customer_id, return_url: `${site}/profile.html#billing`, ...(portalConfig ? { configuration: portalConfig } : {}), ...flow, locale: body.lang === "es" ? "es" : body.lang === "en" ? "en" : "auto" });
       return json({ url: p.url });
     }
 

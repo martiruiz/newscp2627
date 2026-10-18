@@ -3,8 +3,8 @@
 // Pairs with data-dp="from" / data-dp="to" in the same container highlight the range between them.
 // The hidden input keeps YYYY-MM-DD and fires "change" (bubbling) when a date is picked or cleared.
 (() => {
-  const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-  const DAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+  const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].map((m) => tx(m));
+  const DAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"].map((d) => tx(d));
   const pad = (n) => String(n).padStart(2, "0");
   const toISO = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
   const fromISO = (s) => (s ? new Date(`${s}T12:00:00`) : null);

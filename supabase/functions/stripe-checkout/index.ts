@@ -111,7 +111,7 @@ Deno.serve(async (req) => {
         client_reference_id: user.id,
         ...(checkoutCfg.require_terms_consent ? { consent_collection: { terms_of_service: "required" as const } } : {}),
         customer_update: { name: "auto" as const, address: "auto" as const },
-        locale: "auto" as const,
+        locale: (body.lang === "es" ? "es" : body.lang === "en" ? "en" : "auto") as "es" | "en" | "auto",
         expires_at: Math.floor(Date.now() / 1000) + 60 * 60,   // the dates above stay accurate
         ...(note ? { custom_text: { submit: { message: note.slice(0, 1200) } } } : {}),
         success_url: `${site}/profile.html?checkout=success#billing`,
@@ -163,7 +163,7 @@ Deno.serve(async (req) => {
         invoice_creation: { enabled: true },
         tax_id_collection: { enabled: true },
         customer_update: { name: "auto", address: "auto" },
-        locale: "auto",
+        locale: body.lang === "es" ? "es" : body.lang === "en" ? "en" : "auto",
         metadata: { user_id: user.id, pack_key: pack.key },
         payment_intent_data: { metadata: { user_id: user.id, pack_key: pack.key } },
         success_url: `${site}/content-library.html?checkout=success&pack=${encodeURIComponent(pack.key)}`,

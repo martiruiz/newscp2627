@@ -20,7 +20,7 @@
 
   const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
   const fmtDate = (iso) =>
-    new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+    new Date(iso).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short", year: "numeric" });
 
   const row = (n) => {
     const icon = n.platform === "other" ? "all" : n.platform;

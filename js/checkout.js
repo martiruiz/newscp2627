@@ -36,7 +36,7 @@ window.SCP_CHECKOUT = (() => {
     const r = await fetch(`${cfg.supabaseUrl}/functions/v1/${fn}`, {
       method: "POST",
       headers: { "Content-Type": "application/json", apikey: cfg.supabaseAnonKey, Authorization: `Bearer ${s?.access_token}` },
-      body: JSON.stringify(body),
+      body: JSON.stringify({ ...body, lang: window.SCP_LANG || "en" }),
     }).catch(() => null);
     const data = r ? await r.json().catch(() => ({})) : {};
     if (!r || !r.ok || (!data.url && !body.preview)) {
@@ -71,24 +71,24 @@ window.SCP_CHECKOUT = (() => {
 
   // ---------- Before paying: the exact terms (from the server / Stripe), discount code, renewal and cancellation ----------
   const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
-  const money = (n, cur) => new Intl.NumberFormat("en-GB", { style: "currency", currency: String(cur || "eur").toUpperCase() }).format(Number(n));
-  const dayOf = (iso) => new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Madrid" });
+  const money = (n, cur) => new Intl.NumberFormat(window.SCP_LOC || "en-GB", { style: "currency", currency: String(cur || "eur").toUpperCase() }).format(Number(n));
+  const dayOf = (iso) => new Date(iso).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Madrid" });
   function termsHtml(t) {
-    const per = t.interval === "year" ? "year" : "month";
+    const per = tx(t.interval === "year" ? "year" : "month");
     const price = money(t.price, t.currency);
     const rows = [];
     if (t.trial_days) {
-      rows.push(["Today", `${money(0, t.currency)} — ${t.trial_days}-day free trial`]);
+      rows.push(["Today", `${money(0, t.currency)} — ${tx("{n}-day free trial", { n: t.trial_days })}`]);
       rows.push(["Trial ends", dayOf(t.trial_end)]);
       rows.push(["First charge", t.interval === "month" && t.prorated_until
-        ? `${dayOf(t.first_charge_at)} · the days until ${dayOf(t.prorated_until)} (prorated; exact amount e-mailed 3 days before)`
+        ? `${dayOf(t.first_charge_at)} · ${tx("the days until {date} (prorated; exact amount e-mailed 3 days before)", { date: dayOf(t.prorated_until) })}`
         : `${dayOf(t.first_charge_at)} · ${price}`]);
     } else {
-      rows.push(["Today", t.first_charge ? `${money(t.first_charge.amount, t.first_charge.currency)}${t.prorated_until ? ` · until ${dayOf(t.prorated_until)} (prorated)` : ""}` : price]);
+      rows.push(["Today", t.first_charge ? `${money(t.first_charge.amount, t.first_charge.currency)}${t.prorated_until ? ` · ${tx("until {date} (prorated)", { date: dayOf(t.prorated_until) })}` : ""}` : price]);
     }
-    rows.push(["Then", `${price} / ${per}${t.interval === "month" ? ", on the 1st of every month" : `, renews every year`} · ${t.tax_included === false ? "plus tax where applicable" : "VAT included"}`]);
-    if (t.discount) rows.push(["Discount", `${esc(t.discount.code)}: ${t.discount.kind === "percent" ? `${Number(t.discount.percent_off)}% off` : `${money(t.discount.amount_off, t.currency)} off`}${t.discount.duration === "repeating" ? ` for ${t.discount.duration_months} months` : t.discount.duration === "once" ? " on the first charge" : " for as long as you stay"}`]);
-    return `<dl class="co-terms">${rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}</dl>`;
+    rows.push(["Then", `${price} / ${per}, ${tx(t.interval === "month" ? "on the 1st of every month" : "renews every year")} · ${tx(t.tax_included === false ? "plus tax where applicable" : "VAT included")}`]);
+    if (t.discount) rows.push(["Discount", `${esc(t.discount.code)}: ${tx("{amount} off", { amount: t.discount.kind === "percent" ? `${Number(t.discount.percent_off)}%` : money(t.discount.amount_off, t.currency) })} ${t.discount.duration === "repeating" ? tx("for {n} months", { n: t.discount.duration_months }) : tx(t.discount.duration === "once" ? "on the first charge" : "for as long as you stay")}`]);
+    return `<dl class="co-terms">${rows.map(([k, v]) => `<div><dt>${tx(k)}</dt><dd>${v}</dd></div>`).join("")}</dl>`;
   }
   async function confirmTerms(req, btn) {
     busy(btn, true);
@@ -108,12 +108,12 @@ window.SCP_CHECKOUT = (() => {
     const draw = () => {
       m.innerHTML = `<div class="co-card">
         <button class="co-x" type="button" aria-label="Close" data-co-close>×</button>
-        <p class="co-eyebrow">${terms.trial_days ? `${terms.trial_days}-day free trial` : "Secure payment with Stripe"}</p>
-        <h2 id="co-title">${esc(terms.plan)} <span>${terms.interval === "year" ? "yearly" : "monthly"} · ${terms.currency.toUpperCase()}</span></h2>
+        <p class="co-eyebrow">${terms.trial_days ? tx("{n}-day free trial", { n: terms.trial_days }) : tx("Secure payment with Stripe")}</p>
+        <h2 id="co-title">${esc(terms.plan)} <span>${tx(terms.interval === "year" ? "yearly" : "monthly")} · ${terms.currency.toUpperCase()}</span></h2>
         ${termsHtml(terms)}
         <form class="co-code" data-co-code><input name="code" placeholder="Discount code" autocomplete="off" value="${esc(req.code || "")}" aria-label="Discount code"><button class="btn btn-outline" type="submit">Apply</button></form>
-        <p class="co-small">Renews automatically until you cancel. Cancel any time in Account → Billing — you keep access until the end of the period you've paid${terms.trial_days ? ", and nothing is charged if you cancel during the trial" : ""}. Your card is handled by Stripe; SCP never sees it.</p>
-        <div class="co-actions"><button class="btn btn-outline" type="button" data-co-close>Not now</button><button class="btn btn-gold" type="button" data-co-go>${terms.trial_days ? "Start free trial" : "Continue to payment"}</button></div>
+        <p class="co-small">${tx(terms.trial_days ? "Renews automatically until you cancel. Cancel any time in Account → Billing — you keep access until the end of the period you've paid, and nothing is charged if you cancel during the trial. Your card is handled by Stripe; SCP never sees it." : "Renews automatically until you cancel. Cancel any time in Account → Billing — you keep access until the end of the period you've paid. Your card is handled by Stripe; SCP never sees it.")}</p>
+        <div class="co-actions"><button class="btn btn-outline" type="button" data-co-close>Not now</button><button class="btn btn-gold" type="button" data-co-go>${tx(terms.trial_days ? "Start free trial" : "Continue to payment")}</button></div>
       </div>`;
     };
     draw();
@@ -159,7 +159,7 @@ window.SCP_CHECKOUT = (() => {
     if (result === "cancel") { clean(); notify("Payment cancelled — you haven't been charged."); return; }
     if (result !== "success" || !auth?.client) return clean();
     const wantPlan = q.get("plan") || (location.pathname.endsWith("profile.html") ? "*" : null);
-    const t = notify(`<span class="co-spin"></span><span><b>Payment received.</b> Activating your ${wantPlan ? "plan" : "AI credits"}…</span>`, { sticky: true, html: true, kind: "is-ok" });
+    const t = notify(`<span class="co-spin"></span><span>${tx(wantPlan ? "<b>Payment received.</b> Activating your plan…" : "<b>Payment received.</b> Activating your AI credits…")}</span>`, { sticky: true, html: true, kind: "is-ok" });
     let first = null;
     for (let i = 0; i < 15; i++) {
       const { data: ent } = await auth.client.rpc("my_entitlements");
@@ -167,17 +167,17 @@ window.SCP_CHECKOUT = (() => {
       const ready = wantPlan ? (wantPlan === "*" ? !!ent?.plan : ent?.plan === wantPlan) : (ent?.pack_balance ?? 0) > first || i >= 4;
       if (ready) {
         clean();
-        const trialEnd = ent?.status === "trialing" && ent.current_period_end ? new Date(ent.current_period_end).toLocaleDateString("en-GB", { day: "numeric", month: "long" }) : "";
+        const trialEnd = ent?.status === "trialing" && ent.current_period_end ? new Date(ent.current_period_end).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "long" }) : "";
         t.innerHTML = wantPlan
-          ? `<span>${"✓"}</span><span><b>Welcome to ${ent.plan_name}!</b> ${trialEnd ? `Your free trial runs until ${trialEnd}.` : "Your plan is active."}</span>`
-          : `<span>${"✓"}</span><span><b>AI credits added.</b> Enjoy your analyses.</span>`;
+          ? `<span>${"✓"}</span><span>${tx("<b>Welcome to {plan}!</b>", { plan: ent.plan_name })} ${trialEnd ? tx("Your free trial runs until {date}.", { date: trialEnd }) : tx("Your plan is active.")}</span>`
+          : `<span>${"✓"}</span><span>${tx("<b>AI credits added.</b> Enjoy your analyses.")}</span>`;
         setTimeout(() => location.reload(), 1800);
         return;
       }
       await new Promise((r) => setTimeout(r, 2000));
     }
     clean();
-    t.innerHTML = `<span><b>Payment received.</b> It's taking a little longer to activate — refresh in a minute, or <a href="contact.html">contact us</a> if it doesn't show.</span>`;
+    t.innerHTML = `<span>${tx("<b>Payment received.</b> It's taking a little longer to activate — refresh in a minute, or <a href=\"contact.html\">contact us</a> if it doesn't show.")}</span>`;
   }
 
   const api = {
