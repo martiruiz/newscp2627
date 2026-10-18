@@ -124,9 +124,15 @@
   const pfLogo = (k, cls = "lf-pfl") => `<span class="${cls} lf-pf-${k}" style="-webkit-mask-image:url(assets/pf-${k}.svg);mask-image:url(assets/pf-${k}.svg)" aria-hidden="true"></span>`;
   // Top Picks / Replicable ideas / Overperforming (catalog "trend" values) — the home page badges
   const SPECIAL = {
-    "top picks": { cls: "lf-sp-top", ico: "star", desc: "The best posts, picked by SCP" },
-    "replicable ideas": { cls: "lf-sp-rep", ico: "copy", desc: "Easy to copy with your own assets" },
-    overperforming: { cls: "lf-sp-over", ico: "trend", desc: "Beat their account's own average" },
+    "top picks": { cls: "lf-sp-top", ico: "star", desc: "The best posts, picked by SCP",
+      lead: "The posts we'd show a club first: a strong idea, well made and with results.",
+      points: ["Start here when you need inspiration fast", "Benchmarks for what “great” looks like"] },
+    "replicable ideas": { cls: "lf-sp-rep", ico: "copy", desc: "Easy to copy with your own assets",
+      lead: "Formats you can recreate with your own players, venue and footage, without a big production.",
+      points: ["Ideas you can publish this week", "Work for any club size"] },
+    overperforming: { cls: "lf-sp-over", ico: "trend", desc: "Beat their account's own average",
+      lead: "Posts that did far better than their account usually does.",
+      points: ["Spot what moves the needle", "Compare against the club's own normal, not the giants"] },
   };
   const special = (v) => SPECIAL[v.name.toLowerCase()] || { cls: "lf-sp-top", ico: "star", desc: "" };
   const shapeBox = (name) => {
@@ -245,9 +251,11 @@
     // Views exist only on Instagram, TikTok and YouTube (Shorts too): with only X / Facebook / LinkedIn chosen, no Views filter
     const pfSel = [...(selected.platform || [])].map((id) => catalog.byId.get(id)?.name.toLowerCase());
     const noViews = pfSel.length > 0 && pfSel.every((n) => ["x", "facebook", "linkedin"].includes(n));
-    const viewsRow = views.hist && !noViews ? `<div class="lf-row${vOpen ? " is-open" : ""}" data-lf-rowbox="views">
+    const viewsRow = views.hist && noViews ? `<div class="lf-row is-disabled" data-lf-rowbox="views">
+        <button class="lf-rh" type="button" disabled aria-disabled="true">${svg("eye")}<span class="lf-t">Views</span><span class="lf-v">${viewsLabel()}</span>${svg("chev", "lf-chev")}</button></div>`
+      : views.hist ? `<div class="lf-row${vOpen ? " is-open" : ""}" data-lf-rowbox="views">
         <button class="lf-rh" type="button" aria-expanded="${vOpen}" data-lf-row="views">${svg("eye")}<span class="lf-t">Views</span><span class="lf-v${viewsSet() ? " is-set" : ""}" data-views-v>${viewsLabel()}</span>${svg("chev", "lf-chev")}</button>
-        <div class="lf-rb"${vOpen ? "" : " hidden"} data-lf-body-of="views">${viewsHtml()}<p class="lf-views-note">${tx("Only Instagram, TikTok and YouTube")}</p></div></div>` : "";
+        <div class="lf-rb"${vOpen ? "" : " hidden"} data-lf-body-of="views">${viewsHtml()}</div></div>` : "";
     return rows + viewsRow;
   }
   // Specials keep the catalog order (Top Picks, Replicable ideas, Overperforming) so they don't jump around
@@ -348,9 +356,23 @@
         clearTimeout(hideT);
         if (tipFor === b) return;
         tipFor = b;
-        tip.innerHTML = `<p>${esc(b.dataset.spTip)}</p><button type="button" aria-label="${esc(tx("Close"))}" data-sp-close="${esc(b.dataset.id)}">${icon("x")}</button>`;
+        const v = catalog.byId.get(Number(b.dataset.id)), sp = v ? special(v) : {};
+        const n = v ? countOf(v) : 0;
+        tip.className = `lf-sp-pop ${sp.cls || ""}`;
+        tip.innerHTML = `
+          <div class="sp-h"><span class="sp-ic">${svg(sp.ico || "star")}</span><b>${esc(pretty(v?.name || ""))}</b>
+            <button class="sp-x" type="button" aria-label="${esc(tx("Close"))}" data-sp-close="${esc(b.dataset.id)}">${icon("x")}</button></div>
+          <p class="sp-lead">${esc(tx(sp.lead || b.dataset.spTip))}</p>
+          ${(sp.points || []).length ? `<ul>${sp.points.map((t) => `<li>${svg("check")}<span>${esc(tx(t))}</span></li>`).join("")}</ul>` : ""}
+          <div class="sp-f"><span>${n ? tx("{n} posts", { n: kfmt(n) }) : ""}</span>
+            <button class="sp-go" type="button" data-sp-go="${esc(b.dataset.id)}">${tx("Show them")} →</button></div>`;
         const r = b.getBoundingClientRect();
-        tip.style.left = `${r.left + scrollX}px`; tip.style.top = `${r.bottom + scrollY + 6}px`; tip.style.width = `${Math.max(220, r.width)}px`;
+        tip.hidden = false;
+        // beside the button (the sidebar is narrow), or under it when there's no room on the right
+        const roomRight = innerWidth - r.right > 300;
+        tip.style.left = `${(roomRight ? r.right + 12 : r.left) + scrollX}px`;
+        tip.style.top = `${(roomRight ? r.top - 6 : r.bottom + 8) + scrollY}px`;
+        tip.classList.toggle("is-side", roomRight);
         tip.hidden = false;
       } else if (tipFor && !e.target.closest(".lf-sp-pop")) {
         clearTimeout(hideT); hideT = setTimeout(hide, 250);
@@ -359,6 +381,8 @@
     tip.addEventListener("mouseenter", () => clearTimeout(hideT));
     tip.addEventListener("click", (e) => {
       const x = e.target.closest("[data-sp-close]");
+      const go = e.target.closest("[data-sp-go]");
+      if (go) { if (tipFor && !tipFor.classList.contains("is-on")) tipFor.click(); return hide(); }
       if (!x) return;
       try { localStorage.setItem(closedKey(x.dataset.spClose), "1"); } catch {}
       hide();
