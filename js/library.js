@@ -119,20 +119,9 @@
   const svg = (k, cls = "") => `<svg class="lf-i ${cls}" viewBox="0 0 24 24" aria-hidden="true">${P[k] || P.dots}</svg>`;
   const FORMAT_ICON = { images: "image", image: "image", post: "image", photo: "image", reel: "reel", reels: "reel", shorts: "reel", carousel: "carousel", video: "video", story: "story", stories: "story" };
   const SPORT_ICON = { football: "ball", soccer: "ball", basketball: "basket", tennis: "tennis", padel: "racket", "american football": "oval", rugby: "oval", baseball: "ball", motor: "wheel", f1: "wheel", motorsport: "wheel", cycling: "bike", "ice hockey": "puck", hockey: "puck", handball: "run", "martial arts": "glove", running: "run", golf: "golf", waterpolo: "ball", volleyball: "ball" };
-  // Official platform logos: monochrome at rest, brand colours when chosen or hovered
-  const PLATFORM = {
-    instagram: ['<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r=".6" fill="currentColor"/>',
-      '<defs><radialGradient id="lf-ig" cx="30%" cy="107%" r="150%"><stop offset=".1" stop-color="#fdf497"/><stop offset=".5" stop-color="#fd5949"/><stop offset=".68" stop-color="#d6249f"/><stop offset="1" stop-color="#285AEB"/></radialGradient></defs><rect width="24" height="24" rx="6" fill="url(#lf-ig)"/><rect x="5.5" y="5.5" width="13" height="13" rx="4" fill="none" stroke="#fff" stroke-width="1.8"/><circle cx="12" cy="12" r="3.1" fill="none" stroke="#fff" stroke-width="1.8"/><circle cx="16.3" cy="7.7" r="1" fill="#fff"/>'],
-    tiktok: ['<path d="M13.5 4v10.5a3 3 0 1 1-3-3M13.5 4c.3 2.3 2 3.8 4.5 4"/>',
-      '<rect width="24" height="24" rx="6" fill="#000"/><path d="M13.5 5v9.2a2.6 2.6 0 1 1-2.6-2.6" fill="none" stroke="#25F4EE" stroke-width="2" transform="translate(-.6 -.4)"/><path d="M13.5 5v9.2a2.6 2.6 0 1 1-2.6-2.6" fill="none" stroke="#FE2C55" stroke-width="2" transform="translate(.6 .4)"/><path d="M13.5 5v9.2a2.6 2.6 0 1 1-2.6-2.6M13.5 5c.3 2 1.7 3.3 3.8 3.4" fill="none" stroke="#fff" stroke-width="2"/>'],
-    youtube: ['<rect x="2" y="5" width="20" height="14" rx="4.5"/><path d="m10 9 5 3-5 3z" fill="currentColor"/>',
-      '<rect x="1" y="5" width="22" height="14" rx="4.5" fill="#FF0000"/><path d="m10 9 5 3-5 3z" fill="#fff"/>'],
-    x: ['<path d="m5 4 14 16M19 4 5 20"/>', '<rect width="24" height="24" rx="6" fill="#000"/><path d="m6.5 6 11 12M17.5 6l-11 12" stroke="#fff" stroke-width="1.8"/>'],
-    facebook: ['<circle cx="12" cy="12" r="9.5"/><path d="M13.5 21.5V14h2.5l.4-3h-2.9V9.5c0-.9.3-1.5 1.5-1.5h1.5V5.4"/>',
-      '<circle cx="12" cy="12" r="12" fill="#0866FF"/><path d="M13.3 24v-8.4h2.6l.4-3.1h-3V10.6c0-.9.3-1.5 1.6-1.5h1.6V6.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v2.2H7.7v3.1h2.6V24z" fill="#fff"/>'],
-    linkedin: ['<path d="M6 10v8M6 6v.01M10.5 18v-8M10.5 13.5c0-2 1.2-3.6 3.2-3.6s2.8 1.4 2.8 3.3V18"/>',
-      '<rect width="24" height="24" rx="5" fill="#0A66C2"/><path d="M7 10v7M7 7v.01M11 17v-7M11 13.5c0-2 1-3.6 3-3.6s2.5 1.4 2.5 3.3V17" stroke="#fff" stroke-width="2.2" stroke-linecap="round" fill="none"/>'],
-  };
+  // Official platform logos (assets/pf-*.svg used as masks): muted at rest, brand colours on hover / when chosen
+  const PLATFORM = { instagram: "Instagram", tiktok: "TikTok", youtube: "YouTube", x: "X", facebook: "Facebook", linkedin: "LinkedIn" };
+  const pfLogo = (k, cls = "lf-pfl") => `<span class="${cls} lf-pf-${k}" style="-webkit-mask-image:url(assets/pf-${k}.svg);mask-image:url(assets/pf-${k}.svg)" aria-hidden="true"></span>`;
   // Top Picks / Replicable ideas / Overperforming (catalog "trend" values) — the home page badges
   const SPECIAL = {
     "top picks": { cls: "lf-sp-top", ico: "star", desc: "The best posts, picked by SCP" },
@@ -284,9 +273,9 @@
 
   function platformHtml() {
     return `<div class="lf-tiles lf-tiles-3 lf-pf">${(catalog.byCat.platform || []).map((v) => {
-      const k = v.name.toLowerCase(), logo = PLATFORM[k];
-      const inner = logo ? `<svg class="lf-mono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">${logo[0]}</svg><svg class="lf-col" viewBox="0 0 24 24" aria-hidden="true">${logo[1]}</svg>` : `<span>${esc(v.name)}</span>`;
-      return `<button type="button" class="lf-tile${isOn(v) ? " is-on" : ""}${countOf(v) === 0 && !isOn(v) ? " is-zero" : ""}" aria-pressed="${isOn(v)}" aria-label="${esc(v.name)}" title="${esc(v.name)}" data-facet="platform" data-id="${v.id}">${inner}</button>`;
+      const k = v.name.toLowerCase();
+      const inner = `${PLATFORM[k] ? pfLogo(k) : ""}<span>${esc(PLATFORM[k] || v.name)}</span>`;
+      return `<button type="button" class="lf-tile lf-pf-${esc(k)}${isOn(v) ? " is-on" : ""}${countOf(v) === 0 && !isOn(v) ? " is-zero" : ""}" aria-pressed="${isOn(v)}" aria-label="${esc(v.name)}" title="${esc(v.name)}" data-facet="platform" data-id="${v.id}">${inner}</button>`;
     }).join("")}</div>`;
   }
 
@@ -358,6 +347,14 @@
     const jump = e.target.closest("[data-lf-jump-to]");
     if (jump) { const t = $(`[data-lf-sec="${jump.dataset.lfJumpTo}"]`); const b = $("[data-lf-body]"); b.scrollTo({ top: t.offsetTop - b.offsetTop, behavior: "smooth" }); $$("[data-lf-jump-to]").forEach((x) => x.classList.toggle("is-on", x === jump)); }
   });
+  // platform tiles: the glow follows the cursor
+  column.addEventListener("pointermove", (e) => {
+    const t = e.target.closest(".lf-pf .lf-tile");
+    if (!t) return;
+    const r = t.getBoundingClientRect();
+    t.style.setProperty("--mx", `${e.clientX - r.left}px`);
+    t.style.setProperty("--my", `${e.clientY - r.top}px`);
+  });
   $("[data-lf-quick]").addEventListener("click", (e) => { const f = e.target.closest("[data-facet]"); if (f && !f.classList.contains("is-zero")) toggleValue(f.dataset.facet, Number(f.dataset.id)); });
   // list searches re-render only their own list (keeps the focus while typing)
   column.addEventListener("input", (e) => {
@@ -400,7 +397,7 @@
     fresults.hidden = false;
     fresults.innerHTML = hits.length ? hits.map((v, i) => {
       const c = CAT[v.category];
-      const lead = c.crest || v.logo ? crestImg(v, "lf-mini") : v.category === "platform" && PLATFORM[v.name.toLowerCase()] ? `<svg class="lf-pfi" viewBox="0 0 24 24" aria-hidden="true">${PLATFORM[v.name.toLowerCase()][1]}</svg>` : "";
+      const lead = c.crest || v.logo ? crestImg(v, "lf-mini") : v.category === "platform" && PLATFORM[v.name.toLowerCase()] ? pfLogo(v.name.toLowerCase(), "lf-pfi is-brand") : "";
       return `<button type="button" class="lf-hit${isOn(v) ? " is-on" : ""}${i === 0 ? " is-kb" : ""}" role="option" data-hit="${i}">${lead}<span class="lf-hv">${hl(pretty(v.name))}</span><span class="lf-hc">${esc(c.sec === "discover" ? "Discover" : c.label)}</span><span class="lf-cnt">${kfmt(countOf(v))}</span></button>`;
     }).join("") : `<p class="lf-none">No filter called “${esc(fsearch.value.trim())}”. The caption search above the posts looks inside the posts.</p>`;
   }
@@ -615,7 +612,7 @@
     chipClears = chips.map((x) => x.clear);
     $("[data-active-bar]").hidden = chips.length === 0 && !savedSearches.length;
     const chipLead = (v) => !v ? "" : v.category === "trend" ? `<span class="lf-chip-sp ${special(v).cls}"></span>`
-      : CAT[v.category]?.crest || v.logo ? crestImg(v, "lf-mini") : v.category === "platform" && PLATFORM[v.name.toLowerCase()] ? `<svg class="lf-pfi" viewBox="0 0 24 24" aria-hidden="true">${PLATFORM[v.name.toLowerCase()][1]}</svg>` : "";
+      : CAT[v.category]?.crest || v.logo ? crestImg(v, "lf-mini") : v.category === "platform" && PLATFORM[v.name.toLowerCase()] ? pfLogo(v.name.toLowerCase(), "lf-pfi is-brand") : "";
     $("[data-active-chips]").innerHTML = chips.map((x, i) => `<button type="button" class="active-chip" data-chip="${i}"${x.title ? ` title="${esc(x.title)}"` : ""}>${chipLead(x.v)}${esc(x.label)} <span aria-hidden="true">×</span><span class="sr-only">Remove</span></button>`).join("")
       + (chips.length > 1 ? `<button type="button" class="link-muted active-clear" data-chip-clear>Clear all</button>` : "");
     $("[data-save-search]").hidden = chips.length === 0;

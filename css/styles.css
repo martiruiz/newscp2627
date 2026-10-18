@@ -4159,7 +4159,6 @@ button.plan-cta { width: 100%; cursor: pointer; font: inherit; }
 .lf-hv { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .lf-hv mark { background: none; color: var(--gold); font-weight: 600; }
 .lf-hc { color: var(--muted-dim); font-size: 11px; white-space: nowrap; }
-.lf-pfi { width: 20px; height: 20px; flex: none; }
 .lf-none { padding: 8px; color: var(--muted-dim); font-size: 12px; line-height: 1.4; }
 .lf-jump { display: none; }
 .lf-foot { display: none; }
@@ -4234,12 +4233,6 @@ button.plan-cta { width: 100%; cursor: pointer; font: inherit; }
 .lf-tile.is-on, .lf-cr.is-on { color: var(--gold); border-color: var(--gold); background: var(--gold-tint); }
 .lf-tile.is-zero, .lf-cr.is-zero, .lf-chip.is-zero, .lf-shp.is-zero { opacity: 0.38; }
 .lf-rb .lf-tiles-3 .lf-tile { aspect-ratio: auto; height: 62px; }
-.lf-pf .lf-tile { aspect-ratio: 1.7; }
-.lf-pf svg { width: 24px; height: 24px; }
-.lf-pf .lf-col { display: none; }
-.lf-pf .lf-tile.is-on { background: var(--surface-2); box-shadow: 0 0 0 3px var(--gold-tint); }
-.lf-pf .lf-tile.is-on .lf-mono, .lf-pf .lf-tile:hover .lf-mono { display: none; }
-.lf-pf .lf-tile.is-on .lf-col, .lf-pf .lf-tile:hover .lf-col { display: block; }
 .lf-crests { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; }
 .lf-crest, .lf-mini { flex: none; display: grid; place-items: center; overflow: hidden; border-radius: 50%; background: #fff; }
 .lf-crest { width: 32px; height: 32px; transition: transform 0.25s; }
@@ -4346,3 +4339,32 @@ button.plan-cta { width: 100%; cursor: pointer; font: inherit; }
   .lf-dd-k { display: none; }
 }
 @media (min-width: 961px) and (max-width: 1560px) { .lf-hide-sm { display: none; } .feed-bar { gap: 8px; } }
+
+/* Platform tiles: the official logos (assets/pf-*.svg as masks) in brand colours, glow that follows the cursor */
+.lf-pf-instagram { --bc: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285aeb 90%); --glow: 225, 48, 108; }
+.lf-pf-tiktok { --bc: linear-gradient(135deg, #25f4ee 10%, #ffffff 50%, #fe2c55 90%); --glow: 254, 44, 85; }
+.lf-pf-youtube { --bc: #ff0033; --glow: 255, 0, 51; }
+.lf-pf-x { --bc: #ffffff; --glow: 255, 255, 255; }
+.lf-pf-facebook { --bc: #1877f2; --glow: 24, 119, 242; }
+.lf-pf-linkedin { --bc: linear-gradient(135deg, #0a66c2, #3d9bff); --glow: 45, 140, 255; }
+.lf-pfl, .lf-pfi { display: block; flex: none; background: var(--muted); -webkit-mask-position: center; mask-position: center; -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
+.lf-pfl { width: 26px; height: 26px; transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.25s; }
+.lf-pfi { width: 16px; height: 16px; }
+.lf-pfi.is-brand { background: var(--bc); }
+.lf-pf .lf-tile { position: relative; overflow: hidden; isolation: isolate; aspect-ratio: auto; height: 76px; gap: 8px;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.25s, box-shadow 0.35s, background 0.25s, color 0.25s; }
+.lf-pf .lf-tile::before { content: ""; position: absolute; inset: 0; z-index: -1; opacity: 0; transition: opacity 0.35s;
+  background: radial-gradient(120px circle at var(--mx, 50%) var(--my, 40%), rgba(var(--glow), 0.32), transparent 70%); }
+.lf-pf .lf-tile::after { content: ""; position: absolute; top: 0; bottom: 0; left: -70%; width: 45%; z-index: -1; transform: skewX(-20deg);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent); transition: left 0.7s ease; }
+.lf-pf .lf-tile:hover { transform: translateY(-3px); color: var(--text); border-color: rgba(var(--glow), 0.55); box-shadow: 0 12px 26px -12px rgba(var(--glow), 0.7); }
+.lf-pf .lf-tile:hover::before { opacity: 1; }
+.lf-pf .lf-tile:hover::after { left: 130%; }
+.lf-pf .lf-tile:hover .lf-pfl { background: var(--bc); transform: scale(1.14) rotate(-5deg); }
+.lf-pf .lf-tile:active { transform: translateY(-1px) scale(0.98); }
+.lf-pf .lf-tile.is-on { color: var(--text); border-color: rgba(var(--glow), 0.9); background: linear-gradient(180deg, rgba(var(--glow), 0.18), rgba(var(--glow), 0.04)); box-shadow: 0 0 0 3px rgba(var(--glow), 0.16), 0 10px 24px -12px rgba(var(--glow), 0.8); }
+.lf-pf .lf-tile.is-on .lf-pfl { background: var(--bc); }
+.lf-pf .lf-tile.is-on::before { opacity: 0.6; }
+@media (prefers-reduced-motion: reduce) { .lf-pf .lf-tile, .lf-pf .lf-tile:hover, .lf-pf .lf-tile:hover .lf-pfl { transform: none; } .lf-pf .lf-tile::after { display: none; } }
+.lf-pfl.lf-pf-instagram { width: 34px; height: 34px; margin: -4px; }
+.lf-pfi.lf-pf-instagram { width: 21px; height: 21px; margin: -2.5px; }
