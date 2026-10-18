@@ -274,7 +274,8 @@
   }
 
   function platformHtml() {
-    return `<div class="lf-tiles lf-tiles-3 lf-pf">${(catalog.byCat.platform || []).map((v) => {
+    const pfs = [...(catalog.byCat.platform || [])].sort((a, b) => (b.name.toLowerCase() === me.favPlatform) - (a.name.toLowerCase() === me.favPlatform));
+    return `<div class="lf-tiles lf-tiles-3 lf-pf">${pfs.map((v) => {
       const k = v.name.toLowerCase();
       const inner = `${PLATFORM[k] ? pfLogo(k) : ""}<span>${esc(PLATFORM[k] || v.name)}</span>`;
       return `<button type="button" class="lf-tile lf-pf-${esc(k)}${isOn(v) ? " is-on" : ""}${countOf(v) === 0 && !isOn(v) ? " is-zero" : ""}" aria-pressed="${isOn(v)}" aria-label="${esc(v.name)}" title="${esc(v.name)}" data-facet="platform" data-id="${v.id}">${inner}</button>`;
@@ -663,7 +664,8 @@
     me.boost = favIds;
     me.fav = new Set(favIds);
     me.boost2 = [...(prefs.sports || []), ...(prefs.competitions || [])].map(Number);
-    if (!me.boost.length && !me.boost2.length) return;
+    me.favPlatform = (prefs.favouritePlatform || "").toLowerCase();   // Profile → Favourites: its posts come first
+    if (!me.boost.length && !me.boost2.length && !me.favPlatform) return;
     const order = $("[data-order]");
     order.insertAdjacentHTML("afterbegin", `<button type="button" aria-pressed="false" data-value="foryou" title="Your favourite profiles first, then your sports">${icon("star")}For you</button>`);
     const btn = order.firstElementChild;
@@ -1273,7 +1275,12 @@
   $("[data-clear]").addEventListener("click", clearAll);
 
   if (!db) return load(true);
-  Promise.all([Promise.all([loadCatalog(), loadViews().catch(() => {})]).then(renderFacets).catch(() => {}), boards.load(), loadSavedSearches(), loadMe().catch(() => {}), loadAi().catch(() => {})]).then(() => { load(true); openFromHash(); });
+  Promise.all([Promise.all([loadCatalog(), loadViews().catch(() => {})]).then(renderFacets).catch(() => {}), boards.load(), loadSavedSearches(), loadMe().catch(() => {}), loadAi().catch(() => {})]).then(() => {
+    // favourite network (catalog value "platform") goes first in "For you", and its tile first in the filters
+    const pv = me.favPlatform && (catalog?.byCat?.platform || []).find((v) => v.name.toLowerCase() === me.favPlatform);
+    if (pv && !me.boost.includes(pv.id)) { me.boost = [pv.id, ...me.boost]; renderFacets(); }
+    load(true); openFromHash();
+  });
 })();
 
 // Welcome offer shown when entering the platform (once per browser session)

@@ -467,6 +467,8 @@ window.SCP_ES = {
   "billed yearly": "facturación anual",
   "or {price}/year": "o {price}/año",
   "Recommended": "Recomendado",
+  "Favourite social network": "Red social favorita",
+  "its posts come first in your Content Library": "sus posts salen primero en tu Biblioteca de contenido",
   "Drag to your Content Plan": "Arrastra a tu Content Plan",
   "Open on {pf}": "Abrir en {pf}",
   "Following": "Sigues",

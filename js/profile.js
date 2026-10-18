@@ -23,6 +23,7 @@
     orgType: ["Club", "League / federation", "Brand / sponsor", "Agency", "Media", "Athlete / creator", "Other"],
     teamSize: ["Just me", "2–5", "6–15", "16+"],
     platforms: ["Instagram", "TikTok", "YouTube", "X", "Facebook", "LinkedIn"],
+    favouritePlatform: ["Instagram", "TikTok", "YouTube", "X", "Facebook", "LinkedIn"],
     audience: ["Under 10K", "10K–100K", "100K–1M", "1M–10M", "10M+"],
     goals: ["Grow followers", "More engagement", "Sponsorship revenue", "Ticket sales", "Merchandise sales", "Fan community", "Brand awareness", "Save production time"],
     formats: ["Reels / short video", "Carousels", "Images", "Stories", "Long video", "Live"],
@@ -63,7 +64,7 @@
   function renderChips() {
     $$("[data-single]").forEach((el) => {
       const k = el.dataset.single;
-      el.innerHTML = OPTIONS[k].map((o) => `<button type="button" class="pf-chip" aria-pressed="${state[k] === o}" data-val="${esc(o)}">${esc(o)}</button>`).join("");
+      el.innerHTML = OPTIONS[k].map((o) => `<button type="button" class="pf-chip" aria-pressed="${state[k] === o}" data-val="${esc(o)}">${k === "favouritePlatform" && PF_ICON[o] ? `<img src="assets/pf-${PF_ICON[o]}.svg" alt="">` : ""}${esc(o)}</button>`).join("");
     });
     $$("[data-multi]").forEach((el) => {
       const k = el.dataset.multi;
