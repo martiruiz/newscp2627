@@ -31,8 +31,9 @@ window.SCP_SMART = {
       "free": true
     },
     {
-      "key": "location",
-      "label": "Location"
+      "key": "city",
+      "label": "City",
+      "free": true
     },
     {
       "key": "goal",
@@ -79,6 +80,16 @@ window.SCP_SMART = {
       "key": "language",
       "label": "Language",
       "single": true
+    },
+    {
+      "key": "aspect_ratio",
+      "label": "Aspect ratio",
+      "meta": true
+    },
+    {
+      "key": "duration",
+      "label": "Duration",
+      "meta": true
     }
   ],
   "values": {
@@ -158,11 +169,21 @@ window.SCP_SMART = {
       "Last game of the season",
       "Pre-season"
     ],
-    "location": [
-      "Away city",
-      "Home city",
-      "Stadium",
-      "Training ground"
+    "aspect_ratio": [
+      "1:1",
+      "4:5",
+      "3:4",
+      "9:16",
+      "16:9",
+      "1.91:1",
+      "2:3",
+      "4:3"
+    ],
+    "duration": [
+      "Under 15s",
+      "15–30s",
+      "30–60s",
+      "Over 60s"
     ],
     "goal": [
       "Ticket sales",

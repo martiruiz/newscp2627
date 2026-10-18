@@ -9,7 +9,7 @@
   try { await A.boot("smart"); } catch { return; }
   const main = $("[data-main]");
   const T = window.SCP_SMART;
-  const CATS = T.categories;
+  const CATS = T.categories.filter((c) => !c.meta); // aspect ratio & duration come from Instagram, not the AI
 
   let items = [], posts = new Map(), idx = 0, view = "review";
   const setOf = (v) => new Set([].concat(v || []).map((x) => String(x).trim()).filter(Boolean));
@@ -108,7 +108,7 @@
       const suggested = setOf(ai[c.key]);
       if (c.free) {
         return `<div class="sr-cat"><div class="sr-cat-h">${esc(c.label)}<span>names, separated by commas</span></div>
-          <input class="input sr-free" data-free="${c.key}" value="${esc([...selected].join(", "))}" placeholder="${c.key === "opponent" ? "e.g. Real Madrid" : "e.g. Spotify, Emirates"}">
+          <input class="input sr-free" data-free="${c.key}" value="${esc([...selected].join(", "))}" placeholder="${c.key === "opponent" ? "e.g. Real Madrid" : c.key === "city" ? "e.g. Milan (Italy)" : "e.g. Spotify, Emirates"}">
           ${suggested.size ? `<p class="sr-ai">AI: ${esc([...suggested].join(", "))}</p>` : ""}</div>`;
       }
       return `<div class="sr-cat" data-cat="${c.key}" data-single="${c.single ? 1 : ""}"><div class="sr-cat-h">${esc(c.label)}${c.single ? "<span>one</span>" : ""}</div>

@@ -318,5 +318,31 @@ await db.query(`insert into public.content_ideas (external_id, title, embed) val
 check("new imports get their link automatically", (await db.query(`select url from public.content_ideas where external_id = 'tt-new'`)).rows[0].url === U2.tt);
 check("an existing link is kept", (await db.query(`select url from public.content_ideas where external_id = 'p1'`)).rows[0].url === "https://www.instagram.com/p/X1/");
 
+console.log("\n21. Smart filters: format clean-up, Instagram data, AI labels");
+await db.exec(`insert into public.idea_catalog (category, name) values ('format','Post'),('format','carousel'),('format','Reel'),('format','Video'),('format','Images'),('platform','Facebook'),('platform','TikTok'),('platform','Instagram') on conflict do nothing`);
+const cv = async (c, n) => (await db.query(`select id from public.idea_catalog where category=$1 and name=$2`, [c, n])).rows[0]?.id;
+const tag = (i, v) => db.query(`insert into public.content_idea_tags (idea_id, value_id) values ($1,$2) on conflict do nothing`, [i, v]);
+await tag(10, await cv("format", "Post")); await tag(10, await cv("platform", "Facebook"));
+await tag(11, await cv("format", "carousel"));
+await tag(12, await cv("format", "Reel")); await tag(12, await cv("platform", "TikTok"));
+await tag(13, await cv("format", "Reel")); await tag(13, await cv("platform", "Instagram"));
+await db.exec(sql("smart-filters.sql")); await db.exec(sql("smart-filters.sql"));
+const fmtOf = async (i) => (await db.query(`select v.name from public.content_idea_tags t join public.idea_catalog v on v.id=t.value_id where t.idea_id=$1 and v.category='format' order by 1`, [i])).rows.map((r) => r.name).join(",");
+check("Post → Images", (await fmtOf(10)) === "Images" && !(await cv("format", "Post")));
+check("carousel → Carousel", (await fmtOf(11)) === "Carousel");
+check("TikTok Reel → Video", (await fmtOf(12)) === "Video");
+check("Instagram Reel stays Reel", (await fmtOf(13)) === "Reel");
+await db.query(`select public.apply_ig_meta($1::jsonb)`, [JSON.stringify([{ id: 13, media_type: "reel", width: 1080, height: 1920, duration: 51.08, views: 226931 }, { id: 14, media_type: "carousel", width: 720, height: 960 }])]);
+const m13 = (await db.query(`select media_type, views, duration_s, media_ratio from public.content_ideas where id = 13`)).rows[0];
+const tagsOf = async (i, c) => (await db.query(`select v.name from public.content_idea_tags t join public.idea_catalog v on v.id=t.value_id where t.idea_id=$1 and v.category=$2 order by 1`, [i, c])).rows.map((r) => r.name).join(",");
+check("Instagram data saved (views, duration, ratio)", m13.media_type === "reel" && Number(m13.views) === 226931 && Number(m13.duration_s) === 51.08 && Number(m13.media_ratio) === 1.7778, JSON.stringify(m13));
+check("reel: 9:16 + 30–60s", (await tagsOf(13, "aspect_ratio")) === "9:16" && (await tagsOf(13, "duration")) === "30–60s");
+check("carousel 720×960 → 3:4, format Carousel", (await tagsOf(14, "aspect_ratio")) === "3:4" && (await fmtOf(14)) === "Carousel");
+await db.query(`select public.apply_smart_labels($1::jsonb)`, [JSON.stringify([{ id: 13, version: "t1", labels: { matchday_graphic: ["Starting XI"], city: ["Milan (Italy)"], language: "English" } }])]);
+check("AI labels saved as tags", (await tagsOf(13, "matchday_graphic")) === "Starting XI" && (await tagsOf(13, "city")) === "Milan (Italy)" && (await tagsOf(13, "language")) === "English");
+await db.query(`select public.apply_smart_labels($1::jsonb)`, [JSON.stringify([{ id: 13, version: "t2", labels: { matchday_graphic: ["Full-time"] } }])]);
+check("re-labelling replaces only the AI's tags", (await tagsOf(13, "matchday_graphic")) === "Full-time" && (await fmtOf(13)) === "Reel");
+check("members can't write AI labels", await as(U.A, `select public.apply_smart_labels('[]'::jsonb)`).then(() => false, () => true));
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

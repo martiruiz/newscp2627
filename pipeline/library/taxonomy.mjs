@@ -12,7 +12,7 @@ export const CATEGORIES = [
   { key: "outcome", label: "Match outcome" },
   { key: "season_moment", label: "Season moment" },
   { key: "opponent", label: "Opponent", free: true },
-  { key: "location", label: "Location" },
+  { key: "city", label: "City", free: true },
   // who it's for / how it's told
   { key: "goal", label: "Business goal" },
   { key: "comms", label: "Comms type" },
@@ -26,7 +26,11 @@ export const CATEGORIES = [
   { key: "sponsor_sector", label: "Sponsor sector" },
   { key: "sponsor_integration", label: "Sponsor integration" },
   { key: "language", label: "Language", single: true },
+  // from Instagram's own data (no AI)
+  { key: "aspect_ratio", label: "Aspect ratio", meta: true },
+  { key: "duration", label: "Duration", meta: true },
 ];
+export const AI_CATEGORIES = CATEGORIES.filter((c) => !c.meta);
 
 // Allowed values for the AI (free categories: any name, normalised afterwards)
 export const AI_VALUES = {
@@ -39,7 +43,8 @@ export const AI_VALUES = {
   transfer: ["Signing", "Renewal", "Loan", "Departure"],
   outcome: ["Win", "Draw", "Loss"],
   season_moment: ["Opening day", "Derby", "Cup final", "Title celebration", "Promotion", "Relegation", "European qualification", "Last game of the season", "Pre-season"],
-  location: ["Away city", "Home city", "Stadium", "Training ground"],
+  aspect_ratio: ["1:1", "4:5", "3:4", "9:16", "16:9", "1.91:1", "2:3", "4:3"],
+  duration: ["Under 15s", "15–30s", "30–60s", "Over 60s"],
   goal: ["Ticket sales", "Merchandise sales", "Memberships", "Sponsor value", "App / digital product", "Community / CSR", "Recruitment / grassroots", "Fan growth", "Engagement"],
   comms: ["Official announcement", "Press conference", "Statement", "Injury / medical update", "Ticket info", "Schedule change"],
   crisis: ["Apology", "Racism / abuse", "Sanction / disciplinary", "Serious injury", "Security / incident", "Condolences"],

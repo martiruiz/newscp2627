@@ -2,3 +2,6 @@ node_modules/
 .env
 media/
 library/smart-filters-sample.*
+library/.smart-cache/
+library/smart-eval-after.json
+library/_probe.mjs

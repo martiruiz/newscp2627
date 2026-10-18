@@ -37,6 +37,15 @@
     const d = new Date(s); // ISO with Z / offset
     return isNaN(d) ? undefined : d;
   }
+  const normFormat = (name, platform) => {
+    const n = String(name).toLowerCase(), pf = String(platform || "instagram").toLowerCase();
+    if (["post", "image", "images", "photo"].includes(n)) return "Images";
+    if (n === "carousel") return "Carousel";
+    if (n === "reel" || n === "reels") return pf.includes("instagram") ? "Reel" : "Video";
+    if (n === "short" || n === "shorts") return "Shorts";
+    if (n === "video") return "Video";
+    return name;
+  };
   const splitValues = (v) => String(v ?? "").split(",").map((x) => x.trim().replace(/\s+/g, " ")).filter(Boolean);
 
   // ---------- Live console ("hacker view") while analysing / importing ----------
@@ -140,6 +149,8 @@
       const get = (k) => (map[k] ? String(raw[map[k]] ?? "").trim() : "");
       const row = { _row: line, external_id: get("external_id"), embed: get("embed"), url: get("url"), title: get("title") };
       for (const c of A.CATEGORIES) row[c.key] = splitValues(get(c.key)).join(",");
+      // Formats: Post → Images, carousel → Carousel, only Instagram can be "Reel" (supabase/smart-filters.sql)
+      row.format = splitValues(row.format).map((f) => normFormat(f, row.platform)).join(",");
       const dateRaw = get("published_at");
       const date = parseDate(dateRaw);
       row.published_at = date ? date.toISOString() : "";

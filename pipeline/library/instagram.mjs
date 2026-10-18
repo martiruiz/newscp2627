@@ -43,3 +43,37 @@ export async function igEmbed(url, { captioned = false } = {}) {
   const video = raw ? raw.replace(/\\+\//g, "/").replace(/\\+u0026/g, "&") : null; // JSON escaped twice inside the page
   return { status: "ok", ratio: pad ? Math.round(Number(pad[1]) * 10) / 1000 : null, image, video };
 }
+
+// Everything the smart filters need from one embed page:
+// → { status, media_type: image | carousel | reel | video, width, height, duration, views, image (≈480px wide) }
+// The page embeds Instagram's own post data as JSON escaped twice; we read a few fields from it.
+export async function igMeta(url) {
+  const ref = igRef(url);
+  if (!ref) return { status: "unknown" };
+  let html;
+  try { html = await get(`https://www.instagram.com/${ref.kind}/${ref.code}/embed/captioned/`); } catch { return { status: "unknown" }; }
+  if (html.includes("may be broken")) return { status: "broken" };
+  if (!/EmbeddedMedia|EmbedSidecar|EmbedVideo/.test(html)) return { status: "unknown" };
+  const un = (s) => s?.replace(/\\+\//g, "/").replace(/\\+u0026/g, "&");
+  const field = (name, re = "[^,}]+") => new RegExp(`\\\\*"${name}\\\\*"\\s*:\\s*(${re})`).exec(html)?.[1];
+  const typename = /__typename\\*"\s*:\s*\\*"(Graph\w+|XDT\w+)/.exec(html)?.[1] || "";
+  const product = /product_type\\*"\s*:\s*\\*"(\w+)/.exec(html)?.[1] || "";
+  const dims = /dimensions\\*"\s*:\s*\{\\*"height\\*"\s*:\s*(\d+),\s*\\*"width\\*"\s*:\s*(\d+)\}/.exec(html);
+  const isVideo = /Video/.test(typename) || /is_video\\*"\s*:\s*true/.test(html.slice(0, 400000));
+  const media_type = /Sidecar/.test(typename) ? "carousel" : isVideo ? (product === "clips" || !product ? "reel" : "video") : "image";
+  // a small rendition for the AI (display_resources lists 640 / 750 / 1080 wide)
+  const res = [...html.matchAll(/\\*"src\\*"\s*:\s*\\*"(https:[^"\\]+(?:\\+\/[^"\\]+)*)\\*"\s*,\s*\\*"config_width\\*"\s*:\s*(\d+)/g)]
+    .map((m) => ({ src: un(m[1]), w: Number(m[2]) })).sort((a, b) => a.w - b.w);
+  const small = res.find((r) => r.w >= 480) || res[0];
+  const image = small?.src || /class="EmbeddedMediaImage"[^>]*\ssrc="([^"]+)"/.exec(html)?.[1]?.replaceAll("&amp;", "&") || null;
+  // single photos: the size isn't in the data, but the media box keeps the photo's exact proportion
+  const pad = Number(/padding-bottom:\s*([\d.]+)%/.exec(html)?.[1]) || null;
+  const width = dims ? Number(dims[2]) : pad && media_type === "image" ? 1080 : null;
+  const height = dims ? Number(dims[1]) : pad && media_type === "image" ? Math.round(1080 * pad / 100) : null;
+  return {
+    status: "ok", media_type, product, height, width,
+    duration: Number(field("video_duration")) || null,
+    views: Number(field("video_view_count")) || Number(field("video_play_count")) || null,
+    image,
+  };
+}
