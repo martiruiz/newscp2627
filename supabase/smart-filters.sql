@@ -40,9 +40,10 @@ returns text language sql immutable as $$
     select name from (values ('1:1', 1.0), ('4:5', 0.8), ('3:4', 0.75), ('9:16', 0.5625), ('16:9', 1.7778), ('1.91:1', 1.91), ('2:3', 0.6667), ('4:3', 1.3333))
       v(name, r) order by abs(ln(p_w::numeric / p_h) - ln(r)) limit 1) end;
 $$;
+-- The dashes are written as U&'\2013' so the file stays ASCII: pasted with the wrong encoding, '–' became '‚Äì'
 create or replace function public.duration_name(p_s numeric)
 returns text language sql immutable as $$
-  select case when p_s is null then null when p_s < 15 then 'Under 15s' when p_s < 30 then '15–30s' when p_s < 60 then '30–60s' else 'Over 60s' end;
+  select case when p_s is null then null when p_s < 15 then 'Under 15s' when p_s < 30 then U&'15\201330s' when p_s < 60 then U&'30\201360s' else 'Over 60s' end;
 $$;
 
 -- Replace one category's tags of a post (from a given source)

@@ -60,7 +60,9 @@
     { key: "explore", label: "Explore by" }, { key: "content", label: "Content", ai: true }, { key: "brands", label: "Brands", ai: true },
   ];
   const PERIODS = { 7: "This week", 31: "This month", season: "This season", custom: "Custom dates" };
-  const pretty = (name) => (name && name[0] === name[0].toLowerCase() ? name[0].toUpperCase() + name.slice(1) : name);
+  // Some catalog values were saved with a mis-encoded dash ("15‚Äì30s"): show the real characters
+  const fixText = (t) => (typeof t === "string" && t.includes("\u201aÄ") ? t.replace(/\u201aÄì/g, "\u2013").replace(/\u201aÄî/g, "\u2014").replace(/\u201aÄô/g, "\u2019").replace(/\u201aÄú/g, "\u201c").replace(/\u201aÄù/g, "\u201d") : t);
+  const pretty = (raw) => { const name = fixText(raw); return name && name[0] === name[0].toLowerCase() ? name[0].toUpperCase() + name.slice(1) : name; };
   const shortDate = (v) => v ? new Date(`${v}T12:00:00`).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" }) : "";
   const kfmt = (n) => (n >= 1e6 ? `${(n / 1e6).toFixed(n < 1e7 ? 1 : 0).replace(".0", "")}M` : n >= 1e4 ? `${Math.round(n / 1e3)}k` : n >= 1e3 ? `${(n / 1e3).toFixed(1).replace(".0", "")}k` : String(n));
 
@@ -167,7 +169,7 @@
     const byId = new Map();
     for (const r of data || []) {
       if (!CAT[r.category]) continue;
-      const v = { id: Number(r.id), category: r.category, name: r.name, total: Number(r.ideas), logo: logo.get(Number(r.id)) || null, ig: igHandle.get(Number(r.id)) || null };
+      const v = { id: Number(r.id), category: r.category, name: fixText(r.name), total: Number(r.ideas), logo: logo.get(Number(r.id)) || null, ig: igHandle.get(Number(r.id)) || null };
       if (!v.total) continue;
       (byCat[v.category] ||= []).push(v);
       byId.set(v.id, v);
