@@ -5814,3 +5814,16 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 .pp-dots span.is-on i { background: linear-gradient(90deg, #f0b84a, #f8cc75); box-shadow: 0 0 10px rgba(240, 184, 74, 0.35); }
 .pp-dots span.is-today i { outline: 1px solid rgba(240, 184, 74, 0.6); outline-offset: 2px; }
 .pp-dots small { font-size: 10px; color: var(--muted); }
+
+/* Library loading: skeleton cards with a shimmer + a thin gold bar on top while posts load */
+.lib-skel { position: relative; margin-bottom: 18px; border-radius: 18px; overflow: hidden; background: var(--surface); border: 0.5px solid var(--line); }
+.lib-skel i { position: absolute; inset: 0 0 46px 0; background: rgba(var(--fg), 0.04); }
+.lib-skel span { position: absolute; left: 12px; right: 40%; bottom: 16px; height: 10px; border-radius: 6px; background: rgba(var(--fg), 0.06); }
+.lib-skel::after { content: ""; position: absolute; inset: 0; transform: translateX(-100%); animation: skelShine 1.3s ease-in-out infinite;
+  background: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, 0.06) 50%, transparent 80%); }
+@keyframes skelShine { to { transform: translateX(100%); } }
+[aria-busy="true"].masonry { position: relative; }
+[aria-busy="true"].masonry::before { content: ""; position: absolute; top: -10px; left: 0; height: 2px; width: 30%; border-radius: 2px; z-index: 5;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent); animation: loadBar 1.1s ease-in-out infinite; }
+@keyframes loadBar { 0% { left: -30%; } 100% { left: 100%; } }
+@media (prefers-reduced-motion: reduce) { .lib-skel::after, [aria-busy="true"].masonry::before { animation: none; } }

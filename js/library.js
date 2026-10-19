@@ -778,7 +778,12 @@
   async function load(reset) {
     const s = state();
     renderActive(s);
-    if (reset) { offset = 0; resetGrid(); empty.hidden = true; note.hidden = true; }
+    if (reset) {
+      offset = 0; resetGrid(); empty.hidden = true; note.hidden = true;
+      // skeleton cards while the posts load (different heights, like the real grid)
+      const H = [1.25, 1.78, 1, 1.5, 0.9, 1.78, 1.25, 1.1, 1.6];
+      cols.forEach((c, i) => { for (let k = 0; k < 2; k++) c.insertAdjacentHTML("beforeend", `<div class="lib-skel" style="aspect-ratio:1/${H[(i * 2 + k) % H.length]}"><i></i><span></span></div>`); });
+    }
     if (!db) return showNote("Content isn't connected yet.");
     const my = ++token;
     more.hidden = true;
@@ -791,6 +796,7 @@
     const { data, error } = await fetchIdeas({ ...args, p_order: s.order, p_seed: seed, p_ids: ids, p_limit: PAGE, p_offset: offset, ...boost });
     if (my !== token) return;
     grid.removeAttribute("aria-busy");
+    grid.querySelectorAll(".lib-skel").forEach((x) => x.remove());
     if (error) return showNote(/schema cache|does not exist|function/i.test(error.message) ? "The library isn't connected yet (run supabase/library-ideas.sql in Supabase)." : "Couldn't load posts right now.");
     const rows = data?.data || [];
     if (reset) {
