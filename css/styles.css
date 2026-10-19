@@ -5789,3 +5789,28 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 .rcal-grid button.is-start:not(.is-end) { border-radius: 9px 0 0 9px; }
 .rcal-grid button.is-end:not(.is-start) { border-radius: 0 9px 9px 0; }
 .rcal-grid button.is-preview { background: rgba(240, 184, 74, 0.55); }
+
+/* ---------- Content Plan side panel: nothing wider than the panel, more visual ---------- */
+.pp-list { grid-template-columns: minmax(0, 1fr); }
+.pp-entry { min-width: 0; padding: 6px 30px 6px 9px; gap: 10px; border-radius: 12px; }
+.pp-entry::before { top: 10px; bottom: 10px; }
+.pp-entry-txt b { font-size: 12.5px; }
+.pp-thumb, .pp-thumb-img { width: 38px; height: 48px; border-radius: 8px; flex: none; }
+.pp-thumb-img { display: block; background-size: cover; background-position: 50% 30%; box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.12); }
+/* days: compact when empty, a counter when not */
+.pp-day > header { position: relative; }
+.pp-day .pp-n { margin-top: 4px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; display: grid; place-items: center; font-style: normal; font-size: 10px; font-weight: 700; color: var(--on-gold); background: var(--gold); }
+.pp-day.is-empty > header { flex-direction: row; gap: 4px; padding: 8px 0; justify-content: center; }
+.pp-day.is-empty > header span { font-size: 10px; }
+.pp-day.is-empty > header b { font-size: 15px; }
+.pp-day.is-empty > header em { display: none; }
+.pp-day.is-empty .pp-list { min-height: 0; padding: 8px 10px; }
+.pp-day.is-empty .pp-drop-hint { font-size: 11.5px; }
+.pp-day.is-empty { grid-template-columns: 64px minmax(0, 1fr); }
+/* week progress: a dot per day */
+.pp-dots { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 10px; }
+.pp-dots span { display: grid; justify-items: center; gap: 4px; }
+.pp-dots i { width: 100%; height: 8px; border-radius: 6px; background: rgba(var(--fg), 0.08); }
+.pp-dots span.is-on i { background: linear-gradient(90deg, #f0b84a, #f8cc75); box-shadow: 0 0 10px rgba(240, 184, 74, 0.35); }
+.pp-dots span.is-today i { outline: 1px solid rgba(240, 184, 74, 0.6); outline-offset: 2px; }
+.pp-dots small { font-size: 10px; color: var(--muted); }

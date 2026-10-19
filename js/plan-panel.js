@@ -52,7 +52,7 @@
   function norm(p) {
     const fmt = nameOf(p, "format");
     return {
-      id: Number(p.id), url: p.url, media_ratio: p.media_ratio,
+      id: Number(p.id), url: p.url, media_ratio: p.media_ratio, cover: p.cover_url || null,
       reel: /^(reels?|shorts?|video)$/i.test(fmt) || /\/(reel|shorts)\//.test(p.url || ""),
       who: pretty(nameOf(p, "club") || nameOf(p, "competition") || nameOf(p, "entity")) || "Post",
       format: pretty(fmt),
@@ -69,7 +69,7 @@
       if (p) S.refs.set(id, norm(p)); else missing.push(id);
     }
     if (!missing.length) return;
-    const { data } = await db.from("content_ideas").select("id,url,media_ratio,content_idea_tags(idea_catalog(category,name))").in("id", missing.slice(0, 200));
+    const { data } = await db.from("content_ideas").select("id,url,media_ratio,cover_url,content_idea_tags(idea_catalog(category,name))").in("id", missing.slice(0, 200));
     for (const row of data || []) {
       const tags = {};
       for (const { idea_catalog: v } of row.content_idea_tags || []) if (v) (tags[v.category] ||= []).push({ name: v.name });
@@ -212,7 +212,7 @@
   function entryHtml(e) {
     const r = S.refs.get(refId(e));
     return `<div class="pp-entry s-${e.status}" draggable="true" data-pp-entry="${e.id}" aria-label="${esc(e.label || "Untitled")} · open in the Content Plan">
-      ${r ? T.html(r, "pp-thumb") : `<span class="pp-thumb pp-thumb-none">${icon(TYPE_ICON[e.content_type] || "layout-grid")}</span>`}
+      ${r?.cover ? `<span class="pp-thumb pp-thumb-img" style="background-image:url('${esc(r.cover)}')"></span>` : r ? T.html(r, "pp-thumb") : `<span class="pp-thumb pp-thumb-none">${icon(TYPE_ICON[e.content_type] || "layout-grid")}</span>`}
       <span class="pp-entry-txt"><b>${esc(e.label || "Untitled")}</b><small><i></i>${STATUS[e.status] || ""}${e.entry_date && e.time_slot !== "12:00" ? ` · ${e.time_slot}` : ""}</small></span>
       <button type="button" class="pp-entry-x" data-pp-del="${e.id}" aria-label="Remove from the plan" title="Remove from the plan">${icon("x")}</button>
     </div>`;
@@ -239,14 +239,14 @@
     if (S.view === "week") {
       body = `
         <div class="pp-occ"><div class="pp-occ-top"><span><b>${covered}/7</b> days with content</span>${covered === 7 ? `<em>${icon("check")}Full week</em>` : ""}</div>
-          <div class="pp-track"><i style="width:${(covered / 7) * 100}%"></i></div></div>
+          <div class="pp-dots">${days.map((d, i) => { const n = dated().filter((e) => e.entry_date === iso(d)).length; return `<span class="${n ? "is-on" : ""}${iso(d) === today ? " is-today" : ""}" title="${DAYS[i]} · ${n}"><i></i><small>${DAYS[i][0]}</small></span>`; }).join("")}</div></div>
         <button class="pp-fill" type="button" data-pp-fill>${icon("sparkles")}Fill my week<small>posts from your favourites</small></button>
         <div class="pp-suggest" data-pp-suggest ${S.suggest ? "" : "hidden"}>${S.suggest ? suggestHtml() : ""}</div>
         <div class="pp-days">${days.map((d, i) => {
           const date = iso(d);
           const list = dated().filter((e) => e.entry_date === date);
-          return `<section class="pp-day pp-drop${date === today ? " is-today" : ""}${date < today ? " is-past" : ""}" data-pp-drop="${date}">
-            <header><span>${DAYS[i]}</span><b>${d.getDate()}</b>${date === today ? `<em>Today</em>` : ""}</header>
+          return `<section class="pp-day pp-drop${date === today ? " is-today" : ""}${date < today ? " is-past" : ""}${list.length ? "" : " is-empty"}" data-pp-drop="${date}">
+            <header><span>${DAYS[i]}</span><b>${d.getDate()}</b>${date === today ? `<em>Today</em>` : ""}${list.length ? `<i class="pp-n">${list.length}</i>` : ""}</header>
             <div class="pp-list">${list.map(entryHtml).join("")}<p class="pp-drop-hint">${list.length ? "" : "Drop a post here"}</p></div>
           </section>`;
         }).join("")}</div>`;
