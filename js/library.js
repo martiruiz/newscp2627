@@ -212,7 +212,7 @@
   // ---------- Views (supabase/library-filters.sql: views_histogram + p_min_views / p_max_views) ----------
   const VB = 28; // buckets on a log scale from 1K to 50M
   const vEdge = (i) => 1000 * Math.pow(50000, i / VB);
-  const views = { hist: null, a: 0, b: VB };
+  const views = { hist: null, a: 0, b: VB, exact: null };   // exact: [min, max] typed in the search ("2M views"), else the slider buckets
   async function loadViews() {
     const { data, error } = await db.rpc("views_histogram");
     if (error || !data?.length) return;
@@ -220,8 +220,8 @@
     for (const r of data) h[Math.min(VB - 1, Math.max(0, Number(r.bucket)))] += Number(r.posts);
     if (h.some(Boolean)) { views.hist = h; $("[data-views-order]").hidden = false; }
   }
-  const viewsSet = () => views.a > 0 || views.b < VB;
-  const viewsLabel = () => (viewsSet() ? `${kfmt(Math.round(vEdge(views.a)))} – ${views.b === VB ? `${kfmt(Math.round(vEdge(VB)))}+` : kfmt(Math.round(vEdge(views.b)))}` : "Any");
+  const viewsSet = () => !!views.exact || views.a > 0 || views.b < VB;
+  const viewsLabel = () => (views.exact ? (([lo, hi]) => (lo && hi ? `${kfmt(lo)} – ${kfmt(hi)}` : lo ? `${kfmt(lo)}+` : `≤ ${kfmt(hi)}`))(views.exact) : viewsSet() ? `${kfmt(Math.round(vEdge(views.a)))} – ${views.b === VB ? `${kfmt(Math.round(vEdge(VB)))}+` : kfmt(Math.round(vEdge(views.b)))}` : "Any");
 
   // ---------- Rendering ----------
   const countOf = (v) => (counts ? counts.get(v.id) ?? 0 : v.total);
@@ -630,7 +630,7 @@
     const ph = e.target.closest("[data-md-phase]");
     if (ph) { ui.phase = ph.dataset.mdPhase; return renderFacets(); }
     const vq = e.target.closest("[data-vq]");
-    if (vq) { views.a = Number(vq.dataset.vq); views.b = VB; renderFacets(); return load(true); }
+    if (vq) { views.a = Number(vq.dataset.vq); views.b = VB; views.exact = null; renderFacets(); return load(true); }
     const jump = e.target.closest("[data-lf-jump-to]");
     if (jump) { const t = $(`[data-lf-sec="${jump.dataset.lfJumpTo}"]`); const b = $("[data-lf-body]"); b.scrollTo({ top: t.offsetTop - b.offsetTop, behavior: "smooth" }); $$("[data-lf-jump-to]").forEach((x) => x.classList.toggle("is-on", x === jump)); }
   });
@@ -659,7 +659,7 @@
     if (lo) {
       let a = Number($("[data-views-lo]").value), b = Number($("[data-views-hi]").value);
       if (a > b - 1) { if (e.target.matches("[data-views-lo]")) a = b - 1; else b = a + 1; }
-      views.a = Math.max(0, a); views.b = Math.min(VB, b);
+      views.a = Math.max(0, a); views.b = Math.min(VB, b); views.exact = null;
       $("[data-views-lo]").value = views.a; $("[data-views-hi]").value = views.b;
       $$(".lf-hist i").forEach((x, i) => x.classList.toggle("is-in", i >= views.a && i < views.b));
       const fl = $(".lf-fl"); fl.style.left = `${(views.a / VB) * 100}%`; fl.style.right = `${100 - (views.b / VB) * 100}%`;
@@ -739,13 +739,40 @@
     for (const v of [...out.values()]) if (v.category === "city" && clubs.some((c) => c.includes(fold(v.name)))) out.delete(v.id);
     return [...out.values()];
   }
-  let sentence = [];
+  // Views in a sentence: "2 milions de visualitzacions", "més de 500k views", "entre 1M i 5M", "menys de 100.000 reproduccions"
+  const VIEWS_WORD = /(visualitzacions|visualizaciones|views|reproduccions|reproducciones|plays|vistes|visites|visitas|visionados)/;
+  const NUM = "(\\d+(?:[.,]\\d+)*)\\s*(milions?|millones?|millions?|mill?|m|mil|k|thousand|miles)?(?![a-z])";
+  function toNumber(n, unit) {
+    let x;
+    if (/^\d{1,3}([.,]\d{3})+$/.test(n)) x = Number(n.replace(/[.,]/g, ""));   // 2.000.000 / 500,000
+    else x = Number(n.replace(",", "."));
+    const u = (unit || "").toLowerCase();
+    if (/^(milions?|millones?|millions?|m)$/.test(u) || u === "mill") x *= 1e6;
+    else if (/^(mil|k|thousand|miles)$/.test(u)) x *= 1e3;
+    return Number.isFinite(x) && x > 0 ? Math.round(x) : null;
+  }
+  function parseViews(text) {
+    const t = ` ${fold(text)} `;
+    if (!VIEWS_WORD.test(t) && !/\d\s*(m|k)\b/.test(t)) return null;
+    const nums = [...t.matchAll(new RegExp(NUM, "g"))].map((m) => ({ n: toNumber(m[1], m[2]), at: m.index })).filter((m) => m.n && m.n >= 100);
+    if (!nums.length) return null;
+    const near = (re, m) => re.test(t.slice(Math.max(0, m.at - 22), m.at));
+    if (nums.length >= 2 && /(entre|between|de .* a |from .* to )/.test(t)) return [Math.min(nums[0].n, nums[1].n), Math.max(nums[0].n, nums[1].n)];
+    const m = nums[0];
+    if (near(/(menys de|menos de|less than|under|fins a|hasta|up to|maxim|maximo|<)\s*$/, m)) return [null, m.n];
+    return [m.n, null];   // "2 milions de visualitzacions", "més de 2M", "+2M": at least
+  }
+  let sentence = [], sentenceViews = null;
   function applySentence() {
-    if (!sentence.length) return;
+    if (!sentence.length && !sentenceViews) return;
     const facets = {};
     for (const v of sentence) (facets[v.category] ||= []).push(v.id);
     fsearch.value = ""; fresults.hidden = true;
-    applyState({ order: state().order, period: state().period, facets });
+    const ex = sentenceViews;
+    // the slider shows the closest buckets; the query uses the exact numbers
+    const bucket = (n) => Math.max(0, Math.min(VB, Math.round((Math.log(n / 1000) / Math.log(50000)) * VB)));
+    applyState({ order: state().order, period: state().period, facets,
+      ...(ex ? { views: [ex[0] ? bucket(ex[0]) : 0, ex[1] ? bucket(ex[1]) : VB], viewsExact: ex } : {}) });
     load(true);
   }
 
@@ -762,7 +789,10 @@
     const hl = (n) => { const i = n.toLowerCase().indexOf(q); return `${esc(n.slice(0, i))}<mark>${esc(n.slice(i, i + q.length))}</mark>${esc(n.slice(i + q.length))}`; };
     // a sentence (2+ words) that names several filters: offer to apply them all at once
     sentence = !LAYOUT_BEFORE && /\S\s+\S/.test(q) ? parseSentence(q) : [];
-    const sentenceHtml = sentence.length >= 2 ? `<button type="button" class="lf-hit lf-hit-all is-kb" data-hit-all>${svg("search")}<span class="lf-hv"><b>${esc(tx("Search with {n} filters", { n: sentence.length }))}</b><span class="lf-hit-tags">${sentence.slice(0, 6).map((v) => `<i>${esc(pretty(v.name))}</i>`).join("")}${sentence.length > 6 ? `<i>+${sentence.length - 6}</i>` : ""}</span></span></button>` : "";
+    sentenceViews = !LAYOUT_BEFORE ? parseViews(q) : null;
+    const viewsTag = sentenceViews ? `<i class="is-views">${esc(sentenceViews[0] && sentenceViews[1] ? `${kfmt(sentenceViews[0])} – ${kfmt(sentenceViews[1])}` : sentenceViews[0] ? `${kfmt(sentenceViews[0])}+` : `≤ ${kfmt(sentenceViews[1])}`)} ${esc(tx("views"))}</i>` : "";
+    const nFilters = sentence.length + (sentenceViews ? 1 : 0);
+    const sentenceHtml = sentence.length >= 2 || sentenceViews ? `<button type="button" class="lf-hit lf-hit-all is-kb" data-hit-all>${svg("search")}<span class="lf-hv"><b>${esc(tx(nFilters === 1 ? "Search with 1 filter" : "Search with {n} filters", { n: nFilters }))}</b><span class="lf-hit-tags">${viewsTag}${sentence.slice(0, 6).map((v) => `<i>${esc(pretty(v.name))}</i>`).join("")}${sentence.length > 6 ? `<i>+${sentence.length - 6}</i>` : ""}</span></span></button>` : "";
     fresults.hidden = false;
     fresults.innerHTML = sentenceHtml + (hits.length ? hits.map((v, i) => {
       const c = CAT[v.category];
@@ -785,7 +815,7 @@
   }
   fsearch.addEventListener("input", searchFilters);
   fsearch.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") { e.preventDefault(); sentence.length >= 2 ? applySentence() : pickHit(0); }
+    if (e.key === "Enter") { e.preventDefault(); sentence.length >= 2 || sentenceViews ? applySentence() : pickHit(0); }
     if (e.key === "Escape") { fsearch.value = ""; fresults.hidden = true; }
   });
   fresults.addEventListener("click", (e) => { if (e.target.closest("[data-hit-all]")) return applySentence(); const b = e.target.closest("[data-hit]"); if (b) pickHit(Number(b.dataset.hit)); });
@@ -943,11 +973,13 @@
     facets: Object.fromEntries(Object.entries(selected).filter(([, s]) => s.size).map(([k, s]) => [k, [...s]])),
     q: $("[data-q]").value.trim(),
     ...(viewsSet() ? { views: [views.a, views.b] } : {}),
+    ...(views.exact ? { viewsExact: views.exact } : {}),
   });
 
   function applyState(f) {
     for (const c of CATEGORIES) selected[c.key] = new Set((f.facets?.[c.key] || []).map(Number).filter((id) => catalog.byId.has(id)));
     [views.a, views.b] = Array.isArray(f.views) ? f.views.map(Number) : [0, VB];
+    views.exact = Array.isArray(f.viewsExact) ? f.viewsExact.map((x) => (x == null ? null : Number(x))) : null;
     ui.q = {};
     if (f.order) $$("[data-order] button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.value === f.order)));
     setPeriod(f.period || "all");
@@ -969,7 +1001,8 @@
     const filters = Object.fromEntries(Object.entries(s.facets).map(([k, ids]) => [k, { ids, mode: "any" }]));
     const args = { p_filters: filters, p_q: s.q || null, p_from: from, p_to: to };
     // views range (only sent when used, so the page keeps working before library-filters.sql)
-    if (s.views) { const [a, b] = s.views; if (a > 0) args.p_min_views = Math.round(vEdge(a)); if (b < VB) args.p_max_views = Math.round(vEdge(b)); }
+    if (s.viewsExact) { const [lo, hi] = s.viewsExact; if (lo) args.p_min_views = lo; if (hi) args.p_max_views = hi; }
+    else if (s.views) { const [a, b] = s.views; if (a > 0) args.p_min_views = Math.round(vEdge(a)); if (b < VB) args.p_max_views = Math.round(vEdge(b)); }
     return args;
   }
 
@@ -980,7 +1013,7 @@
       const v = catalog.byId.get(id);
       if (v) c.push({ label: `${pretty(v.name)}`, title: cat.sec === "discover" ? "Discover" : cat.label, v, clear: () => { selected[cat.key].delete(id); renderFacets(); } });
     }
-    if (s.views) c.push({ label: `${viewsLabel()} views`, title: "Views", clear: () => { views.a = 0; views.b = VB; renderFacets(); } });
+    if (s.views) c.push({ label: `${viewsLabel()} views`, title: "Views", clear: () => { views.a = 0; views.b = VB; views.exact = null; renderFacets(); } });
     if (s.period !== "all") c.push({ label: s.period === "custom" ? `${s.from || "…"} → ${s.to || "…"}` : PERIODS[s.period], clear: () => { setPeriod("all"); ["from", "to"].forEach((k) => { const el = $(`[data-${k}]`); el.value = ""; el.dispatchEvent(new Event("input")); }); } });
     if (s.q) c.push({ label: `“${s.q}”`, clear: () => ($("[data-q]").value = "") });
     return c;

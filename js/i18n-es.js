@@ -467,6 +467,7 @@ window.SCP_ES = {
   "billed yearly": "facturación anual",
   "or {price}/year": "o {price}/año",
   "Recommended": "Recomendado",
+  "Search with 1 filter": "Buscar con 1 filtro",
   "Posts by content creators": "Publicaciones de creadores de contenido",
   "Search filters or write what you need: signing reels that worked…": "Busca filtros o escribe lo que necesitas: reels de fichajes que funcionaron…",
   "I work on": "Trabajo en",

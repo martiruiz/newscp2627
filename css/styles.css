@@ -5974,3 +5974,4 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 .lf-sp-creators.is-on, .lf-sp-creators.is-on .lf-sp-tx b { color: #1a1206; }
 .lf-sp-creators.is-on .lf-sp-n { color: rgba(26, 18, 6, 0.75); }
 .lf-sp-creators.is-on .lf-sp-ic { background: rgba(26, 18, 6, 0.12); }
+.lf-hit-tags i.is-views { background: var(--gold-tint); color: var(--gold); font-weight: 600; }
