@@ -966,7 +966,7 @@
 
   // Card = the post (clean cover, or the embed for X / LinkedIn / Facebook) + a footer joined to it (who, when, views).
   // On the cover, always: the network and the format / length, and "Following" (which folds into a star).
-  // On hover: a rail on the right with Save · Add to Content Plan · AI analysis · Open original.
+  // On hover: a rail on the right with Drag to the Content Plan · Save · AI analysis.
   // Footer avatar: Instagram profile picture (fills the circle) › crest (inside a neutral circle) › initials (gold on dark)
   function footCrest(v, who) {
     const name = v?.name || who || "";
@@ -991,7 +991,6 @@
           <div class="lib-rail">
             <button class="lib-grip" type="button" data-pp-grip="${esc(p.id)}" data-tip="${esc(tx("Drag to your Content Plan"))}" aria-label="${esc(tx("Drag to your Content Plan"))}">${icon("grip-vertical")}</button>
             ${saveBtn(p.id)}
-            <button class="lib-plan-add" type="button" data-plan-add="${esc(p.id)}" data-tip="${esc(tx("Add to Content Plan"))}" aria-label="${esc(tx("Add to Content Plan"))}">${icon("calendar-plus")}</button>
             <button class="lib-ai" type="button" data-open="${esc(p.id)}" data-tip="${esc(tx("AI analysis"))}" aria-label="${esc(tx("AI analysis"))}">${icon("sparkles")}</button>
             ${me.isSuper ? `<button class="lib-remove" type="button" data-remove="${esc(p.id)}" data-tip="Remove (superadmin)" aria-label="Remove from the library">${icon("trash-2")}</button>` : ""}
           </div>`;
