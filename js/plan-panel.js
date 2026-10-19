@@ -204,7 +204,7 @@
   function headHtml() {
     return `<header class="pp-head">
       <div class="pp-title"><span class="pp-eyebrow">${icon("calendar-days")}Content Plan</span>
-        ${S.plans.length ? `<select class="pp-plan" data-pp-plan aria-label="Plan">${S.plans.map((p) => `<option value="${p.id}"${p.id === S.planId ? " selected" : ""}>${esc(p.name)}</option>`).join("")}<option value="__new">+ New plan…</option></select>` : `<b class="pp-plan-name">Your plan</b>`}</div>
+        ${S.plans.length ? `<select class="pp-plan" data-pp-plan aria-label="Plan">${S.plans.map((p) => `<option value="${p.id}"${p.id === S.planId ? " selected" : ""}>${esc(p.name)}</option>`).join("")}<option value="__rename">✎ Rename this plan…</option><option value="__new">+ New plan…</option></select><button class="pp-icon pp-rename" type="button" data-pp-rename title="Rename this plan" aria-label="Rename this plan">${icon("pencil")}</button>` : `<b class="pp-plan-name">Your plan</b>`}</div>
       <a class="pp-icon" href="content-plan.html" title="Open the full Content Plan">${icon("arrow-up-right")}</a>
       <button class="pp-icon" type="button" data-pp-close aria-label="Close the Content Plan">${icon("x")}</button>
     </header>`;
@@ -322,6 +322,7 @@
   });
   panel.addEventListener("change", async (e) => {
     if (e.target.matches("[data-pp-plan]")) {
+      if (e.target.value === "__rename") { e.target.value = S.planId; return renamePlan(); }
       if (e.target.value === "__new") {
         const name = window.prompt("Name of the new plan (e.g. Pre-season, Kit launch, Women's team)")?.trim();
         if (name) {
@@ -335,6 +336,17 @@
     }
     if (e.target.matches("[data-sg-day]")) { const s = S.suggest?.items[Number(e.target.dataset.sgDay)]; if (s) s.date = e.target.value; }
   });
+  async function renamePlan() {
+    const cur = S.plans.find((p) => p.id === S.planId);
+    if (!cur) return;
+    const name = window.prompt("New name for this plan", cur.name)?.trim();
+    if (!name || name === cur.name) return;
+    const { error } = await db.from("org_plans").update({ name: name.slice(0, 80) }).eq("id", cur.id);
+    if (error) return toast(errText(error));
+    cur.name = name.slice(0, 80);
+    render();
+  }
+  panel.addEventListener("click", (e) => { if (e.target.closest("[data-pp-rename]")) renamePlan(); });
   async function reload() {
     try { await loadEntries(); } catch (e) { toast(errText(e)); }
     render();
