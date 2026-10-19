@@ -125,8 +125,8 @@
   async function saving(run) {
     pending++; saveSign();
     try {
-      let r = await run().catch((err) => ({ error: err }));
-      if (r.error && netFail(r.error)) { await new Promise((res) => setTimeout(res, 1200)); r = await run().catch((err) => ({ error: err })); }
+      let r = await Promise.resolve().then(run).catch((err) => ({ error: err }));
+      if (r.error && netFail(r.error)) { await new Promise((res) => setTimeout(res, 1200)); r = await Promise.resolve().then(run).catch((err) => ({ error: err })); }
       return r;
     } finally { pending--; saveSign(); }
   }
