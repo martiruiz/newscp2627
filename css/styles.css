@@ -5764,3 +5764,28 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 .pp-title .pp-eyebrow { flex-basis: 100%; }
 .pp-rename { width: 28px; height: 28px; }
 .pp-rename svg { width: 14px; height: 14px; }
+
+/* Library: one calendar for the date range (js/range-cal.js) */
+.rcal-wrap { padding: 10px 6px 4px; border-top: 0.5px solid var(--line-soft); margin-top: 6px; }
+.rcal { width: 280px; }
+.rcal-sum { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 30px; padding: 0 4px 8px; font-size: 13px; color: var(--muted); }
+.rcal-sum b { color: var(--text); font-weight: 600; }
+.rcal-sum i { font-style: normal; color: var(--gold); }
+.rcal-clear { border: 0; background: none; padding: 4px 6px; border-radius: 8px; font: inherit; font-size: 12px; color: var(--muted); cursor: pointer; }
+.rcal-clear:hover { color: var(--text); background: rgba(var(--fg), 0.06); }
+.rcal-head { display: flex; align-items: center; justify-content: space-between; padding: 0 2px 8px; }
+.rcal-head b { font-size: 14px; }
+.rcal-head button { width: 30px; height: 30px; border: 0; border-radius: 9px; background: rgba(var(--fg), 0.05); color: var(--text); font-size: 18px; line-height: 1; cursor: pointer; }
+.rcal-head button:hover:not(:disabled) { background: rgba(var(--fg), 0.12); }
+.rcal-head button:disabled { opacity: 0.3; cursor: default; }
+.rcal-grid { display: grid; grid-template-columns: repeat(7, 1fr); row-gap: 2px; }
+.rcal-grid small { text-align: center; font-size: 11px; color: var(--muted); padding: 4px 0 6px; }
+.rcal-grid button { position: relative; height: 34px; border: 0; background: none; color: var(--text); font: inherit; font-size: 13px; cursor: pointer; border-radius: 9px; }
+.rcal-grid button:hover:not(:disabled) { background: rgba(var(--fg), 0.08); }
+.rcal-grid button:disabled { color: var(--muted-dim); cursor: default; }
+.rcal-grid button.is-today { box-shadow: inset 0 0 0 1px rgba(240, 184, 74, 0.5); }
+.rcal-grid button.is-in { background: rgba(240, 184, 74, 0.16); border-radius: 0; }
+.rcal-grid button.is-start, .rcal-grid button.is-end { background: var(--gold); color: var(--on-gold); font-weight: 700; }
+.rcal-grid button.is-start:not(.is-end) { border-radius: 9px 0 0 9px; }
+.rcal-grid button.is-end:not(.is-start) { border-radius: 0 9px 9px 0; }
+.rcal-grid button.is-preview { background: rgba(240, 184, 74, 0.55); }

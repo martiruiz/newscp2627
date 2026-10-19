@@ -61,6 +61,7 @@
   ];
   const PERIODS = { 7: "This week", 31: "This month", season: "This season", custom: "Custom dates" };
   const pretty = (name) => (name && name[0] === name[0].toLowerCase() ? name[0].toUpperCase() + name.slice(1) : name);
+  const shortDate = (v) => v ? new Date(`${v}T12:00:00`).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" }) : "";
   const kfmt = (n) => (n >= 1e6 ? `${(n / 1e6).toFixed(n < 1e7 ? 1 : 0).replace(".0", "")}M` : n >= 1e4 ? `${Math.round(n / 1e3)}k` : n >= 1e3 ? `${(n / 1e3).toFixed(1).replace(".0", "")}k` : String(n));
 
   let catalog = { byCat: {}, byId: new Map() };
@@ -550,7 +551,7 @@
   });
   document.addEventListener("click", (e) => { if (!e.target.closest("[data-dd], .dp-pop")) $$("[data-dd-menu]").forEach((m) => { m.hidden = true; m.previousElementSibling.setAttribute("aria-expanded", "false"); }); });
   function paintDropdowns(s) {
-    $("[data-period-label]").textContent = s.period === "all" ? "All time" : s.period === "custom" ? (s.from || s.to ? `${s.from || "…"} → ${s.to || "…"}` : "Custom dates") : PERIODS[s.period];
+    $("[data-period-label]").textContent = s.period === "all" ? "All time" : s.period === "custom" ? (s.from || s.to ? `${shortDate(s.from) || "…"} → ${shortDate(s.to) || "…"}` : "Custom dates") : PERIODS[s.period];
     $("[data-order-label]").textContent = $(`[data-order] [data-value="${s.order}"]`)?.textContent.trim() || "Latest";
   }
 
