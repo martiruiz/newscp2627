@@ -467,6 +467,8 @@ window.SCP_ES = {
   "billed yearly": "facturación anual",
   "or {price}/year": "o {price}/año",
   "Recommended": "Recomendado",
+  "Not saved — try again.": "No se ha guardado — inténtalo de nuevo.",
+  "Your plan isn't ready yet — try again in a second.": "Tu plan aún no está listo — inténtalo en un segundo.",
   "See the whole week": "Ver toda la semana",
   "Nothing planned this day.": "Nada planificado este día.",
   "Drag posts from the library here.": "Arrastra posts de la biblioteca aquí.",

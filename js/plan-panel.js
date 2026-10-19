@@ -39,6 +39,14 @@
     entries: [], refs: new Map(), selected: new Set(), suggest: null,
     day: null,   // week view: one day opened big (a date), or null for the whole week
   };
+  try {
+    const at = JSON.parse(store.get("scp-pp-at") || "null");
+    if (at?.anchor && Date.now() - (at.t || 0) < 12 * 3600e3 && /^\d{4}-\d{2}-\d{2}$/.test(at.anchor)) {
+      const [y, m, d] = at.anchor.split("-").map(Number);
+      S.anchor = S.view === "week" ? mondayOf(new Date(y, m - 1, d)) : new Date(y, m - 1, d);
+      if (S.view === "week" && at.day && /^\d{4}-\d{2}-\d{2}$/.test(at.day)) S.day = at.day;
+    }
+  } catch {}
   const allowed = () => !S.ent || S.ent.has_planner;
   const range = () => {
     if (S.view === "week") { const m = mondayOf(S.anchor); return [m, addDays(m, 6)]; }
@@ -110,8 +118,36 @@
     S.entries = [...(a.data || []), ...(b.data || [])];
     await loadRefs(S.entries.map(refId));
   }
+  // Every write to the plan goes through here: retried once if the connection drops, a "Saving… / Saved" sign in the
+  // panel, and a warning if the page is closed or reloaded before it's stored.
+  let pending = 0, savedTimer = 0;
+  const netFail = (e) => e && (!e.code || e.code === "") && /fetch|network|load failed|timeout/i.test(e.message || "");
+  async function saving(run) {
+    pending++; saveSign();
+    try {
+      let r = await run().catch((err) => ({ error: err }));
+      if (r.error && netFail(r.error)) { await new Promise((res) => setTimeout(res, 1200)); r = await run().catch((err) => ({ error: err })); }
+      return r;
+    } finally { pending--; saveSign(); }
+  }
+  function saveSign() {
+    const el = $("[data-pp-saved]", panel);
+    clearTimeout(savedTimer);
+    if (!el) return;
+    el.hidden = false;
+    el.classList.toggle("is-saving", pending > 0);
+    el.innerHTML = pending > 0 ? `<span class="ai-spinner"></span>Saving…` : `${icon("check")}Saved`;
+    if (!pending) savedTimer = setTimeout(() => { el.hidden = true; }, 2500);
+  }
+  addEventListener("beforeunload", (e) => { if (pending > 0) { e.preventDefault(); e.returnValue = ""; } });
+  // Which week / day the panel shows, kept across reloads
+  const keepPlace = () => store.set("scp-pp-at", JSON.stringify({ anchor: iso(S.anchor), day: S.day, t: Date.now() }));
+
   // Creates one entry per post. Returns the created rows (or null on error).
   async function addPosts(ids, date, planId = S.planId, time = "12:00") {
+    try { await ready(); } catch (e) { toast(errText(e)); return null; }
+    planId ||= S.planId;
+    if (!planId) { toast("Your plan isn't ready yet — try again in a second."); return null; }
     await loadRefs(ids);
     const rows = ids.map((id) => {
       const p = postInfo(id);
@@ -121,8 +157,8 @@
         content_type: typeFor(p?.format), inspiration: `ci-${id}`,
       };
     });
-    const { data, error } = await db.from("org_entries").insert(rows).select(COLS);
-    if (error) { toast(errText(error)); return null; }
+    const { data, error } = await saving(() => db.from("org_entries").insert(rows).select(COLS));
+    if (error || !data?.length) { toast(error ? `Not saved: ${errText(error)}` : "Not saved — try again."); return null; }
     if (planId === S.planId) {
       const [from, to] = range();
       for (const e of data) if (!e.entry_date || (e.entry_date >= iso(from) && e.entry_date <= iso(to))) S.entries.push(e);
@@ -132,7 +168,7 @@
     const where = date ? `${fmtDay(date)}${time !== "12:00" ? ` · ${time}` : ""}` : "No date";
     const planName = planId !== S.planId ? ` in “${S.plans.find((p) => p.id === planId)?.name || "your plan"}”` : "";
     toast(`${data.length === 1 ? "Added" : `${data.length} posts added`} to ${where}${planName}`, "Undo", async () => {
-      const { error: e } = await db.from("org_entries").delete().in("id", data.map((x) => x.id));
+      const { error: e } = await saving(() => db.from("org_entries").delete().in("id", data.map((x) => x.id)));
       if (e) return toast(errText(e));
       S.entries = S.entries.filter((x) => !data.some((d) => d.id === x.id));
       render();
@@ -149,7 +185,7 @@
     const [from, to] = range();
     if (date && (date < iso(from) || date > iso(to))) S.entries = S.entries.filter((x) => x !== e);
     render([id]);
-    const { error } = await db.from("org_entries").update({ ...changes, updated_at: new Date().toISOString() }).eq("id", id);
+    const { error } = await saving(() => db.from("org_entries").update({ ...changes, updated_at: new Date().toISOString() }).eq("id", id));
     if (error) { Object.assign(e, before); toast(errText(error)); return render(); }
     toast(`Moved to ${date ? `${fmtDay(date)} · ${e.time_slot}` : "No date"}`);
   }
@@ -160,7 +196,7 @@
     const prev = e.time_slot;
     e.time_slot = time;
     render([id]);
-    const { error } = await db.from("org_entries").update({ time_slot: time, updated_at: new Date().toISOString() }).eq("id", id);
+    const { error } = await saving(() => db.from("org_entries").update({ time_slot: time, updated_at: new Date().toISOString() }).eq("id", id));
     if (error) { e.time_slot = prev; toast(errText(error)); return render(); }
     toast(`${fmtDay(e.entry_date)} · ${time}`);
   }
@@ -169,10 +205,10 @@
     if (!e) return;
     S.entries = S.entries.filter((x) => x !== e);
     render();
-    const { error } = await db.from("org_entries").delete().eq("id", id);
+    const { error } = await saving(() => db.from("org_entries").delete().eq("id", id));
     if (error) { S.entries.push(e); render(); return toast(errText(error)); }
     toast("Removed from your plan", "Undo", async () => {
-      const { error: e2 } = await db.from("org_entries").insert(e);
+      const { error: e2 } = await saving(() => db.from("org_entries").insert(e));
       if (e2) return toast(errText(e2));
       S.entries.push(e); render([e.id]);
     });
@@ -220,6 +256,7 @@
     return `<header class="pp-head">
       <div class="pp-title"><span class="pp-eyebrow">${icon("calendar-days")}Content Plan</span>
         ${S.plans.length ? `<select class="pp-plan" data-pp-plan aria-label="Plan">${S.plans.map((p) => `<option value="${p.id}"${p.id === S.planId ? " selected" : ""}>${esc(p.name)}</option>`).join("")}<option value="__rename">✎ Rename this plan…</option><option value="__new">+ New plan…</option></select><button class="pp-icon pp-rename" type="button" data-pp-rename title="Rename this plan" aria-label="Rename this plan">${icon("pencil")}</button>` : `<b class="pp-plan-name">Your plan</b>`}</div>
+      <span class="pp-saved" data-pp-saved role="status" aria-live="polite" hidden></span>
       <a class="pp-icon" href="content-plan.html" title="Open the full Content Plan">${icon("arrow-up-right")}</a>
       <button class="pp-icon" type="button" data-pp-close aria-label="Close the Content Plan">${icon("x")}</button>
     </header>`;
@@ -263,6 +300,7 @@
   }
   function render(fresh = []) {
     lib.classList.toggle("plan-day", S.open && S.view === "week" && !!S.day);   // one day open: a wider panel
+    keepPlace();
     if (!S.open) return;
     if (!allowed()) {
       panel.innerHTML = `${headHtml()}<div class="pp-gate">${icon("lock")}<b>The Content Plan is part of Library + Content Plan and All Access</b>
@@ -323,6 +361,7 @@
       </div>
       <footer class="pp-foot" data-pp-foot>${footHtml()}</footer>`;
     fresh.forEach((id) => $(`[data-pp-entry="${CSS.escape(String(id))}"]`, panel)?.classList.add("is-new"));
+    if (pending) saveSign();
     requestAnimationFrame(() => T.fit(panel));
   }
   const footHtml = () => S.selected.size
@@ -637,12 +676,12 @@
         const p = S.refs.get(it.id);
         rows.push({ plan_id: S.planId, entry_date: it.date, time_slot: "12:00", status: "planned", label: `Idea: ${p?.who || "Post"}${p?.format ? ` · ${p.format}` : ""}`.slice(0, 140), content_type: typeFor(p?.format), inspiration: `ci-${it.id}` });
       }
-      const { data, error } = await db.from("org_entries").insert(rows).select(COLS);
+      const { data, error } = await saving(() => db.from("org_entries").insert(rows).select(COLS));
       if (error) { toast(errText(error)); return render(); }
       S.entries.push(...data);
       render(data.map((e) => e.id));
       toast(`${data.length} posts added to your week`, "Undo", async () => {
-        const { error: e } = await db.from("org_entries").delete().in("id", data.map((x) => x.id));
+        const { error: e } = await saving(() => db.from("org_entries").delete().in("id", data.map((x) => x.id)));
         if (e) return toast(errText(e));
         S.entries = S.entries.filter((x) => !data.some((d) => d.id === x.id));
         render();

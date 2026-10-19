@@ -5879,3 +5879,9 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
   .library.plan-open.plan-day.filters-collapsed { grid-template-columns: 0 minmax(0, 1fr) 440px; }
   .library.plan-open.plan-day .pp-big-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+/* Content Plan panel: "Saving… / Saved" next to the plan name */
+.pp-saved { display: inline-flex; align-items: center; gap: 5px; margin-left: auto; padding: 3px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 600; color: #00d85b; background: rgba(0, 216, 91, 0.1); white-space: nowrap; }
+.pp-saved[hidden] { display: none; }
+.pp-saved svg { width: 13px; height: 13px; }
+.pp-saved.is-saving { color: var(--muted); background: rgba(var(--fg), 0.06); }
+.pp-saved .ai-spinner { width: 11px; height: 11px; border-width: 2px; }
