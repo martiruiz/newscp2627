@@ -84,6 +84,7 @@
     { key: "discover", label: "Discover" }, { key: "format", label: "Format" }, { key: "platform", label: "Platform" },
     { key: "explore", label: "Explore by" }, { key: "content", label: "Content", ai: true }, { key: "brands", label: "Brands", ai: true },
   ] : [
+    { key: "recipes", label: "Ready-made searches", jump: "Recipes", q: "4–5 filters in one click" },
     { key: "discover", label: "What works", jump: "Works" }, { key: "occasion", label: "Occasion", ai: true, q: "What are you posting about?" },
     { key: "goal", label: "Goal & sponsors", ai: true, jump: "Goal", q: "What should it achieve?" }, { key: "where", label: "Where & how", jump: "Where", q: "Platform and format" },
     { key: "benchmark", label: "Inspiration from", jump: "Inspiration", q: "Sports, competitions and clubs" },
@@ -118,6 +119,7 @@
     trophy: '<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3a3 3 0 0 1-3 4M7 5H4a3 3 0 0 0 3 4"/>',
     shield: '<path d="M12 2 4 6v6c0 5 3.5 8.5 8 10 4.5-1.5 8-5 8-10V6z"/>',
     megaphone: '<path d="M3 10v4h4l6 4V6L7 10z"/><path d="M17 8a5 5 0 0 1 0 8"/>',
+    search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M8 11h6M11 8v6"/>',
     calendar: '<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/>',
     grid: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>',
     swap: '<path d="M17 3l4 4-4 4"/><path d="M3 7h18"/><path d="M7 21l-4-4 4-4"/><path d="M21 17H3"/>',
@@ -247,7 +249,9 @@
     const items = byCount(all.filter((v) => !q || v.name.toLowerCase().includes(q)));
     const showAll = ui.all.has(c.key) || q;
     const N = c.crest ? 12 : 7;
-    const shown = showAll ? items : items.slice(0, N);
+    // long lists (cities, opponents): only through the search box — the chosen ones stay visible
+    const searchOnly = !LAYOUT_BEFORE && ["city", "opponent"].includes(c.key) && !q;
+    const shown = searchOnly ? items.filter(isOn) : showAll ? items : items.slice(0, N);
     const searchBox = c.crest || c.search || all.length > 12
       ? `<input class="lf-lsearch" type="search" placeholder="${esc(tx("Search {n} {what}", { n: all.length.toLocaleString(window.SCP_LOC || "en-GB"), what: tx(c.label).toLowerCase() }))}" value="${esc(ui.q[c.key] || "")}" aria-label="${esc(tx("Search {what}", { what: tx(c.label).toLowerCase() }))}" data-facet-search="${c.key}">` : "";
     let body;
@@ -262,6 +266,7 @@
         return `<button type="button" class="lf-li${isOn(v) ? " is-on" : ""}${n === 0 && !isOn(v) ? " is-zero" : ""}" aria-pressed="${isOn(v)}" data-facet="${c.key}" data-id="${v.id}">${lead}<span class="lf-lab">${esc(pretty(v.name))}</span><span class="lf-cnt">${kfmt(n)}</span></button>`;
       }).join("") || `<p class="lf-none">Nothing matches “${esc(ui.q[c.key])}”.</p>`}</div>`;
     }
+    if (searchOnly) return searchBox + (shown.length ? `<div class="lf-list">${shown.map((v) => `<button type="button" class="lf-li is-on" aria-pressed="true" data-facet="${c.key}" data-id="${v.id}"><span class="lf-lab">${esc(pretty(v.name))}</span><span class="lf-cnt">${kfmt(countOf(v))}</span></button>`).join("")}</div>` : `<p class="lf-none">${esc(tx("Type to search {n} {what}", { n: all.length.toLocaleString(window.SCP_LOC || "en-GB"), what: tx(c.label).toLowerCase() }))}</p>`);
     const moreBtn = !showAll && items.length > N ? `<button type="button" class="lf-showall" data-lf-all="${c.key}">${tx("Show all {n}", { n: items.length.toLocaleString(window.SCP_LOC || "en-GB") })}</button>` : "";
     return searchBox + body + moreBtn;
   }
@@ -273,12 +278,23 @@
 
   function discoverHtml() {
     const sp = byCountStable(catalog.byCat.trend || []);
-    const rows = sp.map((v) => {
+    let rows = sp.map((v) => {
       const s = special(v), n = countOf(v), on = isOn(v), zero = n === 0 && !on;
       return `<button type="button" class="lf-sp ${s.cls}${on ? " is-on" : ""}${zero ? " is-zero" : ""}" aria-pressed="${on}" ${zero ? 'aria-disabled="true" ' : ""}data-facet="trend" data-id="${v.id}"${s.desc ? ` data-sp-tip="${esc(tx(s.desc))}"` : ""}>
         <span class="lf-sp-ic">${svg(s.ico)}</span><span class="lf-sp-tx"><b>${esc(pretty(v.name))}</b></span>${s.desc ? `<span class="lf-sp-info" data-sp-info role="button" tabindex="0" aria-label="${esc(tx("What is this?"))}" title="${esc(tx("What is this?"))}">i</span>` : ""}
         <span class="lf-sp-n">${zero ? "No matches" : kfmt(n)}</span>${svg("check", "lf-sp-ck")}</button>`;
-    }).join("");
+    });
+    // "Content Creators" (Publisher type): its own gold button right under Replicable ideas
+    const cc = (catalog.byCat.entity || []).find((v) => v.name.toLowerCase() === "content creators");
+    if (cc) {
+      const n = countOf(cc), on = isOn(cc), zero = n === 0 && !on;
+      const btn = `<button type="button" class="lf-sp lf-sp-creators${on ? " is-on" : ""}${zero ? " is-zero" : ""}" aria-pressed="${on}" ${zero ? 'aria-disabled="true" ' : ""}data-facet="entity" data-id="${cc.id}" title="${esc(tx("Posts by content creators"))}">
+        <span class="lf-sp-ic">${svg("user")}</span><span class="lf-sp-tx"><b>${esc(tx("Content Creators"))}</b></span>
+        <span class="lf-sp-n">${zero ? "No matches" : kfmt(n)}</span>${svg("check", "lf-sp-ck")}</button>`;
+      const at = sp.findIndex((v) => v.name.toLowerCase() === "replicable ideas");
+      rows.splice(at >= 0 ? at + 1 : rows.length, 0, btn);
+    }
+    rows = rows.join("");
     const vOpen = ui.open === "views";
     // Views exist only on Instagram, TikTok and YouTube (Shorts too): with only X / Facebook / LinkedIn chosen, no Views filter
     const pfSel = [...(selected.platform || [])].map((id) => catalog.byId.get(id)?.name.toLowerCase());
@@ -360,13 +376,142 @@
     return `<div class="lf-stack">${top.map((c) => rowHtml(c)).join("")}${rest.length ? `<div class="lf-more-rows"${expanded ? "" : " hidden"}>${rest.map((c) => rowHtml(c)).join("")}</div><button type="button" class="lf-morebtn" data-lf-more="${sec}">${expanded ? "Show fewer" : `+${rest.length} more`}</button>` : ""}</div>`;
   }
 
+  // ---------- Role: the sections are ordered for the way each team works (Profile preference "libraryRole") ----------
+  const ROLES = [
+    { key: "social", label: "Social media", order: ["recipes", "discover", "occasion", "where", "benchmark", "goal"] },
+    { key: "partner", label: "Partnerships", order: ["recipes", "discover", "goal", "occasion", "benchmark", "where"] },
+    { key: "creator", label: "Content creation", order: ["recipes", "discover", "where", "occasion", "benchmark", "goal"] },
+  ];
+  const DEFAULT_ORDER = ["recipes", "discover", "occasion", "goal", "where", "benchmark"];
+  async function saveRole(role) {
+    me.role = role; store.set("scp-lib-role", role);
+    renderFacets();
+    try {   // keep it in the profile too, merged with the other preferences
+      const { data: { session } } = await db.auth.getSession();
+      const { data: p } = await db.from("profiles").select("preferences,newsletter,newsletter_frequency").eq("id", session.user.id).single();
+      await db.rpc("update_my_preferences", { p_preferences: { ...(p.preferences || {}), libraryRole: role }, p_newsletter: p.newsletter, p_frequency: p.newsletter_frequency || "weekly" });
+    } catch {}
+  }
+  const roleHtml = () => `<div class="lf-role"><span>I work on</span>${ROLES.map((r) => `<button type="button" class="${me.role === r.key ? "is-on" : ""}" aria-pressed="${me.role === r.key}" data-lf-role="${r.key}">${esc(r.label)}</button>`).join("")}</div>`;
+
+  // ---------- Recipes: ready-made searches (4–5 filters in one click) ----------
+  const RECIPES = [
+    { key: "signing-reel", title: "Signing announcement on Reels", ico: "swap", roles: ["social", "creator"], vals: [["transfer", "Signing"], ["format", "Reel"]] },
+    { key: "sponsor-worked", title: "Sponsor activations that worked", ico: "tag", roles: ["partner"], vals: [["sponsor_integration", "Sponsor activation / event"], ["sponsor_integration", "Brand collab post"], ["sponsor_integration", "Presented-by segment"], ["sponsor_integration", "Sponsor giveaway"], ["trend", "Overperforming"]] },
+    { key: "matchday-easy", title: "Matchday with few resources", ico: "ball", roles: ["social", "creator"], vals: [["trend", "Replicable ideas"], ["matchday_graphic", "Matchday poster"], ["matchday_graphic", "Starting XI"], ["matchday_graphic", "Full-time"]] },
+    { key: "kit-launch", title: "Kit launch", ico: "shirt", roles: ["social", "partner"], vals: [["kit", "Home kit"], ["kit", "Away kit"], ["kit", "Third kit"], ["kit", "Special edition kit"]] },
+    { key: "derby", title: "Derby week", ico: "flag", roles: ["social"], vals: [["season_moment", "Derby"]] },
+    { key: "result-viral", title: "Full-time posts that took off", ico: "pulse", roles: ["social", "creator"], vals: [["matchday_graphic", "Full-time"], ["trend", "Overperforming"]] },
+    { key: "tickets", title: "Selling tickets", ico: "target", roles: ["partner", "social"], vals: [["goal", "Ticket sales"]] },
+    { key: "women", title: "Women's team content that worked", ico: "user", roles: ["social", "creator"], vals: [["team", "Women's team"], ["trend", "Overperforming"]] },
+  ];
+  const valByName = (cat, name) => (catalog.byCat[cat] || []).find((v) => v.name.toLowerCase() === name.toLowerCase());
+  function recipeFacets(r) {
+    const facets = {};
+    for (const [cat, name] of r.vals) { const v = valByName(cat, name); if (v) (facets[cat] ||= []).push(v.id); }
+    // every category of the recipe must exist, or the recipe would mean something else
+    return new Set(r.vals.map(([c]) => c)).size === Object.keys(facets).length ? facets : null;
+  }
+  const sameFacets = (f) => CATEGORIES.every((c) => { const a = selected[c.key], b = f[c.key] || []; return a.size === b.length && b.every((id) => a.has(id)); });
+  function recipesHtml() {
+    const list = RECIPES.map((r) => ({ ...r, facets: recipeFacets(r) })).filter((r) => r.facets)
+      .sort((a, b) => (me.role ? (b.roles[0] === me.role) - (a.roles[0] === me.role) || (b.roles.includes(me.role) - a.roles.includes(me.role)) : 0));
+    if (!list.length) return "";
+    const shown = ui.all.has("recipes") ? list : list.slice(0, 4);
+    return `<div class="lf-recipes">${shown.map((r) => `<button type="button" class="lf-recipe${sameFacets(r.facets) ? " is-on" : ""}" data-recipe="${r.key}">${svg(r.ico)}<span>${esc(tx(r.title))}</span></button>`).join("")}</div>
+      ${list.length > 4 && !ui.all.has("recipes") ? `<button type="button" class="lf-morebtn" data-lf-all="recipes">+${list.length - 4} more</button>` : ""}`;
+  }
+  function applyRecipe(key) {
+    const r = RECIPES.find((x) => x.key === key), facets = r && recipeFacets(r);
+    if (!facets) return;
+    if (sameFacets(facets)) { applyState({ order: state().order }); return load(true); }   // second click: off
+    applyState({ order: state().order, period: state().period, facets });
+    load(true);
+  }
+
+  // ---------- "Clubs like mine": the member's competitions (or sports) from the profile ----------
+  function likeMineIds() {
+    const comp = (me.likeMine.competitions || []).filter((id) => catalog.byId.get(id)?.category === "competition");
+    if (comp.length) return { cat: "competition", ids: comp };
+    const sp = (me.likeMine.sports || []).filter((id) => catalog.byId.get(id)?.category === "sport");
+    return sp.length ? { cat: "sport", ids: sp } : null;
+  }
+  function likeMineHtml() {
+    const l = likeMineIds();
+    if (!l) return `<a class="lf-like" href="profile.html#favourites">${svg("shield")}<span><b>Clubs like mine</b><small>Add your sport and competition in your profile</small></span></a>`;
+    const on = l.ids.every((id) => selected[l.cat].has(id));
+    const names = l.ids.map((id) => pretty(catalog.byId.get(id).name));
+    return `<button type="button" class="lf-like${on ? " is-on" : ""}" aria-pressed="${on}" data-like-mine>${svg("shield")}<span><b>Clubs like mine</b><small>${esc(names.slice(0, 2).join(", "))}${names.length > 2 ? ` +${names.length - 2}` : ""}</small></span>${svg("check", "lf-sp-ck")}</button>`;
+  }
+  function toggleLikeMine() {
+    const l = likeMineIds();
+    if (!l) return;
+    const on = l.ids.every((id) => selected[l.cat].has(id));
+    l.ids.forEach((id) => (on ? selected[l.cat].delete(id) : selected[l.cat].add(id)));
+    renderFacets(); load(true);
+  }
+
+  // ---------- Content Plan → what to look for: the next 10 days of the member's plan ----------
+  let planHints = null;
+  const HINT_WORDS = [
+    [/\b(derb[iy]|clasico|classic)\b/, "season_moment", "Derby"], [/\b(final)\b/, "season_moment", "Cup final"],
+    [/\b(fitxatge|fichaje|signing|welcome|bienvenid|benvingut)/, "transfer", "Signing"], [/\b(renova|renewal)/, "transfer", "Renewal"],
+    [/\b(samarreta|camiseta|equipaci|kit|jersey)/, "kit", "Home kit"], [/\b(aniversari|cumplea|birthday)/, "moment", "Birthday"],
+    [/\b(nadal|navidad|christmas|xmas)/, "moment", "Christmas"], [/\b(alineaci|onze|lineup|line-up|xi)\b/, "matchday_graphic", "Starting XI"],
+    [/\b(convocat|squad)/, "matchday_graphic", "Squad list"], [/\b(entrades|entradas|tickets?)\b/, "goal", "Ticket sales"],
+    [/\b(partit|partido|match|matchday|vs|jornada)\b/, "moment", "Matchday preview"],
+  ];
+  const fold = (t) => String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  async function loadPlanHints() {
+    if (planHints || !db) return;
+    planHints = [];
+    const today = new Date(), end = new Date(Date.now() + 10 * 864e5);
+    const d = (x) => `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, "0")}-${String(x.getDate()).padStart(2, "0")}`;
+    const { data } = await db.from("org_entries").select("entry_date,label,notes").gte("entry_date", d(today)).lte("entry_date", d(end)).order("entry_date").limit(60);
+    for (const e of data || []) {
+      const t = fold(`${e.label || ""} ${e.notes || ""}`).replace(/^idea:/, "");
+      if (/^idea: /.test(fold(e.label))) continue;   // posts dragged from the library: nothing to look for
+      for (const [re, cat, name] of HINT_WORDS) {
+        const v = valByName(cat, name);
+        if (v && re.test(t) && !planHints.some((h) => h.v.id === v.id)) { planHints.push({ date: e.entry_date, label: e.label, v }); break; }
+      }
+      if (planHints.length >= 2) break;
+    }
+    if (planHints.length) renderFacets();
+  }
+  function planHintsHtml() {
+    if (!planHints?.length) return "";
+    const day = (iso) => new Date(`${iso}T12:00:00`).toLocaleDateString(window.SCP_LOC || "en-GB", { weekday: "short", day: "numeric", month: "short" });
+    return planHints.map((h) => `<button type="button" class="lf-hint${isOn(h.v) ? " is-on" : ""}" data-facet="${h.v.category}" data-id="${h.v.id}">${svg("calendar")}<span><small>${esc(tx("In your Content Plan"))} · ${esc(day(h.date))}</small><b>${esc(h.label || "")}</b><em>${esc(tx("See {what}", { what: pretty(h.v.name) }))}</em></span></button>`).join("");
+  }
+
+  // ---------- Occasion and Goal, grouped the way a club plans ----------
+  function rowsOf(keys) { return keys.filter((k) => CAT[k] && has(k)).map((k) => rowHtml(CAT[k])).join(""); }
+  function occasionHtml() {
+    const groups = [["Transfer market", ["transfer"]], ["Launches", ["kit"]], ["Season", ["season_moment"]], ["Campaigns", ["campaign", "moment"]]];
+    const tone = (catalog.byCat.angle || []).filter((v) => countOf(v) > 0 || isOn(v));
+    const commsOpen = ui.more.has("occasion") || ["comms", "crisis"].some((k) => selected[k]?.size || ui.open === k);
+    const comms = ["comms", "crisis"].filter(has);
+    return planHintsHtml() + matchdayHtml()
+      + groups.map(([label, keys]) => { const r = rowsOf(keys); return r ? `<div class="lf-sub">${esc(tx(label))}</div><div class="lf-stack">${r}</div>` : ""; }).join("")
+      + (tone.length ? `<div class="lf-sub">${esc(tx("Tone"))}</div><div class="lf-chips">${tone.map((v) => `<button type="button" class="lf-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="angle" data-id="${v.id}">${esc(pretty(v.name))}</button>`).join("")}</div>` : "")
+      + (comms.length ? `<div class="lf-more-rows lf-stack"${commsOpen ? "" : " hidden"}><div class="lf-sub">${esc(tx("Communication"))}</div>${rowsOf(comms)}</div><button type="button" class="lf-morebtn" data-lf-more="occasion">${commsOpen ? "Show fewer" : esc(tx("Press and sensitive topics"))}</button>` : "");
+  }
+  function goalHtml() {
+    const top = rowsOf(["goal", "cta"]);
+    const sp = rowsOf(["sponsor", "sponsor_integration", "sponsor_sector", "collab"]);
+    return (top ? `<div class="lf-stack">${top}</div>` : "")
+      + (sp ? `<div class="lf-md lf-spons"><div class="lf-md-h">${svg("tag")}<b>${esc(tx("Sponsors"))}</b><small>${esc(tx("How other clubs activate their partners"))}</small></div><div class="lf-stack">${sp}</div></div>` : "");
+  }
+
   function renderFacets() {
     const parts = {
       discover: (has("trend") || views.hist) && discoverHtml(),
-      occasion: !LAYOUT_BEFORE && (CATEGORIES.some((c) => c.sec === "occasion" && has(c.key))) && matchdayHtml() + groupHtml("occasion"),
-      goal: !LAYOUT_BEFORE && CATEGORIES.some((c) => c.sec === "goal" && has(c.key)) && groupHtml("goal"),
+      recipes: !LAYOUT_BEFORE && catalog.byId.size && recipesHtml(),
+      occasion: !LAYOUT_BEFORE && (CATEGORIES.some((c) => c.sec === "occasion" && has(c.key))) && occasionHtml(),
+      goal: !LAYOUT_BEFORE && CATEGORIES.some((c) => c.sec === "goal" && has(c.key)) && goalHtml(),
       where: !LAYOUT_BEFORE && (has("platform") || has("format")) && `${has("platform") ? `<div class="lf-sub lf-sub-top">Platform</div>${platformHtml()}` : ""}${has("format") || has("aspect_ratio") || has("duration") || has("language") ? `<div class="lf-sub">Format</div>${formatHtml()}` : ""}`,
-      benchmark: !LAYOUT_BEFORE && CATEGORIES.some((c) => c.sec === "benchmark" && has(c.key)) && groupHtml("benchmark"),
+      benchmark: !LAYOUT_BEFORE && CATEGORIES.some((c) => c.sec === "benchmark" && has(c.key)) && likeMineHtml() + groupHtml("benchmark"),
       format: (has("format") || has("aspect_ratio") || has("duration") || has("language")) && formatHtml(),
       platform: has("platform") && platformHtml(),
       explore: CATEGORIES.some((c) => c.sec === "explore" && has(c.key)) && groupHtml("explore"),
@@ -375,10 +520,11 @@
     };
     const ai = (s) => s.ai && CATEGORIES.some((c) => c.sec === s.key && c.key !== "campaign" && has(c.key))
       ? ` <span class="lf-ai" tabindex="0" data-tip="${esc(AI_TIP)}">AI <b>?</b></span>` : "";
-    const secs = SECTIONS.filter((s) => parts[s.key]);
+    const ord = LAYOUT_BEFORE ? null : ROLES.find((r) => r.key === me.role)?.order || DEFAULT_ORDER;
+    const secs = SECTIONS.filter((s) => parts[s.key]).sort((a, b) => (ord ? ord.indexOf(a.key) - ord.indexOf(b.key) : 0));
     const box = $("[data-facets]");
     const scroll = $("[data-lf-body]").scrollTop;
-    box.innerHTML = secs.map((s) => `<section class="lf-sec${LAYOUT_BEFORE ? "" : " lf-sec-v2"}" data-lf-sec="${s.key}"><h2 class="lf-lbl">${esc(s.label)}${ai(s)}</h2>${s.q ? `<p class="lf-q">${esc(s.q)}</p>` : ""}${parts[s.key]}</section>`).join("");
+    box.innerHTML = (LAYOUT_BEFORE ? "" : roleHtml()) + secs.map((s) => `<section class="lf-sec${LAYOUT_BEFORE ? "" : " lf-sec-v2"}" data-lf-sec="${s.key}"><h2 class="lf-lbl">${esc(s.label)}${ai(s)}</h2>${s.q ? `<p class="lf-q">${esc(s.q)}</p>` : ""}${parts[s.key]}</section>`).join("");
     $("[data-lf-body]").scrollTop = scroll;
     $("[data-lf-jump]").innerHTML = secs.map((s) => `<button type="button" data-lf-jump-to="${s.key}">${esc(s.jump || s.label.replace(" by", ""))}</button>`).join("");
     $("[data-lf-credit]").hidden = !catalog.byId.size || ![...catalog.byId.values()].some((v) => v.logo);
@@ -476,6 +622,11 @@
     if (all) { ui.all.add(all.dataset.lfAll); return renderFacets(); }
     const more = e.target.closest("[data-lf-more]");
     if (more) { const s = more.dataset.lfMore; ui.more.has(s) ? ui.more.delete(s) : ui.more.add(s); return renderFacets(); }
+    const rl = e.target.closest("[data-lf-role]");
+    if (rl) return saveRole(rl.dataset.lfRole === me.role ? "" : rl.dataset.lfRole);
+    const rc = e.target.closest("[data-recipe]");
+    if (rc) return applyRecipe(rc.dataset.recipe);
+    if (e.target.closest("[data-like-mine]")) return toggleLikeMine();
     const ph = e.target.closest("[data-md-phase]");
     if (ph) { ui.phase = ph.dataset.mdPhase; return renderFacets(); }
     const vq = e.target.closest("[data-vq]");
@@ -519,6 +670,85 @@
     }
   });
 
+  // ---------- Search a sentence: "reels de fitxatges amb sponsor que hagin funcionat" → filters ----------
+  // Free: it only reads the tags the AI already put on every post. A dictionary (CA / ES / EN) maps words to filter
+  // values; club, competition, sponsor, city and opponent names are matched against the catalog itself.
+  // Values of one filter are combined with "or", different filters with "and" (like clicking them).
+  const SYN = [
+    ["format", "Reel", "reels?"], ["format", "Carousel", "carrusel(s|es)?|carousels?"], ["format", "Shorts", "shorts?"], ["format", "Image", "fotos?|imatges?|imagen(es)?|images?|photos?"], ["format", "Video", "videos?"],
+    ["platform", "Instagram", "instagram|insta"], ["platform", "TikTok", "tiktok"], ["platform", "YouTube", "youtube"], ["platform", "X", "twitter"], ["platform", "LinkedIn", "linkedin"], ["platform", "Facebook", "facebook"],
+    ["trend", "Overperforming", "(hagin |han |que )?funciona(t|n|do|ron)?|worked|work well|virals?|virales|exit(o|os)?|overperform\\w*|took off"],
+    ["trend", "Top Picks", "millors|mejores|best|top picks?"],
+    ["trend", "Replicable ideas", "facils?|faciles|easy|pocs recursos|pocos recursos|low budget|sense produccio|sin produccion|replicables?"],
+    ["transfer", "Signing", "fitxatges?|fichajes?|signings?|presentacio de jugador|nou jugador|nuevo jugador"], ["transfer", "Renewal", "renovaci(o|on)(ns|nes)?|renewals?"],
+    ["transfer", "Loan", "cessi(o|ons)|cesi(on|ones)|loans?"], ["transfer", "Departure", "comiat|despedidas?|farewells?"],
+    ["kit", "*", "samarretes?|camisetas?|equipaci(o|on)(ns|nes)?|kits?|jerseys?"],
+    ["season_moment", "Derby", "derbi|derby|derbis|clasico"], ["season_moment", "Cup final", "final de copa|cup final"], ["season_moment", "Title celebration", "titols?|titulos?|campio|campeon(es)?|title|lliga guanyada"],
+    ["season_moment", "Pre-season", "pretemporada|pre-?season"], ["season_moment", "Promotion", "ascens|ascenso|promotion"], ["season_moment", "Relegation", "descens|descenso|relegation"],
+    ["matchday_graphic", "Starting XI", "alineaci(o|on)(ns|es)?|onze inicial|once inicial|line-?ups?|starting xi"], ["matchday_graphic", "Squad list", "convocatori(a|es|as)|convocats|convocados|squad list"],
+    ["matchday_graphic", "Matchday poster", "cartells?|carteles?|posters?"], ["matchday_graphic", "Countdown", "compte enrere|cuenta atras|countdown"], ["matchday_graphic", "Half-time", "mitja part|descanso|half-?time"],
+    ["matchday_graphic", "Goal", "gols|goles|goals"], ["matchday_graphic", "Full-time", "resultat final|resultado final|full-?time|final del partit|final del partido"],
+    ["matchday_graphic", "MOTM vote", "mvp|motm|millor jugador|mejor jugador"], ["matchday_graphic", "Standings", "classificaci(o|ons)|clasificaci(on|ones)|standings"],
+    ["matchday_graphic", "Stats card", "estadistiques|estadisticas|stats"], ["matchday_graphic", "Fixture / schedule", "calendari|calendario|fixtures?|horaris?|horarios?"],
+    ["outcome", "Win", "victori(a|es|as)|wins?|guanyar|ganar|triomf"], ["outcome", "Draw", "empats?|empates?|draws?"], ["outcome", "Loss", "derrot(a|es|as)|loss|losses|perdre|perder"],
+    ["moment", "Matchday preview", "previ(a|es|as)|preview|matchday|dia de partit|dia de partido"], ["moment", "Birthday", "aniversaris?|cumpleanos|birthdays?"], ["moment", "Tribute", "homenatges?|homenajes?|tributes?"],
+    ["moment", "Christmas", "nadal|navidad|christmas"], ["moment", "Halloween", "halloween"], ["moment", "Black Friday", "black friday"], ["moment", "Valentine's Day", "sant valenti|san valentin|valentine"],
+    ["moment", "International Women's Day", "dia de la dona|dia de la mujer|womens day|8m"], ["moment", "Training", "entrenaments?|entrenamientos?|training"],
+    ["moment", "Milestone / record", "records?|fites?|hitos?|milestones?"], ["moment", "Award", "premis?|premios?|awards?"], ["moment", "Throwback", "throwback|tbt|nostalgi(a|c)"],
+    ["team", "Women's team", "femeni|femenino|women|womens|dones|mujeres|equip femeni"], ["team", "Academy / youth", "academia|academy|cantera|planter|futbol base|youth"], ["team", "Legends", "llegendes|leyendas|legends"],
+    ["goal", "Ticket sales", "entrades|entradas|tickets?|taquilla"], ["goal", "Merchandise sales", "botiga|tienda|merch\\w*|shop"], ["goal", "Memberships", "socis|socios|members(hip)?|abonaments?|abonos?"],
+    ["sponsor_integration", "*", "sponsors?|patrocinadors?|patrocinadores|patrocini|patrocinio|partners?"],
+    ["angle", "Humour / meme", "humor|memes?|divertits?|graciosos?|funny"], ["angle", "Emotional", "emotius?|emotivos?|emotional|emocionants?"], ["angle", "Behind the scenes", "behind the scenes|backstage|darrere les cameres|detras de camaras|bts"],
+    ["angle", "Celebration", "celebraci(o|on)(ns|es)?|celebrations?"], ["angle", "Data & stats", "dades|datos|data"],
+    ["collab", "Influencer / creator", "influencers?|creadors?|creadores|creators?"], ["collab", "Fan content (UGC)", "ugc|contingut de fans|contenido de fans|fan content"],
+    ["aspect_ratio", "9:16", "verticals?|verticales"], ["aspect_ratio", "1:1", "quadrats?|cuadrados?|square"],
+    ["cta", "Giveaway / contest", "sortei(g|gs)|sorteos?|giveaways?|concursos?"], ["cta", "Vote / poll", "enquest(a|es)|encuestas?|polls?|votaci(o|on)"],
+    ["sport", "Football", "futbol|football|soccer"], ["sport", "Basketball", "basquet|baloncesto|basketball|basket"], ["sport", "Handball", "handbol|balonmano|handball"], ["sport", "Tennis", "tennis|tenis"],
+  ].map(([cat, name, re]) => ({ cat, name, re: new RegExp(`(^|[^a-z0-9])(${re})(?=$|[^a-z0-9])`) }));
+  const STOP = /^(fc|cf|club|de|del|la|el|the|ac|as|sc|afc|cd|ud|rc|sd|real|sporting|united|city)$/;
+  // nicknames → the name in the catalog
+  const ALIAS = [[/\bbarca\b/g, "barcelona"], [/\batleti\b/g, "atletico de madrid"], [/\bman utd\b|\bman united\b/g, "manchester united"], [/\bman city\b/g, "manchester city"],
+    [/\bpsg\b/g, "paris saint-germain"], [/\bjuve\b/g, "juventus"], [/\bbayern\b/g, "bayern munich"], [/\bspurs\b/g, "tottenham"], [/\bla liga\b/g, "laliga"], [/\bucl\b|\bchampions\b(?! league)/g, "champions league"]];
+  const VERSUS = /(contra|vs\.?|versus|against|frente a|davant|ante)\s+(el |la |l |the )?$/;
+  function parseSentence(text) {
+    let t = ` ${fold(text).replace(/['’]/g, " ")} `;
+    for (const [re, to] of ALIAS) t = t.replace(re, to);
+    const out = new Map();   // value id → value
+    const add = (v) => v && out.set(v.id, v);
+    for (const s of SYN) if (s.re.test(t)) {
+      if (s.name === "*") (catalog.byCat[s.cat] || []).forEach(add); else add(valByName(s.cat, s.name));
+    }
+    // names from the catalog itself (clubs, competitions, sponsors, cities, opponents…): the whole name, or its main word
+    for (const v of catalog.byId.values()) {
+      if (["trend", "format", "platform", "aspect_ratio", "duration", "language"].includes(v.category) || out.has(v.id)) continue;
+      const n = fold(v.name).replace(/[^a-z0-9 ]+/g, " ").trim();
+      if (n.length < 4) continue;
+      const core = n.split(/\s+/).filter((w) => !STOP.test(w)).join(" ");
+      const hit = (w) => w.length >= 4 && new RegExp(`(^|[^a-z0-9])${w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?=$|[^a-z0-9])`).test(t);
+      if (hit(n) || (["club", "competition", "sponsor", "opponent", "city"].includes(v.category) && core.length >= 5 && hit(core))) add(v);
+    }
+    // the same name as club and as opponent: "contra / vs / against X" → opponent, otherwise → club
+    const before = (name) => { const n = fold(name), i = t.indexOf(n); return i > 0 ? t.slice(Math.max(0, i - 20), i) : ""; };
+    for (const v of [...out.values()]) {
+      if (v.category !== "opponent") continue;
+      const club = [...out.values()].find((c) => c.category === "club" && fold(c.name).includes(fold(v.name)));
+      if (VERSUS.test(before(v.name))) { if (club) out.delete(club.id); } else if (club) out.delete(v.id);
+    }
+    // a club named in the sentence: the club, not a city with the same name
+    const clubs = [...out.values()].filter((v) => v.category === "club").map((v) => fold(v.name));
+    for (const v of [...out.values()]) if (v.category === "city" && clubs.some((c) => c.includes(fold(v.name)))) out.delete(v.id);
+    return [...out.values()];
+  }
+  let sentence = [];
+  function applySentence() {
+    if (!sentence.length) return;
+    const facets = {};
+    for (const v of sentence) (facets[v.category] ||= []).push(v.id);
+    fsearch.value = ""; fresults.hidden = true;
+    applyState({ order: state().order, period: state().period, facets });
+    load(true);
+  }
+
   // ---------- Search inside the filters: any value of any filter ----------
   const fsearch = $("[data-lf-search]"), fresults = $("[data-lf-results]");
   let hits = [];
@@ -530,12 +760,15 @@
     hits.sort((a, b) => (b.name.toLowerCase().startsWith(q) - a.name.toLowerCase().startsWith(q)) || countOf(b) - countOf(a));
     hits = hits.slice(0, 8);
     const hl = (n) => { const i = n.toLowerCase().indexOf(q); return `${esc(n.slice(0, i))}<mark>${esc(n.slice(i, i + q.length))}</mark>${esc(n.slice(i + q.length))}`; };
+    // a sentence (2+ words) that names several filters: offer to apply them all at once
+    sentence = !LAYOUT_BEFORE && /\S\s+\S/.test(q) ? parseSentence(q) : [];
+    const sentenceHtml = sentence.length >= 2 ? `<button type="button" class="lf-hit lf-hit-all is-kb" data-hit-all>${svg("search")}<span class="lf-hv"><b>${esc(tx("Search with {n} filters", { n: sentence.length }))}</b><span class="lf-hit-tags">${sentence.slice(0, 6).map((v) => `<i>${esc(pretty(v.name))}</i>`).join("")}${sentence.length > 6 ? `<i>+${sentence.length - 6}</i>` : ""}</span></span></button>` : "";
     fresults.hidden = false;
-    fresults.innerHTML = hits.length ? hits.map((v, i) => {
+    fresults.innerHTML = sentenceHtml + (hits.length ? hits.map((v, i) => {
       const c = CAT[v.category];
       const lead = c.crest || v.logo ? crestImg(v, "lf-mini") : v.category === "platform" && PLATFORM[v.name.toLowerCase()] ? pfLogo(v.name.toLowerCase(), "lf-pfi is-brand") : "";
-      return `<button type="button" class="lf-hit${isOn(v) ? " is-on" : ""}${i === 0 ? " is-kb" : ""}" role="option" data-hit="${i}">${lead}<span class="lf-hv">${hl(pretty(v.name))}</span><span class="lf-hc">${esc(c.sec === "discover" ? "Discover" : c.label)}</span><span class="lf-cnt">${kfmt(countOf(v))}</span></button>`;
-    }).join("") : `<p class="lf-none">No filter called “${esc(fsearch.value.trim())}”. The caption search above the posts looks inside the posts.</p>`;
+      return `<button type="button" class="lf-hit${isOn(v) ? " is-on" : ""}${i === 0 && !sentenceHtml ? " is-kb" : ""}" role="option" data-hit="${i}">${lead}<span class="lf-hv">${hl(pretty(v.name))}</span><span class="lf-hc">${esc(c.sec === "discover" ? "Discover" : c.label)}</span><span class="lf-cnt">${kfmt(countOf(v))}</span></button>`;
+    }).join("") : sentenceHtml ? "" : `<p class="lf-none">No filter called “${esc(fsearch.value.trim())}”. The caption search above the posts looks inside the posts.</p>`);
   }
   function pickHit(i) {
     const v = hits[i];
@@ -552,10 +785,10 @@
   }
   fsearch.addEventListener("input", searchFilters);
   fsearch.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") { e.preventDefault(); pickHit(0); }
+    if (e.key === "Enter") { e.preventDefault(); sentence.length >= 2 ? applySentence() : pickHit(0); }
     if (e.key === "Escape") { fsearch.value = ""; fresults.hidden = true; }
   });
-  fresults.addEventListener("click", (e) => { const b = e.target.closest("[data-hit]"); if (b) pickHit(Number(b.dataset.hit)); });
+  fresults.addEventListener("click", (e) => { if (e.target.closest("[data-hit-all]")) return applySentence(); const b = e.target.closest("[data-hit]"); if (b) pickHit(Number(b.dataset.hit)); });
 
   // ---------- Column scroll: thin gold bar while scrolling, edge fades when there's more ----------
   const lfBody = $("[data-lf-body]");
@@ -798,7 +1031,7 @@
   });
 
   // ---------- "For you": the member's favourite profiles / creators first, then their sports / competitions ----------
-  const me = { boost: [], boost2: [], fav: new Set(), isSuper: false };
+  const me = { boost: [], boost2: [], fav: new Set(), isSuper: false, role: store.get("scp-lib-role") || "", likeMine: [] };
   async function loadMe() {
     const profile = (await auth?.getProfile?.())?.profile;
     me.isSuper = profile?.role === "superadmin";
@@ -808,6 +1041,9 @@
     me.fav = new Set(favIds);
     me.boost2 = [...(prefs.sports || []), ...(prefs.competitions || [])].map(Number);
     me.favPlatform = (prefs.favouritePlatform || "").toLowerCase();   // Profile → Favourites: its posts come first
+    me.likeMine = { competitions: (prefs.competitions || []).map(Number), sports: (prefs.sports || []).map(Number) };
+    if (prefs.libraryRole && prefs.libraryRole !== me.role) { me.role = prefs.libraryRole; store.set("scp-lib-role", me.role); }
+    if (!LAYOUT_BEFORE) renderFacets();
     if (!me.boost.length && !me.boost2.length && !me.favPlatform) return;
     const order = $("[data-order]");
     order.insertAdjacentHTML("afterbegin", `<button type="button" aria-pressed="false" data-value="foryou" title="Your favourite profiles first, then your sports">${icon("star")}For you</button>`);
@@ -1433,5 +1669,6 @@
     const pv = me.favPlatform && (catalog?.byCat?.platform || []).find((v) => v.name.toLowerCase() === me.favPlatform);
     if (pv && !me.boost.includes(pv.id)) { me.boost = [pv.id, ...me.boost]; renderFacets(); }
     load(true); openFromHash();
+    if (!LAYOUT_BEFORE) loadPlanHints().catch(() => {});
   });
 })();
