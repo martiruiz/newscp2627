@@ -52,12 +52,41 @@
     { key: "goal", label: "Business goal", sec: "brands", ico: "target", more: true },
     { key: "cta", label: "Call to action", sec: "brands", ico: "cursor", more: true },
   ];
+  // New layout (default): the filters follow the questions a club's social team asks —
+  //   What works · Occasion (matchday timeline, transfers, kit…) · Goal & sponsors · Where & how · Inspiration from.
+  // ?filters=before shows the previous layout (Discover · Format · Platform · Explore by · Content · Brands) to compare.
+  const LAYOUT_BEFORE = /[?&]filters=before\b/.test(location.search);
+  if (!LAYOUT_BEFORE) {
+    const NEW = [
+      ["trend", "discover"], ["format", "format"], ["aspect_ratio", "format"], ["duration", "format"], ["language", "format"], ["platform", "platform"],
+      ["matchday_graphic", "occasion"], ["outcome", "occasion"], ["opponent", "occasion"],
+      ["transfer", "occasion"], ["kit", "occasion"], ["season_moment", "occasion"], ["campaign", "occasion"], ["moment", "occasion"], ["angle", "occasion"],
+      ["comms", "occasion", true], ["crisis", "occasion", true],
+      ["goal", "goal"], ["sponsor", "goal"], ["sponsor_integration", "goal"], ["sponsor_sector", "goal"], ["cta", "goal", true], ["collab", "goal", true],
+      ["sport", "benchmark"], ["competition", "benchmark"], ["club", "benchmark"], ["entity", "benchmark"], ["team", "benchmark"], ["city", "benchmark", true],
+    ];
+    const pos = new Map(NEW.map(([k], i) => [k, i]));
+    for (const [k, sec, more] of NEW) { const c = CATEGORIES.find((x) => x.key === k); if (c) { c.sec = sec; c.more = !!more; } }
+    CATEGORIES.sort((a, b) => (pos.get(a.key) ?? 99) - (pos.get(b.key) ?? 99));
+    Object.assign(CATEGORIES.find((c) => c.key === "moment") || {}, { label: "Campaign moment" });
+    Object.assign(CATEGORIES.find((c) => c.key === "team") || {}, { label: "Team" });
+  }
+  // Matchday as a timeline: before / live / after the game (graphics + campaign moments that belong to each phase)
+  const MATCHDAY = [
+    { key: "before", label: "Before", vals: [["moment", "Matchday preview"], ["matchday_graphic", "Matchday poster"], ["matchday_graphic", "Countdown"], ["matchday_graphic", "Squad list"], ["matchday_graphic", "Starting XI"], ["matchday_graphic", "Fixture / schedule"]] },
+    { key: "live", label: "Live", vals: [["matchday_graphic", "Goal"], ["matchday_graphic", "Half-time"]] },
+    { key: "after", label: "After", vals: [["matchday_graphic", "Full-time"], ["moment", "Match coverage"], ["matchday_graphic", "MOTM vote"], ["matchday_graphic", "Stats card"], ["matchday_graphic", "Quote card"], ["matchday_graphic", "Weekly recap"], ["matchday_graphic", "Standings"]] },
+  ];
   const CAT = Object.fromEntries(CATEGORIES.map((c) => [c.key, c]));
   const CAT_LABEL = Object.fromEntries(CATEGORIES.map((c) => [c.key, c.label]));
   const AI_TIP = "Detected by AI on Instagram posts from October 2026. Older posts are still being analysed.";
-  const SECTIONS = [
+  const SECTIONS = LAYOUT_BEFORE ? [
     { key: "discover", label: "Discover" }, { key: "format", label: "Format" }, { key: "platform", label: "Platform" },
     { key: "explore", label: "Explore by" }, { key: "content", label: "Content", ai: true }, { key: "brands", label: "Brands", ai: true },
+  ] : [
+    { key: "discover", label: "What works", jump: "Works" }, { key: "occasion", label: "Occasion", ai: true, q: "What are you posting about?" },
+    { key: "goal", label: "Goal & sponsors", ai: true, jump: "Goal", q: "What should it achieve?" }, { key: "where", label: "Where & how", jump: "Where", q: "Platform and format" },
+    { key: "benchmark", label: "Inspiration from", jump: "Inspiration", q: "Sports, competitions and clubs" },
   ];
   const PERIODS = { 7: "This week", 31: "This month", season: "This season", custom: "Custom dates" };
   // Some catalog values were saved with a mis-encoded dash ("15‚Äì30s"): show the real characters
@@ -306,8 +335,25 @@
     }).join("")}</div>`;
   }
 
+  // Occasion → Matchday: a 3-step timeline (Before · Live · After), the result and the opponent
+  function matchdayHtml() {
+    const val = (cat, name) => (catalog.byCat[cat] || []).find((v) => v.name.toLowerCase() === name.toLowerCase());
+    const phases = MATCHDAY.map((ph) => ({ ...ph, list: ph.vals.map(([cat, name]) => val(cat, name)).filter((v) => v && (countOf(v) > 0 || isOn(v))) })).filter((ph) => ph.list.length);
+    if (!phases.length && !has("outcome") && !has("opponent")) return "";
+    const nOn = (ph) => ph.list.filter(isOn).length;
+    let cur = phases.find((ph) => ph.key === ui.phase) || phases.find(nOn) || phases[0];
+    const chip = (v) => `<button type="button" class="lf-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="${v.category}" data-id="${v.id}">${esc(pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`;
+    const results = (catalog.byCat.outcome || []).filter((v) => countOf(v) > 0 || isOn(v));
+    return `<div class="lf-md">
+      <div class="lf-md-h">${svg("ball")}<b>Matchday</b><small>${esc(tx("Pick a moment of the game"))}</small></div>
+      ${phases.length ? `<div class="lf-md-steps" role="tablist" style="--n:${phases.length}">${phases.map((ph) => `<button type="button" role="tab" aria-selected="${ph === cur}" class="${ph === cur ? "is-cur" : ""}${nOn(ph) ? " has-on" : ""}" data-md-phase="${ph.key}"><i></i><span>${esc(ph.label)}</span>${nOn(ph) ? `<em>${nOn(ph)}</em>` : ""}</button>`).join("")}</div>
+      <div class="lf-chips lf-md-chips">${cur.list.map(chip).join("")}</div>` : ""}
+      ${results.length ? `<div class="lf-sub">Result</div><div class="lf-chips lf-md-res">${results.map(chip).join("")}</div>` : ""}
+      ${has("opponent") || has("matchday_graphic") ? `<div class="lf-stack lf-md-opp">${has("opponent") ? rowHtml(CAT.opponent) : ""}${has("matchday_graphic") ? rowHtml({ ...CAT.matchday_graphic, label: "All matchday graphics" }) : ""}</div>` : ""}
+    </div>`;
+  }
   function groupHtml(sec) {
-    const cats = CATEGORIES.filter((c) => c.sec === sec && has(c.key));
+    const cats = CATEGORIES.filter((c) => c.sec === sec && has(c.key) && !(sec === "occasion" && ["matchday_graphic", "outcome", "opponent"].includes(c.key)));
     const top = cats.filter((c) => !c.more), rest = cats.filter((c) => c.more);
     // a hidden row with a selection (or open) stays reachable: the "+N more" group opens itself
     const expanded = ui.more.has(sec) || rest.some((c) => selected[c.key].size || ui.open === c.key);
@@ -317,6 +363,10 @@
   function renderFacets() {
     const parts = {
       discover: (has("trend") || views.hist) && discoverHtml(),
+      occasion: !LAYOUT_BEFORE && (CATEGORIES.some((c) => c.sec === "occasion" && has(c.key))) && matchdayHtml() + groupHtml("occasion"),
+      goal: !LAYOUT_BEFORE && CATEGORIES.some((c) => c.sec === "goal" && has(c.key)) && groupHtml("goal"),
+      where: !LAYOUT_BEFORE && (has("platform") || has("format")) && `${has("platform") ? `<div class="lf-sub lf-sub-top">Platform</div>${platformHtml()}` : ""}${has("format") || has("aspect_ratio") || has("duration") || has("language") ? `<div class="lf-sub">Format</div>${formatHtml()}` : ""}`,
+      benchmark: !LAYOUT_BEFORE && CATEGORIES.some((c) => c.sec === "benchmark" && has(c.key)) && groupHtml("benchmark"),
       format: (has("format") || has("aspect_ratio") || has("duration") || has("language")) && formatHtml(),
       platform: has("platform") && platformHtml(),
       explore: CATEGORIES.some((c) => c.sec === "explore" && has(c.key)) && groupHtml("explore"),
@@ -328,9 +378,9 @@
     const secs = SECTIONS.filter((s) => parts[s.key]);
     const box = $("[data-facets]");
     const scroll = $("[data-lf-body]").scrollTop;
-    box.innerHTML = secs.map((s) => `<section class="lf-sec" data-lf-sec="${s.key}"><h2 class="lf-lbl">${esc(s.label)}${ai(s)}</h2>${parts[s.key]}</section>`).join("");
+    box.innerHTML = secs.map((s) => `<section class="lf-sec${LAYOUT_BEFORE ? "" : " lf-sec-v2"}" data-lf-sec="${s.key}"><h2 class="lf-lbl">${esc(s.label)}${ai(s)}</h2>${s.q ? `<p class="lf-q">${esc(s.q)}</p>` : ""}${parts[s.key]}</section>`).join("");
     $("[data-lf-body]").scrollTop = scroll;
-    $("[data-lf-jump]").innerHTML = secs.map((s) => `<button type="button" data-lf-jump-to="${s.key}">${esc(s.label.replace(" by", ""))}</button>`).join("");
+    $("[data-lf-jump]").innerHTML = secs.map((s) => `<button type="button" data-lf-jump-to="${s.key}">${esc(s.jump || s.label.replace(" by", ""))}</button>`).join("");
     $("[data-lf-credit]").hidden = !catalog.byId.size || ![...catalog.byId.values()].some((v) => v.logo);
     renderQuick();
     fadeEdges();
@@ -426,6 +476,8 @@
     if (all) { ui.all.add(all.dataset.lfAll); return renderFacets(); }
     const more = e.target.closest("[data-lf-more]");
     if (more) { const s = more.dataset.lfMore; ui.more.has(s) ? ui.more.delete(s) : ui.more.add(s); return renderFacets(); }
+    const ph = e.target.closest("[data-md-phase]");
+    if (ph) { ui.phase = ph.dataset.mdPhase; return renderFacets(); }
     const vq = e.target.closest("[data-vq]");
     if (vq) { views.a = Number(vq.dataset.vq); views.b = VB; renderFacets(); return load(true); }
     const jump = e.target.closest("[data-lf-jump-to]");

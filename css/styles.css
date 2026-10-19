@@ -5914,3 +5914,27 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 .pp-menu-form .btn { padding: 8px 14px; font-size: 13px; }
 .pp-menu-cancel { padding: 8px 12px; border: 0; border-radius: 10px; background: none; color: var(--muted); font: 600 13px var(--font-body); cursor: pointer; }
 .pp-menu-cancel:hover { color: var(--text); }
+
+/* Library filters, new layout: sections as questions + Matchday timeline */
+.lf-sec-v2 + .lf-sec-v2 { margin-top: 10px; padding-top: 14px; border-top: 0.5px solid var(--line-soft); }
+.lf-sec-v2 .lf-lbl { margin-bottom: 2px; font-size: 12px; }
+.lf-q { margin: 0 2px 10px; font-size: 12px; color: var(--muted); }
+.lf-sub-top { margin-top: 2px; }
+.lf-md { margin-bottom: 8px; padding: 12px; border-radius: 14px; border: 0.5px solid var(--line); background: linear-gradient(180deg, rgba(240, 184, 74, 0.06), transparent 70%); }
+.lf-md-h { display: flex; align-items: baseline; gap: 8px; }
+.lf-md-h .lf-i { align-self: center; width: 16px; height: 16px; color: var(--gold); }
+.lf-md-h b { font-family: var(--font-display); font-size: 14px; }
+.lf-md-h small { margin-left: auto; font-size: 11px; color: var(--muted-dim); }
+.lf-md-steps { position: relative; display: grid; grid-template-columns: repeat(var(--n, 3), 1fr); margin: 14px 0 10px; }
+.lf-md-steps::before { content: ""; position: absolute; left: 16%; right: 16%; top: 6px; height: 2px; border-radius: 2px; background: linear-gradient(90deg, rgba(240, 184, 74, 0.25), rgba(240, 184, 74, 0.6), rgba(240, 184, 74, 0.25)); }
+.lf-md-steps button { position: relative; display: grid; justify-items: center; gap: 6px; padding: 0 0 4px; border: 0; background: none; color: var(--muted); font: 600 12px var(--font-body); cursor: pointer; }
+.lf-md-steps i { width: 14px; height: 14px; border-radius: 50%; background: var(--surface); border: 2px solid rgba(240, 184, 74, 0.5); transition: transform 0.15s, background 0.15s; }
+.lf-md-steps button:hover { color: var(--text); }
+.lf-md-steps button:hover i { transform: scale(1.15); }
+.lf-md-steps .is-cur { color: var(--gold); }
+.lf-md-steps .is-cur i { background: var(--gold); border-color: var(--gold); box-shadow: 0 0 0 4px rgba(240, 184, 74, 0.18); }
+.lf-md-steps .has-on:not(.is-cur) i { background: rgba(240, 184, 74, 0.55); }
+.lf-md-steps em { position: absolute; top: -8px; left: calc(50% + 6px); min-width: 16px; height: 16px; padding: 0 4px; border-radius: 8px; background: var(--gold); color: #0b1020; font: 700 10px/16px var(--font-body); font-style: normal; }
+.lf-md-chips { min-height: 30px; animation: ppTimesIn 0.15s ease-out; }
+.lf-md .lf-sub { margin: 12px 2px 6px; }
+.lf-md-opp { margin-top: 10px; }
