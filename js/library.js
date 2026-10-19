@@ -244,7 +244,7 @@
     const rows = sp.map((v) => {
       const s = special(v), n = countOf(v), on = isOn(v), zero = n === 0 && !on;
       return `<button type="button" class="lf-sp ${s.cls}${on ? " is-on" : ""}${zero ? " is-zero" : ""}" aria-pressed="${on}" ${zero ? 'aria-disabled="true" ' : ""}data-facet="trend" data-id="${v.id}"${s.desc ? ` data-sp-tip="${esc(tx(s.desc))}"` : ""}>
-        <span class="lf-sp-ic">${svg(s.ico)}</span><span class="lf-sp-tx"><b>${esc(pretty(v.name))}</b></span>
+        <span class="lf-sp-ic">${svg(s.ico)}</span><span class="lf-sp-tx"><b>${esc(pretty(v.name))}</b></span>${s.desc ? `<span class="lf-sp-info" data-sp-info role="button" tabindex="0" aria-label="${esc(tx("What is this?"))}" title="${esc(tx("What is this?"))}">i</span>` : ""}
         <span class="lf-sp-n">${zero ? "No matches" : kfmt(n)}</span>${svg("check", "lf-sp-ck")}</button>`;
     }).join("");
     const vOpen = ui.open === "views";
@@ -347,14 +347,12 @@
     const tip = document.createElement("div");
     tip.className = "lf-sp-pop"; tip.hidden = true; tip.setAttribute("role", "tooltip");
     document.body.append(tip);
-    const closedKey = (id) => `scp-sp-tip-${id}`;
+    const closedKey = (id) => `scp-sp-tip2-${id}`;   // v2: the new explainer shows again even if the old one was closed
     const isClosed = (id) => { try { return localStorage.getItem(closedKey(id)) === "1"; } catch { return false; } };
     const hide = () => { tip.hidden = true; tipFor = null; };
-    document.addEventListener("mouseover", (e) => {
-      const b = e.target.closest(".lf-sp[data-sp-tip]");
-      if (b && !isClosed(b.dataset.id)) {
+    const show = (b) => {
         clearTimeout(hideT);
-        if (tipFor === b) return;
+        if (tipFor === b && !tip.hidden) return;
         tipFor = b;
         const v = catalog.byId.get(Number(b.dataset.id)), sp = v ? special(v) : {};
         const n = v ? countOf(v) : 0;
@@ -374,10 +372,20 @@
         tip.style.top = `${(roomRight ? r.top - 6 : r.bottom + 8) + scrollY}px`;
         tip.classList.toggle("is-side", roomRight);
         tip.hidden = false;
-      } else if (tipFor && !e.target.closest(".lf-sp-pop")) {
-        clearTimeout(hideT); hideT = setTimeout(hide, 250);
-      }
+    };
+    document.addEventListener("mouseover", (e) => {
+      const b = e.target.closest(".lf-sp[data-sp-tip]");
+      if (b && !isClosed(b.dataset.id)) show(b);
+      else if (b && tipFor === b) clearTimeout(hideT);
+      else if (tipFor && !e.target.closest(".lf-sp-pop")) { clearTimeout(hideT); hideT = setTimeout(hide, 250); }
     });
+    // the ⓘ in the button opens it any time, also after it was closed
+    document.addEventListener("click", (e) => {
+      const i = e.target.closest("[data-sp-info]");
+      if (!i) return;
+      e.preventDefault(); e.stopPropagation();
+      show(i.closest(".lf-sp"));
+    }, true);
     tip.addEventListener("mouseenter", () => clearTimeout(hideT));
     tip.addEventListener("click", (e) => {
       const x = e.target.closest("[data-sp-close]");

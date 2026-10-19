@@ -467,6 +467,7 @@ window.SCP_ES = {
   "billed yearly": "facturación anual",
   "or {price}/year": "o {price}/año",
   "Recommended": "Recomendado",
+  "What is this?": "¿Qué es esto?",
   "The posts we'd show a club first: a strong idea, well made and with results.": "Los posts que enseñaríamos primero a un club: una buena idea, bien hecha y con resultados.",
   "Start here when you need inspiration fast": "Empieza aquí cuando necesites inspiración rápida",
   "Benchmarks for what “great” looks like": "Referencias de lo que es un gran post",

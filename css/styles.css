@@ -5757,3 +5757,6 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 .lf-sp-pop .sp-go:hover { filter: brightness(1.08); }
 .lf-sp-pop > p:not(.sp-lead), .lf-sp-pop > button:not(.sp-go):not(.sp-x) { display: none; }
 .lf-row.is-disabled { opacity: 0.4; } .lf-row.is-disabled .lf-rh { cursor: not-allowed; }
+.lf-sp-info { flex: none; width: 18px; height: 18px; margin-left: 6px; border-radius: 50%; display: grid; place-items: center; font: italic 700 11px/1 Georgia, serif;
+  color: var(--muted); border: 1px solid rgba(var(--fg), 0.25); cursor: pointer; transition: color 0.2s, border-color 0.2s; }
+.lf-sp-info:hover { color: var(--text); border-color: rgba(var(--fg), 0.6); }
