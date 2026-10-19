@@ -43,7 +43,10 @@
     if (S.view === "week") { const m = mondayOf(S.anchor); return [m, addDays(m, 6)]; }
     const g = monthGrid(S.anchor); return [g[0], g[41]];
   };
-  const dated = () => S.entries.filter((e) => e.entry_date);
+  const dated = () => S.entries.filter((e) => e.entry_date).sort((a, b) => (a.time_slot || "").localeCompare(b.time_slot || ""));
+  const pad2 = (n) => String(n).padStart(2, "0");
+  const QUARTERS = Array.from({ length: 96 }, (_, i) => `${pad2(Math.floor(i / 4))}:${pad2((i % 4) * 15)}`);   // times a post can have
+  const DROP_HOURS = Array.from({ length: 16 }, (_, i) => `${pad2(i + 8)}:00`);                                  // 08:00 → 23:00 while dragging
   const undated = () => S.entries.filter((e) => !e.entry_date);
 
   // ---------- Posts: what we know about each one (from the library, or fetched) ----------
@@ -107,12 +110,12 @@
     await loadRefs(S.entries.map(refId));
   }
   // Creates one entry per post. Returns the created rows (or null on error).
-  async function addPosts(ids, date, planId = S.planId) {
+  async function addPosts(ids, date, planId = S.planId, time = "12:00") {
     await loadRefs(ids);
     const rows = ids.map((id) => {
       const p = postInfo(id);
       return {
-        plan_id: planId, entry_date: date || null, time_slot: "12:00", status: date ? "planned" : "idea",
+        plan_id: planId, entry_date: date || null, time_slot: date ? time : "12:00", status: date ? "planned" : "idea",
         label: (p ? `Idea: ${p.who}${p.format ? ` · ${p.format}` : ""}` : "Idea from the library").slice(0, 140),
         content_type: typeFor(p?.format), inspiration: `ci-${id}`,
       };
@@ -125,7 +128,7 @@
       render(data.map((e) => e.id));
     }
     clearSelection();
-    const where = date ? fmtDay(date) : "No date";
+    const where = date ? `${fmtDay(date)}${time !== "12:00" ? ` · ${time}` : ""}` : "No date";
     const planName = planId !== S.planId ? ` in “${S.plans.find((p) => p.id === planId)?.name || "your plan"}”` : "";
     toast(`${data.length === 1 ? "Added" : `${data.length} posts added`} to ${where}${planName}`, "Undo", async () => {
       const { error: e } = await db.from("org_entries").delete().in("id", data.map((x) => x.id));
@@ -136,18 +139,29 @@
     });
     return data;
   }
-  async function moveEntry(id, date) {
+  async function moveEntry(id, date, time = null) {
     const e = S.entries.find((x) => x.id === id);
-    if (!e || e.entry_date === (date || null)) return;
-    const before = { entry_date: e.entry_date, status: e.status };
-    const changes = { entry_date: date || null, ...(date && e.status === "idea" ? { status: "planned" } : {}) };
+    if (!e || (e.entry_date === (date || null) && (!time || time === e.time_slot))) return;
+    const before = { entry_date: e.entry_date, status: e.status, time_slot: e.time_slot };
+    const changes = { entry_date: date || null, ...(date && time ? { time_slot: time } : {}), ...(date && e.status === "idea" ? { status: "planned" } : {}) };
     Object.assign(e, changes);
     const [from, to] = range();
     if (date && (date < iso(from) || date > iso(to))) S.entries = S.entries.filter((x) => x !== e);
     render([id]);
     const { error } = await db.from("org_entries").update({ ...changes, updated_at: new Date().toISOString() }).eq("id", id);
     if (error) { Object.assign(e, before); toast(errText(error)); return render(); }
-    toast(`Moved to ${date ? fmtDay(date) : "No date"}`);
+    toast(`Moved to ${date ? `${fmtDay(date)} · ${e.time_slot}` : "No date"}`);
+  }
+  // Time of a planned post (the select on each entry)
+  async function setTime(id, time) {
+    const e = S.entries.find((x) => x.id === id);
+    if (!e || !time || e.time_slot === time) return;
+    const prev = e.time_slot;
+    e.time_slot = time;
+    render([id]);
+    const { error } = await db.from("org_entries").update({ time_slot: time, updated_at: new Date().toISOString() }).eq("id", id);
+    if (error) { e.time_slot = prev; toast(errText(error)); return render(); }
+    toast(`${fmtDay(e.entry_date)} · ${time}`);
   }
   async function deleteEntry(id) {
     const e = S.entries.find((x) => x.id === id);
@@ -213,7 +227,7 @@
     const r = S.refs.get(refId(e));
     return `<div class="pp-entry s-${e.status}" draggable="true" data-pp-entry="${e.id}" aria-label="${esc(e.label || "Untitled")} · open in the Content Plan">
       ${r?.cover ? `<span class="pp-thumb pp-thumb-img" style="background-image:url('${esc(r.cover)}')"></span>` : r ? T.html(r, "pp-thumb") : `<span class="pp-thumb pp-thumb-none">${icon(TYPE_ICON[e.content_type] || "layout-grid")}</span>`}
-      <span class="pp-entry-txt"><b>${esc(e.label || "Untitled")}</b><small><i></i>${STATUS[e.status] || ""}${e.entry_date && e.time_slot !== "12:00" ? ` · ${e.time_slot}` : ""}</small></span>
+      <span class="pp-entry-txt"><b>${esc(e.label || "Untitled")}</b><small><i></i>${STATUS[e.status] || ""}${e.entry_date ? `<select class="pp-time" data-pp-time-of="${e.id}" aria-label="Time" title="Change the time">${QUARTERS.map((t) => `<option${t === e.time_slot ? " selected" : ""}>${t}</option>`).join("")}${QUARTERS.includes(e.time_slot) ? "" : `<option selected>${esc(e.time_slot || "12:00")}</option>`}</select>` : ""}</small></span>
       <button type="button" class="pp-entry-x" data-pp-del="${e.id}" aria-label="Remove from the plan" title="Remove from the plan">${icon("x")}</button>
     </div>`;
   }
@@ -248,6 +262,7 @@
           return `<section class="pp-day pp-drop${date === today ? " is-today" : ""}${date < today ? " is-past" : ""}${list.length ? "" : " is-empty"}" data-pp-drop="${date}">
             <header><span>${DAYS[i]}</span><b>${d.getDate()}</b>${date === today ? `<em>Today</em>` : ""}${list.length ? `<i class="pp-n">${list.length}</i>` : ""}</header>
             <div class="pp-list">${list.map(entryHtml).join("")}<p class="pp-drop-hint">${list.length ? "" : "Drop a post here"}</p></div>
+            <div class="pp-times"><small>Drop on a time</small>${DROP_HOURS.map((t) => `<span class="pp-drop" data-pp-drop="${date}" data-pp-time="${t}">${t.slice(0, 2)}</span>`).join("")}</div>
           </section>`;
         }).join("")}</div>`;
     } else {
@@ -311,6 +326,7 @@
     }
     const del = e.target.closest("[data-pp-del]");
     if (del) { e.stopPropagation(); return deleteEntry(del.dataset.ppDel); }
+    if (e.target.closest(".pp-time")) return;
     const ent = e.target.closest("[data-pp-entry]");
     if (ent) return window.open(`content-plan.html#entry=${ent.dataset.ppEntry}`, "_blank", "noopener");
     if (e.target.closest("[data-pp-clear]")) return clearSelection();
@@ -334,6 +350,7 @@
       S.suggest = null;
       return reload();
     }
+    if (e.target.matches("[data-pp-time-of]")) return setTime(e.target.dataset.ppTimeOf, e.target.value);
     if (e.target.matches("[data-sg-day]")) { const s = S.suggest?.items[Number(e.target.dataset.sgDay)]; if (s) s.date = e.target.value; }
   });
   async function renamePlan() {
@@ -420,22 +437,26 @@
     if (!zone || !accepts(e)) return;
     e.preventDefault();
     e.dataTransfer.dropEffect = [...e.dataTransfer.types].includes("text/scp-entry") ? "move" : "copy";
-    $$(".pp-drop.is-over", panel).forEach((x) => x !== zone && x.classList.remove("is-over"));
+    const day = zone.closest(".pp-day");
+    $$(".pp-drop.is-over", panel).forEach((x) => x !== zone && x !== day && x.classList.remove("is-over"));
     zone.classList.add("is-over");
+    day?.classList.add("is-over");
   });
   panel.addEventListener("dragleave", (e) => { const z = e.target.closest("[data-pp-drop]"); if (z && !z.contains(e.relatedTarget)) z.classList.remove("is-over"); });
+  panel.addEventListener("dragleave", (e) => { const d = e.target.closest(".pp-day"); if (d && !d.contains(e.relatedTarget)) d.classList.remove("is-over"); });
   panel.addEventListener("drop", async (e) => {
     const zone = e.target.closest("[data-pp-drop]");
     if (!zone || !accepts(e)) return;
     e.preventDefault();
-    zone.classList.remove("is-over");
+    $$(".is-over", panel).forEach((x) => x.classList.remove("is-over"));
     panel.classList.remove("is-receiving");
     const date = zone.dataset.ppDrop || null;
+    const time = zone.dataset.ppTime || null;
     const moving = e.dataTransfer.getData("text/scp-entry");
-    if (moving) return moveEntry(moving, date);
+    if (moving) return moveEntry(moving, date, time);
     let ids = [];
     try { ids = JSON.parse(e.dataTransfer.getData("text/scp-ideas")).map(Number).filter(Boolean); } catch {}
-    if (ids.length) addPosts(ids, date);
+    if (ids.length) addPosts(ids, date, S.planId, time || "12:00");
   });
 
   // ---------- "+" under each card: add to a day from a mini calendar (also on touch screens) ----------

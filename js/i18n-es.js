@@ -467,6 +467,8 @@ window.SCP_ES = {
   "billed yearly": "facturación anual",
   "or {price}/year": "o {price}/año",
   "Recommended": "Recomendado",
+  "Drop on a time": "Suelta en una hora",
+  "Change the time": "Cambiar la hora",
   "pick the end date": "elige la fecha final",
   "Pick the start date": "Elige la fecha de inicio",
   "Previous month": "Mes anterior",
