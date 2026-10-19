@@ -37,6 +37,7 @@
     open: false, ready: null, ent: null, plans: [], planId: null,
     view: store.get("scp-pp-view") === "month" ? "month" : "week", anchor: mondayOf(new Date()),
     entries: [], refs: new Map(), selected: new Set(), suggest: null,
+    day: null,   // week view: one day opened big (a date), or null for the whole week
   };
   const allowed = () => !S.ent || S.ent.has_planner;
   const range = () => {
@@ -205,7 +206,7 @@
   function close() {
     S.open = false;
     panel.hidden = true;
-    lib.classList.remove("plan-open");
+    lib.classList.remove("plan-open", "plan-day");
     toggleBtn.setAttribute("aria-pressed", "false");
     store.set("scp-pp-open", "");
     if (collapsedByUs && lib.classList.contains("filters-collapsed")) $("[data-collapse]")?.click();
@@ -231,7 +232,37 @@
       <button type="button" class="pp-entry-x" data-pp-del="${e.id}" aria-label="Remove from the plan" title="Remove from the plan">${icon("x")}</button>
     </div>`;
   }
+  const timesHtml = (date) => `<div class="pp-times"><small>Drop on a time</small>${DROP_HOURS.map((t) => `<span class="pp-drop" data-pp-drop="${date}" data-pp-time="${t}">${t.slice(0, 2)}</span>`).join("")}</div>`;
+  // One day, big: the posts as cards with their cover, time and status
+  function dayHtml(date, i, today) {
+    const list = dated().filter((e) => e.entry_date === date);
+    const d = parse(date);
+    const card = (e) => {
+      const r = S.refs.get(refId(e));
+      const media = r?.cover ? `<span class="pp-big-img" style="background-image:url('${esc(r.cover)}')"></span>`
+        : r ? T.html(r, "pp-big-img") : `<span class="pp-big-img pp-thumb-none">${icon(TYPE_ICON[e.content_type] || "layout-grid")}</span>`;
+      return `<div class="pp-big s-${e.status}" draggable="true" data-pp-entry="${e.id}" aria-label="${esc(e.label || "Untitled")} · open in the Content Plan">
+        ${media}
+        <select class="pp-time pp-big-time" data-pp-time-of="${e.id}" aria-label="Time" title="Change the time">${QUARTERS.map((t) => `<option${t === e.time_slot ? " selected" : ""}>${t}</option>`).join("")}${QUARTERS.includes(e.time_slot) ? "" : `<option selected>${esc(e.time_slot || "12:00")}</option>`}</select>
+        <button type="button" class="pp-entry-x" data-pp-del="${e.id}" aria-label="Remove from the plan" title="Remove from the plan">${icon("x")}</button>
+        <span class="pp-big-txt"><b>${esc(e.label || "Untitled")}</b><small><i></i>${STATUS[e.status] || ""}${r?.format ? ` · ${esc(r.format)}` : ""}</small></span>
+      </div>`;
+    };
+    return `<section class="pp-focus pp-drop${date === today ? " is-today" : ""}" data-pp-drop="${date}">
+      <header>
+        <button type="button" class="pp-icon" data-pp-day-go="-1" aria-label="Previous day">${icon("chevron-left")}</button>
+        <div><span>${d.toLocaleDateString(window.SCP_LOC || "en-GB", { weekday: "long" })}${date === today ? ` · <em>Today</em>` : ""}</span>
+          <b>${d.toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "long" })}</b>
+          <small>${list.length} post${list.length === 1 ? "" : "s"}</small></div>
+        <button type="button" class="pp-icon" data-pp-day-go="1" aria-label="Next day">${icon("chevron-right")}</button>
+      </header>
+      <div class="pp-big-grid">${list.map(card).join("") || `<p class="pp-focus-empty">${icon("calendar-plus")}<span>Nothing planned this day.<br>Drag posts from the library here.</span></p>`}</div>
+      ${timesHtml(date)}
+      <button type="button" class="pp-focus-back" data-pp-day="">${icon("calendar-days")}See the whole week</button>
+    </section>`;
+  }
   function render(fresh = []) {
+    lib.classList.toggle("plan-day", S.open && S.view === "week" && !!S.day);   // one day open: a wider panel
     if (!S.open) return;
     if (!allowed()) {
       panel.innerHTML = `${headHtml()}<div class="pp-gate">${icon("lock")}<b>The Content Plan is part of Library + Content Plan and All Access</b>
@@ -253,18 +284,18 @@
     if (S.view === "week") {
       body = `
         <div class="pp-occ"><div class="pp-occ-top"><span><b>${covered}/7</b> days with content</span>${covered === 7 ? `<em>${icon("check")}Full week</em>` : ""}</div>
-          <div class="pp-dots">${days.map((d, i) => { const n = dated().filter((e) => e.entry_date === iso(d)).length; return `<span class="${n ? "is-on" : ""}${iso(d) === today ? " is-today" : ""}" title="${DAYS[i]} · ${n}"><i></i><small>${DAYS[i][0]}</small></span>`; }).join("")}</div></div>
+          <div class="pp-dots">${days.map((d, i) => { const n = dated().filter((e) => e.entry_date === iso(d)).length; return `<button type="button" data-pp-day="${iso(d)}" class="${n ? "is-on" : ""}${iso(d) === today ? " is-today" : ""}${iso(d) === S.day ? " is-focus" : ""}" title="${DAYS[i]} · ${n} post${n === 1 ? "" : "s"} · see this day" aria-pressed="${iso(d) === S.day}"><i></i><small>${DAYS[i][0]}</small></button>`; }).join("")}</div></div>
         <button class="pp-fill" type="button" data-pp-fill>${icon("sparkles")}Fill my week<small>posts from your favourites</small></button>
         <div class="pp-suggest" data-pp-suggest ${S.suggest ? "" : "hidden"}>${S.suggest ? suggestHtml() : ""}</div>
-        <div class="pp-days">${days.map((d, i) => {
+        ${S.day && days.some((d) => iso(d) === S.day) ? dayHtml(S.day, days.findIndex((d) => iso(d) === S.day), today) : `<div class="pp-days">${days.map((d, i) => {
           const date = iso(d);
           const list = dated().filter((e) => e.entry_date === date);
           return `<section class="pp-day pp-drop${date === today ? " is-today" : ""}${date < today ? " is-past" : ""}${list.length ? "" : " is-empty"}" data-pp-drop="${date}">
             <header><span>${DAYS[i]}</span><b>${d.getDate()}</b>${date === today ? `<em>Today</em>` : ""}${list.length ? `<i class="pp-n">${list.length}</i>` : ""}</header>
             <div class="pp-list">${list.map(entryHtml).join("")}<p class="pp-drop-hint">${list.length ? "" : "Drop a post here"}</p></div>
-            <div class="pp-times"><small>Drop on a time</small>${DROP_HOURS.map((t) => `<span class="pp-drop" data-pp-drop="${date}" data-pp-time="${t}">${t.slice(0, 2)}</span>`).join("")}</div>
+            ${timesHtml(date)}
           </section>`;
-        }).join("")}</div>`;
+        }).join("")}</div>`}`;
     } else {
       const month = S.anchor.getMonth();
       body = `<div class="pp-month"><div class="pp-mhead">${DAYS.map((d) => `<span>${d[0]}</span>`).join("")}</div>
@@ -315,10 +346,11 @@
   panel.addEventListener("click", async (e) => {
     if (e.target.closest("[data-pp-close]")) return close();
     const v = e.target.closest("[data-pp-view]");
-    if (v) { S.view = v.dataset.ppView; store.set("scp-pp-view", S.view); S.anchor = S.view === "week" ? mondayOf(S.anchor) : new Date(S.anchor); S.suggest = null; return reload(); }
+    if (v) { S.day = null; S.view = v.dataset.ppView; store.set("scp-pp-view", S.view); S.anchor = S.view === "week" ? mondayOf(S.anchor) : new Date(S.anchor); S.suggest = null; return reload(); }
     const go = e.target.closest("[data-pp-go]");
     if (go) {
       const n = Number(go.dataset.ppGo);
+      S.day = null;
       S.anchor = n === 0 ? (S.view === "week" ? mondayOf(new Date()) : new Date())
         : S.view === "week" ? addDays(mondayOf(S.anchor), 7 * n) : new Date(S.anchor.getFullYear(), S.anchor.getMonth() + n, 1);
       S.suggest = null;
@@ -327,6 +359,16 @@
     const del = e.target.closest("[data-pp-del]");
     if (del) { e.stopPropagation(); return deleteEntry(del.dataset.ppDel); }
     if (e.target.closest(".pp-time")) return;
+    const dayBtn = e.target.closest("[data-pp-day]");
+    if (dayBtn) { S.day = dayBtn.dataset.ppDay && dayBtn.dataset.ppDay !== S.day ? dayBtn.dataset.ppDay : null; return render(); }
+    const dayGo = e.target.closest("[data-pp-day-go]");
+    if (dayGo && S.day) {
+      const next = iso(addDays(parse(S.day), Number(dayGo.dataset.ppDayGo)));
+      const [from, to] = range();
+      S.day = next;
+      if (next < iso(from) || next > iso(to)) { S.anchor = mondayOf(parse(next)); S.suggest = null; return reload(); }
+      return render();
+    }
     const ent = e.target.closest("[data-pp-entry]");
     if (ent) return window.open(`content-plan.html#entry=${ent.dataset.ppEntry}`, "_blank", "noopener");
     if (e.target.closest("[data-pp-clear]")) return clearSelection();
@@ -334,7 +376,7 @@
     const sAct = e.target.closest("[data-sg]");
     if (sAct) return suggestAction(sAct);
     const mday = e.target.closest(".pp-mday");
-    if (mday) { S.view = "week"; store.set("scp-pp-view", "week"); S.anchor = mondayOf(parse(mday.dataset.ppDrop)); return reload(); }
+    if (mday) { S.day = mday.dataset.ppDrop; S.view = "week"; store.set("scp-pp-view", "week"); S.anchor = mondayOf(parse(mday.dataset.ppDrop)); return reload(); }
   });
   panel.addEventListener("change", async (e) => {
     if (e.target.matches("[data-pp-plan]")) {
@@ -437,13 +479,13 @@
     if (!zone || !accepts(e)) return;
     e.preventDefault();
     e.dataTransfer.dropEffect = [...e.dataTransfer.types].includes("text/scp-entry") ? "move" : "copy";
-    const day = zone.closest(".pp-day");
+    const day = zone.closest(".pp-day, .pp-focus");
     $$(".pp-drop.is-over", panel).forEach((x) => x !== zone && x !== day && x.classList.remove("is-over"));
     zone.classList.add("is-over");
     day?.classList.add("is-over");
   });
   panel.addEventListener("dragleave", (e) => { const z = e.target.closest("[data-pp-drop]"); if (z && !z.contains(e.relatedTarget)) z.classList.remove("is-over"); });
-  panel.addEventListener("dragleave", (e) => { const d = e.target.closest(".pp-day"); if (d && !d.contains(e.relatedTarget)) d.classList.remove("is-over"); });
+  panel.addEventListener("dragleave", (e) => { const d = e.target.closest(".pp-day, .pp-focus"); if (d && !d.contains(e.relatedTarget)) d.classList.remove("is-over"); });
   panel.addEventListener("drop", async (e) => {
     const zone = e.target.closest("[data-pp-drop]");
     if (!zone || !accepts(e)) return;
