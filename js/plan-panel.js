@@ -255,7 +255,10 @@
   function headHtml() {
     return `<header class="pp-head">
       <div class="pp-title"><span class="pp-eyebrow">${icon("calendar-days")}Content Plan</span>
-        ${S.plans.length ? `<select class="pp-plan" data-pp-plan aria-label="Plan">${S.plans.map((p) => `<option value="${p.id}"${p.id === S.planId ? " selected" : ""}>${esc(p.name)}</option>`).join("")}<option value="__rename">✎ Rename this plan…</option><option value="__new">+ New plan…</option></select><button class="pp-icon pp-rename" type="button" data-pp-rename title="Rename this plan" aria-label="Rename this plan">${icon("pencil")}</button>` : `<b class="pp-plan-name">Your plan</b>`}</div>
+        ${S.plans.length ? `<div class="pp-planpick">
+          <button type="button" class="pp-plan-btn" data-pp-menu aria-haspopup="menu" aria-expanded="false"><b>${esc(S.plans.find((p) => p.id === S.planId)?.name || "My plan")}</b>${icon("chevron-down")}</button>
+          <div class="pp-menu" data-pp-menu-box role="menu" hidden></div>
+        </div>` : `<b class="pp-plan-name">Your plan</b>`}</div>
       <span class="pp-saved" data-pp-saved role="status" aria-live="polite" hidden></span>
       <a class="pp-icon" href="content-plan.html" title="Open the full Content Plan">${icon("arrow-up-right")}</a>
       <button class="pp-icon" type="button" data-pp-close aria-label="Close the Content Plan">${icon("x")}</button>
@@ -418,33 +421,82 @@
     if (mday) { S.day = mday.dataset.ppDrop; S.view = "week"; store.set("scp-pp-view", "week"); S.anchor = mondayOf(parse(mday.dataset.ppDrop)); return reload(); }
   });
   panel.addEventListener("change", async (e) => {
-    if (e.target.matches("[data-pp-plan]")) {
-      if (e.target.value === "__rename") { e.target.value = S.planId; return renamePlan(); }
-      if (e.target.value === "__new") {
-        const name = window.prompt("Name of the new plan (e.g. Pre-season, Kit launch, Women's team)")?.trim();
-        if (name) {
-          const { data, error } = await db.from("org_plans").insert({ name }).select("id,name").single();
-          if (error) toast(errText(error)); else { S.plans.push(data); S.planId = data.id; }
-        }
-      } else S.planId = e.target.value;
-      store.set("scp-org-plan", S.planId);
-      S.suggest = null;
-      return reload();
-    }
     if (e.target.matches("[data-pp-time-of]")) return setTime(e.target.dataset.ppTimeOf, e.target.value);
     if (e.target.matches("[data-sg-day]")) { const s = S.suggest?.items[Number(e.target.dataset.sgDay)]; if (s) s.date = e.target.value; }
   });
-  async function renamePlan() {
-    const cur = S.plans.find((p) => p.id === S.planId);
-    if (!cur) return;
-    const name = window.prompt("New name for this plan", cur.name)?.trim();
-    if (!name || name === cur.name) return;
-    const { error } = await db.from("org_plans").update({ name: name.slice(0, 80) }).eq("id", cur.id);
-    if (error) return toast(errText(error));
-    cur.name = name.slice(0, 80);
-    render();
+  // ---------- Plan menu (switch, rename, new plan) ----------
+  const menuBox = () => $("[data-pp-menu-box]", panel);
+  function menuList() {
+    return `<p class="pp-menu-cap">Your plans</p>
+      ${S.plans.map((p) => `<button type="button" role="menuitemradio" aria-checked="${p.id === S.planId}" class="pp-menu-item${p.id === S.planId ? " is-on" : ""}" data-pp-pick="${p.id}">
+        <span class="pp-menu-dot">${p.id === S.planId ? icon("check") : ""}</span><span class="pp-menu-name">${esc(p.name)}</span></button>`).join("")}
+      <hr>
+      <button type="button" role="menuitem" class="pp-menu-item" data-pp-menu-form="rename"><span class="pp-menu-dot">${icon("pencil")}</span>Rename this plan</button>
+      <button type="button" role="menuitem" class="pp-menu-item is-gold" data-pp-menu-form="new"><span class="pp-menu-dot">${icon("plus")}</span>New plan</button>`;
   }
-  panel.addEventListener("click", (e) => { if (e.target.closest("[data-pp-rename]")) renamePlan(); });
+  function menuForm(kind) {
+    const cur = S.plans.find((p) => p.id === S.planId);
+    return `<form class="pp-menu-form" data-pp-form="${kind}">
+      <label>${kind === "new" ? "Name of the new plan" : "Rename this plan"}</label>
+      <input type="text" maxlength="80" required value="${kind === "new" ? "" : esc(cur?.name || "")}" placeholder="${kind === "new" ? "e.g. Pre-season, Kit launch, Women's team" : ""}">
+      <div><button type="button" class="pp-menu-cancel" data-pp-menu-back>Cancel</button><button type="submit" class="btn btn-gold">${kind === "new" ? "Create" : "Save"}</button></div>
+    </form>`;
+  }
+  function openMenu(html = menuList()) {
+    const box = menuBox();
+    if (!box) return;
+    box.innerHTML = html;
+    box.hidden = false;
+    $("[data-pp-menu]", panel)?.setAttribute("aria-expanded", "true");
+    const input = $("input", box);
+    if (input) { input.focus(); input.select(); }
+  }
+  function closeMenu() {
+    const box = menuBox();
+    if (box) box.hidden = true;
+    $("[data-pp-menu]", panel)?.setAttribute("aria-expanded", "false");
+  }
+  async function switchPlan(id) {
+    closeMenu();
+    if (!id || id === S.planId) return;
+    S.planId = id;
+    store.set("scp-org-plan", S.planId);
+    S.suggest = null;
+    return reload();
+  }
+  panel.addEventListener("click", (e) => {
+    if (e.target.closest("[data-pp-menu]")) { e.stopPropagation(); return menuBox()?.hidden ? openMenu() : closeMenu(); }
+    const pick = e.target.closest("[data-pp-pick]");
+    if (pick) return switchPlan(pick.dataset.ppPick);
+    const form = e.target.closest("[data-pp-menu-form]");
+    if (form) return openMenu(menuForm(form.dataset.ppMenuForm));
+    if (e.target.closest("[data-pp-menu-back]")) return openMenu();
+  });
+  panel.addEventListener("submit", async (e) => {
+    const f = e.target.closest("[data-pp-form]");
+    if (!f) return;
+    e.preventDefault();
+    const name = $("input", f).value.trim().slice(0, 80);
+    if (!name) return;
+    const btn = $("[type=submit]", f);
+    btn.disabled = true;
+    if (f.dataset.ppForm === "new") {
+      const { data, error } = await saving(() => db.from("org_plans").insert({ name }).select("id,name").single());
+      if (error) { btn.disabled = false; return toast(errText(error)); }
+      S.plans.push(data);
+      toast(`Plan “${name}” created`);
+      return switchPlan(data.id);
+    }
+    const cur = S.plans.find((p) => p.id === S.planId);
+    if (!cur || name === cur.name) return closeMenu();
+    const { error } = await saving(() => db.from("org_plans").update({ name }).eq("id", cur.id));
+    if (error) { btn.disabled = false; return toast(errText(error)); }
+    cur.name = name;
+    closeMenu();
+    render();
+  });
+  document.addEventListener("mousedown", (e) => { const box = menuBox(); if (box && !box.hidden && !e.target.closest(".pp-planpick")) closeMenu(); });
+  document.addEventListener("keydown", (e) => { const box = menuBox(); if (e.key === "Escape" && box && !box.hidden) { e.stopPropagation(); closeMenu(); } }, true);
   async function reload() {
     try { await loadEntries(); } catch (e) { toast(errText(e)); }
     render();

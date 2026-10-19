@@ -5885,3 +5885,32 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 .pp-saved svg { width: 13px; height: 13px; }
 .pp-saved.is-saving { color: var(--muted); background: rgba(var(--fg), 0.06); }
 .pp-saved .ai-spinner { width: 11px; height: 11px; border-width: 2px; }
+/* Content Plan panel: plan menu (switch / rename / new) in the site's style instead of the browser's select */
+.pp-planpick { position: relative; min-width: 0; max-width: 100%; }
+.pp-plan-btn { display: inline-flex; align-items: center; gap: 8px; max-width: 100%; margin-top: 4px; height: 36px; padding: 0 10px 0 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface-2); color: var(--text); cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+.pp-plan-btn b { font: 600 15px var(--font-display); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pp-plan-btn svg { flex: none; width: 16px; height: 16px; color: var(--muted); transition: transform 0.2s; }
+.pp-plan-btn:hover { border-color: rgba(240, 184, 74, 0.5); }
+.pp-plan-btn[aria-expanded="true"] { border-color: var(--gold); background: rgba(240, 184, 74, 0.08); }
+.pp-plan-btn[aria-expanded="true"] svg { transform: rotate(180deg); color: var(--gold); }
+.pp-menu { position: absolute; top: calc(100% + 6px); left: 0; z-index: 30; width: 270px; padding: 6px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45); animation: ppMenuIn 0.14s ease-out; }
+.pp-menu[hidden] { display: none; }
+@keyframes ppMenuIn { from { opacity: 0; transform: translateY(-4px); } }
+.pp-menu-cap { margin: 4px 10px 6px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.pp-menu hr { margin: 6px 4px; border: 0; border-top: 1px solid var(--line-soft); }
+.pp-menu-item { display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 10px; border: 0; border-radius: 9px; background: none; color: var(--text); font: 500 13.5px var(--font-body); text-align: left; cursor: pointer; }
+.pp-menu-item:hover, .pp-menu-item:focus-visible { background: rgba(var(--fg), 0.06); outline: none; }
+.pp-menu-item.is-on { background: rgba(240, 184, 74, 0.1); font-weight: 600; }
+.pp-menu-item.is-gold { color: var(--gold); font-weight: 600; }
+.pp-menu-name { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pp-menu-dot { flex: none; display: grid; place-items: center; width: 18px; height: 18px; color: var(--gold); }
+.pp-menu-dot svg { width: 15px; height: 15px; }
+.pp-menu-item:not(.is-on):not(.is-gold) .pp-menu-dot svg { color: var(--muted); }
+.pp-menu-form { display: grid; gap: 8px; padding: 8px; }
+.pp-menu-form label { font-size: 12px; font-weight: 600; color: var(--muted); }
+.pp-menu-form input { height: 38px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface-2); color: var(--text); font: 500 14px var(--font-body); }
+.pp-menu-form input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(240, 184, 74, 0.15); }
+.pp-menu-form div { display: flex; justify-content: flex-end; gap: 6px; }
+.pp-menu-form .btn { padding: 8px 14px; font-size: 13px; }
+.pp-menu-cancel { padding: 8px 12px; border: 0; border-radius: 10px; background: none; color: var(--muted); font: 600 13px var(--font-body); cursor: pointer; }
+.pp-menu-cancel:hover { color: var(--text); }
