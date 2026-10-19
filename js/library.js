@@ -167,6 +167,9 @@
     overperforming: { cls: "lf-sp-over", ico: "trend", desc: "Beat their account's own average",
       lead: "Posts that did far better than their account usually does.",
       points: ["Spot what moves the needle", "Compare against the club's own normal, not the giants"] },
+    "content creators": { cls: "lf-sp-creators", ico: "user", desc: "Posts by sports content creators",
+      lead: "Posts from creators who make sports content: fresh formats, trends and a native tone your club can borrow.",
+      points: ["Trends before clubs adopt them", "Ideas for collabs with creators"] },
   };
   const special = (v) => SPECIAL[v.name.toLowerCase()] || { cls: "lf-sp-top", ico: "star", desc: "" };
   const shapeBox = (name) => {
@@ -288,8 +291,9 @@
     const cc = (catalog.byCat.entity || []).find((v) => v.name.toLowerCase() === "content creators");
     if (cc) {
       const n = countOf(cc), on = isOn(cc), zero = n === 0 && !on;
-      const btn = `<button type="button" class="lf-sp lf-sp-creators${on ? " is-on" : ""}${zero ? " is-zero" : ""}" aria-pressed="${on}" ${zero ? 'aria-disabled="true" ' : ""}data-facet="entity" data-id="${cc.id}" title="${esc(tx("Posts by content creators"))}">
-        <span class="lf-sp-ic">${svg("user")}</span><span class="lf-sp-tx"><b>${esc(tx("Content Creators"))}</b></span>
+      const s = special(cc);
+      const btn = `<button type="button" class="lf-sp ${s.cls}${on ? " is-on" : ""}${zero ? " is-zero" : ""}" aria-pressed="${on}" ${zero ? 'aria-disabled="true" ' : ""}data-facet="entity" data-id="${cc.id}" data-sp-tip="${esc(tx(s.desc))}">
+        <span class="lf-sp-ic">${svg(s.ico)}</span><span class="lf-sp-tx"><b>${esc(tx("Content Creators"))}</b></span><span class="lf-sp-info" data-sp-info role="button" tabindex="0" aria-label="${esc(tx("What is this?"))}" title="${esc(tx("What is this?"))}">i</span>
         <span class="lf-sp-n">${zero ? "No matches" : kfmt(n)}</span>${svg("check", "lf-sp-ck")}</button>`;
       const at = sp.findIndex((v) => v.name.toLowerCase() === "replicable ideas");
       rows.splice(at >= 0 ? at + 1 : rows.length, 0, btn);

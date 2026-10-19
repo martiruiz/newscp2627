@@ -5975,3 +5975,5 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 .lf-sp-creators.is-on .lf-sp-n { color: rgba(26, 18, 6, 0.75); }
 .lf-sp-creators.is-on .lf-sp-ic { background: rgba(26, 18, 6, 0.12); }
 .lf-hit-tags i.is-views { background: var(--gold-tint); color: var(--gold); font-weight: 600; }
+/* Content Creators explainer: gold, with dark text on the gold parts */
+.lf-sp-pop.lf-sp-creators .sp-ic, .lf-sp-pop.lf-sp-creators .sp-go { color: #1a1206; }
