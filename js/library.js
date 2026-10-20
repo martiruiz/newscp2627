@@ -56,11 +56,11 @@
   //   What works · Occasion (matchday timeline, transfers, kit…) · Goal & sponsors · Where & how · Inspiration from.
   // ?filters=before shows the previous layout (Discover · Format · Platform · Explore by · Content · Brands) to compare.
   const LAYOUT_BEFORE = /[?&]filters=before\b/.test(location.search);
-  // Wide screens: Occasion, Goal, Where & how and Inspiration open as wide panels from a bar above the posts; the
+  // Wide screens: Occasion, Goal and Inspiration open as wide panels from a bar above the posts; the
   // column keeps the one-click shortcuts. ?filters=column shows everything in the column (the previous layout).
   const BAR_OK = !LAYOUT_BEFORE && !/[?&]filters=column\b/.test(location.search);
   const barMode = () => BAR_OK && innerWidth > 900;
-  const BAR_SECS = ["occasion", "goal", "where", "benchmark"];
+  const BAR_SECS = ["occasion", "goal", "benchmark"];   // Where & how stays in the column, under Views
   if (!LAYOUT_BEFORE) {
     const NEW = [
       ["trend", "discover"], ["format", "format"], ["aspect_ratio", "format"], ["duration", "format"], ["language", "format"], ["platform", "platform"],
@@ -561,7 +561,7 @@
   }
 
   // ---------- Bar above the posts (wide screens): one button per section, its filters in a wide panel ----------
-  const BAR_ICO = { occasion: "calendar", goal: "target", where: "reel", benchmark: "trophy" };
+  const BAR_ICO = { occasion: "calendar", goal: "target", benchmark: "trophy" };
   const secOf = (c) => (c.key === "angle" ? "where" : c.key === "campaign" ? "occasion" : ["format", "platform"].includes(c.sec) ? "where" : c.sec);
   function renderBar(list, parts) {
     const bar = $("[data-lf-bar]");
