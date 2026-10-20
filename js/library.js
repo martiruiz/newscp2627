@@ -356,8 +356,12 @@
       const list = byCount((catalog.byCat[cat] || []).filter((v) => countOf(v) > 0 || isOn(v))).slice(0, max);
       return list.map((v) => `<button type="button" class="lf-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="${cat}" data-id="${v.id}">${esc(pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`).join("");
     };
-    const groups = [["Content type", "angle"], ["Collaboration", "collab"], ["Brands", "sponsor", 10], ["Network", "platform"], ["Format", "format"], ["Sport", "sport"]]
-      .map(([label, cat, max]) => [label, chips(cat, max)]).filter(([, h]) => h);
+    // the creators' own accounts (from the post URL or the import; supabase/scraped-profiles.sql)
+    if (!ui.accts) { ui.accts = []; db?.rpc("creator_accounts").then((r) => { ui.accts = r.data || []; if (ui.accts.length) renderFacets(); }, () => {}); }
+    const accts = ui.accts.slice(0, 12).map((a) => { const k = `${a.platform}|${a.handle}`, on = ui.acct?.key === k;
+      return `<button type="button" class="lf-chip${on ? " is-on" : ""}" aria-pressed="${on}" data-acct="${esc(k)}" title="${esc(a.platform)}">@${esc(a.handle)}<em>${kfmt(Number(a.posts))}</em></button>`; }).join("");
+    const groups = [["Accounts", null, 0, accts], ["Content type", "angle"], ["Collaboration", "collab"], ["Brands", "sponsor", 10], ["Network", "platform"], ["Format", "format"], ["Sport", "sport"]]
+      .map(([label, cat, max, h]) => [label, h ?? chips(cat, max)]).filter(([, h]) => h);
     if (!groups.length) return "";
     return `<div class="lf-cc-sub"><p class="lf-cc-h">${esc(tx("Refine creators' posts"))}</p>
       ${groups.map(([label, h]) => `<div class="lf-sub">${esc(tx(label))}</div><div class="lf-chips">${h}</div>`).join("")}</div>`;
@@ -696,6 +700,17 @@
     renderFacets();
     if (ui.open) $(`[data-lf-rowbox="${CSS.escape(ui.open)}"]`)?.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }
+  // one creator account at a time: only its posts (their ids, then the other filters still apply)
+  async function toggleAccount(k) {
+    if (ui.acct?.key === k) ui.acct = null;
+    else {
+      const [platform, handle] = k.split("|");
+      const { data } = await db.rpc("account_post_ids", { p_platform: platform, p_handle: handle }).catch(() => ({}));
+      ui.acct = { key: k, ids: (data || []).map(Number) };
+    }
+    renderFacets();
+    load(true);
+  }
   const column = $("[data-filters]");
   const filterBar = $("[data-lf-bar]");
   const onFilterClick = (e) => {
@@ -710,6 +725,8 @@
     if (e.target.closest("[data-lfb-close]")) { ui.bar = null; return renderFacets(); }
     const f = e.target.closest("[data-facet]");
     if (f) { if (f.getAttribute("aria-disabled") === "true") return; return toggleValue(f.dataset.facet, Number(f.dataset.id)); }
+    const ac = e.target.closest("[data-acct]");
+    if (ac) return toggleAccount(ac.dataset.acct);
     const row = e.target.closest("[data-lf-row]");
     if (row) return openRow(row.dataset.lfRow);
     const all = e.target.closest("[data-lf-all]");
@@ -1200,10 +1217,13 @@
     grid.setAttribute("aria-busy", "true");
 
     const args = queryArgs(s);
-    const ids = ui.aiMode ? [...aiList().keys()] : null;
+    const cc = (catalog.byCat.entity || []).find((v) => v.name.toLowerCase() === "content creators");
+    if (ui.acct && !(cc && isOn(cc))) ui.acct = null;   // the account filter lives under Content Creators
+    let ids = ui.aiMode ? [...aiList().keys()] : null;
+    if (ui.acct) ids = ids ? ids.filter((id) => ui.acct.ids.includes(Number(id))) : ui.acct.ids;
     if (ids && !ids.length) {
       grid.querySelectorAll(".lib-skel").forEach((x) => x.remove());
-      return showEmpty(tx(ui.aiMode === "team" ? "Your team hasn't analysed any post yet." : "You haven't analysed any post yet. Open a post and press “Unlock AI Analysis”."));
+      return showEmpty(tx(!ui.aiMode ? "No posts from this account yet." : ui.aiMode === "team" ? "Your team hasn't analysed any post yet." : "You haven't analysed any post yet. Open a post and press “Unlock AI Analysis”."));
     }
     if (reset) refreshCounts(args);
     const boost = s.order === "foryou" ? { p_boost: me.boost, p_boost2: me.boost2 } : {};

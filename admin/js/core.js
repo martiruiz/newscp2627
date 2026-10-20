@@ -151,6 +151,7 @@
     { href: "library.html", label: "Content Library", icon: "library", key: "library" },
     { href: "filters.html", label: "Filters", icon: "filters", key: "filters" },
     { href: "import.html", label: "Import", icon: "import", key: "import" },
+    { href: "profiles.html", label: "Scraped profiles", icon: "audience", key: "profiles" },
     { href: "audience.html", label: "Audience", icon: "audience", key: "audience" },
     { href: "smart-review.html", label: "Smart filters", icon: "smart", key: "smart" },
     { href: "leads.html", label: "Leads & Demos", icon: "users", key: "leads" },
