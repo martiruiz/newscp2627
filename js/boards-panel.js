@@ -15,7 +15,7 @@
   const wide = () => innerWidth > 960;
 
   const panel = document.createElement("aside");
-  panel.className = "pp bp";
+  panel.className = "pp sbp";
   panel.hidden = true;
   panel.setAttribute("aria-label", "Saved boards");
   lib.append(panel);
@@ -41,22 +41,23 @@
         <a class="pp-icon" href="saved.html" title="${esc(tx("Open the full page"))}">${icon("arrow-up-right")}</a>
         <button class="pp-icon" type="button" data-bp-close aria-label="${esc(tx("Close"))}">${icon("x")}</button>
       </header>
-      <div class="pp-scroll bp-scroll">
+      <div class="pp-bar sbp-bar"><span><b>${boards.length}</b> ${esc(tx(boards.length === 1 ? "board" : "boards"))} · <b>${B.itemsOf(null).length}</b> ${esc(tx("saved posts"))}</span></div>
+      <div class="pp-scroll sbp-scroll">
         ${S.creating
-          ? `<form class="bp-new" data-bp-new><input class="input" name="name" maxlength="60" required placeholder="${esc(tx("Board name"))}" autocomplete="off"><button class="btn btn-gold btn-sm" type="submit">${esc(tx("Create"))}</button></form>`
-          : `<button class="bp-add" type="button" data-bp-create>${icon("plus")}${esc(tx("New board"))}</button>`}
+          ? `<form class="sbp-new" data-bp-new><input class="input" name="name" maxlength="60" required placeholder="${esc(tx("Board name"))}" autocomplete="off"><button class="btn btn-gold btn-sm" type="submit">${esc(tx("Create"))}</button></form>`
+          : `<button class="sbp-add" type="button" data-bp-create>${icon("plus")}${esc(tx("New board"))}</button>`}
         ${boards.length ? boards.map((b) => {
           const its = B.itemsOf(b.id), open = S.openBoard === b.id;
-          return `<section class="bp-board${open ? " is-open" : ""}" data-bp-drop="${b.id}">
-            <button class="bp-board-h" type="button" data-bp-toggle="${b.id}" aria-expanded="${open}">
-              <span class="bp-covers">${[...its].sort((x, y) => covers.has(idOf(y.post_id)) - covers.has(idOf(x.post_id))).slice(0, 3).map((it) => thumb(idOf(it.post_id))).join("") || `<i class="is-empty">${icon("bookmark")}</i>`}</span>
-              <span class="bp-name"><b>${esc(b.name)}</b><small>${esc(tx(its.length === 1 ? "{n} post" : "{n} posts", { n: its.length }))}</small></span>
+          return `<section class="sbp-board${open ? " is-open" : ""}" data-bp-drop="${b.id}">
+            <button class="sbp-board-h" type="button" data-bp-toggle="${b.id}" aria-expanded="${open}">
+              <span class="sbp-covers">${[...its].sort((x, y) => covers.has(idOf(y.post_id)) - covers.has(idOf(x.post_id))).slice(0, 3).map((it) => thumb(idOf(it.post_id))).join("") || `<i class="is-empty">${icon("bookmark")}</i>`}</span>
+              <span class="sbp-name"><b>${esc(b.name)}</b><small>${esc(tx(its.length === 1 ? "{n} post" : "{n} posts", { n: its.length }))}</small></span>
               ${icon("chevron-down")}
             </button>
-            ${open ? `<div class="bp-grid">${its.map((it) => `<span class="bp-item">${thumb(idOf(it.post_id))}<button type="button" data-bp-remove="${b.id}|${idOf(it.post_id)}" aria-label="${esc(tx("Remove from the board"))}">${icon("x")}</button></span>`).join("") || `<p class="bp-empty">${esc(tx("Drag posts from the library here."))}</p>`}</div>` : ""}
-            <p class="bp-drop-hint">${esc(tx("Drop to save here"))}</p>
+            ${open ? `<div class="sbp-grid">${its.map((it) => `<span class="sbp-item">${thumb(idOf(it.post_id))}<button type="button" data-bp-remove="${b.id}|${idOf(it.post_id)}" aria-label="${esc(tx("Remove from the board"))}">${icon("x")}</button></span>`).join("") || `<p class="sbp-empty">${esc(tx("Drag posts from the library here."))}</p>`}</div>` : ""}
+            <p class="sbp-drop-hint">${esc(tx("Drop to save here"))}</p>
           </section>`;
-        }).join("") : `<p class="bp-none">${icon("bookmark")}<span>${esc(tx("You don't have any boards yet. Create one and drag posts into it."))}</span></p>`}
+        }).join("") : `<p class="sbp-none">${icon("bookmark")}<span>${esc(tx("You don't have any boards yet. Create one and drag posts into it."))}</span></p>`}
       </div>`;
     if (S.creating) $("[data-bp-new] input", panel)?.focus();
   }
@@ -65,7 +66,7 @@
   new MutationObserver(syncCards).observe($("[data-posts]") || lib, { childList: true, subtree: true });
 
   // as wide as the Content Plan was (week 380 px, day view 540 px): its width is remembered whenever it's open
-  const planW = () => { const pp = $(".pp:not(.bp)"); return pp && !pp.hidden ? Math.round(pp.getBoundingClientRect().width) : 0; };
+  const planW = () => { const pp = $(".pp:not(.sbp)"); return pp && !pp.hidden ? Math.round(pp.getBoundingClientRect().width) : 0; };
   const rememberPlanW = () => { const w = planW(); if (w) try { localStorage.setItem("scp-side-w", String(w)); } catch {} };
   const sideW = () => { try { return Number(localStorage.getItem("scp-side-w")) || 0; } catch { return 0; } };
   async function open() {
@@ -127,14 +128,14 @@
     card.classList.add("is-dragging");
     panel.classList.add("is-receiving");
   });
-  document.addEventListener("dragend", () => { panel.classList.remove("is-receiving"); $$(".bp-board.is-over", panel).forEach((x) => x.classList.remove("is-over")); $$(".lib-card.is-dragging").forEach((c) => c.classList.remove("is-dragging")); });
+  document.addEventListener("dragend", () => { panel.classList.remove("is-receiving"); $$(".sbp-board.is-over", panel).forEach((x) => x.classList.remove("is-over")); $$(".lib-card.is-dragging").forEach((c) => c.classList.remove("is-dragging")); });
   const accepts = (e) => [...(e.dataTransfer?.types || [])].includes("text/scp-ideas");
   panel.addEventListener("dragover", (e) => {
     const zone = e.target.closest("[data-bp-drop]");
     if (!zone || !accepts(e)) return;
     e.preventDefault();
     e.dataTransfer.dropEffect = "copy";
-    $$(".bp-board.is-over", panel).forEach((x) => x !== zone && x.classList.remove("is-over"));
+    $$(".sbp-board.is-over", panel).forEach((x) => x !== zone && x.classList.remove("is-over"));
     zone.classList.add("is-over");
   });
   panel.addEventListener("dragleave", (e) => { const z = e.target.closest("[data-bp-drop]"); if (z && !z.contains(e.relatedTarget)) z.classList.remove("is-over"); });

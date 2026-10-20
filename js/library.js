@@ -302,14 +302,27 @@
     return `<div class="lf-row${open ? " is-open" : ""}${extraCls}" data-lf-rowbox="${c.key}">${rowHead(c)}<div class="lf-rb"${open ? "" : " hidden"} data-lf-body-of="${c.key}">${open ? listHtml(c) : ""}</div></div>`;
   }
 
+  // "Favs": the posts of the favourite profiles chosen in Profile → Favourites (instead of Top Picks)
+  const favVals = () => [...me.fav].map((id) => catalog.byId.get(id)).filter(Boolean);
+  const favsOn = () => { const f = favVals(); return f.length > 0 && f.every(isOn); };
+  function favsHtml() {
+    const f = favVals();
+    if (!f.length) return `<a class="lf-sp lf-sp-top lf-sp-favs" href="profile.html#favourites" title="${esc(tx("Choose your favourite profiles"))}"><span class="lf-sp-ic">${svg("star")}</span><span class="lf-sp-tx"><b>Favs</b><small>${esc(tx("Choose your favourite profiles"))}</small></span></a>`;
+    const on = favsOn(), n = f.reduce((t, v) => t + countOf(v), 0);
+    return `<button type="button" class="lf-sp lf-sp-top lf-sp-favs${on ? " is-on" : ""}" aria-pressed="${on}" data-favs title="${esc(tx("Posts from your favourite profiles"))}">
+      <span class="lf-sp-ic">${svg("star")}</span><span class="lf-sp-tx"><b>Favs</b><small>${esc(tx(f.length === 1 ? "{n} profile" : "{n} profiles", { n: f.length }))}</small></span>
+      <span class="lf-sp-n">${kfmt(n)}</span>${svg("check", "lf-sp-ck")}</button>`;
+  }
+  const notTopPicks = (v) => v.name.toLowerCase() !== "top picks";
+
   function discoverHtml() {
-    const sp = byCountStable(catalog.byCat.trend || []);
-    let rows = sp.map((v) => {
+    const sp = byCountStable((catalog.byCat.trend || []).filter(notTopPicks));
+    let rows = [favsHtml(), ...sp.map((v) => {
       const s = special(v), n = countOf(v), on = isOn(v), zero = n === 0 && !on;
       return `<button type="button" class="lf-sp ${s.cls}${on ? " is-on" : ""}${zero ? " is-zero" : ""}" aria-pressed="${on}" ${zero ? 'aria-disabled="true" ' : ""}data-facet="trend" data-id="${v.id}"${s.desc ? ` data-sp-tip="${esc(tx(s.desc))}"` : ""}>
         <span class="lf-sp-ic">${svg(s.ico)}</span><span class="lf-sp-tx"><b>${esc(pretty(v.name))}</b></span>${s.desc ? `<span class="lf-sp-info" data-sp-info role="button" tabindex="0" aria-label="${esc(tx("What is this?"))}" title="${esc(tx("What is this?"))}">i</span>` : ""}
         <span class="lf-sp-n">${zero ? "No matches" : kfmt(n)}</span>${svg("check", "lf-sp-ck")}</button>`;
-    });
+    })];
     // "Content Creators" (Publisher type): its own gold button right under Replicable ideas
     const cc = (catalog.byCat.entity || []).find((v) => v.name.toLowerCase() === "content creators");
     if (cc) {
@@ -319,7 +332,7 @@
         <span class="lf-sp-ic">${svg(s.ico)}</span><span class="lf-sp-tx"><b>${esc(tx("Content Creators"))}</b></span><span class="lf-sp-info" data-sp-info role="button" tabindex="0" aria-label="${esc(tx("What is this?"))}" title="${esc(tx("What is this?"))}">i</span>
         <span class="lf-sp-n">${zero ? "No matches" : kfmt(n)}</span>${svg("check", "lf-sp-ck")}</button>`;
       const at = sp.findIndex((v) => v.name.toLowerCase() === "replicable ideas");
-      rows.splice(at >= 0 ? at + 1 : rows.length, 0, btn + (on ? creatorsHtml() : ""));
+      rows.splice(at >= 0 ? at + 2 : rows.length, 0, btn + (on ? creatorsHtml() : ""));   // +1: Favs is the first row
     }
     rows = rows.join("");
     const vOpen = ui.open === "views";
@@ -602,7 +615,7 @@
 
   // Mobile: the three specials as quick chips above the posts
   function renderQuick() {
-    $("[data-lf-quick]").innerHTML = byCountStable(catalog.byCat.trend || []).map((v) => {
+    $("[data-lf-quick]").innerHTML = byCountStable((catalog.byCat.trend || []).filter(notTopPicks)).map((v) => {
       const s = special(v), on = isOn(v), zero = countOf(v) === 0 && !on;
       return `<button type="button" class="lf-q ${s.cls}${on ? " is-on" : ""}${zero ? " is-zero" : ""}" aria-pressed="${on}" data-facet="trend" data-id="${v.id}">${svg(s.ico)}${esc(pretty(v.name))}</button>`;
     }).join("");
@@ -683,6 +696,12 @@
   const column = $("[data-filters]");
   const filterBar = $("[data-lf-bar]");
   const onFilterClick = (e) => {
+    if (e.target.closest("[data-favs]")) {   // all the favourite profiles on / off
+      const f = favVals(), on = favsOn();
+      f.forEach((v) => (on ? selected[v.category].delete(v.id) : selected[v.category].add(v.id)));
+      renderFacets();
+      return load(true);
+    }
     const lfb = e.target.closest("[data-lfb]");
     if (lfb) { ui.bar = ui.bar === lfb.dataset.lfb ? null : lfb.dataset.lfb; return renderFacets(); }
     if (e.target.closest("[data-lfb-close]")) { ui.bar = null; return renderFacets(); }
