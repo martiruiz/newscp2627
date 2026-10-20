@@ -16,7 +16,7 @@
         { icon: "search", title: "Smart search", desc: "Search by sport, club, format, hook or views.", href: "index.html#library" },
         { icon: "trophy", title: "Top Picks & smart filters", desc: "The posts that work, picked and tagged for you.", href: "content-library.html" },
         { icon: "sparkles", title: "AI analysis", desc: "Why a post worked and how to adapt it.", href: "index.html#ai-analysis" },
-        { icon: "calendar-days", title: "Content Plan", desc: "Plan your week by dragging ideas in.", href: "index.html#content-plan" },
+        { icon: "calendar-days", title: "Content Plan", desc: "Plan your week by dragging ideas in.", href: "content-plan.html" },
         { icon: "file-text", title: "Social News", desc: "What sports accounts post, every day.", href: "news.html" },
       ],
     },

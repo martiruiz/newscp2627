@@ -350,7 +350,7 @@ ${related.map(card).join("\n")}
   ${footer}
 
   <script src="js/config.js?v=20261021a"></script>
-  <script src="js/nav-menu.js?v=20261020b"></script>
+  <script src="js/nav-menu.js?v=20261020c"></script>
   <script src="js/lead-flow.js?v=20261020b"></script>
   <script src="js/promo-bar.js?v=20261020a"></script>
   <script src="js/main.js"></script>
