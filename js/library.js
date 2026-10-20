@@ -362,7 +362,8 @@
   }
 
   function formatHtml() {
-    const tiles = (catalog.byCat.format || []).map((v) => `<button type="button" class="lf-tile${isOn(v) ? " is-on" : ""}${countOf(v) === 0 && !isOn(v) ? " is-zero" : ""}" aria-pressed="${isOn(v)}" data-facet="format" data-id="${v.id}">${svg(FORMAT_ICON[v.name.toLowerCase()] || "image")}<span>${esc(pretty(v.name))}</span></button>`).join("");
+    // icons only, all formats in one row; the name shows on hover
+    const tiles = (catalog.byCat.format || []).map((v) => { const name = esc(tx(pretty(v.name))); return `<button type="button" class="lf-tile${isOn(v) ? " is-on" : ""}${countOf(v) === 0 && !isOn(v) ? " is-zero" : ""}" aria-pressed="${isOn(v)}" aria-label="${name}" data-tip="${name}" data-facet="format" data-id="${v.id}">${svg(FORMAT_ICON[v.name.toLowerCase()] || "image")}</button>`; }).join("");
     // proportions only once a format is chosen: they open right under the tiles, only the ones that format has
     // (also while a proportion is still selected, so it can be removed)
     const shapes = (selected.format.size || selected.aspect_ratio.size) && has("aspect_ratio") ? catalog.byCat.aspect_ratio.filter((v) => countOf(v) > 0 || isOn(v)) : [];
@@ -370,7 +371,7 @@
     const shapesHtml = shapes.length ? `<div class="lf-fmt-ar"><div class="lf-sub">${esc(tx(CAT_LABEL.aspect_ratio))}</div><div class="lf-shapes">${byCount(shapes).map((v) => shapeBtn(v).replace("</span></button>", `</span><em>${kfmt(countOf(v))}</em></button>`)).join("")}</div></div>` : "";
     const extra = durationHtml();
     const lang = has("language") ? `<div class="lf-stack lf-row-gap">${rowHtml(CAT.language)}</div>` : "";
-    return `<div class="lf-tiles">${tiles}</div>${shapesHtml}${extra}${lang}`;
+    return `<div class="lf-tiles lf-fmt-tiles" style="--n:${(catalog.byCat.format || []).length || 5}">${tiles}</div>${shapesHtml}${extra}${lang}`;
   }
 
   // Length as a timeline, like Views: the 4 length bands of the catalog as bars, a two-handle range over them

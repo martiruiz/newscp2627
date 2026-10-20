@@ -6304,3 +6304,10 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 .lf-hit-alt { flex: none; height: 26px; padding: 0 9px; border-radius: 100px; border: 0.5px solid var(--line); background: none; color: var(--muted); font: 600 11.5px var(--font-body); white-space: nowrap; cursor: pointer; }
 .lf-hit-alt:hover, .lf-hit-alt.is-on { color: var(--gold); border-color: rgba(240, 184, 74, 0.6); }
 .lf-hit-alt em { font-style: normal; opacity: 0.7; margin-left: 2px; }
+/* Content Library: Format as icons in one row, the name on hover */
+.lf-fmt-tiles { grid-template-columns: repeat(var(--n, 5), minmax(0, 1fr)); gap: 6px; }
+.lf-fmt-tiles .lf-tile { position: relative; aspect-ratio: auto; height: 48px; padding: 0; }
+.lf-fmt-tiles .lf-tile .lf-i { width: 22px; height: 22px; }
+.lf-fmt-tiles [data-tip]::after { content: attr(data-tip); position: absolute; left: 50%; bottom: calc(100% + 7px); transform: translate(-50%, 4px); z-index: 20; white-space: nowrap;
+  padding: 5px 9px; border-radius: 8px; background: #0b111d; border: 0.5px solid var(--line); color: #fff; font: 600 12px var(--font-body); pointer-events: none; opacity: 0; transition: opacity 0.15s, transform 0.15s; }
+.lf-fmt-tiles [data-tip]:hover::after, .lf-fmt-tiles [data-tip]:focus-visible::after { opacity: 1; transform: translate(-50%, 0); }
