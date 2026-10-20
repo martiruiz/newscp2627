@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SCP reel 2 (EN, Spanish subtitles) — overlay</title>
+<link rel="stylesheet" href="../css/fonts.css?v=1">
+<style>
+  /* Transparent overlay drawn over the talking-head clip (video/me/blur.mp4), 1080×1920. ?bg shows a grey stand-in. */
+  :root { --gold: #f0b84a; --muted: #b4c0d3; }
+  html, body { margin: 0; background: transparent; }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; color: #fff; font-family: Inter, system-ui, sans-serif; }
+  .abs { position: absolute; }
+  .big { font-family: "Host Grotesk", Inter, sans-serif; font-weight: 700; letter-spacing: -0.04em; line-height: .9; text-transform: uppercase; white-space: nowrap; }
+  .goldfill { background: linear-gradient(100deg, #d99a2b, #f0b84a 40%, #ffe3a3 60%, #f0b84a 80%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .shadow { filter: drop-shadow(0 8px 24px rgba(0,0,0,.75)); }
+  .card { position: absolute; border-radius: 16px; overflow: hidden; background: #17213b; border: 1px solid rgba(255,255,255,.14); box-shadow: 0 24px 50px -20px rgba(0,0,0,.9); }
+  .card img { position: absolute; left: 0; top: 0; width: 100%; object-fit: cover; }
+  .card .vw { position: absolute; top: 10px; left: 10px; padding: 5px 10px; border-radius: 100px; background: rgba(8,12,24,.8); font: 700 17px Inter; }
+  .card .vw b { color: var(--gold); }
+  .panel { position: absolute; border-radius: 26px; background: rgba(13,20,40,.94); border: 1px solid rgba(255,255,255,.12); box-shadow: 0 40px 90px -30px rgba(0,0,0,.9); }
+  .chip { display: inline-flex; align-items: center; gap: 10px; height: 82px; padding: 0 34px; border-radius: 100px; border: 2px solid rgba(240,184,74,.6); background: rgba(13,20,40,.92); color: #fff; font: 700 40px "Host Grotesk"; white-space: nowrap; box-shadow: 0 14px 30px -12px rgba(0,0,0,.8); }
+  .chip.on { background: linear-gradient(90deg,#d99a2b,#f0b84a,#ffe3a3); color: #1a1206; border-color: transparent; }
+  .sp { display: inline-flex; align-items: center; gap: 16px; height: 96px; padding: 0 30px; border-radius: 24px; font: 700 40px "Host Grotesk"; }
+  .sp i { width: 50px; height: 50px; border-radius: 14px; background: rgba(26,18,6,.15); }
+  .sp-cc { background: linear-gradient(90deg, #d99a2b, #f0b84a 45%, #ffd98a); color: #1a1206; box-shadow: 0 20px 60px -10px rgba(240,184,74,.7); }
+  .sbox { display: flex; align-items: center; gap: 18px; height: 104px; padding: 0 30px; border-radius: 26px; border: 3px solid rgba(240,184,74,.75); background: rgba(13,20,40,.95); font: 600 40px Inter; box-shadow: 0 0 0 10px rgba(240,184,74,.1), 0 30px 60px -20px rgba(0,0,0,.8); }
+  .sbox svg { width: 40px; height: 40px; fill: none; stroke: var(--gold); stroke-width: 2.4; flex: none; }
+  /* captions */
+  #cap { position: absolute; left: 60px; right: 60px; top: 1430px; text-align: center; z-index: 40; }
+  #cap span { display: inline-block; margin: 0 9px; font: 800 70px/1.12 "Host Grotesk", Inter; letter-spacing: -0.02em; color: #fff;
+    text-shadow: 0 0 2px #000, 0 4px 0 rgba(0,0,0,.55), 0 10px 30px rgba(0,0,0,.6); -webkit-text-stroke: 2px rgba(0,0,0,.55); paint-order: stroke fill; }
+  #cap span.on { color: var(--gold); transform: scale(1.08); }
+  #cap span.hl { color: var(--gold); }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script>
+(async () => {
+  const Q = new URLSearchParams(location.search);
+  const W = 1080, H = 1920, TOTAL = 10.73;
+  const stage = document.getElementById("stage");
+  if (Q.has("bg")) stage.style.background = "#3a4152";
+  const pick = await (await fetch("real/pick.json")).json();
+  const words = await (await fetch("me/words2-clean.json")).json();
+  await document.fonts.load('700 100px "Host Grotesk"'); await document.fonts.load('800 70px "Host Grotesk"'); await document.fonts.load('600 40px Inter'); await document.fonts.load('700 20px Inter'); await document.fonts.ready;
+
+  const anims = [], ticks = [], seen = new WeakMap();
+  const E = { out: "cubic-bezier(.16,1,.3,1)", inout: "cubic-bezier(.65,0,.35,1)", in: "cubic-bezier(.7,0,.84,0)", slam: "cubic-bezier(.2,1.5,.35,1)", lin: "linear", soft: "cubic-bezier(.4,0,.2,1)" };
+  function A(el, kf, t, dur, ease = E.out) {
+    const n = seen.get(el) || 0; seen.set(el, n + 1);
+    const a = el.animate(kf, { delay: t * 1000, duration: Math.max(1, dur * 1000), easing: ease, fill: n ? "forwards" : "both" });
+    a.pause(); anims.push(a); return a;
+  }
+  const mk = (p, cls = "", html = "", css = {}) => { const e = document.createElement("div"); e.className = cls; e.innerHTML = html; Object.assign(e.style, css); p.append(e); return e; };
+  const px = (v) => v + "px";
+  const centred = "translate(-50%,-50%)";
+  const C = (x, y) => ({ left: px(x), top: px(y), transform: centred });
+  const fmtV = (n) => n >= 1e6 ? `${(n / 1e6).toFixed(n < 1e7 ? 1 : 0)}M` : `${Math.round(n / 1e3)}K`;
+  const SEARCH = `<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>`;
+  const W_ = (txt) => { const w = words.find((x) => x[2].toLowerCase().replace(/[¿?¡!.,]/g, "").startsWith(txt)); return w ? w[0] : 0; };
+  function block(a, b) { const s = mk(stage, "abs", "", { inset: 0 }); ticks.push((t) => { s.style.display = t >= a - .05 && t < b + .05 ? "" : "none"; }); return s; }
+  function card(parent, p, x, y, w, opt = {}) {
+    const h = w * Math.min(Math.max(p.r, .56), 1.78);
+    const c = mk(parent, "card", `<img src="real/${p.f}" style="height:${h}px">`, { left: px(x), top: px(y), width: px(w), height: px(h), ...(opt.css || {}) });
+    if (opt.views && p.v) mk(c, "vw", `<b>${fmtV(p.v)}</b> views`);
+    return { el: c, h };
+  }
+  function masonry(parent, list, cols, width, gap, opt = {}) {
+    const cw = (width - gap * (cols - 1)) / cols, ys = Array(cols).fill(0), out = [];
+    list.forEach((p) => { const c = ys.indexOf(Math.min(...ys)); const k = card(parent, p, c * (cw + gap), ys[c], cw, opt); ys[c] += k.h + gap; out.push(k.el); });
+    return out;
+  }
+  const out = (els, t, d = .25) => els.forEach((e) => A(e, [{ opacity: 1 }, { opacity: 0 }], t, d, E.soft));
+
+  // small brand mark at the top, all the time
+  const brand = mk(stage, "abs", `<img src="../assets/logo-scp.png" style="width:100%">`, { left: "50%", top: "56px", width: "190px", transform: "translateX(-50%)", zIndex: 30, filter: "drop-shadow(0 4px 14px rgba(0,0,0,.6))" });
+  A(brand, [{ opacity: 0 }, { opacity: .95 }], .1, .5, E.soft);
+
+  // ===== A · 0–2.7 "If you're still asking ChatGPT for 30 content ideas" — an AI chat that spits out a list =====
+  // ===== B · 2.7–4.5 "you're making it way too complicated" — the list turns into a mess =====
+  {
+    const s = block(0, 4.55);
+    const chat = mk(s, "panel", "", { left: "70px", right: "70px", top: "170px", height: "590px", overflow: "hidden", padding: "30px 34px", boxSizing: "border-box" });
+    A(chat, [{ opacity: 0, transform: "translateY(40px) scale(.95)" }, { opacity: 1, transform: "translateY(0) scale(1)" }], 0.05, .35, E.out);
+    mk(chat, "", `<span style="display:inline-grid;place-items:center;width:46px;height:46px;border-radius:12px;background:rgba(255,255,255,.1);font:700 24px Inter">✦</span><b style="font:700 30px Inter;margin-left:14px;vertical-align:middle">AI chat</b>`, { marginBottom: "22px" });
+    const ask = mk(chat, "", "", { marginLeft: "auto", width: "fit-content", maxWidth: "88%", padding: "18px 24px", borderRadius: "22px 22px 6px 22px", background: "#2f4a8a", font: "600 32px/1.3 Inter" });
+    const askT = "Give me 30 content ideas for my club";
+    ticks.push((t) => { const k = Math.max(0, Math.min(1, (t - .25) / 1.4)); ask.textContent = askT.slice(0, Math.round(k * askT.length)) || " "; });
+    const list = mk(chat, "", "", { marginTop: "24px", font: "500 27px/1.55 Inter", color: "#cfd8e6" });
+    const ideas = ["Behind the scenes", "Matchday countdown", "Player Q&A", "Training highlights", "Fan of the week", "Throwback Thursday", "Kit reveal", "Goal of the month", "Meet the staff", "Stadium tour", "Pre-match playlist", "Locker room tour", "Player challenge", "Fan predictions", "Top 5 saves"];
+    const rows = ideas.map((x, i) => { const r = mk(list, "", `<b style="color:#8b98ae">${i + 1}.</b> ${x}`); A(r, [{ opacity: 0, transform: "translateX(-20px)" }, { opacity: 1, transform: "translateX(0)" }], 1.75 + i * .06, .2, E.out); return r; });
+    A(list, [{ transform: "translateY(0)" }, { transform: "translateY(-260px)" }], 2.1, 1.2, E.inout);
+    const n30 = mk(s, "big abs goldfill shadow", "30", { ...C(870, 600), fontSize: "220px", zIndex: 3 });
+    A(n30, [{ opacity: 0, transform: `${centred} scale(2) rotate(-12deg)` }, { opacity: 1, transform: `${centred} scale(1) rotate(-8deg)` }], W_("30") - .05, .25, E.slam);
+    // the mess: the rows scatter and the chat falls apart
+    rows.forEach((r, i) => A(r, [{ transform: "translate(0,0) rotate(0)" }, { transform: `translate(${(i % 2 ? 1 : -1) * (40 + i * 9)}px, ${-20 + (i % 5) * 18}px) rotate(${(i % 3 - 1) * 14}deg)` }], 3.0 + i * .02, .5, E.out));
+    A(chat, [{ transform: "rotate(0) scale(1)", filter: "blur(0)" }, { transform: "rotate(-4deg) scale(.96)", filter: "blur(1px)" }], 3.0, .4, E.out);
+    A(n30, [{ opacity: 1 }, { opacity: 0 }], 3.0, .2, E.soft);
+    const wtc = mk(s, "big abs shadow", "WAY TOO<br>COMPLICATED", { ...C(W / 2, 470), fontSize: "128px", textAlign: "center", zIndex: 4 });
+    A(wtc, [{ opacity: 0, transform: `${centred} scale(1.5)` }, { opacity: 1, transform: `${centred} scale(1)` }], W_("way") - .05, .2, E.out);
+    A(wtc, [{ transform: `${centred} translate(0,0)` }, { transform: `${centred} translate(-10px,6px)` }, { transform: `${centred} translate(9px,-5px)` }, { transform: `${centred} translate(0,0)` }], W_("complicated") + .1, .3, E.lin);
+    const strike = mk(s, "abs", "", { left: "90px", top: "520px", height: "18px", width: "0px", borderRadius: "9px", background: "#ff3b5c", zIndex: 5 });
+    A(strike, [{ width: "0px" }, { width: "900px" }], W_("complicated") + .35, .3, E.out);
+    out([chat, wtc, strike], 4.35, .2);
+  }
+
+  // ===== C · 4.5–9.0 "Here you have more than half a million real examples of sports content" — the platform =====
+  {
+    const s = block(4.45, 9.1);
+    const sheet = mk(s, "abs", "", { inset: 0, background: "radial-gradient(120% 80% at 50% 30%, #1a2646, #0b1020 70%)" });
+    A(sheet, [{ transform: "translateY(100%)" }, { transform: "translateY(0)" }], 4.45, .4, E.out);
+    A(sheet, [{ transform: "translateY(0)" }, { transform: "translateY(100%)" }], 8.75, .35, E.in);
+    const ui = mk(sheet, "panel", "", { left: "40px", right: "40px", top: "170px", height: "1180px", overflow: "hidden" });
+    mk(ui, "sbox", `${SEARCH}<span style="color:#8b98ae;font-size:32px">Search filters or write what you need…</span>`, { position: "absolute", left: "26px", right: "26px", top: "26px", height: "88px" });
+    const grid = mk(ui, "abs", "", { left: "26px", right: "26px", top: "140px", height: "4000px" });
+    masonry(grid, [...pick.views.slice(0, 6), ...pick.lineup.slice(0, 9), ...pick.signing.slice(0, 6), ...pick.kit.slice(0, 6)], 3, 948, 16, { views: true });
+    A(grid, [{ transform: "translateY(0)" }, { transform: "translateY(-1400px)" }], 4.7, 4.1, E.inout);
+    const shade = mk(sheet, "abs", "", { inset: 0, background: "radial-gradient(70% 40% at 50% 45%, rgba(7,11,23,.9), rgba(7,11,23,.1) 80%)" });
+    const t0 = W_("half") - .15;
+    A(shade, [{ opacity: 0 }, { opacity: 1 }], t0 - .2, .35, E.soft);
+    const num = mk(sheet, "big abs goldfill shadow", "0", { ...C(W / 2, 690), fontSize: "190px" });
+    A(num, [{ opacity: 0, transform: `${centred} scale(.6)` }, { opacity: 1, transform: `${centred} scale(1)` }], t0, .35, E.slam);
+    ticks.push((t) => { const k = Math.min(1, Math.max(0, (t - t0) / 1.1)); num.textContent = "+" + (Math.round((1 - Math.pow(1 - k, 3)) * 500) * 1000).toLocaleString("en-US"); });
+    const lab = mk(sheet, "big abs shadow", "REAL EXAMPLES", { ...C(W / 2, 830), fontSize: "86px" });
+    A(lab, [{ opacity: 0, transform: `${centred} translateY(30px)` }, { opacity: 1, transform: `${centred} translateY(0)` }], W_("real") - .05, .25, E.out);
+    const wrap = mk(sheet, "abs", "", { left: "60px", right: "60px", top: "930px", display: "flex", flexWrap: "wrap", gap: "14px", justifyContent: "center" });
+    ["⚽ Football", "🏀 Basketball", "🏈 NFL", "🏍️ MotoGP", "🎾 Tennis", "🏒 NHL"].forEach((x, i) => { const c = mk(wrap, "chip on", x, { height: "70px", fontSize: "32px" }); A(c, [{ opacity: 0, transform: "scale(.3)" }, { opacity: 1, transform: "scale(1)" }], W_("sports") - .1 + i * .07, .3, E.slam); });
+  }
+
+  // ===== D · 9.08–end "Comment REEL and I'll send you the link" =====
+  {
+    const s = block(9.0, TOTAL);
+    const card1 = mk(s, "panel", "", { left: "70px", right: "70px", top: "190px", height: "520px", padding: "36px 40px", boxSizing: "border-box" });
+    mk(card1, "", `<div style="display:flex;align-items:center;gap:18px"><span style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#f58529,#dd2a7b,#8134af);flex:none"></span><div><b style="font:700 30px Inter">your.account</b><div style="font:500 22px Inter;color:#8b98ae">Add a comment…</div></div></div>`);
+    const inp = mk(card1, "", `<span class="q" style="font:800 64px 'Host Grotesk';color:var(--gold);letter-spacing:.06em"></span><span class="c" style="font:400 60px Inter;color:#fff">|</span><span style="margin-left:auto;width:74px;height:74px;border-radius:50%;background:var(--gold);display:grid;place-items:center;font:700 34px Inter;color:#1a1206">➤</span>`, { display: "flex", alignItems: "center", gap: "8px", marginTop: "34px", height: "120px", padding: "0 18px 0 30px", borderRadius: "100px", border: "2px solid rgba(255,255,255,.18)", background: "rgba(255,255,255,.05)" });
+    const qEl = inp.querySelector(".q"), cEl = inp.querySelector(".c");
+    const tq = W_("comment") + .25;
+    ticks.push((t) => { const k = Math.max(0, Math.min(1, (t - tq) / .35)); qEl.textContent = "REEL".slice(0, Math.round(k * 4)); cEl.style.opacity = Math.floor(t * 2.6) % 2 ? 0 : 1; });
+    const dm = mk(card1, "", `📩 I'll send you the link to <b style="color:var(--gold)">Sports Content Playbook</b>`, { marginTop: "40px", font: "600 32px/1.35 Inter", color: "#e6ebf5" });
+    A(card1, [{ opacity: 0, transform: "translateY(60px) scale(.9)" }, { opacity: 1, transform: "translateY(0) scale(1)" }], 9.05, .35, E.slam);
+    A(dm, [{ opacity: 0, transform: "translateY(20px)" }, { opacity: 1, transform: "translateY(0)" }], W_("send") - .1, .3, E.out);
+  }
+
+  // ===== Spanish subtitles (by phrase, timed to the English voice) =====
+  const cap = mk(stage, "", "", {}); cap.id = "cap";
+  const SUBS = [
+    [0.03, 2.70, "Si todavía le pides a *ChatGPT* *30 ideas* de contenido,"],
+    [2.72, 4.45, "lo estás complicando *demasiado.*"],
+    [4.48, 6.88, "Aquí tienes más de *medio millón*"],
+    [6.92, 9.00, "de ejemplos *reales* de contenido deportivo."],
+    [9.08, 10.73, "Comenta *REEL* y te mando el link."],
+  ];
+  ticks.push((t) => {
+    const s = SUBS.find((x) => t >= x[0] - .03 && t < x[1]);
+    cap.innerHTML = s ? s[2].replace(/\*([^*]+)\*/g, '<span class="hl">$1</span>').split(/(<span class="hl">[^<]+<\/span>)/).map((part) => part.startsWith("<span") ? part : part.split(" ").filter(Boolean).map((w) => `<span>${w}</span>`).join(" ")).join(" ") : "";
+  });
+
+  await Promise.all([...document.images].map((im) => im.complete ? 0 : new Promise((r) => { im.onload = im.onerror = r; })));
+  window.VIDEO = { W, H, TOTAL };
+  window.renderAt = (t) => { for (const f of ticks) f(t); for (const an of anims) an.currentTime = t * 1000; };
+  window.renderAt(Number(Q.get("t") || 0));
+  window.READY = true;
+})();
+</script>
+</body>
+</html>
