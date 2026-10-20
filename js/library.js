@@ -265,6 +265,7 @@
     const all = (catalog.byCat[c.key] || []).filter((v) => LAYOUT_BEFORE || !REPEATED[c.key]?.includes(v.name.toLowerCase()) || isOn(v));
     const q = (ui.q[c.key] || "").toLowerCase();
     const items = byCount(all.filter((v) => !q || v.name.toLowerCase().includes(q)));
+    if (c.key === "language") items.sort((a, b) => (a.name.toLowerCase() === "emoji only") - (b.name.toLowerCase() === "emoji only"));   // "Emoji only" always last
     const showAll = ui.all.has(c.key) || q;
     const N = c.crest ? 12 : c.key === "language" ? 99 : 7;
     // long lists (cities, opponents): only through the search box — the chosen ones stay visible
