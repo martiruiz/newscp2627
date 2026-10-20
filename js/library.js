@@ -363,7 +363,7 @@
         return `<div class="lf-sub">${esc(CAT_LABEL[k])}</div><div class="${k === "aspect_ratio" ? "lf-shapes" : "lf-chips"}">${btns}${more}</div>`;
       }).join("");
       extra = `<div class="lf-row lf-row-gap${open ? " is-open" : ""}" data-lf-rowbox="format-extra">
-        <button class="lf-rh" type="button" aria-expanded="${open}" data-lf-row="format-extra">${svg("shape")}<span class="lf-t">${esc(extras.map((k) => CAT_LABEL[k]).join(", ").replace(/, ([^,]*)$/, " and $1"))}</span>${sel.length ? `<span class="lf-badge">${sel.length}</span>` : ""}<span class="lf-v${sel.length ? " is-set" : ""}">${sel.length ? esc(pretty(sel[0].name)) + (sel.length > 1 ? ` +${sel.length - 1}` : "") : "Any"}</span>${svg("chev", "lf-chev")}</button>
+        <button class="lf-rh" type="button" aria-expanded="${open}" data-lf-row="format-extra">${svg("shape")}<span class="lf-t" title="${esc(extras.map((k) => tx(CAT_LABEL[k])).join(" · "))}">${esc(tx("More filters"))}</span>${sel.length ? `<span class="lf-badge">${sel.length}</span>` : ""}<span class="lf-v${sel.length ? " is-set" : ""}">${sel.length ? esc(pretty(sel[0].name)) + (sel.length > 1 ? ` +${sel.length - 1}` : "") : "Any"}</span>${svg("chev", "lf-chev")}</button>
         <div class="lf-rb"${open ? "" : " hidden"}>${inner}</div></div>`;
     }
     return `<div class="lf-tiles">${tiles}</div>${shapesHtml}${extra}`;
