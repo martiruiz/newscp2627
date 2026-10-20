@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<title>Tipografia · abans / després</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Mockup only: Bai Jamjuree comes from Google Fonts here. If we adopt it, it gets self-hosted in assets/fonts like the others. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --bg: #0b1020; --line: rgba(255,255,255,.12); --gold: #f0b84a; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: #fff; font: 14px/1.4 "Bai Jamjuree", system-ui, sans-serif; }
+  header { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; padding: 14px 18px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--bg); z-index: 2; }
+  h1 { margin: 0 12px 0 0; font-size: 18px; font-weight: 700; }
+  .seg { display: inline-flex; padding: 3px; border-radius: 100px; border: 1px solid var(--line); }
+  .seg button { border: 0; background: none; color: #b4c0d3; font: 600 13px "Bai Jamjuree", sans-serif; padding: 7px 14px; border-radius: 100px; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--gold); color: #1a1206; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding: 14px; height: calc(100vh - 70px); }
+  .col { display: flex; flex-direction: column; min-height: 0; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  .col p { margin: 0; padding: 10px 14px; font-weight: 600; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; }
+  .col p small { color: #8b98ae; font-weight: 500; }
+  .col.after p { color: var(--gold); }
+  iframe { flex: 1; width: 100%; border: 0; background: #121b33; }
+  @media (max-width: 900px) { .cols { grid-template-columns: 1fr; height: auto; } iframe { height: 80vh; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Tipografia: abans / després</h1>
+  <div class="seg" data-page>
+    <button aria-pressed="true" data-v="index.html">Home</button>
+    <button aria-pressed="false" data-v="pricing.html">Pricing</button>
+    <button aria-pressed="false" data-v="blog.html">Blog</button>
+    <button aria-pressed="false" data-v="content-library.html">Content Library</button>
+  </div>
+  <div class="seg" data-scope>
+    <button aria-pressed="true" data-v="all">Tot el text</button>
+    <button aria-pressed="false" data-v="titles">Només títols</button>
+  </div>
+</header>
+<div class="cols">
+  <div class="col"><p>Abans <small>Host Grotesk (títols) + Inter (text)</small></p><iframe data-before title="Abans"></iframe></div>
+  <div class="col after"><p>Després <small data-after-label>Bai Jamjuree a tot el text</small></p><iframe data-after title="Després"></iframe></div>
+</div>
+<script>
+  const before = document.querySelector("[data-before]"), after = document.querySelector("[data-after]");
+  const state = { page: "index.html", scope: "all" };
+  const FONT = '"Bai Jamjuree", system-ui, sans-serif';
+  function inject() {
+    const d = after.contentDocument;
+    if (!d) return;
+    d.getElementById("bai-font")?.remove(); d.getElementById("bai-css")?.remove();
+    const l = d.createElement("link"); l.id = "bai-font"; l.rel = "stylesheet";
+    l.href = "https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap"; d.head.append(l);
+    const s = d.createElement("style"); s.id = "bai-css";
+    s.textContent = state.scope === "all"
+      ? `:root{--font-display:${FONT}!important;--font-body:${FONT}!important} body,button,input,select,textarea{font-family:${FONT}}`
+      : `:root{--font-display:${FONT}!important}`;
+    d.head.append(s);
+    document.querySelector("[data-after-label]").textContent = state.scope === "all" ? "Bai Jamjuree a tot el text" : "Bai Jamjuree als títols + Inter al text";
+  }
+  // keep both sides scrolled to the same place
+  let syncing = false;
+  const sync = (from, to) => { if (syncing) return; syncing = true; to.contentWindow?.scrollTo(0, from.contentWindow.scrollY); requestAnimationFrame(() => (syncing = false)); };
+  function load() {
+    const url = `../${state.page}?compare=${Date.now()}`;
+    before.src = url; after.src = url;
+  }
+  after.addEventListener("load", () => { inject(); after.contentWindow.addEventListener("scroll", () => sync(after, before)); });
+  before.addEventListener("load", () => before.contentWindow.addEventListener("scroll", () => sync(before, after)));
+  document.querySelectorAll(".seg").forEach((g) => g.addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    g.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    if (g.hasAttribute("data-page")) { state.page = b.dataset.v; load(); } else { state.scope = b.dataset.v; inject(); }
+  }));
+  load();
+</script>
+</body>
+</html>
