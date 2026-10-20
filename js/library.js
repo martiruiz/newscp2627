@@ -549,12 +549,50 @@
     const comms = ["comms", "crisis"].filter(has);
     return planHintsHtml() + matchdayHtml()
       + groups.map(([label, keys]) => { const r = rowsOf(keys); return r ? `<div class="lf-grp"><div class="lf-sub">${esc(tx(label))}</div><div class="lf-stack">${r}</div></div>` : ""; }).join("")
-      + (barMode() ? "" : toneHtml())
+      + (occasionOn() || selected.angle?.size ? toneRowHtml() : "")
       + (comms.length ? `<div class="lf-grp"><div class="lf-more-rows lf-stack"${commsOpen ? "" : " hidden"}><div class="lf-sub">${esc(tx("Communication"))}</div>${rowsOf(comms)}</div><button type="button" class="lf-morebtn" data-lf-more="occasion">${commsOpen ? "Show fewer" : esc(tx("Press and sensitive topics"))}</button></div>` : "");
   }
-  function toneHtml() {
-    const tone = (catalog.byCat.angle || []).filter((v) => countOf(v) > 0 || isOn(v));
-    return tone.length ? `<div class="lf-grp"><div class="lf-sub">${esc(tx("Tone"))}</div><div class="lf-chips">${tone.map((v) => `<button type="button" class="lf-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="angle" data-id="${v.id}">${esc(pretty(v.name))}</button>`).join("")}</div></div>` : "";
+  // Tone: "How do you tell it?" — a dropdown that appears once an occasion is chosen, each tone with the cover of
+  // its most viewed post for the current filters (loaded when the dropdown opens)
+  const OCCASION_KEYS = ["matchday_graphic", "outcome", "opponent", "transfer", "kit", "season_moment", "moment", "comms", "crisis", "campaign"];
+  const occasionOn = () => OCCASION_KEYS.some((k) => selected[k]?.size);
+  const TONE_ICON = { "player-focused": "👤", "humour / meme": "😂", emotional: "❤️", "data & stats": "📊", "behind the scenes": "🎬", "skills / tutorial": "🎯", celebration: "🎉" };
+  const toneIcon = (v) => TONE_ICON[v.name.toLowerCase()] || "✨";
+  const toneThumbs = new Map();
+  let toneKey = "";
+  function toneRowHtml() {
+    const tones = byCount((catalog.byCat.angle || []).filter((v) => countOf(v) > 0 || isOn(v)));
+    if (!tones.length) return "";
+    const open = ui.open === "angle", sel = tones.filter(isOn);
+    const val = sel.length ? `${toneIcon(sel[0])} ${esc(pretty(sel[0].name))}${sel.length > 1 ? ` +${sel.length - 1}` : ""}` : esc(tx("Any"));
+    return `<div class="lf-grp lf-tone-grp"><div class="lf-row${open ? " is-open" : ""}" data-lf-rowbox="angle">
+      <button class="lf-rh" type="button" aria-expanded="${open}" data-lf-row="angle">${svg("smile")}<span class="lf-t">${esc(tx("How do you tell it?"))}</span>${sel.length ? `<span class="lf-badge">${sel.length}</span>` : ""}<span class="lf-v${sel.length ? " is-set" : ""}">${val}</span>${svg("chev", "lf-chev")}</button>
+      <div class="lf-rb"${open ? "" : " hidden"}><div class="lf-tones">${tones.map((v) => {
+        const img = toneThumbs.get(v.id);
+        return `<button type="button" class="lf-tone${isOn(v) ? " is-on" : ""}${countOf(v) === 0 && !isOn(v) ? " is-zero" : ""}" aria-pressed="${isOn(v)}" data-facet="angle" data-id="${v.id}">
+          <span class="lf-tone-img" data-tone-img="${v.id}">${img ? `<img src="${esc(img)}" alt="" loading="lazy">` : ""}<i>${toneIcon(v)}</i></span>
+          <span class="lf-tone-tx"><b>${esc(pretty(v.name))}</b><small>${esc(tx("{n} posts", { n: kfmt(countOf(v)) }))}</small></span></button>`;
+      }).join("")}</div></div></div></div>`;
+  }
+  async function loadToneThumbs() {
+    if (ui.open !== "angle") return;
+    const base = state();
+    const key = JSON.stringify({ ...base, facets: { ...base.facets, angle: [] } });
+    if (key === toneKey) return;
+    toneKey = key; toneThumbs.clear();
+    const tones = (catalog.byCat.angle || []).filter((v) => countOf(v) > 0);
+    for (let i = 0; i < tones.length; i += 2) {   // two at a time: these are full library queries
+      await Promise.all(tones.slice(i, i + 2).map(async (v) => {
+        const args = queryArgs({ ...base, facets: { ...base.facets, angle: [v.id] } });
+        const { data } = await fetchIdeas({ ...args, p_order: "views", p_seed: "", p_ids: null, p_limit: 1, p_offset: 0 }).catch(() => ({}));
+        const url = data?.data?.[0]?.cover_url;
+        if (key !== toneKey || !url) return;
+        toneThumbs.set(v.id, url);
+        const box = $(`[data-tone-img="${v.id}"]`);
+        if (box && !box.querySelector("img")) box.insertAdjacentHTML("afterbegin", `<img src="${esc(url)}" alt="" loading="lazy">`);
+      }));
+      if (key !== toneKey) return;
+    }
   }
   function goalHtml() {
     const top = rowsOf(["goal", "cta"]);
@@ -569,7 +607,7 @@
       recipes: !LAYOUT_BEFORE && catalog.byId.size && recipesHtml(),
       occasion: !LAYOUT_BEFORE && (CATEGORIES.some((c) => c.sec === "occasion" && has(c.key))) && occasionHtml(),
       goal: !LAYOUT_BEFORE && CATEGORIES.some((c) => c.sec === "goal" && has(c.key)) && goalHtml(),
-      where: !LAYOUT_BEFORE && (has("platform") || has("format")) && `${has("platform") ? `<div class="lf-grp"><div class="lf-sub lf-sub-top">Platform</div>${platformHtml()}</div>` : ""}${has("format") || has("aspect_ratio") || has("duration") || has("language") ? `<div class="lf-grp"><div class="lf-sub">Format</div>${formatHtml()}</div>` : ""}${barMode() ? toneHtml() : ""}`,
+      where: !LAYOUT_BEFORE && (has("platform") || has("format")) && `${has("platform") ? `<div class="lf-grp"><div class="lf-sub lf-sub-top">Platform</div>${platformHtml()}</div>` : ""}${has("format") || has("aspect_ratio") || has("duration") || has("language") ? `<div class="lf-grp"><div class="lf-sub">Format</div>${formatHtml()}</div>` : ""}`,
       benchmark: !LAYOUT_BEFORE && CATEGORIES.some((c) => c.sec === "benchmark" && has(c.key)) && likeMineHtml() + groupHtml("benchmark"),
       format: (has("format") || has("aspect_ratio") || has("duration") || has("language")) && formatHtml(),
       platform: has("platform") && platformHtml(),
@@ -591,11 +629,12 @@
     $("[data-lf-jump]").innerHTML = colSecs.map((s) => `<button type="button" data-lf-jump-to="${s.key}">${esc(s.jump || s.label.replace(" by", ""))}</button>`).join("");
     renderQuick();
     fadeEdges();
+    loadToneThumbs();
   }
 
   // ---------- Bar above the posts (wide screens): one button per section, its filters in a wide panel ----------
   const BAR_ICO = { occasion: "calendar", goal: "target", benchmark: "trophy" };
-  const secOf = (c) => (c.key === "angle" ? "where" : c.key === "campaign" ? "occasion" : ["format", "platform"].includes(c.sec) ? "where" : c.sec);
+  const secOf = (c) => (c.key === "angle" || c.key === "campaign" ? "occasion" : ["format", "platform"].includes(c.sec) ? "where" : c.sec);
   function renderBar(list, parts) {
     const bar = $("[data-lf-bar]");
     if (!list.length) { bar.hidden = true; bar.innerHTML = ""; ui.bar = null; return; }
