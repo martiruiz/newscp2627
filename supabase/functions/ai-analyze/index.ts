@@ -8,7 +8,7 @@
 //   4. on any error refunds every pending unlock of that post (fail_generation).
 // Other users who unlock the same post later get the stored analysis without any API call.
 //
-// Secrets: ANTHROPIC_API_KEY; optional AI_MODEL (default claude-opus-5-5),
+// Secrets: ANTHROPIC_API_KEY; optional AI_MODEL (default claude-sonnet-5-5: faster and cheaper than Opus for this task),
 //          AI_PRICE_IN_PER_MTOK / AI_PRICE_OUT_PER_MTOK (USD per million tokens, to record the real cost).
 // SUPABASE_URL, SUPABASE_ANON_KEY and SUPABASE_SERVICE_ROLE_KEY are provided by Supabase.
 import Anthropic from "npm:@anthropic-ai/sdk@0.129.0";
@@ -108,7 +108,7 @@ Deno.serve(async (req) => {
     if (!image) throw new Error("Couldn't load the post image (removed or private post)");
 
     // 3. Claude
-    const model = env("AI_MODEL") || "claude-opus-5-5";
+    const model = env("AI_MODEL") || "claude-sonnet-5-5";
     const claude = new Anthropic({ apiKey: env("ANTHROPIC_API_KEY") });
     const response = await claude.beta.messages.create({
       model,
