@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="256x256" href="assets/icon-logo-lg.png">
   <link rel="apple-touch-icon" href="assets/icon-logo-lg.png">
   <link rel="stylesheet" href="css/fonts.css?v=1">
-  <link rel="stylesheet" href="css/styles.css?v=20261025g">
+  <link rel="stylesheet" href="css/styles.css?v=20261025h">
   <script src="js/theme.js?v=20261021a"></script>
   <script src="js/i18n.js?v=20261025d"></script>
   <style>.auth-checking body { visibility: hidden; }</style>
@@ -60,7 +60,7 @@
     <div class="lib-head" data-lib-head>
       <div class="feed-bar">
         <button class="pill pill-dark collapse" type="button" aria-expanded="true" data-collapse><img src="assets/chevron-duo.svg" alt=""><span data-collapse-label>Hide filters</span><b class="filter-count" hidden data-filter-count></b></button>
-        <label class="feed-search"><img src="assets/search.svg" alt=""><input type="search" placeholder="Search captions…" aria-label="Search posts" data-q></label>
+        <input type="hidden" data-q><!-- caption query, set by the "Coming up" dates (no visible search box) -->
         <div class="spacer"></div>
         <div class="lf-dd" data-dd>
           <button class="pill pill-dark lf-dd-btn" type="button" aria-haspopup="true" aria-expanded="false" data-dd-btn><span data-icon="calendar-days"></span><span data-period-label>All time</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
@@ -106,9 +106,6 @@
       <div class="lf-quick" data-lf-quick></div>
 
       <div class="need">
-        <div class="need-head">
-          <h2>What do you need today?</h2>
-        </div>
         <div class="upcoming" data-upcoming></div>
       </div>
 
@@ -142,7 +139,7 @@
   <script src="js/thumbs.js?v=20261018p"></script>
   <script src="js/covers.js?v=20261018p"></script>
   <script src="js/post-preview.js?v=20261018p"></script>
-  <script src="js/library.js?v=20261025h" defer></script>
+  <script src="js/library.js?v=20261025i" defer></script>
   <script src="js/plan-panel.js?v=20261025a" defer></script>
   <script src="js/checkout.js?v=20261020lh"></script>
 

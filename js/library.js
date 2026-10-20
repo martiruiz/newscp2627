@@ -930,7 +930,7 @@
       const lead = c.crest || v.logo ? crestImg(v, "lf-mini") : v.category === "platform" && PLATFORM[v.name.toLowerCase()] ? pfLogo(v.name.toLowerCase(), "lf-pfi is-brand") : "";
       const alt = hitAlt.get(v.id);
       return `<div class="lf-hit-wrap"><button type="button" class="lf-hit${isOn(v) ? " is-on" : ""}${i === 0 && !sentenceHtml ? " is-kb" : ""}" role="option" data-hit="${i}">${lead}<span class="lf-hv">${hl(pretty(v.name))}</span><span class="lf-hc">${esc(c.sec === "discover" ? "Discover" : c.label)}</span><span class="lf-cnt">${kfmt(countOf(v))}</span></button>${alt ? `<button type="button" class="lf-hit-alt${isOn(alt) ? " is-on" : ""}" data-hit-alt="${i}" title="${esc(tx("Posts against {name}", { name: pretty(alt.name) }))}">${esc(tx("as opponent"))} <em>${kfmt(countOf(alt))}</em></button>` : ""}</div>`;
-    }).join("") : sentenceHtml ? "" : `<p class="lf-none">No filter called “${esc(fsearch.value.trim())}”. The caption search above the posts looks inside the posts.</p>`);
+    }).join("") : sentenceHtml ? "" : `<p class="lf-none">No filter called “${esc(fsearch.value.trim())}”.</p>`);
   }
   function pickHit(i, asOpponent = false) {
     const v = asOpponent ? hitAlt.get(hits[i]?.id) : hits[i];
@@ -1907,8 +1907,6 @@
     if (e.target.closest("[data-order]")) seed = String(Math.random()).slice(2, 10); // new shuffle each "Surprise me"
     load(true);
   });
-  let timer;
-  $("[data-q]").addEventListener("input", () => { clearTimeout(timer); timer = setTimeout(() => load(true), 350); });
   // the Content Plan starts right under the head (search + My space + filter bar), whatever its height
   { const head = $("[data-lib-head]"); new ResizeObserver(() => root.style.setProperty("--lib-head-h", `${head.offsetHeight}px`)).observe(head); }
   $("[data-ai-mine]").addEventListener("click", () => setAiMode(ui.aiMode ? null : "mine"));

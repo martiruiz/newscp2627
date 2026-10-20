@@ -2164,13 +2164,6 @@ a.blog-img { display: block; }
   color: var(--text); font: inherit; letter-spacing: -0.005em; cursor: pointer;
 }
 .f-select-native select option { background: var(--surface-2); }
-.feed-search {
-  display: flex; align-items: center; gap: 10px; flex: 1 1 160px; max-width: 320px; height: 35px; padding: 0 16px;
-  background: var(--surface-2); border: 0.5px solid var(--line-soft); border-radius: 100px;
-}
-.feed-search img { width: 15px; height: 15px; opacity: 0.8; }
-.feed-search input { flex: 1; min-width: 0; background: none; border: 0; outline: 0; color: var(--text); font: inherit; font-size: 14px; }
-.feed-search input::placeholder { color: var(--muted); }
 .folder-pick { position: relative; gap: 12px; color: var(--muted); background: var(--surface-2); border: 0.5px solid var(--line-soft); cursor: pointer; }
 .folder-pick select { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
 .folder-pick.is-active { background: var(--gold-tint); color: var(--gold); border-color: transparent; }
@@ -2236,7 +2229,6 @@ a.blog-img { display: block; }
 
 @media (max-width: 960px) {
   .drawer-body { grid-template-columns: 1fr; padding: 56px 20px 32px; }
-  .feed-search { max-width: none; }
   .feed-note { margin-inline: var(--gutter); }
 }
 
@@ -2334,10 +2326,8 @@ a.blog-img { display: block; }
 .fx-more summary .filter-count { margin: 0 10px 0 8px; }
 .dp-wrap { margin-top: 12px; }
 
-/* "What do you need today?" */
-.need { padding: 24px 38px 4px; }
-.need-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-.need-head h2 { font-family: var(--font-display); font-weight: 600; font-size: 24px; letter-spacing: -0.02em; }
+/* Coming-up dates above the posts */
+.need { padding: 16px 38px 4px; }
 .need-order { display: inline-flex; padding: 4px; border-radius: 100px; background: var(--surface-2); border: 0.5px solid var(--line-soft); }
 .need-order button { height: 30px; padding: 0 14px; border-radius: 100px; font-size: 13px; color: var(--muted); }
 .need-order button[aria-pressed="true"] { background: var(--gold-tint); color: var(--gold); }
