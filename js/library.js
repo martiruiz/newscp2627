@@ -1729,9 +1729,20 @@
   function embedHtml(p) {
     if (/^\s*<blockquote class="(instagram-media|tiktok-embed|twitter-tweet)/.test(p.embed || "")) return p.embed;
     const src = previewSrc(p);
+    // TikTok: the cover with a play button; the player loads only on click. TikTok throttles its embed per visitor
+    // ("ratelimit triggered") when many TikTok posts are opened or loaded in a short time.
+    if (src && platformOf(p) === "tiktok") return `<div class="yt-frame is-vertical an-poster" data-cover-box data-embed-src="${esc(src)}">
+      ${p.cover_url ? `<img src="${esc(p.cover_url)}" alt="" class="is-loaded">` : `<img data-oembed="${esc(p.url)}" alt="">`}
+      <button type="button" class="an-play" data-embed-play aria-label="${esc(tx("Play"))}"></button></div>`;
     if (src) return `<div class="yt-frame is-vertical"><iframe src="${esc(src)}" title="Post" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe></div>`;
     return `<a class="btn btn-outline" href="${esc(p.url)}" target="_blank" rel="noopener">Open post</a>`;
   }
+  body.addEventListener("click", (e) => {
+    const play = e.target.closest("[data-embed-play]");
+    if (!play) return;
+    const box = play.closest("[data-embed-src]");
+    box.innerHTML = `<iframe src="${esc(box.dataset.embedSrc)}" title="Post" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
+  });
   const SCRIPTS = { "instagram-media": "https://www.instagram.com/embed.js", "tiktok-embed": "https://www.tiktok.com/embed.js", "twitter-tweet": "https://platform.twitter.com/widgets.js" };
   function runEmbedScript() {
     if ($(".instagram-media", body) && window.instgrm) return window.instgrm.Embeds.process();
@@ -1795,6 +1806,7 @@
     drawer.hidden = false;
     document.body.style.overflow = "hidden";
     runEmbedScript();
+    window.SCP_COVERS?.observe(body);
     showAnalysisArea(p.id);
   }
 
