@@ -1472,8 +1472,12 @@
   // Instagram's embed shows reels (9:16) letterboxed inside its media box (usually 4:5): the card is 9:16 and the box is zoomed to fill it.
   // Default card shapes (height / width) for platforms without a measured media ratio
   const PLATFORM_RATIO = { tiktok: 1.78, x: 1.25, facebook: 1.2, linkedin: 1.2 };
+  // Facebook: reels vertical like a reel (9:16), other videos horizontal (16:9), photo posts as before
+  const fbRatio = (p) => (/facebook\.com\/reel\//.test(p.url || "") || /^reels?$/i.test(first(p, "format")) ? 16 / 9
+    : /facebook\.com\/(?:[^/]+\/videos|watch)\b/.test(p.url || "") || /^video$/i.test(first(p, "format")) ? 9 / 16 : 1.2);
   function shape(p) {
     const pf = platformOf(p);
+    if (pf === "facebook") return { ratio: Number(p.media_ratio) || fbRatio(p) };
     if (pf === "youtube") return { ratio: /\/shorts\//.test(p.url || "") ? 1.78 : 0.5625 };
     if (PLATFORM_RATIO[pf]) return { ratio: PLATFORM_RATIO[pf] };
     const box = Number(p.media_ratio) || 1.25;
@@ -1492,6 +1496,7 @@
     if (pf === "tiktok" || shorts || (pf === "instagram" && isReel(p))) return 16 / 9;
     if (pf === "youtube") return 9 / 16;
     if (pf === "instagram") return Math.min(1.25, Math.max(1, Number(p.media_ratio) || 1.25));
+    if (pf === "facebook") return Number(p.media_ratio) || fbRatio(p);
     return Number(p.media_ratio) || 1.25;
   }
   const coverRatio = mediaRatio;
@@ -1721,7 +1726,9 @@
     const w = grid.clientWidth - parseFloat(getComputedStyle(grid).paddingLeft) - parseFloat(getComputedStyle(grid).paddingRight);
     // as many ~240px columns as fit (with or without the filters column), up to 6 on very wide screens
     const pfs = [...(selected.platform || [])].map((id) => catalog.byId.get(id)?.name.toLowerCase());
-    const ytOnly = pfs.length === 1 && pfs[0] === "youtube";
+    const fmts = [...(selected.format || [])].map((id) => catalog.byId.get(id)?.name.toLowerCase());
+    // horizontal videos (YouTube, Facebook videos) need wide cards: 3 columns at most
+    const ytOnly = pfs.length === 1 && (pfs[0] === "youtube" || (pfs[0] === "facebook" && fmts.length === 1 && fmts[0] === "video"));
     const MAX = ytOnly ? 3 : 6, MIN = ytOnly ? 260 : 240;
     return Math.max(1, Math.min(MAX, Math.floor((w + GAP) / (MIN + GAP))));
   }
