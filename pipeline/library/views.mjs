@@ -2,8 +2,8 @@
 // Views, likes, comments (and TikTok shares) of TikTok and YouTube posts, read from the platform (same rules as
 // supabase/functions/_shared/engagement.ts). Writes content_ideas.views, likes, comments, shares and views_at.
 //
-//   cd pipeline && node library/views.mjs --platform tiktok|youtube [--limit 200] [--all]
-//   by default only posts without views; --all also the ones that have them (oldest reading first)
+//   cd pipeline && node library/views.mjs --platform tiktok|youtube [--limit 200] [--missing-likes | --all]
+//   by default only posts without views; --missing-likes those without likes; --all every post
 // Needs SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in pipeline/.env and supabase/views-refresh.sql.
 import { createClient } from "@supabase/supabase-js";
 import { loadEnv } from "./env.mjs";
@@ -12,7 +12,7 @@ loadEnv();
 const db = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
 const argv = process.argv.slice(2);
 const arg = (k) => (argv.includes(k) ? argv[argv.indexOf(k) + 1] : null);
-const PF = arg("--platform"), LIMIT = Number(arg("--limit") || 1e9), ALL = argv.includes("--all");
+const PF = arg("--platform"), LIMIT = Number(arg("--limit") || 1e9), ALL = argv.includes("--all"), NO_LIKES = argv.includes("--missing-likes");
 if (!["tiktok", "youtube"].includes(PF)) { console.error("--platform tiktok|youtube"); process.exit(1); }
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36";
@@ -56,7 +56,8 @@ const t0 = Date.now();
 let done = 0, none = 0, removed = 0, throttled = 0, lastId = 0;
 while (done + none + removed < LIMIT) {
   let q = db.from("content_ideas").select("id,url").eq("account_platform", PF).is("unavailable_at", null).gt("id", lastId).order("id").limit(200);
-  if (!ALL) q = q.is("views", null);
+  if (NO_LIKES) q = q.is("likes", null);   // read before likes were saved: fill them
+  else if (!ALL) q = q.is("views", null);
   const { data: rows, error } = await q;
   if (error) throw error;
   if (!rows?.length) break;
