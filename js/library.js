@@ -543,7 +543,6 @@
     box.innerHTML = (LAYOUT_BEFORE ? "" : roleHtml()) + colSecs.map((s) => `<section class="lf-sec${LAYOUT_BEFORE ? "" : " lf-sec-v2"}" data-lf-sec="${s.key}"><h2 class="lf-lbl">${esc(s.label)}${ai(s)}</h2>${s.q ? `<p class="lf-q">${esc(s.q)}</p>` : ""}${parts[s.key]}</section>`).join("");
     $("[data-lf-body]").scrollTop = scroll;
     $("[data-lf-jump]").innerHTML = colSecs.map((s) => `<button type="button" data-lf-jump-to="${s.key}">${esc(s.jump || s.label.replace(" by", ""))}</button>`).join("");
-    $("[data-lf-credit]").hidden = !catalog.byId.size || ![...catalog.byId.values()].some((v) => v.logo);
     renderQuick();
     fadeEdges();
   }

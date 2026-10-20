@@ -1204,7 +1204,6 @@ window.SCP_ES = {
   "Saved searches…": "Búsquedas guardadas…",
   "Save this search": "Guardar esta búsqueda",
   "Post analysis": "Análisis del post",
-  "Wikimedia Commons": "Wikimedia Commons",
   "Show results": "Ver resultados",
   "This week": "Esta semana",
   "This month": "Este mes",

@@ -4323,8 +4323,6 @@ button.plan-cta { width: 100%; cursor: pointer; font: inherit; }
 @keyframes lfGlow { 0%, 100% { box-shadow: 0 0 12px rgba(var(--glow), 0.35); } 50% { box-shadow: 0 0 22px 1px rgba(var(--glow), 0.6); } }
 .lf-chip-sp { width: 10px; height: 10px; border-radius: 50%; background: var(--g); flex: none; }
 .lf-quick { display: none; }
-.lf-credit { margin: 14px 2px 0; font-size: 10.5px; color: var(--muted-dim); }
-.lf-credit a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
 
 /* period / sort dropdowns in the feed bar */
 .lf-dd { position: relative; }
@@ -5100,7 +5098,6 @@ main { position: relative; z-index: 0; }
 @keyframes libClick { 0% { opacity: 1; transform: scale(0.4); } 100% { opacity: 0; transform: scale(1.8); } }
 @media (max-width: 600px) { .lib-crests { grid-template-columns: repeat(3, minmax(0, 1fr)); } .lib-showing { display: none; } }
 .lib-crest img { width: 36px; height: 36px; padding: 5px; border-radius: 50%; background: #f4f6fb; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35); filter: none; }
-.lib-credit { margin: 10px 2px 0; font-size: 11px; color: var(--muted-dim); text-align: right; }
 
 /* Content Plan demo: week progress bar, a fuller week */
 .cp-demo-top { align-items: center; gap: 16px; }
