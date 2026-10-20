@@ -304,14 +304,17 @@
 
   // "Favs": the posts of the favourite profiles chosen in Profile → Favourites (instead of Top Picks)
   const favVals = () => [...me.fav].map((id) => catalog.byId.get(id)).filter(Boolean);
-  const favsOn = () => { const f = favVals(); return f.length > 0 && f.every(isOn); };
+  // the favourite network (Profile → Favourites) goes with them: Instagram favourite → their Instagram posts
+  const favNetwork = () => (me.favPlatform && (catalog.byCat.platform || []).find((v) => v.name.toLowerCase() === me.favPlatform)) || null;
+  const favsOn = () => { const f = favVals(), pf = favNetwork(); return f.length > 0 && f.every(isOn) && (!pf || isOn(pf)); };
   function favsHtml() {
     const f = favVals();
     if (!f.length) return `<a class="lf-sp lf-sp-top lf-sp-favs" href="profile.html#favourites" title="${esc(tx("Choose your favourite profiles"))}"><span class="lf-sp-ic">${svg("star")}</span><span class="lf-sp-tx"><b>Favs</b><small>${esc(tx("Choose your favourite profiles"))}</small></span></a>`;
-    const on = favsOn(), n = f.reduce((t, v) => t + countOf(v), 0);
+    const on = favsOn();
+    const pf = favNetwork();
     return `<button type="button" class="lf-sp lf-sp-top lf-sp-favs${on ? " is-on" : ""}" aria-pressed="${on}" data-favs title="${esc(tx("Posts from your favourite profiles"))}">
-      <span class="lf-sp-ic">${svg("star")}</span><span class="lf-sp-tx"><b>Favs</b><small>${esc(tx(f.length === 1 ? "{n} profile" : "{n} profiles", { n: f.length }))}</small></span>
-      <span class="lf-sp-n">${kfmt(n)}</span>${svg("check", "lf-sp-ck")}</button>`;
+      <span class="lf-sp-ic">${svg("star")}</span><span class="lf-sp-tx"><b>Favs</b><small>${esc(tx(f.length === 1 ? "{n} profile" : "{n} profiles", { n: f.length }))}${pf ? ` · ${esc(pf.name)}` : ""}</small></span>
+      ${svg("check", "lf-sp-ck")}</button>`;
   }
   const notTopPicks = (v) => v.name.toLowerCase() !== "top picks";
 
@@ -697,7 +700,7 @@
   const filterBar = $("[data-lf-bar]");
   const onFilterClick = (e) => {
     if (e.target.closest("[data-favs]")) {   // all the favourite profiles on / off
-      const f = favVals(), on = favsOn();
+      const pf = favNetwork(), f = [...favVals(), ...(pf ? [pf] : [])], on = favsOn();
       f.forEach((v) => (on ? selected[v.category].delete(v.id) : selected[v.category].add(v.id)));
       renderFacets();
       return load(true);
