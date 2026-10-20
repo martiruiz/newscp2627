@@ -13,6 +13,7 @@ const argv = process.argv.slice(2);
 const arg = (k, d = null) => (argv.includes(k) ? argv[argv.indexOf(k) + 1] : d);
 const F = arg("--f", "h"), FPS = Number(arg("--fps", 30)), BASE = arg("--base", "http://localhost:8765");
 const W = F === "v" ? 1080 : 1920, H = F === "v" ? 1920 : 1080;
+const UNDER = arg("--under");   // a video to draw the (transparent) page over, e.g. the talking-head clip
 const CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const PORT = 9300 + Math.floor(Math.random() * 500);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -37,6 +38,7 @@ const cdp = (method, params = {}) => new Promise((res, rej) => { const i = ++id;
 const evaluate = async (expr) => (await cdp("Runtime.evaluate", { expression: expr, awaitPromise: true, returnByValue: true })).result.value;
 
 await cdp("Emulation.setDeviceMetricsOverride", { width: W, height: H, deviceScaleFactor: 1, mobile: false });
+if (UNDER) await cdp("Emulation.setDefaultBackgroundColorOverride", { color: { r: 0, g: 0, b: 0, a: 0 } });
 const q = new URLSearchParams({ f: F, ...(arg("--d") ? { d: arg("--d") } : {}) });
 await cdp("Page.navigate", { url: `${BASE}/video/${arg("--page", "scp-video.html")}?${q}` });
 for (let i = 0; i < 100 && !(await evaluate("window.READY === true").catch(() => false)); i++) await sleep(100);
@@ -44,7 +46,8 @@ const info = await evaluate("window.VIDEO");
 console.log(`format ${F} ${W}×${H} · ${info.TOTAL.toFixed(2)} s`);
 const shot = async (t, format = "jpeg") => {
   await evaluate(`window.renderAt(${t}); new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))`);
-  return Buffer.from((await cdp("Page.captureScreenshot", { format, quality: 92, clip: { x: 0, y: 0, width: W, height: H, scale: 1 } })).data, "base64");
+  if (UNDER && format === "jpeg") format = "png";   // keep the transparency
+  return Buffer.from((await cdp("Page.captureScreenshot", { format, ...(format === "jpeg" ? { quality: 92 } : {}), clip: { x: 0, y: 0, width: W, height: H, scale: 1 } })).data, "base64");
 };
 
 if (arg("--stills")) {
@@ -55,8 +58,8 @@ if (arg("--stills")) {
 
 const out = arg("--out", `video/out/scp-${F}.mp4`); fs.mkdirSync(path.dirname(out), { recursive: true });
 const audio = arg("--audio");
-const ff = spawn("ffmpeg", ["-y", "-loglevel", "error", "-f", "image2pipe", "-framerate", String(FPS), "-i", "-",
-  ...(audio ? ["-i", audio] : []), "-c:v", "libx264", "-preset", "slow", "-crf", "17", "-pix_fmt", "yuv420p", "-movflags", "+faststart",
+const ff = spawn("ffmpeg", ["-y", "-loglevel", "error", ...(UNDER ? ["-i", UNDER] : []), "-f", "image2pipe", "-framerate", String(FPS), "-i", "-",
+  ...(audio ? ["-i", audio] : []), ...(UNDER ? ["-filter_complex", "[0:v][1:v]overlay=0:0:format=auto:shortest=1[v]", "-map", "[v]", "-map", audio ? "2:a" : "0:a?"] : []), "-c:v", "libx264", "-preset", "slow", "-crf", "17", "-pix_fmt", "yuv420p", "-movflags", "+faststart",
   ...(audio ? ["-c:a", "aac", "-b:a", "192k", "-shortest"] : []), out], { stdio: ["pipe", "inherit", "inherit"] });
 const frames = Math.ceil(info.TOTAL * FPS), t0 = Date.now();
 for (let i = 0; i < frames; i++) {
