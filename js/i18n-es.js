@@ -467,6 +467,7 @@ window.SCP_ES = {
   "billed yearly": "facturación anual",
   "or {price}/year": "o {price}/año",
   "Recommended": "Recomendado",
+  "{club} is one of your favourite profiles (Favs). Change them in Profile \u2192 Favourites.": "{club} es uno de tus perfiles favoritos (Favs). Puedes cambiarlos en Perfil \u2192 Favoritos.",
   "No posts from this account yet.": "Todav\u00eda no hay posts de esta cuenta.",
   "Accounts": "Cuentas",
   "The posts you saved, by board.": "Los posts que has guardado, por tablero.",

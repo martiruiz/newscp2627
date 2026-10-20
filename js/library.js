@@ -705,7 +705,7 @@
     if (ui.acct?.key === k) ui.acct = null;
     else {
       const [platform, handle] = k.split("|");
-      const { data } = await db.rpc("account_post_ids", { p_platform: platform, p_handle: handle }).catch(() => ({}));
+      const { data } = await db.rpc("account_post_ids", { p_platform: platform, p_handle: handle });   // the query builder has no .catch
       ui.acct = { key: k, ids: (data || []).map(Number) };
     }
     renderFacets();
@@ -1168,7 +1168,7 @@
     await loadSavedSearches();
   });
 
-  // ---------- "For you": the member's favourite profiles / creators first, then their sports / competitions ----------
+  // ---------- The member's favourites (Favs, the "Following" badge, "Like mine") ----------
   const me = { boost: [], boost2: [], fav: new Set(), isSuper: false, likeMine: [] };
   async function loadMe() {
     const profile = (await auth?.getProfile?.())?.profile;
@@ -1181,15 +1181,6 @@
     me.favPlatform = (prefs.favouritePlatform || "").toLowerCase();   // Profile → Favourites: its posts come first
     me.likeMine = { competitions: (prefs.competitions || []).map(Number), sports: (prefs.sports || []).map(Number) };
     if (!LAYOUT_BEFORE) renderFacets();
-    if (!me.boost.length && !me.boost2.length && !me.favPlatform) return;
-    const order = $("[data-order]");
-    order.insertAdjacentHTML("afterbegin", `<button type="button" aria-pressed="false" data-value="foryou" title="Your favourite profiles first, then your sports">${icon("star")}For you</button>`);
-    const btn = order.firstElementChild;
-    btn.addEventListener("click", () => {
-      $$("button", order).forEach((o) => o.setAttribute("aria-pressed", String(o === btn)));
-      order.dispatchEvent(new CustomEvent("change", { bubbles: true }));
-    });
-    $$("button", order).forEach((o) => o.setAttribute("aria-pressed", String(o === btn)));
   }
 
   // ---------- Saved boards (js/boards.js) ----------
@@ -1364,7 +1355,7 @@
     const favClub = (p.tags?.club || []).find((v) => me.fav.has(Number(v.id)));
     const fmt = pretty(first(p, "format"));
     const name = PLATFORM_NAMES[pf] || "the platform";
-    const fav = favClub ? `<span class="lib-badge lib-badge-fav" tabindex="0">${icon("star")}<span class="lib-fav-lbl">${tx("Following")}</span><span class="lib-tip" role="tooltip">${tx("{club} is one of your favourite profiles, so its posts come first in “For you”. Change them in Profile → Favourites.", { club: esc(favClub.name || "") })}</span></span>` : "";
+    const fav = favClub ? `<span class="lib-badge lib-badge-fav" tabindex="0">${icon("star")}<span class="lib-fav-lbl">${tx("Following")}</span><span class="lib-tip" role="tooltip">${tx("{club} is one of your favourite profiles (Favs). Change them in Profile → Favourites.", { club: esc(favClub.name || "") })}</span></span>` : "";
     const corner = `<div class="lib-corner">${pf ? `<span class="lib-pfchip" title="${esc(PLATFORM_NAMES[pf] || pf)}"><i class="lf-pfi is-brand lf-pf-${esc(pf)}" style="-webkit-mask-image:url(assets/pf-${esc(pf)}.svg);mask-image:url(assets/pf-${esc(pf)}.svg)"></i></span>` : ""}${fav}</div>`;
     const rail = `
           <div class="lib-rail">
