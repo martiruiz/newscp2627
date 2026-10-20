@@ -9,9 +9,9 @@
   <link rel="icon" type="image/png" sizes="256x256" href="assets/icon-logo-lg.png">
   <link rel="apple-touch-icon" href="assets/icon-logo-lg.png">
   <link rel="stylesheet" href="css/fonts.css?v=1">
-  <link rel="stylesheet" href="css/styles.css?v=20261020zh">
+  <link rel="stylesheet" href="css/styles.css?v=20261020zi">
   <script src="js/theme.js?v=20261021a"></script>
-  <script src="js/i18n.js?v=20261020lh"></script>
+  <script src="js/i18n.js?v=20261020li"></script>
 </head>
 <body class="auth-page" data-auth-mode="login">
   <main class="auth">
@@ -25,11 +25,21 @@
         <label class="auth-field">Email
           <input name="email" type="email" placeholder="Your email address" autocomplete="email" required>
         </label>
-        <label class="auth-field" data-password-field hidden>Password
-          <input name="password" type="password" placeholder="Your password" autocomplete="current-password">
+        <label class="auth-field" data-password-field>Password
+          <input name="password" type="password" placeholder="Your password" autocomplete="current-password" required minlength="6">
         </label>
-        <button class="btn btn-gold auth-submit" type="submit" data-submit-label>Send me a login link</button>
-        <button class="auth-toggle link-gold" type="button" data-password-toggle>Log in with a password instead</button>
+        <button class="btn btn-gold auth-submit" type="submit" data-submit-label>Log in</button>
+        <button class="auth-toggle link-gold" type="button" data-forgot>Forgot your password? Set a new one</button>
+      </form>
+      <form novalidate data-reset-form hidden>
+        <p class="auth-reset-sub">Choose a password for your account. You'll use it, with your email, to log in.</p>
+        <label class="auth-field">New password
+          <input name="password" type="password" placeholder="At least 8 characters" autocomplete="new-password" required minlength="8">
+        </label>
+        <label class="auth-field">Repeat the password
+          <input name="password2" type="password" placeholder="The same password" autocomplete="new-password" required minlength="8">
+        </label>
+        <button class="btn btn-gold auth-submit" type="submit">Save password and continue</button>
       </form>
 
       <div class="auth-or"><span>or</span></div>
@@ -54,7 +64,7 @@
   <script src="js/auth.js?v=20261018p"></script>
   <script src="js/lead-flow.js?v=20261020b"></script>
   <script src="js/main.js?v=20261021e"></script>
-  <script src="js/signup.js?v=20261020lg"></script>
+  <script src="js/signup.js?v=20261020lh"></script>
   <script src="js/checkout.js?v=20261020lg"></script>
 </body>
 </html>

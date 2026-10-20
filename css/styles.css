@@ -6188,3 +6188,4 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 .auth-signed { margin: 0 0 18px; padding: 10px 14px; border-radius: 10px; background: rgba(240, 184, 74, 0.08); border: 1px solid rgba(240, 184, 74, 0.25); font-size: 13px; line-height: 1.5; color: var(--muted); }
 .auth-signout { border: 0; padding: 0; background: none; color: var(--muted); font: inherit; text-decoration: underline; cursor: pointer; }
 .auth-signout:hover { color: var(--text); }
+.auth-reset-sub { margin: 0 0 18px; font-size: 14px; line-height: 1.5; color: var(--muted); }

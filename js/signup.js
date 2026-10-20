@@ -32,10 +32,37 @@
     setStatus("Sign-up isn't connected yet (Supabase keys missing in js/config.js).", "err");
   }
 
+  // Password recovery: the link from "Forgot your password?" opens this page signed in for that purpose only — first a
+  // new password, then the platform (login.html?reset=1, or Supabase's PASSWORD_RECOVERY event)
+  let recovering = mode === "login" && (params.get("reset") === "1" || /type=recovery/.test(location.hash));
+  const resetForm = document.querySelector("[data-reset-form]");
+  const showReset = () => {
+    recovering = true;
+    if (!resetForm) return;
+    document.querySelector("[data-signup-form]").hidden = true;
+    document.querySelectorAll(".auth-or, .auth-google, .auth-switch, .auth-signed").forEach((el) => (el.hidden = true));
+    const h = document.querySelector(".auth h1"); if (h) h.innerHTML = `${tx("Set your")} <span class="gold">${tx("password")}</span>`;
+    resetForm.hidden = false; resetForm.password.focus();
+  };
+  auth?.client?.auth.onAuthStateChange((event) => { if (event === "PASSWORD_RECOVERY") showReset(); });
+  if (recovering) auth?.client?.auth.getSession().then(({ data: { session } }) => { if (session) showReset(); else setStatus("This link has expired. Ask for a new one below.", "err"); });
+  resetForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const pw = resetForm.password.value, pw2 = resetForm.password2.value;
+    if (pw.length < 8) return setStatus("Use at least 8 characters.", "err");
+    if (pw !== pw2) return setStatus("The two passwords don't match.", "err");
+    const btn = resetForm.querySelector("[type=submit]"); btn.disabled = true;
+    const { error } = await auth.client.auth.updateUser({ password: pw });
+    btn.disabled = false;
+    if (error) return setStatus(/same|different/i.test(error.message) ? "Choose a different password from your current one." : error.message, "err");
+    setStatus("Password saved. Taking you to the platform…", "ok");
+    setTimeout(() => (location.href = redirectUrl), 900);
+  });
+
   // Already logged in: the log-in form still shows (to enter with another email or a password); a note offers to
   // continue to the platform or to log out first
   auth?.client?.auth.getSession().then(({ data: { session } }) => {
-    if (!session || mode !== "login") return;
+    if (!session || mode !== "login" || recovering) return;
     const card = document.querySelector(".auth-card");
     if (!card || card.querySelector(".auth-signed")) return;
     const t = (x, v) => (window.tx ? window.tx(x, v) : x.replace("{email}", v?.email || ""));
@@ -74,13 +101,17 @@
   const form = document.querySelector("[data-signup-form]");
   const pwField = document.querySelector("[data-password-field]");
   const pwToggle = document.querySelector("[data-password-toggle]");
-  let usePassword = false;
-  pwToggle?.addEventListener("click", () => {
-    usePassword = !usePassword;
-    pwField.hidden = !usePassword;
-    pwField.querySelector("input").required = usePassword;
-    document.querySelector("[data-submit-label]").textContent = usePassword ? "Log in" : "Send me a login link";
-    pwToggle.textContent = usePassword ? "Email me a login link instead" : "Log in with a password instead";
+  // Log in = email + password only (no login links). Sign up still confirms the email with a link.
+  const usePassword = mode === "login";
+  // "Forgot your password?": an email to set a new one (also for accounts that never had a password)
+  document.querySelector("[data-forgot]")?.addEventListener("click", async (e) => {
+    const email = form.email.value.trim();
+    if (!form.email.checkValidity() || !email) { form.email.classList.add("is-invalid"); form.email.focus(); return setStatus("Write your email above and we'll send you a link to set a new password.", "err"); }
+    e.currentTarget.disabled = true;
+    const { error } = await auth.client.auth.resetPasswordForEmail(email, { redirectTo: auth.pageUrl("login.html?reset=1") });
+    e.currentTarget.disabled = false;
+    if (error) return setStatus(/rate limit/i.test(error.message) ? "Too many emails sent in a short time. Please check your inbox or try again later." : error.message, "err");
+    setStatus("Check your inbox — we've sent you a link to set a new password.", "ok");
   });
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
