@@ -1234,7 +1234,6 @@
     if (error) return showNote(/schema cache|does not exist|function/i.test(error.message) ? "The library isn't connected yet (run supabase/library-ideas.sql in Supabase)." : "Couldn't load posts right now.");
     const rows = data?.data || [];
     if (reset) {
-      $("[data-result-count]").textContent = `${Number(data.total).toLocaleString(window.SCP_LOC || "en-GB")} post${data.total === 1 ? "" : "s"}`;
       $("[data-lf-go]").textContent = data.total ? `Show ${Number(data.total).toLocaleString(window.SCP_LOC || "en-GB")} results` : "No results — change the filters";
     }
     if (!rows.length && offset === 0) {
@@ -1247,8 +1246,8 @@
     more.hidden = offset >= data.total;
   }
 
-  function showEmpty(text) { empty.textContent = text; empty.hidden = false; $("[data-result-count]").textContent = ""; }
-  function showNote(text) { note.textContent = text; note.hidden = false; $("[data-result-count]").textContent = ""; }
+  function showEmpty(text) { empty.textContent = text; empty.hidden = false; }
+  function showNote(text) { note.textContent = text; note.hidden = false; }
 
   // library_ideas (members). Until supabase/library-ideas.sql has been run, superadmins fall back to the admin search
   // (newest first only; saved posts are filtered from the page).

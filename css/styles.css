@@ -2384,7 +2384,6 @@ a.blog-img { display: block; }
 .home-blog .blog-grid { margin-top: 40px; }
 
 /* ---------- Content Library ← imported content ---------- */
-.result-count { margin: 18px 38px 0; font-size: 13px; color: var(--muted); }
 [data-facets] .f-row { flex-wrap: wrap; }
 [data-facets] .seg-btn { gap: 7px; }
 [data-facets] .seg-btn img { width: 16px; height: 16px; }
