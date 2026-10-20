@@ -7,67 +7,68 @@
 <title>Prototipo · Barra de filtros</title>
 <link rel="stylesheet" href="../css/fonts.css?v=1">
 <style>
-  :root { --bg: #0f1730; --gold: #f0b84a; --gold-2: #ffd98c; --text: #fff; --dim: rgba(180, 192, 211, 0.5); --display: "Host Grotesk", Inter, sans-serif; }
+  /* the platform's own colours (css/styles.css :root) */
+  :root { --bg: #121b33; --surface: #17213b; --surface-2: #1d2845; --surface-3: #213050; --gold: #f0b84a; --gold-tint: rgba(240,184,74,.2);
+    --text: #fff; --muted: #b4c0d3; --line: rgba(255,255,255,.1); --line-soft: rgba(255,255,255,.05); --display: "Host Grotesk", Inter, sans-serif; }
   * { box-sizing: border-box; margin: 0; }
-  body { min-height: 100vh; color: var(--text); font: 14px/1.4 Inter, system-ui, sans-serif; padding: 36px 44px 70px;
-    background: radial-gradient(1200px 500px at 10% -10%, rgba(240,184,74,.07), transparent 60%), radial-gradient(900px 500px at 100% 0%, rgba(90,120,255,.08), transparent 60%), var(--bg); }
+  body { color: var(--text); font: 14px/1.4 Inter, system-ui, sans-serif; background: var(--bg); }
   button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
-  .label { font: 600 11px Inter; letter-spacing: .16em; text-transform: uppercase; color: var(--gold); margin: 36px 0 6px; }
-  .label:first-child { margin-top: 0; }
-  .note { color: var(--dim); font-size: 13px; margin-bottom: 14px; max-width: 820px; }
-  .row { max-width: 1240px; }
-  .tabs { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); padding: 6px; border-radius: 999px; }
-  .tabs .lens { position: absolute; top: 6px; bottom: 6px; left: 6px; width: calc((100% - 12px) / 3); border-radius: 999px; transition: transform .5s cubic-bezier(.2,.8,.2,1); pointer-events: none;
-    background: linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,.06) 50%, rgba(255,255,255,.1)); box-shadow: inset 0 1px 1px rgba(255,255,255,.5), inset 0 -2px 6px rgba(0,0,0,.25), 0 8px 24px -10px rgba(0,0,0,.8); }
-  .tabs button { position: relative; z-index: 1; height: 50px; border-radius: 999px; color: #fff; font: 600 15.5px var(--display); }
-  .cnt { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; margin-left: 8px; border-radius: 10px; background: rgba(255,255,255,.16); font: 700 11.5px Inter; }
-  .edge { box-shadow: inset 0 1px 0 rgba(255,255,255,.1), inset 0 -1px 0 rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.07), 0 24px 50px -28px rgba(0,0,0,.9); }
+  .wrap { display: grid; grid-template-columns: 250px 1fr; min-height: 100vh; }
+  .col { background: var(--surface); border-right: 1px solid var(--line-soft); padding: 26px 18px; }
+  .col h1 { font: 600 18px var(--display); margin-bottom: 16px; }
+  .col .f { height: 46px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface-2); margin-bottom: 10px; }
+  .col .f.on { border-color: rgba(240,184,74,.6); background: linear-gradient(90deg, rgba(240,184,74,.18), rgba(240,184,74,.04)); }
+  main { padding: 0 28px 60px; }
+  .opt { padding: 22px 0 6px; border-bottom: 1px solid var(--line-soft); }
+  .label { font: 600 11px Inter; letter-spacing: .16em; text-transform: uppercase; color: var(--gold); }
+  .note { color: var(--muted); opacity: .7; font-size: 12.5px; margin: 4px 0 12px; }
+  .cards { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; margin: 14px 0 16px; }
+  .cards i { display: block; height: 70px; border-radius: 14px; background: linear-gradient(160deg, #2a3866, #172142); border: 1px solid var(--line-soft); }
 
-  /* I · now (grey glass) */
-  .i { background: rgba(255,255,255,.04); backdrop-filter: blur(18px); }
-  /* Q · deep navy: the brand navy, a little lighter on top */
-  .q { background: linear-gradient(180deg, #1c2a55, #111a38); }
-  /* R · midnight blue: navy with a cool blue light from the left */
-  .r { background: radial-gradient(70% 160% at 0% 0%, rgba(90,130,255,.28), transparent 60%), linear-gradient(180deg, #14204a, #0c1430); }
-  /* S · champagne: dark glass warmed with gold */
-  .s { background: linear-gradient(180deg, rgba(240,184,74,.16), rgba(240,184,74,.05)), #141a2e; box-shadow: inset 0 0 0 1px rgba(240,184,74,.28), inset 0 1px 0 rgba(255,231,180,.18), 0 24px 50px -28px rgba(0,0,0,.9); }
-  .s .lens { background: linear-gradient(180deg, rgba(255,240,210,.28), rgba(255,231,180,.08) 50%, rgba(255,231,180,.14)); }
-  /* T · black ink: nearly black, the lens the only light */
-  .t { background: linear-gradient(180deg, #0a0f1f, #05080f); }
-  /* U · aurora: navy that shifts to deep violet */
-  .u { background: linear-gradient(90deg, #13204a, #1d1a4a 50%, #2a1846); }
+  .tabs { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); padding: 5px; border-radius: 999px; }
+  .tabs .lens { position: absolute; top: 5px; bottom: 5px; left: 5px; width: calc((100% - 10px) / 3); border-radius: 999px; transition: transform .5s cubic-bezier(.2,.8,.2,1); pointer-events: none; }
+  .tabs button { position: relative; z-index: 1; height: 44px; border-radius: 999px; color: #fff; font: 600 15px var(--display); }
+  .cnt { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; margin-left: 8px; border-radius: 10px; font: 700 11.5px Inter; background: rgba(255,255,255,.14); }
+
+  /* 1 · Surface: the colour of the filters column; lens = the raised surface */
+  .t1 { background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); }
+  .t1 .lens { background: linear-gradient(180deg, var(--surface-3), var(--surface-2)); box-shadow: inset 0 1px 0 rgba(255,255,255,.1), inset 0 0 0 1px var(--line), 0 6px 16px -8px rgba(0,0,0,.7); }
+  /* 2 · Gold tint lens: the same "chosen" look as the filters (gold tint + gold edge) */
+  .t2 { background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); }
+  .t2 .lens { background: linear-gradient(90deg, rgba(240,184,74,.2), rgba(240,184,74,.07)); box-shadow: inset 0 0 0 1px rgba(240,184,74,.6), 0 8px 22px -12px rgba(240,184,74,.5); }
+  .t2 .cnt { background: linear-gradient(90deg, #d99a2b, #f0b84a); color: #1a1206; }
+  /* 3 · Recessed: a channel cut in the page (darker than the page), the lens raised in the cards' colour */
+  .t3 { background: #0d1428; box-shadow: inset 0 2px 6px rgba(0,0,0,.45), inset 0 0 0 1px var(--line-soft); }
+  .t3 .lens { background: linear-gradient(180deg, #24335c, var(--surface-2)); box-shadow: inset 0 1px 0 rgba(255,255,255,.14), 0 4px 12px -4px rgba(0,0,0,.6); }
+  /* 4 · Surface + gold rail: the column's colour, a raised lens and a thin gold light at its base */
+  .t4 { background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); }
+  .t4 .lens { background: linear-gradient(180deg, var(--surface-3), var(--surface-2)); box-shadow: inset 0 1px 0 rgba(255,255,255,.1), inset 0 0 0 1px var(--line); }
+  .t4 .lens::after { content: ""; position: absolute; left: 28%; right: 28%; bottom: 3px; height: 2px; border-radius: 2px; background: linear-gradient(90deg, transparent, #ffd98c, transparent); box-shadow: 0 0 10px rgba(240,184,74,.7); }
+  /* 5 · Outline: no fill, the platform's hairline; the lens in surface-2, like the "My space" pills */
+  .t5 { background: transparent; box-shadow: inset 0 0 0 1px var(--line); }
+  .t5 .lens { background: var(--surface-2); box-shadow: inset 0 0 0 1px rgba(255,255,255,.14); }
 </style>
 </head>
 <body>
-<div class="row">
-  <p class="label">I · Ara (vidre gris)</p>
-  <div class="tabs i edge" data-tabs><span class="lens"></span><button>Inspírate en<span class="cnt">2</span></button><button>Match Day</button><button>Objetivo y patrocinadores</button></div>
-
-  <p class="label">Q · Navy profund</p>
-  <p class="note">El blau marí de la marca, una mica més clar a dalt. Integrat amb la resta de la web.</p>
-  <div class="tabs q edge" data-tabs><span class="lens"></span><button>Inspírate en<span class="cnt">2</span></button><button>Match Day</button><button>Objetivo y patrocinadores</button></div>
-
-  <p class="label">R · Midnight blue</p>
-  <p class="note">Navy amb una llum blava freda que entra per l'esquerra. Més viu i tecnològic.</p>
-  <div class="tabs r edge" data-tabs><span class="lens"></span><button>Inspírate en<span class="cnt">2</span></button><button>Match Day</button><button>Objetivo y patrocinadores</button></div>
-
-  <p class="label">S · Champagne</p>
-  <p class="note">Vidre fosc escalfat amb el daurat de la marca, vora daurada fina i lent de color xampany.</p>
-  <div class="tabs s" data-tabs><span class="lens"></span><button>Inspírate en<span class="cnt">2</span></button><button>Match Day</button><button>Objetivo y patrocinadores</button></div>
-
-  <p class="label">T · Black ink</p>
-  <p class="note">Gairebé negre: la lent de vidre és l'única llum. El més sobri i elegant.</p>
-  <div class="tabs t edge" data-tabs><span class="lens"></span><button>Inspírate en<span class="cnt">2</span></button><button>Match Day</button><button>Objetivo y patrocinadores</button></div>
-
-  <p class="label">U · Aurora</p>
-  <p class="note">Degradat de navy a violeta profund, com el botó de «Mis análisis IA». Més modern.</p>
-  <div class="tabs u edge" data-tabs><span class="lens"></span><button>Inspírate en<span class="cnt">2</span></button><button>Match Day</button><button>Objetivo y patrocinadores</button></div>
+<div class="wrap">
+  <aside class="col"><h1>Filtros</h1><div class="f on"></div><div class="f"></div><div class="f"></div><div class="f"></div><div class="f"></div></aside>
+  <main>
+    <section class="opt"><p class="label">1 · Surface</p><p class="note">El mateix color que la columna de filtres; la pestanya oberta, una mica més clara i elevada.</p>
+      <div class="tabs t1" data-tabs><span class="lens"></span><button>Inspírate en<span class="cnt">2</span></button><button>Match Day</button><button>Objetivo y patrocinadores</button></div><div class="cards"><i></i><i></i><i></i><i></i></div></section>
+    <section class="opt"><p class="label">2 · Surface + daurat de selecció</p><p class="note">La pestanya oberta amb el mateix daurat suau i vora daurada que els filtres seleccionats de la columna.</p>
+      <div class="tabs t2" data-tabs><span class="lens"></span><button>Inspírate en<span class="cnt">2</span></button><button>Match Day</button><button>Objetivo y patrocinadores</button></div><div class="cards"><i></i><i></i><i></i><i></i></div></section>
+    <section class="opt"><p class="label">3 · Canal enfonsat</p><p class="note">Un canal una mica més fosc que la pàgina, com tallat; la pestanya oberta sobresurt amb el color de les targetes.</p>
+      <div class="tabs t3" data-tabs><span class="lens"></span><button>Inspírate en<span class="cnt">2</span></button><button>Match Day</button><button>Objetivo y patrocinadores</button></div><div class="cards"><i></i><i></i><i></i><i></i></div></section>
+    <section class="opt"><p class="label">4 · Surface + línia de llum</p><p class="note">Com la 1, amb una línia fina de llum daurada a la base de la pestanya oberta.</p>
+      <div class="tabs t4" data-tabs><span class="lens"></span><button>Inspírate en<span class="cnt">2</span></button><button>Match Day</button><button>Objetivo y patrocinadores</button></div><div class="cards"><i></i><i></i><i></i><i></i></div></section>
+    <section class="opt"><p class="label">5 · Contorn</p><p class="note">Sense fons, només el fil fi que fa servir tota la plataforma; la pestanya oberta, com els botons de «Mi espacio».</p>
+      <div class="tabs t5" data-tabs><span class="lens"></span><button>Inspírate en<span class="cnt">2</span></button><button>Match Day</button><button>Objetivo y patrocinadores</button></div><div class="cards"><i></i><i></i><i></i><i></i></div></section>
+  </main>
 </div>
 <script>
   document.querySelectorAll("[data-tabs]").forEach((t) => t.addEventListener("click", (e) => {
     const b = e.target.closest("button"); if (!b) return;
-    const i = [...t.querySelectorAll("button")].indexOf(b);
-    t.querySelector(".lens").style.transform = `translateX(${i * 100}%)`;
+    t.querySelector(".lens").style.transform = `translateX(${[...t.querySelectorAll("button")].indexOf(b) * 100}%)`;
   }));
 </script>
 </body>
