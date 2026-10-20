@@ -617,6 +617,7 @@
           <div class="stat ${R.skipped ? "amber" : ""}"><p>Skipped</p><b>${num(R.skipped)}</b></div>
           <div class="stat ${R.errors.length ? "red" : ""}"><p>Errors</p><b>${num(R.errors.length)}</b></div>
         </div>
+        ${R.created + R.replaced ? `<div class="panel panel-pad"><b>Next: the covers</b><p class="muted" style="margin-top:4px">Without a cover a post shows only a poster in the library. In the terminal:</p><p class="mono" style="margin-top:8px">cd pipeline && node library/covers.mjs --new</p><p class="muted ms-small" style="margin-top:6px">--new takes every post imported in the last 2 days, whatever its publication date (--from filters by publication date).</p></div>` : ""}
         ${nvCount ? accordion({ title: "New filter values", count: `${num(nvCount)} created`, tone: "good", body: nv.map(([k, vals]) => `<p class="label" style="margin-top:8px">${A.CAT_LABEL[k]}</p><div class="value-chips">${vals.map((v) => `<span class="chip">${esc(v)}</span>`).join("")}</div>`).join("") }) : ""}
         ${R.errors.length ? accordion({
           title: "Errors", count: `${num(R.errors.length)}`, tone: "bad", open: true,

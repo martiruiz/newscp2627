@@ -7,6 +7,8 @@
 //   Facebook   post plugin page image      LinkedIn embed page image / video cover
 //
 //   cd pipeline && node library/covers.mjs --from 2026-10-01 [--to 2026-10-31] [--platform Instagram] [--limit 500]
+//   cd pipeline && node library/covers.mjs --new [2]   ← after every import: posts imported in the last 2 days, any date
+//   (--from / --to filter by PUBLICATION date, not by import date.)
 //   Posts that already have a cover are skipped; Instagram goes slowly (≈1 post / 1.2 s) so it isn't blocked.
 // Needs SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in pipeline/.env and supabase/covers.sql.
 import https from "node:https";
@@ -138,6 +140,34 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
       }
     }
     console.log(`\n${done} covers for the newest ${N} posts.`);
+    process.exit(0);
+  }
+  // --new [days]: every post imported in the last days (default 2) that has no cover yet, whatever its publication date.
+  // Run it right after each import (Admin → Import), so no post reaches the library without its cover.
+  if (argv.includes("--new")) {
+    const days = Number(arg("--new")) || 2, since = new Date(Date.now() - days * 864e5).toISOString();
+    let done = 0, missing = 0, broken = 0, lastId = 0;
+    for (;;) {
+      const { data: rows, error } = await db.from("content_ideas").select("id,url").gte("created_at", since).is("cover_url", null).is("unavailable_at", null).gt("id", lastId).order("id").limit(200);
+      if (error) throw error;
+      if (!rows?.length || done >= LIMIT) break;
+      lastId = rows[rows.length - 1].id;
+      for (const r of rows) {
+        if (done >= LIMIT) break;
+        const ig = /instagram\.com/.test(r.url || ""), slow = ig ? 1200 : /tiktok|facebook|linkedin/.test(r.url || "") ? 800 : 150;
+        if (ONLY && !(r.url || "").toLowerCase().includes(ONLY.toLowerCase() === "x" ? "x.com" : ONLY.toLowerCase())) continue;
+        const c = await coverFor(r.url);
+        if (c?.broken) { broken++; await db.from("content_ideas").update({ unavailable_at: new Date().toISOString() }).eq("id", r.id); await sleep(slow); continue; }
+        const stored = c?.image ? await storeCover(r.id, c.image).catch(() => null) : null;
+        if (!stored) { missing++; await sleep(slow); continue; }
+        await db.from("content_ideas").update({ cover_url: stored.url, cover_at: new Date().toISOString(), ...(!ig && c.media_type ? { media_type: c.media_type } : {}), ...(!ig && c.width && c.height ? { media_width: c.width, media_height: c.height, media_ratio: Math.round((c.height / c.width) * 10000) / 10000 } : {}), ...(!ig && c.duration ? { duration_s: c.duration } : {}) }).eq("id", r.id);
+        if (ig) await db.rpc("apply_ig_meta", { p_rows: [{ id: r.id, media_type: c.media_type, width: c.width, height: c.height, duration: c.duration, views: c.views }] });
+        done++;
+        await sleep(slow);
+      }
+      console.log(`${done} covers · ${missing} without image · ${broken} removed from the platform`);
+    }
+    console.log(`Done: ${done} covers for the posts imported in the last ${days} days.`);
     process.exit(0);
   }
   const { data: cat } = await db.from("idea_catalog").select("id,name").eq("category", "platform");
