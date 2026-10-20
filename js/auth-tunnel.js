@@ -48,12 +48,12 @@
     }
     place(offset);
   }
-  let offset = 0, last = performance.now(), lookX = 0, lookY = 0, tx = 0, ty = 0;
+  let offset = 0, last = performance.now(), lookX = 0, lookY = 0, tx = 0, ty = 0, push = 0;   // push: extra speed from the wheel / a drag
   function place(o) {
     rows.forEach((row, j) => {
       // rows run from deep in the tunnel up to just in front of the camera (never behind it), so the walls reach the screen edges
       const near = Math.min(cell * 0.9, persp * 0.6);
-      let z = (-(j + 0.5) * cell + o) % D; if (z > near) z -= D;
+      let z = ((((-(j + 0.5) * cell + o) % D) + D) % D) - D; if (z + D <= near) z += D;   // also when going backwards
       const depth = Math.max(0, -z) / (D - near);
       row.style.transform = `translateZ(${z}px)`;
       row.style.setProperty("--o", String(Math.max(0, 1 - Math.pow(depth, 1.4))).slice(0, 5));   // on the tiles: opacity on a 3D group would flatten it
@@ -62,11 +62,22 @@
   }
   function frame(now) {
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
-    if (!still) offset = (offset + SPEED * cell * dt) % D;
+    // cruise forward; the wheel / a drag adds speed (forward or backwards) that fades out smoothly
+    offset = (offset + ((still ? 0 : SPEED * cell) + push) * dt) % D;
+    push *= Math.pow(0.12, dt);
     lookX += (tx - lookX) * 0.04; lookY += (ty - lookY) * 0.04;
     place(offset);
     if (!document.hidden) requestAnimationFrame(frame);
   }
+  // mouse wheel / trackpad: down = deeper into the tunnel, up = back out
+  addEventListener("wheel", (e) => {
+    const dy = e.deltaMode === 1 ? e.deltaY * 32 : e.deltaY;
+    push = Math.max(-cell * 14, Math.min(cell * 14, push + dy * cell * 0.012));
+  }, { passive: true });
+  let touchY = null;
+  addEventListener("touchstart", (e) => { touchY = e.touches[0].clientY; }, { passive: true });
+  addEventListener("touchmove", (e) => { if (touchY == null) return; const y = e.touches[0].clientY; push = Math.max(-cell * 14, Math.min(cell * 14, push + (touchY - y) * cell * 0.03)); touchY = y; }, { passive: true });
+  addEventListener("touchend", () => { touchY = null; }, { passive: true });
   addEventListener("pointermove", (e) => { tx = (e.clientX / innerWidth - 0.5) * 6; ty = -(e.clientY / innerHeight - 0.5) * 4; }, { passive: true });
   document.addEventListener("visibilitychange", () => { if (!document.hidden) { last = performance.now(); requestAnimationFrame(frame); } });
   let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(build, 200); });
