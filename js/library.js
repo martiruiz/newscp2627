@@ -1422,8 +1422,12 @@
     const media = $(`.lib-card[data-id="${CSS.escape(String(id))}"] .lib-media`);
     const pl = p && playerSrc(p);
     if (!media || !pl) return openPost(id);
+    // Instagram's player is a 4:5 box with its white footer under it: wide enough to fill the card's height, centred
+    // (only black bars are cut at the sides), so the footer stays below the card
+    let ig = "";
+    if (pl.ig) { const W = media.clientWidth, H = media.clientHeight, w = Math.min(540, Math.max(W, Math.ceil(H / 1.25))); ig = ` style="width:${w}px;left:${Math.round((W - w) / 2)}px"`; }
     media.classList.add("is-playing");
-    media.insertAdjacentHTML("beforeend", `<div class="lib-player${pl.ig ? " is-ig" : ""}"><iframe src="${esc(pl.src)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen scrolling="no" title="Video"></iframe>
+    media.insertAdjacentHTML("beforeend", `<div class="lib-player${pl.ig ? " is-ig" : ""}"><iframe${ig} src="${esc(pl.src)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen scrolling="no" title="Video"></iframe>
       <button class="lib-stop" type="button" data-stop="${esc(id)}" aria-label="Close the video">${icon("x")}</button></div>`);
   }
   function stopInCard(id) {
