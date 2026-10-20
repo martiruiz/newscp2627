@@ -6198,7 +6198,7 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 .lfb { position: sticky; top: 61px; z-index: 6; padding: 12px 38px; background: var(--surface); border-bottom: 1px solid var(--line-soft); }
 .lfb[hidden] { display: none; }
 .lfb-row { display: flex; gap: 10px; }
-.lfb-btn { position: relative; flex: 1 1 0; min-width: 0; display: flex; align-items: center; gap: 10px; height: 54px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--line); background: linear-gradient(180deg, rgba(var(--fg), 0.05), rgba(var(--fg), 0.015)); color: var(--text); font: inherit; text-align: left; cursor: pointer; transition: border-color 0.2s, background 0.2s; }
+.lfb-btn { position: relative; flex: 1 1 0; min-width: 0; display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--line); background: linear-gradient(180deg, rgba(var(--fg), 0.05), rgba(var(--fg), 0.015)); color: var(--text); font: inherit; text-align: left; cursor: pointer; transition: border-color 0.2s, background 0.2s; }
 .lfb-btn:hover, .lfb-btn.is-open { border-color: rgba(240, 184, 74, 0.45); background: linear-gradient(180deg, rgba(var(--fg), 0.09), rgba(var(--fg), 0.03)); }
 .lfb-btn.is-set { border-color: rgba(240, 184, 74, 0.6); }
 .lfb-btn > svg { flex: none; width: 19px; height: 19px; fill: none; stroke: var(--gold); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
