@@ -26,6 +26,7 @@ language sql stable security definer set search_path = public as $$
   limit greatest(p_limit, 1);
 $$;
 revoke execute on function public.views_due(int) from public, anon, authenticated;
+grant execute on function public.views_due(int) to service_role;   -- the Edge Function calls it with the service role
 
 -- for the admin: readings of the last 24 h and posts still due
 create or replace function public.admin_views_status()
@@ -47,6 +48,7 @@ returns boolean language sql stable security definer set search_path = public, v
   select coalesce(p_secret, '') <> '' and exists (select 1 from vault.decrypted_secrets where name = 'cron_secret' and decrypted_secret = p_secret);
 $$;
 revoke execute on function public.cron_secret_ok(text) from public, anon, authenticated;
+grant execute on function public.cron_secret_ok(text) to service_role;
 
 -- every 10 minutes
 select cron.unschedule('scp-views') where exists (select 1 from cron.job where jobname = 'scp-views');
