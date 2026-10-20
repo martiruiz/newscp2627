@@ -6627,3 +6627,7 @@ a.lf-sp-favs { text-decoration: none; }
 .lib-foot-stats { display: flex; gap: 12px; }
 .lib-foot-stats:empty { display: none; }
 .lib-foot-views:not(.is-views) b { color: var(--text); }
+/* Inspiration → Club: the squad as chips; filters column: "Who publishes" */
+.lfp-squad { margin: -4px 0 14px; }
+.lf-who { margin-top: 12px; }
+.lf-who .lf-sub { margin: 0 0 8px; }

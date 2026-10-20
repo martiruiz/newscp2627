@@ -68,7 +68,7 @@
       ["transfer", "occasion"], ["kit", "occasion"], ["season_moment", "occasion"], ["moment", "occasion"], ["angle", "occasion"],
       ["comms", "occasion", true], ["crisis", "occasion", true],
       ["goal", "goal"], ["sponsor", "goal"], ["sponsor_integration", "goal"], ["sponsor_sector", "goal"], ["cta", "goal", true], ["collab", "goal", true],
-      ["sport", "benchmark"], ["competition", "benchmark"], ["club", "benchmark"], ["entity", "benchmark"], ["team", "benchmark"], ["city", "benchmark", true],
+      ["sport", "benchmark"], ["competition", "benchmark"], ["club", "benchmark"], ["entity", "who"], ["team", "benchmark"], ["city", "benchmark", true],
     ];
     const pos = new Map(NEW.map(([k], i) => [k, i]));
     for (const [k, sec, more] of NEW) { const c = CATEGORIES.find((x) => x.key === k); if (c) { c.sec = sec; c.more = !!more; } }
@@ -357,6 +357,7 @@
       const at = sp.findIndex((v) => v.name.toLowerCase() === "replicable ideas");
       rows.splice(at >= 0 ? at + 2 : rows.length, 0, btn + (on ? creatorsHtml() : ""));   // +1: Favs is the first row
     }
+    rows.push(whoHtml());
     rows = rows.join("");
     const vOpen = ui.open === "views";
     // Views exist only on Instagram, TikTok and YouTube (Shorts too): with only X / Facebook / LinkedIn chosen, no Views filter
@@ -368,6 +369,12 @@
         <button class="lf-rh" type="button" aria-expanded="${vOpen}" data-lf-row="views">${svg("eye")}<span class="lf-t">Views</span><span class="lf-v${viewsSet() ? " is-set" : ""}" data-views-v>${viewsLabel()}</span>${svg("chev", "lf-chev")}</button>
         <div class="lf-rb"${vOpen ? "" : " hidden"} data-lf-body-of="views">${viewsHtml()}</div></div>` : "";
     return rows + viewsRow;
+  }
+  // "Who publishes": clubs, competitions, media, players, brands, memes (Content Creators has its own button above)
+  function whoHtml() {
+    const list = byCount((catalog.byCat.entity || []).filter((v) => v.name.toLowerCase() !== "content creators" && (countOf(v) > 0 || isOn(v))));
+    if (!list.length) return "";
+    return `<div class="lf-who"><div class="lf-sub">${esc(tx("Who publishes"))}</div><div class="lf-chips">${list.map((v) => `<button type="button" class="lf-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="entity" data-id="${v.id}">${esc(pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`).join("")}</div></div>`;
   }
   // Content Creators on: the filters that describe creators' posts, right under the button (counts are already
   // limited to creators' posts, because the button is one of the active filters)
@@ -650,9 +657,9 @@
       { key: "sport", label: "Sport", ico: "ball", desc: "Every sport in the library", cats: ["sport"], tiles: true },
       { key: "competition", label: "Competition", ico: "trophy", desc: "Leagues and cups", cats: ["competition"], logos: true },
       { key: "club", label: "Club", ico: "shield", desc: "Clubs and teams", cats: ["club"], logos: true },
-      { key: "entity", label: "Publisher type", ico: "users", desc: "Who published it", cats: ["entity"] },
-      { key: "team", label: "Team", ico: "user", desc: "Women's team, academy, legends…", cats: ["team"] },
-      { key: "city", label: "City", ico: "pin", desc: "Clubs by city", cats: ["city"], logos: true },
+      // the club's squad (women's team, academy…) shows inside Club; cities only through the search box
+      { key: "team", label: "Team", ico: "user", desc: "Women's team, academy, legends…", cats: ["team"], hidden: true },
+      { key: "city", label: "City", ico: "pin", desc: "Clubs by city", cats: ["city"], logos: true, hidden: true },
     ],
   };
   const MD_IDS = () => new Set(MATCHDAY.flatMap((ph) => ph.vals.map(([c, n]) => valByName(c, n)?.id)).filter(Boolean));
@@ -698,13 +705,17 @@
       return hits.length ? hits.map(([g, l]) => `<p class="lfp-sub">${esc(tx(g.label))}</p>${lfpCards(l, g)}`).join("")
         : `<p class="lfp-none">${esc(tx("Nothing matches “{q}”.", { q: ui.barQ }))}</p>`;
     }
-    const g = groups.find((x) => x.key === ui.barG?.[sec]) || groups[0];
+    const shown = groups.filter((x) => !x.hidden);
+    const g = shown.find((x) => x.key === ui.barG?.[sec]) || shown[0];
     if (!g) return "";
     const total = groupVals(g).reduce((s, v) => s + (g.key === "matchday" && v.category === "outcome" ? 0 : countOf(v)), 0);
     const head = `<div class="lfp-head"><div><h3>${esc(tx(g.label))}</h3><p>${esc(tx(g.desc))}</p></div>${total ? `<span>${esc(tx("{n} posts", { n: total.toLocaleString(window.SCP_LOC || "en-GB") }))}</span>` : ""}</div>`;
     if (g.key === "matchday") return head + lfpMatchday(g);
+    // Club: the squad as quick chips above the clubs
+    const teamG = g.key === "club" && groups.find((x) => x.key === "team");
+    const squad = teamG ? `<div class="lfp-chips lfp-squad">${byCount(groupVals(teamG)).map((v) => `<button type="button" class="lfp-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="team" data-id="${v.id}">${esc(pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`).join("")}</div>` : "";
     const many = g.logos && groupVals(g).length > 30;
-    return head + (g.key === "city" ? "" : lfpCards(groupVals(g), g, many ? 30 : 0))
+    return head + squad + (g.key === "city" ? "" : lfpCards(groupVals(g), g, many ? 30 : 0))
       + (many || g.key === "city" ? `<p class="lfp-tip">${svg("search")}${esc(tx("Search above to find any of the {n}", { n: groupVals(g).length.toLocaleString(window.SCP_LOC || "en-GB") }))}</p>` : "");
   }
   function lfpTop(sec) {
@@ -716,13 +727,13 @@
       pills = top.map((v) => `<button type="button" class="lfp-pill${isOn(v) ? " is-on" : ""}" data-facet="${v.category}" data-id="${v.id}">${esc(pretty(v.name))} <em>${kfmt(countOf(v))}</em></button>`).join("");
     }
     const lbl = sec === "occasion" && planHints?.length ? "In your Content Plan" : sec === "benchmark" && likeMineIds() ? "For you" : "Popular";
-    return `<label class="lfp-search">${svg("search")}<input type="search" data-lfb-q value="${esc(ui.barQ || "")}" placeholder="${esc(tx(sec === "occasion" ? "Search an occasion: derby, signing, birthday…" : sec === "goal" ? "Search a goal, a sponsor or a sector…" : "Search a sport, a competition or a club…"))}" autocomplete="off"></label>
+    return `<label class="lfp-search">${svg("search")}<input type="search" data-lfb-q value="${esc(ui.barQ || "")}" placeholder="${esc(tx(sec === "occasion" ? "Search an occasion: derby, signing, birthday…" : sec === "goal" ? "Search a goal, a sponsor or a sector…" : "Search a sport, a competition, a club or a city…"))}" autocomplete="off"></label>
       ${pills ? `<div class="lfp-now"><span class="lfp-now-l">${svg("trend")}${esc(tx(lbl))}</span>${pills}</div>` : ""}`;
   }
   function lfpRail(sec) {
-    return groupsOf(sec).map((g) => {
+    return groupsOf(sec).filter((g) => !g.hidden).map((g) => {
       const n = groupVals(g).filter(isOn).length + (g.key === "matchday" ? selected.opponent.size : g.key === "moment" ? 0 : 0);
-      const cur = !ui.barQ && (ui.barG?.[sec] || groupsOf(sec)[0]?.key) === g.key;
+      const cur = !ui.barQ && (ui.barG?.[sec] || groupsOf(sec).find((x) => !x.hidden)?.key) === g.key;
       return `<button type="button" class="lfp-r${cur ? " is-on" : ""}" data-lfb-g="${g.key}"><span class="lfp-ric">${svg(g.ico)}</span><span class="lfp-rtx"><b>${esc(tx(g.label))}</b><small>${esc(tx("{n} options", { n: groupVals(g).length }))}</small></span>${n ? `<em>${n}</em>` : ""}</button>`;
     }).join("");
   }
