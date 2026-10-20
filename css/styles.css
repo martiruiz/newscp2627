@@ -6584,3 +6584,8 @@ a.lf-sp-favs { text-decoration: none; }
 .an-play::after { content: ""; position: absolute; left: 25px; top: 19px; border-style: solid; border-width: 13px 0 13px 20px; border-color: transparent transparent transparent #fff; }
 .an-play:hover { transform: translate(-50%, -50%) scale(1.08); background: rgba(240, 184, 74, 0.85); }
 .an-embed { max-width: 420px; margin: 0 auto; }
+
+/* Home: less space between How it works and What you get */
+.magic#how-it-works { padding-bottom: 40px; }
+#how-it-works + #what-is-scp { padding-top: 56px; }
+@media (max-width: 960px) { .magic#how-it-works { padding-bottom: 24px; } #how-it-works + #what-is-scp { padding-top: 40px; } }
