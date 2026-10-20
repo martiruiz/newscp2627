@@ -1,0 +1,72 @@
+// Blurs the background of a talking-head video (Apple Vision person segmentation), keeps the person sharp.
+//   swift video/bgblur.swift in.mp4 out.mp4
+// The background is blurred, darkened and pulled towards the site's navy; the mask is smoothed over time (no flicker).
+import AVFoundation
+import CoreImage
+import Vision
+
+let args = CommandLine.arguments
+let inURL = URL(fileURLWithPath: args[1]), outURL = URL(fileURLWithPath: args[2])
+try? FileManager.default.removeItem(at: outURL)
+
+let asset = AVURLAsset(url: inURL)
+let track = asset.tracks(withMediaType: .video)[0]
+let size = track.naturalSize
+let fps = track.nominalFrameRate
+let reader = try AVAssetReader(asset: asset)
+let rOut = AVAssetReaderTrackOutput(track: track, outputSettings: [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA])
+reader.add(rOut)
+let writer = try AVAssetWriter(outputURL: outURL, fileType: .mp4)
+let wIn = AVAssetWriterInput(mediaType: .video, outputSettings: [
+  AVVideoCodecKey: AVVideoCodecType.h264, AVVideoWidthKey: Int(size.width), AVVideoHeightKey: Int(size.height),
+  AVVideoCompressionPropertiesKey: [AVVideoAverageBitRateKey: 24_000_000, AVVideoProfileLevelKey: AVVideoProfileLevelH264HighAutoLevel],
+])
+wIn.expectsMediaDataInRealTime = false
+let adaptor = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: wIn, sourcePixelBufferAttributes: [
+  kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA, kCVPixelBufferWidthKey as String: Int(size.width), kCVPixelBufferHeightKey as String: Int(size.height)])
+writer.add(wIn)
+reader.startReading(); writer.startWriting(); writer.startSession(atSourceTime: .zero)
+
+let ctx = CIContext(options: [.useSoftwareRenderer: false])
+let req = VNGeneratePersonSegmentationRequest()
+req.qualityLevel = .accurate
+req.outputPixelFormat = kCVPixelFormatType_OneComponent8
+var prevMask: CIImage? = nil
+var n = 0
+let extent = CGRect(origin: .zero, size: size)
+
+while let sample = rOut.copyNextSampleBuffer() {
+  guard let pb = CMSampleBufferGetImageBuffer(sample) else { continue }
+  let pts = CMSampleBufferGetPresentationTimeStamp(sample)
+  let img = CIImage(cvPixelBuffer: pb)
+  try VNImageRequestHandler(cvPixelBuffer: pb, options: [:]).perform([req])
+  var mask = CIImage(cvPixelBuffer: req.results![0].pixelBuffer)
+  mask = mask.transformed(by: CGAffineTransform(scaleX: size.width / mask.extent.width, y: size.height / mask.extent.height))
+  // soften the edge a little and smooth over time (65 % this frame, 35 % the previous one)
+  mask = mask.clampedToExtent().applyingGaussianBlur(sigma: 2.5).cropped(to: extent)
+  if let p = prevMask {
+    let a = mask.applyingFilter("CIColorMatrix", parameters: ["inputRVector": CIVector(x: 0.65, y: 0, z: 0, w: 0), "inputGVector": CIVector(x: 0, y: 0.65, z: 0, w: 0), "inputBVector": CIVector(x: 0, y: 0, z: 0.65, w: 0)])
+    let b = p.applyingFilter("CIColorMatrix", parameters: ["inputRVector": CIVector(x: 0.35, y: 0, z: 0, w: 0), "inputGVector": CIVector(x: 0, y: 0.35, z: 0, w: 0), "inputBVector": CIVector(x: 0, y: 0, z: 0.35, w: 0)])
+    mask = a.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: b]).cropped(to: extent)
+  }
+  prevMask = mask
+  // background: strong blur, darker, less saturated, tinted navy
+  var bg = img.clampedToExtent().applyingGaussianBlur(sigma: 38).cropped(to: extent)
+  bg = bg.applyingFilter("CIColorControls", parameters: [kCIInputSaturationKey: 0.55, kCIInputBrightnessKey: -0.18, kCIInputContrastKey: 0.95])
+  let navy = CIImage(color: CIColor(red: 0.07, green: 0.10, blue: 0.20, alpha: 0.45)).cropped(to: extent)
+  bg = navy.applyingFilter("CISourceOverCompositing", parameters: [kCIInputBackgroundImageKey: bg])
+  let out = img.applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: bg, kCIInputMaskImageKey: mask])
+
+  while !wIn.isReadyForMoreMediaData { usleep(2000) }
+  var buf: CVPixelBuffer?
+  CVPixelBufferPoolCreatePixelBuffer(nil, adaptor.pixelBufferPool!, &buf)
+  ctx.render(out, to: buf!)
+  adaptor.append(buf!, withPresentationTime: pts)
+  n += 1
+  if n % 90 == 0 { print("\(n) frames") }
+}
+wIn.markAsFinished()
+let sem = DispatchSemaphore(value: 0)
+writer.finishWriting { sem.signal() }
+sem.wait()
+print("Done: \(n) frames at \(fps) fps → \(outURL.path)")
