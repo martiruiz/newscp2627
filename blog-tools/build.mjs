@@ -301,7 +301,7 @@ ${(p.keywords || []).map((k) => `  <meta property="article:tag" content="${esc(k
   <link rel="stylesheet" href="css/fonts.css?v=1">
   <link rel="stylesheet" href="css/styles.css">
   <script src="js/theme.js?v=20261021a"></script>
-  <script src="js/i18n.js?v=20261025m"></script>
+  <script src="js/i18n.js?v=20261025n"></script>
 </head>
 <body>
 
@@ -350,7 +350,7 @@ ${related.map(card).join("\n")}
   ${footer}
 
   <script src="js/config.js?v=20261021a"></script>
-  <script src="js/nav-menu.js?v=20261025e"></script>
+  <script src="js/nav-menu.js?v=20261025f"></script>
   <script src="js/lead-flow.js?v=20261020b"></script>
   <script src="js/promo-bar.js?v=20261020a"></script>
   <script src="js/main.js"></script>

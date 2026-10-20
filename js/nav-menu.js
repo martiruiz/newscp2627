@@ -18,7 +18,6 @@
         { icon: "calendar-days", title: "Content Plan", href: "content-plan.html", acc: "61, 220, 151", vis: "cp" },
       ],
       more: [
-        { icon: "bookmark", title: "Saved boards", href: "saved.html", member: true },
         { icon: "arrow-up-right", title: "Try it free for 7 days", href: "signup.html", guest: true },
       ],
     },
@@ -39,6 +38,7 @@
       label: "Resources", type: "about",
       hello: "Learn", title: "Ideas and trends in", highlight: "sports social media", sub: "Free, every week.",
       links: [
+        { title: "Saved boards", desc: "The posts you saved, by board.", href: "saved.html", member: true },
         { title: "How it works", desc: "From idea to published post.", href: "index.html#how-it-works" },
         { title: "Blog", desc: "Ideas and trends in sports social.", href: "blog.html" },
         { title: "Social News", desc: "What's happening on club accounts.", href: "news.html" },
