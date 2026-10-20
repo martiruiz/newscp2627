@@ -6237,13 +6237,13 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 
 /* Content Library: "My AI analyses" — violet glowing button, an AI "scan" over the library while it's on */
 .ai-mine { position: relative; overflow: hidden; gap: 8px; border: 0 !important; color: #fff !important; font-weight: 700;
-  background: linear-gradient(110deg, #5b3df5, #9b6bff 45%, #c38bff 60%, #6d4dff) !important; box-shadow: 0 0 0 1px rgba(196, 160, 255, 0.35), 0 8px 26px -8px rgba(140, 92, 255, 0.85); }
+  background: linear-gradient(110deg, #4a67e0, #7aa2ff 45%, #a3bdff 60%, #5577ee) !important; box-shadow: 0 0 0 1px rgba(163, 189, 255, 0.4), 0 8px 26px -8px rgba(122, 162, 255, 0.85); }   /* the AI blue of the menu (122, 162, 255) */
 .ai-mine::after { content: ""; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.45) 50%, transparent 70%); transform: translateX(-120%); animation: aiShine 3.2s ease-in-out infinite; pointer-events: none; }
 @keyframes aiShine { 55%, 100% { transform: translateX(120%); } }
 .ai-mine [data-icon] svg, .ai-mine svg { width: 16px; height: 16px; }
 .ai-mine b { min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; display: grid; place-items: center; background: rgba(255, 255, 255, 0.22); font-size: 11.5px; }
 .ai-mine b:empty { display: none; }
-.ai-mine[aria-pressed="true"] { box-shadow: 0 0 0 2px #e2d4ff, 0 10px 34px -6px rgba(140, 92, 255, 1); }
+.ai-mine[aria-pressed="true"] { box-shadow: 0 0 0 2px #d6e2ff, 0 10px 34px -6px rgba(122, 162, 255, 1); }
 .ai-mine[hidden] { display: none; }
 .library.ai-mode .feed { position: relative; background:
     radial-gradient(1200px 500px at 50% -10%, rgba(123, 92, 255, 0.18), transparent 70%),
