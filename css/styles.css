@@ -6631,3 +6631,6 @@ a.lf-sp-favs { text-decoration: none; }
 .lfp-squad { margin: -4px 0 14px; }
 .lf-who { margin-top: 12px; }
 .lf-who .lf-sub { margin: 0 0 8px; }
+/* filters column: special spaces (js/library.js SPECIAL_GROUPS) — Graphic design (violet → pink), Sponsors (teal → blue) */
+.lf-sp-design { --g: linear-gradient(90deg, #8b5cf6, #ec4899); --g-soft: linear-gradient(90deg, rgba(139, 92, 246, 0.8), rgba(236, 72, 153, 0.8)); --glow: 168, 85, 247; }
+.lf-sp-sponsors { --g: linear-gradient(90deg, #14b8a6, #3b82f6); --g-soft: linear-gradient(90deg, rgba(20, 184, 166, 0.8), rgba(59, 130, 246, 0.8)); --glow: 45, 160, 220; }

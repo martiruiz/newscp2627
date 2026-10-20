@@ -357,7 +357,7 @@
       const at = sp.findIndex((v) => v.name.toLowerCase() === "replicable ideas");
       rows.splice(at >= 0 ? at + 2 : rows.length, 0, btn + (on ? creatorsHtml() : ""));   // +1: Favs is the first row
     }
-    rows.push(whoHtml());
+    rows.push(...SPECIAL_GROUPS.map(spGroupHtml), whoHtml());
     rows = rows.join("");
     const vOpen = ui.open === "views";
     // Views exist only on Instagram, TikTok and YouTube (Shorts too): with only X / Facebook / LinkedIn chosen, no Views filter
@@ -370,10 +370,30 @@
         <div class="lf-rb"${vOpen ? "" : " hidden"} data-lf-body-of="views">${viewsHtml()}</div></div>` : "";
     return rows + viewsRow;
   }
-  // "Who publishes": media, players, brands, memes
+  // Special spaces in the column (like Content Creators): a coloured button that turns on its values, and while it is on
+  // a sub-filter under it. vals: [category, name] (all of a category when name is null); sub: chips under it.
+  const SPECIAL_GROUPS = [
+    { key: "design", label: "Graphic design", ico: "grid", cls: "lf-sp-design", vals: [["campaign", "Graphic Design"]], sub: [["Matchday graphics", "matchday_graphic", 10]] },
+    { key: "sponsors", label: "Sponsors", ico: "tag", cls: "lf-sp-sponsors", vals: [["sponsor_integration", null]], sub: [["Sponsor sector", "sponsor_sector", 10], ["Sponsors", "sponsor", 10]] },
+  ];
+  const spVals = (g) => g.vals.flatMap(([c, n]) => (n ? [valByName(c, n)] : (catalog.byCat[c] || []))).filter(Boolean);
+  function spGroupHtml(g) {
+    const vals = spVals(g);
+    if (!vals.length) return "";
+    const on = vals.every(isOn), n = vals.reduce((t, v) => t + countOf(v), 0), zero = n === 0 && !on;
+    const chip = (v, label) => `<button type="button" class="lf-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="${v.category}" data-id="${v.id}">${esc(label || pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`;
+    const subs = on ? [
+      ...(g.sub || []).map(([label, cat, max]) => [label, byCount((catalog.byCat[cat] || []).filter((v) => countOf(v) > 0 || isOn(v))).slice(0, max).map((v) => chip(v)).join("")]),
+    ].filter(([, h]) => h) : [];
+    return `<button type="button" class="lf-sp ${g.cls}${on ? " is-on" : ""}${zero ? " is-zero" : ""}" aria-pressed="${on}" ${zero ? 'aria-disabled="true" ' : ""}data-spg="${g.key}">
+        <span class="lf-sp-ic">${svg(g.ico)}</span><span class="lf-sp-tx"><b>${esc(tx(g.label))}</b></span>
+        <span class="lf-sp-n">${zero ? "No matches" : kfmt(n)}</span>${svg("check", "lf-sp-ck")}</button>`
+      + (subs.length ? `<div class="lf-cc-sub">${subs.map(([label, h]) => `${label ? `<div class="lf-sub">${esc(tx(label))}</div>` : ""}<div class="lf-chips">${h}</div>`).join("")}</div>` : "");
+  }
+  // "Who publishes": media, memes (players' and brands' accounts are in Inspiration → Club, next to the squad)
   function whoHtml() {
     // clubs and competitions are already in "Inspiration"; Content Creators has its own button above
-    const list = byCount((catalog.byCat.entity || []).filter((v) => !["content creators", "clubs", "competitions"].includes(v.name.toLowerCase()) && (countOf(v) > 0 || isOn(v))));
+    const list = byCount((catalog.byCat.entity || []).filter((v) => !["content creators", "clubs", "competitions", "player", "brand"].includes(v.name.toLowerCase()) && (countOf(v) > 0 || isOn(v))));
     if (!list.length) return "";
     return `<div class="lf-who"><div class="lf-sub">${esc(tx("Who publishes"))}</div><div class="lf-chips">${list.map((v) => `<button type="button" class="lf-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="entity" data-id="${v.id}">${esc(pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`).join("")}</div></div>`;
   }
@@ -714,7 +734,8 @@
     if (g.key === "matchday") return head + lfpMatchday(g);
     // Club: the squad as quick chips above the clubs
     const teamG = g.key === "club" && groups.find((x) => x.key === "team");
-    const squad = teamG ? `<div class="lfp-chips lfp-squad">${byCount(groupVals(teamG)).map((v) => `<button type="button" class="lfp-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="team" data-id="${v.id}">${esc(pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`).join("")}</div>` : "";
+    const squadVals = teamG ? [...byCount(groupVals(teamG)), ...["Player", "Brand"].map((n) => valByName("entity", n)).filter((v) => v && (countOf(v) > 0 || isOn(v)))] : [];
+    const squad = teamG ? `<div class="lfp-chips lfp-squad">${squadVals.map((v) => `<button type="button" class="lfp-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="${v.category}" data-id="${v.id}">${esc(v.category === "entity" ? tx(v.name === "Player" ? "Players' accounts" : "Brand accounts") : pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`).join("")}</div>` : "";
     const many = g.logos && groupVals(g).length > 30;
     return head + squad + (g.key === "city" ? "" : lfpCards(groupVals(g), g, many ? 30 : 0))
       + (many || g.key === "city" ? `<p class="lfp-tip">${svg("search")}${esc(tx("Search above to find any of the {n}", { n: groupVals(g).length.toLocaleString(window.SCP_LOC || "en-GB") }))}</p>` : "");
@@ -934,6 +955,14 @@
     if (e.target.closest("[data-lfb-close]")) { ui.bar = null; return renderFacets(); }
     const f = e.target.closest("[data-facet]");
     if (f) { if (f.getAttribute("aria-disabled") === "true") return; return toggleValue(f.dataset.facet, Number(f.dataset.id)); }
+    const spg = e.target.closest("[data-spg]");
+    if (spg) {
+      if (spg.getAttribute("aria-disabled") === "true") return;
+      const vals = spVals(SPECIAL_GROUPS.find((x) => x.key === spg.dataset.spg)), on = vals.every(isOn);
+      vals.forEach((v) => (on ? selected[v.category].delete(v.id) : selected[v.category].add(v.id)));
+      renderFacets();
+      return load(true);
+    }
     const ac = e.target.closest("[data-acct]");
     if (ac) return toggleAccount(ac.dataset.acct);
     const row = e.target.closest("[data-lf-row]");
