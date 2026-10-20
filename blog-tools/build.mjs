@@ -301,7 +301,7 @@ ${(p.keywords || []).map((k) => `  <meta property="article:tag" content="${esc(k
   <link rel="stylesheet" href="css/fonts.css?v=1">
   <link rel="stylesheet" href="css/styles.css">
   <script src="js/theme.js?v=20261026c"></script>
-  <script src="js/i18n.js?v=20261026d"></script>
+  <script src="js/i18n.js?v=20261026f"></script>
 </head>
 <body>
 

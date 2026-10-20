@@ -2,7 +2,7 @@
 // Covers for the Content Library: one clean image per post, copied to Supabase Storage (bucket "covers", public), so
 // the library shows tidy cards instead of embedded pages. Platform links expire, our copies don't.
 //   Instagram  embed page (first image / reel cover) + exact format, size, duration, views (apply_ig_meta)
-//   TikTok     oEmbed thumbnail            YouTube  i.ytimg.com thumbnail (Shorts too)
+//   TikTok     oEmbed thumbnail, else the video page (cover, size, length)   YouTube  i.ytimg.com thumbnail (Shorts too)
 //   X          syndication (photo or video poster, size, duration)
 //   Facebook   post plugin page image      LinkedIn embed page image / video cover
 //
@@ -32,6 +32,22 @@ function page(url) {
 }
 const amp = (s) => s?.replace(/&amp;/g, "&");
 
+// TikTok video page: its rehydration data has the video's cover, size and length ("video":{"id":…,"cover":…})
+async function tiktokPage(url) {
+  const id = /video\/(\d+)/.exec(url)?.[1];
+  if (!id) return null;
+  const r = await fetch(url, { headers: { "User-Agent": UA, "Accept-Language": "en-US,en;q=0.9" } }).catch(() => null);
+  const html = r?.ok ? await r.text().catch(() => "") : "";
+  if (/"statusCode":10204\b/.test(html)) return { broken: true };   // the video was removed
+  const i = html.indexOf(`"video":{"id":"${id}"`);
+  if (i < 0) return null;
+  const v = html.slice(i, i + 6000);
+  const raw = /"cover":"([^"]+)"/.exec(v)?.[1] || /"originCover":"([^"]+)"/.exec(v)?.[1];
+  if (!raw) return null;
+  const num = (k) => Number(new RegExp(`"${k}":(\\d+)`).exec(v)?.[1]) || undefined;
+  return { image: JSON.parse(`"${raw}"`), media_type: "video", width: num("width"), height: num("height"), duration: num("duration") };
+}
+
 // → { image, media_type?, width?, height?, duration?, views?, broken? }
 export async function coverFor(url) {
   let m;
@@ -44,7 +60,8 @@ export async function coverFor(url) {
     const r = await fetch(`https://www.tiktok.com/oembed?url=${encodeURIComponent(url)}`).catch(() => null);
     if (r?.status === 404 || r?.status === 400) return { broken: true };
     const j = r?.ok ? await r.json().catch(() => null) : null;
-    return j?.thumbnail_url ? { image: j.thumbnail_url, media_type: "video", width: j.thumbnail_width, height: j.thumbnail_height } : null;
+    if (j?.thumbnail_url) return { image: j.thumbnail_url, media_type: "video", width: j.thumbnail_width, height: j.thumbnail_height };
+    return tiktokPage(url);   // since Oct 2026 TikTok's oEmbed has no thumbnail: the video's own page has it
   }
   if ((m = /(?:shorts\/|v=|youtu\.be\/)([\w-]{11})/.exec(url))) {
     for (const q of ["maxresdefault", "hqdefault"]) {
@@ -127,7 +144,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
   const platforms = (cat || []).filter((p) => !ONLY || p.name.toLowerCase() === ONLY.toLowerCase());
   let done = 0, broken = 0, missing = 0;
   for (const pf of platforms) {
-    const slow = pf.name === "Instagram" ? 1200 : pf.name === "Facebook" || pf.name === "LinkedIn" ? 800 : 150;
+    const slow = pf.name === "Instagram" ? 1200 : pf.name === "Facebook" || pf.name === "LinkedIn" || pf.name === "TikTok" ? 800 : 150;
     let offset = 0;
     while (done < LIMIT) {
       const { data: pageRows, error } = await db.rpc("library_ideas", { p_filters: { platform: { ids: [pf.id] } }, p_from: FROM, p_to: TO, p_limit: 100, p_offset: offset });

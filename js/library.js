@@ -309,12 +309,12 @@
   const favsOn = () => { const f = favVals(), pf = favNetwork(); return f.length > 0 && f.every(isOn) && (!pf || isOn(pf)); };
   function favsHtml() {
     const f = favVals();
-    if (!f.length) return `<a class="lf-sp lf-sp-top lf-sp-favs" href="profile.html#favourites" title="${esc(tx("Choose your favourite profiles"))}"><span class="lf-sp-ic">${svg("star")}</span><span class="lf-sp-tx"><b>Favs</b><small>${esc(tx("Choose your favourite profiles"))}</small></span></a>`;
+    if (!f.length) return `<a class="lf-sp lf-sp-top lf-sp-favs" href="profile.html#favourites" data-id="favs" data-sp-tip="favs"><span class="lf-sp-ic">${svg("star")}</span><span class="lf-sp-tx"><b>Favs</b><small>${esc(tx("Choose your favourite profiles"))}</small></span><span class="lf-sp-info" data-sp-info role="button" tabindex="0" aria-label="${esc(tx("What is this?"))}" title="${esc(tx("What is this?"))}">i</span></a>`;
     const on = favsOn();
     const pf = favNetwork();
-    return `<button type="button" class="lf-sp lf-sp-top lf-sp-favs${on ? " is-on" : ""}" aria-pressed="${on}" data-favs title="${esc(tx("Posts from your favourite profiles"))}">
+    return `<button type="button" class="lf-sp lf-sp-top lf-sp-favs${on ? " is-on" : ""}" aria-pressed="${on}" data-favs data-id="favs" data-sp-tip="favs">
       <span class="lf-sp-ic">${svg("star")}</span><span class="lf-sp-tx"><b>Favs</b><small>${esc(tx(f.length === 1 ? "{n} profile" : "{n} profiles", { n: f.length }))}${pf ? ` · ${esc(pf.name)}` : ""}</small></span>
-      ${svg("check", "lf-sp-ck")}</button>`;
+      <span class="lf-sp-info" data-sp-info role="button" tabindex="0" aria-label="${esc(tx("What is this?"))}" title="${esc(tx("What is this?"))}">i</span>${svg("check", "lf-sp-ck")}</button>`;
   }
   const notTopPicks = (v) => v.name.toLowerCase() !== "top picks";
 
@@ -766,6 +766,7 @@
         clearTimeout(hideT);
         if (tipFor === b && !tip.hidden) return;
         tipFor = b;
+        if (b.dataset.id === "favs") return showFavs(b);
         const v = catalog.byId.get(Number(b.dataset.id)), sp = v ? special(v) : {};
         const n = v ? countOf(v) : 0;
         tip.className = `lf-sp-pop ${sp.cls || ""}`;
@@ -776,6 +777,9 @@
           ${(sp.points || []).length ? `<ul>${sp.points.map((t) => `<li>${svg("check")}<span>${esc(tx(t))}</span></li>`).join("")}</ul>` : ""}
           <div class="sp-f"><span>${n ? tx("{n} posts", { n: kfmt(n) }) : ""}</span>
             <button class="sp-go" type="button" data-sp-go="${esc(b.dataset.id)}">${tx("Show them")} →</button></div>`;
+        place(b);
+    };
+    const place = (b) => {
         const r = b.getBoundingClientRect();
         tip.hidden = false;
         // beside the button (the sidebar is narrow), or under it when there's no room on the right
@@ -783,7 +787,27 @@
         tip.style.left = `${(roomRight ? r.right + 12 : r.left) + scrollX}px`;
         tip.style.top = `${(roomRight ? r.top - 6 : r.bottom + 8) + scrollY}px`;
         tip.classList.toggle("is-side", roomRight);
-        tip.hidden = false;
+    };
+    // Favs: what it does, what the profile already has (favourite profiles, network, sports / competitions) and a
+    // direct link to complete the profile when something is missing
+    const showFavs = (b) => {
+        tipFor = b;
+        const profiles = favVals().length, pf = favNetwork(), sports = (me.likeMine.sports || []).length + (me.likeMine.competitions || []).length;
+        const rows = [
+          [profiles > 0, tx("Favourite profiles"), profiles ? tx(profiles === 1 ? "{n} profile" : "{n} profiles", { n: profiles }) : tx("Not chosen yet")],
+          [!!pf, tx("Favourite network"), pf ? pf.name : tx("Not chosen yet")],
+          [sports > 0, tx("Sports and competitions"), sports ? tx(sports === 1 ? "1 chosen" : "{n} chosen", { n: sports }) : tx("Not chosen yet")],
+        ];
+        const full = rows.every(([ok]) => ok);
+        tip.className = "lf-sp-pop lf-sp-top";
+        tip.innerHTML = `
+          <div class="sp-h"><span class="sp-ic">${svg("star")}</span><b>Favs</b>
+            <button class="sp-x" type="button" aria-label="${esc(tx("Close"))}" data-sp-close="favs">${icon("x")}</button></div>
+          <p class="sp-lead">${esc(tx("The posts of the profiles you follow, on your favourite network. You choose them in your profile."))}</p>
+          <ul class="sp-status">${rows.map(([ok, k, v]) => `<li class="${ok ? "is-ok" : "is-miss"}">${svg(ok ? "check" : "alert")}<span><b>${esc(k)}</b> · ${esc(v)}</span></li>`).join("")}</ul>
+          <div class="sp-f"><span>${esc(tx(full ? "Your profile is complete" : "Complete your profile to get better Favs"))}</span>
+            ${full && profiles ? `<button class="sp-go" type="button" data-sp-go="favs">${tx("Show them")} →</button>` : `<a class="sp-go" href="profile.html#favourites">${esc(tx(profiles ? "Complete profile" : "Choose favourites"))} →</a>`}</div>`;
+        place(b);
     };
     document.addEventListener("mouseover", (e) => {
       const b = e.target.closest(".lf-sp[data-sp-tip]");

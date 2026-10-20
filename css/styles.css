@@ -6589,3 +6589,7 @@ a.lf-sp-favs { text-decoration: none; }
 .magic#how-it-works { padding-bottom: 40px; }
 #how-it-works + #what-is-scp { padding-top: 56px; }
 @media (max-width: 960px) { .magic#how-it-works { padding-bottom: 24px; } #how-it-works + #what-is-scp { padding-top: 40px; } }
+/* Favs popover: what the profile already has */
+.lf-sp-pop .sp-status li b { color: var(--text); font-weight: 600; }
+.lf-sp-pop .sp-status li.is-miss svg { color: #ff8a6b; }
+.lf-sp-pop a.sp-go { text-decoration: none; }
