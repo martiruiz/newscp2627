@@ -1749,14 +1749,18 @@
     generating();
     const { data: { session } } = await db.auth.getSession();
     const cfg = window.SCP_CONFIG;
+    // the function answers when the analysis is stored: show it right then (polling stays as a backup, e.g. when
+    // another user's request is the one generating it)
+    let done = false;
     fetch(`${cfg.supabaseUrl}/functions/v1/ai-analyze`, {
       method: "POST",
       headers: { "Content-Type": "application/json", apikey: cfg.supabaseAnonKey, Authorization: `Bearer ${session?.access_token}` },
       body: JSON.stringify({ post_id: n }),
-    }).catch(() => null);
+    }).then((r) => r.json()).then((d) => { if (d?.status === "unlocked" || d?.status === "failed") done = true; }).catch(() => null);
     const started = Date.now();
     while (Date.now() - started < 150000) {
-      await new Promise((r) => setTimeout(r, 2500));
+      for (let t = 0; t < 15 && !done; t++) await new Promise((r) => setTimeout(r, 100));   // up to 1.5 s, or at once when the function answers
+      done = false;
       if (!area()) return;
       const { data } = await db.rpc("get_unlocked_analysis", { p_post_id: n });
       if (data?.status === "unlocked") { area().innerHTML = analysisHtml(data.analysis); return; }

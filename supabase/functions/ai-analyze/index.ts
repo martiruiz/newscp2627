@@ -49,6 +49,18 @@ const SCHEMA = {
   required: ["summary", "whyItWorks", "hook", "format", "angle", "visualBreakdown", "scrollStoppers", "replicable", "topics", "moment", "style", "language"],
 };
 
+const toBase64 = async (img: Response) => {
+  const bytes = new Uint8Array(await img.arrayBuffer());
+  let bin = "";
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return { data: btoa(bin), type: img.headers.get("content-type")?.split(";")[0] || "image/jpeg" };
+};
+// The cover we already keep in Storage (covers.sql) — fast and always there; Instagram's embed page only as a fallback
+async function storedCover(coverUrl: string | null) {
+  if (!coverUrl) return null;
+  const img = await fetch(coverUrl).catch(() => null);
+  return img?.ok && (img.headers.get("content-type") || "").startsWith("image/") ? toBase64(img) : null;
+}
 // Instagram's public embed page: cover image of the post (no login)
 async function coverImage(url: string): Promise<{ data: string; type: string } | null> {
   const m = /instagram\.com\/(?:[\w.]+\/)?(p|reel|tv)\/([\w-]+)/.exec(url || "");
@@ -63,10 +75,7 @@ async function coverImage(url: string): Promise<{ data: string; type: string } |
   if (!src) return null;
   const img = await fetch(src);
   if (!img.ok) return null;
-  const bytes = new Uint8Array(await img.arrayBuffer());
-  let bin = "";
-  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
-  return { data: btoa(bin), type: img.headers.get("content-type")?.split(";")[0] || "image/jpeg" };
+  return toBase64(img);
 }
 
 Deno.serve(async (req) => {
@@ -91,11 +100,11 @@ Deno.serve(async (req) => {
   if (!claimed) return json({ status: "pending" });
 
   try {
-    const [post] = await (await rest(`content_ideas?select=id,url,title,content_idea_tags(idea_catalog(category,name))&id=eq.${postId}`)).json();
+    const [post] = await (await rest(`content_ideas?select=id,url,title,cover_url,content_idea_tags(idea_catalog(category,name))&id=eq.${postId}`)).json();
     if (!post) throw new Error("Post not found");
     const tags: Record<string, string[]> = {};
     for (const t of post.content_idea_tags || []) if (t.idea_catalog) (tags[t.idea_catalog.category] ||= []).push(t.idea_catalog.name);
-    const image = await coverImage(post.url);
+    const image = (await storedCover(post.cover_url)) || (await coverImage(post.url));
     if (!image) throw new Error("Couldn't load the post image (removed or private post)");
 
     // 3. Claude
