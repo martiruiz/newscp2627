@@ -2,7 +2,8 @@
 -- the views of ~40 posts that are due and saves them. Which posts are due (by age of the post):
 --   published in the last 7 days → every day · 8–30 days → every week · 31–90 days → every month · older → never
 --   (they still update when a member plays them: Edge Function "views").
--- TikTok, YouTube and Instagram videos (Instagram shows no views for photos or carousels).
+-- TikTok, YouTube and Instagram videos (Instagram shows no views for photos or carousels: their likes and comments are
+-- read in their first week). Likes and comments are saved with the views (supabase/engagement.sql).
 --
 -- Before running this file, create the secret the call uses, in Supabase > SQL editor:
 --   select vault.create_secret(encode(gen_random_bytes(32), 'hex'), 'cron_secret');
@@ -17,7 +18,8 @@ returns table (id bigint, url text)
 language sql stable security definer set search_path = public as $$
   select c.id, c.url from public.content_ideas c
   where c.unavailable_at is null and c.published_at > now() - interval '90 days'
-    and (c.account_platform in ('tiktok', 'youtube') or (c.account_platform = 'instagram' and c.media_type in ('reel', 'video')))
+    -- TikTok and YouTube; Instagram videos, and in their first week every Instagram post (likes and comments)
+    and (c.account_platform in ('tiktok', 'youtube') or (c.account_platform = 'instagram' and (c.media_type in ('reel', 'video') or c.published_at > now() - interval '7 days')))
     and (c.views_at is null
       or (c.published_at > now() - interval '7 days' and c.views_at < now() - interval '20 hours')
       or (c.published_at <= now() - interval '7 days' and c.published_at > now() - interval '30 days' and c.views_at < now() - interval '6 days 12 hours')

@@ -6623,3 +6623,7 @@ a.lf-sp-favs { text-decoration: none; }
 .lfb-glass .lfb-btn.is-set { border: 0; }
 .lfb-glass .lfb-tx b { font: 600 15px var(--font-display); letter-spacing: -0.01em; }
 .lfb-glass .lfb-btn em { min-width: 20px; height: 20px; background: rgba(var(--fg), 0.14); color: var(--text); font-weight: 700; }
+/* card footer: views (gold) and likes side by side */
+.lib-foot-stats { display: flex; gap: 12px; }
+.lib-foot-stats:empty { display: none; }
+.lib-foot-views:not(.is-views) b { color: var(--text); }

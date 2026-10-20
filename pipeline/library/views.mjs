@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Views of TikTok and YouTube posts, read from the platform (same rules as the Edge Function "views"): TikTok's video
-// page ("playCount"), YouTube's player API / "next" API / watch page. Writes content_ideas.views and views_at.
+// Views, likes, comments (and TikTok shares) of TikTok and YouTube posts, read from the platform (same rules as
+// supabase/functions/_shared/engagement.ts). Writes content_ideas.views, likes, comments, shares and views_at.
 //
 //   cd pipeline && node library/views.mjs --platform tiktok|youtube [--limit 200] [--all]
 //   by default only posts without views; --all also the ones that have them (oldest reading first)
@@ -21,24 +21,33 @@ const page = async (url, extra = {}) => {
   return { status: r?.status || 0, html: r?.ok ? await r.text() : "" };
 };
 
-// → { views } | { removed: true } | null
+// → { views, likes, comments, shares } | { removed } | { throttled } | null  (same rules as supabase/functions/_shared/engagement.ts)
+const num = (v) => { const n = Number(String(v ?? "").replace(/[^\d]/g, "")); return n > 0 ? n : undefined; };
+const compact = (t) => { if (!t) return undefined; const m = /([\d.,]+)\s*([KMB])?/i.exec(t); if (!m) return undefined;
+  const n = Number(m[1].replace(/,/g, "")) * ({ K: 1e3, M: 1e6, B: 1e9 }[(m[2] || "").toUpperCase()] || 1); return n > 0 ? Math.round(n) : undefined; };
 export async function viewsOf(url) {
   let m;
   if (/tiktok\.com\//.test(url)) {
     const { status, html } = await page(url);
     if (status === 429) return { throttled: true };
     if (/"statusCode":10204\b/.test(html)) return { removed: true };
-    const n = Number(/"stats":\{[^}]*?"playCount":(\d+)/.exec(html)?.[1] || /"statsV2":\{[^}]*?"playCount":"(\d+)"/.exec(html)?.[1]);
-    return n ? { views: n } : null;
+    const s = /"stats":\{([^}]*)\}/.exec(html)?.[1] || "";
+    const f = (k) => num(new RegExp(`"${k}":"?(\\d+)`).exec(s)?.[1]);
+    const e = { views: f("playCount"), likes: f("diggCount"), comments: f("commentCount"), shares: f("shareCount") };
+    return e.views || e.likes ? e : null;
   }
   if ((m = /(?:shorts\/|v=|youtu\.be\/)([\w-]{11})/.exec(url))) {
     const body = JSON.stringify({ videoId: m[1], context: { client: { clientName: "WEB", clientVersion: "2.20241010.00.00", hl: "en", gl: "US" } } });
     const api = (ep) => fetch(`https://www.youtube.com/youtubei/v1/${ep}?prettyPrint=false`, { method: "POST", headers: { "Content-Type": "application/json", "User-Agent": UA }, body }).then((r) => (r.ok ? r.text() : "")).catch(() => "");
-    const player = JSON.parse((await api("player")) || "{}");
-    if (/ERROR|UNPLAYABLE/.test(player?.playabilityStatus?.status || "") && !player?.videoDetails) return { removed: true };
-    let n = Number(player?.videoDetails?.viewCount);
-    if (!n) n = Number((/"videoViewCountRenderer":\{"viewCount":\{"simpleText":"([\d,.\s]+)/.exec(await api("next"))?.[1] || "").replace(/\D/g, ""));
-    return n ? { views: n } : null;
+    const [pt, next] = await Promise.all([api("player"), api("next")]);
+    const player = JSON.parse(pt || "{}");
+    if (/ERROR/.test(player?.playabilityStatus?.status || "") && !player?.videoDetails) return { removed: true };
+    const e = {
+      views: num(player?.videoDetails?.viewCount) || num(/"videoViewCountRenderer":\{"viewCount":\{"simpleText":"([\d,.\s]+)/.exec(next)?.[1]),
+      likes: num(/like this video along with ([\d,]+) other/.exec(next)?.[1]),
+      comments: compact(/"contextualInfo":\{"runs":\[\{"text":"([^"]+)"/.exec(next)?.[1]),
+    };
+    return e.views || e.likes ? e : null;
   }
   return null;
 }
@@ -57,7 +66,7 @@ while (done + none + removed < LIMIT) {
     const v = await viewsOf(r.url);
     if (v?.throttled) { throttled++; console.log("  throttled: waiting 60 s"); await sleep(60000); continue; }
     if (v?.removed) { removed++; await db.from("content_ideas").update({ unavailable_at: new Date().toISOString() }).eq("id", r.id); }
-    else if (v?.views) { done++; await db.from("content_ideas").update({ views: v.views, views_at: new Date().toISOString() }).eq("id", r.id); }
+    else if (v?.views || v?.likes) { done++; await db.from("content_ideas").update({ ...Object.fromEntries(Object.entries({ views: v.views, likes: v.likes, comments: v.comments, shares: v.shares }).filter(([, x]) => x)), views_at: new Date().toISOString() }).eq("id", r.id); }
     else none++;
     await sleep(PF === "tiktok" ? 900 : 250);
   }

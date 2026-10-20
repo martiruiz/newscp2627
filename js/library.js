@@ -1558,6 +1558,20 @@
     return Number(p.media_ratio) || 1.25;
   }
   const coverRatio = mediaRatio;
+  // views (gold) and likes on the card footer; likes come in a second query (library_ideas doesn't return them)
+  const footStats = (p) => [[p.views, "views", "is-views"], [p.likes, "likes", ""]].filter(([n]) => Number(n) > 0)
+    .map(([n, l, c]) => `<span class="lib-foot-views ${c}"><b>${compact(n)}</b><small>${tx(l)}</small></span>`).join("");
+  async function loadLikes(rows) {
+    const ids = rows.filter((r) => r.likes === undefined).map((r) => Number(r.id));
+    if (!ids.length || !db) return;
+    const { data } = await db.from("content_ideas").select("id,likes,comments").in("id", ids);
+    for (const d of data || []) {
+      const p = cache.get(String(d.id));
+      if (!p) continue;
+      p.likes = d.likes; p.comments = d.comments;
+      if (d.likes) { const box = $(`[data-stats="${CSS.escape(String(d.id))}"]`); if (box) box.innerHTML = footStats(p); }
+    }
+  }
   const compact = (n) => Number(n).toLocaleString(window.SCP_LOC || "en-GB", { notation: "compact", maximumFractionDigits: 1 });
 
   // Card = the post (clean cover, or the embed for X / LinkedIn / Facebook) + a footer joined to it (who, when, views).
@@ -1594,7 +1608,7 @@
         <div class="lib-foot" data-open="${esc(p.id)}" role="button" tabindex="-1">
           ${footCrest(crest, who)}
           <span class="lib-foot-who"><b>${esc(who || name)}</b><small>${date(p.published_at)}</small></span>
-          ${p.views ? `<span class="lib-foot-views"><b>${compact(p.views)}</b><small>${tx("views")}</small></span>` : ""}
+          <span class="lib-foot-stats" data-stats="${esc(p.id)}">${footStats(p)}</span>
         </div>`;
 
     // X, LinkedIn and Facebook: always the post itself, so the text can be read and videos played in place
@@ -1677,21 +1691,19 @@
   }
   // YouTube / TikTok: the views are read again from the platform when the video is played (Edge Function "views",
   // at most every 6 hours per post); the card shows the new number
-  const viewsAsked = new Set();
+  const viewsAsked = new Set();   // also likes and comments (Edge Function "views")
   async function refreshViews(id) {
     const p = cache.get(String(id));
-    if (!p || !db || viewsAsked.has(String(id)) || !/tiktok\.com|youtu/.test(p.url || "")) return;
+    if (!p || !db || viewsAsked.has(String(id)) || !/tiktok\.com|youtu|instagram\.com/.test(p.url || "")) return;
     viewsAsked.add(String(id));
     const cfg = window.SCP_CONFIG || {}, token = (await db.auth.getSession()).data.session?.access_token;
     const r = await fetch(`${cfg.supabaseUrl}/functions/v1/views`, { method: "POST", headers: { "Content-Type": "application/json", apikey: cfg.supabaseAnonKey, Authorization: `Bearer ${token}` }, body: JSON.stringify({ id: Number(id) }) }).catch(() => null);
     const d = r?.ok ? await r.json().catch(() => null) : null;
-    if (!d?.views || Number(d.views) === Number(p.views)) return;
-    p.views = Number(d.views);
-    const foot = $(`.lib-card[data-id="${CSS.escape(String(id))}"] .lib-foot`);
-    if (!foot) return;
-    const box = foot.querySelector(".lib-foot-views");
-    if (box) box.querySelector("b").textContent = compact(p.views);
-    else foot.insertAdjacentHTML("beforeend", `<span class="lib-foot-views"><b>${compact(p.views)}</b><small>${tx("views")}</small></span>`);
+    if (!d || (Number(d.views || 0) === Number(p.views || 0) && Number(d.likes || 0) === Number(p.likes || 0))) return;
+    if (d.views) p.views = Number(d.views);
+    if (d.likes) p.likes = Number(d.likes);
+    const box = $(`[data-stats="${CSS.escape(String(id))}"]`);
+    if (box) box.innerHTML = footStats(p);
   }
   function playInCard(id) {
     refreshViews(id);
@@ -1865,6 +1877,7 @@
       }
     });
     window.SCP_COVERS?.observe(grid);
+    loadLikes(rows);
   }
   // Re-flow only when the number of columns changes (moving iframes reloads them)
   new ResizeObserver(() => {
