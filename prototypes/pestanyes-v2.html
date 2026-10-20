@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Prototipo · Pestañas v2</title>
+<link rel="stylesheet" href="../css/fonts.css?v=1">
+<style>
+  /* the platform's own colours (css/styles.css :root) */
+  :root { --bg: #121b33; --surface: #17213b; --surface-2: #1d2845; --surface-3: #213050; --gold: #f0b84a;
+    --grad: linear-gradient(90deg, #d99a2b, #f0b84a 55%, #ffe0a0); --text: #fff; --muted: #b4c0d3; --line: rgba(255,255,255,.1); --line-soft: rgba(255,255,255,.05);
+    --display: "Host Grotesk", Inter, sans-serif; --ease: cubic-bezier(.2,.8,.2,1); }
+  * { box-sizing: border-box; margin: 0; }
+  body { color: var(--text); font: 14px/1.45 Inter, system-ui, sans-serif; background: var(--bg); padding: 0 16px 80px; }
+  button, input { font: inherit; color: inherit; background: none; border: 0; }
+  button { cursor: pointer; }
+  .page { max-width: 1180px; margin: 0 auto; }
+  header.top { padding: 44px 0 10px; }
+  header.top h1 { font: 600 30px/1.15 var(--display); }
+  header.top p { color: var(--muted); max-width: 760px; margin-top: 10px; }
+  .prop { margin-top: 56px; padding-top: 34px; border-top: 1px solid var(--line); }
+  .ptag { font: 700 11px Inter; letter-spacing: .18em; text-transform: uppercase; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .prop h2 { font: 600 24px var(--display); margin: 6px 0 6px; }
+  .prop > p { color: var(--muted); max-width: 820px; margin-bottom: 20px; }
+  .stage { border-radius: 22px; padding: 22px; background: radial-gradient(120% 80% at 50% -10%, rgba(240,184,74,.07), transparent 60%), var(--surface); border: 1px solid var(--line); }
+  .order { margin-top: 16px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .order div { padding: 14px 16px; border-radius: 14px; border: 1px dashed var(--line); font-size: 12.5px; color: var(--muted); }
+  .order b { color: #fff; font: 600 13px var(--display); display: block; margin-bottom: 6px; }
+  .order ol { padding-left: 18px; }
+  .on-gold { color: #1a1206; background: var(--grad); }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px); } }
+  .fade { animation: fade .45s var(--ease); }
+
+  /* ---------- 4 · Mega menu: the three tabs open as one panel with three columns ---------- */
+  .mm-bar { display: flex; align-items: center; gap: 6px; padding: 6px; border-radius: 999px; box-shadow: inset 0 0 0 1px rgba(240,184,74,.45); }
+  .mm-bar button { flex: 1; height: 44px; border-radius: 999px; font: 600 15px var(--display); transition: background .3s, color .3s; }
+  .mm-bar button.on { background: rgba(240,184,74,.1); box-shadow: inset 0 0 0 1px rgba(240,184,74,.9); }
+  .mm-bar .k { flex: none; width: auto; padding: 0 16px; font: 500 12px Inter; color: var(--muted); border: 1px solid var(--line); }
+  .mm { margin-top: 12px; display: grid; grid-template-columns: repeat(3, 1fr); border-radius: 18px; background: rgba(18,27,51,.75); border: 1px solid var(--line); overflow: hidden; }
+  .mm-col { padding: 18px 18px 20px; border-right: 1px solid var(--line-soft); transition: background .4s; }
+  .mm-col:last-child { border-right: 0; }
+  .mm-col.on { background: linear-gradient(180deg, rgba(240,184,74,.06), transparent 40%); }
+  .mm-col h3 { font: 600 16px var(--display); display: flex; justify-content: space-between; align-items: baseline; }
+  .mm-col h3 small { font: 500 11.5px Inter; color: var(--muted); }
+  .mm-feat { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0 14px; }
+  .mm-feat button { position: relative; height: 92px; border-radius: 12px; overflow: hidden; text-align: left; background: var(--c); border: 1px solid var(--line-soft); transition: transform .3s var(--ease); }
+  .mm-feat button::after { content: ""; position: absolute; inset: 35% 0 0; background: linear-gradient(transparent, rgba(10,15,30,.9)); }
+  .mm-feat button span { position: absolute; z-index: 1; left: 10px; bottom: 8px; font: 600 12.5px var(--display); }
+  .mm-feat button:hover { transform: translateY(-2px); }
+  .mm-feat button.sel { box-shadow: 0 0 0 2px var(--gold); }
+  .mm-h { font: 700 10.5px Inter; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); opacity: .7; margin: 12px 0 4px; }
+  .mm-l button { display: flex; justify-content: space-between; width: 100%; padding: 6px 8px; margin: 0 -8px; width: calc(100% + 16px); border-radius: 8px; font-size: 13px; color: var(--muted); text-align: left; transition: all .2s; }
+  .mm-l button:hover { background: rgba(255,255,255,.04); color: #fff; }
+  .mm-l button.sel { color: #fff; }
+  .mm-l button.sel::after { content: "✓"; color: var(--gold); }
+  .mm-l em { font-style: normal; opacity: .5; font-size: 11.5px; }
+  .mm-l button.sel em { display: none; }
+
+  /* ---------- 5 · Streaming: one row per group, scrolled sideways ---------- */
+  .st-tabs { display: flex; gap: 28px; border-bottom: 1px solid var(--line); }
+  .st-tabs button { position: relative; padding: 4px 0 14px; font: 600 20px var(--display); color: var(--muted); transition: color .3s; }
+  .st-tabs button.on { color: #fff; }
+  .st-tabs button::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; border-radius: 2px; background: var(--grad); transform: scaleX(0); transition: transform .45s var(--ease); }
+  .st-tabs button.on::after { transform: scaleX(1); }
+  .st-tabs small { font: 500 12px Inter; margin-left: 6px; opacity: .6; }
+  .st-body { max-height: 470px; overflow-y: auto; padding-top: 6px; }
+  .st-row { margin-top: 18px; }
+  .st-row h4 { display: flex; align-items: baseline; gap: 10px; font: 600 15px var(--display); margin-bottom: 10px; }
+  .st-row h4 small { font: 500 12px Inter; color: var(--muted); }
+  .st-row h4 a { margin-left: auto; font: 500 12px Inter; color: var(--gold); cursor: pointer; }
+  .st-strip { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; scrollbar-width: thin; }
+  .st-card { flex: none; width: 168px; aspect-ratio: 4/5; position: relative; border-radius: 14px; overflow: hidden; scroll-snap-align: start; background: var(--c); border: 1px solid var(--line-soft); text-align: left; transition: transform .35s var(--ease), box-shadow .3s; }
+  .st-card::after { content: ""; position: absolute; inset: 40% 0 0; background: linear-gradient(transparent, rgba(10,15,30,.92)); }
+  .st-card span { position: absolute; z-index: 1; left: 11px; right: 11px; bottom: 10px; font: 600 13.5px var(--display); }
+  .st-card small { display: block; font: 500 11.5px Inter; color: var(--muted); }
+  .st-card:hover { transform: scale(1.04); z-index: 2; }
+  .st-card.sel { box-shadow: 0 0 0 2px var(--gold); }
+  .st-card.sel::before { content: "✓"; position: absolute; z-index: 2; top: 8px; right: 8px; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; color: #1a1206; background: var(--grad); }
+
+  /* ---------- 6 · Sentence builder ---------- */
+  .sb { font: 500 30px/1.7 var(--display); letter-spacing: -.01em; padding: 18px 8px 6px; }
+  .sb .slot { display: inline-flex; align-items: center; gap: 8px; padding: 0 16px; height: 50px; border-radius: 14px; vertical-align: middle; font: 600 26px var(--display); border: 1px dashed rgba(240,184,74,.55); color: var(--gold); transition: all .3s var(--ease); }
+  .sb .slot:hover { background: rgba(240,184,74,.08); }
+  .sb .slot.set { border-style: solid; border-color: transparent; color: #1a1206; background: var(--grad); }
+  .sb .slot.open { box-shadow: 0 0 0 4px rgba(240,184,74,.2); }
+  .sb .slot i { font-style: normal; font-size: 15px; opacity: .7; }
+  .sb-pop { margin-top: 14px; border-radius: 18px; padding: 16px; background: rgba(18,27,51,.8); border: 1px solid var(--line); }
+  .sb-pop .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+  .sb-pop .tabs button { padding: 6px 12px; border-radius: 999px; font-size: 12.5px; color: var(--muted); border: 1px solid var(--line-soft); }
+  .sb-pop .tabs button.on { color: #fff; border-color: rgba(240,184,74,.6); background: rgba(240,184,74,.08); }
+  .sb-pop .opts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .sb-pop .opts button { height: 76px; position: relative; border-radius: 12px; overflow: hidden; text-align: left; background: var(--c); border: 1px solid var(--line-soft); transition: transform .3s var(--ease); }
+  .sb-pop .opts button::after { content: ""; position: absolute; inset: 30% 0 0; background: linear-gradient(transparent, rgba(10,15,30,.9)); }
+  .sb-pop .opts button span { position: absolute; z-index: 1; left: 10px; bottom: 8px; font: 600 13px var(--display); }
+  .sb-pop .opts button small { display: block; font: 500 11px Inter; color: var(--muted); }
+  .sb-pop .opts button:hover { transform: translateY(-2px); }
+  .sb-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; color: var(--muted); font-size: 13px; }
+  .sb-foot button { padding: 0 20px; height: 44px; border-radius: 999px; font: 600 14px var(--display); }
+
+  @media (max-width: 800px) {
+    .order, .mm { grid-template-columns: 1fr; } .mm-col { border-right: 0; border-bottom: 1px solid var(--line-soft); }
+    .mm-bar button { font-size: 13px; } .mm-bar .k { display: none; }
+    .st-tabs { gap: 16px; overflow-x: auto; } .st-tabs button { font-size: 16px; white-space: nowrap; }
+    .sb { font-size: 22px; } .sb .slot { font-size: 18px; height: 40px; }
+    .sb-pop .opts { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="top">
+    <span class="ptag">Prototip · Content Library · v2</span>
+    <h1>Tres propostes més per a les tres pestanyes</h1>
+    <p>Sense selector de perfil professional: el mateix disseny per a tothom, amb un ordre de filtres pensat perquè serveixi tant a un CM com a un director de màrqueting o un content creator. Tot és clicable.</p>
+  </header>
+
+  <!-- ===================== 4 ===================== -->
+  <section class="prop">
+    <span class="ptag">Proposta 4</span>
+    <h2>«Mega menú»: les tres pestanyes obertes alhora</h2>
+    <p>Un sol panell amb tres columnes, com els menús d'Apple o Stripe. A dalt de cada columna, les dues opcions més fortes amb portada. A sota, la resta en llista, agrupada. La pestanya que cliques només il·lumina la seva columna, i pots combinar filtres de les tres sense canviar de pestanya: «Previa» + «LaLiga» + «Venta de entradas» en tres clics.</p>
+    <div class="stage" id="p4">
+      <div class="mm-bar"></div>
+      <div class="mm"></div>
+    </div>
+  </section>
+
+  <!-- ===================== 5 ===================== -->
+  <section class="prop">
+    <span class="ptag">Proposta 5</span>
+    <h2>«Streaming»: una fila de portades per a cada grup</h2>
+    <p>Com Netflix o Apple TV: pestanyes grans de text amb un subratllat daurat que llisca, i a dins una fila horitzontal de portades per a cada grup, ordenades de la més vista a la menys. Sense menú lateral: tot és visual i es descobreix fent scroll (amunt i avall entre grups, a la dreta dins d'un grup).</p>
+    <div class="stage" id="p5">
+      <div class="st-tabs"></div>
+      <div class="st-body"></div>
+    </div>
+  </section>
+
+  <!-- ===================== 6 ===================== -->
+  <section class="prop">
+    <span class="ptag">Proposta 6</span>
+    <h2>«Constructor de frases»: el filtre es llegeix com un brief</h2>
+    <p>Les tres pestanyes es converteixen en tres buits d'una frase: <i>«Quiero ideas de <b>[Match Day]</b> como las de <b>[Inspírate en]</b> para <b>[Objetivo]</b>»</i>. Cliques un buit, s'obre a sota amb els seus grups i portades, i la frase es va omplint en daurat. Es pot desar tal qual com a cerca i es llegeix com un brief per passar a l'equip.</p>
+    <div class="stage" id="p6">
+      <div class="sb"></div>
+      <div class="sb-pop"></div>
+      <div class="sb-foot"><span data-n></span><button class="on-gold">Ver posts</button></div>
+    </div>
+  </section>
+
+  <section class="prop">
+    <span class="ptag">Ordre dels filtres (igual a les tres propostes)</span>
+    <h2>De més concret i freqüent a més específic</h2>
+    <div class="order">
+      <div><b>Match Day</b><ol><li>Día de partido (Previa · Directo · Post)</li><li>Diseño gráfico</li><li>Mercado</li><li>Equipaciones</li><li>Temporada</li><li>Fechas y campañas</li><li>Tono</li><li>Prensa y temas sensibles</li></ol></div>
+      <div><b>Inspírate en</b><ol><li>Dónde se juega: Deporte · Competición · Club</li><li>Qué se publica: Jugadores · Patrocinadores</li><li>Quién lo publica: Medios · Marcas · Creadores</li></ol></div>
+      <div><b>Objetivo y patrocinadores</b><ol><li>Objetivo de negocio</li><li>Llamada a la acción</li><li>Patrocinadores</li><li>Integración</li><li>Sector del sponsor</li><li>Colaboraciones</li></ol></div>
+    </div>
+  </section>
+</div>
+
+<script>
+const C = ["linear-gradient(160deg,#f97316,#ef4444)", "linear-gradient(160deg,#4a67e0,#7aa2ff)", "linear-gradient(160deg,#8b5cf6,#ec4899)", "linear-gradient(160deg,#14b8a6,#3b82f6)", "linear-gradient(160deg,#d99a2b,#f0b84a)", "linear-gradient(160deg,#2a3866,#172142)", "linear-gradient(160deg,#10b981,#065f46)", "linear-gradient(160deg,#e11d48,#7c2d12)"];
+const G = {
+  matchday: { t: "Día de partido", o: [["Previa", "41k"], ["Post partido", "36k"], ["En directo", "18k"], ["Starting XI", "9k"], ["Resultado final", "8k"], ["MVP", "4k"]] },
+  design: { t: "Diseño gráfico", o: [["Diseño gráfico", "27k"], ["Matchday poster", "6k"], ["Stats card", "3k"], ["Quote card", "2k"]] },
+  transfer: { t: "Mercado", o: [["Fichaje", "12k"], ["Renovación", "4k"], ["Despedida", "3k"], ["Cesión", "1k"]] },
+  kit: { t: "Equipaciones", o: [["Lanzamiento", "5k"], ["Colección", "2k"], ["Edición especial", "900"]] },
+  season: { t: "Temporada", o: [["Pretemporada", "6k"], ["Final de temporada", "4k"], ["Título", "3k"]] },
+  dates: { t: "Fechas y campañas", o: [["Cumpleaños", "7k"], ["Récord", "3k"], ["Homenaje", "2k"], ["Navidad", "2k"]] },
+  tone: { t: "Tono", o: [["Humor", "22k"], ["Emocional", "15k"], ["Detrás de cámaras", "11k"], ["Épico", "9k"]] },
+  press: { t: "Prensa y temas sensibles", o: [["Comunicado", "4k"], ["Info práctica", "3k"], ["Crisis", "800"]] },
+  sport: { t: "Deporte", o: [["Fútbol", "367k"], ["Baloncesto", "48k"], ["Tenis", "12k"], ["Fórmula 1", "9k"]] },
+  comp: { t: "Competición", o: [["Premier League", "74k"], ["LaLiga", "61k"], ["NBA", "31k"], ["Champions", "22k"]] },
+  club: { t: "Club", o: [["FC Barcelona", "9k"], ["Real Madrid", "8k"], ["Arsenal", "6k"], ["Celta", "3k"]] },
+  players: { t: "Jugadores", o: [["Aparición de jugadores", "46k"], ["Cuentas de jugadores", "12k"]] },
+  sponsors: { t: "Patrocinadores", o: [["Logo en el gráfico", "9k"], ["Sección patrocinada", "3k"], ["Product placement", "2k"], ["Sorteo", "1k"]] },
+  who: { t: "Quién lo publica", o: [["Medios", "52k"], ["Creadores", "16k"], ["Memes", "5k"], ["Marcas", "2.3k"]] },
+  goal: { t: "Objetivo de negocio", o: [["Engagement", "88k"], ["Seguidores", "21k"], ["Venta de entradas", "6k"], ["Merchandising", "5k"]] },
+  cta: { t: "Llamada a la acción", o: [["Comenta", "14k"], ["Compra", "6k"], ["Comparte", "4k"], ["Vota", "3k"]] },
+  sponsor: { t: "Patrocinadores", o: [["Nike", "4k"], ["Adidas", "3k"], ["Spotify", "1k"], ["Emirates", "1k"]] },
+  integ: { t: "Integración", o: [["Logo en el gráfico", "9k"], ["Sección patrocinada", "3k"], ["Sorteo", "1k"]] },
+  sector: { t: "Sector del sponsor", o: [["Apuestas", "3k"], ["Bebidas", "2k"], ["Banca", "2k"], ["Moda", "2k"]] },
+  collab: { t: "Colaboraciones", o: [["Con creadores", "6k"], ["Con marcas", "4k"], ["Entre clubes", "2k"]] },
+};
+const TABS = [
+  { k: "md", t: "Match Day", n: "190k", blocks: [["Partido", ["matchday", "design"]], ["Actualidad", ["transfer", "kit", "season", "dates"]], ["Cómo lo cuentas", ["tone", "press"]]] },
+  { k: "insp", t: "Inspírate en", n: "542k", blocks: [["Dónde se juega", ["sport", "comp", "club"]], ["Qué se publica", ["players", "sponsors"]], ["Quién lo publica", ["who"]]] },
+  { k: "goal", t: "Objetivo y patrocinadores", n: "120k", blocks: [["Negocio", ["goal", "cta"]], ["Patrocinio", ["sponsor", "integ", "sector"]], ["Con otros", ["collab"]]] },
+];
+const col = (s) => C[[...s].reduce((a, c) => a + c.charCodeAt(0), 0) % C.length];
+const sel = new Set();
+const flip = (n) => (sel.has(n) ? sel.delete(n) : sel.add(n));
+const replay = (m) => { m.classList.remove("fade"); void m.offsetWidth; m.classList.add("fade"); };
+
+// ---------- 4 · mega menu ----------
+{
+  const el = document.getElementById("p4"); let t = 0;
+  const draw = () => {
+    el.querySelector(".mm-bar").innerHTML = TABS.map((x, i) => `<button data-t="${i}" class="${i === t ? "on" : ""}">${x.t}</button>`).join("") + `<button class="k">⌘K Buscar</button>`;
+    el.querySelector(".mm").innerHTML = TABS.map((x, i) => {
+      const feat = x.blocks[0][1].flatMap((k) => G[k].o).slice(0, 2);
+      return `<div class="mm-col${i === t ? " on" : ""}"><h3>${x.t}<small>${x.n} posts</small></h3>
+        <div class="mm-feat">${feat.map(([n]) => `<button data-o="${n}" class="${sel.has(n) ? "sel" : ""}" style="--c:${col(n)}"><span>${n}</span></button>`).join("")}</div>
+        ${x.blocks.map(([h, ks]) => `<p class="mm-h">${h}</p><div class="mm-l">${ks.map((k) => `<button data-o="${G[k].o[0][0]}" class="${sel.has(G[k].o[0][0]) ? "sel" : ""}">${G[k].t}<em>${G[k].o.length} opciones</em></button>`).join("")}</div>`).join("")}</div>`;
+    }).join("");
+  };
+  el.addEventListener("click", (e) => {
+    const tb = e.target.closest("[data-t]"); if (tb) { t = +tb.dataset.t; return draw(); }
+    const o = e.target.closest("[data-o]"); if (o) { flip(o.dataset.o); draw(); }
+  });
+  draw();
+}
+
+// ---------- 5 · streaming ----------
+{
+  const el = document.getElementById("p5"); let t = 0;
+  const draw = (anim) => {
+    el.querySelector(".st-tabs").innerHTML = TABS.map((x, i) => `<button data-t="${i}" class="${i === t ? "on" : ""}">${x.t}<small>${x.n}</small></button>`).join("");
+    const b = el.querySelector(".st-body");
+    b.innerHTML = TABS[t].blocks.flatMap(([, ks]) => ks).map((k) => `<div class="st-row"><h4>${G[k].t}<small>${G[k].o.length} opciones</small><a>Ver todo →</a></h4>
+      <div class="st-strip">${G[k].o.map(([n, c]) => `<button class="st-card${sel.has(n) ? " sel" : ""}" data-o="${n}" style="--c:${col(n)}"><span>${n}<small>${c} posts</small></span></button>`).join("")}</div></div>`).join("");
+    if (anim) replay(b);
+  };
+  el.addEventListener("click", (e) => {
+    const tb = e.target.closest("[data-t]"); if (tb) { t = +tb.dataset.t; el.querySelector(".st-body").scrollTop = 0; return draw(true); }
+    const o = e.target.closest("[data-o]"); if (o) { flip(o.dataset.o); o.classList.toggle("sel"); }
+  });
+  draw();
+}
+
+// ---------- 6 · sentence builder ----------
+{
+  const el = document.getElementById("p6");
+  const val = [null, null, null], ph = ["un momento", "un referente", "un objetivo"];
+  let open = 0, g = [TABS[0].blocks[0][1][0], TABS[1].blocks[0][1][0], TABS[2].blocks[0][1][0]];
+  const slot = (i) => `<button class="slot${val[i] ? " set" : ""}${open === i ? " open" : ""}" data-s="${i}">${val[i] || ph[i]} <i>${val[i] ? "✕" : "▾"}</i></button>`;
+  const draw = (anim) => {
+    el.querySelector(".sb").innerHTML = `Quiero ideas de ${slot(0)} como las de ${slot(1)} para ${slot(2)}`;
+    const p = el.querySelector(".sb-pop");
+    const keys = TABS[open].blocks.flatMap(([, ks]) => ks);
+    p.innerHTML = `<div class="tabs">${keys.map((k) => `<button data-g="${k}" class="${k === g[open] ? "on" : ""}">${G[k].t}</button>`).join("")}</div>
+      <div class="opts">${G[g[open]].o.slice(0, 8).map(([n, c]) => `<button data-o="${n}" style="--c:${col(n)}"><span>${n}<small>${c} posts</small></span></button>`).join("")}</div>`;
+    if (anim) replay(p);
+    const filled = val.filter(Boolean).length;
+    el.querySelector("[data-n]").textContent = filled ? `${filled} de 3 · ${[0, "48.210", "6.930", "412"][filled]} posts encajan` : "Rellena uno, dos o los tres huecos";
+  };
+  el.addEventListener("click", (e) => {
+    const s = e.target.closest("[data-s]");
+    if (s) { const i = +s.dataset.s; if (val[i] && e.target.tagName === "I") val[i] = null; open = i; return draw(true); }
+    const gb = e.target.closest("[data-g]"); if (gb) { g[open] = gb.dataset.g; return draw(true); }
+    const o = e.target.closest("[data-o]");
+    if (o) { val[open] = o.dataset.o; const next = val.findIndex((v) => !v); if (next >= 0) open = next; draw(true); }
+  });
+  draw();
+}
+</script>
+</body>
+</html>
