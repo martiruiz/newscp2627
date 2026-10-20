@@ -433,23 +433,8 @@
     return `<div class="lf-stack">${top.map((c) => rowHtml(c)).join("")}${rest.length ? `<div class="lf-more-rows"${expanded ? "" : " hidden"}>${rest.map((c) => rowHtml(c)).join("")}</div><button type="button" class="lf-morebtn" data-lf-more="${sec}">${expanded ? "Show fewer" : `+${rest.length} more`}</button>` : ""}</div>`;
   }
 
-  // ---------- Role: the sections are ordered for the way each team works (Profile preference "libraryRole") ----------
-  const ROLES = [
-    { key: "social", label: "Social media", order: ["recipes", "discover", "occasion", "where", "benchmark", "goal"] },
-    { key: "partner", label: "Partnerships", order: ["recipes", "discover", "goal", "occasion", "benchmark", "where"] },
-    { key: "creator", label: "Content creation", order: ["recipes", "discover", "where", "occasion", "benchmark", "goal"] },
-  ];
+  // ---------- Section order of the filter column ----------
   const DEFAULT_ORDER = ["recipes", "discover", "occasion", "goal", "where", "benchmark"];
-  async function saveRole(role) {
-    me.role = role; store.set("scp-lib-role", role);
-    renderFacets();
-    try {   // keep it in the profile too, merged with the other preferences
-      const { data: { session } } = await db.auth.getSession();
-      const { data: p } = await db.from("profiles").select("preferences,newsletter,newsletter_frequency").eq("id", session.user.id).single();
-      await db.rpc("update_my_preferences", { p_preferences: { ...(p.preferences || {}), libraryRole: role }, p_newsletter: p.newsletter, p_frequency: p.newsletter_frequency || "weekly" });
-    } catch {}
-  }
-  const roleHtml = () => `<div class="lf-role"><span>I work on</span>${ROLES.map((r) => `<button type="button" class="${me.role === r.key ? "is-on" : ""}" aria-pressed="${me.role === r.key}" data-lf-role="${r.key}">${esc(r.label)}</button>`).join("")}</div>`;
 
   // ---------- Recipes: ready-made searches (4–5 filters in one click) ----------
   const RECIPES = [
@@ -471,8 +456,7 @@
   }
   const sameFacets = (f) => CATEGORIES.every((c) => { const a = selected[c.key], b = f[c.key] || []; return a.size === b.length && b.every((id) => a.has(id)); });
   function recipesHtml() {
-    const list = RECIPES.map((r) => ({ ...r, facets: recipeFacets(r) })).filter((r) => r.facets)
-      .sort((a, b) => (me.role ? (b.roles[0] === me.role) - (a.roles[0] === me.role) || (b.roles.includes(me.role) - a.roles.includes(me.role)) : 0));
+    const list = RECIPES.map((r) => ({ ...r, facets: recipeFacets(r) })).filter((r) => r.facets);
     if (!list.length) return "";
     const shown = ui.all.has("recipes") ? list : list.slice(0, 4);
     return `<div class="lf-recipes">${shown.map((r) => `<button type="button" class="lf-recipe${sameFacets(r.facets) ? " is-on" : ""}" data-recipe="${r.key}">${svg(r.ico)}<span>${esc(tx(r.title))}</span></button>`).join("")}</div>
@@ -618,14 +602,14 @@
     };
     const ai = (s) => s.ai && CATEGORIES.some((c) => c.sec === s.key && c.key !== "campaign" && has(c.key))
       ? ` <span class="lf-ai" tabindex="0" data-tip="${esc(AI_TIP)}">AI <b>?</b></span>` : "";
-    const ord = LAYOUT_BEFORE ? null : ROLES.find((r) => r.key === me.role)?.order || DEFAULT_ORDER;
+    const ord = LAYOUT_BEFORE ? null : DEFAULT_ORDER;
     const secs = SECTIONS.filter((s) => parts[s.key]).sort((a, b) => (ord ? ord.indexOf(a.key) - ord.indexOf(b.key) : 0));
     const inBar = barMode() ? secs.filter((s) => BAR_SECS.includes(s.key)) : [];
     renderBar(inBar, parts);
     const colSecs = secs.filter((s) => !inBar.includes(s));
     const box = $("[data-facets]");
     const scroll = $("[data-lf-body]").scrollTop;
-    box.innerHTML = (LAYOUT_BEFORE ? "" : roleHtml()) + colSecs.map((s) => `<section class="lf-sec${LAYOUT_BEFORE ? "" : " lf-sec-v2"}" data-lf-sec="${s.key}"><h2 class="lf-lbl">${esc(s.label)}${ai(s)}</h2>${s.q ? `<p class="lf-q">${esc(s.q)}</p>` : ""}${parts[s.key]}</section>`).join("");
+    box.innerHTML = colSecs.map((s) => `<section class="lf-sec${LAYOUT_BEFORE ? "" : " lf-sec-v2"}" data-lf-sec="${s.key}"><h2 class="lf-lbl">${esc(s.label)}${ai(s)}</h2>${s.q ? `<p class="lf-q">${esc(s.q)}</p>` : ""}${parts[s.key]}</section>`).join("");
     $("[data-lf-body]").scrollTop = scroll;
     $("[data-lf-jump]").innerHTML = colSecs.map((s) => `<button type="button" data-lf-jump-to="${s.key}">${esc(s.jump || s.label.replace(" by", ""))}</button>`).join("");
     renderQuick();
@@ -743,8 +727,6 @@
     if (all) { ui.all.add(all.dataset.lfAll); return renderFacets(); }
     const more = e.target.closest("[data-lf-more]");
     if (more) { const s = more.dataset.lfMore; ui.more.has(s) ? ui.more.delete(s) : ui.more.add(s); return renderFacets(); }
-    const rl = e.target.closest("[data-lf-role]");
-    if (rl) return saveRole(rl.dataset.lfRole === me.role ? "" : rl.dataset.lfRole);
     const rc = e.target.closest("[data-recipe]");
     if (rc) return applyRecipe(rc.dataset.recipe);
     if (e.target.closest("[data-like-mine]")) return toggleLikeMine();
@@ -1215,7 +1197,7 @@
   });
 
   // ---------- "For you": the member's favourite profiles / creators first, then their sports / competitions ----------
-  const me = { boost: [], boost2: [], fav: new Set(), isSuper: false, role: store.get("scp-lib-role") || "", likeMine: [] };
+  const me = { boost: [], boost2: [], fav: new Set(), isSuper: false, likeMine: [] };
   async function loadMe() {
     const profile = (await auth?.getProfile?.())?.profile;
     me.isSuper = profile?.role === "superadmin";
@@ -1226,7 +1208,6 @@
     me.boost2 = [...(prefs.sports || []), ...(prefs.competitions || [])].map(Number);
     me.favPlatform = (prefs.favouritePlatform || "").toLowerCase();   // Profile → Favourites: its posts come first
     me.likeMine = { competitions: (prefs.competitions || []).map(Number), sports: (prefs.sports || []).map(Number) };
-    if (prefs.libraryRole && prefs.libraryRole !== me.role) { me.role = prefs.libraryRole; store.set("scp-lib-role", me.role); }
     if (!LAYOUT_BEFORE) renderFacets();
     if (!me.boost.length && !me.boost2.length && !me.favPlatform) return;
     const order = $("[data-order]");

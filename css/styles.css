@@ -5940,11 +5940,6 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 .lf-md-opp { margin-top: 10px; }
 
 /* Library filters: role, recipes, clubs like mine, Content Plan hints, sponsors card, sentence search */
-.lf-role { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; margin: 6px 2px 2px; }
-.lf-role span { margin-right: 2px; font-size: 11px; color: var(--muted-dim); }
-.lf-role button { height: 26px; padding: 0 10px; border-radius: 100px; border: 0.5px solid var(--line); color: var(--muted); font-size: 11.5px; font-weight: 600; }
-.lf-role button:hover { color: var(--text); }
-.lf-role button.is-on { border-color: var(--gold); color: var(--gold); background: var(--gold-tint); }
 .lf-recipes { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .lf-recipe { display: flex; align-items: center; gap: 8px; min-height: 48px; padding: 8px 10px; border-radius: 12px; border: 0.5px solid var(--line); background: rgba(var(--fg), 0.03); color: var(--text); font-size: 12px; font-weight: 600; line-height: 1.25; text-align: left; transition: border-color 0.15s, background 0.15s, transform 0.15s; }
 .lf-recipe .lf-i { flex: none; width: 16px; height: 16px; color: var(--gold); }
