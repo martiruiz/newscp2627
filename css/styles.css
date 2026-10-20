@@ -2357,7 +2357,7 @@ a.blog-img { display: block; }
 .ac-ic .lf-i { width: 16px; height: 16px; }
 .ac-ic .lf-pfi { width: 16px; height: 16px; }
 .ac-logo { background: #fff; }
-.ac-logo img { width: 80%; height: 80%; object-fit: contain; }
+.ac-logo img { width: 92%; height: 92%; object-fit: contain; }
 .ac-logo b { font: 700 9.5px var(--font-body); color: #121b33; }
 .ac-tx { display: grid; line-height: 1.15; text-align: left; white-space: nowrap; }
 .ac-tx small { font: 700 9.5px var(--font-body); letter-spacing: 0.09em; text-transform: uppercase; color: var(--muted-dim); }
@@ -6522,7 +6522,8 @@ a.lf-sp-favs { text-decoration: none; }
 .lfp-logo .lfp-meta b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .lfp-logo .lfp-ck { top: 50%; transform: translateY(-50%); border-color: var(--line); background: transparent; }
 .lfp-lg { flex: none; width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; overflow: hidden; background: #fff; color: #121b33; }
-.lfp-lg img { width: 80%; height: 80%; object-fit: contain; }
+.lfp-lg img { width: 92%; height: 92%; object-fit: contain; }
+.lfp-lg.is-photo img { width: 100%; height: 100%; object-fit: cover; }   /* Instagram profile pictures fill the square */
 .lfp-lg b { font: 700 11px var(--font-body); }
 .lfp-lg-ic { background: var(--gold-tint); color: var(--gold); }
 .lfp-lg-ic .lf-i { width: 19px; height: 19px; }
