@@ -921,12 +921,17 @@
 
   // ---------- Search inside the filters: any value of any filter ----------
   const fsearch = $("[data-lf-search]"), fresults = $("[data-lf-results]");
-  let hits = [];
+  let hits = [], hitAlt = new Map();
   function searchFilters() {
     const q = fsearch.value.trim().toLowerCase();
     if (q.length < 2) { fresults.hidden = true; return; }
     hits = [];
     for (const v of catalog.byId.values()) if (v.name.toLowerCase().includes(q)) hits.push(v);
+    // the same team as club and as opponent: one row (the club), with "as opponent" beside it
+    const norm = (n) => fold(n).replace(/[^a-z0-9]+/g, " ").trim();
+    const clubs = new Map(hits.filter((v) => v.category === "club").map((v) => [norm(v.name), v]));
+    hitAlt = new Map();
+    hits = hits.filter((v) => { const c = v.category === "opponent" && clubs.get(norm(v.name)); if (c) hitAlt.set(c.id, v); return !c; });
     hits.sort((a, b) => (b.name.toLowerCase().startsWith(q) - a.name.toLowerCase().startsWith(q)) || countOf(b) - countOf(a));
     hits = hits.slice(0, 8);
     const hl = (n) => { const i = n.toLowerCase().indexOf(q); return `${esc(n.slice(0, i))}<mark>${esc(n.slice(i, i + q.length))}</mark>${esc(n.slice(i + q.length))}`; };
@@ -940,11 +945,12 @@
     fresults.innerHTML = sentenceHtml + (hits.length ? hits.map((v, i) => {
       const c = CAT[v.category];
       const lead = c.crest || v.logo ? crestImg(v, "lf-mini") : v.category === "platform" && PLATFORM[v.name.toLowerCase()] ? pfLogo(v.name.toLowerCase(), "lf-pfi is-brand") : "";
-      return `<button type="button" class="lf-hit${isOn(v) ? " is-on" : ""}${i === 0 && !sentenceHtml ? " is-kb" : ""}" role="option" data-hit="${i}">${lead}<span class="lf-hv">${hl(pretty(v.name))}</span><span class="lf-hc">${esc(c.sec === "discover" ? "Discover" : c.label)}</span><span class="lf-cnt">${kfmt(countOf(v))}</span></button>`;
+      const alt = hitAlt.get(v.id);
+      return `<div class="lf-hit-wrap"><button type="button" class="lf-hit${isOn(v) ? " is-on" : ""}${i === 0 && !sentenceHtml ? " is-kb" : ""}" role="option" data-hit="${i}">${lead}<span class="lf-hv">${hl(pretty(v.name))}</span><span class="lf-hc">${esc(c.sec === "discover" ? "Discover" : c.label)}</span><span class="lf-cnt">${kfmt(countOf(v))}</span></button>${alt ? `<button type="button" class="lf-hit-alt${isOn(alt) ? " is-on" : ""}" data-hit-alt="${i}" title="${esc(tx("Posts against {name}", { name: pretty(alt.name) }))}">${esc(tx("as opponent"))} <em>${kfmt(countOf(alt))}</em></button>` : ""}</div>`;
     }).join("") : sentenceHtml ? "" : `<p class="lf-none">No filter called “${esc(fsearch.value.trim())}”. The caption search above the posts looks inside the posts.</p>`);
   }
-  function pickHit(i) {
-    const v = hits[i];
+  function pickHit(i, asOpponent = false) {
+    const v = asOpponent ? hitAlt.get(hits[i]?.id) : hits[i];
     if (!v) return;
     fsearch.value = ""; fresults.hidden = true;
     const c = CAT[v.category];
@@ -962,7 +968,7 @@
     if (e.key === "Enter") { e.preventDefault(); sentence.length >= 2 || sentenceViews ? applySentence() : pickHit(0); }
     if (e.key === "Escape") { fsearch.value = ""; fresults.hidden = true; }
   });
-  fresults.addEventListener("click", (e) => { if (e.target.closest("[data-hit-all]")) return applySentence(); const b = e.target.closest("[data-hit]"); if (b) pickHit(Number(b.dataset.hit)); });
+  fresults.addEventListener("click", (e) => { if (e.target.closest("[data-hit-all]")) return applySentence(); const a = e.target.closest("[data-hit-alt]"); if (a) return pickHit(Number(a.dataset.hitAlt), true); const b = e.target.closest("[data-hit]"); if (b) pickHit(Number(b.dataset.hit)); });
 
   // ---------- Column scroll: thin gold bar while scrolling, edge fades when there's more ----------
   const lfBody = $("[data-lf-body]");

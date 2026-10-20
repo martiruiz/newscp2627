@@ -467,6 +467,8 @@ window.SCP_ES = {
   "billed yearly": "facturación anual",
   "or {price}/year": "o {price}/año",
   "Recommended": "Recomendado",
+  "as opponent": "como rival",
+  "Posts against {name}": "Posts contra {name}",
   "How do you tell it?": "¿Cómo lo cuentas?",
   "My AI analyses": "Mis análisis IA",
   "My team's AI analyses": "Análisis IA de mi equipo",
