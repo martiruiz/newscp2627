@@ -1496,8 +1496,11 @@
     renderCredits();
     if (!ai.ent?.has_ai) { renderAiMine(); return; }
     // "My AI analyses": the analyses themselves (readable by whoever unlocked them) and the ones of my team (supabase/ai-team.sql)
+    // only MY unlocks: admins may read everyone's (RLS), so the user is always named here
+    const uid = (await db.auth.getSession()).data.session?.user?.id;
+    if (!uid) { ai.mine = new Map(); ai.team = new Map(); renderAiMine(); return; }
     const [mine, team] = await Promise.all([
-      db.from("user_ai_unlocks").select("post_id,completed_at,ai_analyses(result)").eq("status", "completed").order("completed_at", { ascending: false }).then((r) => r.data || [], () => []),
+      db.from("user_ai_unlocks").select("post_id,completed_at,ai_analyses(result)").eq("user_id", uid).eq("status", "completed").order("completed_at", { ascending: false }).then((r) => r.data || [], () => []),
       db.rpc("team_ai_analyses").then((r) => (r.error ? [] : r.data || []), () => []),
     ]);
     ai.mine = new Map(mine.filter((r) => r.ai_analyses?.result).map((r) => [Number(r.post_id), { at: r.completed_at, result: r.ai_analyses.result }]));
