@@ -6240,3 +6240,6 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 /* Content Library: language list with a flag beside each language */
 .lf-lead-flag { width: 28px; height: 20px; border-radius: 4px; box-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.18); }
 .lf-lead-flag img { max-width: none; max-height: none; width: 100%; height: 100%; object-fit: cover; }
+/* Content Library: Length timeline (same look as Views) */
+.lf-dur .lf-hist i { cursor: help; }
+.lf-dur-ticks { margin: 4px 0 0; font-size: 11px; color: var(--muted); }

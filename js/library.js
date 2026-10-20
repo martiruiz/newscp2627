@@ -143,6 +143,7 @@
     target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
     cursor: '<path d="M3 11l18-8-8 18-2-8z"/>',
     eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
     shape: '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16"/>',
     chev: '<path d="m6 9 6 6 6-6"/>',
     check: '<path d="m5 12 5 5 9-10"/>',
@@ -360,21 +361,34 @@
     const shapes = (selected.format.size || selected.aspect_ratio.size) && has("aspect_ratio") ? catalog.byCat.aspect_ratio.filter((v) => countOf(v) > 0 || isOn(v)) : [];
     const shapeBtn = (v) => `<button type="button" class="lf-shp${isOn(v) ? " is-on" : ""}${countOf(v) === 0 && !isOn(v) ? " is-zero" : ""}" aria-pressed="${isOn(v)}" data-facet="aspect_ratio" data-id="${v.id}">${shapeBox(v.name)}<span>${esc(v.name)}</span></button>`;
     const shapesHtml = shapes.length ? `<div class="lf-fmt-ar"><div class="lf-sub">${esc(tx(CAT_LABEL.aspect_ratio))}</div><div class="lf-shapes">${byCount(shapes).map((v) => shapeBtn(v).replace("</span></button>", `</span><em>${kfmt(countOf(v))}</em></button>`)).join("")}</div></div>` : "";
-    const extras = ["duration"].filter(has);
-    let extra = "";
-    if (extras.length) {
-      const open = ui.open === "format-extra";
-      const sel = extras.flatMap((k) => [...selected[k]]).map((id) => catalog.byId.get(id)).filter(Boolean);
-      const inner = extras.map((k) => {
-        const btns = catalog.byCat[k].map((v) => `<button type="button" class="lf-chip${isOn(v) ? " is-on" : ""}${countOf(v) === 0 && !isOn(v) ? " is-zero" : ""}" aria-pressed="${isOn(v)}" data-facet="${k}" data-id="${v.id}">${esc(pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`).join("");
-        return `<div class="lf-sub">${esc(CAT_LABEL[k])}</div><div class="lf-chips">${btns}</div>`;
-      }).join("");
-      extra = `<div class="lf-row lf-row-gap${open ? " is-open" : ""}" data-lf-rowbox="format-extra">
-        <button class="lf-rh" type="button" aria-expanded="${open}" data-lf-row="format-extra">${svg("shape")}<span class="lf-t">${esc(tx(extras.length === 1 ? CAT_LABEL[extras[0]] : "Format details"))}</span>${sel.length ? `<span class="lf-badge">${sel.length}</span>` : ""}<span class="lf-v${sel.length ? " is-set" : ""}">${sel.length ? esc(pretty(sel[0].name)) + (sel.length > 1 ? ` +${sel.length - 1}` : "") : "Any"}</span>${svg("chev", "lf-chev")}</button>
-        <div class="lf-rb"${open ? "" : " hidden"}>${inner}</div></div>`;
-    }
+    const extra = durationHtml();
     const lang = has("language") ? `<div class="lf-stack lf-row-gap">${rowHtml(CAT.language)}</div>` : "";
     return `<div class="lf-tiles">${tiles}</div>${shapesHtml}${extra}${lang}`;
+  }
+
+  // Length as a timeline, like Views: the 4 length bands of the catalog as bars, a two-handle range over them
+  const DUR_BANDS = [/^under/i, /^15/, /^30/, /^over/i];
+  const durBands = () => DUR_BANDS.map((re) => (catalog.byCat.duration || []).find((v) => re.test(v.name))).filter(Boolean);
+  const DUR_TICKS = ["0 s", "15 s", "30 s", "60 s", "60 s+"];
+  function durRange() {
+    const bands = durBands(), on = bands.map(isOn);
+    if (!on.some(Boolean)) return [0, bands.length];
+    return [on.indexOf(true), on.lastIndexOf(true) + 1];
+  }
+  const durLabel = ([a, b], n) => (a === 0 && b === n ? tx("Any") : b === n ? `${DUR_TICKS[a]}+` : a === 0 ? `< ${DUR_TICKS[b]}` : `${DUR_TICKS[a]} – ${DUR_TICKS[b]}`);
+  function durationHtml() {
+    const bands = durBands();
+    if (bands.length < 2) return "";
+    const n = bands.length, [a, b] = durRange(), open = ui.open === "duration", mx = Math.max(1, ...bands.map(countOf));
+    const set = !(a === 0 && b === n);
+    return `<div class="lf-row lf-row-gap lf-dur${open ? " is-open" : ""}" data-lf-rowbox="duration">
+      <button class="lf-rh" type="button" aria-expanded="${open}" data-lf-row="duration">${svg("clock")}<span class="lf-t">${esc(tx(CAT_LABEL.duration))}</span><span class="lf-v${set ? " is-set" : ""}" data-dur-v>${esc(durLabel([a, b], n))}</span>${svg("chev", "lf-chev")}</button>
+      <div class="lf-rb"${open ? "" : " hidden"}>
+        <div class="lf-hist" aria-hidden="true">${bands.map((v, i) => `<i class="${i >= a && i < b ? "is-in" : ""}" style="height:${Math.max(6, (countOf(v) / mx) * 100)}%" title="${esc(pretty(v.name))} · ${kfmt(countOf(v))}"></i>`).join("")}</div>
+        <div class="lf-rng"><div class="lf-tr"></div><div class="lf-fl" style="left:${(a / n) * 100}%;right:${100 - (b / n) * 100}%"></div>
+          <input type="range" min="0" max="${n}" step="1" value="${a}" aria-label="${esc(tx("Shortest"))}" data-dur-lo><input type="range" min="0" max="${n}" step="1" value="${b}" aria-label="${esc(tx("Longest"))}" data-dur-hi></div>
+        <div class="lf-rl lf-dur-ticks">${DUR_TICKS.slice(0, n + 1).map((t) => `<span>${t}</span>`).join("")}</div>
+      </div></div>`;
   }
 
   function platformHtml() {
@@ -729,12 +743,25 @@
       if (a > b - 1) { if (e.target.matches("[data-views-lo]")) a = b - 1; else b = a + 1; }
       views.a = Math.max(0, a); views.b = Math.min(VB, b); views.exact = null;
       $("[data-views-lo]").value = views.a; $("[data-views-hi]").value = views.b;
-      $$(".lf-hist i").forEach((x, i) => x.classList.toggle("is-in", i >= views.a && i < views.b));
-      const fl = $(".lf-fl"); fl.style.left = `${(views.a / VB) * 100}%`; fl.style.right = `${100 - (views.b / VB) * 100}%`;
+      $$('[data-lf-rowbox="views"] .lf-hist i').forEach((x, i) => x.classList.toggle("is-in", i >= views.a && i < views.b));
+      const fl = $('[data-lf-rowbox="views"] .lf-fl'); fl.style.left = `${(views.a / VB) * 100}%`; fl.style.right = `${100 - (views.b / VB) * 100}%`;
       $("[data-views-lo-l]").textContent = kfmt(Math.round(vEdge(views.a)));
       $("[data-views-hi-l]").textContent = views.b === VB ? `${kfmt(Math.round(vEdge(VB)))}+` : kfmt(Math.round(vEdge(views.b)));
       const v = $("[data-views-v]"); v.textContent = viewsLabel(); v.classList.toggle("is-set", viewsSet());
       $$(".lf-vq button").forEach((x) => x.classList.toggle("is-on", views.b === VB && Number(x.dataset.vq) === views.a));
+    }
+    const dr = e.target.closest("[data-dur-lo], [data-dur-hi]");
+    if (dr) {
+      const box = dr.closest(".lf-dur"), bands = durBands(), n = bands.length;
+      const lo = $("[data-dur-lo]", box), hi = $("[data-dur-hi]", box);
+      let a = Number(lo.value), b = Number(hi.value);
+      if (a > b - 1) { if (dr === lo) a = b - 1; else b = a + 1; }
+      a = Math.max(0, a); b = Math.min(n, b); lo.value = a; hi.value = b;
+      // the bands inside the range become the selected Length values (all of them = no filter); the change event reloads
+      selected.duration = new Set(a === 0 && b === n ? [] : bands.slice(a, b).map((v) => v.id));
+      $$(".lf-hist i", box).forEach((x, i) => x.classList.toggle("is-in", i >= a && i < b));
+      const fl = $(".lf-fl", box); fl.style.left = `${(a / n) * 100}%`; fl.style.right = `${100 - (b / n) * 100}%`;
+      const v = $("[data-dur-v]", box); v.textContent = durLabel([a, b], n); v.classList.toggle("is-set", !(a === 0 && b === n));
     }
   };
   column.addEventListener("input", onFilterInput);
@@ -877,7 +904,8 @@
     const c = CAT[v.category];
     if (!isOn(v)) selected[v.category].add(v.id);
     if (c.sec === "discover" || c.key === "format" || c.key === "platform") ui.open = null;
-    else if (c.extra) ui.open = "format-extra";
+    else if (c.key === "duration" || c.key === "language") ui.open = c.key;
+    else if (c.extra) ui.open = null;
     else { ui.open = c.key; if (c.more) ui.more.add(c.sec); }
     renderFacets();
     ($(`[data-lf-rowbox="${CSS.escape(ui.open || "")}"]`) || $(`[data-facet="${v.category}"][data-id="${v.id}"]`))?.scrollIntoView({ block: "nearest", behavior: "smooth" });
