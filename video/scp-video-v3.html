@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SCP video v3</title>
+<link rel="stylesheet" href="../css/fonts.css?v=1">
+<style>
+  :root { --gold: #f0b84a; --muted: #b4c0d3; }
+  html, body { margin: 0; background: #000; }
+  #stage { position: relative; overflow: hidden; color: #fff; font-family: Inter, system-ui, sans-serif;
+    background: radial-gradient(120% 90% at 50% 35%, #1a2646 0%, #0d1428 55%, #070b17 100%); }
+  .scene { position: absolute; inset: 0; overflow: hidden; }
+  .abs { position: absolute; }
+  .big { font-family: "Host Grotesk", Inter, sans-serif; font-weight: 700; letter-spacing: -0.045em; line-height: .88; text-transform: uppercase; white-space: nowrap; }
+  .small { font-weight: 600; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+  .goldfill { background: linear-gradient(100deg, #d99a2b, #f0b84a 40%, #ffe3a3 60%, #f0b84a 80%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .grain { position: absolute; inset: 0; pointer-events: none; z-index: 50; opacity: .06; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+  .vignette { position: absolute; inset: 0; pointer-events: none; z-index: 49; background: radial-gradient(120% 100% at 50% 50%, transparent 55%, rgba(0,0,0,.55) 100%); }
+  .glow { position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; }
+  /* real post card, like the library */
+  .card { position: absolute; border-radius: 16px; overflow: hidden; background: #17213b; border: 1px solid rgba(255,255,255,.1); box-shadow: 0 24px 50px -24px rgba(0,0,0,.8); }
+  .card img { position: absolute; left: 0; top: 0; width: 100%; object-fit: cover; }
+  .card .ft { position: absolute; left: 0; right: 0; bottom: 0; height: 44px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: #17213b; font: 600 14px Inter; color: #cfd8e6; }
+  .card .ft i { width: 20px; height: 20px; border-radius: 50%; background: rgba(255,255,255,.16); flex: none; }
+  .card .vw { position: absolute; top: 10px; left: 10px; padding: 5px 10px; border-radius: 100px; background: rgba(8,12,24,.78); font: 700 14px Inter; color: #fff; }
+  .card .vw b { color: var(--gold); }
+  .chip { display: inline-flex; align-items: center; gap: 8px; padding: 0 16px; height: 40px; border-radius: 100px; border: 1px solid rgba(240,184,74,.55); background: rgba(240,184,74,.12); color: var(--gold); font: 600 17px Inter; white-space: nowrap; }
+  .chip.w { border-color: rgba(255,255,255,.22); background: rgba(255,255,255,.06); color: #fff; }
+  .panel { position: absolute; border-radius: 22px; background: rgba(23,33,59,.95); border: 1px solid rgba(255,255,255,.1); box-shadow: 0 40px 80px -30px rgba(0,0,0,.8); }
+  .sp { display: flex; align-items: center; gap: 12px; height: 58px; padding: 0 16px; border-radius: 15px; font: 700 18px "Host Grotesk"; color: #fff; }
+  .sp i { width: 30px; height: 30px; border-radius: 9px; background: rgba(255,255,255,.22); flex: none; }
+  .sp-top { background: linear-gradient(90deg, #f32f71, #ff685c); } .sp-rep { background: linear-gradient(90deg, #00d85b, #00ccdd); }
+  .sp-cc { background: linear-gradient(90deg, #d99a2b, #f0b84a 45%, #ffd98a); color: #1a1206; } .sp-over { background: linear-gradient(90deg, #4d5bff, #7a5cff); }
+  .bar { height: 12px; border-radius: 6px; background: rgba(255,255,255,.12); }
+  .ui { position: absolute; border-radius: 26px; background: rgba(13,20,40,.94); border: 1px solid rgba(255,255,255,.1); overflow: hidden; box-shadow: 0 60px 120px -40px #000; }
+  .sbox { display: flex; align-items: center; gap: 14px; border-radius: 18px; border: 2px solid rgba(240,184,74,.6); background: rgba(240,184,74,.06); padding: 0 24px; color: #fff; box-shadow: 0 0 0 8px rgba(240,184,74,.07); }
+  .sbox svg { width: 26px; height: 26px; flex: none; stroke: var(--gold); fill: none; stroke-width: 2.2; }
+  .note { position: absolute; left: 0; right: 0; bottom: 14px; text-align: center; font: 500 13px Inter; color: rgba(255,255,255,.4); z-index: 60; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script>
+(async () => {
+  const Q = new URLSearchParams(location.search);
+  const P = Q.get("f") === "v";
+  const W = P ? 1080 : 1920, H = P ? 1920 : 1080;
+  const O = 0.3;                                   // the voice starts at 0.3 s; every cue below = voice time + O
+  const TOTAL = 53.6;
+  const stage = document.getElementById("stage");
+  Object.assign(stage.style, { width: W + "px", height: H + "px" });
+  const pick = await (await fetch("real/pick.json")).json();
+  await document.fonts.load('700 100px "Host Grotesk"'); await document.fonts.load('500 20px Inter'); await document.fonts.load('600 20px Inter'); await document.fonts.load('700 20px Inter'); await document.fonts.ready;
+
+  const anims = [], ticks = [], seen = new WeakMap();
+  const E = { out: "cubic-bezier(.16,1,.3,1)", inout: "cubic-bezier(.65,0,.35,1)", in: "cubic-bezier(.7,0,.84,0)", slam: "cubic-bezier(.2,1.5,.35,1)", lin: "linear", soft: "cubic-bezier(.4,0,.2,1)" };
+  function A(el, kf, t, dur, ease = E.out) {
+    const n = seen.get(el) || 0; seen.set(el, n + 1);
+    const a = el.animate(kf, { delay: t * 1000, duration: Math.max(1, dur * 1000), easing: ease, fill: n ? "forwards" : "both" });
+    a.pause(); anims.push(a); return a;
+  }
+  const mk = (parent, cls = "", html = "", css = {}) => { const e = document.createElement("div"); e.className = cls; e.innerHTML = html; Object.assign(e.style, css); parent.append(e); return e; };
+  const px = (v) => v + "px";
+  const L = (h, v) => (P ? v : h);
+  const centred = "translate(-50%,-50%)";
+  const C = (x, y) => ({ left: px(x), top: px(y), transform: centred });
+  const fmtV = (n) => n >= 1e6 ? `${(n / 1e6).toFixed(n < 1e7 ? 1 : 0)}M` : `${Math.round(n / 1e3)}K`;
+  const SEARCH = `<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>`;
+  function scene(a, b) {
+    const s = mk(stage, "scene");
+    ticks.push((t) => { s.style.display = t >= a - 0.04 && t < b + 0.04 ? "" : "none"; });
+    return s;
+  }
+  // a real post as a library card (cover + footer); w = width
+  function card(parent, p, x, y, w, opt = {}) {
+    const ch = w * Math.min(Math.max(p.r, .56), 1.78), foot = opt.foot === false ? 0 : 44;
+    const c = mk(parent, "card", `<img src="real/${p.f}" style="height:${ch}px">`, { left: px(x), top: px(y), width: px(w), height: px(ch + foot), ...(opt.css || {}) });
+    if (foot) mk(c, "ft", `<i></i><span class="bar" style="width:${40 + (p.f.length % 5) * 8}%;height:9px"></span>`);
+    if (opt.views && p.v) mk(c, "vw", `<b>${fmtV(p.v)}</b> views`);
+    return { el: c, h: ch + foot };
+  }
+  // masonry of real posts inside a box; returns the cards
+  function masonry(parent, list, cols, width, gap, opt = {}) {
+    const cw = (width - gap * (cols - 1)) / cols, ys = Array(cols).fill(0), out = [];
+    list.forEach((p) => { const c = ys.indexOf(Math.min(...ys)); const k = card(parent, p, c * (cw + gap), ys[c], cw, opt); ys[c] += k.h + gap; out.push(k.el); });
+    return out;
+  }
+  const ALL = [...pick.lineup, ...pick.kit, ...pick.views, ...pick.signing];
+  const g1 = mk(stage, "glow", "", { width: px(W * .7), height: px(W * .7), left: px(-W * .2), top: px(-W * .25), background: "rgba(240,184,74,.10)" });
+  A(g1, [{ transform: "translate(0,0)" }, { transform: `translate(${W * .3}px,${H * .25}px)` }], 0, TOTAL, E.lin);
+
+  // ======================= 1 · Hook (0 – 3.4): a burst of real posts =======================
+  {
+    const s = scene(0, 3.45);
+    const wall = mk(s, "abs", "", { left: "50%", top: "50%", width: px(L(2400, 1500)), height: px(L(1500, 2400)) });
+    const cols = L(9, 5), cw = L(250, 280), gap = 18;
+    masonry(wall, [...ALL].sort((a, b) => (a.f > b.f ? 1 : -1)).slice(0, cols * 6), cols, cols * cw + (cols - 1) * gap, gap, { foot: false })
+      .forEach((c, i) => A(c, [{ opacity: 0, transform: "scale(.6)" }, { opacity: 1, transform: "scale(1)" }], .02 * i, .3, E.out));
+    A(wall, [{ transform: "translate(-50%,-50%) scale(1.5) rotate(-6deg)" }, { transform: "translate(-50%,-50%) scale(.85) rotate(-3deg)" }], 0, 3.45, E.out);
+    const sh = mk(s, "abs", "", { inset: 0, background: "radial-gradient(70% 60% at 50% 50%, rgba(7,11,23,.9), rgba(7,11,23,.35))" });
+    A(sh, [{ opacity: 0 }, { opacity: 1 }], .2, .5, E.soft);
+    const t1 = mk(s, "big abs", P ? "YOUR NEXT<br>GREAT POST" : "YOUR NEXT GREAT POST", { ...C(W / 2, H / 2 - L(70, 120)), fontSize: px(L(150, 150)), textAlign: "center" });
+    const t2 = mk(s, "big abs goldfill", P ? "ALREADY<br>EXISTS." : "ALREADY EXISTS.", { ...C(W / 2, H / 2 + L(90, 170)), fontSize: px(L(150, 150)), textAlign: "center" });
+    A(t1, [{ opacity: 0, transform: `${centred} scale(1.3)`, filter: "blur(12px)" }, { opacity: 1, transform: `${centred} scale(1)`, filter: "blur(0)" }], O + .05, .45, E.out);
+    A(t2, [{ opacity: 0, transform: `${centred} translateY(80px)` }, { opacity: 1, transform: `${centred} translateY(0)` }], O + 1.45, .3, E.out);
+    [t1, t2].forEach((e) => A(e, [{ opacity: 1 }, { opacity: 0 }], 3.2, .2, E.soft));
+  }
+
+  // ======================= 2 · Problems (3.4 – 11.6) =======================
+  {
+    const s = scene(3.4, 11.65);
+    const cw = L(560, 860), ch = L(420, 360), gap = L(46, 40);
+    const pos = (i) => (P ? [W / 2, 430 + i * (ch + gap)] : [W / 2 + (i - 1) * (cw + gap), H / 2 - 40]);
+    const boxes = [
+      `<div class="small" style="font-size:18px;color:#ff6b81">Saturday</div><div class="big" style="font-size:78px;margin:14px 0 26px">Matchday</div>
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px">${["M", "T", "W", "T", "F", "S", "S"].map((d, i) => `<div style="height:54px;border-radius:10px;display:grid;place-items:center;font:700 18px Inter;${i === 5 ? "background:#ff3b5c;color:#fff" : "background:rgba(255,255,255,.07);color:#8b98ae"}">${d}</div>`).join("")}</div>
+        <div class="small" style="margin-top:22px;font-size:15px">nothing planned yet</div>`,
+      `<div class="small" style="font-size:18px;color:var(--gold)">Draft · New signing</div>
+        <div style="margin-top:18px;height:${L(230, 150)}px;border-radius:14px;border:2px dashed rgba(255,255,255,.25);display:grid;place-items:center;font:700 80px 'Host Grotesk';color:rgba(255,255,255,.35)">?</div>
+        <div class="small" style="margin-top:18px;font-size:15px">announcement due today</div>`,
+      `<div style="display:flex;gap:14px;align-items:center"><span style="width:52px;height:52px;border-radius:50%;background:#2f8f5b;display:grid;place-items:center;font:700 22px Inter">S</span><div><b style="font:700 22px Inter">Sponsor</b><div class="small" style="font-size:13px;margin-top:4px">partnerships</div></div></div>
+        <div style="margin-top:22px;padding:20px 22px;border-radius:18px 18px 18px 4px;background:rgba(255,255,255,.08);font:500 30px/1.35 Inter">Any results from our campaign? We need numbers for the board 📊</div>`,
+    ];
+    const at = [3.58, 5.33, 6.94];
+    boxes.forEach((html, i) => {
+      const b = mk(s, "panel", html, { ...C(...pos(i)), width: px(cw), height: px(ch), padding: "34px", boxSizing: "border-box" });
+      A(b, [{ opacity: 0, transform: `${centred} translateY(70px) rotate(${(i - 1) * 4}deg)` }, { opacity: 1, transform: `${centred} translateY(0) rotate(${(i - 1) * 1.5}deg)` }], at[i], .45, E.slam);
+      A(b, [{ opacity: 1, filter: "blur(0)" }, { opacity: 0, filter: "blur(14px)", transform: `${centred} translateY(-40px) scale(.9)` }], 9.25, .35, E.soft);
+    });
+    const words = [["matchday on saturday", 3.58], ["a signing to announce", 5.33], ["a sponsor asking for results", 6.94]];
+    words.forEach(([w, t], i) => {
+      const e = mk(s, "small abs", w, { ...C(W / 2, L(H - 150, 140)), fontSize: px(L(34, 34)), color: "#fff" });
+      A(e, [{ opacity: 0, transform: `${centred} translateY(20px)` }, { opacity: 1, transform: `${centred} translateY(0)` }], t, .3, E.out);
+      A(e, [{ opacity: 1 }, { opacity: 0 }], (words[i + 1]?.[1] || 9.25) - .1, .15, E.soft);
+    });
+    // blank page
+    const page = mk(s, "abs", "", { ...C(W / 2, H / 2 - L(60, 120)), width: px(L(560, 640)), height: px(L(560, 780)), borderRadius: "18px", background: "#f4f6fb", boxShadow: "0 50px 100px -30px #000" });
+    const cur = mk(page, "abs", "", { left: "60px", top: "70px", width: "4px", height: "46px", background: "#121b33" });
+    ticks.push((t) => { cur.style.opacity = Math.floor(t * 2.4) % 2 ? 0 : 1; });
+    A(page, [{ opacity: 0, transform: `${centred} scale(.85)` }, { opacity: 1, transform: `${centred} scale(1)` }], 9.42, .4, E.out);
+    const bp = mk(s, "big abs goldfill", "AND A BLANK PAGE.", { ...C(W / 2, L(H - 160, H - 300)), fontSize: px(L(120, 96)) });
+    A(bp, [{ opacity: 0, transform: `${centred} scale(1.4)` }, { opacity: 1, transform: `${centred} scale(1)` }], 10.1, .25, E.out);
+    [page, bp].forEach((e) => A(e, [{ opacity: 1 }, { opacity: 0 }], 11.4, .2, E.soft));
+  }
+
+  // ======================= 3 · The platform (11.6 – 22.2) =======================
+  {
+    const s = scene(11.6, 22.25);
+    // real library screen, tilted in 3D
+    const world = mk(s, "abs", "", { inset: 0, perspective: "1500px" });
+    const ui = mk(world, "ui", "", { left: px(L(110, 40)), top: px(L(80, 220)), width: px(W - L(220, 80)), height: px(H - L(160, 440)), transformOrigin: "50% 50%" });
+    const sideW = P ? 0 : 400;
+    if (!P) {
+      const side = mk(ui, "abs", "", { left: 0, top: 0, bottom: 0, width: px(sideW), borderRight: "1px solid rgba(255,255,255,.08)", padding: "30px 26px", boxSizing: "border-box" });
+      mk(side, "", "Filters", { font: "700 28px 'Host Grotesk'", marginBottom: "22px" });
+      [["sp-top", "Top Picks"], ["sp-rep", "Replicable Ideas"], ["sp-cc", "Content Creators"], ["sp-over", "Overperforming"]].forEach(([c, t]) => mk(side, `sp ${c}`, `<i></i>${t}`, { marginBottom: "11px" }));
+      ["Occasion", "Goal & sponsors", "Where & how", "Inspiration from"].forEach((t) => mk(side, "small", t, { fontSize: "14px", color: "#fff", padding: "20px 0 10px", borderBottom: "1px solid rgba(255,255,255,.07)" }));
+    }
+    const main = mk(ui, "abs", "", { left: px(sideW + 30), right: "30px", top: "28px", bottom: 0, overflow: "hidden" });
+    mk(main, "sbox", `${SEARCH}<span style="font:500 22px Inter;color:#8b98ae">Search filters or write what you need…</span>`, { height: "68px" });
+    const gridBox = mk(main, "abs", "", { left: 0, right: 0, top: "96px", height: "4000px" });
+    masonry(gridBox, ALL.slice(0, L(40, 24)), L(5, 3), W - L(220, 80) - sideW - 60, 18, { views: true });
+    A(ui, [{ opacity: 0, transform: "rotateX(18deg) rotateY(-14deg) scale(.82) translateY(60px)" }, { opacity: 1, transform: "rotateX(8deg) rotateY(-6deg) scale(.92)", offset: .25 }, { opacity: 1, transform: "rotateX(3deg) rotateY(4deg) scale(1)" }], 11.6, 4, E.inout);
+    A(gridBox, [{ transform: "translateY(0)" }, { transform: `translateY(-${L(900, 1100)}px)` }], 12, 4, E.inout);
+    A(ui, [{ opacity: 1, transform: "rotateX(3deg) rotateY(4deg) scale(1)" }, { opacity: 0, transform: "rotateX(45deg) translateZ(-600px) scale(.9)" }], 15.4, .6, E.in);
+    // 3D flight over real posts
+    const fw = mk(s, "abs", "", { inset: 0, perspective: "1300px", perspectiveOrigin: "50% 30%" });
+    const cols = L(9, 6), cw = 240, gap = 22, planeW = cols * (cw + gap);
+    const plane = mk(fw, "abs", "", { left: px(W / 2 - planeW / 2), top: px(H * .1), width: px(planeW), height: "6000px", transformStyle: "preserve-3d", transformOrigin: "50% 0%" });
+    const big = []; for (let i = 0; i < 4; i++) big.push(...ALL);
+    masonry(plane, big.slice(0, cols * 18), cols, planeW - gap, gap, { views: true });
+    A(fw, [{ opacity: 0 }, { opacity: 1 }], 15.4, .5, E.soft);
+    A(plane, [
+      { transform: "translateZ(-150px) rotateX(64deg) translateY(0px)", offset: 0 },
+      { transform: "translateZ(220px) rotateX(54deg) rotateZ(-4deg) translateY(-900px)", offset: .45 },
+      { transform: "translateZ(-300px) rotateX(42deg) rotateZ(4deg) translateY(-2100px)", offset: 1 },
+    ], 15.4, 6.85, E.inout);
+    const shade = mk(s, "abs", "", { inset: 0, background: "radial-gradient(70% 55% at 50% 50%, rgba(7,11,23,.86), rgba(7,11,23,0) 75%)" });
+    A(shade, [{ opacity: 0 }, { opacity: 1 }], 15.5, .5, E.soft);
+    const num = mk(s, "big abs goldfill", "0", { ...C(W / 2, H / 2 - L(60, 140)), fontSize: px(L(230, 190)) });
+    const lab = mk(s, "small abs", "real posts", { ...C(W / 2, H / 2 + L(80, 0)), fontSize: px(L(32, 38)), color: "#fff" });
+    A(num, [{ opacity: 0, transform: `${centred} scale(.6)` }, { opacity: 1, transform: `${centred} scale(1)` }], 15.6, .45, E.slam);
+    A(lab, [{ opacity: 0 }, { opacity: 1 }], 15.9, .4, E.soft);
+    ticks.push((t) => { const k = Math.min(1, Math.max(0, (t - 15.6) / 1.8)); const e = 1 - Math.pow(1 - k, 3); num.textContent = (Math.round(e * 500) * 1000).toLocaleString("en-US") + (k >= 1 ? "+" : ""); });
+    const clubs = mk(s, "big abs", `770+ <span class="small" style="font-size:.3em;letter-spacing:.2em;color:#fff">clubs</span>`, { ...C(W / 2, H / 2 + L(200, 140)), fontSize: px(L(110, 110)) });
+    A(clubs, [{ opacity: 0, transform: `${centred} translateY(40px)` }, { opacity: 1, transform: `${centred} translateY(0)` }], 18.6, .4, E.out);
+    const pf = mk(s, "abs", "", { ...C(W / 2, H / 2 + L(330, 300)), display: "flex", gap: "12px", flexWrap: "wrap", justifyContent: "center", width: px(L(1400, 900)) });
+    ["Instagram", "TikTok", "YouTube", "X", "LinkedIn", "Facebook"].forEach((n, i) => { const c = mk(pf, "chip w", n, { fontSize: "20px" }); A(c, [{ opacity: 0, transform: "scale(.5)" }, { opacity: 1, transform: "scale(1)" }], 20.5 + i * .12, .3, E.slam); });
+    [num, lab, clubs, pf, shade].forEach((e) => A(e, [{ opacity: 1 }, { opacity: 0 }], 21.95, .25, E.soft));
+  }
+
+  // ======================= 4 · Searches with real results (22.2 – 29.8) =======================
+  {
+    const s = scene(22.2, 29.85);
+    const ui = mk(s, "ui", "", { left: px(L(90, 30)), top: px(L(60, 170)), width: px(W - L(180, 60)), height: px(H - L(120, 300)) });
+    A(ui, [{ opacity: 0, transform: "scale(.96)" }, { opacity: 1, transform: "scale(1)" }], 22.2, .3, E.out);
+    const sb = mk(ui, "sbox", `${SEARCH}<span class="q" style="font:500 ${L(30, 30)}px Inter"></span><span class="c" style="color:var(--gold);font:400 30px Inter">|</span><span class="n" style="margin-left:auto;font:600 20px Inter;color:#8b98ae"></span>`, { position: "absolute", left: "30px", right: "30px", top: "28px", height: px(L(80, 84)) });
+    const qEl = sb.querySelector(".q"), cEl = sb.querySelector(".c"), nEl = sb.querySelector(".n");
+    const band = mk(s, "abs", "", { left: 0, right: 0, bottom: 0, height: px(L(300, 420)), background: "linear-gradient(transparent, rgba(7,11,23,.92) 55%)", zIndex: 4 });
+    A(band, [{ opacity: 0 }, { opacity: 1 }], 22.2, .3, E.soft); A(band, [{ opacity: 1 }, { opacity: 0 }], 26.7, .2, E.soft);
+    const Qs = [{ q: "line-up graphics", t: 22.3, set: pick.lineup, n: "452 posts" }, { q: "kit launches", t: 23.68, set: pick.kit, n: "819 posts" }, { q: "signings that went viral", t: 24.68, set: pick.signing, n: "most viewed", views: true }];
+    const gw = W - L(180, 60) - 60, gbox = mk(ui, "abs", "", { left: "30px", right: "30px", top: px(L(136, 140)), bottom: 0, overflow: "hidden" });
+    Qs.forEach((x, i) => {
+      const layer = mk(gbox, "abs", "", { inset: 0 });
+      const cards = masonry(layer, x.set, x.views ? L(6, 3) : L(6, 3), gw, 16, { views: !!x.views });
+      cards.forEach((c, k) => A(c, [{ opacity: 0, transform: "translateY(50px) scale(.92)" }, { opacity: 1, transform: "translateY(0) scale(1)" }], x.t + .45 + k * .025, .35, E.out));
+      const end = Qs[i + 1]?.t ?? 26.75;
+      A(layer, [{ opacity: 1 }, { opacity: 0 }], end - .05, .12, E.soft);
+      const typing = .4;
+      ticks.push((t) => { if (t >= x.t && t < end) { const k = Math.min(1, (t - x.t) / typing); qEl.textContent = x.q.slice(0, Math.round(k * x.q.length)); nEl.textContent = k >= 1 && t > x.t + .5 ? x.n : ""; } });
+      // the question as kinetic type
+      const kq = mk(s, "big abs", ["NEED A LINE-UP?", "A KIT LAUNCH?", P ? "A SIGNING THAT<br>BREAKS THE INTERNET?" : "A SIGNING THAT BREAKS THE INTERNET?"][i], { ...C(W / 2, L(H - 110, H - 150)), fontSize: px(L(i === 2 ? 76 : 96, i === 2 ? 64 : 92)), textAlign: "center", zIndex: 5, textShadow: "0 10px 40px rgba(0,0,0,.9)" });
+      A(kq, [{ opacity: 0, transform: `${centred} translateY(30px)` }, { opacity: 1, transform: `${centred} translateY(0)` }], x.t - .05, .2, E.out);
+      A(kq, [{ opacity: 1 }, { opacity: 0 }], end - .1, .1, E.soft);
+    });
+    ticks.push((t) => { cEl.style.opacity = Math.floor(t * 2.6) % 2 ? 0 : 1; if (t >= 26.75) { qEl.textContent = ""; nEl.textContent = ""; } });
+    A(ui, [{ opacity: 1, transform: "scale(1)" }, { opacity: 0, transform: "scale(.9)" }], 26.7, .25, E.soft);
+    const js = mk(s, "big abs", P ? "JUST<br>SEARCH IT." : "JUST SEARCH IT.", { ...C(W / 2, H / 2), fontSize: px(L(200, 170)), textAlign: "center" });
+    A(js, [{ opacity: 0, transform: `${centred} scale(1.6)` }, { opacity: 1, transform: `${centred} scale(1)` }], 26.88, .22, E.out);
+    A(js, [{ opacity: 1 }, { opacity: 0, transform: `${centred} scale(.8)` }], 27.7, .2, E.in);
+    // the wall of results
+    const wall = mk(s, "abs", "", { left: "50%", top: "50%", width: px(L(3000, 1900)) });
+    masonry(wall, [...pick.lineup, ...pick.kit, ...pick.signing, ...pick.views].slice(0, L(66, 40)), L(11, 6), L(3000, 1900), 16, { foot: false })
+      .forEach((c, i) => A(c, [{ opacity: 0 }, { opacity: 1 }], 27.8 + (i % 13) * .02, .3, E.soft));
+    A(wall, [{ transform: "translate(-50%,-30%) scale(1.6)" }, { transform: "translate(-50%,-38%) scale(.75)" }], 27.8, 2.05, E.out);
+    const best = mk(s, "big abs goldfill", P ? "HOW THE BEST<br>CLUBS DID IT." : "HOW THE BEST CLUBS DID IT.", { ...C(W / 2, H / 2), fontSize: px(L(120, 110)), textAlign: "center", textShadow: "none", zIndex: 5 });
+    const shade = mk(s, "abs", "", { inset: 0, background: "radial-gradient(60% 45% at 50% 50%, rgba(7,11,23,.88), rgba(7,11,23,.2))", zIndex: 4 });
+    A(shade, [{ opacity: 0 }, { opacity: 1 }], 28.3, .3, E.soft);
+    A(best, [{ opacity: 0, transform: `${centred} translateY(40px)` }, { opacity: 1, transform: `${centred} translateY(0)` }], 28.4, .35, E.out);
+    [wall, best, shade].forEach((e) => A(e, [{ opacity: 1 }, { opacity: 0 }], 29.65, .2, E.soft));
+  }
+
+  // ======================= 5 · Filters → what performed (29.8 – 35.0) =======================
+  {
+    const s = scene(29.8, 35.05);
+    const ui = mk(s, "ui", "", { left: px(L(90, 30)), top: px(L(60, 170)), width: px(W - L(180, 60)), height: px(H - L(120, 300)) });
+    A(ui, [{ opacity: 0, transform: "translateY(40px)" }, { opacity: 1, transform: "translateY(0)" }], 29.8, .35, E.out);
+    const sideW = L(420, 0);
+    const side = mk(ui, "abs", "", P ? { left: "30px", right: "30px", top: "28px", height: "320px" } : { left: 0, top: 0, bottom: 0, width: px(sideW), borderRight: "1px solid rgba(255,255,255,.08)", padding: "30px 26px", boxSizing: "border-box" });
+    const sps = [["sp-top", "Top Picks"], ["sp-rep", "Replicable Ideas"], ["sp-cc", "Content Creators"], ["sp-over", "Overperforming"]].map(([c, t]) => mk(side, `sp ${c}`, `<i></i>${t}`, { marginBottom: "10px", opacity: .55, ...(P ? { display: "inline-flex", width: "47%", marginRight: "3%" } : {}) }));
+    const rows = mk(side, "", "", { marginTop: "16px" });
+    const chipsRow = mk(rows, "", "", { display: "flex", flexWrap: "wrap", gap: "10px" });
+    const filt = [["Football", 30.0], ["Clubs", 30.55], ["Reels", 31.3]];
+    filt.forEach(([t, at]) => { const c = mk(chipsRow, "chip w", t); A(c, [{ background: "rgba(255,255,255,.06)", color: "#fff", borderColor: "rgba(255,255,255,.22)", transform: "scale(1)" }, { background: "rgba(240,184,74,.16)", color: "#f0b84a", borderColor: "rgba(240,184,74,.7)", transform: "scale(1.08)", offset: .5 }, { background: "rgba(240,184,74,.16)", color: "#f0b84a", borderColor: "rgba(240,184,74,.7)", transform: "scale(1)" }], at, .4, E.out); });
+    // views slider → 2M+
+    const vs = mk(rows, "", `<div class="small" style="font-size:14px;color:#fff;margin:22px 0 10px">Views</div>`, {});
+    const tr = mk(vs, "bar", "", { position: "relative", height: "10px" });
+    const fill = mk(tr, "", "", { position: "absolute", top: 0, bottom: 0, left: "0%", right: "0%", borderRadius: "5px", background: "linear-gradient(90deg,#d99a2b,#ffe3a3)" });
+    const vl = mk(vs, "", "Any", { font: "700 22px Inter", color: "var(--gold)", marginTop: "12px" });
+    A(fill, [{ left: "0%" }, { left: "62%" }], 33.2, .7, E.inout);
+    ticks.push((t) => { vl.textContent = t < 33.5 ? "Any" : "2M+ views"; });
+    sps.forEach((e, i) => { if (i === 0 || i === 3) A(e, [{ opacity: .55, transform: "scale(1)" }, { opacity: 1, transform: "scale(1.05)", offset: .5 }, { opacity: 1, transform: "scale(1)" }], 32.75 + (i ? .3 : 0), .45, E.out); });
+    const gw = W - L(180, 60) - sideW - 60;
+    const gbox = mk(ui, "abs", "", P ? { left: "30px", right: "30px", top: "380px", bottom: 0, overflow: "hidden" } : { left: px(sideW + 30), right: "30px", top: "30px", bottom: 0, overflow: "hidden" });
+    const l1 = mk(gbox, "abs", "", { inset: 0 }); masonry(l1, [...pick.kit.slice(0, 8), ...pick.lineup.slice(8, 16)], L(5, 3), gw, 16);
+    const l2 = mk(gbox, "abs", "", { inset: 0 });
+    masonry(l2, pick.views, L(5, 3), gw, 16, { views: true }).forEach((c, k) => A(c, [{ opacity: 0, transform: "translateY(60px)" }, { opacity: 1, transform: "translateY(0)" }], 33.0 + k * .04, .4, E.out));
+    A(l1, [{ opacity: 1 }, { opacity: 0, filter: "blur(10px)" }], 32.85, .3, E.soft);
+    const band = mk(s, "abs", "", { left: 0, right: 0, bottom: 0, height: px(L(300, 420)), background: "linear-gradient(transparent, rgba(7,11,23,.92) 55%)", zIndex: 4 });
+    A(band, [{ opacity: 0 }, { opacity: 1 }], 33.5, .3, E.soft);
+    const k1 = mk(s, "big abs goldfill", P ? "WHAT ACTUALLY<br>PERFORMED." : "WHAT ACTUALLY PERFORMED.", { ...C(W / 2, L(H - 110, H - 150)), fontSize: px(L(100, 84)), textAlign: "center", zIndex: 5, filter: "drop-shadow(0 10px 30px rgba(0,0,0,.9))" });
+    A(k1, [{ opacity: 0, transform: `${centred} translateY(30px)` }, { opacity: 1, transform: `${centred} translateY(0)` }], 33.6, .3, E.out);
+    [ui, k1].forEach((e) => A(e, [{ opacity: 1 }, { opacity: 0 }], 34.85, .2, E.soft));
+  }
+
+  // ======================= 6 · AI analysis of a real post (35.0 – 40.6) =======================
+  {
+    const s = scene(35.0, 40.65);
+    const p = pick.lineup[0];                         // "Man City vs PSG XI — voted by you on our stories"
+    const pw = L(560, 600);
+    const post = mk(s, "card", `<img src="real/${p.f}" style="height:${pw * p.r}px">`, { ...C(L(560, W / 2), L(H / 2, 560)), width: px(pw), height: px(pw * p.r), borderRadius: "24px" });
+    A(post, [{ opacity: 0, transform: `${centred} perspective(1400px) rotateY(24deg) scale(.7)` }, { opacity: 1, transform: `${centred} perspective(1400px) rotateY(7deg) scale(1)` }], 35.05, .7, E.out);
+    A(post, [{ transform: `${centred} perspective(1400px) rotateY(7deg) scale(1)` }, { transform: `${centred} perspective(1400px) rotateY(-3deg) scale(1.03)` }], 35.75, 4.7, E.soft);
+    const pan = mk(s, "panel", "", P ? { left: "50px", right: "50px", top: "1010px", padding: "30px 34px" } : { left: "960px", width: "820px", top: "150px", padding: "38px 42px" });
+    mk(pan, "", `<span style="color:var(--gold)">✦</span> AI analysis`, { font: "700 28px 'Host Grotesk'", marginBottom: "20px" });
+    A(pan, [{ opacity: 0, transform: "translateX(80px)" }, { opacity: 1, transform: "translateX(0)" }], 35.6, .5, E.out);
+    const items = [["Hook", "Fans picked this XI: every player on it is somebody's vote."], ["Format", "Designed graphic · 4:5 · a combined XI with the vote share of each player."], ["Why it worked", "It turns a Stories poll into a post fans come back to check, argue about and share."], ["Make it yours", "Before your next big game, run a combined-XI poll and post the result."]];
+    items.forEach(([k, v], i) => {
+      const it = mk(pan, "", `<div class="small" style="font-size:15px;color:var(--gold);margin-bottom:7px">${k}</div><div style="font:500 ${L(24, 26)}px/1.35 Inter;color:#e6ebf5">${v}</div>`, { padding: "14px 0", borderTop: "1px solid rgba(255,255,255,.08)" });
+      A(it, [{ opacity: 0, transform: "translateY(18px)" }, { opacity: 1, transform: "translateY(0)" }], [35.9, 36.6, 37.4, 38.7][i], .45, E.out);
+    });
+    const why = mk(s, "big abs goldfill", P ? "WHY IT<br>WORKED." : "WHY IT WORKED.", { ...C(W / 2, L(H - 110, H - 140)), fontSize: px(L(130, 110)), textAlign: "center", zIndex: 5, filter: "drop-shadow(0 10px 30px rgba(0,0,0,.9))" });
+    A(why, [{ opacity: 0, transform: `${centred} scale(1.5)` }, { opacity: 1, transform: `${centred} scale(1)` }], 37.1, .22, E.out);
+    A(why, [{ opacity: 1 }, { opacity: 0 }], 38.5, .2, E.soft);
+    const miy = mk(s, "big abs goldfill", "", { ...C(W / 2, L(H - 110, H - 140)), fontSize: px(L(130, 110)), zIndex: 5, filter: "drop-shadow(0 10px 30px rgba(0,0,0,.9))" });
+    ticks.push((t) => { const k = Math.max(0, Math.min(1, (t - 38.9) / 1)); miy.textContent = "MAKE IT YOURS".slice(0, Math.round(k * 13)); });
+    [post, pan, miy].forEach((e) => A(e, [{ opacity: 1 }, { opacity: 0 }], 40.45, .2, E.soft));
+  }
+
+  // ======================= 7 · Content Plan (40.6 – 44.6) =======================
+  {
+    const s = scene(40.6, 44.65);
+    const days = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
+    const top = L(250, 430), colW = L(220, 134), gap = L(22, 9), left = (W - (colW * 7 + gap * 6)) / 2, colH = L(560, 860);
+    const head = mk(s, "abs", "", { left: px(left), top: px(top - 110), width: px(colW * 7 + gap * 6) });
+    const htxt = mk(head, "", "", { font: `600 ${L(28, 30)}px Inter`, marginBottom: "14px" });
+    const hb = mk(head, "bar", "", { height: "14px" });
+    const hf = mk(hb, "", "", { height: "100%", width: "0%", borderRadius: "7px", background: "linear-gradient(90deg,#d99a2b,#f0b84a,#ffe3a3)", boxShadow: "0 0 24px rgba(240,184,74,.6)" });
+    A(head, [{ opacity: 0 }, { opacity: 1 }], 40.65, .3, E.soft);
+    const cols = days.map((d, i) => { const c = mk(s, "abs", `<div class="small" style="font-size:${L(19, 16)}px;color:#fff;text-align:center;padding:14px 0">${d}</div>`, { left: px(left + i * (colW + gap)), top: px(top), width: px(colW), height: px(colH), borderRadius: "18px", background: "rgba(255,255,255,.04)", border: "1px solid rgba(255,255,255,.08)" }); A(c, [{ opacity: 0, transform: "translateY(30px)" }, { opacity: 1, transform: "translateY(0)" }], 40.65 + i * .04, .35, E.out); return c; });
+    const T = (i) => 40.85 + i * .3;
+    const posts = [pick.lineup[4], pick.kit[0], pick.signing[0], pick.views[0], pick.lineup[9], pick.kit[2], pick.views[3]];
+    posts.forEach((p, i) => {
+      const cw = colW - L(26, 14);
+      const k = card(s, { ...p, r: 1.2 }, 0, 0, cw, { foot: false });
+      const tx = left + i * (colW + gap) + L(13, 7), ty = top + L(62, 56);
+      k.el.style.left = px(tx); k.el.style.top = px(ty);
+      const sx = L(-260, W / 2 - cw / 2), sy = L(H / 2, H + 120);
+      A(k.el, [{ transform: `translate(${sx - tx}px, ${sy - ty}px) rotate(-12deg) scale(1.3)`, opacity: 0 }, { transform: `translate(${(sx - tx) * .4}px, ${(sy - ty) * .4 - 140}px) rotate(-5deg) scale(1.15)`, opacity: 1, offset: .55 }, { transform: "translate(0,0) rotate(0) scale(1)", opacity: 1 }], T(i), .55, E.inout);
+      A(cols[i], [{ borderColor: "rgba(255,255,255,.08)", background: "rgba(255,255,255,.04)" }, { borderColor: "rgba(240,184,74,.7)", background: "rgba(240,184,74,.08)" }], T(i) + .5, .25, E.soft);
+    });
+    ticks.push((t) => { const n = posts.filter((_, i) => t >= T(i) + .52).length; htxt.innerHTML = `<b style="font-family:'Host Grotesk';font-size:1.3em">${n}/7</b> days with content${n === 7 ? ' <span style="color:#00d85b">✓ Full week</span>' : ""}`; hf.style.width = (n / 7 * 100) + "%"; });
+    const ws = mk(s, "big abs goldfill", "YOUR WEEK, SORTED.", { ...C(W / 2, L(H - 110, H - 250)), fontSize: px(L(140, 104)) });
+    A(ws, [{ opacity: 0, transform: `${centred} scale(1.5)` }, { opacity: 1, transform: `${centred} scale(1)` }], 42.95, .25, E.out);
+    A(s, [{ opacity: 1 }, { opacity: 0 }], 44.4, .25, E.soft);
+  }
+
+  // ======================= 8 · Stop guessing → logo (44.6 – end) =======================
+  {
+    const s = scene(44.6, TOTAL);
+    const sg = mk(s, "big abs", "STOP GUESSING.", { ...C(W / 2, H / 2), fontSize: px(L(200, 128)) });
+    A(sg, [{ opacity: 0, transform: `${centred} scale(1.6)` }, { opacity: 1, transform: `${centred} scale(1)` }], 44.72, .2, E.out);
+    const line = mk(s, "abs", "", { left: px(W / 2 - L(700, 450)), top: px(H / 2 - 6), height: "12px", width: "0px", background: "#ff3b5c", borderRadius: "6px" });
+    A(line, [{ width: "0px" }, { width: px(L(1400, 900)) }], 45.3, .3, E.out);
+    [sg, line].forEach((e) => A(e, [{ opacity: 1 }, { opacity: 0 }], 45.85, .12, E.soft));
+    const sw = mk(s, "big abs goldfill", P ? "START WITH<br>WHAT WORKS." : "START WITH WHAT WORKS.", { ...C(W / 2, H / 2), fontSize: px(L(150, 128)), textAlign: "center" });
+    A(sw, [{ opacity: 0, transform: `${centred} translateY(60px)` }, { opacity: 1, transform: `${centred} translateY(0)` }], 46.0, .3, E.out);
+    A(sw, [{ opacity: 1 }, { opacity: 0, transform: `${centred} scale(.9)` }], 47.55, .25, E.soft);
+    const ring = mk(s, "abs", "", { ...C(W / 2, H / 2 - L(70, 120)), width: "620px", height: "620px", borderRadius: "50%", background: "radial-gradient(circle, rgba(240,184,74,.25), transparent 65%)" });
+    A(ring, [{ opacity: 0, transform: `${centred} scale(.4)` }, { opacity: 1, transform: `${centred} scale(1.2)` }], 47.8, 1.6, E.out);
+    const word = mk(s, "abs", `<img src="../assets/logo-scp.png" style="width:100%">`, { ...C(W / 2, H / 2 - L(70, 120)), width: px(L(720, 820)) });
+    A(word, [{ opacity: 0, transform: `${centred} scale(1.25)`, filter: "blur(16px)" }, { opacity: 1, transform: `${centred} scale(1)`, filter: "blur(0)" }], 47.8, 1, E.out);
+    A(word, [{ transform: `${centred} scale(1)` }, { transform: `${centred} scale(1.04)` }], 48.8, TOTAL - 48.8, E.lin);
+    const btn = mk(s, "abs", "Try it for free", { ...C(W / 2, H / 2 + L(250, 330)), padding: "22px 54px", borderRadius: "100px", background: "linear-gradient(90deg,#d99a2b,#f0b84a,#ffe3a3)", color: "#1a1206", font: "700 32px Inter", boxShadow: "0 20px 60px -10px rgba(240,184,74,.6)" });
+    A(btn, [{ opacity: 0, transform: `${centred} scale(.6)` }, { opacity: 1, transform: `${centred} scale(1)` }], 49.75, .4, E.slam);
+    A(btn, [{ boxShadow: "0 20px 60px -10px rgba(240,184,74,.6)" }, { boxShadow: "0 20px 90px 0px rgba(240,184,74,.9)" }, { boxShadow: "0 20px 60px -10px rgba(240,184,74,.6)" }], 50.3, 1.6, E.soft);
+    const note = mk(s, "note", "Content shown belongs to its respective owners. No affiliation implied.");
+    A(note, [{ opacity: 0 }, { opacity: 1 }], 48.4, .6, E.soft);
+  }
+  // small note while real posts are on screen
+  const note = mk(stage, "note", "Content shown belongs to its respective owners. No affiliation implied.", { fontSize: "12px" });
+  ticks.push((t) => { note.style.opacity = (t > .1 && t < 3.4) || (t > 11.6 && t < 44.5) ? .8 : 0; });
+
+  mk(stage, "vignette"); mk(stage, "grain");
+  await Promise.all([...document.images].map((im) => im.complete ? 0 : new Promise((r) => { im.onload = im.onerror = r; })));
+  window.VIDEO = { W, H, TOTAL };
+  window.renderAt = (t) => { for (const f of ticks) f(t); for (const an of anims) an.currentTime = t * 1000; };
+  window.renderAt(Number(Q.get("t") || 0));
+  if (Q.has("play")) { const st = performance.now(); const loop = () => { window.renderAt((performance.now() - st) / 1000 % TOTAL); requestAnimationFrame(loop); }; loop(); }
+  window.READY = true;
+})();
+</script>
+</body>
+</html>

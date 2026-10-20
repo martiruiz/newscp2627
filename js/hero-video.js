@@ -3,7 +3,7 @@
 (() => {
   const btn = document.querySelector("[data-hero-video]");
   if (!btn) return;
-  const V = "20261020b";
+  const V = "20261020c";
   const lang = window.SCP_LANG === "es" ? "es" : "en";
   let dlg = null;
 

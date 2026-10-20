@@ -38,7 +38,7 @@ const evaluate = async (expr) => (await cdp("Runtime.evaluate", { expression: ex
 
 await cdp("Emulation.setDeviceMetricsOverride", { width: W, height: H, deviceScaleFactor: 1, mobile: false });
 const q = new URLSearchParams({ f: F, ...(arg("--d") ? { d: arg("--d") } : {}) });
-await cdp("Page.navigate", { url: `${BASE}/video/scp-video.html?${q}` });
+await cdp("Page.navigate", { url: `${BASE}/video/${arg("--page", "scp-video.html")}?${q}` });
 for (let i = 0; i < 100 && !(await evaluate("window.READY === true").catch(() => false)); i++) await sleep(100);
 const info = await evaluate("window.VIDEO");
 console.log(`format ${F} ${W}×${H} · ${info.TOTAL.toFixed(2)} s`);
