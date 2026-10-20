@@ -6410,3 +6410,16 @@ a.lf-sp-favs { text-decoration: none; }
 .lf-sortbar .lf-dd-btn > span:first-child:empty, .lf-sortbar .lf-dd-btn > svg:first-child { display: none; }
 .lf-sortbar .lf-dd-btn > span:not(.lf-dd-k) { overflow: hidden; text-overflow: ellipsis; }
 .lf-sortbar .lf-dd:first-child .lf-menu { left: 0; right: auto; }
+
+/* Menu → Platform: the free-trial link hangs under the panel as a small tab, below Content Plan (right edge) */
+.mm-ptab { position: absolute; top: calc(100% - 1px); right: 40px; display: flex; padding: 4px 8px 8px; border: 1px solid var(--line); border-top: 0; border-radius: 0 0 16px 16px; background: var(--surface); }
+.mm-ptab::before, .mm-ptab::after { content: ""; position: absolute; top: 0; width: 16px; height: 16px; pointer-events: none; }
+.mm-ptab::before { left: -16px; background: radial-gradient(circle at 0 100%, transparent 15px, var(--line) 15.5px, var(--line) 16px, var(--surface) 16.5px); }
+.mm-ptab::after { right: -16px; background: radial-gradient(circle at 100% 100%, transparent 15px, var(--line) 15.5px, var(--line) 16px, var(--surface) 16.5px); }
+.mm-ptab a { display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 14px; border-radius: 100px; color: var(--text); font-size: 13.5px; font-weight: 500; opacity: 1 !important; white-space: nowrap; }
+.mm-ptab a:hover { color: var(--gold) !important; background: var(--gold-tint); }
+.mm-ptab svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+@media (max-width: 1180px) {
+  .site-nav .mm-ptab { position: static; margin-top: 10px; border: 1px solid var(--line); border-radius: 100px; justify-content: center; }
+  .site-nav .mm-ptab::before, .site-nav .mm-ptab::after { display: none; }
+}
