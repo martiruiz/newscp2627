@@ -178,13 +178,16 @@ end $$;
 create or replace function public.creator_accounts()
 returns table (platform text, handle text, name text, posts bigint)
 language sql stable security definer set search_path = public as $$
-  select c.account_platform, c.account, max(p.name), count(*)
-  from public.content_ideas c
-  join public.content_idea_tags t on t.idea_id = c.id
-  join public.idea_catalog v on v.id = t.value_id and v.category = 'entity' and v.name = 'Content Creators'
-  left join public.scraped_profiles p on p.platform = c.account_platform and p.handle = c.account
-  where c.account is not null and c.unavailable_at is null
-  group by 1, 2 order by count(*) desc limit 500;
+  -- the posts with an account first, then a look-up of their Content Creators tag (fast with the (idea_id, value_id) key)
+  with cc as (select id from public.idea_catalog where category = 'entity' and name = 'Content Creators'),
+  a as (select c.account_platform as platform, c.account as handle, count(*) as posts
+    from public.content_ideas c
+    where c.account is not null and c.unavailable_at is null
+      and exists (select 1 from public.content_idea_tags t, cc where t.idea_id = c.id and t.value_id = cc.id)
+    group by 1, 2 order by 3 desc limit 500)
+  select a.platform, a.handle, p.name, a.posts from a
+  left join public.scraped_profiles p on p.platform = a.platform and p.handle = a.handle
+  order by a.posts desc;
 $$;
 create or replace function public.account_post_ids(p_platform text, p_handle text)
 returns bigint[] language sql stable security definer set search_path = public as $$
