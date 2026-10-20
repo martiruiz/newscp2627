@@ -6634,3 +6634,27 @@ a.lf-sp-favs { text-decoration: none; }
 /* filters column: special spaces (js/library.js SPECIAL_GROUPS) — Graphic design (violet → pink), Sponsors (teal → blue) */
 .lf-sp-design { --g: linear-gradient(90deg, #8b5cf6, #ec4899); --g-soft: linear-gradient(90deg, rgba(139, 92, 246, 0.8), rgba(236, 72, 153, 0.8)); --glow: 168, 85, 247; }
 .lf-sp-sponsors { --g: linear-gradient(90deg, #14b8a6, #3b82f6); --g-soft: linear-gradient(90deg, rgba(20, 184, 166, 0.8), rgba(59, 130, 246, 0.8)); --glow: 45, 160, 220; }
+
+/* Home CTA ("Find your next winning post idea…"): a frame of light — two gold lights travel round the edge and a warm
+   glow drifts along the top and bottom inside (instead of the static gold border) */
+@property --cta-a { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+.cta-box { isolation: isolate; border: 1px solid rgba(240, 184, 74, 0.28); overflow: hidden;
+  box-shadow: 0 0 90px -10px rgba(240, 184, 74, 0.22), inset 0 0 40px 0 rgba(240, 184, 74, 0.18); }
+.cta-box::before { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1.5px; pointer-events: none; z-index: 0;
+  background: conic-gradient(from var(--cta-a), transparent 0deg, rgba(255, 217, 140, 0.95) 22deg, rgba(240, 184, 74, 0.4) 50deg, transparent 80deg,
+    transparent 180deg, rgba(255, 217, 140, 0.95) 202deg, rgba(217, 154, 43, 0.4) 230deg, transparent 260deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
+  animation: cta-turn 7s linear infinite; }
+.cta-box::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(40% 70px at var(--x1, 30%) 0%, rgba(240, 184, 74, 0.32), transparent 70%),
+    radial-gradient(35% 60px at var(--x2, 70%) 100%, rgba(217, 154, 43, 0.3), transparent 70%),
+    radial-gradient(30% 50px at var(--x3, 85%) 100%, rgba(255, 217, 140, 0.18), transparent 70%);
+  animation: cta-drift 9s ease-in-out infinite alternate; }
+.cta-box > * { position: relative; z-index: 1; }
+@property --x1 { syntax: "<percentage>"; inherits: false; initial-value: 30%; }
+@property --x2 { syntax: "<percentage>"; inherits: false; initial-value: 70%; }
+@property --x3 { syntax: "<percentage>"; inherits: false; initial-value: 85%; }
+@keyframes cta-turn { to { --cta-a: 360deg; } }
+@keyframes cta-drift { 0% { --x1: 20%; --x2: 75%; --x3: 40%; } 50% { --x1: 60%; --x2: 30%; --x3: 80%; } 100% { --x1: 85%; --x2: 55%; --x3: 15%; } }
+@media (prefers-reduced-motion: reduce) { .cta-box::before, .cta-box::after { animation: none; } }
