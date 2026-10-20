@@ -778,12 +778,11 @@
   function lfpTop(sec) {
     let pills = "";
     if (sec === "occasion" && planHints?.length) pills = planHints.map((h) => `<button type="button" class="lfp-pill${isOn(h.v) ? " is-on" : ""}" data-facet="${h.v.category}" data-id="${h.v.id}">${svg("calendar")}${esc(pretty(h.v.name))}</button>`).join("");
-    if (sec === "benchmark") { const l = likeMineIds(); if (l) { const on = l.ids.every((id) => selected[l.cat].has(id)); pills = `<button type="button" class="lfp-pill${on ? " is-on" : ""}" data-like-mine>${svg("shield")}${esc(tx("Clubs like mine"))} <em>${esc(l.ids.map((id) => pretty(catalog.byId.get(id).name)).slice(0, 2).join(", "))}</em></button>`; } }
-    if (!pills) {   // the most posted options of the section
+    if (!pills && sec !== "benchmark") {   // Inspiration: just the search   // the most posted options of the section
       const top = groupsOf(sec).filter((g) => !g.logos && !g.tiles).flatMap(groupVals).filter((v) => v.category !== "outcome").sort((a, b) => countOf(b) - countOf(a)).slice(0, 4);
       pills = top.map((v) => `<button type="button" class="lfp-pill${isOn(v) ? " is-on" : ""}" data-facet="${v.category}" data-id="${v.id}">${esc(pretty(v.name))} <em>${kfmt(countOf(v))}</em></button>`).join("");
     }
-    const lbl = sec === "occasion" && planHints?.length ? "In your Content Plan" : sec === "benchmark" && likeMineIds() ? "For you" : "Popular";
+    const lbl = sec === "occasion" && planHints?.length ? "In your Content Plan" : "Popular";
     return `<label class="lfp-search">${svg("search")}<input type="search" data-lfb-q value="${esc(ui.barQ || "")}" placeholder="${esc(tx(sec === "occasion" ? "Search an occasion: derby, signing, birthday…" : sec === "goal" ? "Search a goal, a sponsor or a sector…" : "Search a sport, a competition, a club or a city…"))}" autocomplete="off"></label>
       ${pills ? `<div class="lfp-now"><span class="lfp-now-l">${svg("trend")}${esc(tx(lbl))}</span>${pills}</div>` : ""}`;
   }
