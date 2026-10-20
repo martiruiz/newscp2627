@@ -6,7 +6,7 @@
 --
 -- Before running this file, create the secret the call uses (the same value as the Edge Function secret CRON_SECRET),
 -- in Supabase > SQL editor:   select vault.create_secret('<the CRON_SECRET value>', 'cron_secret');
--- Run after views-refresh.sql. Safe to run again.
+-- Run after views-refresh.sql. Safe to run again (run it again after any change here: it replaces the schedule).
 
 create extension if not exists pg_net;
 
@@ -22,7 +22,7 @@ language sql stable security definer set search_path = public as $$
       or (c.published_at <= now() - interval '7 days' and c.published_at > now() - interval '30 days' and c.views_at < now() - interval '6 days 12 hours')
       or (c.published_at <= now() - interval '30 days' and c.views_at < now() - interval '29 days'))
   order by c.published_at desc
-  limit least(greatest(p_limit, 1), 100);
+  limit greatest(p_limit, 1);
 $$;
 revoke execute on function public.views_due(int) from public, anon, authenticated;
 
@@ -45,7 +45,9 @@ select cron.unschedule('scp-views') where exists (select 1 from cron.job where j
 select cron.schedule('scp-views', '*/10 * * * *', $c$
   select net.http_post(
     url := 'https://wppdbomtiliutpxsimtp.supabase.co/functions/v1/views-cron',
-    headers := jsonb_build_object('Content-Type', 'application/json',
+    -- apikey: the site's public (publishable) key, so Supabase lets the call reach the function; the function itself
+    -- only accepts it with the cron secret
+    headers := jsonb_build_object('Content-Type', 'application/json', 'apikey', 'sb_publishable_oq57pA0ZaavEQPDBYeWH-w_TRybCb05',
       'x-cron-secret', (select decrypted_secret from vault.decrypted_secrets where name = 'cron_secret')),
     body := '{}'::jsonb, timeout_milliseconds := 150000)
 $c$);
