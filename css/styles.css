@@ -6178,3 +6178,4 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 .auth-page .auth-bg.is-on { opacity: 0.55; }
 .auth-page .auth { z-index: 2; }
 :root[data-theme="light"] .atn-scene { filter: invert(0.92) hue-rotate(180deg); }
+.auth h1 .gold { display: block; white-space: nowrap; }
