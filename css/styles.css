@@ -6060,3 +6060,13 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 .site-nav.is-tight .mm-panel { position: static; width: auto; margin-top: 8px; display: none; opacity: 1; visibility: visible; transform: none; box-shadow: none; }
 .site-nav.is-tight .mm-tab.is-open .mm-panel { display: block; }
 .site-nav.is-tight .mm-cols { grid-template-columns: 1fr; }
+/* menu tabs as in the reference: slate fill, thin light border, small chevron; a little wider */
+.nav-links.mm { gap: 10px; }
+.mm-tab { flex: 1 1 270px; min-width: 150px; max-width: 340px; }
+.mm-btn-tab { height: 52px; padding: 0 22px; gap: 9px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.16); background: linear-gradient(180deg, #243247, #1d293b); color: #f1f4f9; font: 500 16px var(--font-body); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04); }
+.mm-btn-tab:hover, .mm-tab.is-open .mm-btn-tab, .mm-btn-tab[aria-current="page"] { border-color: rgba(255, 255, 255, 0.3); background: linear-gradient(180deg, #2a3a52, #223044); color: #fff !important; }
+.mm-chev { width: 13px; height: 13px; stroke-width: 2.6; }
+:root[data-theme="light"] .mm-btn-tab { background: linear-gradient(180deg, #ffffff, #f2f4f8); border-color: rgba(18, 27, 51, 0.14); color: #121b33; }
+:root[data-theme="light"] .mm-btn-tab:hover, :root[data-theme="light"] .mm-tab.is-open .mm-btn-tab { border-color: rgba(18, 27, 51, 0.3); background: #fff; color: #121b33 !important; }
+@media (max-width: 1180px) { .site-nav .mm-tab { max-width: none; min-width: 0; } }
+.site-nav.is-tight .mm-tab { max-width: none; min-width: 0; }
