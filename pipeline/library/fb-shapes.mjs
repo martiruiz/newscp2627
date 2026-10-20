@@ -9,12 +9,17 @@ import { imageSize } from "./image-size.mjs";
 loadEnv();
 const db = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
 const LIMIT = Number(process.argv.includes("--limit") ? process.argv[process.argv.indexOf("--limit") + 1] : 1e9);
-let done = 0, failed = 0, lastId = 0;
-while (done + failed < LIMIT) {
-  const { data: rows, error } = await db.from("content_ideas").select("id,cover_url").eq("account_platform", "facebook").not("cover_url", "is", null).is("media_ratio", null).gt("id", lastId).order("id").limit(100);
+const { data: top } = await db.from("content_ideas").select("id").order("id", { ascending: false }).limit(1);
+const MAX = top?.[0]?.id || 0, STEP = 20000;   // id windows (by primary key): a filter over the whole table times out
+let done = 0, failed = 0;
+for (let from = 0; from <= MAX && done + failed < LIMIT; from += STEP) {
+  const { data: rows, error } = await db.from("content_ideas").select("id,cover_url").gte("id", from).lt("id", from + STEP).eq("account_platform", "facebook").not("cover_url", "is", null).is("media_ratio", null).limit(2000);
   if (error) throw error;
-  if (!rows?.length) break;
-  lastId = rows[rows.length - 1].id;
+  if (!rows?.length) continue;
+  for (let k = 0; k < rows.length; k += 20) await batch(rows.slice(k, k + 20));   // 20 at a time: more makes some downloads fail
+}
+console.log(`Done: ${done} Facebook posts with their shape, ${failed} unreadable.`);
+async function batch(rows) {
   const out = [];
   await Promise.all(rows.map(async (r) => {
     const res = await fetch(r.cover_url).catch(() => null);
@@ -24,4 +29,3 @@ while (done + failed < LIMIT) {
   if (out.length) { const { error: e } = await db.rpc("apply_media_shape", { p_rows: out }); if (e) throw e; done += out.length; }
   console.log(`${done} shapes · ${failed} unreadable`);
 }
-console.log(`Done: ${done} Facebook posts with their shape, ${failed} unreadable.`);
