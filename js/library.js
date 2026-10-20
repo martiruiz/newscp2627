@@ -575,7 +575,8 @@
     const colSecs = secs.filter((s) => !inBar.includes(s));
     const box = $("[data-facets]");
     const scroll = $("[data-lf-body]").scrollTop;
-    box.innerHTML = colSecs.map((s) => `<section class="lf-sec${LAYOUT_BEFORE ? "" : " lf-sec-v2"}" data-lf-sec="${s.key}">${s.key === "discover" ? "" : `<h2 class="lf-lbl">${esc(s.label)}${ai(s)}</h2>`}${s.q ? `<p class="lf-q">${esc(s.q)}</p>` : ""}${parts[s.key]}</section>`).join("");
+    const NO_TITLE = new Set(["discover", "where"]); // these column sections show their filters with no title
+    box.innerHTML = colSecs.map((s) => `<section class="lf-sec${LAYOUT_BEFORE ? "" : " lf-sec-v2"}" data-lf-sec="${s.key}">${NO_TITLE.has(s.key) ? "" : `<h2 class="lf-lbl">${esc(s.label)}${ai(s)}</h2>${s.q ? `<p class="lf-q">${esc(s.q)}</p>` : ""}`}${parts[s.key]}</section>`).join("");
     $("[data-lf-body]").scrollTop = scroll;
     $("[data-lf-jump]").innerHTML = colSecs.map((s) => `<button type="button" data-lf-jump-to="${s.key}">${esc(s.jump || s.label.replace(" by", ""))}</button>`).join("");
     renderQuick();
