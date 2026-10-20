@@ -300,7 +300,7 @@ ${(p.keywords || []).map((k) => `  <meta property="article:tag" content="${esc(k
   <link rel="apple-touch-icon" href="assets/icon-logo-lg.png">
   <link rel="stylesheet" href="css/fonts.css?v=1">
   <link rel="stylesheet" href="css/styles.css">
-  <script src="js/theme.js?v=20261026b"></script>
+  <script src="js/theme.js?v=20261026c"></script>
   <script src="js/i18n.js?v=20261026d"></script>
 </head>
 <body>
