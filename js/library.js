@@ -56,6 +56,11 @@
   //   What works · Occasion (matchday timeline, transfers, kit…) · Goal & sponsors · Where & how · Inspiration from.
   // ?filters=before shows the previous layout (Discover · Format · Platform · Explore by · Content · Brands) to compare.
   const LAYOUT_BEFORE = /[?&]filters=before\b/.test(location.search);
+  // Wide screens: Occasion, Goal, Where & how, Inspiration and Views open as wide panels from a bar above the posts; the
+  // column keeps the one-click shortcuts. ?filters=column shows everything in the column (the previous layout).
+  const BAR_OK = !LAYOUT_BEFORE && !/[?&]filters=column\b/.test(location.search);
+  const barMode = () => BAR_OK && innerWidth > 900;
+  const BAR_SECS = ["occasion", "goal", "where", "benchmark"];
   if (!LAYOUT_BEFORE) {
     const NEW = [
       ["trend", "discover"], ["format", "format"], ["aspect_ratio", "format"], ["duration", "format"], ["language", "format"], ["platform", "platform"],
@@ -308,7 +313,7 @@
       : views.hist ? `<div class="lf-row${vOpen ? " is-open" : ""}" data-lf-rowbox="views">
         <button class="lf-rh" type="button" aria-expanded="${vOpen}" data-lf-row="views">${svg("eye")}<span class="lf-t">Views</span><span class="lf-v${viewsSet() ? " is-set" : ""}" data-views-v>${viewsLabel()}</span>${svg("chev", "lf-chev")}</button>
         <div class="lf-rb"${vOpen ? "" : " hidden"} data-lf-body-of="views">${viewsHtml()}</div></div>` : "";
-    return rows + viewsRow;
+    return rows + (barMode() ? "" : viewsRow);
   }
   // Specials keep the catalog order (Top Picks, Replicable ideas, Overperforming) so they don't jump around
   const ORDER_SP = ["top picks", "replicable ideas", "overperforming"];
@@ -493,18 +498,21 @@
   function rowsOf(keys) { return keys.filter((k) => CAT[k] && has(k)).map((k) => rowHtml(CAT[k])).join(""); }
   function occasionHtml() {
     const groups = [["Transfer market", ["transfer"]], ["Launches", ["kit"]], ["Season", ["season_moment"]], ["Campaigns", ["campaign", "moment"]]];
-    const tone = (catalog.byCat.angle || []).filter((v) => countOf(v) > 0 || isOn(v));
     const commsOpen = ui.more.has("occasion") || ["comms", "crisis"].some((k) => selected[k]?.size || ui.open === k);
     const comms = ["comms", "crisis"].filter(has);
     return planHintsHtml() + matchdayHtml()
-      + groups.map(([label, keys]) => { const r = rowsOf(keys); return r ? `<div class="lf-sub">${esc(tx(label))}</div><div class="lf-stack">${r}</div>` : ""; }).join("")
-      + (tone.length ? `<div class="lf-sub">${esc(tx("Tone"))}</div><div class="lf-chips">${tone.map((v) => `<button type="button" class="lf-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="angle" data-id="${v.id}">${esc(pretty(v.name))}</button>`).join("")}</div>` : "")
-      + (comms.length ? `<div class="lf-more-rows lf-stack"${commsOpen ? "" : " hidden"}><div class="lf-sub">${esc(tx("Communication"))}</div>${rowsOf(comms)}</div><button type="button" class="lf-morebtn" data-lf-more="occasion">${commsOpen ? "Show fewer" : esc(tx("Press and sensitive topics"))}</button>` : "");
+      + groups.map(([label, keys]) => { const r = rowsOf(keys); return r ? `<div class="lf-grp"><div class="lf-sub">${esc(tx(label))}</div><div class="lf-stack">${r}</div></div>` : ""; }).join("")
+      + (barMode() ? "" : toneHtml())
+      + (comms.length ? `<div class="lf-grp"><div class="lf-more-rows lf-stack"${commsOpen ? "" : " hidden"}><div class="lf-sub">${esc(tx("Communication"))}</div>${rowsOf(comms)}</div><button type="button" class="lf-morebtn" data-lf-more="occasion">${commsOpen ? "Show fewer" : esc(tx("Press and sensitive topics"))}</button></div>` : "");
+  }
+  function toneHtml() {
+    const tone = (catalog.byCat.angle || []).filter((v) => countOf(v) > 0 || isOn(v));
+    return tone.length ? `<div class="lf-grp"><div class="lf-sub">${esc(tx("Tone"))}</div><div class="lf-chips">${tone.map((v) => `<button type="button" class="lf-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="angle" data-id="${v.id}">${esc(pretty(v.name))}</button>`).join("")}</div></div>` : "";
   }
   function goalHtml() {
     const top = rowsOf(["goal", "cta"]);
     const sp = rowsOf(["sponsor", "sponsor_integration", "sponsor_sector", "collab"]);
-    return (top ? `<div class="lf-stack">${top}</div>` : "")
+    return (top ? `<div class="lf-grp"><div class="lf-stack">${top}</div></div>` : "")
       + (sp ? `<div class="lf-md lf-spons"><div class="lf-md-h">${svg("tag")}<b>${esc(tx("Sponsors"))}</b><small>${esc(tx("How other clubs activate their partners"))}</small></div><div class="lf-stack">${sp}</div></div>` : "");
   }
 
@@ -514,7 +522,7 @@
       recipes: !LAYOUT_BEFORE && catalog.byId.size && recipesHtml(),
       occasion: !LAYOUT_BEFORE && (CATEGORIES.some((c) => c.sec === "occasion" && has(c.key))) && occasionHtml(),
       goal: !LAYOUT_BEFORE && CATEGORIES.some((c) => c.sec === "goal" && has(c.key)) && goalHtml(),
-      where: !LAYOUT_BEFORE && (has("platform") || has("format")) && `${has("platform") ? `<div class="lf-sub lf-sub-top">Platform</div>${platformHtml()}` : ""}${has("format") || has("aspect_ratio") || has("duration") || has("language") ? `<div class="lf-sub">Format</div>${formatHtml()}` : ""}`,
+      where: !LAYOUT_BEFORE && (has("platform") || has("format")) && `${has("platform") ? `<div class="lf-grp"><div class="lf-sub lf-sub-top">Platform</div>${platformHtml()}</div>` : ""}${has("format") || has("aspect_ratio") || has("duration") || has("language") ? `<div class="lf-grp"><div class="lf-sub">Format</div>${formatHtml()}</div>` : ""}${barMode() ? toneHtml() : ""}`,
       benchmark: !LAYOUT_BEFORE && CATEGORIES.some((c) => c.sec === "benchmark" && has(c.key)) && likeMineHtml() + groupHtml("benchmark"),
       format: (has("format") || has("aspect_ratio") || has("duration") || has("language")) && formatHtml(),
       platform: has("platform") && platformHtml(),
@@ -526,14 +534,34 @@
       ? ` <span class="lf-ai" tabindex="0" data-tip="${esc(AI_TIP)}">AI <b>?</b></span>` : "";
     const ord = LAYOUT_BEFORE ? null : ROLES.find((r) => r.key === me.role)?.order || DEFAULT_ORDER;
     const secs = SECTIONS.filter((s) => parts[s.key]).sort((a, b) => (ord ? ord.indexOf(a.key) - ord.indexOf(b.key) : 0));
+    const inBar = barMode() ? secs.filter((s) => BAR_SECS.includes(s.key)) : [];
+    renderBar(inBar, parts);
+    const colSecs = secs.filter((s) => !inBar.includes(s));
     const box = $("[data-facets]");
     const scroll = $("[data-lf-body]").scrollTop;
-    box.innerHTML = (LAYOUT_BEFORE ? "" : roleHtml()) + secs.map((s) => `<section class="lf-sec${LAYOUT_BEFORE ? "" : " lf-sec-v2"}" data-lf-sec="${s.key}"><h2 class="lf-lbl">${esc(s.label)}${ai(s)}</h2>${s.q ? `<p class="lf-q">${esc(s.q)}</p>` : ""}${parts[s.key]}</section>`).join("");
+    box.innerHTML = (LAYOUT_BEFORE ? "" : roleHtml()) + colSecs.map((s) => `<section class="lf-sec${LAYOUT_BEFORE ? "" : " lf-sec-v2"}" data-lf-sec="${s.key}"><h2 class="lf-lbl">${esc(s.label)}${ai(s)}</h2>${s.q ? `<p class="lf-q">${esc(s.q)}</p>` : ""}${parts[s.key]}</section>`).join("");
     $("[data-lf-body]").scrollTop = scroll;
-    $("[data-lf-jump]").innerHTML = secs.map((s) => `<button type="button" data-lf-jump-to="${s.key}">${esc(s.jump || s.label.replace(" by", ""))}</button>`).join("");
+    $("[data-lf-jump]").innerHTML = colSecs.map((s) => `<button type="button" data-lf-jump-to="${s.key}">${esc(s.jump || s.label.replace(" by", ""))}</button>`).join("");
     $("[data-lf-credit]").hidden = !catalog.byId.size || ![...catalog.byId.values()].some((v) => v.logo);
     renderQuick();
     fadeEdges();
+  }
+
+  // ---------- Bar above the posts (wide screens): one button per section, its filters in a wide panel ----------
+  const BAR_ICO = { occasion: "calendar", goal: "target", where: "reel", benchmark: "trophy", views: "eye" };
+  const secOf = (c) => (c.key === "angle" ? "where" : ["format", "platform"].includes(c.sec) ? "where" : c.sec);
+  function renderBar(list, parts) {
+    const bar = $("[data-lf-bar]");
+    if (!list.length) { bar.hidden = true; bar.innerHTML = ""; ui.bar = null; return; }
+    const items = list.map((s) => ({ key: s.key, label: tx(s.label), q: s.q ? tx(s.q) : "", n: CATEGORIES.filter((c) => secOf(c) === s.key).reduce((t, c) => t + selected[c.key].size, 0), html: parts[s.key] }));
+    if (views.hist) items.push({ key: "views", label: tx("Views"), q: viewsSet() ? viewsLabel() : tx("Any"), n: viewsSet() ? 1 : 0, html: viewsHtml() });
+    if (!items.some((it) => it.key === ui.bar)) ui.bar = null;
+    const open = items.find((it) => it.key === ui.bar);
+    const keep = $(".lfb-body", bar)?.scrollTop || 0;
+    bar.hidden = false;
+    bar.innerHTML = `<div class="lfb-row" role="toolbar" aria-label="${esc(tx("Filters"))}">${items.map((it) => `<button type="button" class="lfb-btn${it.n ? " is-set" : ""}${open === it ? " is-open" : ""}" aria-expanded="${open === it}" data-lfb="${it.key}">${svg(BAR_ICO[it.key])}<span class="lfb-tx"><b>${esc(it.label)}</b><small>${esc(it.q)}</small></span>${it.n && it.key !== "views" ? `<em>${it.n}</em>` : ""}${svg("chev", "lfb-chev")}</button>`).join("")}</div>
+      ${open ? `<div class="lfb-panel" role="dialog" aria-label="${esc(open.label)}"><div class="lfb-body lfb-${open.key}">${open.html}</div><div class="lfb-foot"><button type="button" class="btn btn-gold btn-sm" data-lfb-close>${esc(tx("Done"))}</button></div></div>` : ""}`;
+    if (open) $(".lfb-body", bar).scrollTop = keep;
   }
 
   // Mobile: the three specials as quick chips above the posts
@@ -617,7 +645,11 @@
     if (ui.open) $(`[data-lf-rowbox="${CSS.escape(ui.open)}"]`)?.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }
   const column = $("[data-filters]");
-  column.addEventListener("click", (e) => {
+  const filterBar = $("[data-lf-bar]");
+  const onFilterClick = (e) => {
+    const lfb = e.target.closest("[data-lfb]");
+    if (lfb) { ui.bar = ui.bar === lfb.dataset.lfb ? null : lfb.dataset.lfb; return renderFacets(); }
+    if (e.target.closest("[data-lfb-close]")) { ui.bar = null; return renderFacets(); }
     const f = e.target.closest("[data-facet]");
     if (f) { if (f.getAttribute("aria-disabled") === "true") return; return toggleValue(f.dataset.facet, Number(f.dataset.id)); }
     const row = e.target.closest("[data-lf-row]");
@@ -637,18 +669,26 @@
     if (vq) { views.a = Number(vq.dataset.vq); views.b = VB; views.exact = null; renderFacets(); return load(true); }
     const jump = e.target.closest("[data-lf-jump-to]");
     if (jump) { const t = $(`[data-lf-sec="${jump.dataset.lfJumpTo}"]`); const b = $("[data-lf-body]"); b.scrollTo({ top: t.offsetTop - b.offsetTop, behavior: "smooth" }); $$("[data-lf-jump-to]").forEach((x) => x.classList.toggle("is-on", x === jump)); }
-  });
+  };
+  column.addEventListener("click", onFilterClick);
+  filterBar.addEventListener("click", onFilterClick);
+  // the panel closes with Esc or a click outside the bar (pointerdown: before a click re-renders the panel)
+  document.addEventListener("pointerdown", (e) => { if (ui.bar && !e.target.closest("[data-lf-bar], .lf-sp-pop")) { ui.bar = null; renderFacets(); } });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && ui.bar) { const k = ui.bar; ui.bar = null; renderFacets(); $(`[data-lfb="${k}"]`)?.focus(); } });
+  { let wasBar = barMode(); addEventListener("resize", () => { if (barMode() !== wasBar) { wasBar = barMode(); ui.bar = null; renderFacets(); } }); }
   // platform tiles: the glow follows the cursor
-  column.addEventListener("pointermove", (e) => {
+  const tileGlow = (e) => {
     const t = e.target.closest(".lf-pf .lf-tile");
     if (!t) return;
     const r = t.getBoundingClientRect();
     t.style.setProperty("--mx", `${e.clientX - r.left}px`);
     t.style.setProperty("--my", `${e.clientY - r.top}px`);
-  });
+  };
+  column.addEventListener("pointermove", tileGlow);
+  filterBar.addEventListener("pointermove", tileGlow);
   $("[data-lf-quick]").addEventListener("click", (e) => { const f = e.target.closest("[data-facet]"); if (f && !f.classList.contains("is-zero")) toggleValue(f.dataset.facet, Number(f.dataset.id)); });
   // list searches re-render only their own list (keeps the focus while typing)
-  column.addEventListener("input", (e) => {
+  const onFilterInput = (e) => {
     const s = e.target.closest("[data-facet-search]");
     if (s) {
       const k = s.dataset.facetSearch, pos = s.selectionStart;
@@ -669,10 +709,12 @@
       const fl = $(".lf-fl"); fl.style.left = `${(views.a / VB) * 100}%`; fl.style.right = `${100 - (views.b / VB) * 100}%`;
       $("[data-views-lo-l]").textContent = kfmt(Math.round(vEdge(views.a)));
       $("[data-views-hi-l]").textContent = views.b === VB ? `${kfmt(Math.round(vEdge(VB)))}+` : kfmt(Math.round(vEdge(views.b)));
-      const v = $("[data-views-v]"); v.textContent = viewsLabel(); v.classList.toggle("is-set", viewsSet());
+      const v = $("[data-views-v]") || $('[data-lfb="views"] small'); v.textContent = viewsLabel(); v.classList.toggle("is-set", viewsSet());
       $$(".lf-vq button").forEach((x) => x.classList.toggle("is-on", views.b === VB && Number(x.dataset.vq) === views.a));
     }
-  });
+  };
+  column.addEventListener("input", onFilterInput);
+  filterBar.addEventListener("input", onFilterInput);
 
   // ---------- Search a sentence: "reels de fitxatges amb sponsor que hagin funcionat" → filters ----------
   // Free: it only reads the tags the AI already put on every post. A dictionary (CA / ES / EN) maps words to filter

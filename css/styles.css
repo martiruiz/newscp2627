@@ -6201,3 +6201,28 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 .promo-code.is-done { border-color: rgba(47, 217, 122, 0.6); color: #2fd97a; background: rgba(47, 217, 122, 0.1); }
 :root[data-theme="light"] .promo-bar { background: #121b33; }
 @media (max-width: 560px) { .promo-bar { font-size: 13px; padding: 7px 12px; } }
+
+/* Content Library, wide screens: the filter bar above the posts (js/library.js renderBar) — one button per section,
+   its filters in a wide panel; the column keeps the one-click shortcuts */
+.lfb { position: sticky; top: 61px; z-index: 6; padding: 12px 38px; background: var(--surface); border-bottom: 1px solid var(--line-soft); }
+.lfb[hidden] { display: none; }
+.lfb-row { display: flex; gap: 10px; }
+.lfb-btn { position: relative; flex: 1 1 0; min-width: 0; display: flex; align-items: center; gap: 10px; height: 54px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--line); background: linear-gradient(180deg, rgba(var(--fg), 0.05), rgba(var(--fg), 0.015)); color: var(--text); font: inherit; text-align: left; cursor: pointer; transition: border-color 0.2s, background 0.2s; }
+.lfb-btn:hover, .lfb-btn.is-open { border-color: rgba(240, 184, 74, 0.45); background: linear-gradient(180deg, rgba(var(--fg), 0.09), rgba(var(--fg), 0.03)); }
+.lfb-btn.is-set { border-color: rgba(240, 184, 74, 0.6); }
+.lfb-btn > svg { flex: none; width: 19px; height: 19px; fill: none; stroke: var(--gold); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.lfb-tx { display: grid; min-width: 0; line-height: 1.2; }
+.lfb-tx b { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lfb-tx small { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lfb-btn.is-set .lfb-tx small { color: var(--gold); }
+.lfb-btn em { flex: none; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; display: grid; place-items: center; background: linear-gradient(90deg, #d99a2b, #f0b84a); color: #1a1206; font: 700 11.5px/1 var(--font-body); font-style: normal; }
+.lfb-chev { flex: none; width: 15px; height: 15px; margin-left: auto; fill: none; stroke: var(--muted); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.2s; }
+.lfb-btn.is-open .lfb-chev { transform: rotate(180deg); }
+.lfb-panel { position: absolute; left: 38px; right: 38px; top: calc(100% - 4px); display: flex; flex-direction: column; max-height: min(70vh, 720px); border-radius: 16px; border: 1px solid var(--line); background: var(--surface); box-shadow: 0 30px 70px -20px rgba(0, 0, 0, 0.55); animation: lfb-in 0.18s ease; }
+@keyframes lfb-in { from { opacity: 0; transform: translateY(-6px); } }
+.lfb-body { overflow-y: auto; padding: 18px 20px 6px; columns: 3 280px; column-gap: 22px; }
+.lfb-body > * { break-inside: avoid; margin-bottom: 12px; }
+.lfb-body .lf-sub { margin-top: 0; }
+.lfb-body.lfb-views { columns: auto; max-width: 560px; }
+.lfb-foot { display: flex; justify-content: flex-end; padding: 10px 16px; border-top: 0.5px solid var(--line-soft); }
+@media (max-width: 1280px) { .lfb, .lfb-panel { padding-left: 20px; padding-right: 20px; } .lfb-panel { left: 20px; right: 20px; padding: 0; } .lfb-tx small { display: none; } }
