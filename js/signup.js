@@ -115,6 +115,7 @@
       return;
     }
     setStatus("Check your inbox — we've sent you a link to continue.", "ok");
+    if (mode === "signup") window.SCP_TRACK?.("free_trial_started", { step: "signup" });   // js/lead-flow.js (no personal data)
     form.reset();
   });
   form.addEventListener("input", (e) => e.target.classList.remove("is-invalid"));

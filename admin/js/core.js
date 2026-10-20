@@ -151,6 +151,7 @@
     { href: "import.html", label: "Import", icon: "import", key: "import" },
     { href: "audience.html", label: "Audience", icon: "audience", key: "audience" },
     { href: "smart-review.html", label: "Smart filters", icon: "smart", key: "smart" },
+    { href: "leads.html", label: "Leads & Demos", icon: "users", key: "leads" },
     { href: "memberships.html", label: "Memberships", icon: "billing", key: "memberships" },
     { href: "billing.html", label: "AI & packs", icon: "smart", key: "billing" },
     { href: "users.html", label: "Users", icon: "users", key: "users" },

@@ -10,6 +10,8 @@ window.SCP_CONFIG = {
 
   // Demo bookings: the Google Calendar booking page (Calendar → Create → Appointment schedule → Share → link).
   // When set, the demo forms show the calendar so visitors pick a time themselves; the request form stays below.
+  // Lead flow (js/lead-flow.js): "new" = interactive form everywhere, "classic" = old forms, "ab" = 50/50 test (?lf=… forces one)
+  leadFlow: { variant: "new" },
   demoBookingUrl: "https://cal.com/sports-content-playbook/30min",
   // Optional: the same demo as a second Cal.com event with its interface language set to Spanish
   // (Cal.com → event → Advanced → Interface language). Used when the website is in Spanish.

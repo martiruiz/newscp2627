@@ -100,7 +100,8 @@ window.SCP_CHECKOUT = (() => {
       if (!r.terms) { if (r.url) { store.clear(); location.href = r.url; } else busy(btn, false); return; }
       terms = r.terms;
     }
-    catch (e) { busy(btn, false); if (e.manage) { location.href = "profile.html#billing"; return; } notify(e.message, { kind: "is-err" }); return; }
+    // already subscribed (manage) or any error: forget the pending request, or every visit to the pricing page would repeat it
+    catch (e) { store.clear(); busy(btn, false); if (e.manage) { location.href = "profile.html#billing"; return; } notify(e.message, { kind: "is-err" }); return; }
     busy(btn, false);
     document.querySelector(".co-modal")?.remove();
     const m = document.createElement("div");
@@ -172,6 +173,7 @@ window.SCP_CHECKOUT = (() => {
         t.innerHTML = wantPlan
           ? `<span>${"✓"}</span><span>${tx("<b>Welcome to {plan}!</b>", { plan: ent.plan_name })} ${trialEnd ? tx("Your free trial runs until {date}.", { date: trialEnd }) : tx("Your plan is active.")}</span>`
           : `<span>${"✓"}</span><span>${tx("<b>AI analyses added.</b> Enjoy them.")}</span>`;
+        if (wantPlan) window.SCP_TRACK?.("subscription_created", { step: ent?.status === "trialing" ? "trial" : "paid" });   // js/lead-flow.js
         setTimeout(() => location.reload(), 1800);
         return;
       }

@@ -588,3 +588,15 @@ body { background: radial-gradient(60% 40% at 50% 0%, rgba(240, 184, 74, 0.06), 
 .ms-settings .panel { margin-bottom: 14px; }
 .ms-settings .ms-check { margin-top: 8px; }
 .side-brand .side-wordmark { display: block; width: auto; height: 46px; margin-bottom: 8px; }
+
+/* Leads & Demos (js/leads.js) */
+.select-sm { height: 32px; padding: 0 8px; font-size: 13px; }
+.check-inline { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; }
+.row-click { cursor: pointer; }
+.row-click:hover td { background: rgba(255, 255, 255, 0.03); }
+.kv-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 24px; margin-bottom: 16px; }
+.kv { display: grid; gap: 2px; font-size: 13px; }
+.kv span { color: var(--muted, #8b98ae); }
+.rules-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 18px; margin-bottom: 8px; }
+.aud-bars li small { margin-left: 8px; color: var(--muted, #8b98ae); font-size: 12px; }
+@media (max-width: 720px) { .kv-grid, .rules-grid { grid-template-columns: 1fr; } }
