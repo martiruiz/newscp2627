@@ -6189,3 +6189,15 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 .auth-signout { border: 0; padding: 0; background: none; color: var(--muted); font: inherit; text-decoration: underline; cursor: pointer; }
 .auth-signout:hover { color: var(--text); }
 .auth-reset-sub { margin: 0 0 18px; font-size: 14px; line-height: 1.5; color: var(--muted); }
+
+/* Offer bar (js/promo-bar.js): top centre, above the menu; the code copies on click */
+.promo-bar { position: relative; z-index: 51; display: flex; justify-content: center; padding: 8px 16px; background: #070b14; border-bottom: 1px solid rgba(255, 255, 255, 0.07); color: #b9c2d2; font-size: 14px; line-height: 1.4; text-align: center; }
+.promo-bar p { margin: 0; display: flex; align-items: center; justify-content: center; gap: 4px 10px; flex-wrap: wrap; }
+.promo-bar b { color: #fff; font-weight: 600; }
+.promo-code { display: inline-flex; align-items: center; gap: 7px; padding: 3px 8px 3px 10px; border-radius: 7px; border: 1px solid rgba(240, 184, 74, 0.45); background: rgba(240, 184, 74, 0.1); color: var(--gold, #f0b84a); font: inherit; cursor: pointer; transition: background 0.2s, border-color 0.2s; }
+.promo-code:hover { background: rgba(240, 184, 74, 0.18); border-color: rgba(240, 184, 74, 0.7); }
+.promo-code code { font: 600 13px/1 var(--font-body); letter-spacing: 0.06em; color: inherit; }
+.promo-code svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.promo-code.is-done { border-color: rgba(47, 217, 122, 0.6); color: #2fd97a; background: rgba(47, 217, 122, 0.1); }
+:root[data-theme="light"] .promo-bar { background: #121b33; }
+@media (max-width: 560px) { .promo-bar { font-size: 13px; padding: 7px 12px; } }

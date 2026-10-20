@@ -600,3 +600,11 @@ body { background: radial-gradient(60% 40% at 50% 0%, rgba(240, 184, 74, 0.06), 
 .rules-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 18px; margin-bottom: 8px; }
 .aud-bars li small { margin-left: 8px; color: var(--muted, #8b98ae); font-size: 12px; }
 @media (max-width: 720px) { .kv-grid, .rules-grid { grid-template-columns: 1fr; } }
+
+/* Promo codes (admin/promo-codes.html): preview of the website offer bar */
+.pc-bar { display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; padding: 9px 14px; margin: 8px 0 4px; border-radius: 10px;
+  background: #0b111d; border: 1px solid rgba(255, 255, 255, 0.08); color: #c9d1de; font-size: 13.5px; text-align: center; }
+.pc-bar b { color: #fff; font-weight: 600; }
+.pc-bar code { padding: 2px 8px; border-radius: 6px; background: rgba(240, 184, 74, 0.14); color: var(--accent); font-weight: 600; letter-spacing: 0.04em; }
+.pc-acts { white-space: nowrap; text-align: right; }
+.pc-acts svg { width: 15px; height: 15px; }

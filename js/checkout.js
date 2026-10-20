@@ -127,14 +127,15 @@ window.SCP_CHECKOUT = (() => {
       const go = e.target.closest("[data-co-go]");
       if (go) { close(); start({ ...req, confirmed: true }, btn); }
     });
-    m.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const code = new FormData(e.target).get("code")?.toString().trim();
-      const b = e.target.querySelector("button"); b.disabled = true;
+    const apply = async (code, quiet) => {
+      const b = m.querySelector("[data-co-code] button"); if (b) b.disabled = true;
       try { terms = (await call("stripe-checkout", { ...req, code, preview: true })).terms; req = { ...req, code }; draw(); }
-      catch (err) { b.disabled = false; notify(err.message, { kind: "is-err" }); }
-    });
+      catch (err) { if (b) b.disabled = false; if (!quiet) notify(err.message, { kind: "is-err" }); }
+    };
+    m.addEventListener("submit", (e) => { e.preventDefault(); apply(new FormData(e.target).get("code")?.toString().trim()); });
     m.querySelector("[data-co-go]")?.focus();
+    // the code from the offer bar (js/promo-bar.js, kept 30 days): applied by itself; if it doesn't fit this plan, nothing happens
+    if (!req.code) { try { const p = JSON.parse(localStorage.getItem("scp-promo") || "null"); if (p?.code && Date.now() - p.at < 30 * 864e5) apply(p.code, true); } catch {} }
   }
   async function portal(btn) {
     busy(btn, true);
