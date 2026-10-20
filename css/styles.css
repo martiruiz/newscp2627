@@ -6384,3 +6384,9 @@ th .org-kd { display: flex; justify-content: center; margin: 4px auto 0; width: 
 .bp-board.is-over { border-color: var(--gold) !important; border-style: solid !important; background: var(--gold-tint); transform: scale(1.01); }
 .bp-board.is-saved { animation: bpSaved 0.6s ease; }
 @keyframes bpSaved { 30% { box-shadow: 0 0 0 3px rgba(240, 184, 74, 0.5); } }
+/* the boards panel as wide as the Content Plan (its day view) and filling its column */
+.library.plan-open.boards-open { grid-template-columns: 316px minmax(0, 1fr) var(--side-w, 540px); }
+.library.plan-open.boards-open.filters-collapsed { grid-template-columns: 0 minmax(0, 1fr) var(--side-w, 540px); }
+@media (max-width: 1180px) { .library.plan-open.boards-open { grid-template-columns: 300px minmax(0, 1fr) 440px; } .library.plan-open.boards-open.filters-collapsed { grid-template-columns: 0 minmax(0, 1fr) 440px; } }
+.library > .bp { width: auto; justify-self: stretch; }
+.bp-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }

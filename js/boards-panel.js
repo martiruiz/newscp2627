@@ -64,9 +64,16 @@
   function syncCards() { if (S.open) $$(".lib-card").forEach((c) => { c.draggable = true; }); }
   new MutationObserver(syncCards).observe($("[data-posts]") || lib, { childList: true, subtree: true });
 
+  // as wide as the Content Plan was (week 380 px, day view 540 px): its width is remembered whenever it's open
+  const planW = () => { const pp = $(".pp:not(.bp)"); return pp && !pp.hidden ? Math.round(pp.getBoundingClientRect().width) : 0; };
+  const rememberPlanW = () => { const w = planW(); if (w) try { localStorage.setItem("scp-side-w", String(w)); } catch {} };
+  const sideW = () => { try { return Number(localStorage.getItem("scp-side-w")) || 0; } catch { return 0; } };
   async function open() {
     if (!wide()) { location.href = "saved.html"; return; }
+    rememberPlanW();
     if ($("[data-plan-toggle]")?.getAttribute("aria-pressed") === "true") $("[data-plan-toggle]").click();   // one panel at a time
+    const w = sideW();
+    if (w) lib.style.setProperty("--side-w", `${w}px`); else lib.style.removeProperty("--side-w");
     S.open = true;
     panel.hidden = false;
     lib.classList.add("plan-open", "boards-open");
@@ -90,7 +97,8 @@
     S.open ? close() : open();
   });
   // opening the Content Plan closes this panel (they share the column)
-  $("[data-plan-toggle]")?.addEventListener("click", () => { if (S.open) close(); }, true);
+  $("[data-plan-toggle]")?.addEventListener("click", () => { rememberPlanW(); if (S.open) close(); }, true);
+  addEventListener("pagehide", rememberPlanW);
   B.onChange(async () => { if (!S.open) return; await loadCovers(); render(); });
 
   panel.addEventListener("click", async (e) => {
