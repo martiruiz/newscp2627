@@ -778,7 +778,13 @@
       lens.style.setProperty("--x", oi);
     }
     lens.classList.toggle("is-on", oi >= 0);
-    $("[data-lfb-host]", bar).innerHTML = open ? `<div class="lfb-panel lfp" role="dialog" aria-label="${esc(open.label)}">${lfpHtml(open.key)}</div>` : "";
+    // the open panel is kept and only its content changes (a new panel would replay its opening animation on every
+    // click inside it — the panel seemed to blink); a new panel only when another section opens
+    const host = $("[data-lfb-host]", bar);
+    const cur = $(".lfb-panel", host);
+    if (!open) host.innerHTML = "";
+    else if (cur && cur.dataset.sec === open.key) cur.innerHTML = lfpHtml(open.key);
+    else host.innerHTML = `<div class="lfb-panel lfp" role="dialog" aria-label="${esc(open.label)}" data-sec="${open.key}">${lfpHtml(open.key)}</div>`;
     if (open) { $(".lfp-main", bar).scrollTop = keep; loadCovers(open.key); }
   }
 
