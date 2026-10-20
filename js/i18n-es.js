@@ -484,8 +484,6 @@ window.SCP_ES = {
   "Drop to save here": "Suelta para guardar aquí",
   "You don't have any boards yet. Create one and drag posts into it.": "Aún no tienes tableros. Crea uno y arrastra posts dentro.",
   "See posts about {name}": "Ver posts sobre {name}",
-  "Three tools,": "Tres herramientas,",
-  "one playbook": "un solo playbook",
   "My space": "Mi espacio",
   "as opponent": "como rival",
   "Posts against {name}": "Posts contra {name}",

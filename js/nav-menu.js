@@ -11,7 +11,6 @@
     {
       // the three pillars of the product; each card opens its tool (members) or its explanation (visitors)
       label: "Platform", type: "pillars",
-      eyebrow: "The platform", title: "Three tools,", highlight: "one playbook",
       // same order, colours and little visuals as the home (index.html .tools): Library gold, AI blue, Content Plan green
       pillars: [
         { icon: "layout-grid", title: "Content Library", href: "content-library.html", acc: "240, 184, 74", vis: "lib" },
@@ -92,8 +91,7 @@
 
   function panel(m, id) {
     if (m.type === "pillars") return `<div class="mm-panel mm-pillars" id="${id}" role="region" aria-label="${esc(m.label)}">
-      <div class="mm-phead"><div><p class="mm-eyebrow">${esc(m.eyebrow)}</p><p class="mm-title">${esc(m.title)} <em>${esc(m.highlight)}</em></p></div>
-        ${m.more?.filter(show).length ? `<div class="mm-pmore">${m.more.filter(show).map((l) => `<a href="${esc(l.href)}">${icon(l.icon)}${esc(l.title)}</a>`).join("")}</div>` : ""}</div>
+      ${m.more?.filter(show).length ? `<div class="mm-phead"><div class="mm-pmore">${m.more.filter(show).map((l) => `<a href="${esc(l.href)}">${icon(l.icon)}${esc(l.title)}</a>`).join("")}</div></div>` : ""}
       <div class="mm-pcols">${m.pillars.map((p) => `<a class="mm-pillar" href="${esc(member && p.memberHref ? p.memberHref : p.href)}" style="--acc:${p.acc}">
         ${VIS[p.vis] || ""}<span class="mm-pillar-h"><span class="mm-ic">${icon(p.icon)}</span><b>${esc(p.title)}</b></span></a>`).join("")}</div></div>`;
     if (m.type === "grid") return `<div class="mm-panel mm-grid" id="${id}" role="region" aria-label="${esc(m.label)}">

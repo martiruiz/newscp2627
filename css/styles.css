@@ -6310,7 +6310,7 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 
 /* Menu → Platform: the three pillars as cards — the home's colours and little visuals, one short line each */
 .mm-pillars { width: 820px; }
-.mm-phead { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+.mm-phead { display: flex; justify-content: flex-end; margin-bottom: 12px; }
 .mm-pillars .mm-title { margin-bottom: 0; }
 .mm-pcols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 .mm-pillar { display: grid; align-content: start; gap: 6px; min-width: 0; white-space: normal; padding: 10px 10px 14px; border-radius: 18px; border: 1px solid var(--line); background: rgba(var(--fg), 0.03); color: var(--text); opacity: 1 !important; transition: border-color 0.15s, background 0.15s, transform 0.15s; }
