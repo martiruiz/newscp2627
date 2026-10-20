@@ -9,15 +9,20 @@
 (() => {
   const MENU = [
     {
-      label: "Platform", type: "grid",
-      eyebrow: "The platform", title: "Everything your sports content needs,", highlight: "in one place",
-      items: [
-        { icon: "layout-grid", title: "Content Library", desc: "500,000+ real posts from clubs, leagues and creators.", href: "content-library.html" },
-        { icon: "search", title: "Smart search", desc: "Search by sport, club, format, hook or views.", href: "index.html#library" },
-        { icon: "trophy", title: "Top Picks & smart filters", desc: "The posts that work, picked and tagged for you.", href: "content-library.html" },
-        { icon: "sparkles", title: "AI analysis", desc: "Why a post worked and how to adapt it.", href: "index.html#ai-analysis" },
-        { icon: "calendar-days", title: "Content Plan", desc: "Plan your week by dragging ideas in.", href: "content-plan.html" },
-        { icon: "file-text", title: "Social News", desc: "What sports accounts post, every day.", href: "news.html" },
+      // the three pillars of the product; each card opens its tool (members) or its explanation (visitors)
+      label: "Platform", type: "pillars",
+      eyebrow: "The platform", title: "Three tools,", highlight: "one playbook",
+      pillars: [
+        { icon: "layout-grid", title: "Content Library", desc: "500,000+ real posts from clubs, leagues, brands and creators.", href: "content-library.html",
+          points: ["Top Picks and replicable ideas", "Filters by occasion, sponsor and format", "Views, creators and languages"] },
+        { icon: "calendar-days", title: "Content Plan", desc: "Your week of content, planned by dragging posts in.", href: "content-plan.html",
+          points: ["Week, day and month views", "Key dates: Halloween, Black Friday…", "From idea to published"] },
+        { icon: "sparkles", title: "AI analysis", desc: "Why a post worked and how to adapt it to your club.", href: "index.html#ai-analysis", memberHref: "content-library.html?ai=mine",
+          points: ["Hook and why it works", "How to adapt it, step by step", "All your analyses in one place"] },
+      ],
+      more: [
+        { icon: "bookmark", title: "Saved boards", href: "saved.html", member: true },
+        { icon: "arrow-up-right", title: "Try it free for 7 days", href: "signup.html", guest: true },
       ],
     },
     {
@@ -79,9 +84,15 @@
     Instagram: `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>`,
     LinkedIn: `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 10v7"/></svg>`,
   };
-  const show = (it) => !it.member || member;
+  const show = (it) => (!it.member || member) && (!it.guest || !member);
 
   function panel(m, id) {
+    if (m.type === "pillars") return `<div class="mm-panel mm-pillars" id="${id}" role="region" aria-label="${esc(m.label)}">
+      <p class="mm-eyebrow">${esc(m.eyebrow)}</p><p class="mm-title">${esc(m.title)} <em>${esc(m.highlight)}</em></p>
+      <div class="mm-pcols">${m.pillars.map((p) => `<a class="mm-pillar" href="${esc(member && p.memberHref ? p.memberHref : p.href)}">
+        <span class="mm-ic">${icon(p.icon)}</span><b>${esc(p.title)}</b><small>${esc(p.desc)}</small>
+        <ul>${p.points.map((t) => `<li>${esc(t)}</li>`).join("")}</ul></a>`).join("")}</div>
+      ${m.more?.filter(show).length ? `<div class="mm-pmore">${m.more.filter(show).map((l) => `<a href="${esc(l.href)}">${icon(l.icon)}${esc(l.title)}</a>`).join("")}</div>` : ""}</div>`;
     if (m.type === "grid") return `<div class="mm-panel mm-grid" id="${id}" role="region" aria-label="${esc(m.label)}">
       <p class="mm-eyebrow">${esc(m.eyebrow)}</p><p class="mm-title">${esc(m.title)} <em>${esc(m.highlight)}</em></p>
       <div class="mm-cols">${m.items.filter(show).map((i) => `<a class="mm-item" href="${esc(i.href)}"><span class="mm-ic">${icon(i.icon)}</span><span><b>${esc(i.title)}</b><small>${esc(i.desc)}</small></span></a>`).join("")}</div></div>`;

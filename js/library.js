@@ -1453,6 +1453,8 @@
     ai.mine = new Map(mine.filter((r) => r.ai_analyses?.result).map((r) => [Number(r.post_id), { at: r.completed_at, result: r.ai_analyses.result }]));
     ai.team = new Map(team.filter((r) => !ai.mine.has(Number(r.post_id))).map((r) => [Number(r.post_id), { at: r.at, by: r.by, result: r.result }]));
     renderAiMine();
+    // Menu → Platform → AI analysis opens the library on "My AI analyses"
+    if (/[?&]ai=mine\b/.test(location.search) && !ui.aiMode) setAiMode("mine");
   }
   const credits = () => (ai.ent ? (ai.ent.monthly_left || 0) + (ai.ent.pack_left || 0) : 0);
   function renderCredits() {
