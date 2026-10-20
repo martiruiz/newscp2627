@@ -6316,7 +6316,8 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 
 /* Menu → Platform: the three pillars as cards — the home's colours and little visuals, one short line each */
 .mm-pillars { width: 820px; }
-.mm-pillars .mm-title { margin-bottom: 18px; }
+.mm-phead { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+.mm-pillars .mm-title { margin-bottom: 0; }
 .mm-pcols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 .mm-pillar { display: grid; align-content: start; gap: 6px; min-width: 0; white-space: normal; padding: 10px 10px 14px; border-radius: 18px; border: 1px solid var(--line); background: rgba(var(--fg), 0.03); color: var(--text); opacity: 1 !important; transition: border-color 0.15s, background 0.15s, transform 0.15s; }
 .mm-pillar:hover { border-color: rgba(var(--acc), 0.6); background: rgba(var(--acc), 0.06); color: var(--text) !important; transform: translateY(-2px); }
@@ -6326,8 +6327,7 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 .mm-pillar .mm-ic { width: 34px; height: 34px; border-radius: 10px; border: 0; background: rgba(var(--acc), 0.16); color: rgb(var(--acc)); }
 .mm-pillar .mm-ic svg { width: 17px; height: 17px; }
 .mm-pillar-h b { font-size: 15.5px; font-weight: 600; }
-.mm-pillar > small { padding: 0 4px; font-size: 13px; line-height: 1.4; color: var(--muted); }
-.mm-pmore { display: flex; gap: 8px; margin-top: 12px; }
+.mm-pmore { display: flex; gap: 8px; }
 .mm-pmore a { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px; border-radius: 100px; border: 1px solid var(--line); color: var(--text); font-size: 13.5px; opacity: 1 !important; }
 .mm-pmore a:hover { border-color: rgba(240, 184, 74, 0.55); color: var(--gold) !important; }
 .mm-pmore svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }

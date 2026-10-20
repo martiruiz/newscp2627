@@ -14,9 +14,9 @@
       eyebrow: "The platform", title: "Three tools,", highlight: "one playbook",
       // same order, colours and little visuals as the home (index.html .tools): Library gold, AI blue, Content Plan green
       pillars: [
-        { icon: "layout-grid", title: "Content Library", desc: "500,000+ real posts, filtered your way.", href: "content-library.html", acc: "240, 184, 74", vis: "lib" },
-        { icon: "sparkles", title: "AI analysis", desc: "Why a post works, and your own version.", href: "index.html#ai-analysis", memberHref: "content-library.html?ai=mine", acc: "122, 162, 255", vis: "ai" },
-        { icon: "calendar-days", title: "Content Plan", desc: "Your week of content, drag and drop.", href: "content-plan.html", acc: "61, 220, 151", vis: "cp" },
+        { icon: "layout-grid", title: "Content Library", href: "content-library.html", acc: "240, 184, 74", vis: "lib" },
+        { icon: "sparkles", title: "AI analysis", href: "index.html#ai-analysis", memberHref: "content-library.html?ai=mine", acc: "122, 162, 255", vis: "ai" },
+        { icon: "calendar-days", title: "Content Plan", href: "content-plan.html", acc: "61, 220, 151", vis: "cp" },
       ],
       more: [
         { icon: "bookmark", title: "Saved boards", href: "saved.html", member: true },
@@ -92,10 +92,10 @@
 
   function panel(m, id) {
     if (m.type === "pillars") return `<div class="mm-panel mm-pillars" id="${id}" role="region" aria-label="${esc(m.label)}">
-      <p class="mm-eyebrow">${esc(m.eyebrow)}</p><p class="mm-title">${esc(m.title)} <em>${esc(m.highlight)}</em></p>
+      <div class="mm-phead"><div><p class="mm-eyebrow">${esc(m.eyebrow)}</p><p class="mm-title">${esc(m.title)} <em>${esc(m.highlight)}</em></p></div>
+        ${m.more?.filter(show).length ? `<div class="mm-pmore">${m.more.filter(show).map((l) => `<a href="${esc(l.href)}">${icon(l.icon)}${esc(l.title)}</a>`).join("")}</div>` : ""}</div>
       <div class="mm-pcols">${m.pillars.map((p) => `<a class="mm-pillar" href="${esc(member && p.memberHref ? p.memberHref : p.href)}" style="--acc:${p.acc}">
-        ${VIS[p.vis] || ""}<span class="mm-pillar-h"><span class="mm-ic">${icon(p.icon)}</span><b>${esc(p.title)}</b></span><small>${esc(p.desc)}</small></a>`).join("")}</div>
-      ${m.more?.filter(show).length ? `<div class="mm-pmore">${m.more.filter(show).map((l) => `<a href="${esc(l.href)}">${icon(l.icon)}${esc(l.title)}</a>`).join("")}</div>` : ""}</div>`;
+        ${VIS[p.vis] || ""}<span class="mm-pillar-h"><span class="mm-ic">${icon(p.icon)}</span><b>${esc(p.title)}</b></span></a>`).join("")}</div></div>`;
     if (m.type === "grid") return `<div class="mm-panel mm-grid" id="${id}" role="region" aria-label="${esc(m.label)}">
       <p class="mm-eyebrow">${esc(m.eyebrow)}</p><p class="mm-title">${esc(m.title)} <em>${esc(m.highlight)}</em></p>
       <div class="mm-cols">${m.items.filter(show).map((i) => `<a class="mm-item" href="${esc(i.href)}"><span class="mm-ic">${icon(i.icon)}</span><span><b>${esc(i.title)}</b><small>${esc(i.desc)}</small></span></a>`).join("")}</div></div>`;
