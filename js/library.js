@@ -1398,7 +1398,21 @@
     rows.forEach((p) => cache.set(String(p.id), p));
     offset += rows.length;
     more.hidden = offset >= data.total;
+    saveKeep();
   }
+
+  // ---------- Keep the place on refresh (this tab): filters, sort and its shuffle, posts loaded and scroll ----------
+  const KEEP = "scp-lib-keep";
+  const keep = {
+    get() { try { return JSON.parse(sessionStorage.getItem(KEEP) || "null"); } catch { return null; } },
+    set(v) { try { sessionStorage.setItem(KEEP, JSON.stringify(v)); } catch {} },
+  };
+  if ("scrollRestoration" in history) history.scrollRestoration = "manual";   // we put the scroll back ourselves, once the posts are there
+  let restoring = false;
+  function saveKeep() { if (!restoring) keep.set({ state: state(), seed, n: offset, y: Math.round(window.scrollY), t: Date.now() }); }
+  let keepTimer;
+  window.addEventListener("scroll", () => { clearTimeout(keepTimer); keepTimer = setTimeout(saveKeep, 250); }, { passive: true });
+  window.addEventListener("pagehide", saveKeep);
 
   function showEmpty(text) { empty.textContent = text; empty.hidden = false; }
   function showNote(text) { note.textContent = text; note.hidden = false; }
@@ -2151,7 +2165,24 @@
     // favourite network (catalog value "platform") goes first in "For you", and its tile first in the filters
     const pv = me.favPlatform && (catalog?.byCat?.platform || []).find((v) => v.name.toLowerCase() === me.favPlatform);
     if (pv && !me.boost.includes(pv.id)) { me.boost = [pv.id, ...me.boost]; renderFacets(); }
-    load(true); openFromHash();
+    // back where you were after a refresh, unless the link asks for something else (a topic, My AI analyses, a post)
+    const saved = keep.get();
+    const intent = /[?&](topic|ai)=/.test(location.search) || location.hash.startsWith("#post=");
+    if (saved?.state && !intent && Date.now() - (saved.t || 0) < 12 * 3600e3) {
+      restoring = true;
+      applyState(saved.state);
+      if (saved.seed) seed = saved.seed;
+    }
+    (async () => {
+      await load(true);
+      if (restoring) {
+        // load as many pages as were showing (at most 10), then go back to the same scroll position
+        for (let i = 0; i < 10 && offset < (saved.n || 0) && !more.hidden; i++) await load(false);
+        requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo(0, saved.y || 0)));
+        setTimeout(() => { restoring = false; saveKeep(); }, 400);
+      }
+      openFromHash();
+    })();
     if (!LAYOUT_BEFORE) loadPlanHints().catch(() => {});
   });
 })();
