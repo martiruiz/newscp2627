@@ -58,6 +58,7 @@
     <div class="head-actions"><label class="btn btn-primary">${icon("import")}Upload accounts Excel<input type="file" accept=".xlsx,.xls,.csv" hidden data-file></label></div></div>
     <section data-preview></section>
     <section class="stats" data-stats></section>
+    <p class="muted ms-small" style="margin-top:10px" data-views-status></p>
     <section class="panel panel-pad" style="margin-top:16px" data-report></section>
     <section class="panel panel-pad" style="margin-top:16px" data-alerts></section>
     <section class="panel" style="margin-top:16px">
@@ -191,4 +192,9 @@
     try { await rpc("admin_scraped_profile_settings_save", { p_low_posts_7d: Number(f.get("low")), p_stale_days: Number(f.get("stale")) }); A.toast("Thresholds saved."); draw(); } catch (err) { fail(err); }
   });
   draw();
+  // views kept up to date in the cloud (supabase/views-cron.sql): readings of the last 24 h and posts still due
+  rpc("admin_views_status").then((v) => {
+    const by = Object.entries(v.by_platform || {}).map(([k, n]) => `${PF[k] || k} ${num(n)}`).join(" · ");
+    $("[data-views-status]").innerHTML = `Views updated in the last 24 h: <b>${num(v.last_24h)}</b>${by ? ` (${by})` : ""} · due now: <b>${num(v.due)}</b>`;
+  }, () => {});
 })();

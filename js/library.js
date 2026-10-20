@@ -89,7 +89,7 @@
     { key: "discover", label: "Discover" }, { key: "format", label: "Format" }, { key: "platform", label: "Platform" },
     { key: "explore", label: "Explore by" }, { key: "content", label: "Content", ai: true }, { key: "brands", label: "Brands", ai: true },
   ] : [
-    { key: "discover", label: "What works", jump: "Works" }, { key: "occasion", label: "Occasion", ai: true, q: "What are you posting about?" },
+    { key: "discover", label: "What works", jump: "Works" }, { key: "occasion", label: "Match Day", ai: true, q: "What are you posting about?" },
     { key: "goal", label: "Goal & sponsors", ai: true, jump: "Goal", q: "What should it achieve?" }, { key: "where", label: "Where & how", jump: "Where", q: "Platform and format" },
     { key: "benchmark", label: "Inspiration from", jump: "Inspiration", q: "Sports, competitions and clubs" },
   ];
@@ -730,7 +730,6 @@
   }
 
   // ---------- Bar above the posts (wide screens): one button per section, its filters in a wide panel ----------
-  const BAR_ICO = { occasion: "calendar", goal: "target", benchmark: "trophy" };
   const secOf = (c) => (c.key === "angle" || c.key === "campaign" ? "occasion" : ["format", "platform"].includes(c.sec) ? "where" : c.sec);
   function renderBar(list, parts) {
     const bar = $("[data-lf-bar]");
@@ -740,7 +739,7 @@
     const open = items.find((it) => it.key === ui.bar);
     const keep = $(".lfp-main", bar)?.scrollTop || 0;
     bar.hidden = false;
-    bar.innerHTML = `<div class="lfb-row" role="toolbar" aria-label="${esc(tx("Filters"))}">${items.map((it) => `<button type="button" class="lfb-btn${it.n ? " is-set" : ""}${open === it ? " is-open" : ""}" aria-expanded="${open === it}" data-lfb="${it.key}">${svg(BAR_ICO[it.key])}<span class="lfb-tx"><b>${esc(it.label)}</b><small>${esc(it.q)}</small></span>${it.n ? `<em>${it.n}</em>` : ""}${svg("chev", "lfb-chev")}</button>`).join("")}</div>
+    bar.innerHTML = `<div class="lfb-row" role="toolbar" aria-label="${esc(tx("Filters"))}">${items.map((it) => `<button type="button" class="lfb-btn${it.n ? " is-set" : ""}${open === it ? " is-open" : ""}" aria-expanded="${open === it}" data-lfb="${it.key}"><span class="lfb-tx"><b>${esc(it.label)}</b></span>${it.n ? `<em>${it.n}</em>` : ""}${svg("chev", "lfb-chev")}</button>`).join("")}</div>
       ${open ? `<div class="lfb-panel lfp" role="dialog" aria-label="${esc(open.label)}">${lfpHtml(open.key)}</div>` : ""}`;
     if (open) { $(".lfp-main", bar).scrollTop = keep; loadCovers(open.key); }
   }
