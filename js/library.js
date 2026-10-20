@@ -60,7 +60,7 @@
   // column keeps the one-click shortcuts. ?filters=column shows everything in the column (the previous layout).
   const BAR_OK = !LAYOUT_BEFORE && !/[?&]filters=column\b/.test(location.search);
   const barMode = () => BAR_OK && innerWidth > 900;
-  const BAR_SECS = ["occasion", "goal", "benchmark"];   // Where & how stays in the column, under Views
+  const BAR_SECS = ["benchmark", "occasion", "goal"];   // bar order: Inspiration first   // Where & how stays in the column, under Views
   if (!LAYOUT_BEFORE) {
     const NEW = [
       ["trend", "discover"], ["format", "format"], ["aspect_ratio", "format"], ["duration", "format"], ["language", "format"], ["platform", "platform"],
@@ -590,7 +590,7 @@
       ? ` <span class="lf-ai" tabindex="0" data-tip="${esc(AI_TIP)}">AI <b>?</b></span>` : "";
     const ord = LAYOUT_BEFORE ? null : DEFAULT_ORDER;
     const secs = SECTIONS.filter((s) => parts[s.key]).sort((a, b) => (ord ? ord.indexOf(a.key) - ord.indexOf(b.key) : 0));
-    const inBar = barMode() ? secs.filter((s) => BAR_SECS.includes(s.key)) : [];
+    const inBar = barMode() ? secs.filter((s) => BAR_SECS.includes(s.key)).sort((a, b) => BAR_SECS.indexOf(a.key) - BAR_SECS.indexOf(b.key)) : [];
     renderBar(inBar, parts);
     const colSecs = secs.filter((s) => !inBar.includes(s));
     const box = $("[data-facets]");
