@@ -1044,50 +1044,15 @@
     if (!fresults.hidden) searchFilters();
   }
 
-  // ---------- Upcoming dates (seasonal ideas → caption search) ----------
-  const KEY_DATES = [
-    { m: 1, d: 1, icon: "party-popper", name: "New Year", q: "new year" },
-    { m: 2, d: 14, icon: "heart", name: "Valentine’s Day", q: "valentine" },
-    { m: 3, d: 8, icon: "sparkles", name: "Women’s Day", q: "women's day" },
-    { m: 4, d: 1, icon: "drama", name: "April Fools", q: "april fools" },
-    { m: 4, d: 22, icon: "earth", name: "Earth Day", q: "earth day" },
-    { m: 6, d: 28, icon: "rainbow", name: "Pride", q: "pride" },
-    { m: 7, d: 15, icon: "plane", name: "Pre-season", q: "preseason" },
-    { m: 8, d: 15, icon: "calendar-days", name: "Fixture release", q: "fixtures" },
-    { m: 10, d: 31, icon: "ghost", name: "Halloween", q: "halloween" },
-    { m: 11, d: 0, icon: "shopping-bag", name: "Black Friday", q: "black friday" }, // 4th Friday of November
-    { m: 12, d: 25, icon: "tree-pine", name: "Christmas", q: "christmas" },
-    { m: 12, d: 28, icon: "drama", name: "Inocentes", q: "inocentes" },
-  ];
-  function nextOccurrence(k, now) {
-    const make = (y) => {
-      if (k.d) return new Date(y, k.m - 1, k.d);
-      const first = new Date(y, 10, 1); // Black Friday
-      return new Date(y, 10, 1 + ((5 - first.getDay() + 7) % 7) + 21);
-    };
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    let d = make(now.getFullYear());
-    if (d < today) d = make(now.getFullYear() + 1);
-    return d;
-  }
-  function renderUpcoming() {
-    const now = new Date();
-    const list = KEY_DATES.map((k) => ({ ...k, date: nextOccurrence(k, now) }))
-      .map((k) => ({ ...k, days: Math.round((k.date - new Date(now.getFullYear(), now.getMonth(), now.getDate())) / 864e5) }))
-      .filter((k) => k.days <= 75).sort((a, b) => a.days - b.days).slice(0, 4);
-    const q = $("[data-q]").value.trim().toLowerCase();
-    $("[data-upcoming]").innerHTML = list.length
-      ? `<span class="upcoming-label">Coming up</span>` + list.map((k) => `<button type="button" class="upcoming-chip" data-upcoming-q="${esc(k.q)}" aria-pressed="${q === k.q}">${icon(k.icon)}${esc(k.name)} <small>${k.days === 0 ? "today" : `in ${k.days} day${k.days === 1 ? "" : "s"}`}</small></button>`).join("")
-      : "";
-  }
-  $("[data-upcoming]").addEventListener("click", (e) => {
-    const b = e.target.closest("[data-upcoming-q]");
-    if (!b) return;
+  // ---------- Key dates (Halloween, Black Friday…): shown in the Content Plan (js/plan-panel.js), they search the captions ----------
+  const topicOn = () => $("[data-q]").value.trim().toLowerCase();
+  function topic(q) {
     const input = $("[data-q]");
-    input.value = input.value.trim().toLowerCase() === b.dataset.upcomingQ ? "" : b.dataset.upcomingQ;
+    input.value = topicOn() === q ? "" : q;
     setPeriod("all");
     load(true);
-  });
+    return !!input.value;
+  }
 
   // ---------- Period (When) ----------
   const setPeriod = (value) => {
@@ -1166,7 +1131,7 @@
     badge.textContent = sidebarCount; badge.hidden = sidebarCount <= 0;
     $("[data-lf-active]").textContent = sidebarCount > 0 ? `· ${tx("{n} active", { n: sidebarCount })}` : "";
     paintDropdowns(s);
-    renderUpcoming();
+    document.dispatchEvent(new CustomEvent("scp:topic", { detail: topicOn() }));   // the key dates in the Content Plan show which one is on
   }
   $("[data-active-chips]").addEventListener("click", (e) => {
     const chip = e.target.closest("[data-chip]");
@@ -1570,7 +1535,7 @@
   const refreshAiButtons = (id) => $$(`.lib-card[data-id="${CSS.escape(String(id))}"] .lib-analysis`).forEach((b) => (b.outerHTML = aiButton(id)));
 
   // The Content Plan panel (js/plan-panel.js) reads the posts shown here
-  window.SCP_LIB = { post: (id) => cache.get(String(id)), adapt: (id) => aiAdapt(id) };
+  window.SCP_LIB = { post: (id) => cache.get(String(id)), adapt: (id) => aiAdapt(id), topic: (q) => topic(q), topicOn: () => topicOn() };
 
   // ---------- Masonry: N columns, each card goes to the shortest one (heights known from the ratios) ----------
   const GAP = 22;

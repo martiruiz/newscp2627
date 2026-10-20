@@ -253,6 +253,38 @@
   }
   toggleBtn.addEventListener("click", () => (S.open ? close() : open()));
 
+  // ---------- Key dates: coming up in the plan, and marked on their day (clicking one shows its posts in the library) ----------
+  const KEY_DATES = [
+    { m: 1, d: 1, icon: "party-popper", name: "New Year", q: "new year" },
+    { m: 2, d: 14, icon: "heart", name: "Valentine’s Day", q: "valentine" },
+    { m: 3, d: 8, icon: "sparkles", name: "Women’s Day", q: "women's day" },
+    { m: 4, d: 1, icon: "drama", name: "April Fools", q: "april fools" },
+    { m: 4, d: 22, icon: "earth", name: "Earth Day", q: "earth day" },
+    { m: 6, d: 28, icon: "rainbow", name: "Pride", q: "pride" },
+    { m: 7, d: 15, icon: "plane", name: "Pre-season", q: "preseason" },
+    { m: 8, d: 15, icon: "calendar-days", name: "Fixture release", q: "fixtures" },
+    { m: 10, d: 31, icon: "ghost", name: "Halloween", q: "halloween" },
+    { m: 11, d: 0, icon: "shopping-bag", name: "Black Friday", q: "black friday" }, // 4th Friday of November
+    { m: 12, d: 25, icon: "tree-pine", name: "Christmas", q: "christmas" },
+    { m: 12, d: 28, icon: "drama", name: "Inocentes", q: "inocentes" },
+  ];
+  const keyDay = (k, y) => {
+    if (k.d) return new Date(y, k.m - 1, k.d);
+    const first = new Date(y, 10, 1);   // Black Friday
+    return new Date(y, 10, 1 + ((5 - first.getDay() + 7) % 7) + 21);
+  };
+  const keyDateOn = (date) => { const d = parse(date); return KEY_DATES.find((k) => iso(keyDay(k, d.getFullYear())) === date); };
+  const topicOn = () => window.SCP_LIB?.topicOn?.() || "";
+  function upcomingHtml() {
+    const now = new Date(), today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const list = KEY_DATES.map((k) => { let d = keyDay(k, today.getFullYear()); if (d < today) d = keyDay(k, today.getFullYear() + 1); return { ...k, days: Math.round((d - today) / 864e5) }; })
+      .filter((k) => k.days <= 75).sort((a, b) => a.days - b.days).slice(0, 4);
+    if (!list.length || !window.SCP_LIB?.topic) return "";
+    return `<div class="pp-upcoming"><span class="pp-upcoming-t">Coming up</span><div class="pp-upcoming-list">${list.map((k) => `<button type="button" class="pp-kd-chip" data-pp-topic="${esc(k.q)}" aria-pressed="${topicOn() === k.q}" title="See posts about ${esc(k.name)}">${icon(k.icon)}<span>${esc(k.name)}</span><small>${k.days === 0 ? "today" : `in ${k.days} day${k.days === 1 ? "" : "s"}`}</small></button>`).join("")}</div></div>`;
+  }
+  const keyMark = (date) => { const k = keyDateOn(date); return k ? `<span class="pp-kd" title="${esc(k.name)}">${icon(k.icon)}<span>${esc(k.name)}</span></span>` : ""; };
+  document.addEventListener("scp:topic", (e) => panel.querySelectorAll("[data-pp-topic]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.ppTopic === e.detail))));
+
   function headHtml() {
     return `<header class="pp-head">
       <div class="pp-title"><span class="pp-eyebrow">${icon("calendar-days")}Content Plan</span>
@@ -294,7 +326,7 @@
         <button type="button" class="pp-icon" data-pp-day-go="-1" aria-label="Previous day">${icon("chevron-left")}</button>
         <div><span>${d.toLocaleDateString(window.SCP_LOC || "en-GB", { weekday: "long" })}${date === today ? ` · <em>Today</em>` : ""}</span>
           <b>${d.toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "long" })}</b>
-          <small>${list.length} post${list.length === 1 ? "" : "s"}</small></div>
+          <small>${list.length} post${list.length === 1 ? "" : "s"}</small>${keyMark(date)}</div>
         <button type="button" class="pp-icon" data-pp-day-go="1" aria-label="Next day">${icon("chevron-right")}</button>
       </header>
       <div class="pp-big-grid">${list.map(card).join("") || `<p class="pp-focus-empty">${icon("calendar-plus")}<span>Nothing planned this day.<br>Drag posts from the library here.</span></p>`}</div>
@@ -333,7 +365,7 @@
           const date = iso(d);
           const list = dated().filter((e) => e.entry_date === date);
           return `<section class="pp-day pp-drop${date === today ? " is-today" : ""}${date < today ? " is-past" : ""}${list.length ? "" : " is-empty"}" data-pp-drop="${date}">
-            <header><span>${DAYS[i]}</span><b>${d.getDate()}</b>${date === today ? `<em>Today</em>` : ""}${list.length ? `<i class="pp-n">${list.length}</i>` : ""}</header>
+            <header><span>${DAYS[i]}</span><b>${d.getDate()}</b>${date === today ? `<em>Today</em>` : ""}${keyMark(date)}${list.length ? `<i class="pp-n">${list.length}</i>` : ""}</header>
             <div class="pp-list">${list.map(entryHtml).join("")}<p class="pp-drop-hint">${list.length ? "" : "Drop a post here"}</p></div>
             ${timesHtml(date)}
           </section>`;
@@ -345,7 +377,7 @@
           const date = iso(d);
           const list = dated().filter((e) => e.entry_date === date);
           return `<div class="pp-mday pp-drop${d.getMonth() !== month ? " is-out" : ""}${date === today ? " is-today" : ""}" data-pp-drop="${date}" title="${esc(list.map((e) => e.label || "Untitled").join("\n"))}">
-            <span>${d.getDate()}</span><div class="pp-mdots">${list.slice(0, 4).map((e) => `<i class="s-${e.status}"></i>`).join("")}${list.length > 4 ? `<em>+${list.length - 4}</em>` : ""}</div>
+            <span>${d.getDate()}</span>${(() => { const k = keyDateOn(date); return k ? `<i class="pp-mkd" title="${esc(k.name)}">${icon(k.icon)}</i>` : ""; })()}<div class="pp-mdots">${list.slice(0, 4).map((e) => `<i class="s-${e.status}"></i>`).join("")}${list.length > 4 ? `<em>+${list.length - 4}</em>` : ""}</div>
           </div>`;
         }).join("")}</div>
         <p class="pp-month-note">${dated().filter((e) => parse(e.entry_date).getMonth() === month).length} posts planned this month · drop posts on a day</p></div>`;
@@ -357,6 +389,7 @@
           <button type="button" class="pp-today" data-pp-go="0">Today</button></div>
       </div>
       <div class="pp-scroll">
+        ${upcomingHtml()}
         <section class="pp-tray pp-drop" data-pp-drop="">
           <header>${icon("inbox")}<b>No date</b><span>${ideas.length || ""}</span><small>ideas for later</small></header>
           <div class="pp-list">${ideas.map(entryHtml).join("")}<p class="pp-drop-hint">${ideas.length ? "" : "Drop posts here to keep them as ideas"}</p></div>
@@ -387,6 +420,8 @@
 
   // Panel clicks
   panel.addEventListener("click", async (e) => {
+    const kd = e.target.closest("[data-pp-topic]");
+    if (kd) { window.SCP_LIB?.topic?.(kd.dataset.ppTopic); return; }   // the library shows that date's posts
     if (e.target.closest("[data-pp-close]")) return close();
     const v = e.target.closest("[data-pp-view]");
     if (v) { S.day = null; S.view = v.dataset.ppView; store.set("scp-pp-view", S.view); S.anchor = S.view === "week" ? mondayOf(S.anchor) : new Date(S.anchor); S.suggest = null; return reload(); }
