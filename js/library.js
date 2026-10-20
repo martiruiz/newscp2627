@@ -1248,9 +1248,9 @@
       const v = catalog.byId.get(id);
       if (v) c.push({ label: `${pretty(v.name)}`, title: cat.sec === "discover" ? "Discover" : cat.label, v, clear: () => { selected[cat.key].delete(id); renderFacets(); } });
     }
-    if (s.views) c.push({ label: `${viewsLabel()} views`, title: "Views", clear: () => { views.a = 0; views.b = VB; views.exact = null; renderFacets(); } });
-    if (s.period !== "all") c.push({ label: s.period === "custom" ? `${s.from || "…"} → ${s.to || "…"}` : PERIODS[s.period], clear: () => { setPeriod("all"); ["from", "to"].forEach((k) => { const el = $(`[data-${k}]`); el.value = ""; el.dispatchEvent(new Event("input")); }); } });
-    if (s.q) c.push({ label: `“${s.q}”`, clear: () => ($("[data-q]").value = "") });
+    if (s.views) c.push({ label: viewsLabel(), title: "Views", ico: "eye", clear: () => { views.a = 0; views.b = VB; views.exact = null; renderFacets(); } });
+    if (s.period !== "all") c.push({ label: s.period === "custom" ? `${s.from || "…"} → ${s.to || "…"}` : PERIODS[s.period], title: "Period", ico: "calendar", clear: () => { setPeriod("all"); ["from", "to"].forEach((k) => { const el = $(`[data-${k}]`); el.value = ""; el.dispatchEvent(new Event("input")); }); } });
+    if (s.q) c.push({ label: `“${s.q}”`, title: "Text", ico: "search", clear: () => ($("[data-q]").value = "") });
     return c;
   }
   let chipClears = [];
@@ -1258,10 +1258,16 @@
     const chips = chipsFor(s);
     chipClears = chips.map((x) => x.clear);
     $("[data-active-bar]").hidden = chips.length === 0 && !savedSearches.length;
-    const chipLead = (v) => !v ? "" : v.category === "trend" ? `<span class="lf-chip-sp ${special(v).cls}"></span>`
-      : CAT[v.category]?.crest || v.logo ? crestImg(v, "lf-mini") : v.category === "platform" && PLATFORM[v.name.toLowerCase()] ? pfLogo(v.name.toLowerCase(), "lf-pfi is-brand") : "";
-    $("[data-active-chips]").innerHTML = chips.map((x, i) => `<button type="button" class="active-chip" data-chip="${i}"${x.title ? ` title="${esc(x.title)}"` : ""}>${chipLead(x.v)}${esc(x.label)} <span aria-hidden="true">×</span><span class="sr-only">Remove</span></button>`).join("")
-      + (chips.length > 1 ? `<button type="button" class="link-muted active-clear" data-chip-clear>Clear all</button>` : "");
+    // each chip: its logo / icon, the filter it belongs to (small caption) and the value; × on the right
+    const chipLead = (x) => { const v = x.v;
+      if (!v) return `<span class="ac-ic">${svg(x.ico || "dots")}</span>`;
+      if (v.category === "trend") return `<span class="ac-ic ac-sp ${special(v).cls}">${svg(special(v).ico)}</span>`;
+      if (CAT[v.category]?.crest || v.logo) return crestImg(v, "ac-logo");
+      if (v.category === "platform" && PLATFORM[v.name.toLowerCase()]) return `<span class="ac-ic">${pfLogo(v.name.toLowerCase(), "lf-pfi is-brand")}</span>`;
+      return `<span class="ac-ic">${svg(v.category === "format" ? FORMAT_ICON[v.name.toLowerCase()] || "image" : v.category === "sport" ? SPORT_ICON[v.name.toLowerCase()] || "ball" : CAT[v.category]?.ico || "dots")}</span>`; };
+    $("[data-active-chips]").innerHTML = chips.length ? `<span class="ab-lead"><span class="ab-ic">${svg("check")}</span><span class="ab-tx"><b>${esc(tx("Your search"))}</b><small>${esc(tx(chips.length === 1 ? "{n} filter" : "{n} filters", { n: chips.length }))}${chips.length > 1 ? ` · <button type="button" class="active-clear" data-chip-clear>${esc(tx("Clear all"))}</button>` : ""}</small></span></span>`
+      + chips.map((x, i) => `<button type="button" class="active-chip" data-chip="${i}" aria-label="${esc(tx("Remove {what}", { what: x.label }))}">${chipLead(x)}<span class="ac-tx">${x.title ? `<small>${esc(tx(x.title))}</small>` : ""}<b>${esc(x.label)}</b></span><span class="ac-x" aria-hidden="true">${icon("x")}</span></button>`).join("")
+ : "";
     $("[data-save-search]").hidden = chips.length === 0;
     const sidebarCount = chips.length - (s.q ? 1 : 0);
     const badge = $("[data-filter-count]");
