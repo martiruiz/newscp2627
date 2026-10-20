@@ -12,13 +12,11 @@
       // the three pillars of the product; each card opens its tool (members) or its explanation (visitors)
       label: "Platform", type: "pillars",
       eyebrow: "The platform", title: "Three tools,", highlight: "one playbook",
+      // same order, colours and little visuals as the home (index.html .tools): Library gold, AI blue, Content Plan green
       pillars: [
-        { icon: "layout-grid", title: "Content Library", desc: "500,000+ real posts from clubs, leagues, brands and creators.", href: "content-library.html",
-          points: ["Top Picks and replicable ideas", "Filters by occasion, sponsor and format", "Views, creators and languages"] },
-        { icon: "calendar-days", title: "Content Plan", desc: "Your week of content, planned by dragging posts in.", href: "content-plan.html",
-          points: ["Week, day and month views", "Key dates: Halloween, Black Friday…", "From idea to published"] },
-        { icon: "sparkles", title: "AI analysis", desc: "Why a post worked and how to adapt it to your club.", href: "index.html#ai-analysis", memberHref: "content-library.html?ai=mine",
-          points: ["Hook and why it works", "How to adapt it, step by step", "All your analyses in one place"] },
+        { icon: "layout-grid", title: "Content Library", desc: "500,000+ real posts, filtered your way.", href: "content-library.html", acc: "240, 184, 74", vis: "lib" },
+        { icon: "sparkles", title: "AI analysis", desc: "Why a post works, and your own version.", href: "index.html#ai-analysis", memberHref: "content-library.html?ai=mine", acc: "122, 162, 255", vis: "ai" },
+        { icon: "calendar-days", title: "Content Plan", desc: "Your week of content, drag and drop.", href: "content-plan.html", acc: "61, 220, 151", vis: "cp" },
       ],
       more: [
         { icon: "bookmark", title: "Saved boards", href: "saved.html", member: true },
@@ -84,14 +82,19 @@
     Instagram: `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>`,
     LinkedIn: `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 10v7"/></svg>`,
   };
+  // the home's little tool visuals (index.html), animated by the same styles
+  const VIS = {
+    lib: `<span class="tool-vis tv-lib" aria-hidden="true"><span class="tv-grid">${["10229", "18490", "21156", "3655", "4146", "4219"].map((n) => `<i style="background-image:url(assets/lib/${n}.jpg)"></i>`).join("")}</span></span>`,
+    ai: `<span class="tool-vis tv-ai" aria-hidden="true"><span class="tv-ai-img" style="background-image:url(assets/ai-example-messi.jpg)"><i class="tv-scan"></i></span><span class="tv-ai-rows"><span><b>Hook</b><i></i></span><span><b>Why it works</b><i></i></span><span><b>Your version</b><i></i></span></span></span>`,
+    cp: `<span class="tool-vis tv-cp" aria-hidden="true"><span class="tv-week">${["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d, i) => `<span><small>${d}</small>${Array.from({ length: [2, 3, 2, 1, 2, 3, 1][i] }, (_, k) => `<i style="--k:${i + k}"></i>`).join("")}</span>`).join("")}</span><span class="tv-bar"><i></i></span></span>`,
+  };
   const show = (it) => (!it.member || member) && (!it.guest || !member);
 
   function panel(m, id) {
     if (m.type === "pillars") return `<div class="mm-panel mm-pillars" id="${id}" role="region" aria-label="${esc(m.label)}">
       <p class="mm-eyebrow">${esc(m.eyebrow)}</p><p class="mm-title">${esc(m.title)} <em>${esc(m.highlight)}</em></p>
-      <div class="mm-pcols">${m.pillars.map((p) => `<a class="mm-pillar" href="${esc(member && p.memberHref ? p.memberHref : p.href)}">
-        <span class="mm-ic">${icon(p.icon)}</span><b>${esc(p.title)}</b><small>${esc(p.desc)}</small>
-        <ul>${p.points.map((t) => `<li>${esc(t)}</li>`).join("")}</ul></a>`).join("")}</div>
+      <div class="mm-pcols">${m.pillars.map((p) => `<a class="mm-pillar" href="${esc(member && p.memberHref ? p.memberHref : p.href)}" style="--acc:${p.acc}">
+        ${VIS[p.vis] || ""}<span class="mm-pillar-h"><span class="mm-ic">${icon(p.icon)}</span><b>${esc(p.title)}</b></span><small>${esc(p.desc)}</small></a>`).join("")}</div>
       ${m.more?.filter(show).length ? `<div class="mm-pmore">${m.more.filter(show).map((l) => `<a href="${esc(l.href)}">${icon(l.icon)}${esc(l.title)}</a>`).join("")}</div>` : ""}</div>`;
     if (m.type === "grid") return `<div class="mm-panel mm-grid" id="${id}" role="region" aria-label="${esc(m.label)}">
       <p class="mm-eyebrow">${esc(m.eyebrow)}</p><p class="mm-title">${esc(m.title)} <em>${esc(m.highlight)}</em></p>

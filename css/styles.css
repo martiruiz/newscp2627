@@ -6314,24 +6314,24 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 .pp-mkd { position: absolute; top: 3px; right: 3px; display: grid; place-items: center; color: var(--gold); font-style: normal; }
 .pp-mkd svg { width: 11px; height: 11px; }
 
-/* Menu → Platform: the three pillars as cards */
-.mm-pillars { width: 860px; }
+/* Menu → Platform: the three pillars as cards — the home's colours and little visuals, one short line each */
+.mm-pillars { width: 820px; }
 .mm-pillars .mm-title { margin-bottom: 18px; }
 .mm-pcols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-.mm-pillar { display: grid; align-content: start; gap: 6px; min-width: 0; white-space: normal; padding: 16px; border-radius: 16px; border: 1px solid var(--line); background: rgba(var(--fg), 0.03); color: var(--text); opacity: 1 !important; transition: border-color 0.15s, background 0.15s, transform 0.15s; }
-.mm-pillar:hover { border-color: rgba(240, 184, 74, 0.55); background: rgba(240, 184, 74, 0.05); color: var(--text) !important; transform: translateY(-2px); }
-.mm-pillar:hover .mm-ic { border-color: rgba(240, 184, 74, 0.5); color: var(--gold); }
-.mm-pillar .mm-ic { margin-bottom: 6px; }
-.mm-pillar b { font-size: 16px; font-weight: 600; }
-.mm-pillar small { font-size: 13px; line-height: 1.45; color: var(--muted); }
-.mm-pillar ul { margin: 6px 0 0; padding: 0; list-style: none; display: grid; gap: 5px; }
-.mm-pillar li { position: relative; padding-left: 16px; font-size: 12.5px; color: var(--text); opacity: 0.85; }
-.mm-pillar li::before { content: ""; position: absolute; left: 2px; top: 6px; width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
+.mm-pillar { display: grid; align-content: start; gap: 6px; min-width: 0; white-space: normal; padding: 10px 10px 14px; border-radius: 18px; border: 1px solid var(--line); background: rgba(var(--fg), 0.03); color: var(--text); opacity: 1 !important; transition: border-color 0.15s, background 0.15s, transform 0.15s; }
+.mm-pillar:hover { border-color: rgba(var(--acc), 0.6); background: rgba(var(--acc), 0.06); color: var(--text) !important; transform: translateY(-2px); }
+.mm-pillar .tool-vis { height: 104px; margin: 0 0 6px; border-radius: 12px; }
+.nav-links .mm-pillar { white-space: normal; }   /* .nav-links a keeps tab labels on one line */
+.mm-pillar-h { display: flex; align-items: center; gap: 10px; padding: 0 4px; }
+.mm-pillar .mm-ic { width: 34px; height: 34px; border-radius: 10px; border: 0; background: rgba(var(--acc), 0.16); color: rgb(var(--acc)); }
+.mm-pillar .mm-ic svg { width: 17px; height: 17px; }
+.mm-pillar-h b { font-size: 15.5px; font-weight: 600; }
+.mm-pillar > small { padding: 0 4px; font-size: 13px; line-height: 1.4; color: var(--muted); }
 .mm-pmore { display: flex; gap: 8px; margin-top: 12px; }
 .mm-pmore a { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px; border-radius: 100px; border: 1px solid var(--line); color: var(--text); font-size: 13.5px; opacity: 1 !important; }
 .mm-pmore a:hover { border-color: rgba(240, 184, 74, 0.55); color: var(--gold) !important; }
 .mm-pmore svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-@media (max-width: 1180px) { .mm-pillars { width: auto; } .mm-pcols { grid-template-columns: 1fr; } .mm-pillar ul { display: none; } }
+@media (max-width: 1180px) { .mm-pillars { width: auto; } .mm-pcols { grid-template-columns: 1fr; } .mm-pillar .tool-vis { display: none; } }
 
 /* Content Plan page: key dates (js/key-dates.js) on their day — a link to that date's posts in the library */
 .org-kd { display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; padding: 2px 8px; border-radius: 100px; background: var(--gold-tint); color: var(--gold); font: 600 11px var(--font-body); white-space: nowrap; text-decoration: none; max-width: 100%; overflow: hidden; }
