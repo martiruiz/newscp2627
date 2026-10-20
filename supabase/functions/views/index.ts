@@ -15,8 +15,8 @@ async function signedIn(req: Request) {
   const r = await fetch(`${env("SUPABASE_URL")}/auth/v1/user`, { headers: { apikey: env("SUPABASE_ANON_KEY"), Authorization: `Bearer ${token}` } });
   return r.ok && !!(await r.json())?.id;
 }
-const page = async (url: string) => {
-  const r = await fetch(url, { headers: { "User-Agent": UA, "Accept-Language": "en-US,en;q=0.9" } }).catch(() => null);
+const page = async (url: string, extra: Record<string, string> = {}) => {
+  const r = await fetch(url, { headers: { "User-Agent": UA, "Accept-Language": "en-US,en;q=0.9", ...extra } }).catch(() => null);
   return r?.ok ? await r.text() : "";
 };
 async function viewsOf(url: string): Promise<number | null> {
@@ -26,13 +26,16 @@ async function viewsOf(url: string): Promise<number | null> {
     return Number(/"stats":\{[^}]*?"playCount":(\d+)/.exec(html)?.[1] || /"statsV2":\{[^}]*?"playCount":"(\d+)"/.exec(html)?.[1]) || null;
   }
   if ((m = /(?:shorts\/|v=|youtu\.be\/)([\w-]{11})/.exec(url))) {
-    // YouTube's own player API (the watch page shows a cookie-consent page to servers in Europe)
-    const r = await fetch("https://www.youtube.com/youtubei/v1/player?prettyPrint=false", { method: "POST", headers: { "Content-Type": "application/json", "User-Agent": UA },
-      body: JSON.stringify({ videoId: m[1], context: { client: { clientName: "WEB", clientVersion: "2.20241010.00.00", hl: "en", gl: "US" } } }) }).catch(() => null);
-    const j = r?.ok ? await r.json().catch(() => null) : null;
-    if (Number(j?.videoDetails?.viewCount)) return Number(j.videoDetails.viewCount);
-    const html = await page(`https://www.youtube.com/watch?v=${m[1]}`);
-    return Number(/"videoDetails":\{.*?"viewCount":"(\d+)"/s.exec(html)?.[1]) || null;
+    // several ways in: YouTube answers servers differently (cookie consent in Europe, "confirm you're not a bot"…)
+    const body = JSON.stringify({ videoId: m[1], context: { client: { clientName: "WEB", clientVersion: "2.20241010.00.00", hl: "en", gl: "US" } } });
+    const api = (ep: string) => fetch(`https://www.youtube.com/youtubei/v1/${ep}?prettyPrint=false`, { method: "POST", headers: { "Content-Type": "application/json", "User-Agent": UA }, body }).then((r) => (r.ok ? r.text() : "")).catch(() => "");
+    const tries: [string, () => Promise<number>][] = [
+      ["player", async () => Number(JSON.parse((await api("player")) || "{}")?.videoDetails?.viewCount)],
+      ["next", async () => Number((/"videoViewCountRenderer":\{"viewCount":\{"simpleText":"([\d,.\s]+)/.exec(await api("next"))?.[1] || "").replace(/\D/g, ""))],
+      ["watch", async () => Number(/"videoDetails":\{.*?"viewCount":"(\d+)"/s.exec(await page(`https://www.youtube.com/watch?v=${m[1]}&hl=en&gl=US`, { Cookie: "SOCS=CAI; CONSENT=YES+cb" }))?.[1])],
+    ];
+    for (const [, f] of tries) { const n = await f().catch(() => 0); if (n) return n; }
+    return null;
   }
   return null;
 }
