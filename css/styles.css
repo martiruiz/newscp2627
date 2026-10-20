@@ -6611,9 +6611,12 @@ a.lf-sp-favs { text-decoration: none; }
    a lens in surface-2 (like the "My space" pills) that glides between them; white type, no icons */
 .lfb-row.lfb-glass { position: relative; display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); gap: 0; padding: 5px; border-radius: 999px;
   background: transparent; box-shadow: inset 0 0 0 1px var(--line); }
-.lfb-glass .lfb-lens { position: absolute; top: 5px; bottom: 5px; left: 5px; width: calc((100% - 10px) / var(--n, 3)); border-radius: 999px; pointer-events: none; transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-  background: var(--surface-2); box-shadow: inset 0 0 0 1px rgba(var(--fg), 0.14); }
-.lfb-glass .lfb-lens[hidden] { display: none; }
+.lfb-glass .lfb-lens { position: absolute; top: 5px; bottom: 5px; left: 5px; width: calc((100% - 10px) / var(--n, 3)); border-radius: 999px; pointer-events: none;
+  background: var(--surface-2); box-shadow: inset 0 0 0 1px rgba(var(--fg), 0.14);
+  transform: translateX(calc(var(--x, 0) * 100%)) scale(0.96); opacity: 0;
+  transition: transform 0.55s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.25s ease; will-change: transform; }
+.lfb-glass .lfb-lens.is-on { transform: translateX(calc(var(--x, 0) * 100%)); opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .lfb-glass .lfb-lens { transition: opacity 0.2s; } }
 .lfb-glass .lfb-btn { z-index: 1; justify-content: center; gap: 8px; height: 44px; padding: 0 16px; border: 0; border-radius: 999px; background: transparent; color: var(--text); text-align: center; transition: background 0.3s; }
 .lfb-glass .lfb-btn:hover { background: rgba(var(--fg), 0.04); }
 .lfb-glass .lfb-btn.is-open, .lfb-glass .lfb-btn.is-open:hover { background: transparent; }

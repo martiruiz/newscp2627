@@ -758,19 +758,28 @@
     const open = items.find((it) => it.key === ui.bar);
     const keep = $(".lfp-main", bar)?.scrollTop || 0;
     bar.hidden = false;
-    // one outlined capsule; the open section sits under a lens that slides between them
+    // one outlined capsule; the open section sits under a lens that glides between them. The capsule is built once and
+    // then only updated (rebuilding it would cut the lens's movement short); the panel below is replaced.
     const oi = items.indexOf(open);
-    bar.innerHTML = `<div class="lfb-row lfb-glass" role="toolbar" aria-label="${esc(tx("Filters"))}" style="--n:${items.length}"><span class="lfb-lens"${oi < 0 ? " hidden" : ""}></span>${items.map((it) => `<button type="button" class="lfb-btn${it.n ? " is-set" : ""}${open === it ? " is-open" : ""}" aria-expanded="${open === it}" data-lfb="${it.key}"><span class="lfb-tx"><b>${esc(it.label)}</b></span>${it.n ? `<em>${it.n}</em>` : ""}</button>`).join("")}</div>
-      ${open ? `<div class="lfb-panel lfp" role="dialog" aria-label="${esc(open.label)}">${lfpHtml(open.key)}</div>` : ""}`;
-    if (open) { $(".lfp-main", bar).scrollTop = keep; loadCovers(open.key); }
-    // the lens glides from the section that was open to the new one
-    const lens = $(".lfb-lens", bar);
-    if (oi >= 0) {
-      const from = ui.lensAt ?? oi;
-      lens.style.transform = `translateX(${from * 100}%)`;
-      if (from !== oi) requestAnimationFrame(() => requestAnimationFrame(() => { lens.style.transform = `translateX(${oi * 100}%)`; }));
+    const keys = items.map((it) => it.key).join();
+    let row = $(".lfb-row", bar);
+    if (!row || row.dataset.keys !== keys) {
+      bar.innerHTML = `<div class="lfb-row lfb-glass" role="toolbar" aria-label="${esc(tx("Filters"))}" style="--n:${items.length}" data-keys="${keys}"><span class="lfb-lens"></span>${items.map((it) => `<button type="button" class="lfb-btn" data-lfb="${it.key}"><span class="lfb-tx"><b>${esc(it.label)}</b></span><em hidden></em></button>`).join("")}</div><div data-lfb-host></div>`;
+      row = $(".lfb-row", bar);
     }
-    ui.lensAt = oi >= 0 ? oi : null;
+    items.forEach((it, k) => {
+      const b = row.querySelectorAll("[data-lfb]")[k], em = b.querySelector("em");
+      b.classList.toggle("is-set", !!it.n); b.classList.toggle("is-open", open === it); b.setAttribute("aria-expanded", String(open === it));
+      em.hidden = !it.n; em.textContent = it.n || "";
+    });
+    const lens = $(".lfb-lens", row);
+    if (oi >= 0) {
+      if (!lens.classList.contains("is-on")) { lens.style.transition = "none"; lens.style.setProperty("--x", oi); void lens.offsetWidth; lens.style.transition = ""; }   // appears where it is, then glides
+      lens.style.setProperty("--x", oi);
+    }
+    lens.classList.toggle("is-on", oi >= 0);
+    $("[data-lfb-host]", bar).innerHTML = open ? `<div class="lfb-panel lfp" role="dialog" aria-label="${esc(open.label)}">${lfpHtml(open.key)}</div>` : "";
+    if (open) { $(".lfp-main", bar).scrollTop = keep; loadCovers(open.key); }
   }
 
   // Mobile: the three specials as quick chips above the posts
