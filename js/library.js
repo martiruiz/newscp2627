@@ -604,6 +604,131 @@
     loadToneThumbs();
   }
 
+  // ---------- Bar panels (wide screens): the section's groups on the left, their options as cards on the right ----------
+  // Each option shows the cover of its most viewed post (supabase/value-covers.sql); clubs, competitions and sponsors
+  // show their logo, sports their icon. A search box looks through every group; the footer lists what's chosen.
+  const BAR_GROUPS = {
+    occasion: [
+      { key: "matchday", label: "Matchday", ico: "ball", desc: "Before, during and after the game" },
+      { key: "transfer", label: "Transfer market", ico: "swap", desc: "Signings, renewals and farewells", cats: ["transfer"] },
+      { key: "kit", label: "Kit launches", ico: "shirt", desc: "Shirts and collections", cats: ["kit"] },
+      { key: "season_moment", label: "Season", ico: "flag", desc: "The big moments of the year", cats: ["season_moment"] },
+      { key: "moment", label: "Dates & campaigns", ico: "star", desc: "Records, tributes and calendar dates", cats: ["moment"] },
+      { key: "angle", label: "How do you tell it?", ico: "smile", desc: "The tone of the post", cats: ["angle"] },
+      { key: "comms", label: "Press and comms", ico: "message", desc: "Announcements, press and practical info", cats: ["comms"] },
+      { key: "crisis", label: "Sensitive topics", ico: "alert", desc: "How other clubs handle them, with care", cats: ["crisis"] },
+    ],
+    goal: [
+      { key: "goal", label: "Business goal", ico: "target", desc: "What the post should achieve", cats: ["goal"] },
+      { key: "cta", label: "Call to action", ico: "cursor", desc: "What it asks the fans to do", cats: ["cta"] },
+      { key: "sponsor", label: "Sponsors", ico: "tag", desc: "Brands on other clubs' posts", cats: ["sponsor"], logos: true },
+      { key: "sponsor_integration", label: "Integration", ico: "badge", desc: "How the sponsor appears", cats: ["sponsor_integration"] },
+      { key: "sponsor_sector", label: "Sponsor sector", ico: "briefcase", desc: "Partners by industry", cats: ["sponsor_sector"] },
+      { key: "collab", label: "Collaborations", ico: "users", desc: "Posts made with others", cats: ["collab"] },
+    ],
+    benchmark: [
+      { key: "sport", label: "Sport", ico: "ball", desc: "Every sport in the library", cats: ["sport"], tiles: true },
+      { key: "competition", label: "Competition", ico: "trophy", desc: "Leagues and cups", cats: ["competition"], logos: true },
+      { key: "club", label: "Club", ico: "shield", desc: "Clubs and teams", cats: ["club"], logos: true },
+      { key: "entity", label: "Publisher type", ico: "users", desc: "Who published it", cats: ["entity"] },
+      { key: "team", label: "Team", ico: "user", desc: "Women's team, academy, legends…", cats: ["team"] },
+      { key: "city", label: "City", ico: "pin", desc: "Clubs by city", cats: ["city"], logos: true },
+    ],
+  };
+  const MD_IDS = () => new Set(MATCHDAY.flatMap((ph) => ph.vals.map(([c, n]) => valByName(c, n)?.id)).filter(Boolean));
+  const live = (v) => countOf(v) > 0 || isOn(v);
+  function groupVals(g) {
+    if (g.key === "matchday") { const md = MD_IDS(); return [...[...md].map((id) => catalog.byId.get(id)), ...(catalog.byCat.matchday_graphic || []), ...(catalog.byCat.outcome || [])].filter((v, i, a) => v && a.indexOf(v) === i && live(v)); }
+    const md = g.key === "moment" ? MD_IDS() : null;   // matchday previews / coverage live in Matchday
+    return g.cats.flatMap((k) => (catalog.byCat[k] || []).filter((v) => live(v) && !(md && md.has(v.id)) && !(k === "entity" && REPEATED.entity.includes(v.name.toLowerCase()) && !isOn(v))));
+  }
+  const groupsOf = (sec) => (BAR_GROUPS[sec] || []).filter((g) => groupVals(g).length || (g.key === "matchday" && has("opponent")));
+  const covers = new Map();   // value id → cover url ("" = none)
+  const hotOf = (list) => list.reduce((b, v) => (countOf(v) > countOf(b || v) || !b ? v : b), null);
+  function lfpCard(v, g, hot) {
+    const on = isOn(v), n = countOf(v);
+    const st = `${on ? " is-on" : ""}${n === 0 && !on ? " is-zero" : ""}${n < 20 && !on ? " is-low" : ""}`;
+    const meta = `<span class="lfp-meta"><b>${esc(pretty(v.name))}</b><small>${esc(tx("{n} posts", { n: kfmt(n) }))}</small></span><span class="lfp-ck">${svg("check")}</span>`;
+    if (g.tiles) return `<button type="button" class="lfp-logo${st}" aria-pressed="${on}" data-facet="${v.category}" data-id="${v.id}"><span class="lfp-lg lfp-lg-ic">${svg(SPORT_ICON[v.name.toLowerCase()] || "dots")}</span>${meta}</button>`;
+    if (g.logos) return `<button type="button" class="lfp-logo${st}" aria-pressed="${on}" data-facet="${v.category}" data-id="${v.id}">${v.logo ? `<span class="lfp-lg"><img src="${esc(v.logo)}" alt="" loading="lazy"></span>` : `<span class="lfp-lg"><b>${esc(initials(v.name))}</b></span>`}${meta}</button>`;
+    const c = covers.get(v.id);
+    return `<button type="button" class="lfp-card${st}" aria-pressed="${on}" data-facet="${v.category}" data-id="${v.id}">
+      <span class="lfp-img" data-cover="${v.id}"${c ? ` style="background-image:url('${esc(c)}')"` : ""}>${c ? "" : svg(g.ico)}</span>${hot ? `<span class="lfp-hot">${esc(tx("Popular"))}</span>` : ""}${meta}</button>`;
+  }
+  const lfpCards = (list, g, max = 0) => { const l = byCount(list), shown = max ? [...l.slice(0, max), ...l.slice(max).filter(isOn)] : l, hot = l.length > 2 ? l[0] : null;
+    return `<div class="lfp-cards${g.logos || g.tiles ? " lfp-cards-logo" : ""}">${shown.map((v) => lfpCard(v, g, v === hot && !g.logos && !g.tiles)).join("")}</div>`; };
+  function lfpMatchday(g) {
+    const phases = MATCHDAY.map((ph) => ({ ...ph, list: ph.vals.map(([cat, name]) => valByName(cat, name)).filter((v) => v && live(v)) })).filter((ph) => ph.list.length);
+    const nOn = (ph) => ph.list.filter(isOn).length;
+    const cur = phases.find((ph) => ph.key === ui.phase) || phases.find(nOn) || phases[0];
+    const inPh = MD_IDS();
+    const other = (catalog.byCat.matchday_graphic || []).filter((v) => live(v) && !inPh.has(v.id));
+    const results = (catalog.byCat.outcome || []).filter(live);
+    const DOT = { win: "#3ddc97", loss: "#ff6b6b", draw: "#b4c0d3" };
+    return `${cur ? `<div class="lfp-phases" role="tablist">${phases.map((ph) => `<button type="button" role="tab" aria-selected="${ph === cur}" class="${ph === cur ? "is-on" : ""}${ph.key === "live" ? " is-live" : ""}" data-md-phase="${ph.key}"><i></i>${esc(tx(ph.label))}${nOn(ph) ? `<em>${nOn(ph)}</em>` : ""}</button>`).join("")}</div>${lfpCards(cur.list, g)}` : ""}
+      ${results.length && (!cur || cur.key !== "before") ? `<p class="lfp-sub">${esc(tx("Result"))}</p><div class="lfp-chips">${results.map((v) => `<button type="button" class="lfp-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="outcome" data-id="${v.id}"><i style="background:${DOT[v.name.toLowerCase()] || "#b4c0d3"}"></i>${esc(pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`).join("")}</div>` : ""}
+      ${has("opponent") ? `<p class="lfp-sub">${esc(tx("Opponent"))}</p><div class="lf-stack lfp-opp">${rowHtml(CAT.opponent)}</div>` : ""}
+      ${other.length ? `<p class="lfp-sub">${esc(tx("More matchday graphics"))}</p>${lfpCards(other, g)}` : ""}`;
+  }
+  function lfpMain(sec) {
+    const groups = groupsOf(sec);
+    const q = fold(ui.barQ || "");
+    if (q) {
+      const hits = groups.map((g) => [g, groupVals(g).filter((v) => fold(v.name).includes(q) || fold(tx(pretty(v.name))).includes(q)).slice(0, 40)]).filter(([, l]) => l.length);
+      return hits.length ? hits.map(([g, l]) => `<p class="lfp-sub">${esc(tx(g.label))}</p>${lfpCards(l, g)}`).join("")
+        : `<p class="lfp-none">${esc(tx("Nothing matches “{q}”.", { q: ui.barQ }))}</p>`;
+    }
+    const g = groups.find((x) => x.key === ui.barG?.[sec]) || groups[0];
+    if (!g) return "";
+    const total = groupVals(g).reduce((s, v) => s + (g.key === "matchday" && v.category === "outcome" ? 0 : countOf(v)), 0);
+    const head = `<div class="lfp-head"><div><h3>${esc(tx(g.label))}</h3><p>${esc(tx(g.desc))}</p></div>${total ? `<span>${esc(tx("{n} posts", { n: total.toLocaleString(window.SCP_LOC || "en-GB") }))}</span>` : ""}</div>`;
+    if (g.key === "matchday") return head + lfpMatchday(g);
+    const many = g.logos && groupVals(g).length > 30;
+    return head + (g.key === "city" ? "" : lfpCards(groupVals(g), g, many ? 30 : 0))
+      + (many || g.key === "city" ? `<p class="lfp-tip">${svg("search")}${esc(tx("Search above to find any of the {n}", { n: groupVals(g).length.toLocaleString(window.SCP_LOC || "en-GB") }))}</p>` : "");
+  }
+  function lfpTop(sec) {
+    let pills = "";
+    if (sec === "occasion" && planHints?.length) pills = planHints.map((h) => `<button type="button" class="lfp-pill${isOn(h.v) ? " is-on" : ""}" data-facet="${h.v.category}" data-id="${h.v.id}">${svg("calendar")}${esc(pretty(h.v.name))}</button>`).join("");
+    if (sec === "benchmark") { const l = likeMineIds(); if (l) { const on = l.ids.every((id) => selected[l.cat].has(id)); pills = `<button type="button" class="lfp-pill${on ? " is-on" : ""}" data-like-mine>${svg("shield")}${esc(tx("Clubs like mine"))} <em>${esc(l.ids.map((id) => pretty(catalog.byId.get(id).name)).slice(0, 2).join(", "))}</em></button>`; } }
+    if (!pills) {   // the most posted options of the section
+      const top = groupsOf(sec).filter((g) => !g.logos && !g.tiles).flatMap(groupVals).filter((v) => v.category !== "outcome").sort((a, b) => countOf(b) - countOf(a)).slice(0, 4);
+      pills = top.map((v) => `<button type="button" class="lfp-pill${isOn(v) ? " is-on" : ""}" data-facet="${v.category}" data-id="${v.id}">${esc(pretty(v.name))} <em>${kfmt(countOf(v))}</em></button>`).join("");
+    }
+    const lbl = sec === "occasion" && planHints?.length ? "In your Content Plan" : sec === "benchmark" && likeMineIds() ? "For you" : "Popular";
+    return `<label class="lfp-search">${svg("search")}<input type="search" data-lfb-q value="${esc(ui.barQ || "")}" placeholder="${esc(tx(sec === "occasion" ? "Search an occasion: derby, signing, birthday…" : sec === "goal" ? "Search a goal, a sponsor or a sector…" : "Search a sport, a competition or a club…"))}" autocomplete="off"></label>
+      ${pills ? `<div class="lfp-now"><span class="lfp-now-l">${svg("trend")}${esc(tx(lbl))}</span>${pills}</div>` : ""}`;
+  }
+  function lfpRail(sec) {
+    return groupsOf(sec).map((g) => {
+      const n = groupVals(g).filter(isOn).length + (g.key === "matchday" ? selected.opponent.size : g.key === "moment" ? 0 : 0);
+      const cur = !ui.barQ && (ui.barG?.[sec] || groupsOf(sec)[0]?.key) === g.key;
+      return `<button type="button" class="lfp-r${cur ? " is-on" : ""}" data-lfb-g="${g.key}"><span class="lfp-ric">${svg(g.ico)}</span><span class="lfp-rtx"><b>${esc(tx(g.label))}</b><small>${esc(tx("{n} options", { n: groupVals(g).length }))}</small></span>${n ? `<em>${n}</em>` : ""}</button>`;
+    }).join("");
+  }
+  function lfpFoot(sec) {
+    const sel = CATEGORIES.filter((c) => secOf(c) === sec).flatMap((c) => [...selected[c.key]].map((id) => catalog.byId.get(id)).filter(Boolean));
+    return `<div class="lfp-sel">${sel.length ? sel.map((v) => `<span class="lfp-tag">${esc(pretty(v.name))}<button type="button" data-facet="${v.category}" data-id="${v.id}" aria-label="${esc(tx("Remove"))}">${icon("x")}</button></span>`).join("") : `<span class="lfp-hint">${esc(tx("Pick one or more options"))}</span>`}</div>
+      ${sel.length ? `<button type="button" class="lfp-clear" data-lfb-clear="${sec}">${esc(tx("Clear"))}</button>` : ""}
+      <button type="button" class="lfp-go" data-lfb-close><span data-lfb-go>${esc(goLabel())}</span>${icon("arrow-up-right")}</button>`;
+  }
+  const goLabel = () => (ui.total == null ? tx("Show posts") : ui.total ? tx("Show {n} posts", { n: Number(ui.total).toLocaleString(window.SCP_LOC || "en-GB") }) : tx("No posts — change the filters"));
+  const lfpHtml = (sec) => `<div class="lfp-top">${lfpTop(sec)}</div><div class="lfp-body"><nav class="lfp-rail" aria-label="${esc(tx("Groups"))}">${lfpRail(sec)}</nav><div class="lfp-main" data-lfp-main>${lfpMain(sec)}</div></div><div class="lfp-foot">${lfpFoot(sec)}</div>`;
+  async function loadCovers(sec) {
+    const ids = groupsOf(sec).filter((g) => !g.logos && !g.tiles).flatMap(groupVals).map((v) => v.id).filter((id) => !covers.has(id));
+    if (!ids.length || !db) return;
+    ids.forEach((id) => covers.set(id, ""));
+    for (let i = 0; i < ids.length; i += 60) {
+      const { data, error } = await db.rpc("value_covers", { p_ids: ids.slice(i, i + 60) });
+      if (error) return;   // supabase/value-covers.sql not run yet: the cards keep their icon
+      for (const r of data || []) {
+        if (!r.cover) continue;
+        covers.set(Number(r.id), r.cover);
+        $$(`[data-cover="${r.id}"]`).forEach((el) => { el.style.backgroundImage = `url('${r.cover}')`; el.innerHTML = ""; });
+      }
+    }
+  }
+
   // ---------- Bar above the posts (wide screens): one button per section, its filters in a wide panel ----------
   const BAR_ICO = { occasion: "calendar", goal: "target", benchmark: "trophy" };
   const secOf = (c) => (c.key === "angle" || c.key === "campaign" ? "occasion" : ["format", "platform"].includes(c.sec) ? "where" : c.sec);
@@ -613,11 +738,11 @@
     const items = list.map((s) => ({ key: s.key, label: tx(s.label), q: s.q ? tx(s.q) : "", n: CATEGORIES.filter((c) => secOf(c) === s.key).reduce((t, c) => t + selected[c.key].size, 0), html: parts[s.key] }));
     if (!items.some((it) => it.key === ui.bar)) ui.bar = null;
     const open = items.find((it) => it.key === ui.bar);
-    const keep = $(".lfb-body", bar)?.scrollTop || 0;
+    const keep = $(".lfp-main", bar)?.scrollTop || 0;
     bar.hidden = false;
     bar.innerHTML = `<div class="lfb-row" role="toolbar" aria-label="${esc(tx("Filters"))}">${items.map((it) => `<button type="button" class="lfb-btn${it.n ? " is-set" : ""}${open === it ? " is-open" : ""}" aria-expanded="${open === it}" data-lfb="${it.key}">${svg(BAR_ICO[it.key])}<span class="lfb-tx"><b>${esc(it.label)}</b><small>${esc(it.q)}</small></span>${it.n ? `<em>${it.n}</em>` : ""}${svg("chev", "lfb-chev")}</button>`).join("")}</div>
-      ${open ? `<div class="lfb-panel" role="dialog" aria-label="${esc(open.label)}"><div class="lfb-body lfb-${open.key}">${open.html}</div><div class="lfb-foot"><button type="button" class="btn btn-gold btn-sm" data-lfb-close>${esc(tx("Done"))}</button></div></div>` : ""}`;
-    if (open) $(".lfb-body", bar).scrollTop = keep;
+      ${open ? `<div class="lfb-panel lfp" role="dialog" aria-label="${esc(open.label)}">${lfpHtml(open.key)}</div>` : ""}`;
+    if (open) { $(".lfp-main", bar).scrollTop = keep; loadCovers(open.key); }
   }
 
   // Mobile: the three specials as quick chips above the posts
@@ -721,7 +846,11 @@
       return load(true);
     }
     const lfb = e.target.closest("[data-lfb]");
-    if (lfb) { ui.bar = ui.bar === lfb.dataset.lfb ? null : lfb.dataset.lfb; return renderFacets(); }
+    if (lfb) { ui.bar = ui.bar === lfb.dataset.lfb ? null : lfb.dataset.lfb; ui.barQ = ""; return renderFacets(); }
+    const grp = e.target.closest("[data-lfb-g]");
+    if (grp) { ui.barG = { ...ui.barG, [ui.bar]: grp.dataset.lfbG }; ui.barQ = ""; renderFacets(); $(".lfp-main")?.scrollTo(0, 0); return; }
+    const clr = e.target.closest("[data-lfb-clear]");
+    if (clr) { CATEGORIES.filter((c) => secOf(c) === clr.dataset.lfbClear).forEach((c) => selected[c.key].clear()); renderFacets(); return load(true); }
     if (e.target.closest("[data-lfb-close]")) { ui.bar = null; return renderFacets(); }
     const f = e.target.closest("[data-facet]");
     if (f) { if (f.getAttribute("aria-disabled") === "true") return; return toggleValue(f.dataset.facet, Number(f.dataset.id)); }
@@ -760,6 +889,8 @@
   $("[data-lf-quick]").addEventListener("click", (e) => { const f = e.target.closest("[data-facet]"); if (f && !f.classList.contains("is-zero")) toggleValue(f.dataset.facet, Number(f.dataset.id)); });
   // list searches re-render only their own list (keeps the focus while typing)
   const onFilterInput = (e) => {
+    const bq = e.target.closest("[data-lfb-q]");
+    if (bq) { ui.barQ = bq.value.trim(); $("[data-lfp-main]").innerHTML = lfpMain(ui.bar); $(".lfp-rail").innerHTML = lfpRail(ui.bar); loadCovers(ui.bar); return; }
     const s = e.target.closest("[data-facet-search]");
     if (s) {
       const k = s.dataset.facetSearch, pos = s.selectionStart;
@@ -1225,6 +1356,8 @@
     if (error) return showNote(/schema cache|does not exist|function/i.test(error.message) ? "The library isn't connected yet (run supabase/library-ideas.sql in Supabase)." : "Couldn't load posts right now.");
     const rows = data?.data || [];
     if (reset) {
+      ui.total = data.total;
+      const g = $("[data-lfb-go]"); if (g) g.textContent = goLabel();
       $("[data-lf-go]").textContent = data.total ? `Show ${Number(data.total).toLocaleString(window.SCP_LOC || "en-GB")} results` : "No results — change the filters";
     }
     if (!rows.length && offset === 0) {
