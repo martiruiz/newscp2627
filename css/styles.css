@@ -4399,14 +4399,18 @@ button.plan-cta { width: 100%; cursor: pointer; font: inherit; }
 :root[data-theme="light"] .site-nav { box-shadow: 0 8px 30px rgba(18, 27, 51, 0.08); }
 
 /* Theme switch (injected in the nav by js/theme.js) */
-.theme-toggle { position: relative; flex: none; width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; overflow: hidden;
-  border: 0.5px solid var(--line); background: var(--surface-2); color: var(--muted); cursor: pointer; transition: color 0.2s, border-color 0.2s, background 0.2s; }
-.theme-toggle:hover { color: var(--gold); border-color: var(--gold-dim); }
-.theme-toggle svg { position: absolute; width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+/* a soft rounded square: night → a sun on dark glass (switch to day), day → a moon on white (switch to night) */
+.theme-toggle { position: relative; flex: none; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; overflow: hidden; cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.12); background: linear-gradient(180deg, #2b3142, #1a1f2c); color: #d9dde6;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 4px 14px -6px rgba(0, 0, 0, 0.6); transition: color 0.2s, border-color 0.2s, background 0.2s, box-shadow 0.2s; }
+.theme-toggle:hover { color: #fff; border-color: rgba(255, 255, 255, 0.22); }
+:root[data-theme="light"] .theme-toggle { border-color: #e2e4e9; background: #fff; color: #3b3f47; box-shadow: 0 1px 2px rgba(18, 27, 51, 0.06); }
+:root[data-theme="light"] .theme-toggle:hover { color: #121b33; border-color: #cfd3da; }
+.theme-toggle svg { position: absolute; width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round;
   transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s; }
-.theme-toggle .tt-sun { transform: translateY(120%) rotate(-90deg); opacity: 0; }
-:root[data-theme="light"] .theme-toggle .tt-sun { transform: none; opacity: 1; }
-:root[data-theme="light"] .theme-toggle .tt-moon { transform: translateY(-120%) rotate(90deg); opacity: 0; }
+.theme-toggle .tt-moon { transform: translateY(120%) rotate(-90deg); opacity: 0; }
+:root[data-theme="light"] .theme-toggle .tt-moon { transform: none; opacity: 1; }
+:root[data-theme="light"] .theme-toggle .tt-sun { transform: translateY(-120%) rotate(90deg); opacity: 0; }
 html.theme-anim, html.theme-anim body, html.theme-anim *, html.theme-anim *::before, html.theme-anim *::after { transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease, fill 0.35s ease !important; }
 
 /* ---------- Memberships: pricing switches, comparison, private plans, terms before paying ---------- */
