@@ -17,6 +17,7 @@ import { fileURLToPath } from "node:url";
 import { createClient } from "@supabase/supabase-js";
 import { loadEnv } from "./env.mjs";
 import { igMeta } from "./instagram.mjs";
+import { imageSize } from "./image-size.mjs";
 
 loadEnv();
 const env = (k) => process.env[k] || "";
@@ -162,6 +163,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
         if (!stored) { missing++; await sleep(slow); continue; }
         await db.from("content_ideas").update({ cover_url: stored.url, cover_at: new Date().toISOString(), ...(!ig && c.media_type ? { media_type: c.media_type } : {}), ...(!ig && c.width && c.height ? { media_width: c.width, media_height: c.height, media_ratio: Math.round((c.height / c.width) * 10000) / 10000 } : {}), ...(!ig && c.duration ? { duration_s: c.duration } : {}) }).eq("id", r.id);
         if (ig) await db.rpc("apply_ig_meta", { p_rows: [{ id: r.id, media_type: c.media_type, width: c.width, height: c.height, duration: c.duration, views: c.views }] });
+        if (/facebook\.com/.test(r.url || "")) { const sz = imageSize(Buffer.from(stored.data, "base64")); if (sz) await db.rpc("apply_media_shape", { p_rows: [{ id: r.id, ...sz }] }); }
         done++;
         await sleep(slow);
       }
@@ -191,6 +193,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
         if (!stored) { missing++; await sleep(slow); continue; }
         await db.from("content_ideas").update({ cover_url: stored.url, cover_at: new Date().toISOString(), ...(c.media_type && pf.name !== "Instagram" ? { media_type: c.media_type } : {}), ...(c.width && c.height && pf.name !== "Instagram" ? { media_width: c.width, media_height: c.height, media_ratio: Math.round((c.height / c.width) * 10000) / 10000 } : {}), ...(c.duration && pf.name !== "Instagram" ? { duration_s: c.duration } : {}) }).eq("id", r.id);
         if (pf.name === "Instagram") metas.push({ id: r.id, media_type: c.media_type, width: c.width, height: c.height, duration: c.duration, views: c.views });
+        if (pf.name === "Facebook") { const sz = imageSize(Buffer.from(stored.data, "base64")); if (sz) await db.rpc("apply_media_shape", { p_rows: [{ id: r.id, ...sz }] }); }   // supabase/media-shape.sql
         done++;
         await sleep(slow);
       }

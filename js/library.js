@@ -196,6 +196,7 @@
       points: ["Trends before clubs adopt them", "Ideas for collabs with creators"] },
   };
   const special = (v) => SPECIAL[v.name.toLowerCase()] || { cls: "lf-sp-top", ico: "star", desc: "" };
+  const SHAPE_WORD = { "9:16": "Vertical", "2:3": "Vertical", "3:4": "Vertical", "4:5": "Vertical", "1:1": "Square", "4:3": "Horizontal", "16:9": "Horizontal", "1.91:1": "Horizontal" };
   const shapeBox = (name) => {
     const [w, h] = String(name).split(":").map(Number);
     if (!w || !h) return "";
@@ -405,7 +406,7 @@
     // proportions only once a format is chosen: they open right under the tiles, only the ones that format has
     // (also while a proportion is still selected, so it can be removed)
     const shapes = (selected.format.size || selected.aspect_ratio.size) && has("aspect_ratio") ? catalog.byCat.aspect_ratio.filter((v) => countOf(v) > 0 || isOn(v)) : [];
-    const shapeBtn = (v) => `<button type="button" class="lf-shp${isOn(v) ? " is-on" : ""}${countOf(v) === 0 && !isOn(v) ? " is-zero" : ""}" aria-pressed="${isOn(v)}" data-facet="aspect_ratio" data-id="${v.id}">${shapeBox(v.name)}<span>${esc(v.name)}</span></button>`;
+    const shapeBtn = (v) => `<button type="button" class="lf-shp${isOn(v) ? " is-on" : ""}${countOf(v) === 0 && !isOn(v) ? " is-zero" : ""}" aria-pressed="${isOn(v)}" data-facet="aspect_ratio" data-id="${v.id}"${SHAPE_WORD[v.name] ? ` data-tip="${esc(tx(SHAPE_WORD[v.name]))}"` : ""}>${shapeBox(v.name)}<span>${esc(v.name)}</span></button>`;
     const shapesHtml = shapes.length ? `<div class="lf-fmt-ar"><div class="lf-sub">${esc(tx(CAT_LABEL.aspect_ratio))}</div><div class="lf-shapes">${byCount(shapes).map((v) => shapeBtn(v).replace("</span></button>", `</span><em>${kfmt(countOf(v))}</em></button>`)).join("")}</div></div>` : "";
     const extra = durationHtml();
     const lang = has("language") ? `<div class="lf-stack lf-row-gap">${rowHtml(CAT.language)}</div>` : "";

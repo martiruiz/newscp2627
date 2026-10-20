@@ -108,7 +108,29 @@ async function coverFor(url: string): Promise<Cover> {
   return null;
 }
 
-// download → Storage "covers/{id/1000}/{id}.{ext}" → public URL
+// width / height of a JPEG, PNG or WebP from its bytes (Facebook doesn't give the shape: the cover does)
+function imageSize(b: Uint8Array): { width: number; height: number } | null {
+  const dv = new DataView(b.buffer, b.byteOffset, b.byteLength), str = (i: number, n: number) => String.fromCharCode(...b.subarray(i, i + n));
+  if (b[0] === 0x89 && str(1, 3) === "PNG") return { width: dv.getUint32(16), height: dv.getUint32(20) };
+  if (str(0, 4) === "RIFF" && str(8, 4) === "WEBP") {
+    const t = str(12, 4);
+    if (t === "VP8 ") return { width: dv.getUint16(26, true) & 0x3fff, height: dv.getUint16(28, true) & 0x3fff };
+    if (t === "VP8L") { const v = dv.getUint32(21, true); return { width: (v & 0x3fff) + 1, height: ((v >> 14) & 0x3fff) + 1 }; }
+    if (t === "VP8X") return { width: 1 + (b[24] | (b[25] << 8) | (b[26] << 16)), height: 1 + (b[27] | (b[28] << 8) | (b[29] << 16)) };
+  }
+  if (b[0] === 0xff && b[1] === 0xd8) {
+    let i = 2;
+    while (i < b.length - 9) {
+      if (b[i] !== 0xff) { i++; continue; }
+      const m = b[i + 1];
+      if (m >= 0xc0 && m <= 0xcf && ![0xc4, 0xc8, 0xcc].includes(m)) return { height: dv.getUint16(i + 5), width: dv.getUint16(i + 7) };
+      i += 2 + dv.getUint16(i + 2);
+    }
+  }
+  return null;
+}
+
+// download → Storage "covers/{id/1000}/{id}.{ext}" → public URL (and its size)
 async function store(id: number, imageUrl: string) {
   const r = await fetch(imageUrl, { headers: { "User-Agent": UA } }).catch(() => null);
   if (!r?.ok) return null;
@@ -116,10 +138,11 @@ async function store(id: number, imageUrl: string) {
   const ext = ({ "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "image/avif": "avif" } as Record<string, string>)[type];
   if (!ext) return null;
   const path = `${Math.floor(id / 1000)}/${id}.${ext}`;
+  const bytes = new Uint8Array(await r.arrayBuffer());
   const up = await fetch(`${env("SUPABASE_URL")}/storage/v1/object/covers/${path}`, { method: "POST",
-    headers: { ...service, "Content-Type": type, "x-upsert": "true", "Cache-Control": "max-age=31536000" }, body: new Uint8Array(await r.arrayBuffer()) });
+    headers: { ...service, "Content-Type": type, "x-upsert": "true", "Cache-Control": "max-age=31536000" }, body: bytes });
   if (!up.ok) throw new Error(`storage: ${up.status} ${await up.text()}`);
-  return `${env("SUPABASE_URL")}/storage/v1/object/public/covers/${path}`;
+  return { url: `${env("SUPABASE_URL")}/storage/v1/object/public/covers/${path}`, size: imageSize(bytes) };
 }
 
 Deno.serve(async (req) => {
@@ -137,10 +160,12 @@ Deno.serve(async (req) => {
     try {
       const c = await coverFor(p.url || "");
       if (c?.broken) { removed++; await rest(`content_ideas?id=eq.${p.id}`, { method: "PATCH", body: JSON.stringify({ unavailable_at: now, cover_at: now }) }); continue; }
-      const url = c?.image ? await store(p.id, c.image) : null;
+      const st = c?.image ? await store(p.id, c.image) : null;
+      const url = st?.url;
       if (!url) { noImage++; await rest(`content_ideas?id=eq.${p.id}`, { method: "PATCH", body: JSON.stringify({ cover_at: now }) }); continue; }
       const extra = !ig ? { ...(c!.media_type ? { media_type: c!.media_type } : {}), ...(c!.width && c!.height ? { media_width: c!.width, media_height: c!.height, media_ratio: Math.round((c!.height / c!.width) * 10000) / 10000 } : {}), ...(c!.duration ? { duration_s: c!.duration } : {}) } : {};
       await rest(`content_ideas?id=eq.${p.id}`, { method: "PATCH", body: JSON.stringify({ cover_url: `${url}?v=${Date.now().toString(36)}`, cover_at: now, ...extra }) });
+      if (/facebook\.com/.test(p.url || "") && st?.size) await rest("rpc/apply_media_shape", { method: "POST", body: JSON.stringify({ p_rows: [{ id: p.id, ...st.size }] }) }).catch(() => {});   // supabase/media-shape.sql
       if (ig) await rest("rpc/apply_ig_meta", { method: "POST", body: JSON.stringify({ p_rows: [{ id: p.id, media_type: c!.media_type, width: c!.width, height: c!.height, duration: c!.duration, views: c!.views }] }) });
       done++;
     } catch (_) {
