@@ -3106,11 +3106,6 @@ a.blog-img { display: block; }
 }
 
 /* ---------- AI credits & unlocks ---------- */
-.ai-credits { display: inline-flex; align-items: center; gap: 7px; height: 36px; padding: 0 14px; border-radius: 100px; background: var(--gold-tint); border: 0.5px solid rgba(240, 184, 74, 0.45); color: var(--gold); font-size: 13px; white-space: nowrap; }
-.ai-credits[hidden] { display: none; }
-.ai-credits svg { width: 15px; height: 15px; }
-.ai-credits b { font-family: var(--font-display); font-size: 15px; }
-.ai-credits small { color: var(--muted); font-size: 11px; margin-left: 2px; }
 .lib-analysis small { font-size: 11px; opacity: 0.75; font-weight: 400; }
 .lib-analysis.is-locked { color: var(--muted-dim); }
 .lib-analysis.is-locked svg { opacity: 0.8; }
@@ -3633,7 +3628,6 @@ a.blog-img { display: block; }
 .org-m-date input { padding: 2px 6px; border-radius: 6px; background: var(--surface-2); border: 0.5px solid var(--line); color: var(--text); font: inherit; font-size: 12px; color-scheme: dark; }
 .org-m-dayname { margin-right: 2px; }
 .plan-open .feed-bar { flex-wrap: wrap; row-gap: 10px; height: auto; min-height: 61px; padding-block: 12px; }
-.plan-open .feed-bar .ai-credits small { display: none; }
 .org-entry.has-thumb .org-entry-meta { flex-wrap: wrap; row-gap: 3px; }
 
 /* ---------- Content Plan week: folding night / evening, now line, hover add, drop preview ---------- */
@@ -6397,3 +6391,13 @@ th .org-kd { display: flex; justify-content: center; margin: 4px auto 0; width: 
 .lf-sp-favs .lf-sp-tx { display: grid; line-height: 1.2; }
 .lf-sp-favs .lf-sp-tx small { font-size: 11px; font-weight: 500; opacity: 0.75; }
 a.lf-sp-favs { text-decoration: none; }
+
+/* "My AI analyses": analyses left on the button (red at 0) and the "buy more" tab under it */
+.ai-mine b.is-out { background: #ff5a5f; color: #fff; }
+.my-space-btns { position: relative; }
+.ai-out { position: absolute; top: calc(100% + 8px); left: 0; z-index: 30; width: 300px; display: grid; gap: 8px; padding: 14px 16px; border-radius: 14px; border: 1px solid rgba(160, 125, 255, 0.45);
+  background: var(--surface); box-shadow: 0 24px 60px -18px rgba(0, 0, 0, 0.7), 0 0 40px -10px rgba(123, 92, 255, 0.5); white-space: normal; animation: lfFmtIn 0.18s ease; }
+.ai-out b { font-size: 14px; }
+.ai-out p { margin: 0; font-size: 12.5px; line-height: 1.45; color: var(--muted); }
+.ai-out .btn { justify-content: center; gap: 6px; }
+.ai-out .btn svg { width: 15px; height: 15px; }

@@ -1427,7 +1427,6 @@
     const [{ data: ent }, { data: ids }] = await Promise.all([db.rpc("my_entitlements"), db.rpc("my_unlocked_posts")]);
     ai.ent = ent || null;
     ai.unlocked = new Set((ids || []).map(Number));
-    renderCredits();
     if (!ai.ent?.has_ai) { renderAiMine(); return; }
     // "My AI analyses": the analyses themselves (readable by whoever unlocked them) and the ones of my team (supabase/ai-team.sql)
     // only MY unlocks: admins may read everyone's (RLS), so the user is always named here
@@ -1444,14 +1443,7 @@
     if (/[?&]ai=mine\b/.test(location.search) && !ui.aiMode) setAiMode("mine");
   }
   const credits = () => (ai.ent ? (ai.ent.monthly_left || 0) + (ai.ent.pack_left || 0) : 0);
-  function renderCredits() {
-    const el = $("[data-ai-credits]");
-    if (!el) return;
-    if (!ai.ent?.has_ai) { el.hidden = true; return; }
-    el.hidden = false;
-    el.innerHTML = ai.ent.is_staff ? `${icon("sparkles")}AI · team access`
-      : `${icon("sparkles")}<b>${credits()}</b> ${tx(credits() === 1 ? "AI analysis left" : "AI analyses left")}${ai.ent.pack_left ? `<small>${tx("{m} monthly + {p} pack", { m: ai.ent.monthly_left, p: ai.ent.pack_left })}</small>` : `<small>${tx("renews {date}", { date: new Date(ai.ent.cycle_end).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" }) })}</small>`}`;
-  }
+
   // ---------- "My AI analyses": only the posts I (or my team) analysed, with the analysis in the card ----------
   const aiList = () => (ui.aiMode === "team" ? ai.team : ai.mine);
   function renderAiMine() {
@@ -1459,7 +1451,10 @@
     if (!b) return;
     b.hidden = !ai.ent?.has_ai;
     b.setAttribute("aria-pressed", String(!!ui.aiMode));
-    $("[data-ai-mine-n]", b).textContent = ai.mine.size ? String(ai.mine.size) : "";
+    const n = $("[data-ai-mine-n]", b), rem = credits();
+    n.textContent = ai.ent?.is_staff ? "∞" : String(rem);
+    n.classList.toggle("is-out", !ai.ent?.is_staff && rem === 0);
+    b.title = ai.ent?.is_staff ? tx("AI · team access") : tx(rem === 1 ? "{n} analysis left" : "{n} analyses left", { n: rem });
     root.classList.toggle("ai-mode", !!ui.aiMode);
     const strip = $("[data-ai-strip]");
     if (!ui.aiMode) { strip.hidden = true; return; }
@@ -1724,7 +1719,7 @@
     const { data, error } = await db.rpc("unlock_analysis", { p_post_id: n });
     await minWait;
     if (error) { area().innerHTML = `<div class="ai-empty"><b>Something went wrong</b><p>${esc(error.message)}</p></div>`; return; }
-    if (data.balance) { ai.ent = data.balance; renderCredits(); }
+    if (data.balance) { ai.ent = data.balance; renderAiMine(); }
     if (data.status === "no_access") return showAnalysisArea(n);
     if (data.status === "no_credits") { area().innerHTML = noCreditsHtml(); return; }
     ai.unlocked.add(n); refreshAiButtons(n);
@@ -1863,7 +1858,25 @@
   });
   // the Content Plan starts right under the head (search + My space + filter bar), whatever its height
   { const head = $("[data-lib-head]"); new ResizeObserver(() => root.style.setProperty("--lib-head-h", `${head.offsetHeight}px`)).observe(head); }
-  $("[data-ai-mine]").addEventListener("click", () => setAiMode(ui.aiMode ? null : "mine"));
+  // out of analyses: a tab under the button to buy more (and still see the ones you have)
+  function outOfAnalyses() {
+    let pop = $("[data-ai-out]");
+    if (pop) { pop.remove(); return; }
+    const b = $("[data-ai-mine]"), r = b.getBoundingClientRect();
+    b.insertAdjacentHTML("afterend", `<div class="ai-out" data-ai-out role="dialog" aria-label="${esc(tx("You've used all your AI analyses"))}">
+      <b>${esc(tx("You've used all your AI analyses"))}</b>
+      <p>${esc(tx("Your monthly analyses renew on {date}. Need more now?", { date: ai.ent?.cycle_end ? new Date(ai.ent.cycle_end).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "long" }) : tx("your next billing date") }))}</p>
+      <a class="btn btn-gold btn-sm" href="pricing.html#packs">${icon("sparkles")}${esc(tx("Buy more analyses"))}</a>
+      ${ai.mine.size ? `<button class="btn btn-outline btn-sm" type="button" data-ai-out-see>${esc(tx("See my analyses"))}</button>` : ""}
+    </div>`);
+    pop = $("[data-ai-out]");
+    pop.addEventListener("click", (e) => { if (e.target.closest("[data-ai-out-see]")) { pop.remove(); setAiMode("mine"); } });
+    setTimeout(() => document.addEventListener("pointerdown", function off(e) { if (!e.target.closest("[data-ai-out], [data-ai-mine]")) { $("[data-ai-out]")?.remove(); document.removeEventListener("pointerdown", off); } }), 0);
+  }
+  $("[data-ai-mine]").addEventListener("click", () => {
+    if (!ui.aiMode && ai.ent?.has_ai && !ai.ent.is_staff && credits() === 0) return outOfAnalyses();
+    setAiMode(ui.aiMode ? null : "mine");
+  });
   $("[data-ai-strip]").addEventListener("click", (e) => {
     const t = e.target.closest("[data-ai-tab]");
     if (t && t.dataset.aiTab !== ui.aiMode) return setAiMode(t.dataset.aiTab);
