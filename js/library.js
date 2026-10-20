@@ -370,9 +370,10 @@
         <div class="lf-rb"${vOpen ? "" : " hidden"} data-lf-body-of="views">${viewsHtml()}</div></div>` : "";
     return rows + viewsRow;
   }
-  // "Who publishes": clubs, competitions, media, players, brands, memes (Content Creators has its own button above)
+  // "Who publishes": media, players, brands, memes
   function whoHtml() {
-    const list = byCount((catalog.byCat.entity || []).filter((v) => v.name.toLowerCase() !== "content creators" && (countOf(v) > 0 || isOn(v))));
+    // clubs and competitions are already in "Inspiration"; Content Creators has its own button above
+    const list = byCount((catalog.byCat.entity || []).filter((v) => !["content creators", "clubs", "competitions"].includes(v.name.toLowerCase()) && (countOf(v) > 0 || isOn(v))));
     if (!list.length) return "";
     return `<div class="lf-who"><div class="lf-sub">${esc(tx("Who publishes"))}</div><div class="lf-chips">${list.map((v) => `<button type="button" class="lf-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="entity" data-id="${v.id}">${esc(pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`).join("")}</div></div>`;
   }
