@@ -6165,3 +6165,16 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 .auth-logo img.brand-logo { height: 58px; width: auto; filter: drop-shadow(0 6px 24px rgba(240, 184, 74, 0.28)); }
 .auth-page .auth-card { background: color-mix(in srgb, var(--surface) 82%, transparent); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
 @media (max-height: 760px) { .auth-page { place-items: start center; } }
+/* Sign up / log in: tunnel of SCP posts (js/auth-tunnel.js) under the light ribbon (js/auth-bg.js) */
+.atn-scene { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; background: #070b17; opacity: 0; transition: opacity 1.2s ease; }
+.atn-scene.is-on { opacity: 1; }
+.atn-world { position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform-style: preserve-3d; }
+.atn-row { position: absolute; left: 0; top: 0; transform-style: preserve-3d; }
+.atn-t { position: absolute; left: 0; top: 0; display: block; box-sizing: border-box; border-radius: 7%; border: 1px solid rgba(255, 255, 255, 0.07); opacity: var(--o, 1); }
+.atn-t.is-photo { border: 0; background: #17213b center / cover no-repeat; filter: brightness(0.7) saturate(0.9); }
+.atn-t.is-accent { border: 0; background: linear-gradient(135deg, #f0b84a, #b07cff 55%, #5b4dff); opacity: calc(var(--o, 1) * 0.85); }
+.atn-fog { position: absolute; inset: 0; background: radial-gradient(40% 52% at 50% 46%, rgba(7, 11, 23, 0.94) 0%, rgba(7, 11, 23, 0.7) 50%, rgba(7, 11, 23, 0) 88%), radial-gradient(130% 100% at 50% 50%, transparent 60%, rgba(7, 11, 23, 0.6)); }
+.auth-page .auth-bg { z-index: 1; mix-blend-mode: screen; }
+.auth-page .auth-bg.is-on { opacity: 0.55; }
+.auth-page .auth { z-index: 2; }
+:root[data-theme="light"] .atn-scene { filter: invert(0.92) hue-rotate(180deg); }
