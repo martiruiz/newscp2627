@@ -7,8 +7,7 @@
 <title>Prototipo · Barra de filtros</title>
 <link rel="stylesheet" href="../css/fonts.css?v=1">
 <style>
-  :root { --bg: #0f1730; --gold: #f0b84a; --gold-2: #ffd98c; --gold-3: #d99a2b; --text: #fff; --muted: #b4c0d3; --dim: rgba(180, 192, 211, 0.5);
-    --display: "Host Grotesk", Inter, sans-serif; }
+  :root { --bg: #0f1730; --gold: #f0b84a; --gold-2: #ffd98c; --gold-3: #d99a2b; --text: #fff; --dim: rgba(180, 192, 211, 0.5); --display: "Host Grotesk", Inter, sans-serif; }
   * { box-sizing: border-box; margin: 0; }
   body { min-height: 100vh; color: var(--text); font: 14px/1.4 Inter, system-ui, sans-serif; padding: 36px 44px 70px;
     background: radial-gradient(1200px 500px at 10% -10%, rgba(240,184,74,.07), transparent 60%), radial-gradient(900px 500px at 100% 0%, rgba(90,120,255,.08), transparent 60%), var(--bg); }
@@ -18,104 +17,82 @@
   .note { color: var(--dim); font-size: 13px; margin-bottom: 14px; max-width: 820px; }
   .row { max-width: 1240px; }
   .tabs { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); }
-  .tabs .glow { position: absolute; left: 0; width: calc(100% / 3); transition: transform .5s cubic-bezier(.2,.8,.2,1); pointer-events: none; }
-  .tabs button { position: relative; z-index: 1; transition: color .3s; }
-  .cnt { font: 700 12px Inter; color: var(--gold); margin-left: 8px; }
+  .tabs .lens { position: absolute; transition: transform .5s cubic-bezier(.2,.8,.2,1); pointer-events: none; }
+  .tabs button { position: relative; z-index: 1; color: #fff; transition: opacity .3s; }
+  .cnt { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; margin-left: 8px; border-radius: 10px; background: rgba(255,255,255,.16); font: 700 11.5px Inter; }
 
-  /* E · reference */
-  .e { padding: 6px; border-radius: 999px; background: linear-gradient(180deg, #0b1124, #121a33); box-shadow: inset 0 1px 0 rgba(255,255,255,.06), inset 0 0 0 1px rgba(255,255,255,.07), 0 24px 50px -28px rgba(0,0,0,.9); }
-  .e .glow { top: 6px; bottom: 6px; left: 6px; width: calc((100% - 12px) / 3); border-radius: 999px;
-    background: linear-gradient(180deg, rgba(255,217,140,.16), rgba(240,184,74,.06)); box-shadow: inset 0 0 0 1px rgba(240,184,74,.55), inset 0 1px 0 rgba(255,231,180,.35), 0 10px 30px -8px rgba(240,184,74,.45); }
-  .e button { height: 52px; border-radius: 999px; font: 600 16px var(--display); letter-spacing: -.01em; color: var(--dim); }
-  .e button.on, .e button:hover { color: var(--text); }
-
-  /* G · E + what's chosen: two lines inside the capsule */
-  .g { padding: 6px; border-radius: 26px; background: linear-gradient(180deg, #0b1124, #121a33); box-shadow: inset 0 1px 0 rgba(255,255,255,.06), inset 0 0 0 1px rgba(255,255,255,.07), 0 24px 50px -28px rgba(0,0,0,.9); }
-  .g .glow { top: 6px; bottom: 6px; left: 6px; width: calc((100% - 12px) / 3); border-radius: 20px;
-    background: linear-gradient(180deg, rgba(255,217,140,.15), rgba(240,184,74,.05)); box-shadow: inset 0 0 0 1px rgba(240,184,74,.5), inset 0 1px 0 rgba(255,231,180,.3), 0 10px 30px -8px rgba(240,184,74,.4); }
-  .g button { display: grid; gap: 2px; padding: 11px 22px; border-radius: 20px; text-align: left; color: var(--dim); }
-  .g button b { font: 600 16px var(--display); letter-spacing: -.01em; }
-  .g button small { font-size: 12.5px; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .g button.on, .g button:hover { color: var(--text); }
-  .g button.on small { color: var(--gold-2); }
-
-  /* H · Light rail: no box, large type, a glowing gold rail slides under the open tab */
-  .h { border-bottom: 1px solid rgba(255,255,255,.08); }
-  .h .glow { bottom: -1px; height: 2px; }
-  .h .glow::before { content: ""; position: absolute; left: 18%; right: 18%; top: 0; height: 2px; border-radius: 2px; background: linear-gradient(90deg, transparent, var(--gold-2), var(--gold), var(--gold-2), transparent); box-shadow: 0 0 14px 2px rgba(240,184,74,.55); }
-  .h .glow::after { content: ""; position: absolute; left: 10%; right: 10%; bottom: 2px; height: 46px; background: radial-gradient(60% 100% at 50% 100%, rgba(240,184,74,.18), transparent 70%); }
-  .h button { height: 60px; font: 600 19px var(--display); letter-spacing: -.02em; color: rgba(255,255,255,.38); }
-  .h button.on, .h button:hover { color: var(--text); }
-
-  /* I · Liquid glass: frosted capsule, the open tab a clear glass lens with gold type */
-  .i { padding: 6px; border-radius: 999px; background: rgba(255,255,255,.04); backdrop-filter: blur(18px); box-shadow: inset 0 1px 0 rgba(255,255,255,.12), inset 0 -1px 0 rgba(0,0,0,.3), inset 0 0 0 1px rgba(255,255,255,.08), 0 24px 50px -28px rgba(0,0,0,.9); }
-  .i .glow { top: 6px; bottom: 6px; left: 6px; width: calc((100% - 12px) / 3); border-radius: 999px;
+  /* glass capsule shared by I, L, M, O */
+  .glass { padding: 6px; border-radius: 999px; background: rgba(255,255,255,.04); backdrop-filter: blur(18px);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.12), inset 0 -1px 0 rgba(0,0,0,.3), inset 0 0 0 1px rgba(255,255,255,.08), 0 24px 50px -28px rgba(0,0,0,.9); }
+  .glass .lens { top: 6px; bottom: 6px; left: 6px; width: calc((100% - 12px) / 3); border-radius: 999px;
     background: linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,.06) 50%, rgba(255,255,255,.1)); box-shadow: inset 0 1px 1px rgba(255,255,255,.5), inset 0 -2px 6px rgba(0,0,0,.25), 0 8px 24px -10px rgba(0,0,0,.8); }
-  .i button { height: 50px; border-radius: 999px; font: 600 15.5px var(--display); color: var(--dim); }
-  .i button:hover { color: var(--text); }
-  .i button.on { color: var(--gold-2); text-shadow: 0 0 18px rgba(240,184,74,.45); }
+  .glass button { height: 50px; border-radius: 999px; font: 600 15.5px var(--display); }
 
-  /* J · Gold thread: the capsule's edge is a slowly turning thread of gold light; the open tab a deep gold plate */
-  .j { padding: 6px; border-radius: 999px; background: #0c1226; isolation: isolate; }
-  .j::before { content: ""; position: absolute; inset: 0; padding: 1px; border-radius: inherit; z-index: -1;
-    background: conic-gradient(from var(--a, 0deg), rgba(240,184,74,.05), rgba(255,217,140,.9), rgba(240,184,74,.05) 30%, rgba(240,184,74,.05) 60%, rgba(255,217,140,.6), rgba(240,184,74,.05));
-    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: turn 8s linear infinite; }
-  @property --a { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
-  @keyframes turn { to { --a: 360deg; } }
-  .j .glow { top: 6px; bottom: 6px; left: 6px; width: calc((100% - 12px) / 3); border-radius: 999px; background: linear-gradient(180deg, #3a2a0e, #241a09); box-shadow: inset 0 1px 0 rgba(255,217,140,.35), inset 0 0 0 1px rgba(240,184,74,.35); }
-  .j button { height: 52px; border-radius: 999px; font: 600 15.5px var(--display); color: var(--dim); }
-  .j button:hover { color: var(--text); }
-  .j button.on { color: var(--gold-2); }
+  /* L · glass + what's chosen */
+  .l { border-radius: 26px; }
+  .l .lens { border-radius: 20px; }
+  .l button { height: auto; display: grid; gap: 2px; padding: 10px 22px; border-radius: 20px; text-align: left; }
+  .l button small { font: 500 12.5px Inter; opacity: .6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-  /* K · Spotlight: dark segments; a soft light follows the mouse; the open tab keeps its light and a gold count */
-  .k { gap: 8px; }
-  .k button { height: 58px; border-radius: 16px; display: flex; align-items: center; justify-content: space-between; padding: 0 22px; text-align: left;
-    font: 600 16px var(--display); letter-spacing: -.01em; color: var(--dim);
-    background: radial-gradient(240px 120px at var(--x, 50%) var(--y, 50%), rgba(255,255,255,.07), transparent 70%), linear-gradient(180deg, #121a33, #0d1429);
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,.07), inset 0 1px 0 rgba(255,255,255,.06); transition: color .3s, box-shadow .3s; }
-  .k button:hover { color: var(--text); }
-  .k button.on { color: var(--text); background: radial-gradient(260px 140px at var(--x, 30%) var(--y, 0%), rgba(240,184,74,.2), transparent 70%), linear-gradient(180deg, #17203d, #0f162d);
-    box-shadow: inset 0 0 0 1px rgba(240,184,74,.5), inset 0 1px 0 rgba(255,231,180,.25), 0 18px 40px -22px rgba(240,184,74,.5); }
-  .k .cnt { font: 600 22px var(--display); color: var(--gold); }
-  .k button:not(.on) .cnt { color: var(--dim); font-size: 14px; }
+  /* M · glass with a gold rim on the lens */
+  .m .lens { box-shadow: inset 0 0 0 1px rgba(240,184,74,.7), inset 0 1px 1px rgba(255,231,180,.6), inset 0 -2px 6px rgba(0,0,0,.25), 0 10px 30px -10px rgba(240,184,74,.45); }
+
+  /* N · three floating glass pills */
+  .n { gap: 10px; }
+  .n button { height: 52px; border-radius: 999px; font: 600 15.5px var(--display); background: rgba(255,255,255,.035); backdrop-filter: blur(16px);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.1), inset 0 0 0 1px rgba(255,255,255,.07), 0 16px 34px -22px rgba(0,0,0,.9); transition: background .3s, box-shadow .3s, transform .3s; }
+  .n button:hover { transform: translateY(-1px); background: rgba(255,255,255,.06); }
+  .n button.on { background: linear-gradient(180deg, rgba(255,255,255,.2), rgba(255,255,255,.06) 55%, rgba(255,255,255,.1)); box-shadow: inset 0 1px 1px rgba(255,255,255,.55), inset 0 -2px 6px rgba(0,0,0,.25), 0 18px 40px -18px rgba(0,0,0,.95); }
+
+  /* O · glass with a soft light that follows the mouse */
+  .o { overflow: hidden; }
+  .o::before { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .3s;
+    background: radial-gradient(180px 80px at var(--x, 50%) 50%, rgba(255,255,255,.12), transparent 70%); }
+  .o:hover::before { opacity: 1; }
+
+  /* P · ink: deeper capsule, small-caps white type, a fine gold line under the lens */
+  .p { padding: 6px; border-radius: 16px; background: #080d1d; box-shadow: inset 0 0 0 1px rgba(255,255,255,.06), 0 24px 50px -28px rgba(0,0,0,.9); }
+  .p .lens { top: 6px; bottom: 6px; left: 6px; width: calc((100% - 12px) / 3); border-radius: 11px;
+    background: linear-gradient(180deg, rgba(255,255,255,.1), rgba(255,255,255,.03)); box-shadow: inset 0 1px 0 rgba(255,255,255,.18), inset 0 0 0 1px rgba(255,255,255,.08); }
+  .p .lens::after { content: ""; position: absolute; left: 30%; right: 30%; bottom: 6px; height: 2px; border-radius: 2px; background: linear-gradient(90deg, transparent, var(--gold-2), transparent); box-shadow: 0 0 10px rgba(240,184,74,.7); }
+  .p button { height: 54px; border-radius: 11px; font: 600 12.5px Inter; letter-spacing: .16em; text-transform: uppercase; }
+  .p .cnt { letter-spacing: 0; }
 </style>
 </head>
 <body>
 <div class="row">
-  <p class="label">E · Luminous track (la que t'agrada, de referència)</p>
-  <div class="tabs e" data-tabs><span class="glow"></span><button class="on">Inspírate en<span class="cnt">2</span></button><button>Match Day</button><button>Objetivo y patrocinadores</button></div>
+  <p class="label">I · Liquid glass (la que està aplicada ara)</p>
+  <div class="tabs glass" data-tabs><span class="lens"></span><button class="on">Inspírate en<span class="cnt">2</span></button><button>Match Day</button><button>Objetivo y patrocinadores</button></div>
 
-  <p class="label">G · Luminous track + el que has triat</p>
-  <p class="note">La mateixa càpsula, però cada pestanya mostra a sota què hi tens marcat. La llum daurada llisca igual.</p>
-  <div class="tabs g" data-tabs><span class="glow"></span>
-    <button class="on"><b>Inspírate en</b><small>Real Madrid · LaLiga</small></button><button><b>Match Day</b><small>Todos los momentos</small></button><button><b>Objetivo y patrocinadores</b><small>Todos los objetivos</small></button></div>
+  <p class="label">L · Liquid glass + el que has triat</p>
+  <p class="note">La mateixa càpsula de vidre; a sota de cada nom, el que hi tens marcat.</p>
+  <div class="tabs glass l" data-tabs><span class="lens"></span>
+    <button class="on">Inspírate en<small>Real Madrid · LaLiga</small></button><button>Match Day<small>Todos los momentos</small></button><button>Objetivo y patrocinadores<small>Todos los objetivos</small></button></div>
 
-  <p class="label">H · Light rail</p>
-  <p class="note">Sense caixa: tipografia de titular gran i un rail de llum daurada que llisca sota la pestanya oberta, amb un halo suau cap amunt.</p>
-  <div class="tabs h" data-tabs><span class="glow"></span><button class="on">Inspírate en<span class="cnt">2</span></button><button>Match Day</button><button>Objetivo y patrocinadores</button></div>
+  <p class="label">M · Liquid glass amb fil daurat</p>
+  <p class="note">Igual que la I, però la lent té una vora daurada fina i una brillantor càlida: el toc de marca sense pintar el text.</p>
+  <div class="tabs glass m" data-tabs><span class="lens"></span><button class="on">Inspírate en<span class="cnt">2</span></button><button>Match Day</button><button>Objetivo y patrocinadores</button></div>
 
-  <p class="label">I · Liquid glass</p>
-  <p class="note">Càpsula de vidre esmerilat; la pestanya oberta és una lent de vidre transparent amb el text en daurat brillant.</p>
-  <div class="tabs i" data-tabs><span class="glow"></span><button class="on">Inspírate en<span class="cnt">2</span></button><button>Match Day</button><button>Objetivo y patrocinadores</button></div>
+  <p class="label">N · Tres càpsules flotants</p>
+  <p class="note">Tres peces de vidre separades que floten; l'oberta s'il·lumina com una lent.</p>
+  <div class="tabs n" data-tabs><button class="on">Inspírate en<span class="cnt">2</span></button><button>Match Day</button><button>Objetivo y patrocinadores</button></div>
 
-  <p class="label">J · Gold thread</p>
-  <p class="note">La vora de la càpsula és un fil de llum daurada que gira lentament; la pestanya oberta, una placa daurada fosca.</p>
-  <div class="tabs j" data-tabs><span class="glow"></span><button class="on">Inspírate en<span class="cnt">2</span></button><button>Match Day</button><button>Objetivo y patrocinadores</button></div>
+  <p class="label">O · Liquid glass amb llum que segueix el ratolí</p>
+  <p class="note">La càpsula de la I amb una llum suau que es mou sota el cursor; la lent llisca igual.</p>
+  <div class="tabs glass o" data-tabs data-spot><span class="lens"></span><button class="on">Inspírate en<span class="cnt">2</span></button><button>Match Day</button><button>Objetivo y patrocinadores</button></div>
 
-  <p class="label">K · Spotlight</p>
-  <p class="note">Tres plaques fosques: una llum suau segueix el ratolí; l'oberta es queda il·luminada en daurat i mostra el nombre de filtres en gran.</p>
-  <div class="tabs k" data-tabs data-spot><button class="on">Inspírate en<span class="cnt">2</span></button><button>Match Day<span class="cnt">0</span></button><button>Objetivo y patrocinadores<span class="cnt">0</span></button></div>
+  <p class="label">P · Ink</p>
+  <p class="note">Càpsula més fosca i rectangular, text en versaletes blanques espaiades i una línia de llum daurada sota la pestanya oberta.</p>
+  <div class="tabs p" data-tabs><span class="lens"></span><button class="on">Inspírate en<span class="cnt">2</span></button><button>Match Day</button><button>Objetivo y patrocinadores</button></div>
 </div>
 <script>
   document.querySelectorAll("[data-tabs]").forEach((t) => t.addEventListener("click", (e) => {
     const b = e.target.closest("button"); if (!b) return;
     const all = [...t.querySelectorAll("button")], i = all.indexOf(b);
     all.forEach((x) => x.classList.toggle("on", x === b));
-    const g = t.querySelector(".glow"); if (g) g.style.transform = `translateX(${i * 100}%)`;
+    const l = t.querySelector(".lens"); if (l) l.style.transform = `translateX(${i * 100}%)`;
   }));
-  document.querySelectorAll("[data-spot] button").forEach((b) => b.addEventListener("pointermove", (e) => {
-    const r = b.getBoundingClientRect(); b.style.setProperty("--x", `${e.clientX - r.left}px`); b.style.setProperty("--y", `${e.clientY - r.top}px`);
-  }));
+  document.querySelectorAll("[data-spot]").forEach((t) => t.addEventListener("pointermove", (e) => { t.style.setProperty("--x", `${e.clientX - t.getBoundingClientRect().left}px`); }));
 </script>
 </body>
 </html>
