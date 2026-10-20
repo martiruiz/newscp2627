@@ -4,6 +4,29 @@ Veu en anglès · subtítols en castellà · dues versions: horitzontal 16:9 (19
 Arc: **el problema → el canvi → la prova → les virtuts → per què el necessites → acció**
 Estil: fosc i daurat (colors de la web), tipografia gran, càmera 3D que viatja per dins de la plataforma.
 
+## Tipografia cinètica (a tot el vídeo)
+Les paraules clau de la veu apareixen a pantalla i es mouen amb el ritme de la locució. Contrast constant:
+- **Mida**: paraules gegants que omplen la pantalla (fins i tot tallades per les vores) al costat de frases petites i discretes.
+- **Velocitat**: entrades ràpides i seques (tall, flaix, zoom de 0,2 s) alternades amb moviments lents que respiren (lliscaments de 2–3 s, desplaçament en paral·lax).
+- **Pes**: Bold condensada per a les paraules fortes; fina i espaiada per als matisos.
+- **Moviment**: escala (de gegant a petit i al revés), lletres que entren una a una, paraules que s'escriuen com al cercador, text que travessa la pantalla en diagonal, profunditat 3D (el text queda enrere quan la càmera avança).
+- **Color**: blanc sobre fosc; el daurat només per a la paraula més important de cada escena.
+- Una sola idea a pantalla cada vegada; mai més de 5–6 paraules alhora.
+
+### Moments tipogràfics per escena
+| # | Text a pantalla | Com es mou |
+|---|---|---|
+| 1 | SAME FEED · *matchday* · *signings* · *sponsors* · **EVERY WEEK** | "SAME FEED" gegant i lent; les tres paraules petites disparades ràpides, una darrere l'altra; "EVERY WEEK" cau de cop i tremola. |
+| 2 | *hours of scrolling…* · **GUESSING** | Text petit que llisca molt lent cap amunt (com un scroll); "GUESSING" es desenfoca i s'esvaeix. |
+| 3 | **NOT ANYMORE.** | Negre, silenci de mig segon, i entra d'un cop gegant en daurat; la càmera travessa la "O". |
+| 4 | **500,000+** posts · 770+ clubs · 110+ competitions · *growing every day* | Números enormes que compten ràpid; les etiquetes petites al costat; "growing every day" passa lent pel fons en 3D. |
+| 5 | *signing reels that went viral* · **WORKED.** | La frase s'escriu lletra a lletra al cercador (petita); "WORKED." gran, sec, en daurat. |
+| 6 | HOOK · FORMAT · TIMING · **MAKE IT YOURS** | Les tres paraules entren alternant mida i direcció (una gran, una petita, una gran); "MAKE IT YOURS" s'escriu lent. |
+| 7 | *your whole week* · **READY.** | "your whole week" petit sobre els 7 dies; "READY." apareix quan s'omple l'últim dia. |
+| 8 | Hours → **Minutes** · Guesswork → **Proof** · Blank page → **Full week** | Cada parella: la primera paraula petita i grisa, la segona la xafa gegant i en daurat. Cada vegada més ràpid. |
+| 9 | Sports Content Playbook · **Try it free** | Lent i net: el logo amb la seva animació, el text petit sota, el botó que s'il·lumina. |
+
+## Escenes
 | # | Temps | Veu (EN) | Subtítol (ES) | Imatge / moviment |
 |---|---|---|---|---|
 | 1 | 0–7 s | Every club is fighting for the same feed. Matchday, signings, sponsors… every single week. | Todos los clubes luchan por el mismo feed. Partido, fichajes, patrocinadores… cada semana. | Negre. Comptadors de notificacions que es disparen, pàgines de calendari que passen, un cursor que parpelleja sobre un text buit: *"What do we post today?"* |
