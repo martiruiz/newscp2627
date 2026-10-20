@@ -758,9 +758,19 @@
     const open = items.find((it) => it.key === ui.bar);
     const keep = $(".lfp-main", bar)?.scrollTop || 0;
     bar.hidden = false;
-    bar.innerHTML = `<div class="lfb-row" role="toolbar" aria-label="${esc(tx("Filters"))}">${items.map((it) => `<button type="button" class="lfb-btn${it.n ? " is-set" : ""}${open === it ? " is-open" : ""}" aria-expanded="${open === it}" data-lfb="${it.key}"><span class="lfb-tx"><b>${esc(it.label)}</b></span>${it.n ? `<em>${it.n}</em>` : ""}${svg("chev", "lfb-chev")}</button>`).join("")}</div>
+    // liquid glass: one frosted capsule; the open section sits under a clear glass lens that slides between them
+    const oi = items.indexOf(open);
+    bar.innerHTML = `<div class="lfb-row lfb-glass" role="toolbar" aria-label="${esc(tx("Filters"))}" style="--n:${items.length}"><span class="lfb-lens"${oi < 0 ? " hidden" : ""}></span>${items.map((it) => `<button type="button" class="lfb-btn${it.n ? " is-set" : ""}${open === it ? " is-open" : ""}" aria-expanded="${open === it}" data-lfb="${it.key}"><span class="lfb-tx"><b>${esc(it.label)}</b></span>${it.n ? `<em>${it.n}</em>` : ""}</button>`).join("")}</div>
       ${open ? `<div class="lfb-panel lfp" role="dialog" aria-label="${esc(open.label)}">${lfpHtml(open.key)}</div>` : ""}`;
     if (open) { $(".lfp-main", bar).scrollTop = keep; loadCovers(open.key); }
+    // the lens glides from the section that was open to the new one
+    const lens = $(".lfb-lens", bar);
+    if (oi >= 0) {
+      const from = ui.lensAt ?? oi;
+      lens.style.transform = `translateX(${from * 100}%)`;
+      if (from !== oi) requestAnimationFrame(() => requestAnimationFrame(() => { lens.style.transform = `translateX(${oi * 100}%)`; }));
+    }
+    ui.lensAt = oi >= 0 ? oi : null;
   }
 
   // Mobile: the three specials as quick chips above the posts
