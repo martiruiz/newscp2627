@@ -1617,7 +1617,26 @@
     if ((m = u.match(/linkedin\.com\/feed\/update\/(urn:li:[\w:]+)/))) return { src: `https://www.linkedin.com/embed/feed/update/${m[1]}?collapsed=1` };
     return null;
   }
+  // YouTube / TikTok: the views are read again from the platform when the video is played (Edge Function "views",
+  // at most every 6 hours per post); the card shows the new number
+  const viewsAsked = new Set();
+  async function refreshViews(id) {
+    const p = cache.get(String(id));
+    if (!p || !db || viewsAsked.has(String(id)) || !/tiktok\.com|youtu/.test(p.url || "")) return;
+    viewsAsked.add(String(id));
+    const cfg = window.SCP_CONFIG || {}, token = (await db.auth.getSession()).data.session?.access_token;
+    const r = await fetch(`${cfg.supabaseUrl}/functions/v1/views`, { method: "POST", headers: { "Content-Type": "application/json", apikey: cfg.supabaseAnonKey, Authorization: `Bearer ${token}` }, body: JSON.stringify({ id: Number(id) }) }).catch(() => null);
+    const d = r?.ok ? await r.json().catch(() => null) : null;
+    if (!d?.views || Number(d.views) === Number(p.views)) return;
+    p.views = Number(d.views);
+    const foot = $(`.lib-card[data-id="${CSS.escape(String(id))}"] .lib-foot`);
+    if (!foot) return;
+    const box = foot.querySelector(".lib-foot-views");
+    if (box) box.querySelector("b").textContent = compact(p.views);
+    else foot.insertAdjacentHTML("beforeend", `<span class="lib-foot-views"><b>${compact(p.views)}</b><small>${tx("views")}</small></span>`);
+  }
   function playInCard(id) {
+    refreshViews(id);
     const p = cache.get(String(id));
     const media = $(`.lib-card[data-id="${CSS.escape(String(id))}"] .lib-media`);
     const pl = p && playerSrc(p);
@@ -1803,6 +1822,7 @@
     const play = e.target.closest("[data-embed-play]");
     if (!play) return;
     const box = play.closest("[data-embed-id]");
+    refreshViews(box.dataset.embedId);
     const p = cache.get(String(box.dataset.embedId));
     if (box.dataset.embedSrc) {
       box.classList.add("is-live");
