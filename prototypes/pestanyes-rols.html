@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Prototipo · Pestañas por perfil</title>
+<link rel="stylesheet" href="../css/fonts.css?v=1">
+<style>
+  /* the platform's own colours (css/styles.css :root) */
+  :root { --bg: #121b33; --surface: #17213b; --surface-2: #1d2845; --surface-3: #213050; --gold: #f0b84a; --gold-tint: rgba(240,184,74,.2);
+    --grad: linear-gradient(90deg, #d99a2b, #f0b84a 55%, #ffe0a0); --text: #fff; --muted: #b4c0d3; --line: rgba(255,255,255,.1); --line-soft: rgba(255,255,255,.05);
+    --display: "Host Grotesk", Inter, sans-serif; --ease: cubic-bezier(.2,.8,.2,1); }
+  * { box-sizing: border-box; margin: 0; }
+  body { color: var(--text); font: 14px/1.45 Inter, system-ui, sans-serif; background: var(--bg); padding: 0 16px 80px; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+  .page { max-width: 1180px; margin: 0 auto; }
+  header.top { padding: 44px 0 10px; }
+  header.top h1 { font: 600 30px/1.15 var(--display); }
+  header.top p { color: var(--muted); max-width: 760px; margin-top: 10px; }
+  .prop { margin-top: 56px; padding-top: 34px; border-top: 1px solid var(--line); }
+  .ptag { font: 700 11px Inter; letter-spacing: .18em; text-transform: uppercase; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .prop h2 { font: 600 24px var(--display); margin: 6px 0 6px; }
+  .prop > p { color: var(--muted); max-width: 820px; }
+  .why { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 18px 0 22px; }
+  .why div { padding: 14px 16px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line-soft); font-size: 13px; color: var(--muted); }
+  .why b { display: block; color: #fff; font: 600 13.5px var(--display); margin-bottom: 4px; }
+  .stage { border-radius: 22px; padding: 22px; background: radial-gradient(120% 80% at 50% -10%, rgba(240,184,74,.07), transparent 60%), var(--surface); border: 1px solid var(--line); }
+
+  /* shared panel */
+  .panel { margin-top: 16px; display: grid; grid-template-columns: 220px 1fr; min-height: 330px; border-radius: 18px; background: rgba(18,27,51,.7); border: 1px solid var(--line); overflow: hidden; }
+  .rail { padding: 14px 10px; border-right: 1px solid var(--line-soft); }
+  .rh { font: 700 10.5px Inter; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); opacity: .75; margin: 14px 8px 6px; }
+  .rh:first-child { margin-top: 2px; }
+  .ri { display: flex; justify-content: space-between; width: 100%; padding: 8px 10px; border-radius: 10px; color: var(--muted); font-size: 13px; text-align: left; transition: background .2s, color .2s; }
+  .ri small { opacity: .6; font-size: 11.5px; }
+  .ri:hover { background: rgba(255,255,255,.04); color: #fff; }
+  .ri.on { background: linear-gradient(90deg, rgba(240,184,74,.16), rgba(240,184,74,.03)); color: #fff; box-shadow: inset 2px 0 0 var(--gold); }
+  .main { padding: 18px 20px; }
+  .main h3 { font: 600 18px var(--display); }
+  .main .sub { color: var(--muted); font-size: 12.5px; margin: 2px 0 14px; }
+  .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .card { position: relative; aspect-ratio: 4/5; border-radius: 14px; overflow: hidden; background: var(--c, linear-gradient(160deg,#2a3866,#172142)); border: 1px solid var(--line-soft); text-align: left; transition: transform .35s var(--ease), box-shadow .35s; }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 16px 30px -18px rgba(0,0,0,.8); }
+  .card::after { content: ""; position: absolute; inset: 40% 0 0; background: linear-gradient(transparent, rgba(10,15,30,.92)); }
+  .card span { position: absolute; z-index: 1; left: 12px; right: 12px; bottom: 10px; font: 600 13.5px var(--display); }
+  .card small { display: block; font: 500 11.5px Inter; color: var(--muted); }
+  .card.on { box-shadow: 0 0 0 2px var(--gold); }
+  .order { margin-top: 18px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .order div { padding: 14px 16px; border-radius: 14px; border: 1px dashed var(--line); font-size: 12.5px; color: var(--muted); }
+  .order b { color: #fff; font: 600 13px var(--display); display: block; margin-bottom: 6px; }
+  .order ol { padding-left: 18px; }
+
+  /* ---------- 1 · Stepper: Moment → Referents → Goal ---------- */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; position: relative; }
+  .step { position: relative; display: flex; gap: 12px; align-items: center; padding: 14px 16px; border-radius: 16px; background: var(--surface-2); border: 1px solid var(--line); text-align: left; transition: border-color .3s, background .3s; }
+  .step .n { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; font: 700 13px var(--display); border: 1px solid var(--line); color: var(--muted); transition: all .3s; }
+  .step b { display: block; font: 600 15px var(--display); }
+  .step small { color: var(--muted); font-size: 12px; }
+  .step.on { border-color: rgba(240,184,74,.55); background: linear-gradient(180deg, rgba(240,184,74,.1), rgba(240,184,74,.02)), var(--surface-2); }
+  .step.on .n, .step.done .n { background: var(--grad); color: #1a1206; border-color: transparent; }
+  .step .sel { margin-left: auto; font-size: 11.5px; color: var(--gold); }
+  .bar1 { height: 2px; margin: 12px 4px 0; border-radius: 2px; background: var(--line); overflow: hidden; }
+  .bar1 i { display: block; height: 100%; width: 33%; background: var(--grad); transition: width .5s var(--ease); }
+
+  /* ---------- 2 · Roles: the role reorders tabs and groups ---------- */
+  .roles { display: inline-flex; gap: 4px; padding: 4px; border-radius: 999px; background: rgba(0,0,0,.25); border: 1px solid var(--line); margin-bottom: 14px; }
+  .roles button { padding: 8px 16px; border-radius: 999px; font: 600 13px var(--display); color: var(--muted); transition: all .3s var(--ease); }
+  .roles button.on { color: #1a1206; background: var(--grad); box-shadow: 0 6px 18px -8px rgba(240,184,74,.7); }
+  .tabs2 { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); padding: 5px; border-radius: 999px; box-shadow: inset 0 0 0 1px rgba(240,184,74,.45); }
+  .tabs2 .lens { position: absolute; top: 5px; bottom: 5px; left: 5px; width: calc((100% - 10px)/3); border-radius: 999px; box-shadow: inset 0 0 0 1px rgba(240,184,74,.9), 0 0 24px -8px rgba(240,184,74,.6); transition: transform .55s var(--ease); }
+  .tabs2 button { position: relative; height: 46px; font: 600 15px var(--display); transition: opacity .3s; }
+  .tabs2 button em { font: 600 10px Inter; letter-spacing: .1em; text-transform: uppercase; color: var(--gold); margin-left: 8px; font-style: normal; }
+  .pick { display: flex; gap: 8px; align-items: center; padding: 10px 12px; margin-bottom: 14px; border-radius: 12px; background: linear-gradient(90deg, rgba(240,184,74,.12), transparent); border: 1px solid rgba(240,184,74,.25); font-size: 12.5px; }
+  .pick b { color: var(--gold); font-weight: 600; }
+  .fade { animation: fade .45s var(--ease); }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px); } }
+
+  /* ---------- 3 · Bento: tabs as live tiles, panel as an editorial grid ---------- */
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .tile { position: relative; height: 112px; padding: 14px 16px; border-radius: 18px; overflow: hidden; text-align: left; border: 1px solid var(--line); background: var(--surface-2); transition: transform .4s var(--ease), border-color .3s; }
+  .tile::before { content: ""; position: absolute; inset: 0; background: var(--c); opacity: .35; transition: opacity .4s; }
+  .tile::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(23,33,59,.95) 35%, rgba(23,33,59,.2)); }
+  .tile > * { position: relative; z-index: 1; }
+  .tile b { display: block; font: 600 17px var(--display); }
+  .tile small { color: var(--muted); font-size: 12px; }
+  .tile .live { position: absolute; left: 16px; bottom: 12px; display: flex; gap: 6px; }
+  .tile .live i { font: 500 11px Inter; font-style: normal; padding: 3px 8px; border-radius: 999px; background: rgba(255,255,255,.08); border: 1px solid var(--line); }
+  .tile:hover { transform: translateY(-2px); }
+  .tile.on { border-color: rgba(240,184,74,.7); }
+  .tile.on::before { opacity: .6; }
+  .bento { display: grid; grid-template-columns: 2fr 1fr 1fr; grid-template-rows: 150px 150px; gap: 12px; }
+  .bento .card { aspect-ratio: auto; }
+  .bento .card.big { grid-row: span 2; }
+  .bento .card.big span { font-size: 20px; }
+  .trend { position: absolute; z-index: 1; top: 10px; left: 10px; font: 700 10px Inter; letter-spacing: .08em; text-transform: uppercase; padding: 4px 8px; border-radius: 999px; background: var(--grad); color: #1a1206; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .chips button { padding: 7px 12px; border-radius: 999px; border: 1px solid var(--line); font-size: 12.5px; color: var(--muted); transition: all .2s; }
+  .chips button:hover { color: #fff; border-color: rgba(240,184,74,.5); }
+  .chips em { font-style: normal; opacity: .55; margin-left: 4px; }
+  .seg { display: flex; gap: 6px; margin-bottom: 14px; }
+  .seg button { padding: 6px 12px; border-radius: 8px; font-size: 12.5px; color: var(--muted); border: 1px solid var(--line-soft); }
+  .seg button.on { color: #fff; border-color: rgba(240,184,74,.5); background: rgba(240,184,74,.08); }
+
+  @media (max-width: 800px) {
+    .why, .order, .steps, .tiles { grid-template-columns: 1fr; }
+    .panel { grid-template-columns: 1fr; } .rail { border-right: 0; border-bottom: 1px solid var(--line-soft); display: flex; flex-wrap: wrap; gap: 4px; } .rh { width: 100%; } .ri { width: auto; }
+    .cards { grid-template-columns: repeat(2, 1fr); }
+    .bento { grid-template-columns: 1fr 1fr; grid-template-rows: auto; } .bento .card { min-height: 130px; } .bento .card.big { grid-column: span 2; grid-row: auto; }
+    .tabs2 button { font-size: 13px; } .tabs2 button em { display: none; }
+    .roles { display: flex; flex-wrap: wrap; border-radius: 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="top">
+    <span class="ptag">Prototip · Content Library</span>
+    <h1>Les tres pestanyes, pensades per a qui les fa servir</h1>
+    <p>Tres maneres de dissenyar «Inspírate en», «Match Day» i «Objetivo y patrocinadores», i d'ordenar-ne els filtres de dins, perquè un CM, un director de màrqueting esportiu i un content creator trobin el que busquen. Tot és clicable.</p>
+  </header>
+
+  <!-- ===================== 1 ===================== -->
+  <section class="prop">
+    <span class="ptag">Proposta 1</span>
+    <h2>«El brief»: tres passos en l'ordre en què es pensa un post</h2>
+    <p>Les pestanyes deixen de ser tres caixes independents i esdevenen un recorregut: <b>1 · Moment</b> (de què va el post) → <b>2 · Referents</b> (a qui m'emmirallo) → <b>3 · Objectiu</b> (què ha d'aconseguir). Cada pas mostra el que ja has triat i una barra de progrés daurada. És la manera com treballa un CM quan prepara la setmana.</p>
+    <div class="why"><div><b>CM</b>Comença pel calendari (partit, fitxatge…) i acaba amb l'objectiu: és el seu dia a dia.</div><div><b>Director de màrqueting</b>Pot saltar directament al pas 3; el pas queda marcat com a fet.</div><div><b>Content creator</b>El pas 2 li dona referents per format i per qui publica, no només per club.</div></div>
+    <div class="stage" id="p1">
+      <div class="steps">
+        <button class="step on" data-s="0"><span class="n">1</span><span><b>Moment</b><small>Match Day, mercado, temporada…</small></span><span class="sel"></span></button>
+        <button class="step" data-s="1"><span class="n">2</span><span><b>Referentes</b><small>Dónde se juega, qué y quién publica</small></span><span class="sel"></span></button>
+        <button class="step" data-s="2"><span class="n">3</span><span><b>Objetivo</b><small>Negocio, llamada a la acción, sponsors</small></span><span class="sel"></span></button>
+      </div>
+      <div class="bar1"><i></i></div>
+      <div class="panel"><nav class="rail"></nav><div class="main"></div></div>
+    </div>
+    <div class="order">
+      <div><b>1 · Moment</b><ol><li>Día de partido (Previa · Directo · Post)</li><li>Diseño gráfico</li><li>Mercado</li><li>Equipaciones</li><li>Temporada</li><li>Fechas y campañas</li><li>Prensa · Temas sensibles</li></ol></div>
+      <div><b>2 · Referentes</b><ol><li>Dónde se juega: Deporte, Competición, Club</li><li>Qué se publica: Jugadores, Tono</li><li>Quién lo publica: Medios, Marcas, Creadores</li></ol></div>
+      <div><b>3 · Objetivo</b><ol><li>Objetivo de negocio</li><li>Llamada a la acción</li><li>Patrocinadores · Integración · Sector</li><li>Colaboraciones</li></ol></div>
+    </div>
+  </section>
+
+  <!-- ===================== 2 ===================== -->
+  <section class="prop">
+    <span class="ptag">Proposta 2</span>
+    <h2>«Treballo com a…»: el perfil reordena les pestanyes i els filtres</h2>
+    <p>Un selector de perfil (que surt del perfil de l'usuari, però que es pot canviar) decideix quina pestanya va primer i l'ordre dels grups de dins. A sobre de cada panell, una franja «Recomanat per a tu» amb els 3 filtres que més fa servir aquell perfil. La barra és la mateixa «Contorn» d'ara, amb la lent que llisca.</p>
+    <div class="why"><div><b>CM</b>Match Day primer: Día de partido, Diseño gráfico i Mercado al capdamunt.</div><div><b>Director de màrqueting</b>Objectiu i patrocinadors primer: sector, integració i retorn per a sponsors.</div><div><b>Content creator</b>Inspira't primer: qui publica (creadors, mitjans), tons i formats que funcionen.</div></div>
+    <div class="stage" id="p2">
+      <div class="roles"><button class="on" data-r="cm">Community manager</button><button data-r="dir">Director/a de marketing</button><button data-r="cc">Content creator</button></div>
+      <div class="tabs2"><span class="lens"></span></div>
+      <div class="panel"><nav class="rail"></nav><div class="main"></div></div>
+    </div>
+  </section>
+
+  <!-- ===================== 3 ===================== -->
+  <section class="prop">
+    <span class="ptag">Proposta 3</span>
+    <h2>«Editorial»: pestanyes vives i panell en bento</h2>
+    <p>Les tres pestanyes són targetes amb la portada del post més vist de la setmana i les 3 tendències del moment. A dins, una graella editorial: el filtre més fort en gran, dos de mitjans i la resta en xips. A dalt, tres lents per a cada perfil (CM · Director · Creator) que canvien què surt en gran. És el més «revista» i el que més ven el producte.</p>
+    <div class="why"><div><b>CM</b>Veu d'un cop d'ull què està funcionant aquesta setmana.</div><div><b>Director de màrqueting</b>Les xifres de posts i views a cada targeta per decidir on invertir.</div><div><b>Content creator</b>Les portades grans són inspiració immediata, sense obrir res.</div></div>
+    <div class="stage" id="p3">
+      <div class="tiles"></div>
+      <div class="panel" style="grid-template-columns:1fr"><div class="main"></div></div>
+    </div>
+  </section>
+</div>
+
+<script>
+// ---------- data (the real groups of the three panels, with rough counts) ----------
+const C = ["linear-gradient(160deg,#f97316,#ef4444)", "linear-gradient(160deg,#4a67e0,#7aa2ff)", "linear-gradient(160deg,#8b5cf6,#ec4899)", "linear-gradient(160deg,#14b8a6,#3b82f6)", "linear-gradient(160deg,#d99a2b,#f0b84a)", "linear-gradient(160deg,#2a3866,#172142)", "linear-gradient(160deg,#10b981,#065f46)", "linear-gradient(160deg,#e11d48,#7c2d12)"];
+const G = {
+  matchday: { t: "Día de partido", d: "Antes, durante y después del partido", o: [["Previa", "41k"], ["En directo", "18k"], ["Post partido", "36k"], ["Starting XI", "9k"]] },
+  design: { t: "Diseño gráfico", d: "Gráficos de matchday, pósters y tarjetas", o: [["Diseño gráfico", "27k"], ["Matchday poster", "6k"], ["Resultado final", "8k"], ["Stats card", "3k"]] },
+  transfer: { t: "Mercado", d: "Fichajes, renovaciones y despedidas", o: [["Fichaje", "12k"], ["Renovación", "4k"], ["Despedida", "3k"], ["Rumor", "1k"]] },
+  kit: { t: "Equipaciones", d: "Camisetas y colecciones", o: [["Lanzamiento", "5k"], ["Colección", "2k"]] },
+  season: { t: "Temporada", d: "Los grandes momentos del año", o: [["Pretemporada", "6k"], ["Título", "3k"], ["Final de temporada", "4k"]] },
+  dates: { t: "Fechas y campañas", d: "Récords, homenajes y fechas", o: [["Cumpleaños", "7k"], ["Récord", "3k"], ["Homenaje", "2k"]] },
+  tone: { t: "Tono", d: "¿Cómo lo cuentas?", o: [["Humor", "22k"], ["Emocional", "15k"], ["Épico", "9k"], ["Detrás de cámaras", "11k"]] },
+  press: { t: "Prensa y temas sensibles", d: "Comunicados e información práctica", o: [["Comunicado", "4k"], ["Info práctica", "3k"], ["Crisis", "800"]] },
+  sport: { t: "Deporte", d: "Todos los deportes", o: [["Fútbol", "367k"], ["Baloncesto", "48k"], ["Tenis", "12k"], ["Fórmula 1", "9k"]] },
+  comp: { t: "Competición", d: "Ligas y copas", o: [["LaLiga", "61k"], ["Premier League", "74k"], ["Champions", "22k"], ["NBA", "31k"]] },
+  club: { t: "Club", d: "Clubes y equipos", o: [["FC Barcelona", "9k"], ["Real Madrid", "8k"], ["Arsenal", "6k"], ["Celta", "3k"]] },
+  players: { t: "Jugadores", d: "Posts protagonizados por jugadores", o: [["Aparición de jugadores", "46k"], ["Cuentas de jugadores", "12k"]] },
+  who: { t: "Quién lo publica", d: "Medios, marcas y creadores", o: [["Medios", "52k"], ["Creadores", "16k"], ["Marcas", "2.3k"], ["Memes", "5k"]] },
+  goal: { t: "Objetivo de negocio", d: "Lo que debe conseguir el post", o: [["Engagement", "88k"], ["Venta de entradas", "6k"], ["Merchandising", "5k"], ["Seguidores", "21k"]] },
+  cta: { t: "Llamada a la acción", d: "Lo que pide a los fans", o: [["Comenta", "14k"], ["Compra", "6k"], ["Vota", "3k"], ["Comparte", "4k"]] },
+  sponsor: { t: "Patrocinadores", d: "Marcas en los posts de otros clubes", o: [["Nike", "4k"], ["Adidas", "3k"], ["Spotify", "1k"], ["Emirates", "1k"]] },
+  integ: { t: "Integración", d: "Cómo aparece el patrocinador", o: [["Logo en el gráfico", "9k"], ["Sección patrocinada", "3k"], ["Product placement", "2k"], ["Sorteo", "1k"]] },
+  sector: { t: "Sector del sponsor", d: "Partners por industria", o: [["Apuestas", "3k"], ["Bebidas", "2k"], ["Banca", "2k"], ["Moda", "2k"]] },
+  collab: { t: "Colaboraciones", d: "Posts hechos con otros", o: [["Con creadores", "6k"], ["Con marcas", "4k"], ["Entre clubes", "2k"]] },
+};
+const cards = (k, max = 4) => `<h3>${G[k].t}</h3><p class="sub">${G[k].d}</p><div class="cards">${G[k].o.slice(0, max).map(([n, c], i) => `<button class="card" style="--c:${C[(i + k.length) % C.length]}"><span>${n}<small>${c} posts</small></span></button>`).join("")}</div>`;
+const rail = (blocks, cur) => blocks.map(([h, ks]) => `${h ? `<p class="rh">${h}</p>` : ""}${ks.map((k) => `<button class="ri${k === cur ? " on" : ""}" data-g="${k}">${G[k].t}<small>${G[k].o.length}</small></button>`).join("")}`).join("");
+document.addEventListener("click", (e) => { const c = e.target.closest(".card"); if (c && !e.target.closest("#p3 .tile")) c.classList.toggle("on"); });
+
+// ---------- 1 · stepper ----------
+{
+  const el = document.getElementById("p1");
+  const S = [
+    [["Partido", ["matchday", "design"]], ["Actualidad", ["transfer", "kit", "season", "dates"]], ["Comunicación", ["press"]]],
+    [["Dónde se juega", ["sport", "comp", "club"]], ["Qué se publica", ["players", "tone"]], ["Quién lo publica", ["who"]]],
+    [["Negocio", ["goal", "cta"]], ["Patrocinio", ["sponsor", "integ", "sector"]], ["Con otros", ["collab"]]],
+  ];
+  const picks = ["Previa", "LaLiga", ""];
+  let s = 0, g = "matchday";
+  const draw = () => {
+    el.querySelectorAll(".step").forEach((b, i) => { b.classList.toggle("on", i === s); b.classList.toggle("done", i < s); b.querySelector(".sel").textContent = i < s && picks[i] ? `✓ ${picks[i]}` : ""; });
+    el.querySelector(".bar1 i").style.width = `${((s + 1) / 3) * 100}%`;
+    el.querySelector(".rail").innerHTML = rail(S[s], g);
+    const m = el.querySelector(".main"); m.innerHTML = cards(g); m.classList.remove("fade"); void m.offsetWidth; m.classList.add("fade");
+  };
+  el.addEventListener("click", (e) => {
+    const st = e.target.closest("[data-s]"); if (st) { s = +st.dataset.s; g = S[s][0][1][0]; return draw(); }
+    const r = e.target.closest("[data-g]"); if (r) { g = r.dataset.g; draw(); }
+  });
+  draw();
+}
+
+// ---------- 2 · roles ----------
+{
+  const el = document.getElementById("p2");
+  const TABS = { md: "Match Day", insp: "Inspírate en", goal: "Objetivo y patrocinadores" };
+  const R = {
+    cm: { order: ["md", "insp", "goal"], rec: ["Previa", "Diseño gráfico", "Fichaje"],
+      md: [["Para tu calendario", ["matchday", "design", "transfer"]], ["Durante el año", ["kit", "season", "dates"]], ["Cómo lo cuentas", ["tone", "press"]]],
+      insp: [["Dónde se juega", ["club", "comp", "sport"]], ["Qué se publica", ["players"]], ["Quién lo publica", ["who"]]],
+      goal: [["Comunidad", ["cta", "goal"]], ["Patrocinio", ["integ", "sponsor", "sector"]], ["", ["collab"]]] },
+    dir: { order: ["goal", "insp", "md"], rec: ["Venta de entradas", "Logo en el gráfico", "Banca"],
+      goal: [["Retorno", ["goal", "cta"]], ["Patrocinio", ["sponsor", "integ", "sector"]], ["Alianzas", ["collab"]]],
+      insp: [["Competencia", ["comp", "club", "sport"]], ["Quién lo publica", ["who"]], ["Qué se publica", ["players"]]],
+      md: [["Picos de audiencia", ["matchday", "season", "transfer"]], ["Activos", ["kit", "design", "dates"]], ["Reputación", ["press", "tone"]]] },
+    cc: { order: ["insp", "md", "goal"], rec: ["Creadores", "Humor", "Detrás de cámaras"],
+      insp: [["Quién lo publica", ["who"]], ["Qué se publica", ["players", "tone"]], ["Dónde se juega", ["sport", "club", "comp"]]],
+      md: [["Formatos que funcionan", ["design", "matchday"]], ["Tendencias", ["transfer", "dates", "season", "kit"]]],
+      goal: [["Colaboraciones", ["collab", "sponsor", "integ"]], ["Comunidad", ["cta", "goal"]]] },
+  };
+  let r = "cm", t = 0, g = null;
+  const lens = el.querySelector(".lens"), tabs = el.querySelector(".tabs2");
+  const draw = (anim) => {
+    const o = R[r].order, tab = o[t], blocks = R[r][tab];
+    if (!g || !blocks.some(([, ks]) => ks.includes(g))) g = blocks[0][1][0];
+    tabs.querySelectorAll("button").forEach((b) => b.remove());
+    o.forEach((k, i) => tabs.insertAdjacentHTML("beforeend", `<button data-t="${i}">${TABS[k]}${i === 0 ? "<em>Para ti</em>" : ""}</button>`));
+    lens.style.transform = `translateX(${t * 100}%)`;
+    el.querySelector(".rail").innerHTML = rail(blocks, g);
+    const m = el.querySelector(".main");
+    m.innerHTML = `<div class="pick">Recomendado para ti · <b>${R[r].rec.join(" · ")}</b></div>${cards(g)}`;
+    if (anim) { m.classList.remove("fade"); void m.offsetWidth; m.classList.add("fade"); }
+  };
+  el.addEventListener("click", (e) => {
+    const rb = e.target.closest("[data-r]"); if (rb) { el.querySelectorAll("[data-r]").forEach((b) => b.classList.toggle("on", b === rb)); r = rb.dataset.r; t = 0; g = null; return draw(true); }
+    const tb = e.target.closest("[data-t]"); if (tb) { t = +tb.dataset.t; g = null; return draw(true); }
+    const gb = e.target.closest("[data-g]"); if (gb) { g = gb.dataset.g; draw(true); }
+  });
+  draw();
+}
+
+// ---------- 3 · bento ----------
+{
+  const el = document.getElementById("p3");
+  const T = [
+    { t: "Inspírate en", s: "Referentes que funcionan", c: C[1], live: ["Premier League", "Creadores", "Jugadores"],
+      lens: { cm: ["club", "comp", "who", "players"], dir: ["comp", "who", "club", "sport"], cc: ["who", "players", "sport", "club"] } },
+    { t: "Match Day", s: "Lo que toca esta semana", c: C[0], live: ["Previa", "Diseño gráfico", "Fichajes"],
+      lens: { cm: ["matchday", "design", "transfer", "tone"], dir: ["matchday", "season", "kit", "dates"], cc: ["design", "tone", "matchday", "dates"] } },
+    { t: "Objetivo y patrocinadores", s: "Lo que tiene que conseguir", c: C[4], live: ["Engagement", "Nike", "Sorteo"],
+      lens: { cm: ["cta", "goal", "integ", "collab"], dir: ["sponsor", "goal", "sector", "integ"], cc: ["collab", "cta", "sponsor", "goal"] } },
+  ];
+  let t = 1, l = "cm";
+  const draw = () => {
+    el.querySelector(".tiles").innerHTML = T.map((x, i) => `<button class="tile${i === t ? " on" : ""}" data-t="${i}" style="--c:${x.c}"><b>${x.t}</b><small>${x.s}</small><span class="live">${x.live.map((n) => `<i>${n}</i>`).join("")}</span></button>`).join("");
+    const [k1, k2, k3, k4] = T[t].lens[l];
+    const big = G[k1].o[0], m1 = G[k2].o[0], m2 = G[k3].o[0];
+    const m = el.querySelector(".main");
+    m.innerHTML = `<div class="seg">${[["cm", "CM"], ["dir", "Director/a"], ["cc", "Creator"]].map(([k, n]) => `<button data-l="${k}" class="${k === l ? "on" : ""}">Vista ${n}</button>`).join("")}</div>
+      <div class="bento">
+        <button class="card big" style="--c:${C[t * 2 % C.length]}"><i class="trend">En tendencia</i><span>${big[0]}<small>${G[k1].t} · ${big[1]} posts · +34% esta semana</small></span></button>
+        <button class="card" style="--c:${C[(t + 3) % C.length]}"><span>${m1[0]}<small>${G[k2].t} · ${m1[1]}</small></span></button>
+        <button class="card" style="--c:${C[(t + 5) % C.length]}"><span>${m2[0]}<small>${G[k3].t} · ${m2[1]}</small></span></button>
+        <button class="card" style="--c:${C[(t + 6) % C.length]}"><span>${G[k1].o[1]?.[0] || ""}<small>${G[k1].o[1]?.[1] || ""}</small></span></button>
+        <button class="card" style="--c:${C[(t + 2) % C.length]}"><span>${G[k4].o[0][0]}<small>${G[k4].t} · ${G[k4].o[0][1]}</small></span></button>
+      </div>
+      <div class="chips">${[k1, k2, k3, k4].flatMap((k) => G[k].o.slice(1)).slice(0, 12).map(([n, c]) => `<button>${n}<em>${c}</em></button>`).join("")}</div>`;
+    m.classList.remove("fade"); void m.offsetWidth; m.classList.add("fade");
+  };
+  el.addEventListener("click", (e) => {
+    const tb = e.target.closest("[data-t]"); if (tb) { t = +tb.dataset.t; return draw(); }
+    const lb = e.target.closest("[data-l]"); if (lb) { l = lb.dataset.l; draw(); }
+  });
+  draw();
+}
+</script>
+</body>
+</html>
