@@ -45,7 +45,8 @@
   const scale = Math.min(window.devicePixelRatio || 1, 1.5) * 0.75;    // soft light doesn't need full resolution
   const size = () => { c.width = Math.round(innerWidth * scale); c.height = Math.round(innerHeight * scale); gl.viewport(0, 0, c.width, c.height); };
   size(); addEventListener("resize", size);
-  const isLight = () => document.documentElement.dataset.theme === "light" || (!document.documentElement.dataset.theme && matchMedia("(prefers-color-scheme: light)").matches);
+  // same rule as the tunnel's CSS (:root[data-theme="light"]): the page stays dark unless the light theme is chosen
+  const isLight = () => document.documentElement.dataset.theme === "light";
   const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const t0 = performance.now() - 40000;
   const draw = () => {
