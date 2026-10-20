@@ -171,7 +171,7 @@
     const spot = document.querySelector(".nav-actions");
     if (spot && !spot.querySelector(".lang-switch")) spot.insertAdjacentHTML("afterbegin", SWITCH());
     // pages without the main nav (log in, sign up): a small switch in the corner
-    if (!spot && document.querySelector(".auth, .auth-page, [data-lang-float]") && !document.querySelector(".lang-switch")) {
+    if (!spot && document.querySelector(".auth, .auth-page, [data-lang-float]") && !document.querySelector(".lang-switch, [data-lang-slot]")) {
       document.body.insertAdjacentHTML("beforeend", `<div class="lang-float">${SWITCH()}</div>`);
     }
     document.querySelectorAll("[data-lang-slot]").forEach((s) => { if (!s.querySelector(".lang-switch")) s.innerHTML = SWITCH(s.getAttribute("data-lang-slot") === "full"); });
