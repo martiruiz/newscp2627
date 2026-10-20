@@ -81,7 +81,7 @@
   addEventListener("pointermove", (e) => { tx = (e.clientX / innerWidth - 0.5) * 6; ty = -(e.clientY / innerHeight - 0.5) * 4; }, { passive: true });
   document.addEventListener("visibilitychange", () => { if (!document.hidden) { last = performance.now(); requestAnimationFrame(frame); } });
   let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(build, 200); });
-  fetch("assets/tunnel/list.json").then((r) => r.json()).catch(() => []).then((list) => {
+  fetch("assets/tunnel/list.json?v=96").then((r) => r.json()).catch(() => []).then((list) => {
     photos = list || [];
     build();
     requestAnimationFrame((t) => { last = t; scene.classList.add("is-on"); frame(t); });
