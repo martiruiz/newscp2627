@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="256x256" href="assets/icon-logo-lg.png">
   <link rel="apple-touch-icon" href="assets/icon-logo-lg.png">
   <link rel="stylesheet" href="css/fonts.css?v=1">
-  <link rel="stylesheet" href="css/styles.css?v=20261025z">
+  <link rel="stylesheet" href="css/styles.css?v=20261026d">
   <script src="js/theme.js?v=20261021a"></script>
   <script src="js/i18n.js?v=20261025o"></script>
   <style>.auth-checking body { visibility: hidden; }</style>
@@ -49,21 +49,8 @@
       <label class="lf-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" placeholder="Search filters or write what you need: signing reels that worked…" aria-label="Search filters" autocomplete="off" data-lf-search></label>
       <div class="lf-results" hidden data-lf-results role="listbox" aria-label="Matching filters"></div>
       <nav class="lf-jump" aria-label="Filter sections" data-lf-jump></nav>
-      <div class="lf-body" data-lf-body>
-        <div data-facets></div>
-      </div>
-      <div class="lf-foot"><button class="btn btn-gold lf-go" type="button" data-sheet-close><span data-lf-go>Show results</span></button></div>
-    </aside>
-    <div class="lf-scrim" data-sheet-close></div>
-    <!-- Shown while the filters column is hidden (wide screens): floats where the column was and opens it again -->
-    <button class="lf-icon filters-show" type="button" aria-label="Show filters" title="Show filters" data-show-filters><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><b class="filter-count" hidden data-filter-count-float></b></button>
-
-    <!-- Head across the posts and the Content Plan: search + "My space" (above the plan), then the filter bar to the edge -->
-    <div class="lib-head" data-lib-head>
-      <div class="feed-bar">
-        <button class="pill pill-dark collapse" type="button" aria-expanded="true" data-collapse><img src="assets/chevron-duo.svg" alt=""><span data-collapse-label>Hide filters</span><b class="filter-count" hidden data-filter-count></b></button>
-        <input type="hidden" data-q><!-- caption query, set by the "Coming up" dates (no visible search box) -->
-        <div class="spacer"></div>
+      <!-- When and order of the posts: above Favs -->
+      <div class="lf-sortbar">
         <div class="lf-dd" data-dd>
           <button class="pill pill-dark lf-dd-btn" type="button" aria-haspopup="true" aria-expanded="false" data-dd-btn><span data-icon="calendar-days"></span><span data-period-label>All time</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
           <div class="lf-menu" hidden data-dd-menu>
@@ -89,6 +76,22 @@
             </div>
           </div>
         </div>
+      </div>
+      <div class="lf-body" data-lf-body>
+        <div data-facets></div>
+      </div>
+      <div class="lf-foot"><button class="btn btn-gold lf-go" type="button" data-sheet-close><span data-lf-go>Show results</span></button></div>
+    </aside>
+    <div class="lf-scrim" data-sheet-close></div>
+    <!-- Shown while the filters column is hidden (wide screens): floats where the column was and opens it again -->
+    <button class="lf-icon filters-show" type="button" aria-label="Show filters" title="Show filters" data-show-filters><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><b class="filter-count" hidden data-filter-count-float></b></button>
+
+    <!-- Head across the posts and the Content Plan: search + "My space" (above the plan), then the filter bar to the edge -->
+    <div class="lib-head" data-lib-head>
+      <div class="feed-bar">
+        <button class="pill pill-dark collapse" type="button" aria-expanded="true" data-collapse><img src="assets/chevron-duo.svg" alt=""><span data-collapse-label>Hide filters</span><b class="filter-count" hidden data-filter-count></b></button>
+        <input type="hidden" data-q><!-- caption query, set by the "Coming up" dates (no visible search box) -->
+        <div class="spacer"></div>
       </div>
       <div class="my-space" data-my-space>
         <span class="my-space-t">My space</span>
