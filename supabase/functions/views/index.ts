@@ -26,6 +26,11 @@ async function viewsOf(url: string): Promise<number | null> {
     return Number(/"stats":\{[^}]*?"playCount":(\d+)/.exec(html)?.[1] || /"statsV2":\{[^}]*?"playCount":"(\d+)"/.exec(html)?.[1]) || null;
   }
   if ((m = /(?:shorts\/|v=|youtu\.be\/)([\w-]{11})/.exec(url))) {
+    // YouTube's own player API (the watch page shows a cookie-consent page to servers in Europe)
+    const r = await fetch("https://www.youtube.com/youtubei/v1/player?prettyPrint=false", { method: "POST", headers: { "Content-Type": "application/json", "User-Agent": UA },
+      body: JSON.stringify({ videoId: m[1], context: { client: { clientName: "WEB", clientVersion: "2.20241010.00.00", hl: "en", gl: "US" } } }) }).catch(() => null);
+    const j = r?.ok ? await r.json().catch(() => null) : null;
+    if (Number(j?.videoDetails?.viewCount)) return Number(j.videoDetails.viewCount);
     const html = await page(`https://www.youtube.com/watch?v=${m[1]}`);
     return Number(/"videoDetails":\{.*?"viewCount":"(\d+)"/s.exec(html)?.[1]) || null;
   }
