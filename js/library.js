@@ -1846,8 +1846,22 @@
       const pfi = platformOf(rows[i]);
       const asPosted = ["x", "linkedin", "facebook"].includes(pfi);
       const ratio = (rows[i].cover_url && !asPosted ? mediaRatio(rows[i]) : shape(rows[i]).ratio) + (asPosted ? 0 : 0.2);   // + the footer
-      placed.push({ el, ratio });
+      const pe = { el, ratio };
+      placed.push(pe);
       place(el, ratio);
+      // Facebook doesn't say a video's shape: its stored cover does (a horizontal video gets a horizontal card)
+      if (pfi === "facebook" && rows[i].cover_url && !Number(rows[i].media_ratio)) {
+        const img = new Image();
+        img.onload = () => {
+          if (!img.naturalWidth) return;
+          const r = Math.min(16 / 9, Math.max(9 / 16, img.naturalHeight / img.naturalWidth));
+          rows[i].media_ratio = r;
+          const m = el.querySelector(".lib-media");
+          if (m) m.style.aspectRatio = `1 / ${r.toFixed(4)}`;
+          pe.ratio = r;
+        };
+        img.src = rows[i].cover_url;
+      }
     });
     window.SCP_COVERS?.observe(grid);
   }
