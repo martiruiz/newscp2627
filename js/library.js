@@ -1555,8 +1555,25 @@
       </article>`;
     }
 
-    // No stored cover (and X, LinkedIn, Facebook): a poster only — the platform's post loads when ▶ is pressed
+    // No stored cover (and X, LinkedIn, Facebook): the post itself, as the platform shows it (as the library did until
+    // 20/10). Not TikTok (its player is throttled when many load at once: "ratelimit triggered") nor YouTube (its own
+    // image is free): those keep the poster below, and the player loads on ▶.
     const sh = shape(p);
+    const src = pf !== "tiktok" && pf !== "youtube" ? previewSrc(p) : "";
+    if (src) {
+      const zoomStyle = sh.zoom ? ` style="--zoom:${sh.zoom.toFixed(4)};--inset:${((1 - sh.boxFrac) / 2 * 100).toFixed(3)}%"` : "";
+      return `
+      <article class="lib-card is-embed" data-id="${esc(p.id)}">
+        <div class="lib-media${sh.zoom ? " is-reel" : ""}" style="aspect-ratio: 1 / ${sh.ratio.toFixed(4)}">
+          <div class="lib-zoom"${zoomStyle}><iframe class="lib-frame${pf === "instagram" ? " is-ig" : ""}" src="${esc(src)}" loading="lazy" title="${esc(who || "Post")}" scrolling="no" allow="encrypted-media; picture-in-picture; fullscreen"></iframe></div>
+          ${asPosted
+            // the tweet's own video / image stays clickable (plays in place); its header, text and bottom open the detail
+            ? `<button class="lib-hit lib-hit-top" type="button" data-open="${esc(p.id)}" aria-label="Details${who ? ` · ${esc(who)}` : ""}"></button><button class="lib-hit lib-hit-bottom" type="button" data-open="${esc(p.id)}" tabindex="-1" aria-hidden="true"></button>`
+            : `<button class="lib-hit" type="button" data-open="${esc(p.id)}" aria-label="Details${who ? ` · ${esc(who)}` : ""}"></button>`}
+          ${rail}
+        </div>${asPosted ? "" : foot}${aiPeek(p.id)}
+      </article>`;
+    }
     return `
       <article class="lib-card is-poster" data-id="${esc(p.id)}">
         <div class="lib-media" style="aspect-ratio: 1 / ${sh.ratio.toFixed(4)}">
