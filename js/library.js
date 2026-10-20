@@ -1510,7 +1510,7 @@
     const name = v?.name || who || "";
     const tip = v?.ig ? `@${v.ig}` : name;
     const ini = name.replace(/\b(FC|CF|AFC|SC|AC|CD|UD|RC|SL)\b/g, "").trim().split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase() || "?";
-    if (v?.logo) return `<span class="lib-crest${v.ig ? " is-photo" : ""}" title="${esc(tip)}"><img src="${esc(v.logo)}" alt="" loading="lazy"></span>`;
+    if (v?.logo) return `<span class="lib-crest${v.ig ? " is-photo" : ""}" title="${esc(tip)}" data-ini="${esc(ini)}"><img src="${esc(v.logo)}" alt="" loading="lazy" referrerpolicy="no-referrer"></span>`;
     return `<span class="lib-crest is-initials" title="${esc(tip)}"><b>${esc(ini)}</b></span>`;
   }
 
@@ -1585,6 +1585,8 @@
   }
   // a cover that fails to load leaves the drawn card visible
   document.addEventListener("error", (e) => { const box = e.target?.tagName === "IMG" && e.target.closest("[data-cover-box]"); if (box) box.classList.add("no-cover"); }, true);
+  // a footer logo / profile picture that fails to load becomes the initials
+  document.addEventListener("error", (e) => { const c = e.target?.tagName === "IMG" && e.target.closest(".lib-crest[data-ini]"); if (c) { c.className = "lib-crest is-initials"; c.innerHTML = `<b>${esc(c.dataset.ini)}</b>`; } }, true);
 
 
   // ▶ on a cover: the platform's player inside the card (TikTok asks for its cookie consent the first time)
