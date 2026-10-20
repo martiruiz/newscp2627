@@ -383,14 +383,14 @@
   const kfOn = (k) => { const v = kfVals(k); return v.length > 0 && v.every(isOn); };
   const imp = { i: 0, el: null, covers: {} };
   function impCount() { const n = KEY_FILTERS.filter(kfOn).length; const em = $("[data-imp-n]"); if (em) { em.hidden = !n; em.textContent = n; } }
-  function impRender() {
+  function impRender(shift = 0) {
     if (!imp.el) return;
     const N = KEY_FILTERS.length;
     imp.el.querySelector("[data-imp-stage]").innerHTML = KEY_FILTERS.map((k, i) => {
-      let o = i - imp.i; if (o > N / 2) o -= N; if (o < -N / 2) o += N;   // the nearest way round
+      let o = i - imp.i - shift; while (o > N / 2) o -= N; while (o < -N / 2) o += N;   // the nearest way round
       const a = Math.abs(o), cover = imp.covers[k.key];
       const style = `--o:${o};--a:${a};z-index:${10 - a};${cover ? `--img:url('${cover}');` : ""}--art:linear-gradient(135deg, ${k.art})`;
-      return `<button type="button" class="imp-card${o === 0 ? " is-center" : ""}${kfOn(k) ? " is-on" : ""}${a > 2 ? " is-far" : ""}" style="${style}" data-imp-card="${i}" aria-label="${esc(tx(k.label))}">
+      return `<button type="button" class="imp-card${Math.round(o) === 0 ? " is-center" : ""}${kfOn(k) ? " is-on" : ""}${a > 2.4 ? " is-far" : ""}" style="${style}" data-imp-card="${i}" aria-label="${esc(tx(k.label))}">
         <span class="imp-ck">${svg("check")}</span></button>`;
     }).join("");
     const k = KEY_FILTERS[imp.i], n = kfVals(k).reduce((t, v) => t + countOf(v), 0);
@@ -408,18 +408,42 @@
       imp.el = document.createElement("div");
       imp.el.className = "imp-modal";
       imp.el.innerHTML = `<div class="imp-back" data-imp-close></div><div class="imp-box" role="dialog" aria-label="${esc(tx("More key filters"))}">
-        <button class="imp-x" type="button" data-imp-close aria-label="${esc(tx("Close"))}">${icon("x")}</button>
         <div class="imp-stage" data-imp-stage></div><div class="imp-cap" data-imp-cap></div>
         <div class="imp-nav"><button type="button" data-imp-step="-1" aria-label="${esc(tx("Previous"))}">${icon("chevron-left")}</button><button type="button" data-imp-step="1" aria-label="${esc(tx("Next"))}">${icon("chevron-right")}</button></div></div>`;
       document.body.append(imp.el);
       imp.el.addEventListener("click", (e) => {
-        if (e.target.closest("[data-imp-close]")) return impClose();
+        if (imp.dragged) { imp.dragged = false; return; }   // the end of a drag isn't a click
+        // anywhere but a card, the caption's button or the arrows: back to the library
+        if (!e.target.closest("[data-imp-card], [data-imp-apply], [data-imp-step]")) return impClose();
         const st = e.target.closest("[data-imp-step]");
         if (st) { imp.i = (imp.i + Number(st.dataset.impStep) + KEY_FILTERS.length) % KEY_FILTERS.length; return impRender(); }
         const c = e.target.closest("[data-imp-card]");
         if (c && Number(c.dataset.impCard) !== imp.i) { imp.i = Number(c.dataset.impCard); return impRender(); }
         if (c || e.target.closest("[data-imp-apply]")) impToggle(KEY_FILTERS[imp.i]);
       });
+      const stage = imp.el.querySelector("[data-imp-stage]");
+      let x0 = null, shift = 0;
+      const STEP = () => Math.max(160, stage.clientWidth / 5);   // px of drag per card
+      stage.addEventListener("pointerdown", (e) => { x0 = e.clientX; shift = 0; imp.dragged = false; stage.setPointerCapture(e.pointerId); stage.classList.add("is-grabbing"); });
+      stage.addEventListener("pointermove", (e) => {
+        if (x0 == null) return;
+        const dx = e.clientX - x0;
+        if (Math.abs(dx) > 6) imp.dragged = true;
+        if (!imp.dragged) return;
+        shift = -dx / STEP();
+        stage.classList.add("is-dragging");
+        impRender(shift);
+      });
+      const end = () => {
+        if (x0 == null) return;
+        x0 = null; stage.classList.remove("is-grabbing", "is-dragging");
+        if (!imp.dragged) return;
+        const N = KEY_FILTERS.length;
+        imp.i = (((imp.i + Math.round(shift)) % N) + N) % N;
+        impRender();
+      };
+      stage.addEventListener("pointerup", end);
+      stage.addEventListener("pointercancel", end);
       addEventListener("keydown", (e) => {
         if (imp.el.hidden) return;
         if (e.key === "Escape") impClose();
