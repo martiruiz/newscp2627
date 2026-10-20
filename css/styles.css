@@ -6326,5 +6326,8 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
   .lib-head .feed-bar { grid-column: 1; }
   .lib-head .my-space { grid-column: 2; border-left: 1px solid var(--line-soft); }
   .lib-head .lfb { grid-column: 1 / -1; }
+  /* plan open: "My space" and the Content Plan are one column; the filter bar stays over the posts */
+  .library.plan-open .lib-head .my-space { grid-row: 1 / span 2; justify-content: flex-start; padding-top: 14px; border-bottom: 0; }
+  .library.plan-open .lib-head .lfb { grid-column: 1; grid-row: 2; }
   .library:not(.plan-open) .lib-head .my-space { flex-direction: row; align-items: center; gap: 10px; }
 }
