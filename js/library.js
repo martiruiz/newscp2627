@@ -1526,24 +1526,37 @@
       </article>`;
     }
 
-    // No cover (X, LinkedIn, Facebook…): the post itself, as the platform shows it
-    const src = previewSrc(p);
+    // No stored cover (and X, LinkedIn, Facebook): a poster only — the platform's post loads when ▶ is pressed
     const sh = shape(p);
-    const zoomStyle = sh.zoom ? ` style="--zoom:${sh.zoom.toFixed(4)};--inset:${((1 - sh.boxFrac) / 2 * 100).toFixed(3)}%"` : "";
     return `
-      <article class="lib-card is-embed" data-id="${esc(p.id)}">
-        <div class="lib-media${sh.zoom ? " is-reel" : ""}" style="aspect-ratio: 1 / ${sh.ratio.toFixed(4)}">
-          ${pf === "tiktok" && p.url
-            ? `<div class="lib-cover" data-cover-box><img data-oembed="${esc(p.url)}" alt="${esc(who || "TikTok video")}"><span class="lib-play" aria-hidden="true"></span></div>`
-            : src ? `<div class="lib-zoom"${zoomStyle}><iframe class="lib-frame${pf === "instagram" ? " is-ig" : ""}" src="${esc(src)}" loading="lazy" title="${esc(who || "Post")}" scrolling="no" allow="encrypted-media; picture-in-picture; fullscreen"></iframe></div>` : `<span class="lib-noimg"></span>`}
-          ${asPosted
-            // the tweet's own video / image stays clickable (plays in place); its header, text and bottom open the detail
-            ? `<button class="lib-hit lib-hit-top" type="button" data-open="${esc(p.id)}" aria-label="Details${who ? ` · ${esc(who)}` : ""}"></button><button class="lib-hit lib-hit-bottom" type="button" data-open="${esc(p.id)}" tabindex="-1" aria-hidden="true"></button>`
-            : `<button class="lib-hit" type="button" data-open="${esc(p.id)}" aria-label="Details${who ? ` · ${esc(who)}` : ""}"></button>`}
-          ${rail}
-        </div>${asPosted ? "" : foot}${aiPeek(p.id)}
+      <article class="lib-card is-poster" data-id="${esc(p.id)}">
+        <div class="lib-media" style="aspect-ratio: 1 / ${sh.ratio.toFixed(4)}">
+          ${posterHtml(p, who)}
+          <button class="lib-hit" type="button" data-open="${esc(p.id)}" aria-label="Details${who ? ` · ${esc(who)}` : ""}"></button>
+          ${playerSrc(p) ? `<button class="lib-playbtn${video ? "" : " is-view"}" type="button" data-play="${esc(p.id)}" aria-label="${esc(video ? tx("Play video") : tx("Show the post"))}">${icon(video ? "play" : "eye")}</button>` : ""}
+          ${fmt || p.duration_s ? `<span class="lib-fmt">${video ? icon("play") : ""}${esc([fmt, p.duration_s ? mmss(p.duration_s) : ""].filter(Boolean).join(" · "))}</span>` : ""}
+          ${corner}${rail}
+        </div>${foot}${aiPeek(p.id)}
       </article>`;
   }
+
+  // Poster for a post with no stored cover: a cover that costs the platform nothing to give (stored cover, YouTube's
+  // image, TikTok's oEmbed thumbnail) or, if there is none, a card drawn here (network, who, first line of the text).
+  // Nothing from the post itself is loaded until ▶ (platforms throttle embeds: TikTok answers "ratelimit triggered").
+  function posterHtml(p, who) {
+    const pf = platformOf(p);
+    const u = p.url || ""; let m;
+    const text = String(p.title || "").replace(/\s+/g, " ").trim();
+    // the drawn card is always underneath: it shows if the image is missing or fails
+    const ph = `<div class="lib-ph lib-ph-${esc(pf || "post")}">${who ? `<b>${esc(who)}</b>` : ""}${text ? `<p>${esc(text.length > 160 ? text.slice(0, 157) + "…" : text)}</p>` : ""}</div>`;
+    const img = p.cover_url || ((m = u.match(/(?:shorts\/|v=|youtu\.be\/)([\w-]{11})/)) ? `https://i.ytimg.com/vi/${m[1]}/hqdefault.jpg` : "");
+    if (img) return `${ph}<div class="lib-cover" data-cover-box><img class="is-loaded" src="${esc(img)}" alt="" loading="lazy" decoding="async"></div>`;
+    if (pf === "tiktok" && u) return `${ph}<div class="lib-cover" data-cover-box><img data-oembed="${esc(u)}" alt=""></div>`;
+    return ph;
+  }
+  // a cover that fails to load leaves the drawn card visible
+  document.addEventListener("error", (e) => { const box = e.target?.tagName === "IMG" && e.target.closest("[data-cover-box]"); if (box) box.classList.add("no-cover"); }, true);
+
 
   // ▶ on a cover: the platform's player inside the card (TikTok asks for its cookie consent the first time)
   function playerSrc(p) {
@@ -1727,21 +1740,27 @@
   const body = $("[data-drawer-body]");
   const PLATFORM_NAMES = { instagram: "Instagram", tiktok: "TikTok", youtube: "YouTube", x: "X", facebook: "Facebook", linkedin: "LinkedIn" };
   function embedHtml(p) {
-    if (/^\s*<blockquote class="(instagram-media|tiktok-embed|twitter-tweet)/.test(p.embed || "")) return p.embed;
-    const src = previewSrc(p);
-    // TikTok: the cover with a play button; the player loads only on click. TikTok throttles its embed per visitor
-    // ("ratelimit triggered") when many TikTok posts are opened or loaded in a short time.
-    if (src && platformOf(p) === "tiktok") return `<div class="yt-frame is-vertical an-poster" data-cover-box data-embed-src="${esc(src)}">
-      ${p.cover_url ? `<img src="${esc(p.cover_url)}" alt="" class="is-loaded">` : `<img data-oembed="${esc(p.url)}" alt="">`}
-      <button type="button" class="an-play" data-embed-play aria-label="${esc(tx("Play"))}"></button></div>`;
-    if (src) return `<div class="yt-frame is-vertical"><iframe src="${esc(src)}" title="Post" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe></div>`;
-    return `<a class="btn btn-outline" href="${esc(p.url)}" target="_blank" rel="noopener">Open post</a>`;
+    // every network: the poster with ▶; the post itself (embed code or the platform's player) loads on click
+    const blockquote = /^\s*<blockquote class="(instagram-media|tiktok-embed|twitter-tweet)/.test(p.embed || "");
+    const pl = playerSrc(p) || (previewSrc(p) ? { src: previewSrc(p) } : null);
+    if (!blockquote && !pl) return p.url ? `<a class="btn btn-outline" href="${esc(p.url)}" target="_blank" rel="noopener">Open post</a>` : "";
+    const vertical = shape(p).ratio > 1.05;
+    return `<div class="an-poster${vertical ? " is-vertical" : ""}" data-cover-box data-embed-id="${esc(p.id)}"${pl && !blockquote ? ` data-embed-src="${esc(pl.src)}"${pl.ig ? " data-embed-ig" : ""}` : ""}>
+      ${posterHtml(p, first(p, "club") || first(p, "competition") || first(p, "entity"))}
+      <button type="button" class="an-play" data-embed-play aria-label="${esc(isVideo(p) ? tx("Play video") : tx("Show the post"))}"></button></div>`;
   }
   body.addEventListener("click", (e) => {
     const play = e.target.closest("[data-embed-play]");
     if (!play) return;
-    const box = play.closest("[data-embed-src]");
-    box.innerHTML = `<iframe src="${esc(box.dataset.embedSrc)}" title="Post" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
+    const box = play.closest("[data-embed-id]");
+    const p = cache.get(String(box.dataset.embedId));
+    if (box.dataset.embedSrc) {
+      box.classList.add("is-live");
+      box.innerHTML = `<iframe src="${esc(box.dataset.embedSrc)}" title="Post" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen scrolling="${box.hasAttribute("data-embed-ig") ? "no" : "auto"}"></iframe>`;
+    } else if (p?.embed) {
+      box.outerHTML = `<div class="an-embed">${p.embed}</div>`;
+      runEmbedScript();
+    }
   });
   const SCRIPTS = { "instagram-media": "https://www.instagram.com/embed.js", "tiktok-embed": "https://www.tiktok.com/embed.js", "twitter-tweet": "https://platform.twitter.com/widgets.js" };
   function runEmbedScript() {

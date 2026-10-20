@@ -6561,11 +6561,26 @@ a.lf-sp-favs { text-decoration: none; }
 @media (max-width: 960px) { .active-bar { flex-wrap: wrap; } .active-chips { flex-basis: 100%; } .active-actions { width: 100%; } .saved-searches { flex: 1; max-width: none; } }
 .active-actions .ab-save { width: 38px; padding: 0; justify-content: center; }
 
-/* Post detail: TikTok shows its cover first; the player loads on click (TikTok rate-limits embeds) */
-.an-poster { background: #0d1426; }
-.an-poster img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.4s; }
-.an-poster img.is-loaded { opacity: 1; }
-.an-play { position: absolute; left: 50%; top: 50%; width: 64px; height: 64px; transform: translate(-50%, -50%); border-radius: 50%; background: rgba(18, 27, 51, 0.6); border: 1px solid rgba(255, 255, 255, 0.4); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); cursor: pointer; transition: transform 0.2s, background 0.2s; }
+/* Posts load only on ▶ (every network): a poster first — stored cover, YouTube / TikTok image, or a drawn card */
+.lib-card.is-poster .lib-media { background: #0d1426; }
+.lib-card.is-poster .lib-cover { position: absolute; inset: 0; background: transparent; }
+.lib-card.is-poster .lib-cover.no-cover, .an-poster .lib-cover.no-cover { display: none; }
+.lib-cover.no-cover img, .an-poster .no-cover img { display: none; }
+.lib-card.is-poster .lib-cover.no-cover::after, .an-poster .lib-cover.no-cover::after { content: none; }
+.lib-playbtn.is-view svg { margin-left: 0; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.lib-ph { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; padding: 56px 18px 48px; overflow: hidden;
+  background: radial-gradient(120% 70% at 20% 0%, rgba(240, 184, 74, 0.12), transparent 60%), linear-gradient(180deg, #17203d, #0d1426); color: var(--text); }
+.lib-ph b { font-family: var(--font-display); font-size: 15px; font-weight: 600; }
+.lib-ph p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
+.lib-card.is-poster .lib-media.is-playing .lib-ph, .lib-card.is-poster .lib-media.is-playing .lib-cover { visibility: hidden; }
+
+.an-poster { position: relative; width: 100%; max-width: 420px; aspect-ratio: 4 / 5; margin: 0 auto; border-radius: 12px; overflow: hidden; border: 0.5px solid var(--line); background: #0d1426; }
+.an-poster.is-vertical { aspect-ratio: 9 / 16; max-width: 340px; }
+.an-poster .lib-cover { position: absolute; inset: 0; background: transparent; }
+.an-poster .lib-cover img { opacity: 1; }
+.an-poster.is-live { background: #000; }
+.an-poster iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: #fff; }
+.an-play { position: absolute; left: 50%; top: 50%; z-index: 2; width: 64px; height: 64px; transform: translate(-50%, -50%); border-radius: 50%; background: rgba(18, 27, 51, 0.6); border: 1px solid rgba(255, 255, 255, 0.4); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); cursor: pointer; transition: transform 0.2s, background 0.2s; }
 .an-play::after { content: ""; position: absolute; left: 25px; top: 19px; border-style: solid; border-width: 13px 0 13px 20px; border-color: transparent transparent transparent #fff; }
 .an-play:hover { transform: translate(-50%, -50%) scale(1.08); background: rgba(240, 184, 74, 0.85); }
-.an-poster.no-cover::before { content: "TikTok"; position: absolute; inset: 0; display: grid; place-items: center; padding-top: 120px; color: var(--muted); font-size: 13px; }
+.an-embed { max-width: 420px; margin: 0 auto; }
