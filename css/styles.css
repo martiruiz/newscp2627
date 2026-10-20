@@ -4407,11 +4407,12 @@ button.plan-cta { width: 100%; cursor: pointer; font: inherit; }
 :root[data-theme="light"] .theme-toggle { border-color: #e2e4e9; background: #fff; color: #3b3f47; box-shadow: 0 1px 2px rgba(18, 27, 51, 0.06); }
 :root[data-theme="light"] .theme-toggle:hover { color: #121b33; border-color: #cfd3da; }
 .theme-toggle svg { position: absolute; width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round;
-  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s; }
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.2s; }
 .theme-toggle .tt-moon { transform: translateY(120%) rotate(-90deg); opacity: 0; }
 :root[data-theme="light"] .theme-toggle .tt-moon { transform: none; opacity: 1; }
 :root[data-theme="light"] .theme-toggle .tt-sun { transform: translateY(-120%) rotate(90deg); opacity: 0; }
-html.theme-anim, html.theme-anim body, html.theme-anim *, html.theme-anim *::before, html.theme-anim *::after { transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease, fill 0.35s ease !important; }
+/* day / night: the new colours spread as a circle from the switch (js/theme.js), no cross-fade */
+::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
 
 /* ---------- Memberships: pricing switches, comparison, private plans, terms before paying ---------- */
 .plan-switches { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 12px; }

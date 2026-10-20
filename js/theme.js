@@ -15,12 +15,19 @@ try {
   try { saved = localStorage.getItem(KEY); } catch {}
   if (saved === "light") root.setAttribute("data-theme", "light");
 
-  const set = (theme) => {
-    root.classList.add("theme-anim");
-    if (theme === "light") root.setAttribute("data-theme", "light"); else root.removeAttribute("data-theme");
-    try { localStorage.setItem(KEY, theme); } catch {}
-    document.querySelectorAll("[data-theme-toggle]").forEach(paint);
-    setTimeout(() => root.classList.remove("theme-anim"), 400);
+  // the new colours open as a circle from the button (View Transitions); older browsers / reduced motion: at once
+  const set = (theme, btn) => {
+    const apply = () => {
+      if (theme === "light") root.setAttribute("data-theme", "light"); else root.removeAttribute("data-theme");
+      try { localStorage.setItem(KEY, theme); } catch {}
+      document.querySelectorAll("[data-theme-toggle]").forEach(paint);
+    };
+    if (!document.startViewTransition || matchMedia("(prefers-reduced-motion: reduce)").matches) return apply();
+    const r = btn?.getBoundingClientRect(), x = r ? r.left + r.width / 2 : innerWidth / 2, y = r ? r.top + r.height / 2 : 0;
+    const end = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+    document.startViewTransition(apply).ready.then(() => root.animate(
+      { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${end}px at ${x}px ${y}px)`] },
+      { duration: 450, easing: "cubic-bezier(0.65, 0, 0.35, 1)", pseudoElement: "::view-transition-new(root)" }));
   };
   const isLight = () => root.getAttribute("data-theme") === "light";
   function paint(btn) {
@@ -37,6 +44,6 @@ try {
     // next to the account buttons in the main nav (and in the admin top bar)
     const spot = document.querySelector(".nav-actions") || document.querySelector("[data-theme-slot]");
     if (spot && !spot.querySelector("[data-theme-toggle]")) spot.insertAdjacentHTML("afterbegin", BUTTON);
-    document.querySelectorAll("[data-theme-toggle]").forEach((b) => { paint(b); b.addEventListener("click", () => set(isLight() ? "dark" : "light")); });
+    document.querySelectorAll("[data-theme-toggle]").forEach((b) => { paint(b); b.addEventListener("click", () => set(isLight() ? "dark" : "light", b)); });
   });
 })();
