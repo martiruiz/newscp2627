@@ -6521,12 +6521,12 @@ a.lf-sp-favs { text-decoration: none; }
 .lfp-logo .lfp-meta { padding: 0; }
 .lfp-logo .lfp-meta b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .lfp-logo .lfp-ck { top: 50%; transform: translateY(-50%); border-color: var(--line); background: transparent; }
-.lfp-lg { flex: none; width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; overflow: hidden; background: #fff; color: #121b33; }
+.lfp-lg { flex: none; width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; overflow: hidden; background: #fff; color: #121b33; }
 .lfp-lg img { width: 92%; height: 92%; object-fit: contain; }
 .lfp-lg.is-photo img { width: 100%; height: 100%; object-fit: cover; }   /* Instagram profile pictures fill the square */
-.lfp-lg b { font: 700 11px var(--font-body); }
+.lfp-lg b { font: 700 12px var(--font-body); }
 .lfp-lg-ic { background: var(--gold-tint); color: var(--gold); }
-.lfp-lg-ic .lf-i { width: 19px; height: 19px; }
+.lfp-lg-ic .lf-i { width: 22px; height: 22px; }
 .lfp-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .lfp-chip { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border-radius: 100px; border: 1px solid var(--line); background: rgba(var(--fg), 0.03); color: var(--muted); font: 500 13px var(--font-body); cursor: pointer; }
 .lfp-chip i { width: 8px; height: 8px; border-radius: 50%; }
