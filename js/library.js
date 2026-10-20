@@ -56,7 +56,7 @@
   //   What works · Occasion (matchday timeline, transfers, kit…) · Goal & sponsors · Where & how · Inspiration from.
   // ?filters=before shows the previous layout (Discover · Format · Platform · Explore by · Content · Brands) to compare.
   const LAYOUT_BEFORE = /[?&]filters=before\b/.test(location.search);
-  // Wide screens: Occasion, Goal, Where & how, Inspiration and Views open as wide panels from a bar above the posts; the
+  // Wide screens: Occasion, Goal, Where & how and Inspiration open as wide panels from a bar above the posts; the
   // column keeps the one-click shortcuts. ?filters=column shows everything in the column (the previous layout).
   const BAR_OK = !LAYOUT_BEFORE && !/[?&]filters=column\b/.test(location.search);
   const barMode = () => BAR_OK && innerWidth > 900;
@@ -314,7 +314,7 @@
       : views.hist ? `<div class="lf-row${vOpen ? " is-open" : ""}" data-lf-rowbox="views">
         <button class="lf-rh" type="button" aria-expanded="${vOpen}" data-lf-row="views">${svg("eye")}<span class="lf-t">Views</span><span class="lf-v${viewsSet() ? " is-set" : ""}" data-views-v>${viewsLabel()}</span>${svg("chev", "lf-chev")}</button>
         <div class="lf-rb"${vOpen ? "" : " hidden"} data-lf-body-of="views">${viewsHtml()}</div></div>` : "";
-    return rows + (barMode() ? "" : viewsRow);
+    return rows + viewsRow;
   }
   // Specials keep the catalog order (Top Picks, Replicable ideas, Overperforming) so they don't jump around
   const ORDER_SP = ["top picks", "replicable ideas", "overperforming"];
@@ -549,18 +549,17 @@
   }
 
   // ---------- Bar above the posts (wide screens): one button per section, its filters in a wide panel ----------
-  const BAR_ICO = { occasion: "calendar", goal: "target", where: "reel", benchmark: "trophy", views: "eye" };
+  const BAR_ICO = { occasion: "calendar", goal: "target", where: "reel", benchmark: "trophy" };
   const secOf = (c) => (c.key === "angle" ? "where" : c.key === "campaign" ? "occasion" : ["format", "platform"].includes(c.sec) ? "where" : c.sec);
   function renderBar(list, parts) {
     const bar = $("[data-lf-bar]");
     if (!list.length) { bar.hidden = true; bar.innerHTML = ""; ui.bar = null; return; }
     const items = list.map((s) => ({ key: s.key, label: tx(s.label), q: s.q ? tx(s.q) : "", n: CATEGORIES.filter((c) => secOf(c) === s.key).reduce((t, c) => t + selected[c.key].size, 0), html: parts[s.key] }));
-    if (views.hist) items.push({ key: "views", label: tx("Views"), q: viewsSet() ? viewsLabel() : tx("Any"), n: viewsSet() ? 1 : 0, html: viewsHtml() });
     if (!items.some((it) => it.key === ui.bar)) ui.bar = null;
     const open = items.find((it) => it.key === ui.bar);
     const keep = $(".lfb-body", bar)?.scrollTop || 0;
     bar.hidden = false;
-    bar.innerHTML = `<div class="lfb-row" role="toolbar" aria-label="${esc(tx("Filters"))}">${items.map((it) => `<button type="button" class="lfb-btn${it.n ? " is-set" : ""}${open === it ? " is-open" : ""}" aria-expanded="${open === it}" data-lfb="${it.key}">${svg(BAR_ICO[it.key])}<span class="lfb-tx"><b>${esc(it.label)}</b><small>${esc(it.q)}</small></span>${it.n && it.key !== "views" ? `<em>${it.n}</em>` : ""}${svg("chev", "lfb-chev")}</button>`).join("")}</div>
+    bar.innerHTML = `<div class="lfb-row" role="toolbar" aria-label="${esc(tx("Filters"))}">${items.map((it) => `<button type="button" class="lfb-btn${it.n ? " is-set" : ""}${open === it ? " is-open" : ""}" aria-expanded="${open === it}" data-lfb="${it.key}">${svg(BAR_ICO[it.key])}<span class="lfb-tx"><b>${esc(it.label)}</b><small>${esc(it.q)}</small></span>${it.n ? `<em>${it.n}</em>` : ""}${svg("chev", "lfb-chev")}</button>`).join("")}</div>
       ${open ? `<div class="lfb-panel" role="dialog" aria-label="${esc(open.label)}"><div class="lfb-body lfb-${open.key}">${open.html}</div><div class="lfb-foot"><button type="button" class="btn btn-gold btn-sm" data-lfb-close>${esc(tx("Done"))}</button></div></div>` : ""}`;
     if (open) $(".lfb-body", bar).scrollTop = keep;
   }
@@ -710,7 +709,7 @@
       const fl = $(".lf-fl"); fl.style.left = `${(views.a / VB) * 100}%`; fl.style.right = `${100 - (views.b / VB) * 100}%`;
       $("[data-views-lo-l]").textContent = kfmt(Math.round(vEdge(views.a)));
       $("[data-views-hi-l]").textContent = views.b === VB ? `${kfmt(Math.round(vEdge(VB)))}+` : kfmt(Math.round(vEdge(views.b)));
-      const v = $("[data-views-v]") || $('[data-lfb="views"] small'); v.textContent = viewsLabel(); v.classList.toggle("is-set", viewsSet());
+      const v = $("[data-views-v]"); v.textContent = viewsLabel(); v.classList.toggle("is-set", viewsSet());
       $$(".lf-vq button").forEach((x) => x.classList.toggle("is-on", views.b === VB && Number(x.dataset.vq) === views.a));
     }
   };

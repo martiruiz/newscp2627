@@ -6223,6 +6223,5 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 .lfb-body { overflow-y: auto; padding: 18px 20px 6px; columns: 3 280px; column-gap: 22px; }
 .lfb-body > * { break-inside: avoid; margin-bottom: 12px; }
 .lfb-body .lf-sub { margin-top: 0; }
-.lfb-body.lfb-views { columns: auto; max-width: 560px; }
 .lfb-foot { display: flex; justify-content: flex-end; padding: 10px 16px; border-top: 0.5px solid var(--line-soft); }
 @media (max-width: 1280px) { .lfb, .lfb-panel { padding-left: 20px; padding-right: 20px; } .lfb-panel { left: 20px; right: 20px; padding: 0; } .lfb-tx small { display: none; } }
