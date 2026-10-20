@@ -6222,3 +6222,8 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 .lfb-body .lf-sub { margin-top: 0; }
 .lfb-foot { display: flex; justify-content: flex-end; padding: 10px 16px; border-top: 0.5px solid var(--line-soft); }
 @media (max-width: 1280px) { .lfb, .lfb-panel { padding-left: 20px; padding-right: 20px; } .lfb-panel { left: 20px; right: 20px; padding: 0; } .lfb-tx small { display: none; } }
+
+/* Content Library: filters for creators' posts, under the gold "Content Creators" button when it's on */
+.lf-cc-sub { margin: -2px 0 8px; padding: 10px 12px 12px; border-radius: 0 0 14px 14px; border: 0.5px solid rgba(240, 184, 74, 0.35); border-top: 0; background: linear-gradient(180deg, rgba(240, 184, 74, 0.08), transparent 80%); }
+.lf-cc-h { margin: 0 2px 2px; font-size: 12px; font-weight: 600; color: var(--gold); }
+.lf-cc-sub .lf-sub { margin: 10px 2px 6px; }

@@ -302,7 +302,7 @@
         <span class="lf-sp-ic">${svg(s.ico)}</span><span class="lf-sp-tx"><b>${esc(tx("Content Creators"))}</b></span><span class="lf-sp-info" data-sp-info role="button" tabindex="0" aria-label="${esc(tx("What is this?"))}" title="${esc(tx("What is this?"))}">i</span>
         <span class="lf-sp-n">${zero ? "No matches" : kfmt(n)}</span>${svg("check", "lf-sp-ck")}</button>`;
       const at = sp.findIndex((v) => v.name.toLowerCase() === "replicable ideas");
-      rows.splice(at >= 0 ? at + 1 : rows.length, 0, btn);
+      rows.splice(at >= 0 ? at + 1 : rows.length, 0, btn + (on ? creatorsHtml() : ""));
     }
     rows = rows.join("");
     const vOpen = ui.open === "views";
@@ -315,6 +315,19 @@
         <button class="lf-rh" type="button" aria-expanded="${vOpen}" data-lf-row="views">${svg("eye")}<span class="lf-t">Views</span><span class="lf-v${viewsSet() ? " is-set" : ""}" data-views-v>${viewsLabel()}</span>${svg("chev", "lf-chev")}</button>
         <div class="lf-rb"${vOpen ? "" : " hidden"} data-lf-body-of="views">${viewsHtml()}</div></div>` : "";
     return rows + viewsRow;
+  }
+  // Content Creators on: the filters that describe creators' posts, right under the button (counts are already
+  // limited to creators' posts, because the button is one of the active filters)
+  function creatorsHtml() {
+    const chips = (cat, max = 8) => {
+      const list = byCount((catalog.byCat[cat] || []).filter((v) => countOf(v) > 0 || isOn(v))).slice(0, max);
+      return list.map((v) => `<button type="button" class="lf-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="${cat}" data-id="${v.id}">${esc(pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`).join("");
+    };
+    const groups = [["Content type", "angle"], ["Collaboration", "collab"], ["Brands", "sponsor", 10], ["Network", "platform"], ["Format", "format"], ["Sport", "sport"]]
+      .map(([label, cat, max]) => [label, chips(cat, max)]).filter(([, h]) => h);
+    if (!groups.length) return "";
+    return `<div class="lf-cc-sub"><p class="lf-cc-h">${esc(tx("Refine creators' posts"))}</p>
+      ${groups.map(([label, h]) => `<div class="lf-sub">${esc(tx(label))}</div><div class="lf-chips">${h}</div>`).join("")}</div>`;
   }
   // Specials keep the catalog order (Top Picks, Replicable ideas, Overperforming) so they don't jump around
   const ORDER_SP = ["top picks", "replicable ideas", "overperforming"];
