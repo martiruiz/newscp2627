@@ -290,6 +290,11 @@ window.SCP_SMART = {
       "Vietnamese",
       "Galician",
       "Basque",
+      "Bosnian",
+      "Kazakh",
+      "Uzbek",
+      "Azerbaijani",
+      "Haitian Creole",
       "Emoji only",
       "Other"
     ]

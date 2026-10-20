@@ -189,7 +189,8 @@
   const FLAG = { english: "gb", spanish: "es", french: "fr", italian: "it", portuguese: "pt",
     german: "de", dutch: "nl", turkish: "tr", arabic: "sa", polish: "pl", greek: "gr", japanese: "jp", korean: "kr", chinese: "cn", indonesian: "id",
     russian: "ru", ukrainian: "ua", swedish: "se", danish: "dk", norwegian: "no", finnish: "fi", croatian: "hr", serbian: "rs", czech: "cz", slovak: "sk",
-    slovenian: "si", romanian: "ro", hungarian: "hu", bulgarian: "bg", hebrew: "il", hindi: "in", thai: "th", vietnamese: "vn", malay: "my" };
+    slovenian: "si", romanian: "ro", hungarian: "hu", bulgarian: "bg", hebrew: "il", hindi: "in", thai: "th", vietnamese: "vn", malay: "my",
+    bosnian: "ba", kazakh: "kz", uzbek: "uz", azerbaijani: "az", "haitian creole": "ht" };
   const symbol = (ch) => `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 26"><rect width="40" height="26" fill="#eef1f6"/><text x="20" y="19" font-size="17" text-anchor="middle">${ch}</text></svg>`)}`;
   const SENYERA = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 9 6"><rect width="9" height="6" fill="#fcdd09"/><path d="M0 1h9M0 2.33h9M0 3.67h9M0 5h9" stroke="#da121a" stroke-width=".67"/></svg>`)}`;
   const svgFlag = (body) => `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 26">${body}</svg>`)}`;

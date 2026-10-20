@@ -55,7 +55,7 @@ export const AI_VALUES = {
   sponsor_integration: ["Logo on graphic", "Presented-by segment", "Brand collab post", "Product placement", "Sponsor activation / event", "Sponsor giveaway"],
   language: ["English", "Spanish", "Catalan", "French", "Italian", "Portuguese", "German", "Dutch", "Turkish", "Arabic", "Polish", "Greek", "Japanese", "Korean", "Chinese",
     "Indonesian", "Russian", "Ukrainian", "Swedish", "Danish", "Norwegian", "Croatian", "Serbian", "Czech", "Romanian", "Hebrew", "Hindi", "Thai", "Vietnamese",
-    "Galician", "Basque", "Emoji only", "Other"],
+    "Galician", "Basque", "Bosnian", "Kazakh", "Uzbek", "Azerbaijani", "Haitian Creole", "Emoji only", "Other"],
 };
 
 const W = (s) => new RegExp(s, "iu");
@@ -177,6 +177,8 @@ const LANG_WORDS = {
   Basque: /\b(eta|gure|dugu|dute|ditu|gaur|bihar|zorionak|eskerrik|asko|taldea|taldeak|aurka|etxean|partida|partidua|ere|izango|dira|hau|honen|gara|zuen|ondo|bai)\b/gi,
 };
 const ARABIC = /[؀-ۿ]/;
+// letters only one of the languages uses: enough on their own
+const LANG_LETTERS = [["Kazakh", /[әғқңөұһ]/i], ["Azerbaijani", /ə/i], ["Uzbek", /[oOgG][ʻ‘][a-z]|[ўҳ]/]];
 
 // Rules → { category: Set(values) }
 export function applyRules(post) {
@@ -199,7 +201,9 @@ export function applyRules(post) {
   if (out.sponsor.size) out.goal.add("Sponsor value");
   // Language: most frequent function words (min 2 hits), Arabic script. Decorative Unicode letters (𝘎𝘖𝘓, 𝐆𝐎𝐋) read as plain ones.
   const plain = text.normalize("NFKC");
+  const letters = LANG_LETTERS.find(([, re]) => re.test(plain));
   if (ARABIC.test(plain)) out.language.add("Arabic");
+  else if (letters) out.language.add(letters[0]);
   else {
     let best = null, hits = 1;
     for (const [lang, re] of Object.entries(LANG_WORDS)) { const n = (plain.match(re) || []).length; if (n > hits) { best = lang; hits = n; } }
