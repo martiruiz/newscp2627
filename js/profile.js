@@ -158,7 +158,7 @@
   const CHECKS = [
     ["your name", (s) => s.first_name], ["your role", (s) => s.role], ["your organisation", (s) => s.organization], ["the type of organisation", (s) => s.orgType],
     ["your sports", (s) => s.sports.length], ["your platforms", (s) => s.platforms.length], ["your audience size", (s) => s.audience],
-    ["5 favourite profiles", (s) => s.favouriteProfiles.length >= 5, (s) => s.favouriteProfiles.length / 5], ["5 favourite creators", (s) => s.favouriteCreators.length >= 5, (s) => s.favouriteCreators.length / 5],
+    ["5 favourite profiles", (s) => s.favouriteProfiles.length >= 5, (s) => s.favouriteProfiles.length / 5], ["5 favourite creator accounts", (s) => s.favouriteCreatorAccounts.length >= 5, (s) => s.favouriteCreatorAccounts.length / 5],
     ["your goals", (s) => s.goals.length], ["the topics you care about", (s) => s.topics.length],
   ];
   function meter() {
