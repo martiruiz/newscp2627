@@ -1,2 +1,7 @@
 .DS_Store
 pipeline/newsletter-preview.html
+
+# Video: sources and renders stay local (music is licensed, files are heavy)
+video/audio/*.mp3
+video/audio/*.wav
+video/out/
