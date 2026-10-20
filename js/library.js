@@ -327,14 +327,30 @@
   // the favourite network (Profile → Favourites) goes with them: Instagram favourite → their Instagram posts
   const favNetwork = () => (me.favPlatform && (catalog.byCat.platform || []).find((v) => v.name.toLowerCase() === me.favPlatform)) || null;
   const favsOn = () => { const f = favVals(), pf = favNetwork(); return f.length > 0 && f.every(isOn) && (!pf || isOn(pf)); };
+  // how many posts Favs shows (the same filters the button turns on), asked once per set of favourites
+  let favsN = null, favsKey = "";
+  async function loadFavsN(f, pf) {
+    const key = [...f.map((v) => v.id), pf?.id].join(",");
+    if (key === favsKey) return;
+    favsKey = key; favsN = null;
+    const facets = {};
+    [...f, ...(pf ? [pf] : [])].forEach((v) => (facets[v.category] = [...(facets[v.category] || []), v.id]));
+    const { data } = await fetchIdeas({ ...queryArgs({ facets, period: "all" }), p_order: "latest", p_seed: "", p_ids: null, p_limit: 1, p_offset: 0 }).catch(() => ({}));
+    if (key !== favsKey || data?.total == null) return;
+    favsN = data.total;
+    const n = $(".lf-sp-favs [data-favs-n]");
+    if (n) { n.textContent = kfmt(favsN); n.hidden = false; }
+  }
   function favsHtml() {
     const f = favVals();
     if (!f.length) return `<a class="lf-sp lf-sp-top lf-sp-favs" href="profile.html#favourites" data-id="favs" data-sp-tip="favs"><span class="lf-sp-ic">${svg("star")}</span><span class="lf-sp-tx"><b>Favs</b><small>${esc(tx("Choose your favourite profiles"))}</small></span><span class="lf-sp-info" data-sp-info role="button" tabindex="0" aria-label="${esc(tx("What is this?"))}" title="${esc(tx("What is this?"))}">i</span></a>`;
     const on = favsOn();
     const pf = favNetwork();
+    if (db) loadFavsN(f, pf);
     return `<button type="button" class="lf-sp lf-sp-top lf-sp-favs${on ? " is-on" : ""}" aria-pressed="${on}" data-favs data-id="favs" data-sp-tip="favs">
       <span class="lf-sp-ic">${svg("star")}</span><span class="lf-sp-tx"><b>Favs</b><small>${esc(tx(f.length === 1 ? "{n} profile" : "{n} profiles", { n: f.length }))}${pf ? ` · ${esc(pf.name)}` : ""}</small></span>
-      <span class="lf-sp-info" data-sp-info role="button" tabindex="0" aria-label="${esc(tx("What is this?"))}" title="${esc(tx("What is this?"))}">i</span>${svg("check", "lf-sp-ck")}</button>`;
+      <span class="lf-sp-info" data-sp-info role="button" tabindex="0" aria-label="${esc(tx("What is this?"))}" title="${esc(tx("What is this?"))}">i</span>
+      <span class="lf-sp-n" data-favs-n${favsN == null ? " hidden" : ""}>${favsN == null ? "" : kfmt(favsN)}</span>${svg("check", "lf-sp-ck")}</button>`;
   }
   const notTopPicks = (v) => v.name.toLowerCase() !== "top picks";
 
