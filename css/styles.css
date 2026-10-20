@@ -6179,3 +6179,5 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 .auth-page .auth { z-index: 2; }
 :root[data-theme="light"] .atn-scene { filter: invert(0.92) hue-rotate(180deg); }
 .auth h1 .gold { display: block; white-space: nowrap; }
+.auth-page .auth h1, .auth-page .auth-legal { text-shadow: 0 2px 14px rgba(5, 8, 18, 0.95), 0 0 2px rgba(5, 8, 18, 0.9); }
+.auth-page .auth-legal { padding: 8px 14px; border-radius: 12px; background: rgba(7, 11, 23, 0.55); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }

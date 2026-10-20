@@ -13,14 +13,14 @@
   const fog = document.createElement("div"); fog.className = "atn-fog"; scene.append(fog);
 
   let seed = 7; const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
-  let photos = [], rows = [], W, H, cell, D, R, persp;
-  const LANES = 5, GAP = 0.1, PHOTO = 0.3, ACCENT = 0.06, SPEED = 0.35;   // cells per second
+  let photos = [], rows = [], W, H, cell, D, R, persp, next = 0;
+  const LANES = 5, GAP = 0.1, PHOTO = 1, ACCENT = 0, SPEED = 0.35;   // every tile holds a real post · speed in cells per second
 
   function tile(row, x, y, rot, size) {
     const r = rnd(), t = document.createElement("i");
     t.className = "atn-t";
     t.style.cssText = `width:${size}px;height:${size}px;margin:${-size / 2}px 0 0 ${-size / 2}px;transform:translate3d(${x}px,${y}px,0) ${rot}`;
-    if (r < PHOTO && photos.length) { t.classList.add("is-photo"); t.style.backgroundImage = `url(assets/tunnel/${photos[Math.floor(rnd() * photos.length)]})`; }
+    if (r < PHOTO && photos.length) { t.classList.add("is-photo"); t.style.backgroundImage = `url(assets/tunnel/${photos[(next++) % photos.length]})`; }
     else if (r < PHOTO + ACCENT) t.classList.add("is-accent");
     row.append(t);
   }
@@ -30,7 +30,8 @@
     scene.style.perspective = `${persp}px`;
     cell = W / LANES; const wallN = Math.max(2, Math.round(H / cell)), wallCell = H / wallN;
     R = W < 700 ? 12 : 16; D = R * cell;
-    world.innerHTML = ""; rows = []; seed = 7;
+    world.innerHTML = ""; rows = []; seed = 7; next = 0;
+    photos.sort(() => rnd() - 0.5);
     for (let j = 0; j < R; j++) {
       const row = document.createElement("div"); row.className = "atn-row";
       for (let i = 0; i < LANES; i++) {
