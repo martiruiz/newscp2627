@@ -61,7 +61,7 @@
     <section class="panel panel-pad" style="margin-top:16px" data-report></section>
     <section class="panel panel-pad" style="margin-top:16px" data-alerts></section>
     <section class="panel" style="margin-top:16px">
-      <div class="panel-pad ms-row" style="margin:0">
+      <div class="panel-pad ms-row pf-bar" style="margin:0">
         <input class="input input-sm" type="search" placeholder="Search handle, club, competition…" data-q>
         <select class="select input-sm" data-pf><option value="">All networks</option></select>
         <label class="pf-check"><input type="checkbox" data-prem> Premium only</label>

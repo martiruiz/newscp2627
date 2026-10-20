@@ -152,13 +152,13 @@
     { href: "filters.html", label: "Filters", icon: "filters", key: "filters" },
     { href: "import.html", label: "Import", icon: "import", key: "import" },
     { href: "profiles.html", label: "Scraped profiles", icon: "audience", key: "profiles" },
-    { href: "audience.html", label: "Audience", icon: "audience", key: "audience" },
     { href: "smart-review.html", label: "Smart filters", icon: "smart", key: "smart" },
-    { href: "leads.html", label: "Leads & Demos", icon: "users", key: "leads" },
-    { href: "memberships.html", label: "Memberships", icon: "billing", key: "memberships" },
-    { href: "promo-codes.html", label: "Promo codes", icon: "tag", key: "promo" },
-    { href: "billing.html", label: "AI & packs", icon: "smart", key: "billing" },
-    { href: "users.html", label: "Users", icon: "users", key: "users" },
+    { href: "audience.html", label: "Audience", icon: "audience", key: "audience", group: "super" },
+    { href: "leads.html", label: "Leads & Demos", icon: "users", key: "leads", group: "super" },
+    { href: "memberships.html", label: "Memberships", icon: "billing", key: "memberships", group: "super" },
+    { href: "promo-codes.html", label: "Promo codes", icon: "tag", key: "promo", group: "super" },
+    { href: "billing.html", label: "AI & packs", icon: "smart", key: "billing", group: "super" },
+    { href: "users.html", label: "Users", icon: "users", key: "users", group: "super" },
   ];
   const here = () => location.pathname.split("/").pop() || "content-ideas.html";
   let loggingOut = false;
@@ -191,7 +191,7 @@
     if (!side) return;
     side.innerHTML = `
       <div class="side-brand"><img class="side-wordmark" src="../assets/logo-scp.png" alt="Sports Content Playbook"><div><b>Admin</b></div></div>
-      <nav aria-label="Admin">${NAV.map((n) => `<a href="${n.href}"${n.key === pageKey ? ' aria-current="page"' : ""}>${icon(n.icon)}${n.label}</a>`).join("")}</nav>
+      <nav aria-label="Admin">${[["Platform content", NAV.filter((n) => !n.group)], ["Superadmin", NAV.filter((n) => n.group === "super")]].map(([t, list]) => `<p class="side-group">${t}</p>${list.map((n) => `<a href="${n.href}"${n.key === pageKey ? ' aria-current="page"' : ""}>${icon(n.icon)}${n.label}</a>`).join("")}`).join("")}</nav>
       <a class="side-cta" href="../content-library.html">Open Content Library<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg></a>
       <div class="side-foot">
         <p class="side-user" title="${esc(session.user.email)}">${esc(session.user.email)}${profile?.role ? ` · ${esc(profile.role)}` : ""}</p>
