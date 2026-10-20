@@ -386,99 +386,6 @@
         <div class="lf-rb"${vOpen ? "" : " hidden"} data-lf-body-of="views">${viewsHtml()}</div></div>` : "";
     return rows + viewsRow;
   }
-  // "More key filters" (button at the bottom of the filters column): a curved 3D carousel of cards — each card turns on
-  // its values. vals: [category, name] (every value of a category when name is null)
-  const KEY_FILTERS = [
-    { key: "players", label: "Players", desc: "Posts starring the players", vals: [["campaign", "Player Appearance"]], art: "#4a67e0, #7aa2ff" },
-    { key: "design", label: "Graphic design", desc: "Matchday graphics, posters and cards", vals: [["campaign", "Graphic Design"]], art: "#8b5cf6, #ec4899" },
-    { key: "sponsors", label: "Sponsors", desc: "Posts where a sponsor shows", vals: [["sponsor_integration", null]], art: "#14b8a6, #3b82f6" },
-    { key: "media", label: "Media", desc: "What sports media publish", vals: [["entity", "Media"]], art: "#f97316, #ef4444" },
-    { key: "brands", label: "Brands", desc: "Posts by the brands' own accounts", vals: [["entity", "Brand"]], art: "#d99a2b, #f0b84a" },
-  ];
-  const kfVals = (k) => k.vals.flatMap(([c, n]) => (n ? [valByName(c, n)] : (catalog.byCat[c] || []))).filter(Boolean);
-  const kfOn = (k) => { const v = kfVals(k); return v.length > 0 && v.every(isOn); };
-  const imp = { i: 0, el: null, covers: {} };
-  function impCount() { const n = KEY_FILTERS.filter(kfOn).length; const em = $("[data-imp-n]"); if (em) { em.hidden = !n; em.textContent = n; } }
-  function impRender(shift = 0) {
-    if (!imp.el) return;
-    const N = KEY_FILTERS.length;
-    imp.el.querySelector("[data-imp-stage]").innerHTML = KEY_FILTERS.map((k, i) => {
-      let o = i - imp.i - shift; while (o > N / 2) o -= N; while (o < -N / 2) o += N;   // the nearest way round
-      const a = Math.abs(o), cover = imp.covers[k.key];
-      const style = `--o:${o};--a:${a};z-index:${10 - a};${cover ? `--img:url('${cover}');` : ""}--art:linear-gradient(135deg, ${k.art})`;
-      return `<button type="button" class="imp-card${Math.round(o) === 0 ? " is-center" : ""}${kfOn(k) ? " is-on" : ""}${a > 2.4 ? " is-far" : ""}" style="${style}" data-imp-card="${i}" aria-label="${esc(tx(k.label))}">
-        <span class="imp-ck">${svg("check")}</span></button>`;
-    }).join("");
-    const k = KEY_FILTERS[imp.i], n = kfVals(k).reduce((t, v) => t + countOf(v), 0);
-    imp.el.querySelector("[data-imp-cap]").innerHTML = `<b>${esc(tx(k.label))}</b><span>${esc(tx(k.desc))} · ${esc(tx("{n} posts", { n: kfmt(n) }))}</span>
-      <button type="button" class="imp-apply${kfOn(k) ? " is-on" : ""}" data-imp-apply>${esc(tx(kfOn(k) ? "Remove filter" : "Apply filter"))}</button>`;
-  }
-  async function impCovers() {
-    const ids = KEY_FILTERS.map((k) => kfVals(k)[0]?.id).filter(Boolean);
-    const { data } = await db.rpc("value_covers", { p_ids: ids }).then((r) => r, () => ({}));
-    for (const r of data || []) { const k = KEY_FILTERS.find((x) => kfVals(x)[0]?.id === Number(r.id)); if (k && r.cover) imp.covers[k.key] = r.cover; }
-    impRender();
-  }
-  function impOpen() {
-    if (!imp.el) {
-      imp.el = document.createElement("div");
-      imp.el.className = "imp-modal";
-      imp.el.innerHTML = `<div class="imp-back" data-imp-close></div><div class="imp-box" role="dialog" aria-label="${esc(tx("More key filters"))}">
-        <div class="imp-stage" data-imp-stage></div><div class="imp-cap" data-imp-cap></div>
-        <div class="imp-nav"><button type="button" data-imp-step="-1" aria-label="${esc(tx("Previous"))}">${icon("chevron-left")}</button><button type="button" data-imp-step="1" aria-label="${esc(tx("Next"))}">${icon("chevron-right")}</button></div></div>`;
-      document.body.append(imp.el);
-      imp.el.addEventListener("click", (e) => {
-        if (imp.dragged) { imp.dragged = false; return; }   // the end of a drag isn't a click
-        // anywhere but a card, the caption's button or the arrows: back to the library
-        if (!e.target.closest("[data-imp-card], [data-imp-apply], [data-imp-step]")) return impClose();
-        const st = e.target.closest("[data-imp-step]");
-        if (st) { imp.i = (imp.i + Number(st.dataset.impStep) + KEY_FILTERS.length) % KEY_FILTERS.length; return impRender(); }
-        const c = e.target.closest("[data-imp-card]");
-        if (c && Number(c.dataset.impCard) !== imp.i) { imp.i = Number(c.dataset.impCard); return impRender(); }
-        if (c || e.target.closest("[data-imp-apply]")) impToggle(KEY_FILTERS[imp.i]);
-      });
-      const stage = imp.el.querySelector("[data-imp-stage]");
-      let x0 = null, shift = 0;
-      const STEP = () => Math.max(160, stage.clientWidth / 5);   // px of drag per card
-      stage.addEventListener("pointerdown", (e) => { x0 = e.clientX; shift = 0; imp.dragged = false; stage.setPointerCapture(e.pointerId); stage.classList.add("is-grabbing"); });
-      stage.addEventListener("pointermove", (e) => {
-        if (x0 == null) return;
-        const dx = e.clientX - x0;
-        if (Math.abs(dx) > 6) imp.dragged = true;
-        if (!imp.dragged) return;
-        shift = -dx / STEP();
-        stage.classList.add("is-dragging");
-        impRender(shift);
-      });
-      const end = () => {
-        if (x0 == null) return;
-        x0 = null; stage.classList.remove("is-grabbing", "is-dragging");
-        if (!imp.dragged) return;
-        const N = KEY_FILTERS.length;
-        imp.i = (((imp.i + Math.round(shift)) % N) + N) % N;
-        impRender();
-      };
-      stage.addEventListener("pointerup", end);
-      stage.addEventListener("pointercancel", end);
-      addEventListener("keydown", (e) => {
-        if (imp.el.hidden) return;
-        if (e.key === "Escape") impClose();
-        else if (e.key === "ArrowRight" || e.key === "ArrowLeft") { imp.i = (imp.i + (e.key === "ArrowRight" ? 1 : -1) + KEY_FILTERS.length) % KEY_FILTERS.length; impRender(); }
-        else if (e.key === "Enter") impToggle(KEY_FILTERS[imp.i]);
-      });
-      impCovers();
-    }
-    imp.el.hidden = false;
-    document.body.classList.add("imp-open");
-    impRender();
-  }
-  function impClose() { if (imp.el) imp.el.hidden = true; document.body.classList.remove("imp-open"); }
-  function impToggle(k) {
-    const vals = kfVals(k), on = kfOn(k);
-    vals.forEach((v) => (on ? selected[v.category].delete(v.id) : selected[v.category].add(v.id)));
-    impRender(); renderFacets(); load(true);
-  }
-  $("[data-imp-open]")?.addEventListener("click", impOpen);
   // "Who publishes": media, memes (players' and brands' accounts are in Inspiration → Club, next to the squad)
   function whoHtml() {
     // clubs and competitions are already in "Inspiration"; Content Creators has its own button above
@@ -769,7 +676,6 @@
     $("[data-lf-body]").scrollTop = scroll;
     $("[data-lf-jump]").innerHTML = colSecs.map((s) => `<button type="button" data-lf-jump-to="${s.key}">${esc(s.jump || s.label.replace(" by", ""))}</button>`).join("");
     renderQuick();
-    impCount();
     fadeEdges();
     loadToneThumbs();
   }
@@ -787,6 +693,7 @@
       { key: "angle", label: "How do you tell it?", ico: "smile", desc: "The tone of the post", cats: ["angle"] },
       { key: "comms", label: "Press and comms", ico: "message", desc: "Announcements, press and practical info", cats: ["comms"] },
       { key: "crisis", label: "Sensitive topics", ico: "alert", desc: "How other clubs handle them, with care", cats: ["crisis"] },
+      { key: "design", label: "Graphic design", ico: "image", desc: "Matchday graphics, posters and cards", vals: [["campaign", "Graphic Design"]] },
     ],
     goal: [
       { key: "goal", label: "Business goal", ico: "target", desc: "What the post should achieve", cats: ["goal"] },
@@ -797,9 +704,14 @@
       { key: "collab", label: "Collaborations", ico: "users", desc: "Posts made with others", cats: ["collab"] },
     ],
     benchmark: [
-      { key: "sport", label: "Sport", ico: "ball", desc: "Every sport in the library", cats: ["sport"], tiles: true },
+      { key: "sport", label: "Sport", ico: "ball", desc: "Every sport in the library", cats: ["sport"], tiles: true, head: "Where it's played" },
       { key: "competition", label: "Competition", ico: "trophy", desc: "Leagues and cups", cats: ["competition"], logos: true },
       { key: "club", label: "Club", ico: "shield", desc: "Clubs and teams", cats: ["club"], logos: true },
+      // vals: [category, name] (every value of the category when name is null)
+      { key: "players", label: "Players", ico: "user", desc: "Posts starring the players", vals: [["campaign", "Player Appearance"]], head: "What's published" },
+      { key: "sponsors", label: "Sponsors", ico: "tag", desc: "Posts where a sponsor shows, by how it appears", vals: [["sponsor_integration", null]] },
+      { key: "media", label: "Media", ico: "megaphone", desc: "What sports media publish", vals: [["entity", "Media"]], head: "Who publishes it" },
+      { key: "brands", label: "Brands", ico: "badge", desc: "Posts by the brands' own accounts", vals: [["entity", "Brand"]] },
       // the club's squad (women's team, academy…) shows inside Club; cities only through the search box
       { key: "team", label: "Team", ico: "user", desc: "Women's team, academy, legends…", cats: ["team"], hidden: true },
       { key: "city", label: "City", ico: "pin", desc: "Clubs by city", cats: ["city"], logos: true, hidden: true },
@@ -808,6 +720,7 @@
   const MD_IDS = () => new Set(MATCHDAY.flatMap((ph) => ph.vals.map(([c, n]) => valByName(c, n)?.id)).filter(Boolean));
   const live = (v) => countOf(v) > 0 || isOn(v);
   function groupVals(g) {
+    if (g.vals) return g.vals.flatMap(([c, n]) => (n ? [valByName(c, n)] : catalog.byCat[c] || [])).filter((v) => v && live(v));
     if (g.key === "matchday") { const md = MD_IDS(); return [...[...md].map((id) => catalog.byId.get(id)), ...(catalog.byCat.matchday_graphic || []), ...(catalog.byCat.outcome || [])].filter((v, i, a) => v && a.indexOf(v) === i && live(v)); }
     const md = g.key === "moment" ? MD_IDS() : null;   // matchday previews / coverage live in Matchday
     return g.cats.flatMap((k) => (catalog.byCat[k] || []).filter((v) => live(v) && !(md && md.has(v.id)) && !(k === "entity" && REPEATED.entity.includes(v.name.toLowerCase()) && !isOn(v))));
@@ -856,7 +769,7 @@
     if (g.key === "matchday") return head + lfpMatchday(g);
     // Club: the squad as quick chips above the clubs
     const teamG = g.key === "club" && groups.find((x) => x.key === "team");
-    const squadVals = teamG ? [...byCount(groupVals(teamG)), ...["Player", "Brand"].map((n) => valByName("entity", n)).filter((v) => v && (countOf(v) > 0 || isOn(v)))] : [];
+    const squadVals = teamG ? [...byCount(groupVals(teamG)), ...["Player"].map((n) => valByName("entity", n)).filter((v) => v && (countOf(v) > 0 || isOn(v)))] : [];
     const squad = teamG ? `<div class="lfp-chips lfp-squad">${squadVals.map((v) => `<button type="button" class="lfp-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="${v.category}" data-id="${v.id}">${esc(v.category === "entity" ? tx(v.name === "Player" ? "Players' accounts" : "Brand accounts") : pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`).join("")}</div>` : "";
     const many = g.logos && groupVals(g).length > 30;
     return head + squad + (g.key === "city" ? "" : lfpCards(groupVals(g), g, many ? 30 : 0))
@@ -878,11 +791,13 @@
     return groupsOf(sec).filter((g) => !g.hidden).map((g) => {
       const n = groupVals(g).filter(isOn).length + (g.key === "matchday" ? selected.opponent.size : g.key === "moment" ? 0 : 0);
       const cur = !ui.barQ && (ui.barG?.[sec] || groupsOf(sec).find((x) => !x.hidden)?.key) === g.key;
-      return `<button type="button" class="lfp-r${cur ? " is-on" : ""}" data-lfb-g="${g.key}"><span class="lfp-ric">${svg(g.ico)}</span><span class="lfp-rtx"><b>${esc(tx(g.label))}</b><small>${esc(tx("{n} options", { n: groupVals(g).length }))}</small></span>${n ? `<em>${n}</em>` : ""}</button>`;
+      return `${g.head ? `<p class="lfp-rh">${esc(tx(g.head))}</p>` : ""}<button type="button" class="lfp-r${cur ? " is-on" : ""}" data-lfb-g="${g.key}"><span class="lfp-ric">${svg(g.ico)}</span><span class="lfp-rtx"><b>${esc(tx(g.label))}</b><small>${esc(groupVals(g).length === 1 ? tx("{n} posts", { n: kfmt(countOf(groupVals(g)[0])) }) : tx("{n} options", { n: groupVals(g).length }))}</small></span>${n ? `<em>${n}</em>` : ""}</button>`;
     }).join("");
   }
+  // the options of the groups picked by name (Players, Sponsors, Media, Brands, Graphic design) that are on
+  const valsOn = (sec) => groupsOf(sec).filter((g) => g.vals).flatMap(groupVals).filter(isOn);
   function lfpFoot(sec) {
-    const sel = CATEGORIES.filter((c) => secOf(c) === sec).flatMap((c) => [...selected[c.key]].map((id) => catalog.byId.get(id)).filter(Boolean));
+    const sel = [...new Set([...CATEGORIES.filter((c) => secOf(c) === sec).flatMap((c) => [...selected[c.key]].map((id) => catalog.byId.get(id)).filter(Boolean)), ...valsOn(sec)])];
     return `<div class="lfp-sel">${sel.length ? sel.map((v) => `<span class="lfp-tag">${esc(pretty(v.name))}<button type="button" data-facet="${v.category}" data-id="${v.id}" aria-label="${esc(tx("Remove"))}">${icon("x")}</button></span>`).join("") : `<span class="lfp-hint">${esc(tx("Pick one or more options"))}</span>`}</div>
       ${sel.length ? `<button type="button" class="lfp-clear" data-lfb-clear="${sec}">${esc(tx("Clear"))}</button>` : ""}
       <button type="button" class="lfp-go" data-lfb-close><span data-lfb-go>${esc(goLabel())}</span>${icon("arrow-up-right")}</button>`;
@@ -1073,7 +988,7 @@
     const grp = e.target.closest("[data-lfb-g]");
     if (grp) { ui.barG = { ...ui.barG, [ui.bar]: grp.dataset.lfbG }; ui.barQ = ""; renderFacets(); $(".lfp-main")?.scrollTo(0, 0); return; }
     const clr = e.target.closest("[data-lfb-clear]");
-    if (clr) { CATEGORIES.filter((c) => secOf(c) === clr.dataset.lfbClear).forEach((c) => selected[c.key].clear()); renderFacets(); return load(true); }
+    if (clr) { valsOn(clr.dataset.lfbClear).forEach((v) => selected[v.category].delete(v.id)); CATEGORIES.filter((c) => secOf(c) === clr.dataset.lfbClear).forEach((c) => selected[c.key].clear()); renderFacets(); return load(true); }
     if (e.target.closest("[data-lfb-close]")) { ui.bar = null; return renderFacets(); }
     const f = e.target.closest("[data-facet]");
     if (f) { if (f.getAttribute("aria-disabled") === "true") return; return toggleValue(f.dataset.facet, Number(f.dataset.id)); }
