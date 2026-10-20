@@ -6631,9 +6631,6 @@ a.lf-sp-favs { text-decoration: none; }
 .lfp-squad { margin: -4px 0 14px; }
 .lf-who { margin-top: 12px; }
 .lf-who .lf-sub { margin: 0 0 8px; }
-/* filters column: special spaces (js/library.js SPECIAL_GROUPS) — Graphic design (violet → pink), Sponsors (teal → blue) */
-.lf-sp-design { --g: linear-gradient(90deg, #8b5cf6, #ec4899); --g-soft: linear-gradient(90deg, rgba(139, 92, 246, 0.8), rgba(236, 72, 153, 0.8)); --glow: 168, 85, 247; }
-.lf-sp-sponsors { --g: linear-gradient(90deg, #14b8a6, #3b82f6); --g-soft: linear-gradient(90deg, rgba(20, 184, 166, 0.8), rgba(59, 130, 246, 0.8)); --glow: 45, 160, 220; }
 
 /* Home CTA ("Find your next winning post idea…"): a frame of light — two gold lights travel round the edge and a warm
    glow drifts along the top and bottom inside (instead of the static gold border) */
@@ -6658,3 +6655,43 @@ a.lf-sp-favs { text-decoration: none; }
 @keyframes cta-turn { to { --cta-a: 360deg; } }
 @keyframes cta-drift { 0% { --x1: 20%; --x2: 75%; --x3: 40%; } 50% { --x1: 60%; --x2: 30%; --x3: 80%; } 100% { --x1: 85%; --x2: 55%; --x3: 15%; } }
 @media (prefers-reduced-motion: reduce) { .cta-box::before, .cta-box::after { animation: none; } }
+
+/* "More key filters": a button at the bottom of the filters column and a curved 3D carousel (js/library.js KEY_FILTERS) */
+.lf-imp-wrap { padding: 12px 10px 4px 0; border-top: 1px solid var(--line-soft); }
+.lf-imp-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; height: 44px; border-radius: 12px; cursor: pointer;
+  border: 1px solid rgba(240, 184, 74, 0.45); background: linear-gradient(180deg, rgba(240, 184, 74, 0.12), rgba(240, 184, 74, 0.03)); color: var(--text); font: 600 14px var(--font-display); transition: background 0.2s, border-color 0.2s; }
+.lf-imp-btn:hover { border-color: var(--gold); background: linear-gradient(180deg, rgba(240, 184, 74, 0.2), rgba(240, 184, 74, 0.06)); }
+.lf-imp-btn em { min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; display: grid; place-items: center; background: linear-gradient(90deg, #d99a2b, #f0b84a); color: #1a1206; font: 700 11px var(--font-body); font-style: normal; }
+.lf-imp-btn em[hidden] { display: none; }
+.imp-modal { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; }
+.imp-modal[hidden] { display: none; }
+.imp-back { position: absolute; inset: 0; background: rgba(6, 9, 18, 0.82); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); animation: imp-fade 0.25s ease; }
+.imp-box { position: relative; width: min(1200px, 96vw); display: grid; justify-items: center; gap: 18px; animation: imp-in 0.35s cubic-bezier(0.2, 0.8, 0.2, 1); }
+@keyframes imp-fade { from { opacity: 0; } }
+@keyframes imp-in { from { opacity: 0; transform: translateY(14px) scale(0.98); } }
+.imp-x { position: absolute; top: -48px; right: 0; width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.06); color: #fff; cursor: pointer; }
+.imp-x svg { width: 16px; height: 16px; }
+.imp-stage { position: relative; width: 100%; height: clamp(220px, 30vw, 360px); perspective: 1400px; perspective-origin: 50% 50%; }
+.imp-card { --w: clamp(240px, 32vw, 420px); position: absolute; left: 50%; top: 0; width: var(--w); height: 100%; margin-left: calc(var(--w) / -2); border: 0; padding: 0; border-radius: 18px; cursor: pointer;
+  background: linear-gradient(180deg, transparent 55%, rgba(6, 9, 18, 0.55)), var(--img, none) center / cover no-repeat, var(--art);
+  box-shadow: 0 30px 60px -24px rgba(0, 0, 0, 0.9), inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  transform: translateX(calc(var(--o) * 78%)) translateZ(calc(var(--a) * -160px)) rotateY(calc(var(--o) * -28deg));
+  filter: brightness(calc(1 - var(--a) * 0.22)); transition: transform 0.6s cubic-bezier(0.32, 0.72, 0, 1), filter 0.6s, opacity 0.6s, box-shadow 0.3s; }
+.imp-card.is-far { opacity: 0; pointer-events: none; }
+.imp-card.is-center { box-shadow: 0 40px 80px -24px rgba(0, 0, 0, 0.95), inset 0 0 0 1px rgba(255, 255, 255, 0.14); }
+.imp-card.is-center:hover { box-shadow: 0 40px 80px -24px rgba(0, 0, 0, 0.95), inset 0 0 0 2px rgba(240, 184, 74, 0.8); }
+.imp-ck { position: absolute; top: 14px; right: 14px; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(135deg, #ffd98c, #f0b84a); color: #1a1206; opacity: 0; transform: scale(0.6); transition: opacity 0.25s, transform 0.25s; }
+.imp-ck svg { width: 16px; height: 16px; stroke-width: 3; }
+.imp-card.is-on .imp-ck { opacity: 1; transform: none; }
+.imp-card.is-on { box-shadow: 0 40px 80px -24px rgba(0, 0, 0, 0.95), inset 0 0 0 2px var(--gold); }
+.imp-cap { display: grid; justify-items: center; gap: 6px; text-align: center; color: #fff; min-height: 110px; }
+.imp-cap b { font: 700 24px var(--font-display); letter-spacing: -0.02em; }
+.imp-cap span { font-size: 15px; color: rgba(255, 255, 255, 0.6); }
+.imp-apply { margin-top: 10px; height: 42px; padding: 0 22px; border-radius: 999px; border: 0; cursor: pointer; font: 700 14px var(--font-body); color: #1a1206; background: linear-gradient(90deg, #d99a2b, #f0b84a 60%, #ffd98c); box-shadow: 0 10px 24px -10px rgba(240, 184, 74, 0.7); }
+.imp-apply.is-on { background: rgba(255, 255, 255, 0.1); color: #fff; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25); }
+.imp-nav { display: flex; gap: 12px; }
+.imp-nav button { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.05); color: #fff; cursor: pointer; }
+.imp-nav button:hover { border-color: rgba(240, 184, 74, 0.6); color: var(--gold); }
+.imp-nav svg { width: 18px; height: 18px; }
+body.imp-open { overflow: hidden; }
+@media (prefers-reduced-motion: reduce) { .imp-card { transition: none; } }
