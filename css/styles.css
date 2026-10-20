@@ -6185,3 +6185,6 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 .auth-lang { position: absolute; top: 0; left: calc(100% + 12px); }
 .auth-lang .lang-switch { flex-direction: column; height: auto; border-radius: 18px; }
 @media (max-width: 620px) { .auth-lang { position: static; display: flex; justify-content: flex-end; margin: -24px -18px 10px 0; } .auth-lang .lang-switch { flex-direction: row; height: 38px; border-radius: 100px; } }
+.auth-signed { margin: 0 0 18px; padding: 10px 14px; border-radius: 10px; background: rgba(240, 184, 74, 0.08); border: 1px solid rgba(240, 184, 74, 0.25); font-size: 13px; line-height: 1.5; color: var(--muted); }
+.auth-signout { border: 0; padding: 0; background: none; color: var(--muted); font: inherit; text-decoration: underline; cursor: pointer; }
+.auth-signout:hover { color: var(--text); }

@@ -32,9 +32,19 @@
     setStatus("Sign-up isn't connected yet (Supabase keys missing in js/config.js).", "err");
   }
 
-  // Already logged in → go straight to the platform
+  // Already logged in: the log-in form still shows (to enter with another email or a password); a note offers to
+  // continue to the platform or to log out first
   auth?.client?.auth.getSession().then(({ data: { session } }) => {
-    if (session && mode === "login") location.href = redirectUrl;
+    if (!session || mode !== "login") return;
+    const card = document.querySelector(".auth-card");
+    if (!card || card.querySelector(".auth-signed")) return;
+    const t = (x, v) => (window.tx ? window.tx(x, v) : x.replace("{email}", v?.email || ""));
+    card.insertAdjacentHTML("afterbegin", `<p class="auth-signed">${t("You're signed in as {email}.", { email: session.user.email })}
+      <a class="link-gold" href="${redirectUrl}">${t("Go to the platform →")}</a> · <button type="button" class="auth-signout" data-auth-signout>${t("Log out")}</button></p>`);
+    card.querySelector("[data-auth-signout]").addEventListener("click", async () => {
+      await auth.client.auth.signOut();
+      card.querySelector(".auth-signed")?.remove();
+    });
   });
 
   // Google. Supabase only accepts it once the provider is switched on (Authentication → Providers → Google);

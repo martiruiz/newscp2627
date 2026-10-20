@@ -467,6 +467,8 @@ window.SCP_ES = {
   "billed yearly": "facturación anual",
   "or {price}/year": "o {price}/año",
   "Recommended": "Recomendado",
+  "You're signed in as {email}.": "Ya has iniciado sesión como {email}.",
+  "Go to the platform →": "Ir a la plataforma →",
   "Progress": "Progreso",
   "Back": "Atrás",
   "Step {x} of {y}": "Paso {x} de {y}",
