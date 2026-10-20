@@ -106,6 +106,24 @@
 
   // ---------- Icons (outline, currentColor) ----------
   const P = {
+    // sports (one drawing per sport: SPORT_ICON)
+    "sp-football": '<circle cx="12" cy="12" r="9"/><path d="m12 8.2 3.6 2.6-1.4 4.2H9.8l-1.4-4.2z"/><path d="M12 8.2V3M15.6 10.8l4.9-1.6M14.2 15l3 4.2M9.8 15l-3 4.2M8.4 10.8 3.5 9.2"/>',
+    "sp-basketball": '<circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/><path d="M5.8 5.5Q10 12 5.8 18.5M18.2 5.5Q14 12 18.2 18.5"/>',
+    "sp-baseball": '<circle cx="12" cy="12" r="9"/><path d="M7.2 4.4Q11 12 7.2 19.6M16.8 4.4Q13 12 16.8 19.6"/><path d="M7.4 7.5l1.6-.6M8.3 10.5l1.7-.2M8.3 13.5l1.7.2M7.4 16.5l1.6.6M16.6 7.5l-1.6-.6M15.7 10.5l-1.7-.2M15.7 13.5l-1.7.2M16.6 16.5l-1.6.6"/>',
+    "sp-tennis": '<ellipse cx="9.5" cy="9.5" rx="5" ry="6.2" transform="rotate(-45 9.5 9.5)"/><path d="m13.4 13.4 6.6 6.6"/><path d="M6.3 9.7l3.4-3.4M8 12.3l4.3-4.3M10 13.9l3.4-3.4"/><circle cx="18.5" cy="5.5" r="2"/>',
+    "sp-padel": '<path d="M12 2.5c3.6 0 6 2.6 6 6.2 0 3.8-2.6 6.3-6 6.3s-6-2.5-6-6.3c0-3.6 2.4-6.2 6-6.2z"/><path d="M10.6 15v6h2.8v-6"/><circle cx="10" cy="7" r=".4"/><circle cx="14" cy="7" r=".4"/><circle cx="12" cy="9" r=".4"/><circle cx="10" cy="11" r=".4"/><circle cx="14" cy="11" r=".4"/>',
+    "sp-american-football": '<ellipse cx="12" cy="12" rx="10" ry="5.8" transform="rotate(-45 12 12)"/><path d="m9 15 6-6M9.6 11.6l2.8 2.8M11.6 9.6l2.8 2.8"/><path d="M5.3 14.5 9.5 18.7M14.5 5.3l4.2 4.2"/>',
+    "sp-rugby": '<ellipse cx="12" cy="12" rx="9.8" ry="6.3"/><path d="M2.6 11Q12 6.5 21.4 11M2.6 13Q12 17.5 21.4 13"/>',
+    "sp-motor": '<path d="M5 21V3.5"/><path d="M5 4h14v10H5"/><path d="M5 9h14M9.7 4v10M14.3 4v10"/>',
+    "sp-f1": '<path d="M2 15.5V13l5-1.5 2-2.5h4l1.5 2.5H19l3 1v3"/><path d="M8.7 15.5h6.6M2 15.5h.3M21.7 15.5h.3"/><circle cx="5.5" cy="15.5" r="2.5"/><circle cx="18.5" cy="15.5" r="2.5"/><path d="M19.5 11.5V8.5h2.5"/>',
+    "sp-cycling": '<circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/>',
+    "sp-ice-hockey": '<path d="M16 3 9.6 17.2a2 2 0 0 1-1.8 1.3H3v-2.5h4.5L13.5 3"/><ellipse cx="17.5" cy="18" rx="3.5" ry="1.4"/><path d="M14 18v1.2c0 .8 1.6 1.4 3.5 1.4s3.5-.6 3.5-1.4V18"/>',
+    "sp-handball": '<circle cx="18.5" cy="4.5" r="2.2"/><circle cx="9" cy="4.5" r="1.8"/><path d="M10.5 8l-1.5 6 3 2.5V21M9 14l-3 2-1 5"/><path d="M10.3 8.8l5.2-2.6M10.2 9.5 6 11.5"/>',
+    "sp-martial-arts": '<path d="M8 21v-4.2C6.2 15.6 5 13.6 5 11V8a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v3.5c0 2.3-1 4.1-3 5.3V21z"/><path d="M8 17h8M5 10.5c2 0 3.5.8 3.5 2.8M9.5 3.5v4.5M14.5 3.5v4.5"/>',
+    "sp-running": '<circle cx="15" cy="4" r="2"/><path d="M13 8.2 10.5 14l3.5 2.5-1 4.5M10.5 14l-2.5 3.5H4"/><path d="M6.5 10.5 9.5 8h3.6l2.4 3 3.5 1"/>',
+    "sp-golf": '<path d="M10 18V3l7 3.5-7 3.5"/><path d="M3.5 19.5c0-1.2 2.9-2.2 6.5-2.2s6.5 1 6.5 2.2-2.9 2-6.5 2-6.5-.8-6.5-2z"/><circle cx="19" cy="16.5" r="1.5"/>',
+    "sp-waterpolo": '<circle cx="12" cy="8.5" r="5.8"/><path d="M8 4.3c1.8 1.6 1.8 6.8 0 8.4M16 4.3c-1.8 1.6-1.8 6.8 0 8.4M6.3 8.5h11.4"/><path d="M2 18c1.7 0 1.7-1.3 3.3-1.3S7 18 8.7 18s1.6-1.3 3.3-1.3 1.6 1.3 3.3 1.3 1.7-1.3 3.4-1.3S20.3 18 22 18M4 21.5c1.3 0 1.4-1 2.7-1s1.4 1 2.7 1 1.3-1 2.6-1 1.4 1 2.7 1 1.3-1 2.6-1 1.4 1 2.7 1"/>',
+    "sp-volleyball": '<circle cx="12" cy="12" r="9.5"/><path d="M12 12a12.6 12.6 0 0 1-8.7 5"/><path d="M11.2 7.3a15 15 0 0 1 10.3 3.9"/><path d="M16.4 13.5a15 15 0 0 1-8.7 7.5"/><path d="M20.3 16.6A12.8 12.8 0 0 0 12 12a13.3 13.3 0 0 1 0-9.5"/><path d="M6.6 4.3a15 15 0 0 0 1.8 10.9"/>',
     ball: '<circle cx="12" cy="12" r="9"/><path d="M12 7.5l3.8 2.8-1.5 4.4H9.7l-1.5-4.4zM12 3v4.5M20.6 9.5l-4.8.8M17.5 19.5l-3.2-4.8M6.5 19.5l3.2-4.8M3.4 9.5l4.8.8"/>',
     basket: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3v18M5.6 5.6c3 3 3 9.8 0 12.8M18.4 5.6c-3 3-3 9.8 0 12.8"/>',
     tennis: '<circle cx="12" cy="12" r="9"/><path d="M5.5 5.5c3.5 3.5 3.5 9.5 0 13M18.5 5.5c-3.5 3.5-3.5 9.5 0 13"/>',
@@ -157,7 +175,8 @@
   };
   const svg = (k, cls = "") => `<svg class="lf-i ${cls}" viewBox="0 0 24 24" aria-hidden="true">${P[k] || P.dots}</svg>`;
   const FORMAT_ICON = { images: "image", image: "image", post: "image", photo: "image", reel: "reel", reels: "reel", shorts: "reel", carousel: "carousel", video: "video", story: "story", stories: "story" };
-  const SPORT_ICON = { football: "ball", soccer: "ball", basketball: "basket", tennis: "tennis", padel: "racket", "american football": "oval", rugby: "oval", baseball: "ball", motor: "wheel", f1: "wheel", motorsport: "wheel", cycling: "bike", "ice hockey": "puck", hockey: "puck", handball: "run", "martial arts": "glove", running: "run", golf: "golf", waterpolo: "ball", volleyball: "ball" };
+  const SPORT_ICON = { football: "football", soccer: "football", basketball: "basketball", tennis: "tennis", padel: "padel", "american football": "american-football", rugby: "rugby", baseball: "baseball", motor: "motor", motorsport: "motor", f1: "f1", "formula 1": "f1", cycling: "cycling", "ice hockey": "ice-hockey", hockey: "ice-hockey", handball: "handball", "martial arts": "martial-arts", running: "running", athletics: "running", golf: "golf", waterpolo: "waterpolo", "water polo": "waterpolo", volleyball: "volleyball" };
+  const sportIco = (name) => { const k = SPORT_ICON[String(name || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim()]; return k ? `sp-${k}` : "dots"; };
   // Official platform logos (assets/pf-*.svg used as masks): muted at rest, brand colours on hover / when chosen
   const PLATFORM = { instagram: "Instagram", tiktok: "TikTok", youtube: "YouTube", x: "X", facebook: "Facebook", linkedin: "LinkedIn" };
   const pfLogo = (k, cls = "lf-pfl") => `<span class="${cls} lf-pf-${k}" style="-webkit-mask-image:url(assets/pf-${k}.svg);mask-image:url(assets/pf-${k}.svg)" aria-hidden="true"></span>`;
@@ -284,7 +303,7 @@
     if (c.crest) {
       body = `<div class="lf-crests">${shown.map((v) => `<button type="button" class="lf-cr${isOn(v) ? " is-on" : ""}${countOf(v) === 0 && !isOn(v) ? " is-zero" : ""}" aria-pressed="${isOn(v)}" data-facet="${c.key}" data-id="${v.id}" title="${esc(v.name)} · ${countOf(v).toLocaleString(window.SCP_LOC || "en-GB")} posts">${crestImg(v)}<span>${esc(pretty(v.name))}</span></button>`).join("")}</div>`;
     } else if (c.key === "sport") {
-      body = `<div class="lf-tiles lf-tiles-3">${shown.map((v) => `<button type="button" class="lf-tile${isOn(v) ? " is-on" : ""}${countOf(v) === 0 && !isOn(v) ? " is-zero" : ""}" aria-pressed="${isOn(v)}" data-facet="${c.key}" data-id="${v.id}">${svg(SPORT_ICON[v.name.toLowerCase()] || "dots")}<span>${esc(pretty(v.name))}</span></button>`).join("")}</div>`;
+      body = `<div class="lf-tiles lf-tiles-3">${shown.map((v) => `<button type="button" class="lf-tile${isOn(v) ? " is-on" : ""}${countOf(v) === 0 && !isOn(v) ? " is-zero" : ""}" aria-pressed="${isOn(v)}" data-facet="${c.key}" data-id="${v.id}">${svg(sportIco(v.name))}<span>${esc(pretty(v.name))}</span></button>`).join("")}</div>`;
     } else {
       body = `<div class="lf-list">${shown.map((v) => {
         const n = countOf(v);
@@ -649,7 +668,7 @@
     const on = isOn(v), n = countOf(v);
     const st = `${on ? " is-on" : ""}${n === 0 && !on ? " is-zero" : ""}${n < 20 && !on ? " is-low" : ""}`;
     const meta = `<span class="lfp-meta"><b>${esc(pretty(v.name))}</b><small>${esc(tx("{n} posts", { n: kfmt(n) }))}</small></span><span class="lfp-ck">${svg("check")}</span>`;
-    if (g.tiles) return `<button type="button" class="lfp-logo${st}" aria-pressed="${on}" data-facet="${v.category}" data-id="${v.id}"><span class="lfp-lg lfp-lg-ic">${svg(SPORT_ICON[v.name.toLowerCase()] || "dots")}</span>${meta}</button>`;
+    if (g.tiles) return `<button type="button" class="lfp-logo${st}" aria-pressed="${on}" data-facet="${v.category}" data-id="${v.id}"><span class="lfp-lg lfp-lg-ic">${svg(sportIco(v.name))}</span>${meta}</button>`;
     if (g.logos) return `<button type="button" class="lfp-logo${st}" aria-pressed="${on}" data-facet="${v.category}" data-id="${v.id}">${v.logo ? `<span class="lfp-lg${v.ig ? " is-photo" : ""}"><img src="${esc(v.logo)}" alt="" loading="lazy"></span>` : `<span class="lfp-lg"><b>${esc(initials(v.name))}</b></span>`}${meta}</button>`;
     const c = covers.get(v.id);
     return `<button type="button" class="lfp-card${st}" aria-pressed="${on}" data-facet="${v.category}" data-id="${v.id}">
@@ -1287,7 +1306,7 @@
       if (v.category === "trend") return `<span class="ac-ic ac-sp ${special(v).cls}">${svg(special(v).ico)}</span>`;
       if (CAT[v.category]?.crest || v.logo) return crestImg(v, "ac-logo");
       if (v.category === "platform" && PLATFORM[v.name.toLowerCase()]) return `<span class="ac-ic">${pfLogo(v.name.toLowerCase(), "lf-pfi is-brand")}</span>`;
-      return `<span class="ac-ic">${svg(v.category === "format" ? FORMAT_ICON[v.name.toLowerCase()] || "image" : v.category === "sport" ? SPORT_ICON[v.name.toLowerCase()] || "ball" : CAT[v.category]?.ico || "dots")}</span>`; };
+      return `<span class="ac-ic">${svg(v.category === "format" ? FORMAT_ICON[v.name.toLowerCase()] || "image" : v.category === "sport" ? sportIco(v.name) : CAT[v.category]?.ico || "dots")}</span>`; };
     $("[data-active-chips]").innerHTML = chips.length ? `<span class="ab-lead"><span class="ab-ic">${svg("check")}</span><span class="ab-tx"><b>${esc(tx("Your search"))}</b><small>${esc(tx(chips.length === 1 ? "{n} filter" : "{n} filters", { n: chips.length }))}${chips.length > 1 ? ` · <button type="button" class="active-clear" data-chip-clear>${esc(tx("Clear all"))}</button>` : ""}</small></span></span>`
       + chips.map((x, i) => `<button type="button" class="active-chip" data-chip="${i}"${x.title ? ` title="${esc(tx(x.title))}"` : ""} aria-label="${esc(tx("Remove {what}", { what: x.label }))}">${chipLead(x)}<span class="ac-tx"><b>${esc(x.label)}</b></span><span class="ac-x" aria-hidden="true">${icon("x")}</span></button>`).join("")
  : "";
