@@ -1,7 +1,7 @@
 // Supabase Edge Function "views-cron": every 10 minutes (pg_cron, supabase/views-cron.sql) reads the views of the posts
 // that are due (views_due: last 7 days daily, 8–30 days weekly, 31–90 days monthly) and saves them.
 // TikTok: the video page · YouTube: its player / "next" API · Instagram videos: the public embed page.
-// Header x-cron-secret = CRON_SECRET. Slow on purpose (pauses between posts) so no platform blocks it; stops after ~110 s.
+// Header x-cron-secret = the vault secret cron_secret (checked with the RPC cron_secret_ok). Slow on purpose (pauses between posts) so no platform blocks it; stops after ~110 s.
 // SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are provided by Supabase.
 const env = (k: string) => Deno.env.get(k) ?? "";
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
@@ -46,7 +46,9 @@ async function viewsOf(url: string): Promise<Reading> {
 }
 
 Deno.serve(async (req) => {
-  if (!env("CRON_SECRET") || req.headers.get("x-cron-secret") !== env("CRON_SECRET")) return json({ error: "Not allowed" }, 403);
+  // the call carries the vault secret "cron_secret" (supabase/views-cron.sql); checked against the vault itself
+  const ok = await (await rest("rpc/cron_secret_ok", { method: "POST", body: JSON.stringify({ p_secret: req.headers.get("x-cron-secret") || "" }) })).json().catch(() => false);
+  if (ok !== true) return json({ error: "Not allowed" }, 403);
   const t0 = Date.now();
   const due = await (await rest("rpc/views_due", { method: "POST", body: JSON.stringify({ p_limit: 40 }) })).json();
   let done = 0, none = 0, removed = 0;

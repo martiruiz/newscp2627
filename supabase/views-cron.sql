@@ -4,8 +4,9 @@
 --   (they still update when a member plays them: Edge Function "views").
 -- TikTok, YouTube and Instagram videos (Instagram shows no views for photos or carousels).
 --
--- Before running this file, create the secret the call uses (the same value as the Edge Function secret CRON_SECRET),
--- in Supabase > SQL editor:   select vault.create_secret('<the CRON_SECRET value>', 'cron_secret');
+-- Before running this file, create the secret the call uses, in Supabase > SQL editor:
+--   select vault.create_secret(encode(gen_random_bytes(32), 'hex'), 'cron_secret');
+-- (the function checks the call against this same vault secret: nothing to copy anywhere else)
 -- Run after views-refresh.sql. Safe to run again (run it again after any change here: it replaces the schedule).
 
 create extension if not exists pg_net;
@@ -39,6 +40,13 @@ begin
 end $$;
 revoke execute on function public.admin_views_status() from public, anon;
 grant execute on function public.admin_views_status() to authenticated;
+
+-- the function checks the call against this same vault secret (one place to keep it)
+create or replace function public.cron_secret_ok(p_secret text)
+returns boolean language sql stable security definer set search_path = public, vault as $$
+  select coalesce(p_secret, '') <> '' and exists (select 1 from vault.decrypted_secrets where name = 'cron_secret' and decrypted_secret = p_secret);
+$$;
+revoke execute on function public.cron_secret_ok(text) from public, anon, authenticated;
 
 -- every 10 minutes
 select cron.unschedule('scp-views') where exists (select 1 from cron.job where jobname = 'scp-views');
