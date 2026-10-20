@@ -1530,6 +1530,8 @@ window.SCP_ES = {
   "Sponsor giveaway": "Sorteo del patrocinador",
   "Spanish": "Español",
   "Catalan": "Catalán",
+  "Galician": "Gallego",
+  "Basque": "Euskera",
   "French": "Francés",
   "Italian": "Italiano",
   "Portuguese": "Portugués",

@@ -54,7 +54,8 @@ export const AI_VALUES = {
   sponsor_sector: ["Apparel / sportswear", "Airline / travel", "Bank / finance", "Telecom / tech", "Beverage", "Food", "Automotive", "Energy", "Betting", "Crypto / fintech", "Media / streaming", "Health", "Retail", "Gaming"],
   sponsor_integration: ["Logo on graphic", "Presented-by segment", "Brand collab post", "Product placement", "Sponsor activation / event", "Sponsor giveaway"],
   language: ["English", "Spanish", "Catalan", "French", "Italian", "Portuguese", "German", "Dutch", "Turkish", "Arabic", "Polish", "Greek", "Japanese", "Korean", "Chinese",
-    "Indonesian", "Russian", "Ukrainian", "Swedish", "Danish", "Norwegian", "Croatian", "Serbian", "Czech", "Romanian", "Hebrew", "Hindi", "Thai", "Vietnamese", "Emoji only", "Other"],
+    "Indonesian", "Russian", "Ukrainian", "Swedish", "Danish", "Norwegian", "Croatian", "Serbian", "Czech", "Romanian", "Hebrew", "Hindi", "Thai", "Vietnamese",
+    "Galician", "Basque", "Emoji only", "Other"],
 };
 
 const W = (s) => new RegExp(s, "iu");
@@ -162,7 +163,7 @@ export const SPONSORS = {
 };
 export const SPONSOR_SECTORS = ["Apparel / sportswear", "Airline / travel", "Bank / finance", "Telecom / tech", "Beverage", "Food", "Automotive", "Energy", "Betting", "Crypto / fintech", "Media / streaming", "Health", "Retail", "Other"];
 
-export const LANGUAGES = ["English", "Spanish", "Catalan", "French", "Italian", "Portuguese", "German", "Dutch", "Arabic", "Turkish", "Other"];
+export const LANGUAGES = ["English", "Spanish", "Catalan", "Galician", "Basque", "French", "Italian", "Portuguese", "German", "Dutch", "Arabic", "Turkish", "Other"];
 const LANG_WORDS = {
   English: /\b(the|and|with|our|this|we|you|for|to)\b/gi,
   Spanish: /\b(el|los|las|con|para|nuestro|nuestra|hoy|del|una|que)\b/gi,
@@ -172,6 +173,8 @@ const LANG_WORDS = {
   Portuguese: /\b(os|as|com|para|nosso|hoje|uma|que|não|vamos)\b/gi,
   German: /\b(der|die|das|und|mit|für|heute|wir|ist|nicht)\b/gi,
   Dutch: /\b(de|het|een|met|voor|vandaag|wij|niet|onze)\b/gi,
+  Galician: /\b(unha|nosa|noso|nosos|tamén|xente|dende|mañá|grazas|facendo|hoxe|xogo|xogadores|equipa|cos|coa|polo|pola|deste|desta|vitoria|adestramento)\b/gi,
+  Basque: /\b(eta|gure|dugu|dute|ditu|gaur|bihar|zorionak|eskerrik|asko|taldea|taldeak|aurka|etxean|partida|partidua|ere|izango|dira|hau|honen|gara|zuen|ondo|bai)\b/gi,
 };
 const ARABIC = /[؀-ۿ]/;
 
@@ -194,11 +197,12 @@ export function applyRules(post) {
     if (new RegExp(`(?:^|[^\\p{L}\\d])@?${esc}(?:[^\\p{L}\\d]|$)`, "iu").test(text)) { out.sponsor.add(brand); out.sponsor_sector.add(sector); }
   }
   if (out.sponsor.size) out.goal.add("Sponsor value");
-  // Language: most frequent function words (min 2 hits), Arabic script
-  if (ARABIC.test(text)) out.language.add("Arabic");
+  // Language: most frequent function words (min 2 hits), Arabic script. Decorative Unicode letters (𝘎𝘖𝘓, 𝐆𝐎𝐋) read as plain ones.
+  const plain = text.normalize("NFKC");
+  if (ARABIC.test(plain)) out.language.add("Arabic");
   else {
     let best = null, hits = 1;
-    for (const [lang, re] of Object.entries(LANG_WORDS)) { const n = (text.match(re) || []).length; if (n > hits) { best = lang; hits = n; } }
+    for (const [lang, re] of Object.entries(LANG_WORDS)) { const n = (plain.match(re) || []).length; if (n > hits) { best = lang; hits = n; } }
     if (best) out.language.add(best);
   }
   // Team default: first team when it's a club post and no other team matched

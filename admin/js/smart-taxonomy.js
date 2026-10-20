@@ -288,6 +288,8 @@ window.SCP_SMART = {
       "Hindi",
       "Thai",
       "Vietnamese",
+      "Galician",
+      "Basque",
       "Emoji only",
       "Other"
     ]

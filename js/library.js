@@ -192,7 +192,13 @@
     slovenian: "si", romanian: "ro", hungarian: "hu", bulgarian: "bg", hebrew: "il", hindi: "in", thai: "th", vietnamese: "vn", malay: "my" };
   const symbol = (ch) => `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 26"><rect width="40" height="26" fill="#eef1f6"/><text x="20" y="19" font-size="17" text-anchor="middle">${ch}</text></svg>`)}`;
   const SENYERA = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 9 6"><rect width="9" height="6" fill="#fcdd09"/><path d="M0 1h9M0 2.33h9M0 3.67h9M0 5h9" stroke="#da121a" stroke-width=".67"/></svg>`)}`;
-  const flagOf = (name) => { const n = name.toLowerCase(), c = FLAG[n]; return c ? `https://flagcdn.com/w40/${c}.png` : n === "catalan" ? SENYERA : n === "emoji only" ? symbol("😀") : symbol("🌐"); };
+  const svgFlag = (body) => `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 26">${body}</svg>`)}`;
+  const OWN_FLAG = {   // regions without an ISO flag: drawn here
+    catalan: SENYERA,
+    galician: svgFlag(`<rect width="40" height="26" fill="#fff"/><path d="M0 0L40 26" stroke="#0099cc" stroke-width="7"/>`),
+    basque: svgFlag(`<rect width="40" height="26" fill="#d52b1e"/><path d="M0 0L40 26M40 0L0 26" stroke="#009b48" stroke-width="4"/><path d="M20 0v26M0 13h40" stroke="#fff" stroke-width="4"/>`),
+  };
+  const flagOf = (name) => { const n = name.toLowerCase(), c = FLAG[n]; return c ? `https://flagcdn.com/w40/${c}.png` : OWN_FLAG[n] || (n === "emoji only" ? symbol("😀") : symbol("🌐")); };
 
   // ---------- Catalog (values + totals; logos from library-filters.sql) ----------
   async function loadCatalog() {
