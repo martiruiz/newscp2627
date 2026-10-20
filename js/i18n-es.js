@@ -467,6 +467,7 @@ window.SCP_ES = {
   "billed yearly": "facturación anual",
   "or {price}/year": "o {price}/año",
   "Recommended": "Recomendado",
+  "See posts about {name}": "Ver posts sobre {name}",
   "Three tools,": "Tres herramientas,",
   "one playbook": "un solo playbook",
   "500,000+ real posts from clubs, leagues, brands and creators.": "Más de 500.000 posts reales de clubes, ligas, marcas y creadores.",

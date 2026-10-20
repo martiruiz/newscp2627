@@ -192,10 +192,15 @@
       </div>`}
     </div>`;
   }
+  // Key dates (js/key-dates.js) on their day; each opens its posts in the library
+  const keyMark = (date, cls = "org-kd") => {
+    const k = window.SCP_KEY_DATES?.on(date);
+    return k ? `<a class="${cls}" href="${esc(window.SCP_KEY_DATES.href(k))}" title="${esc(tx("See posts about {name}", { name: tx(k.name) }))}">${icon(k.icon)}<span>${esc(k.name)}</span></a>` : "";
+  };
   function renderWeek() {
     const today = iso(new Date());
     const days = weekDays();
-    const head = `<thead><tr><th class="org-time-h">Time</th>${days.map((d, i) => `<th class="${iso(d) === today ? "is-today" : ""}${i === mobileDay ? "" : " m-hide"}"><span>${DAYS[i]}</span><b>${d.getDate()}</b></th>`).join("")}</tr></thead>`;
+    const head = `<thead><tr><th class="org-time-h">Time</th>${days.map((d, i) => `<th class="${iso(d) === today ? "is-today" : ""}${i === mobileDay ? "" : " m-hide"}"><span>${DAYS[i]}</span><b>${d.getDate()}</b>${keyMark(iso(d))}</th>`).join("")}</tr></thead>`;
     const atHour = (date, h) => entries.filter((e) => e.entry_date === date && hourOf(e.time_slot) === h).sort((a, b) => a.time_slot.localeCompare(b.time_slot));
     const hourRow = (t) => `<tr data-hour="${hourOf(t)}"><td class="org-time">${t}</td>${days.map((d, i) => {
       const date = iso(d);
@@ -259,7 +264,7 @@
         const date = iso(d);
         const list = entries.filter((e) => e.entry_date === date).sort((a, b) => a.time_slot.localeCompare(b.time_slot));
         return `<div class="org-mday${d.getMonth() !== month ? " is-out" : ""}${date === today ? " is-today" : ""}" data-cell="${date}|12:00">
-          <span class="org-mday-n">${d.getDate()}</span>
+          <span class="org-mday-n">${d.getDate()}</span>${keyMark(date, "org-kd org-kd-m")}
           ${list.slice(0, 4).map((e) => entryHtml(e, true)).join("")}
           ${list.length > 4 ? `<button type="button" class="org-more" data-goto-week="${date}">+${list.length - 4} more</button>` : ""}
           <button type="button" class="org-add" data-add aria-label="Add a post on ${d.toLocaleDateString(window.SCP_LOC || "en-GB")}">${icon("plus")}</button>

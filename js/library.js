@@ -1044,15 +1044,8 @@
     if (!fresults.hidden) searchFilters();
   }
 
-  // ---------- Key dates (Halloween, Black Friday…): shown in the Content Plan (js/plan-panel.js), they search the captions ----------
-  const topicOn = () => $("[data-q]").value.trim().toLowerCase();
-  function topic(q) {
-    const input = $("[data-q]");
-    input.value = topicOn() === q ? "" : q;
-    setPeriod("all");
-    load(true);
-    return !!input.value;
-  }
+  // ---------- Key dates: the Content Plan links to content-library.html?topic=halloween → posts that mention it ----------
+  { const t = new URLSearchParams(location.search).get("topic"); if (t) $("[data-q]").value = t.slice(0, 60); }
 
   // ---------- Period (When) ----------
   const setPeriod = (value) => {
@@ -1131,7 +1124,6 @@
     badge.textContent = sidebarCount; badge.hidden = sidebarCount <= 0;
     $("[data-lf-active]").textContent = sidebarCount > 0 ? `· ${tx("{n} active", { n: sidebarCount })}` : "";
     paintDropdowns(s);
-    document.dispatchEvent(new CustomEvent("scp:topic", { detail: topicOn() }));   // the key dates in the Content Plan show which one is on
   }
   $("[data-active-chips]").addEventListener("click", (e) => {
     const chip = e.target.closest("[data-chip]");
@@ -1537,7 +1529,7 @@
   const refreshAiButtons = (id) => $$(`.lib-card[data-id="${CSS.escape(String(id))}"] .lib-analysis`).forEach((b) => (b.outerHTML = aiButton(id)));
 
   // The Content Plan panel (js/plan-panel.js) reads the posts shown here
-  window.SCP_LIB = { post: (id) => cache.get(String(id)), adapt: (id) => aiAdapt(id), topic: (q) => topic(q), topicOn: () => topicOn() };
+  window.SCP_LIB = { post: (id) => cache.get(String(id)), adapt: (id) => aiAdapt(id) };
 
   // ---------- Masonry: N columns, each card goes to the shortest one (heights known from the ratios) ----------
   const GAP = 22;
