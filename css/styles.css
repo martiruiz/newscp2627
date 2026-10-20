@@ -5918,12 +5918,7 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 .lf-md .lf-sub { margin: 12px 2px 6px; }
 .lf-md-opp { margin-top: 10px; }
 
-/* Library filters: role, recipes, clubs like mine, Content Plan hints, sponsors card, sentence search */
-.lf-recipes { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-.lf-recipe { display: flex; align-items: center; gap: 8px; min-height: 48px; padding: 8px 10px; border-radius: 12px; border: 0.5px solid var(--line); background: rgba(var(--fg), 0.03); color: var(--text); font-size: 12px; font-weight: 600; line-height: 1.25; text-align: left; transition: border-color 0.15s, background 0.15s, transform 0.15s; }
-.lf-recipe .lf-i { flex: none; width: 16px; height: 16px; color: var(--gold); }
-.lf-recipe:hover { border-color: rgba(240, 184, 74, 0.5); transform: translateY(-1px); }
-.lf-recipe.is-on { border-color: var(--gold); background: var(--gold-tint); }
+/* Library filters: clubs like mine, Content Plan hints, sponsors card, sentence search */
 .lf-like, .lf-hint { position: relative; display: flex; align-items: center; gap: 10px; width: 100%; margin-bottom: 8px; padding: 10px 12px; border-radius: 12px; border: 0.5px dashed rgba(240, 184, 74, 0.45); background: rgba(240, 184, 74, 0.05); color: var(--text); text-align: left; text-decoration: none; }
 .lf-like > .lf-i:first-child, .lf-hint > .lf-i { flex: none; width: 18px; height: 18px; color: var(--gold); }
 .lf-like span, .lf-hint span { display: grid; gap: 1px; min-width: 0; flex: 1; }

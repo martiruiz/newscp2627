@@ -89,7 +89,6 @@
     { key: "discover", label: "Discover" }, { key: "format", label: "Format" }, { key: "platform", label: "Platform" },
     { key: "explore", label: "Explore by" }, { key: "content", label: "Content", ai: true }, { key: "brands", label: "Brands", ai: true },
   ] : [
-    { key: "recipes", label: "Ready-made searches", jump: "Recipes", q: "4–5 filters in one click" },
     { key: "discover", label: "What works", jump: "Works" }, { key: "occasion", label: "Occasion", ai: true, q: "What are you posting about?" },
     { key: "goal", label: "Goal & sponsors", ai: true, jump: "Goal", q: "What should it achieve?" }, { key: "where", label: "Where & how", jump: "Where", q: "Platform and format" },
     { key: "benchmark", label: "Inspiration from", jump: "Inspiration", q: "Sports, competitions and clubs" },
@@ -434,41 +433,9 @@
   }
 
   // ---------- Section order of the filter column ----------
-  const DEFAULT_ORDER = ["recipes", "discover", "occasion", "goal", "where", "benchmark"];
+  const DEFAULT_ORDER = ["discover", "occasion", "goal", "where", "benchmark"];
 
-  // ---------- Recipes: ready-made searches (4–5 filters in one click) ----------
-  const RECIPES = [
-    { key: "signing-reel", title: "Signing announcement on Reels", ico: "swap", roles: ["social", "creator"], vals: [["transfer", "Signing"], ["format", "Reel"]] },
-    { key: "sponsor-worked", title: "Sponsor activations that worked", ico: "tag", roles: ["partner"], vals: [["sponsor_integration", "Sponsor activation / event"], ["sponsor_integration", "Brand collab post"], ["sponsor_integration", "Presented-by segment"], ["sponsor_integration", "Sponsor giveaway"], ["trend", "Overperforming"]] },
-    { key: "matchday-easy", title: "Matchday with few resources", ico: "ball", roles: ["social", "creator"], vals: [["trend", "Replicable ideas"], ["matchday_graphic", "Matchday poster"], ["matchday_graphic", "Starting XI"], ["matchday_graphic", "Full-time"]] },
-    { key: "kit-launch", title: "Kit launch", ico: "shirt", roles: ["social", "partner"], vals: [["kit", "Home kit"], ["kit", "Away kit"], ["kit", "Third kit"], ["kit", "Special edition kit"]] },
-    { key: "derby", title: "Derby week", ico: "flag", roles: ["social"], vals: [["season_moment", "Derby"]] },
-    { key: "result-viral", title: "Full-time posts that took off", ico: "pulse", roles: ["social", "creator"], vals: [["matchday_graphic", "Full-time"], ["trend", "Overperforming"]] },
-    { key: "tickets", title: "Selling tickets", ico: "target", roles: ["partner", "social"], vals: [["goal", "Ticket sales"]] },
-    { key: "women", title: "Women's team content that worked", ico: "user", roles: ["social", "creator"], vals: [["team", "Women's team"], ["trend", "Overperforming"]] },
-  ];
   const valByName = (cat, name) => (catalog.byCat[cat] || []).find((v) => v.name.toLowerCase() === name.toLowerCase());
-  function recipeFacets(r) {
-    const facets = {};
-    for (const [cat, name] of r.vals) { const v = valByName(cat, name); if (v) (facets[cat] ||= []).push(v.id); }
-    // every category of the recipe must exist, or the recipe would mean something else
-    return new Set(r.vals.map(([c]) => c)).size === Object.keys(facets).length ? facets : null;
-  }
-  const sameFacets = (f) => CATEGORIES.every((c) => { const a = selected[c.key], b = f[c.key] || []; return a.size === b.length && b.every((id) => a.has(id)); });
-  function recipesHtml() {
-    const list = RECIPES.map((r) => ({ ...r, facets: recipeFacets(r) })).filter((r) => r.facets);
-    if (!list.length) return "";
-    const shown = ui.all.has("recipes") ? list : list.slice(0, 4);
-    return `<div class="lf-recipes">${shown.map((r) => `<button type="button" class="lf-recipe${sameFacets(r.facets) ? " is-on" : ""}" data-recipe="${r.key}">${svg(r.ico)}<span>${esc(tx(r.title))}</span></button>`).join("")}</div>
-      ${list.length > 4 && !ui.all.has("recipes") ? `<button type="button" class="lf-morebtn" data-lf-all="recipes">+${list.length - 4} more</button>` : ""}`;
-  }
-  function applyRecipe(key) {
-    const r = RECIPES.find((x) => x.key === key), facets = r && recipeFacets(r);
-    if (!facets) return;
-    if (sameFacets(facets)) { applyState({ order: state().order }); return load(true); }   // second click: off
-    applyState({ order: state().order, period: state().period, facets });
-    load(true);
-  }
 
   // ---------- "Clubs like mine": the member's competitions (or sports) from the profile ----------
   function likeMineIds() {
@@ -589,7 +556,6 @@
   function renderFacets() {
     const parts = {
       discover: (has("trend") || views.hist) && discoverHtml(),
-      recipes: !LAYOUT_BEFORE && catalog.byId.size && recipesHtml(),
       occasion: !LAYOUT_BEFORE && (CATEGORIES.some((c) => c.sec === "occasion" && has(c.key))) && occasionHtml(),
       goal: !LAYOUT_BEFORE && CATEGORIES.some((c) => c.sec === "goal" && has(c.key)) && goalHtml(),
       where: !LAYOUT_BEFORE && (has("platform") || has("format")) && `${has("platform") ? `<div class="lf-grp"><div class="lf-sub lf-sub-top">Platform</div>${platformHtml()}</div>` : ""}${has("format") || has("aspect_ratio") || has("duration") || has("language") ? `<div class="lf-grp"><div class="lf-sub">Format</div>${formatHtml()}</div>` : ""}`,
@@ -727,8 +693,6 @@
     if (all) { ui.all.add(all.dataset.lfAll); return renderFacets(); }
     const more = e.target.closest("[data-lf-more]");
     if (more) { const s = more.dataset.lfMore; ui.more.has(s) ? ui.more.delete(s) : ui.more.add(s); return renderFacets(); }
-    const rc = e.target.closest("[data-recipe]");
-    if (rc) return applyRecipe(rc.dataset.recipe);
     if (e.target.closest("[data-like-mine]")) return toggleLikeMine();
     const ph = e.target.closest("[data-md-phase]");
     if (ph) { ui.phase = ph.dataset.mdPhase; return renderFacets(); }
