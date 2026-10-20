@@ -6607,21 +6607,16 @@ a.lf-sp-favs { text-decoration: none; }
 .lf-mini img { width: 100%; height: 100%; object-fit: contain; }
 .lib-foot .lib-crest:not(.is-photo) img { width: 100%; height: 100%; object-fit: contain; }
 
-/* Filter bar as liquid glass (js/library.js renderBar): a frosted capsule; the open section under a clear glass lens
-   that glides between them; white type, no icons */
+/* Filter bar (js/library.js renderBar): an outlined capsule — no fill, the platform's hairline; the open section under
+   a lens in surface-2 (like the "My space" pills) that glides between them; white type, no icons */
 .lfb-row.lfb-glass { position: relative; display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); gap: 0; padding: 5px; border-radius: 999px;
-  background: rgba(var(--fg), 0.04); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
-  box-shadow: inset 0 1px 0 rgba(var(--fg), 0.12), inset 0 -1px 0 rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(var(--fg), 0.08), 0 24px 50px -28px rgba(0, 0, 0, 0.9); }
+  background: transparent; box-shadow: inset 0 0 0 1px var(--line); }
 .lfb-glass .lfb-lens { position: absolute; top: 5px; bottom: 5px; left: 5px; width: calc((100% - 10px) / var(--n, 3)); border-radius: 999px; pointer-events: none; transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.06) 50%, rgba(255, 255, 255, 0.1));
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5), inset 0 -2px 6px rgba(0, 0, 0, 0.25), 0 8px 24px -10px rgba(0, 0, 0, 0.8); }
+  background: var(--surface-2); box-shadow: inset 0 0 0 1px rgba(var(--fg), 0.14); }
 .lfb-glass .lfb-lens[hidden] { display: none; }
-.lfb-glass .lfb-btn { z-index: 1; justify-content: center; gap: 8px; height: 44px; padding: 0 16px; border: 0; border-radius: 999px; background: transparent; color: rgba(var(--fg), 0.55); text-align: center; transition: color 0.3s, background 0.3s; }
-.lfb-glass .lfb-btn { color: var(--text); }
-.lfb-glass .lfb-btn:hover { color: var(--text); background: rgba(var(--fg), 0.04); }
-.lfb-glass .lfb-btn.is-open, .lfb-glass .lfb-btn.is-open:hover { color: var(--text); background: transparent; }
-.lfb-glass .lfb-btn.is-set { color: var(--text); border: 0; }
+.lfb-glass .lfb-btn { z-index: 1; justify-content: center; gap: 8px; height: 44px; padding: 0 16px; border: 0; border-radius: 999px; background: transparent; color: var(--text); text-align: center; transition: background 0.3s; }
+.lfb-glass .lfb-btn:hover { background: rgba(var(--fg), 0.04); }
+.lfb-glass .lfb-btn.is-open, .lfb-glass .lfb-btn.is-open:hover { background: transparent; }
+.lfb-glass .lfb-btn.is-set { border: 0; }
 .lfb-glass .lfb-tx b { font: 600 15px var(--font-display); letter-spacing: -0.01em; }
-.lfb-glass .lfb-btn em { min-width: 20px; height: 20px; background: rgba(var(--fg), 0.16); color: var(--text); font-weight: 700; }
-:root[data-theme="light"] .lfb-glass .lfb-lens { background: linear-gradient(180deg, #fff, #f3f5f9); box-shadow: inset 0 1px 0 #fff, 0 6px 16px -8px rgba(18, 27, 51, 0.35), 0 0 0 1px rgba(18, 27, 51, 0.08); }
-:root[data-theme="light"] .lfb-row.lfb-glass { box-shadow: inset 0 0 0 1px rgba(18, 27, 51, 0.08); }
+.lfb-glass .lfb-btn em { min-width: 20px; height: 20px; background: rgba(var(--fg), 0.14); color: var(--text); font-weight: 700; }

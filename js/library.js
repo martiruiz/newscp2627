@@ -758,7 +758,7 @@
     const open = items.find((it) => it.key === ui.bar);
     const keep = $(".lfp-main", bar)?.scrollTop || 0;
     bar.hidden = false;
-    // liquid glass: one frosted capsule; the open section sits under a clear glass lens that slides between them
+    // one outlined capsule; the open section sits under a lens that slides between them
     const oi = items.indexOf(open);
     bar.innerHTML = `<div class="lfb-row lfb-glass" role="toolbar" aria-label="${esc(tx("Filters"))}" style="--n:${items.length}"><span class="lfb-lens"${oi < 0 ? " hidden" : ""}></span>${items.map((it) => `<button type="button" class="lfb-btn${it.n ? " is-set" : ""}${open === it ? " is-open" : ""}" aria-expanded="${open === it}" data-lfb="${it.key}"><span class="lfb-tx"><b>${esc(it.label)}</b></span>${it.n ? `<em>${it.n}</em>` : ""}</button>`).join("")}</div>
       ${open ? `<div class="lfb-panel lfp" role="dialog" aria-label="${esc(open.label)}">${lfpHtml(open.key)}</div>` : ""}`;
