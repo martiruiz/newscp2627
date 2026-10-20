@@ -34,11 +34,10 @@ export const AI_CATEGORIES = CATEGORIES.filter((c) => !c.meta);
 
 // Allowed values for the AI (free categories: any name, normalised afterwards)
 export const AI_VALUES = {
-  moment: ["Matchday preview", "Match coverage", "Milestone / record", "Award", "Tribute", "Birthday", "Throwback", "Training", "Preseason / tour",
-    "Season tickets / membership",
+  moment: ["Matchday preview", "Match coverage", "Milestone / record", "Award", "Tribute", "Birthday", "Throwback", "Training",
     "Christmas", "Halloween", "Black Friday", "Valentine's Day", "New Year", "Pride", "International Women's Day", "Ramadan / Eid", "Lunar New Year"],
   matchday_graphic: ["Matchday poster", "Countdown", "Squad list", "Starting XI", "Half-time", "Goal", "Full-time", "MOTM vote", "Fixture / schedule", "Weekly recap",
-    "Standings", "Stats card", "Quote card", "Birthday graphic", "Signing graphic"],
+    "Standings", "Stats card", "Quote card", "Signing graphic"],
   kit: ["Home kit", "Away kit", "Third kit", "Goalkeeper kit", "Special edition kit", "Training wear", "Retro / heritage"],
   transfer: ["Signing", "Renewal", "Loan", "Departure"],
   outcome: ["Win", "Draw", "Loss"],
@@ -70,14 +69,12 @@ export const RULES = {
     "_Farewell": [W("farewell|goodbye|thank you for everything|gracias por todo|gràcies per tot|merci pour tout|grazie di tutto|obrigado por tudo|adiós|adéu|leaves the club|deja el club")],
     "_Kit launch": [W("new kit|home kit|away kit|third kit|nueva camiseta|nova samarreta|nouveau maillot|nuova maglia|nova camisa|trikot|#?newkit|equipación|equipació|jersey reveal|kit reveal")],
     "_Ticketing": [W("🎟|tickets?|entradas|entrades|billets|biglietti|ingressos|bilhetes|sold out|agotad[oa]s|exhaurides|box office|taquilla")],
-    "Season tickets / membership": [W("season tickets?|abonament|abono|socios?|socis|membership|members|abbonament|sócio|carnet")],
     "Birthday": [W("happy birthday|feliz cumpleaños|feliç aniversari|joyeux anniversaire|buon compleanno|feliz aniversário|alles gute zum geburtstag|🎂|🎉 .*birthday|#hbd")],
     "Milestone / record": [W("record|récord|rècord|milestone|\\b\\d{2,4}(?:th|º|è|e)? (?:game|appearance|partido|partit|goal|gol)s?\\b|historic|histórico|històric|historique|storico|first ever|por primera vez|per primera vegada")],
     "Award": [W("player of the (?:month|match|year|season)|potm|motm|mvp|award|premio|premi|trophée|premio|prêmio|best (?:player|goal)|goal of the (?:month|season)|golden boot|ballon d'or")],
     "Tribute": [W("rest in peace|\\brip\\b|d\\.e\\.p|descanse en paz|descansi en pau|in memoriam|minute'?s silence|minuto de silencio|minut de silenci|homenaje|homenatge|hommage|omaggio|tribute")],
     "Throwback": [W("#?tbt|throwback|#?onthisday|on this day|un dia com avui|tal día como hoy|il y a \\d+ ans|accadde oggi|#?flashback|years ago today")],
     "Training": [W("training|entrenamiento|entrenament|entraînement|allenamento|treino|training session|sesión|session")],
-    "Preseason / tour": [W("pre-?season|pretemporada|pretemporada|pré-saison|precampionato|pré-temporada|summer tour|gira|tour 20\\d\\d")],
     "_Travel": [W("✈|travel|on our way|rumbo a|cap a|en route|in viaggio|a caminho|arrived in|hemos llegado|ja som a")],
     "Christmas": [W("christmas|xmas|navidad|nadal|noël|natale|natal|weihnacht|🎄|🎅"), { months: [11, 12, 1] }],
     "Halloween": [W("halloween|🎃|👻|spooky"), { months: [10, 11] }],
@@ -94,11 +91,15 @@ export const RULES = {
   goal: {
     "Ticket sales": [W("🎟|tickets?|entradas|entrades|billets|biglietti|ingressos|bilhetes|sold out|agotad|box office|taquilla|buy now")],
     "Merchandise sales": [W("🛍|shop|tienda|botiga|boutique|store|merch|collection|available now|ya disponible|pre-?order|discount|descuento|descompte|% off|black friday")],
-    "Memberships": [W("season tickets?|abonament|abono|socios?|socis|membership|members|sócio|abbonament")],
+    "Memberships": [W("season tickets?|abonament|abono|socios?|socis|membership|members|sócio|abbonament|carnet")],
     "Sponsor value": [W("presented by|powered by|in partnership with|en colaboración con|amb la col·laboració|official (?:partner|sponsor)|patrocinador|thanks to our partner|#ad\\b|@\\w+ (?:partner|sponsor)")],
     "App / digital product": [W("download (?:the|our) app|descarga la app|descarrega l'app|app store|google play|our app|nuestra app|la nostra app|fantasy|newsletter|subscribe|suscríbete|subscriu-te|stream|streaming|youtube|twitch|link in bio")],
     "Community / CSR": [W("foundation|fundación|fundació|charity|solidar|community|hospital|donat|volunteer|inclusion|sustainab")],
     "Recruitment / grassroots": [W("academy|cantera|pedrera|trials|pruebas|proves|camp|campus|escuela|escola|school|join (?:our|the) (?:team|academy)|inscripciones|inscripcions")],
+  },
+  // merged 2026-10-20: "Preseason / tour" (moment) is now "Pre-season" here; "Season tickets / membership" is goal "Memberships"
+  season_moment: {
+    "Pre-season": [W("pre-?season|pretemporada|pré-saison|precampionato|pré-temporada|summer tour|gira|tour 20\\d\\d")],
   },
   comms: {
     "Official announcement": [W("official|oficial|officiel|ufficiale|it'?s official|comunicado oficial|comunicat oficial|announcement|anuncio|anunci|annonce")],

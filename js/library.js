@@ -65,7 +65,7 @@
     const NEW = [
       ["trend", "discover"], ["format", "format"], ["aspect_ratio", "format"], ["duration", "format"], ["language", "format"], ["platform", "platform"],
       ["matchday_graphic", "occasion"], ["outcome", "occasion"], ["opponent", "occasion"],
-      ["transfer", "occasion"], ["kit", "occasion"], ["season_moment", "occasion"], ["campaign", "occasion"], ["moment", "occasion"], ["angle", "occasion"],
+      ["transfer", "occasion"], ["kit", "occasion"], ["season_moment", "occasion"], ["moment", "occasion"], ["angle", "occasion"],
       ["comms", "occasion", true], ["crisis", "occasion", true],
       ["goal", "goal"], ["sponsor", "goal"], ["sponsor_integration", "goal"], ["sponsor_sector", "goal"], ["cta", "goal", true], ["collab", "goal", true],
       ["sport", "benchmark"], ["competition", "benchmark"], ["club", "benchmark"], ["entity", "benchmark"], ["team", "benchmark"], ["city", "benchmark", true],
@@ -79,7 +79,7 @@
   // Matchday as a timeline: before / live / after the game (graphics + campaign moments that belong to each phase)
   const MATCHDAY = [
     { key: "before", label: "Before", vals: [["moment", "Matchday preview"], ["matchday_graphic", "Matchday poster"], ["matchday_graphic", "Countdown"], ["matchday_graphic", "Squad list"], ["matchday_graphic", "Starting XI"], ["matchday_graphic", "Fixture / schedule"]] },
-    { key: "live", label: "Live", vals: [["matchday_graphic", "Goal"], ["matchday_graphic", "Half-time"]] },
+    { key: "live", label: "Live", vals: [["matchday_graphic", "Goal"], ["campaign", "Goals & Highlights"], ["matchday_graphic", "Half-time"]] },
     { key: "after", label: "After", vals: [["matchday_graphic", "Full-time"], ["moment", "Match coverage"], ["matchday_graphic", "MOTM vote"], ["matchday_graphic", "Stats card"], ["matchday_graphic", "Quote card"], ["matchday_graphic", "Weekly recap"], ["matchday_graphic", "Standings"]] },
   ];
   const CAT = Object.fromEntries(CATEGORIES.map((c) => [c.key, c]));
@@ -251,8 +251,9 @@
   };
   const crestImg = (v, cls = "lf-crest") => `<span class="${cls}">${v.logo ? `<img src="${esc(v.logo)}" alt="" loading="lazy">` : `<b>${esc(initials(v.name))}</b>`}</span>`;
 
+  const REPEATED = { entity: ["clubs", "competitions", "content creators"] };
   function listHtml(c) {
-    const all = catalog.byCat[c.key] || [];
+    const all = (catalog.byCat[c.key] || []).filter((v) => LAYOUT_BEFORE || !REPEATED[c.key]?.includes(v.name.toLowerCase()) || isOn(v));
     const q = (ui.q[c.key] || "").toLowerCase();
     const items = byCount(all.filter((v) => !q || v.name.toLowerCase().includes(q)));
     const showAll = ui.all.has(c.key) || q;
@@ -497,7 +498,7 @@
   // ---------- Occasion and Goal, grouped the way a club plans ----------
   function rowsOf(keys) { return keys.filter((k) => CAT[k] && has(k)).map((k) => rowHtml(CAT[k])).join(""); }
   function occasionHtml() {
-    const groups = [["Transfer market", ["transfer"]], ["Launches", ["kit"]], ["Season", ["season_moment"]], ["Campaigns", ["campaign", "moment"]]];
+    const groups = [["Transfer market", ["transfer"]], ["Launches", ["kit"]], ["Season", ["season_moment"]], ["Campaigns", ["moment"]]];
     const commsOpen = ui.more.has("occasion") || ["comms", "crisis"].some((k) => selected[k]?.size || ui.open === k);
     const comms = ["comms", "crisis"].filter(has);
     return planHintsHtml() + matchdayHtml()
@@ -549,7 +550,7 @@
 
   // ---------- Bar above the posts (wide screens): one button per section, its filters in a wide panel ----------
   const BAR_ICO = { occasion: "calendar", goal: "target", where: "reel", benchmark: "trophy", views: "eye" };
-  const secOf = (c) => (c.key === "angle" ? "where" : ["format", "platform"].includes(c.sec) ? "where" : c.sec);
+  const secOf = (c) => (c.key === "angle" ? "where" : c.key === "campaign" ? "occasion" : ["format", "platform"].includes(c.sec) ? "where" : c.sec);
   function renderBar(list, parts) {
     const bar = $("[data-lf-bar]");
     if (!list.length) { bar.hidden = true; bar.innerHTML = ""; ui.bar = null; return; }

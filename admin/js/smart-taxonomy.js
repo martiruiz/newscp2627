@@ -102,8 +102,6 @@ window.SCP_SMART = {
       "Birthday",
       "Throwback",
       "Training",
-      "Preseason / tour",
-      "Season tickets / membership",
       "Christmas",
       "Halloween",
       "Black Friday",
@@ -128,7 +126,6 @@ window.SCP_SMART = {
       "Standings",
       "Stats card",
       "Quote card",
-      "Birthday graphic",
       "Signing graphic"
     ],
     "kit": [
