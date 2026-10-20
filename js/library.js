@@ -1909,6 +1909,8 @@
   });
   let timer;
   $("[data-q]").addEventListener("input", () => { clearTimeout(timer); timer = setTimeout(() => load(true), 350); });
+  // the Content Plan starts right under the head (search + My space + filter bar), whatever its height
+  { const head = $("[data-lib-head]"); new ResizeObserver(() => root.style.setProperty("--lib-head-h", `${head.offsetHeight}px`)).observe(head); }
   $("[data-ai-mine]").addEventListener("click", () => setAiMode(ui.aiMode ? null : "mine"));
   $("[data-ai-strip]").addEventListener("click", (e) => {
     const t = e.target.closest("[data-ai-tab]");

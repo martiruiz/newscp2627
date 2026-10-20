@@ -6306,3 +6306,25 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 .lf-fmt-tiles [data-tip]::after { content: attr(data-tip); position: absolute; left: 50%; bottom: calc(100% + 7px); transform: translate(-50%, 4px); z-index: 20; white-space: nowrap;
   padding: 5px 9px; border-radius: 8px; background: #0b111d; border: 0.5px solid var(--line); color: #fff; font: 600 12px var(--font-body); pointer-events: none; opacity: 0; transition: opacity 0.15s, transform 0.15s; }
 .lf-fmt-tiles [data-tip]:hover::after, .lf-fmt-tiles [data-tip]:focus-visible::after { opacity: 1; transform: translate(-50%, 0); }
+
+/* Content Library head (content-library.html .lib-head): search bar + "My space" on top, the filter bar under them
+   reaching the right edge; the Content Plan starts right below it */
+.lib-head { position: sticky; top: 0; z-index: 7; background: var(--surface); }
+.lib-head .feed-bar { position: relative; top: auto; z-index: auto; }
+.lib-head .lfb { position: relative; top: auto; }
+.my-space { display: flex; flex-direction: column; justify-content: center; gap: 6px; min-width: 0; padding: 10px 16px; background: var(--surface); border-bottom: 1px solid var(--line-soft); }
+.my-space-t { font: 700 10.5px/1 var(--font-body); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted-dim); white-space: nowrap; }
+.my-space-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+.my-space-btns .pill { height: 38px; }
+@media (min-width: 961px) {
+  .library { grid-template-rows: auto 1fr; }
+  .library > .filters { grid-column: 1; grid-row: 1 / span 2; }
+  .library > .lib-head { grid-column: 2 / -1; grid-row: 1; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: stretch; }
+  .library.plan-open > .lib-head { grid-template-columns: subgrid; }
+  .library > .feed { grid-column: 2; grid-row: 2; }
+  .library > .pp { grid-column: 3; grid-row: 2; top: var(--lib-head-h, 150px); height: calc(100vh - var(--lib-head-h, 150px)); }
+  .lib-head .feed-bar { grid-column: 1; }
+  .lib-head .my-space { grid-column: 2; border-left: 1px solid var(--line-soft); }
+  .lib-head .lfb { grid-column: 1 / -1; }
+  .library:not(.plan-open) .lib-head .my-space { flex-direction: row; align-items: center; gap: 10px; }
+}
