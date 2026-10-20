@@ -155,6 +155,7 @@
         plan_id: planId, entry_date: date || null, time_slot: date ? time : "12:00", status: date ? "planned" : "idea",
         label: (p ? `Idea: ${p.who}${p.format ? ` · ${p.format}` : ""}` : "Idea from the library").slice(0, 140),
         content_type: typeFor(p?.format), inspiration: `ci-${id}`,
+        ...(window.SCP_LIB?.adapt?.(id) ? { notes: window.SCP_LIB.adapt(id).slice(0, 2000) } : {}),   // the AI's adaptation, when the post was analysed
       };
     });
     const { data, error } = await saving(() => db.from("org_entries").insert(rows).select(COLS));

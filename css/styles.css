@@ -6243,3 +6243,44 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 /* Content Library: Length timeline (same look as Views) */
 .lf-dur .lf-hist i { cursor: help; }
 .lf-dur-ticks { margin: 4px 0 0; font-size: 11px; color: var(--muted); }
+
+/* Content Library: "My AI analyses" — violet glowing button, an AI "scan" over the library while it's on */
+.ai-mine { position: relative; overflow: hidden; gap: 8px; border: 0 !important; color: #fff !important; font-weight: 700;
+  background: linear-gradient(110deg, #5b3df5, #9b6bff 45%, #c38bff 60%, #6d4dff) !important; box-shadow: 0 0 0 1px rgba(196, 160, 255, 0.35), 0 8px 26px -8px rgba(140, 92, 255, 0.85); }
+.ai-mine::after { content: ""; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.45) 50%, transparent 70%); transform: translateX(-120%); animation: aiShine 3.2s ease-in-out infinite; pointer-events: none; }
+@keyframes aiShine { 55%, 100% { transform: translateX(120%); } }
+.ai-mine [data-icon] svg, .ai-mine svg { width: 16px; height: 16px; }
+.ai-mine b { min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; display: grid; place-items: center; background: rgba(255, 255, 255, 0.22); font-size: 11.5px; }
+.ai-mine b:empty { display: none; }
+.ai-mine[aria-pressed="true"] { box-shadow: 0 0 0 2px #e2d4ff, 0 10px 34px -6px rgba(140, 92, 255, 1); }
+.ai-mine[hidden] { display: none; }
+.library.ai-mode .feed { position: relative; background:
+    radial-gradient(1200px 500px at 50% -10%, rgba(123, 92, 255, 0.18), transparent 70%),
+    linear-gradient(rgba(150, 120, 255, 0.07) 1px, transparent 1px) 0 0 / 34px 34px,
+    linear-gradient(90deg, rgba(150, 120, 255, 0.07) 1px, transparent 1px) 0 0 / 34px 34px; }
+.library.ai-mode .feed::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 160px; pointer-events: none; z-index: 0;
+  background: linear-gradient(180deg, transparent, rgba(150, 110, 255, 0.16) 70%, rgba(190, 160, 255, 0.55) 99%, transparent); animation: aiScan 6s linear infinite; }
+@keyframes aiScan { from { transform: translateY(-160px); } to { transform: translateY(100vh); } }
+.library.ai-mode .posts { position: relative; z-index: 1; }
+@media (prefers-reduced-motion: reduce) { .ai-mine::after, .library.ai-mode .feed::before { animation: none; display: none; } }
+.ai-strip { position: relative; z-index: 2; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin: 14px 38px 0; padding: 10px 14px; border-radius: 14px;
+  border: 1px solid rgba(160, 125, 255, 0.4); background: linear-gradient(90deg, rgba(110, 77, 255, 0.16), rgba(160, 120, 255, 0.06)); }
+.ai-strip[hidden] { display: none; }
+.ai-strip-tabs { display: flex; gap: 4px; padding: 3px; border-radius: 100px; background: rgba(0, 0, 0, 0.2); }
+.ai-strip-tabs button { height: 30px; padding: 0 14px; border: 0; border-radius: 100px; background: none; color: var(--muted); font: 600 13px var(--font-body); cursor: pointer; }
+.ai-strip-tabs button[aria-selected="true"] { background: linear-gradient(110deg, #5b3df5, #9b6bff); color: #fff; }
+.ai-strip-tabs em { font-style: normal; opacity: 0.75; margin-left: 4px; }
+.ai-strip-tip { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 12.5px; color: var(--muted); }
+.ai-strip-tip svg { width: 14px; height: 14px; color: #b79bff; }
+.ai-strip-end { display: flex; align-items: center; gap: 12px; margin-left: auto; font-size: 12.5px; color: var(--muted); }
+.ai-strip-end a { color: #c4adff; }
+.ai-strip-end .pill svg { width: 15px; height: 15px; }
+.lib-ai-peek { display: grid; gap: 6px; margin-top: 8px; padding: 10px 12px; border-radius: 12px; cursor: pointer; border: 1px solid rgba(160, 125, 255, 0.35);
+  background: linear-gradient(180deg, rgba(123, 92, 255, 0.14), rgba(123, 92, 255, 0.04)); }
+.lib-ai-peek q { font-weight: 700; font-size: 13.5px; line-height: 1.35; color: var(--text); }
+.lib-ai-peek p { margin: 0; font-size: 12.5px; line-height: 1.45; color: var(--muted); }
+.lib-ai-peek small { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #b79bff; }
+.lib-ai-peek small svg { width: 12px; height: 12px; }
+.ai-team-note { display: flex; align-items: center; gap: 8px; margin: 0 0 12px; padding: 8px 12px; border-radius: 10px; background: rgba(123, 92, 255, 0.12); color: #c4adff; font-size: 13px; }
+.ai-team-note svg { width: 15px; height: 15px; }
+@media (max-width: 760px) { .ai-strip { margin: 12px 16px 0; } .ai-strip-end { margin-left: 0; } }

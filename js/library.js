@@ -252,7 +252,7 @@
   const countOf = (v) => (counts ? counts.get(v.id) ?? 0 : v.total);
   const isOn = (v) => selected[v.category].has(v.id);
   const byCount = (list) => [...list].sort((a, b) => (isOn(b) - isOn(a)) || ((countOf(b) > 0) - (countOf(a) > 0)) || countOf(b) - countOf(a) || a.name.localeCompare(b.name));
-  const ui = { open: "views", more: new Set(), all: new Set(), q: {} };   // Views starts open; it can be folded // open dropdown, expanded "+N more" sections, "Show all" lists, list searches
+  const ui = { open: "views", more: new Set(), all: new Set(), q: {}, aiMode: null };   // Views starts open; it can be folded // open dropdown, expanded "+N more" sections, "Show all" lists, list searches
   const has = (k) => catalog.byCat[k]?.length > 0;
 
   function rowHead(c, title = c.label, icoKey = c.ico) {
@@ -1218,7 +1218,11 @@
     grid.setAttribute("aria-busy", "true");
 
     const args = queryArgs(s);
-    const ids = null;
+    const ids = ui.aiMode ? [...aiList().keys()] : null;
+    if (ids && !ids.length) {
+      grid.querySelectorAll(".lib-skel").forEach((x) => x.remove());
+      return showEmpty(tx(ui.aiMode === "team" ? "Your team hasn't analysed any post yet." : "You haven't analysed any post yet. Open a post and press “Unlock AI Analysis”."));
+    }
     if (reset) refreshCounts(args);
     const boost = s.order === "foryou" ? { p_boost: me.boost, p_boost2: me.boost2 } : {};
     const { data, error } = await fetchIdeas({ ...args, p_order: s.order, p_seed: seed, p_ids: ids, p_limit: PAGE, p_offset: offset, ...boost });
@@ -1387,7 +1391,7 @@
           ${!video && pf === "instagram" && (/carousel/i.test(fmt) || /carousel|sidecar/i.test(p.media_type || "")) ? `<button class="lib-carbtn" type="button" data-play="${esc(p.id)}" aria-label="${esc(tx("See the carousel"))}" title="${esc(tx("See the carousel"))}">${icon("chevron-right")}</button><span class="lib-cardots" aria-hidden="true"><i></i><i></i><i></i></span>` : ""}
           ${fmt || p.duration_s ? `<span class="lib-fmt">${video ? icon("play") : ""}${esc([fmt, p.duration_s ? mmss(p.duration_s) : ""].filter(Boolean).join(" · "))}</span>` : ""}
           ${corner}${rail}
-        </div>${foot}
+        </div>${foot}${aiPeek(p.id)}
       </article>`;
     }
 
@@ -1406,7 +1410,7 @@
             ? `<button class="lib-hit lib-hit-top" type="button" data-open="${esc(p.id)}" aria-label="Details${who ? ` · ${esc(who)}` : ""}"></button><button class="lib-hit lib-hit-bottom" type="button" data-open="${esc(p.id)}" tabindex="-1" aria-hidden="true"></button>`
             : `<button class="lib-hit" type="button" data-open="${esc(p.id)}" aria-label="Details${who ? ` · ${esc(who)}` : ""}"></button>`}
           ${rail}
-        </div>${asPosted ? "" : foot}
+        </div>${asPosted ? "" : foot}${aiPeek(p.id)}
       </article>`;
   }
 
@@ -1439,12 +1443,21 @@
   // ---------- AI analyses: credits & unlocks (supabase/billing.sql) ----------
   // Unlocking spends 1 credit (monthly units first, then packs); re-opening an unlocked analysis is free.
   // 1 credit = 1 AI analysis. "credit" is the internal name only: on screen it is always "analyses".
-  const ai = { ent: null, unlocked: new Set() };
+  const ai = { ent: null, unlocked: new Set(), mine: new Map(), team: new Map() };
   async function loadAi() {
     const [{ data: ent }, { data: ids }] = await Promise.all([db.rpc("my_entitlements"), db.rpc("my_unlocked_posts")]);
     ai.ent = ent || null;
     ai.unlocked = new Set((ids || []).map(Number));
     renderCredits();
+    if (!ai.ent?.has_ai) { renderAiMine(); return; }
+    // "My AI analyses": the analyses themselves (readable by whoever unlocked them) and the ones of my team (supabase/ai-team.sql)
+    const [mine, team] = await Promise.all([
+      db.from("user_ai_unlocks").select("post_id,completed_at,ai_analyses(result)").eq("status", "completed").order("completed_at", { ascending: false }).then((r) => r.data || [], () => []),
+      db.rpc("team_ai_analyses").then((r) => (r.error ? [] : r.data || []), () => []),
+    ]);
+    ai.mine = new Map(mine.filter((r) => r.ai_analyses?.result).map((r) => [Number(r.post_id), { at: r.completed_at, result: r.ai_analyses.result }]));
+    ai.team = new Map(team.filter((r) => !ai.mine.has(Number(r.post_id))).map((r) => [Number(r.post_id), { at: r.at, by: r.by, result: r.result }]));
+    renderAiMine();
   }
   const credits = () => (ai.ent ? (ai.ent.monthly_left || 0) + (ai.ent.pack_left || 0) : 0);
   function renderCredits() {
@@ -1455,6 +1468,69 @@
     el.innerHTML = ai.ent.is_staff ? `${icon("sparkles")}AI · team access`
       : `${icon("sparkles")}<b>${credits()}</b> ${tx(credits() === 1 ? "AI analysis left" : "AI analyses left")}${ai.ent.pack_left ? `<small>${tx("{m} monthly + {p} pack", { m: ai.ent.monthly_left, p: ai.ent.pack_left })}</small>` : `<small>${tx("renews {date}", { date: new Date(ai.ent.cycle_end).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" }) })}</small>`}`;
   }
+  // ---------- "My AI analyses": only the posts I (or my team) analysed, with the analysis in the card ----------
+  const aiList = () => (ui.aiMode === "team" ? ai.team : ai.mine);
+  function renderAiMine() {
+    const b = $("[data-ai-mine]");
+    if (!b) return;
+    b.hidden = !ai.ent?.has_ai;
+    b.setAttribute("aria-pressed", String(!!ui.aiMode));
+    $("[data-ai-mine-n]", b).textContent = ai.mine.size ? String(ai.mine.size) : "";
+    root.classList.toggle("ai-mode", !!ui.aiMode);
+    const strip = $("[data-ai-strip]");
+    if (!ui.aiMode) { strip.hidden = true; return; }
+    strip.hidden = false;
+    const left = credits();
+    strip.innerHTML = `<div class="ai-strip-tabs" role="tablist">
+        <button type="button" role="tab" aria-selected="${ui.aiMode === "mine"}" data-ai-tab="mine">${esc(tx("Mine"))} <em>${ai.mine.size}</em></button>
+        ${ai.team.size ? `<button type="button" role="tab" aria-selected="${ui.aiMode === "team"}" data-ai-tab="team">${esc(tx("My team's"))} <em>${ai.team.size}</em></button>` : ""}
+      </div>
+      <p class="ai-strip-tip">${icon("grip-vertical")}${esc(tx("Drag a post to your Content Plan: the AI's adaptation goes into its notes."))}</p>
+      <div class="ai-strip-end">
+        ${ai.ent.is_staff ? "" : `<span class="ai-strip-left">${esc(tx(left === 1 ? "{n} analysis left" : "{n} analyses left", { n: left }))} · <a href="profile.html#billing">${esc(tx("Get more"))}</a></span>`}
+        <button class="pill" type="button" data-ai-pdf ${aiList().size ? "" : "disabled"}>${icon("download")}${esc(tx("Download as PDF"))}</button>
+      </div>`;
+  }
+  function setAiMode(mode) {
+    ui.aiMode = mode;
+    renderAiMine();
+    load(true);
+  }
+  // the AI's "how to adapt it" for a post I or my team analysed (the Content Plan puts it in the entry's notes)
+  const aiAdapt = (id) => { const r = (ai.mine.get(Number(id)) || ai.team.get(Number(id)))?.result; return r?.replicable?.howToAdapt ? `AI · ${r.replicable.howToAdapt}` : ""; };
+  // in the card: the hook and why it works, without opening it
+  function aiPeek(id) {
+    if (!ui.aiMode) return "";
+    const it = aiList().get(Number(id));
+    const r = it?.result;
+    if (!r) return "";
+    const why = r.hook?.whyItWorks || r.whyItWorks || r.summary || "";
+    return `<div class="lib-ai-peek" data-open="${esc(id)}" role="button" tabindex="-1">
+      ${r.hook?.text ? `<q>${esc(r.hook.text)}</q>` : ""}
+      ${why ? `<p>${esc(why.length > 150 ? `${why.slice(0, 148)}…` : why)}</p>` : ""}
+      <small>${icon("sparkles")}${it.by ? esc(tx("Analysed by {name}", { name: it.by })) : esc(tx("Your analysis"))} · ${esc(date(it.at))}</small></div>`;
+  }
+  // every analysis of the list in one printable page (the browser saves it as PDF)
+  async function aiPdf() {
+    const list = [...aiList().entries()];
+    if (!list.length) return;
+    const { data } = await db.from("content_ideas").select("id,url,title").in("id", list.map(([id]) => id));
+    const post = new Map((data || []).map((x) => [Number(x.id), x]));
+    const w = window.open("", "_blank");
+    if (!w) return toast(tx("Allow pop-ups to download the PDF."));
+    const sec = (t, v) => (v ? `<h3>${esc(tx(t))}</h3><p>${esc(v)}</p>` : "");
+    w.document.write(`<!doctype html><html lang="${document.documentElement.lang}"><head><meta charset="utf-8"><title>${esc(tx("My AI analyses"))} · Sports Content Playbook</title>
+      <style>body{font:14px/1.5 -apple-system,Segoe UI,Inter,sans-serif;color:#121b33;margin:40px auto;max-width:760px;padding:0 20px}h1{font-size:24px;margin:0 0 4px}h2{font-size:17px;margin:0 0 6px}
+      h3{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#7b5cff;margin:12px 0 2px}p{margin:0}article{padding:18px 0;border-top:1px solid #dde3ee;break-inside:avoid}
+      q{display:block;font-size:16px;font-weight:600;margin:4px 0}a{color:#7b5cff;font-size:12px}.m{color:#6b7488;font-size:12px;margin-bottom:22px}</style></head><body>
+      <h1>${esc(tx(ui.aiMode === "team" ? "My team's AI analyses" : "My AI analyses"))}</h1><p class="m">Sports Content Playbook · ${esc(new Date().toLocaleDateString(window.SCP_LOC || "en-GB"))} · ${list.length}</p>
+      ${list.map(([id, it]) => { const r = it.result || {}, p = post.get(id) || {}; return `<article><h2>${esc((p.title || "Post").slice(0, 90))}</h2>
+        ${p.url ? `<a href="${esc(p.url)}">${esc(p.url)}</a>` : ""}${r.hook?.text ? `<h3>${esc(tx("Hook"))}</h3><q>${esc(r.hook.text)}</q>` : ""}
+        ${sec("Summary", r.summary)}${sec("Why it works", r.whyItWorks)}${sec("How to adapt it to your club", r.replicable?.howToAdapt)}</article>`; }).join("")}
+      <script>onload=()=>setTimeout(()=>print(),300)<\/script></body></html>`);
+    w.document.close();
+  }
+
   function aiButton(id) {
     const n = Number(id);
     if (ai.ent && !ai.ent.has_ai) return `<button class="lib-analysis is-locked" type="button" data-open="${esc(id)}">${icon("lock")}<span>AI Analysis</span>${icon("arrow-up-right")}</button>`;
@@ -1464,7 +1540,7 @@
   const refreshAiButtons = (id) => $$(`.lib-card[data-id="${CSS.escape(String(id))}"] .lib-analysis`).forEach((b) => (b.outerHTML = aiButton(id)));
 
   // The Content Plan panel (js/plan-panel.js) reads the posts shown here
-  window.SCP_LIB = { post: (id) => cache.get(String(id)) };
+  window.SCP_LIB = { post: (id) => cache.get(String(id)), adapt: (id) => aiAdapt(id) };
 
   // ---------- Masonry: N columns, each card goes to the shortest one (heights known from the ratios) ----------
   const GAP = 22;
@@ -1602,6 +1678,11 @@
       return;
     }
     if (ai.unlocked.has(n)) return loadUnlocked(n);
+    if (ai.team.has(n)) {   // a teammate already analysed it: free to read
+      const t = ai.team.get(n);
+      area().innerHTML = `<p class="ai-team-note">${icon("users")}${esc(tx("Analysed by {name} from your team", { name: t.by }))}</p>${analysisHtml(t.result)}`;
+      return;
+    }
     area().innerHTML = `<div class="ai-unlock">
       <div class="ai-unlock-top">${icon("sparkles")}<div><b>AI analysis of this post</b><p>Hook, why it works, format, angle, visual breakdown and how to adapt it to your club.</p></div></div>
       ${credits() > 0 || ai.ent.is_staff
@@ -1794,6 +1875,12 @@
   });
   let timer;
   $("[data-q]").addEventListener("input", () => { clearTimeout(timer); timer = setTimeout(() => load(true), 350); });
+  $("[data-ai-mine]").addEventListener("click", () => setAiMode(ui.aiMode ? null : "mine"));
+  $("[data-ai-strip]").addEventListener("click", (e) => {
+    const t = e.target.closest("[data-ai-tab]");
+    if (t && t.dataset.aiTab !== ui.aiMode) return setAiMode(t.dataset.aiTab);
+    if (e.target.closest("[data-ai-pdf]")) aiPdf();
+  });
   more.addEventListener("click", () => load(false));
   function clearAll() {
     applyState({ order: state().order });
