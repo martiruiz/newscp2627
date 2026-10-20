@@ -952,6 +952,15 @@
   const syncCollapseLabel = () => { if (mobile()) $("[data-collapse-label]").textContent = "Filters"; else $("[data-collapse-label]").textContent = root.classList.contains("filters-collapsed") ? "Show filters" : "Hide filters"; };
   matchMedia("(max-width: 960px)").addEventListener("change", () => { syncCollapseLabel(); if (!mobile()) setSheet(false); });
   $("[data-hide-filters]").addEventListener("click", () => setCollapsed(true));
+  // Floating "show filters" button: sits where the column's own hide button was, following the column's top as the page scrolls
+  const showBtn = $("[data-show-filters]");
+  if (showBtn) {
+    showBtn.addEventListener("click", () => setCollapsed(false));
+    const placeShow = () => { showBtn.style.top = `${Math.max(root.getBoundingClientRect().top, 0) + 18}px`; };
+    window.addEventListener("scroll", placeShow, { passive: true });
+    window.addEventListener("resize", placeShow);
+    placeShow();
+  }
   if (store.get("scp-filters-collapsed") === "1") setCollapsed(true);
   syncCollapseLabel();
 
@@ -1086,6 +1095,8 @@
     const sidebarCount = chips.length - (s.q ? 1 : 0);
     const badge = $("[data-filter-count]");
     badge.textContent = sidebarCount; badge.hidden = sidebarCount <= 0;
+    const fbadge = $("[data-filter-count-float]");
+    if (fbadge) { fbadge.textContent = sidebarCount; fbadge.hidden = sidebarCount <= 0; }
     $("[data-lf-active]").textContent = sidebarCount > 0 ? `· ${tx("{n} active", { n: sidebarCount })}` : "";
     paintDropdowns(s);
   }

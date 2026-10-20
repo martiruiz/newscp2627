@@ -6340,3 +6340,13 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 .org-kd svg { flex: none; width: 12px; height: 12px; }
 th .org-kd { display: flex; justify-content: center; margin: 4px auto 0; width: fit-content; }
 .org-kd-m { display: flex; width: fit-content; margin: 2px 0 4px; }
+
+/* Filters column: the feed-bar "Hide filters" pill is gone on wide screens (phones keep it to open the filters sheet);
+   while the column is hidden, a floating button where its hide button was opens it again */
+.filters-show { display: none; position: fixed; left: 14px; top: 18px; z-index: 9; width: 34px; height: 34px; border-radius: 10px; background: var(--surface-2); border: 0.5px solid var(--line); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35); }
+.filters-show .filter-count { position: absolute; top: -7px; right: -9px; margin: 0; }
+@media (min-width: 961px) {
+  .feed-bar .collapse { display: none; }
+  .library.filters-collapsed .filters-show { display: grid; }
+  .library.filters-collapsed .feed-bar { padding-left: 64px; }
+}
