@@ -36,7 +36,7 @@
   const PF_ICON = { Instagram: "instagram", TikTok: "tiktok", YouTube: "youtube", X: "x", Facebook: "facebook", LinkedIn: "linkedin" };
 
   // ---------- State ----------
-  const blank = () => ({ sports: [], competitions: [], platforms: [], favouriteProfiles: [], favouriteCreators: [], goals: [], formats: [], topics: [], newsletterTopics: [] });
+  const blank = () => ({ sports: [], competitions: [], platforms: [], favouriteProfiles: [], favouriteCreators: [], favouriteCreatorAccounts: [], goals: [], formats: [], topics: [], newsletterTopics: [] });
   let saved, state;
   const form = $("[data-pf-form]");
   function fromProfile(p) {
@@ -57,6 +57,9 @@
       for (let from = 0; ; from += 1000) { const r = await db.rpc("catalog_with_counts").range(from, from + 999); data.push(...(r.data || [])); if (r.error || !r.data || r.data.length < 1000) break; }
       for (const v of data || []) if (Number(v.ideas)) (catalog[v.category] ||= []).push({ id: Number(v.id), name: v.name, n: Number(v.ideas) });
       for (const k in catalog) catalog[k].sort((a, b) => b.n - a.n);
+      // the creators' accounts (Content Library → Content Creators → Accounts): id "platform|handle"
+      const acc = await db.rpc("creator_accounts");
+      catalog.accounts = (acc.data || []).map((a) => ({ id: `${a.platform}|${a.handle}`, name: `@${a.handle}`, n: Number(a.posts) }));
     } catch {}
   }
   const pretty = (n) => (n && n[0] === n[0].toLowerCase() ? n[0].toUpperCase() + n.slice(1) : n);

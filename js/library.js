@@ -479,13 +479,45 @@
     };
     // the creators' own accounts (from the post URL or the import; supabase/scraped-profiles.sql)
     if (!ui.accts) { ui.accts = []; db?.rpc("creator_accounts").then((r) => { ui.accts = r.data || []; if (ui.accts.length) renderFacets(); }, () => {}); }
-    const accts = ui.accts.slice(0, 12).map((a) => { const k = `${a.platform}|${a.handle}`, on = ui.acct?.key === k;
-      return `<button type="button" class="lf-chip${on ? " is-on" : ""}" aria-pressed="${on}" data-acct="${esc(k)}" title="${esc(a.platform)}">@${esc(a.handle)}<em>${kfmt(Number(a.posts))}</em></button>`; }).join("");
-    const groups = [["Accounts", null, 0, accts], ["Content type", "angle"], ["Collaboration", "collab"], ["Brands", "sponsor", 10], ["Network", "platform"], ["Format", "format"], ["Sport", "sport"]]
+    const groups = [["Content type", "angle"], ["Collaboration", "collab"], ["Brands", "sponsor", 10], ["Network", "platform"], ["Format", "format"], ["Sport", "sport"]]
       .map(([label, cat, max, h]) => [label, h ?? chips(cat, max)]).filter(([, h]) => h);
     if (!groups.length) return "";
-    return `<div class="lf-cc-sub"><p class="lf-cc-h">${esc(tx("Refine creators' posts"))}</p>
+    return `<div class="lf-cc-sub"><p class="lf-cc-h">${esc(tx("Refine creators' posts"))}</p>${acctRowHtml()}
       ${groups.map(([label, h]) => `<div class="lf-sub">${esc(tx(label))}</div><div class="lf-chips">${h}</div>`).join("")}</div>`;
+  }
+  // Creators' accounts: a dropdown with a search box on top; a star marks up to 5 favourites (Profile → Favourites,
+  // preferences.favouriteCreatorAccounts), which come first
+  const starKeys = () => (me.favAccts || []).map((a) => a.id);
+  function acctListHtml() {
+    const q = fold(ui.acctQ || "").replace(/^@/, ""), stars = starKeys();
+    const all = ui.accts.map((a) => ({ ...a, k: `${a.platform}|${a.handle}` }));
+    const list = q ? all.filter((a) => fold(a.handle).includes(q) || fold(a.name || "").includes(q)).slice(0, 40)
+      : [...stars.map((k) => all.find((a) => a.k === k)).filter(Boolean), ...all.filter((a) => !stars.includes(a.k)).slice(0, 30)];
+    return list.map((a) => { const on = ui.acct?.key === a.k, st = stars.includes(a.k);
+      return `<div class="lf-acct${on ? " is-on" : ""}"><button type="button" class="lf-star${st ? " is-on" : ""}" data-acct-star="${esc(a.k)}" aria-pressed="${st}" aria-label="${esc(tx(st ? "Remove from favourites" : "Add to favourites"))}">${svg("star")}</button>
+        <button type="button" class="lf-acct-b" aria-pressed="${on}" data-acct="${esc(a.k)}"><span>@${esc(a.handle)}<small>${esc(PLATFORM[a.platform] || a.platform)}</small></span><em>${kfmt(Number(a.posts))}</em></button></div>`; }).join("")
+      || `<p class="lf-none">${esc(tx("Nothing matches “{q}”.", { q: ui.acctQ }))}</p>`;
+  }
+  function acctRowHtml() {
+    if (!ui.accts.length) return "";
+    const open = ui.open === "accts", sel = ui.acct ? ui.accts.find((a) => `${a.platform}|${a.handle}` === ui.acct.key) : null;
+    return `<div class="lf-row lf-row-gap${open ? " is-open" : ""}" data-lf-rowbox="accts">
+      <button class="lf-rh" type="button" aria-expanded="${open}" data-lf-row="accts">${svg("user")}<span class="lf-t">${esc(tx("Accounts"))}</span><span class="lf-v${sel ? " is-set" : ""}">${sel ? `@${esc(sel.handle)}` : esc(tx("Any"))}</span>${svg("chev", "lf-chev")}</button>
+      <div class="lf-rb"${open ? "" : " hidden"}><input class="lf-lsearch" type="search" placeholder="${esc(tx("Search an account"))}" value="${esc(ui.acctQ || "")}" data-acct-q>
+        <div class="lf-accts" data-acct-list>${open ? acctListHtml() : ""}</div></div></div>`;
+  }
+  async function toggleStar(k) {
+    const stars = me.favAccts || [];
+    if (stars.some((a) => a.id === k)) me.favAccts = stars.filter((a) => a.id !== k);
+    else if (stars.length >= 5) { alert(tx("You can mark up to 5 favourite accounts. Remove one first (or edit them in your profile).")); return; }
+    else { const a = ui.accts.find((x) => `${x.platform}|${x.handle}` === k); me.favAccts = [...stars, { id: k, name: `@${a?.handle || k.split("|")[1]}` }]; }
+    renderFacets();
+    // saved in the profile's preferences (same place as Profile → Favourites)
+    const r = await auth?.getProfile?.(); const p = r?.profile;
+    if (!p) return;
+    const prefs = { ...(p.preferences || {}), favouriteCreatorAccounts: me.favAccts };
+    const { error } = await db.rpc("update_my_preferences", { p_preferences: prefs, p_newsletter: !!p.newsletter, p_frequency: p.newsletter_frequency || "weekly" });
+    if (!error) p.preferences = prefs;
   }
   // Specials keep the catalog order (Top Picks, Replicable ideas, Overperforming) so they don't jump around
   const ORDER_SP = ["top picks", "replicable ideas", "overperforming"];
@@ -1029,6 +1061,8 @@
     if (e.target.closest("[data-lfb-close]")) { ui.bar = null; return renderFacets(); }
     const f = e.target.closest("[data-facet]");
     if (f) { if (f.getAttribute("aria-disabled") === "true") return; return toggleValue(f.dataset.facet, Number(f.dataset.id)); }
+    const star = e.target.closest("[data-acct-star]");
+    if (star) return toggleStar(star.dataset.acctStar);
     const ac = e.target.closest("[data-acct]");
     if (ac) return toggleAccount(ac.dataset.acct);
     const row = e.target.closest("[data-lf-row]");
@@ -1064,6 +1098,8 @@
   $("[data-lf-quick]").addEventListener("click", (e) => { const f = e.target.closest("[data-facet]"); if (f && !f.classList.contains("is-zero")) toggleValue(f.dataset.facet, Number(f.dataset.id)); });
   // list searches re-render only their own list (keeps the focus while typing)
   const onFilterInput = (e) => {
+    const aq = e.target.closest("[data-acct-q]");
+    if (aq) { ui.acctQ = aq.value; const l = $("[data-acct-list]"); if (l) l.innerHTML = acctListHtml(); return; }
     const bq = e.target.closest("[data-lfb-q]");
     if (bq) { ui.barQ = bq.value.trim(); $("[data-lfp-main]").innerHTML = lfpMain(ui.bar); $(".lfp-rail").innerHTML = lfpRail(ui.bar); loadCovers(ui.bar); return; }
     const s = e.target.closest("[data-facet-search]");
@@ -1490,6 +1526,7 @@
     me.boost = favIds;
     me.fav = new Set(favIds);
     me.boost2 = [...(prefs.sports || []), ...(prefs.competitions || [])].map(Number);
+    me.favAccts = Array.isArray(prefs.favouriteCreatorAccounts) ? prefs.favouriteCreatorAccounts.slice(0, 5) : [];
     me.favPlatform = (prefs.favouritePlatform || "").toLowerCase();   // Profile → Favourites: its posts come first
     me.likeMine = { competitions: (prefs.competitions || []).map(Number), sports: (prefs.sports || []).map(Number) };
     if (!LAYOUT_BEFORE) renderFacets();
@@ -1671,12 +1708,15 @@
   async function loadLikes(rows) {
     const ids = rows.filter((r) => r.likes === undefined).map((r) => Number(r.id));
     if (!ids.length || !db) return;
-    const { data } = await db.from("content_ideas").select("id,likes,comments").in("id", ids);
+    const { data } = await db.from("content_ideas").select("id,likes,comments,account").in("id", ids);
     for (const d of data || []) {
       const p = cache.get(String(d.id));
       if (!p) continue;
-      p.likes = d.likes; p.comments = d.comments;
+      p.likes = d.likes; p.comments = d.comments; p.account = d.account;
       if (d.likes) { const box = $(`[data-stats="${CSS.escape(String(d.id))}"]`); if (box) box.innerHTML = footStats(p); }
+      // a creator's post: its username instead of "Content Creators"
+      const foot = d.account && $(`.lib-foot[data-cc="${CSS.escape(String(d.id))}"]`);
+      if (foot) { foot.querySelector(".lib-foot-who b").textContent = `@${d.account}`; foot.querySelector(".lib-crest").outerHTML = footCrest(null, d.account); }
     }
   }
   const compact = (n) => Number(n).toLocaleString(window.SCP_LOC || "en-GB", { notation: "compact", maximumFractionDigits: 1 });
@@ -1695,9 +1735,12 @@
 
   function card(p) {
     const pf = platformOf(p);
-    const who = first(p, "club") || first(p, "competition") || first(p, "entity");
+    let who = first(p, "club") || first(p, "competition") || first(p, "entity");
     const whoTag = (p.tags?.club || p.tags?.competition || p.tags?.entity || [])[0];
-    const crest = whoTag ? catalog.byId.get(Number(whoTag.id)) : null;
+    let crest = whoTag ? catalog.byId.get(Number(whoTag.id)) : null;
+    // a creator's post shows its username, not "Content Creators" (the account comes with the likes, see loadLikes)
+    const isCC = /^content creators$/i.test(who || "");
+    if (isCC && p.account) { who = `@${p.account}`; crest = null; }
     const video = isVideo(p);
     const favClub = (p.tags?.club || []).find((v) => me.fav.has(Number(v.id)));
     const fmt = pretty(first(p, "format"));
@@ -1712,7 +1755,7 @@
             ${me.isSuper ? `<button class="lib-remove" type="button" data-remove="${esc(p.id)}" data-tip="Remove (superadmin)" aria-label="Remove from the library">${icon("trash-2")}</button>` : ""}
           </div>`;
     const foot = `
-        <div class="lib-foot" data-open="${esc(p.id)}" role="button" tabindex="-1">
+        <div class="lib-foot" data-open="${esc(p.id)}"${isCC ? ` data-cc="${esc(p.id)}"` : ""} role="button" tabindex="-1">
           ${footCrest(crest, who)}
           <span class="lib-foot-who"><b>${esc(who || name)}</b><small>${date(p.published_at)}</small></span>
           <span class="lib-foot-stats" data-stats="${esc(p.id)}">${footStats(p)}</span>
@@ -2301,7 +2344,7 @@
 
   // ---------- Filter events ----------
   root.addEventListener("change", (e) => {
-    if (e.target.closest("[data-saved-searches], [data-facet-search], [data-lf-search]")) return;
+    if (e.target.closest("[data-saved-searches], [data-facet-search], [data-lf-search], [data-acct-q], [data-lfb-q]")) return;
     if (e.target.closest("[data-order]")) seed = String(Math.random()).slice(2, 10); // new shuffle each "Surprise me"
     load(true);
   });
