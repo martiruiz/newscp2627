@@ -345,7 +345,11 @@
 
   function formatHtml() {
     const tiles = (catalog.byCat.format || []).map((v) => `<button type="button" class="lf-tile${isOn(v) ? " is-on" : ""}${countOf(v) === 0 && !isOn(v) ? " is-zero" : ""}" aria-pressed="${isOn(v)}" data-facet="format" data-id="${v.id}">${svg(FORMAT_ICON[v.name.toLowerCase()] || "image")}<span>${esc(pretty(v.name))}</span></button>`).join("");
-    const extras = ["aspect_ratio", "duration", "language"].filter(has);
+    // a format chosen: its shapes (proportions) open right under the tiles, only the ones that format has
+    const shapes = selected.format.size && has("aspect_ratio") ? catalog.byCat.aspect_ratio.filter((v) => countOf(v) > 0 || isOn(v)) : [];
+    const shapeBtn = (v) => `<button type="button" class="lf-shp${isOn(v) ? " is-on" : ""}${countOf(v) === 0 && !isOn(v) ? " is-zero" : ""}" aria-pressed="${isOn(v)}" data-facet="aspect_ratio" data-id="${v.id}">${shapeBox(v.name)}<span>${esc(v.name)}</span></button>`;
+    const shapesHtml = shapes.length ? `<div class="lf-fmt-ar"><div class="lf-sub">${esc(tx(CAT_LABEL.aspect_ratio))}</div><div class="lf-shapes">${byCount(shapes).map((v) => shapeBtn(v).replace("</span></button>", `</span><em>${kfmt(countOf(v))}</em></button>`)).join("")}</div></div>` : "";
+    const extras = ["aspect_ratio", "duration", "language"].filter((k) => has(k) && !(k === "aspect_ratio" && shapes.length));
     let extra = "";
     if (extras.length) {
       const open = ui.open === "format-extra";
@@ -353,7 +357,7 @@
       const inner = extras.map((k) => {
         const vals = k === "language" ? byCount(catalog.byCat[k]).slice(0, ui.all.has(k) ? 99 : 8) : catalog.byCat[k];
         const btns = vals.map((v) => k === "aspect_ratio"
-          ? `<button type="button" class="lf-shp${isOn(v) ? " is-on" : ""}${countOf(v) === 0 && !isOn(v) ? " is-zero" : ""}" aria-pressed="${isOn(v)}" data-facet="${k}" data-id="${v.id}">${shapeBox(v.name)}<span>${esc(v.name)}</span></button>`
+          ? shapeBtn(v)
           : `<button type="button" class="lf-chip${isOn(v) ? " is-on" : ""}${countOf(v) === 0 && !isOn(v) ? " is-zero" : ""}" aria-pressed="${isOn(v)}" data-facet="${k}" data-id="${v.id}">${esc(pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`).join("");
         const more = k === "language" && !ui.all.has(k) && catalog.byCat[k].length > 8 ? `<button type="button" class="lf-chip lf-chip-more" data-lf-all="language">+${catalog.byCat[k].length - 8}</button>` : "";
         return `<div class="lf-sub">${esc(CAT_LABEL[k])}</div><div class="${k === "aspect_ratio" ? "lf-shapes" : "lf-chips"}">${btns}${more}</div>`;
@@ -362,7 +366,7 @@
         <button class="lf-rh" type="button" aria-expanded="${open}" data-lf-row="format-extra">${svg("shape")}<span class="lf-t">${esc(extras.map((k) => CAT_LABEL[k]).join(", ").replace(/, ([^,]*)$/, " and $1"))}</span>${sel.length ? `<span class="lf-badge">${sel.length}</span>` : ""}<span class="lf-v${sel.length ? " is-set" : ""}">${sel.length ? esc(pretty(sel[0].name)) + (sel.length > 1 ? ` +${sel.length - 1}` : "") : "Any"}</span>${svg("chev", "lf-chev")}</button>
         <div class="lf-rb"${open ? "" : " hidden"}>${inner}</div></div>`;
     }
-    return `<div class="lf-tiles">${tiles}</div>${extra}`;
+    return `<div class="lf-tiles">${tiles}</div>${shapesHtml}${extra}`;
   }
 
   function platformHtml() {
