@@ -467,6 +467,7 @@ window.SCP_ES = {
   "billed yearly": "facturación anual",
   "or {price}/year": "o {price}/año",
   "Recommended": "Recomendado",
+  "Show {n} more": "Ver {n} más",
   "Format details": "Detalles del formato",
   "Content type": "Tipo de contenido",
   "Collaboration": "Colaboración",

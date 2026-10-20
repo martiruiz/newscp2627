@@ -267,7 +267,7 @@
     const items = byCount(all.filter((v) => !q || v.name.toLowerCase().includes(q)));
     if (c.key === "language") items.sort((a, b) => (a.name.toLowerCase() === "emoji only") - (b.name.toLowerCase() === "emoji only"));   // "Emoji only" always last
     const showAll = ui.all.has(c.key) || q;
-    const N = c.crest ? 12 : c.key === "language" ? 99 : 7;
+    const N = c.crest ? 12 : c.key === "language" ? 5 : 7;
     // long lists (cities, opponents): only through the search box — the chosen ones stay visible
     const searchOnly = !LAYOUT_BEFORE && ["city", "opponent"].includes(c.key) && !q;
     const shown = searchOnly ? items.filter(isOn) : showAll ? items : items.slice(0, N);
@@ -286,7 +286,7 @@
       }).join("") || `<p class="lf-none">Nothing matches “${esc(ui.q[c.key])}”.</p>`}</div>`;
     }
     if (searchOnly) return searchBox + (shown.length ? `<div class="lf-list">${shown.map((v) => `<button type="button" class="lf-li is-on" aria-pressed="true" data-facet="${c.key}" data-id="${v.id}"><span class="lf-lab">${esc(pretty(v.name))}</span><span class="lf-cnt">${kfmt(countOf(v))}</span></button>`).join("")}</div>` : `<p class="lf-none">${esc(tx("Type to search {n} {what}", { n: all.length.toLocaleString(window.SCP_LOC || "en-GB"), what: tx(c.label).toLowerCase() }))}</p>`);
-    const moreBtn = !showAll && items.length > N ? `<button type="button" class="lf-showall" data-lf-all="${c.key}">${tx("Show all {n}", { n: items.length.toLocaleString(window.SCP_LOC || "en-GB") })}</button>` : "";
+    const moreBtn = !showAll && items.length > N ? `<button type="button" class="lf-showall" data-lf-all="${c.key}">${c.key === "language" ? tx("Show {n} more", { n: items.length - N }) : tx("Show all {n}", { n: items.length.toLocaleString(window.SCP_LOC || "en-GB") })}</button>` : "";
     return searchBox + body + moreBtn;
   }
 
