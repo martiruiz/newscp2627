@@ -9,38 +9,51 @@
 (() => {
   const MENU = [
     {
-      label: "Product", type: "grid",
-      eyebrow: "What you get", title: "The content platform for", highlight: "sports social media",
+      label: "Platform", type: "grid",
+      eyebrow: "The platform", title: "Everything your sports content needs,", highlight: "in one place",
       items: [
-        { icon: "layout-grid", title: "Content Library", desc: "500,000+ real posts, filtered your way.", href: "content-library.html" },
-        { icon: "calendar-days", title: "Content Plan", desc: "Your week of posts, in one board.", href: "content-plan.html" },
-        { icon: "sparkles", title: "AI analysis", desc: "Why a post worked, and how to adapt it.", href: "index.html#how-it-works" },
-        { icon: "file-text", title: "Social News", desc: "What clubs are posting, every day.", href: "news.html" },
-        { icon: "bookmark", title: "Saved boards", desc: "Your ideas, organised.", href: "saved.html", member: true },
-        { icon: "trophy", title: "Top Picks", desc: "The best posts, picked for you.", href: "content-library.html" },
+        { icon: "layout-grid", title: "Content Library", desc: "500,000+ real posts from clubs, leagues and creators.", href: "content-library.html" },
+        { icon: "search", title: "Smart search", desc: "Search by sport, club, format, hook or views.", href: "index.html#library" },
+        { icon: "trophy", title: "Top Picks & smart filters", desc: "The posts that work, picked and tagged for you.", href: "content-library.html" },
+        { icon: "sparkles", title: "AI analysis", desc: "Why a post worked and how to adapt it.", href: "index.html#ai-analysis" },
+        { icon: "calendar-days", title: "Content Plan", desc: "Plan your week by dragging ideas in.", href: "index.html#content-plan" },
+        { icon: "file-text", title: "Social News", desc: "What sports accounts post, every day.", href: "news.html" },
       ],
     },
-    { label: "Pricing", href: "pricing.html" },
     {
-      label: "About", type: "about",
-      hello: "Hi,", title: "We are", highlight: "Sports Content Playbook", sub: "The playbook every sports social team needs.",
+      label: "Solutions", type: "about",
+      hello: "Built for", title: "Every team that creates", highlight: "sports content", sub: "From one creator to a whole club department.",
+      links: [
+        { title: "Clubs", desc: "Matchday, signings, kits and sponsors, all season.", href: "book-a-call.html?for=clubs" },
+        { title: "Leagues & federations", desc: "Content for every club and competition you run.", href: "book-a-call.html?for=leagues" },
+        { title: "Brands & sponsors", desc: "See how others activate their sports partnerships.", href: "book-a-call.html?for=brands" },
+        { title: "Content creators", desc: "Formats and hooks that work in sports.", href: "book-a-call.html?for=creators" },
+        { title: "Agencies", desc: "Ideas and benchmarks for every client.", href: "book-a-call.html?for=agencies" },
+        { title: "Athletes", desc: "Grow your personal brand with proven formats.", href: "book-a-call.html?for=athletes" },
+      ],
+      featured: { eyebrow: "Free trial", title: "Try it free for 7 days", desc: "The full library, no commitment.", href: "signup.html" },
+    },
+    {
+      label: "Resources", type: "about",
+      hello: "Learn", title: "Ideas and trends in", highlight: "sports social media", sub: "Free, every week.",
       links: [
         { title: "How it works", desc: "From idea to published post.", href: "index.html#how-it-works" },
         { title: "Blog", desc: "Ideas and trends in sports social.", href: "blog.html" },
         { title: "Social News", desc: "What's happening on club accounts.", href: "news.html" },
-        { title: "Newsletter", desc: "The best posts of the week.", href: "index.html#newsletter" },
-        { title: "Pricing", desc: "Plans for creators, clubs and teams.", href: "pricing.html" },
+        { title: "FAQ", desc: "Everything you want to know before starting.", href: "index.html#faq" },
+        { title: "Pricing & plans", desc: "Plans for creators, clubs and teams.", href: "pricing.html" },
         { title: "Book a demo", desc: "See the platform with your use case.", href: "book-a-call.html" },
       ],
-      featured: { eyebrow: "The agency", title: "Guinew", desc: "Sports communication and content.", href: "#" },
+      featured: { eyebrow: "What is SCP?", title: "Sports Content Playbook in 2 minutes", desc: "The platform, explained.", href: "index.html#what-is-scp" },
     },
+    { label: "Pricing", href: "pricing.html" },
     {
       label: "Contact", type: "contact",
       hello: "Hi,", title: "We are", highlight: "SCP", sub: "Sports Content Playbook",
       chips: ["🏆 Top Picks", "📈 +2M views", "🎬 Reel ideas", "🗓️ Content Plan"],
       text: "We help clubs, leagues, athletes and agencies find what works and plan their content faster.",
       social: [{ name: "Instagram", href: "#" }, { name: "LinkedIn", href: "#" }],
-      primary: { label: "Contact", href: "contact.html" }, secondary: { label: "Book a demo", href: "book-a-call.html" },
+      primary: { label: "Book a demo", href: "book-a-call.html" }, secondary: { label: "Contact", href: "contact.html" },
     },
   ];
 
@@ -58,6 +71,7 @@
     bookmark: '<path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>',
     trophy: '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22M18 2H6v7a6 6 0 0 0 12 0V2Z"/>',
     "arrow-up-right": '<path d="M7 7h10v10M7 17 17 7"/>',
+    search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
   };
   const icon = (n) => `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ""}</svg>`;
   const CHEV = `<svg class="mm-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>`;

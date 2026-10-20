@@ -6070,3 +6070,6 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 :root[data-theme="light"] .mm-btn-tab:hover, :root[data-theme="light"] .mm-tab.is-open .mm-btn-tab { border-color: rgba(18, 27, 51, 0.3); background: #fff; color: #121b33 !important; }
 @media (max-width: 1180px) { .site-nav .mm-tab { max-width: none; min-width: 0; } }
 .site-nav.is-tight .mm-tab { max-width: none; min-width: 0; }
+/* menu fills the whole width: the tabs share all the space between the logo and the buttons */
+.mm-tab { flex: 1 1 0; min-width: 120px; max-width: none; }
+.mm-tab:last-child .mm-panel { left: auto; right: 0; }
