@@ -26,7 +26,7 @@
     { key: "format", label: "Format", sec: "format" },
     { key: "aspect_ratio", label: "Shape", sec: "format", extra: true },
     { key: "duration", label: "Length", sec: "format", extra: true },
-    { key: "language", label: "Language", sec: "format", extra: true },
+    { key: "language", label: "Language", sec: "format", extra: true, logo: true, ico: "message" },
     { key: "platform", label: "Platform", sec: "platform" },
     { key: "sport", label: "Sport", sec: "explore", ico: "ball" },
     { key: "entity", label: "Publisher type", sec: "explore", ico: "users" },
@@ -184,6 +184,15 @@
     return `<i class="lf-shape" style="width:${Math.round(w * s)}px;height:${Math.round(h * s)}px"></i>`;
   };
 
+  // ---------- Language flags (flagcdn.com); "Emoji only" and "Other" get a symbol instead ----------
+  const FLAG = { english: "gb", spanish: "es", french: "fr", italian: "it", portuguese: "pt",
+    german: "de", dutch: "nl", turkish: "tr", arabic: "sa", polish: "pl", greek: "gr", japanese: "jp", korean: "kr", chinese: "cn", indonesian: "id",
+    russian: "ru", ukrainian: "ua", swedish: "se", danish: "dk", norwegian: "no", finnish: "fi", croatian: "hr", serbian: "rs", czech: "cz", slovak: "sk",
+    slovenian: "si", romanian: "ro", hungarian: "hu", bulgarian: "bg", hebrew: "il", hindi: "in", thai: "th", vietnamese: "vn", malay: "my" };
+  const symbol = (ch) => `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 26"><rect width="40" height="26" fill="#eef1f6"/><text x="20" y="19" font-size="17" text-anchor="middle">${ch}</text></svg>`)}`;
+  const SENYERA = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 9 6"><rect width="9" height="6" fill="#fcdd09"/><path d="M0 1h9M0 2.33h9M0 3.67h9M0 5h9" stroke="#da121a" stroke-width=".67"/></svg>`)}`;
+  const flagOf = (name) => { const n = name.toLowerCase(), c = FLAG[n]; return c ? `https://flagcdn.com/w40/${c}.png` : n === "catalan" ? SENYERA : n === "emoji only" ? symbol("😀") : symbol("🌐"); };
+
   // ---------- Catalog (values + totals; logos from library-filters.sql) ----------
   async function loadCatalog() {
     // The catalog is bigger than the 1,000 rows the API returns per request: read it page by page
@@ -208,7 +217,7 @@
     const byId = new Map();
     for (const r of data || []) {
       if (!CAT[r.category]) continue;
-      const v = { id: Number(r.id), category: r.category, name: fixText(r.name), total: Number(r.ideas), logo: logo.get(Number(r.id)) || null, ig: igHandle.get(Number(r.id)) || null };
+      const v = { id: Number(r.id), category: r.category, name: fixText(r.name), total: Number(r.ideas), logo: logo.get(Number(r.id)) || (r.category === "language" ? flagOf(r.name) : null), ig: igHandle.get(Number(r.id)) || null };
       if (!v.total) continue;
       (byCat[v.category] ||= []).push(v);
       byId.set(v.id, v);
@@ -257,7 +266,7 @@
     const q = (ui.q[c.key] || "").toLowerCase();
     const items = byCount(all.filter((v) => !q || v.name.toLowerCase().includes(q)));
     const showAll = ui.all.has(c.key) || q;
-    const N = c.crest ? 12 : 7;
+    const N = c.crest ? 12 : c.key === "language" ? 99 : 7;
     // long lists (cities, opponents): only through the search box — the chosen ones stay visible
     const searchOnly = !LAYOUT_BEFORE && ["city", "opponent"].includes(c.key) && !q;
     const shown = searchOnly ? items.filter(isOn) : showAll ? items : items.slice(0, N);
@@ -271,7 +280,7 @@
     } else {
       body = `<div class="lf-list">${shown.map((v) => {
         const n = countOf(v);
-        const lead = c.logo ? (v.logo ? `<span class="lf-lead lf-lead-logo"><img src="${esc(v.logo)}" alt="" loading="lazy"></span>` : `<span class="lf-lead lf-lead-logo"><b>${esc(v.name.slice(0, 7))}</b></span>`) : "";
+        const lead = c.logo ? (v.logo ? `<span class="lf-lead lf-lead-logo${c.key === "language" ? " lf-lead-flag" : ""}"><img src="${esc(v.logo)}" alt="" loading="lazy"></span>` : `<span class="lf-lead lf-lead-logo"><b>${esc(v.name.slice(0, 7))}</b></span>`) : "";
         return `<button type="button" class="lf-li${isOn(v) ? " is-on" : ""}${n === 0 && !isOn(v) ? " is-zero" : ""}" aria-pressed="${isOn(v)}" data-facet="${c.key}" data-id="${v.id}">${lead}<span class="lf-lab">${esc(pretty(v.name))}</span><span class="lf-cnt">${kfmt(n)}</span></button>`;
       }).join("") || `<p class="lf-none">Nothing matches “${esc(ui.q[c.key])}”.</p>`}</div>`;
     }
@@ -350,22 +359,21 @@
     const shapes = (selected.format.size || selected.aspect_ratio.size) && has("aspect_ratio") ? catalog.byCat.aspect_ratio.filter((v) => countOf(v) > 0 || isOn(v)) : [];
     const shapeBtn = (v) => `<button type="button" class="lf-shp${isOn(v) ? " is-on" : ""}${countOf(v) === 0 && !isOn(v) ? " is-zero" : ""}" aria-pressed="${isOn(v)}" data-facet="aspect_ratio" data-id="${v.id}">${shapeBox(v.name)}<span>${esc(v.name)}</span></button>`;
     const shapesHtml = shapes.length ? `<div class="lf-fmt-ar"><div class="lf-sub">${esc(tx(CAT_LABEL.aspect_ratio))}</div><div class="lf-shapes">${byCount(shapes).map((v) => shapeBtn(v).replace("</span></button>", `</span><em>${kfmt(countOf(v))}</em></button>`)).join("")}</div></div>` : "";
-    const extras = ["duration", "language"].filter(has);
+    const extras = ["duration"].filter(has);
     let extra = "";
     if (extras.length) {
       const open = ui.open === "format-extra";
       const sel = extras.flatMap((k) => [...selected[k]]).map((id) => catalog.byId.get(id)).filter(Boolean);
       const inner = extras.map((k) => {
-        const vals = k === "language" ? byCount(catalog.byCat[k]).slice(0, ui.all.has(k) ? 99 : 8) : catalog.byCat[k];
-        const btns = vals.map((v) => `<button type="button" class="lf-chip${isOn(v) ? " is-on" : ""}${countOf(v) === 0 && !isOn(v) ? " is-zero" : ""}" aria-pressed="${isOn(v)}" data-facet="${k}" data-id="${v.id}">${esc(pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`).join("");
-        const more = k === "language" && !ui.all.has(k) && catalog.byCat[k].length > 8 ? `<button type="button" class="lf-chip lf-chip-more" data-lf-all="language">+${catalog.byCat[k].length - 8}</button>` : "";
-        return `<div class="lf-sub">${esc(CAT_LABEL[k])}</div><div class="lf-chips">${btns}${more}</div>`;
+        const btns = catalog.byCat[k].map((v) => `<button type="button" class="lf-chip${isOn(v) ? " is-on" : ""}${countOf(v) === 0 && !isOn(v) ? " is-zero" : ""}" aria-pressed="${isOn(v)}" data-facet="${k}" data-id="${v.id}">${esc(pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`).join("");
+        return `<div class="lf-sub">${esc(CAT_LABEL[k])}</div><div class="lf-chips">${btns}</div>`;
       }).join("");
       extra = `<div class="lf-row lf-row-gap${open ? " is-open" : ""}" data-lf-rowbox="format-extra">
-        <button class="lf-rh" type="button" aria-expanded="${open}" data-lf-row="format-extra">${svg("shape")}<span class="lf-t" title="${esc(extras.map((k) => tx(CAT_LABEL[k])).join(" · "))}">${esc(tx("Format details"))}</span>${sel.length ? `<span class="lf-badge">${sel.length}</span>` : ""}<span class="lf-v${sel.length ? " is-set" : ""}">${sel.length ? esc(pretty(sel[0].name)) + (sel.length > 1 ? ` +${sel.length - 1}` : "") : "Any"}</span>${svg("chev", "lf-chev")}</button>
+        <button class="lf-rh" type="button" aria-expanded="${open}" data-lf-row="format-extra">${svg("shape")}<span class="lf-t">${esc(tx(extras.length === 1 ? CAT_LABEL[extras[0]] : "Format details"))}</span>${sel.length ? `<span class="lf-badge">${sel.length}</span>` : ""}<span class="lf-v${sel.length ? " is-set" : ""}">${sel.length ? esc(pretty(sel[0].name)) + (sel.length > 1 ? ` +${sel.length - 1}` : "") : "Any"}</span>${svg("chev", "lf-chev")}</button>
         <div class="lf-rb"${open ? "" : " hidden"}>${inner}</div></div>`;
     }
-    return `<div class="lf-tiles">${tiles}</div>${shapesHtml}${extra}`;
+    const lang = has("language") ? `<div class="lf-stack lf-row-gap">${rowHtml(CAT.language)}</div>` : "";
+    return `<div class="lf-tiles">${tiles}</div>${shapesHtml}${extra}${lang}`;
   }
 
   function platformHtml() {
