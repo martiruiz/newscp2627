@@ -95,7 +95,7 @@
     { key: "explore", label: "Explore by" }, { key: "content", label: "Content", ai: true }, { key: "brands", label: "Brands", ai: true },
   ] : [
     { key: "discover", label: "What works", jump: "Works" }, { key: "occasion", label: "Match Day", ai: true, q: "What are you posting about?" },
-    { key: "goal", label: "Sponsors", ai: true, jump: "Sponsors", q: "What should it achieve?" }, { key: "where", label: "Where & how", jump: "Where", q: "Platform and format" },
+    { key: "goal", label: "Brands & sponsors", ai: true, jump: "Brands", q: "What should it achieve?" }, { key: "where", label: "Where & how", jump: "Where", q: "Platform and format" },
     { key: "benchmark", label: "Inspiration from", jump: "Inspiration", q: "Sports, competitions and clubs" },
   ];
   const PERIODS = { 7: "This week", 31: "This month", season: "This season", custom: "Custom dates" };
@@ -733,7 +733,8 @@
     ],
     goal: [
       // Sponsors: the brands · how they show (what was Inspiration → Sponsors) · the goal
-      { key: "sponsor", label: "Brands", ico: "tag", desc: "Brands on other clubs' posts", cats: ["sponsor"], logos: true, head: "The brands" },
+      // the brands' own accounts (was Inspiration → Brands) as a chip above the sponsors' logos
+      { key: "sponsor", label: "Brands", ico: "tag", desc: "Sponsors on other clubs' posts, and the brands' own accounts", cats: ["sponsor"], logos: true, head: "The brands", chips: [["entity", "Brand", "Brand accounts"]] },
       { key: "sponsor_sector", label: "Sponsor sector", ico: "briefcase", desc: "Partners by industry", cats: ["sponsor_sector"] },
       { key: "sponsors", label: "How the brand shows", ico: "badge", desc: "Logo on a graphic, giveaway, a creator with a brand…", vals: [["collab", "Brand collab"], ["sponsor_integration", null]], head: "How they show" },
       { key: "collab", label: "Collaborations", ico: "users", desc: "Posts made with others", cats: ["collab"], skip: ["brand collab", "player collab"] },   // Player collab → Players
@@ -746,7 +747,6 @@
       // vals: [category, name] (every value of the category when name is null)
       { key: "players", label: "Players", ico: "user", desc: "Posts starring the players", vals: [["campaign", "Player Appearance"]], head: "What's published" },
       { key: "media", label: "Media", ico: "megaphone", desc: "What sports media publish", vals: [["entity", "Media"]], head: "Who publishes it" },
-      { key: "brands", label: "Brands", ico: "badge", desc: "Posts by the brands' own accounts", vals: [["entity", "Brand"]] },
       // the club's squad (women's team, academy…) shows inside Club; cities only through the search box
       { key: "team", label: "Team", ico: "user", desc: "Women's team, academy, legends…", cats: ["team"], hidden: true },
       { key: "city", label: "City", ico: "pin", desc: "Clubs by city", cats: ["city"], logos: true, hidden: true },
@@ -808,8 +808,11 @@
     const teamG = g.key === "club" && groups.find((x) => x.key === "team");
     const squadVals = teamG ? [...byCount(groupVals(teamG)), ...["Player"].map((n) => valByName("entity", n)).filter((v) => v && (countOf(v) > 0 || isOn(v)))] : [];
     const squad = teamG ? `<div class="lfp-chips lfp-squad">${squadVals.map((v) => `<button type="button" class="lfp-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="${v.category}" data-id="${v.id}">${esc(v.category === "entity" ? tx(v.name === "Player" ? "Players' accounts" : "Brand accounts") : pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`).join("")}</div>` : "";
+    // chips above the options (Brands: the brands' own accounts)
+    const chipVals = (g.chips || []).map(([c, n, l]) => [valByName(c, n), l]).filter(([v]) => v && (countOf(v) > 0 || isOn(v)));
+    const chips = chipVals.length ? `<div class="lfp-chips lfp-squad">${chipVals.map(([v, l]) => `<button type="button" class="lfp-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="${v.category}" data-id="${v.id}">${esc(tx(l))}<em>${kfmt(countOf(v))}</em></button>`).join("")}</div>` : "";
     const many = g.logos && groupVals(g).length > 20;
-    return head + squad + (g.key === "city" ? "" : lfpCards(groupVals(g), g, many ? 20 : 0))
+    return head + squad + chips + (g.key === "city" ? "" : lfpCards(groupVals(g), g, many ? 20 : 0))
       + (many || g.key === "city" ? `<p class="lfp-tip">${svg("search")}${esc(tx("Search above to find any of the {n}", { n: groupVals(g).length.toLocaleString(window.SCP_LOC || "en-GB") }))}</p>` : "");
   }
   function lfpTop(sec) {
@@ -828,7 +831,7 @@
     }).join("");
   }
   // the options of the groups picked by name (Players, Sponsors, Media, Brands, Graphic design) that are on
-  const valsOn = (sec) => groupsOf(sec).filter((g) => g.vals).flatMap(groupVals).filter(isOn);
+  const valsOn = (sec) => [...groupsOf(sec).filter((g) => g.vals).flatMap(groupVals), ...groupsOf(sec).flatMap((g) => (g.chips || []).map(([c, n]) => valByName(c, n)))].filter((v) => v && isOn(v));
   const selOf = (sec) => [...new Set([...CATEGORIES.filter((c) => secOf(c) === sec).flatMap((c) => [...selected[c.key]].map((id) => catalog.byId.get(id)).filter(Boolean)), ...valsOn(sec)])];
   function lfpFoot(sec) {
     const sel = selOf(sec);

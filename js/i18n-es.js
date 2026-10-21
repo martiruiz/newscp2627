@@ -467,6 +467,7 @@ window.SCP_ES = {
   "billed yearly": "facturación anual",
   "or {price}/year": "o {price}/año",
   "Recommended": "Recomendado",
+  "Sponsors on other clubs' posts, and the brands' own accounts": "Patrocinadores en los posts de otros clubes, y las cuentas propias de las marcas",
   "What for": "Para qué",
   "How they show": "Cómo aparecen",
   "Logo on a graphic, giveaway, a creator with a brand…": "Logo en un gráfico, sorteo, un creador con una marca…",
