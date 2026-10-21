@@ -6017,19 +6017,9 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 .mm-featured i { font-style: normal; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); }
 .mm-featured b { font-size: 15px; } .mm-featured small { font-size: 13px; color: var(--muted); }
 .mm-featured svg { color: var(--gold); }
-.mm-visual { position: relative; height: 150px; margin-bottom: 16px; border-radius: 14px; overflow: hidden; background: radial-gradient(120% 120% at 20% 0%, rgba(240, 184, 74, 0.16), transparent 55%), linear-gradient(160deg, #1a2646, #0d1428); }
-.mm-float { position: absolute; padding: 7px 12px; border-radius: 100px; background: rgba(8, 12, 24, 0.85); border: 1px solid rgba(255, 255, 255, 0.12); color: #fff; font-size: 12.5px; font-weight: 500; white-space: nowrap; animation: mmFloat 4s ease-in-out infinite; }
-.mm-f0 { left: 14px; top: 16px; } .mm-f1 { right: 14px; top: 52px; animation-delay: -1s; } .mm-f2 { left: 30px; top: 92px; animation-delay: -2s; } .mm-f3 { right: 22px; bottom: 12px; animation-delay: -3s; }
-@keyframes mmFloat { 50% { transform: translateY(-5px); } }
-@media (prefers-reduced-motion: reduce) { .mm-float { animation: none; } }
-.mm-text { margin: 0 0 14px; font-size: 14px; line-height: 1.55; color: var(--muted); white-space: normal; }
 .mm-social { display: flex; justify-content: space-around; padding: 12px 0; margin-bottom: 16px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .mm-social a { color: var(--muted); opacity: 1 !important; } .mm-social a:hover { color: var(--gold) !important; }
 .mm-social svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-.mm-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.mm-btn { display: grid; place-items: center; height: 50px; border-radius: 100px; border: 1px solid var(--line); color: var(--text); font-weight: 600; font-size: 15px; opacity: 1 !important; }
-.mm-btn:hover { border-color: var(--gold); color: var(--text) !important; }
-.mm-btn.is-primary { background: #fff; color: #0b1020 !important; border-color: #fff; }
 /* main call to action: white pill with the arrow in a circle */
 .nav-actions .nav-cta { display: inline-flex; align-items: center; gap: 12px; height: 50px; padding: 0 6px 0 22px; border-radius: 100px; background: #fff; color: #0b1020; border: 0; font-weight: 600; box-shadow: none; }
 .nav-actions .nav-cta:hover { background: #fff; color: #0b1020; transform: translateY(-1px); }
@@ -7003,3 +6993,7 @@ p.lead { display: block; min-height: 0; }   /* the intro paragraphs share the na
   :root[data-theme="light"] .site-nav:not(.is-open) .mm-btn-tab:hover, :root[data-theme="light"] .site-nav .nav-actions .lang-switch button:hover, :root[data-theme="light"] .site-nav .nav-actions .theme-toggle:hover { background: rgba(18, 27, 51, 0.05); color: #121b33; }
   :root[data-theme="light"] .site-nav:not(.is-open) .mm-tab.is-open .mm-btn-tab, :root[data-theme="light"] .site-nav:not(.is-open) .mm-btn-tab[aria-current="page"], :root[data-theme="light"] .site-nav .nav-actions .lang-switch button[aria-pressed="true"] { background: #fff; box-shadow: inset 0 0 0 1px rgba(18, 27, 51, 0.16), 0 1px 2px rgba(18, 27, 51, 0.06); color: #121b33 !important; }
 }
+/* Contact drop-down: a short list (demo or support, write to us) + social icons at the bottom */
+.mm-contact .mm-social { margin: 8px 0 0; padding: 12px 0 2px; border-bottom: 0; }
+/* Pricing tab: the free-trial badge (without a plan) */
+.mm-badge { display: inline-flex; align-items: center; height: 20px; padding: 0 8px; border-radius: 999px; background: var(--gold-tint); color: var(--gold); font: 700 10.5px var(--font-body); letter-spacing: 0.02em; white-space: nowrap; }

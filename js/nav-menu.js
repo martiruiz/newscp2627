@@ -2,10 +2,11 @@
 // Panel types (like the reference design):
 //   "grid"     eyebrow + title (with a highlighted part) + items in two columns (icon, title, description)
 //   "about"    greeting + title + subtitle + links in two columns + a featured box at the bottom
-//   "contact"  greeting + title + subtitle + a visual with floating chips + text + social icons + two buttons
+//   "contact"  a short list of links (icon, title, description) + social icons
 //   no panel   a plain link tab
 // Items with member: true only show when signed in (pages with the profile link in the nav).
-// Items with noPlan: true (and every "featured" box) only show without a plan: visitors, or members with no plan contracted.
+// Items with noPlan: true (and every "featured" box) only show without a plan: visitors, or members with no plan contracted;
+// items with plan: true only show to members with a plan.
 // The texts below are placeholders until the final content is decided.
 (() => {
   const MENU = [
@@ -44,14 +45,16 @@
       ],
       featured: { eyebrow: "What is SCP?", title: "Sports Content Playbook in 2 minutes", desc: "The platform, explained.", href: "index.html#what-is-scp" },
     },
-    { label: "Pricing", href: "pricing.html" },
+    // with a plan it becomes "My plan" (their membership); without one it carries the free-trial badge
+    { label: "Pricing", href: "pricing.html", badge: "7 days free", planLabel: "My plan", planHref: "profile.html#billing" },
     {
       label: "Contact", type: "contact",
-      hello: "Hi,", title: "We are", highlight: "SCP", sub: "Sports Content Playbook",
-      chips: ["🏆 Top Picks", "📈 +2M views", "🎬 Reel ideas", "🗓️ Content Plan"],
-      text: "We help clubs, leagues, athletes and agencies find what works and plan their content faster.",
+      links: [
+        { icon: "calendar-days", title: "Book a demo", desc: "See the platform with your use case.", href: "book-a-call.html", noPlan: true },
+        { icon: "life-buoy", title: "Support", desc: "Questions about your account or your plan.", href: "contact.html?topic=support", plan: true },
+        { icon: "mail", title: "Write to us", desc: "Send us a message.", href: "contact.html" },
+      ],
       social: [{ name: "Instagram", href: "#" }, { name: "LinkedIn", href: "#" }],
-      primary: { label: "Book a demo", href: "book-a-call.html" }, secondary: { label: "Contact", href: "contact.html" },
     },
   ];
 
@@ -69,6 +72,8 @@
     bookmark: '<path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>',
     trophy: '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22M18 2H6v7a6 6 0 0 0 12 0V2Z"/>',
     "arrow-up-right": '<path d="M7 7h10v10M7 17 17 7"/>',
+    "life-buoy": '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="m4.93 4.93 4.24 4.24M14.83 9.17l4.24-4.24M14.83 14.83l4.24 4.24M9.17 14.83l-4.24 4.24"/>',
+    mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/>',
     search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
   };
   const icon = (n) => `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ""}</svg>`;
@@ -86,6 +91,7 @@
   const show = (it) => !it.member || member;
   // hidden for members until their entitlements say they have no plan (staff counts as having one)
   const np = member ? " data-noplan hidden" : "";
+  const attrs = (it) => it.plan ? " data-plan hidden" : it.noPlan ? np : "";
 
   function panel(m, id) {
     if (m.type === "pillars") return `<div class="mm-panel mm-pillars" id="${id}" role="region" aria-label="${esc(m.label)}">
@@ -100,11 +106,8 @@
       <div class="mm-cols">${m.links.filter(show).map((l) => `<a class="mm-link" href="${esc(l.href)}"><b>${esc(l.title)}</b><small>${esc(l.desc)}</small></a>`).join("")}</div>
       ${m.featured ? `<a class="mm-featured"${np} href="${esc(m.featured.href)}"><span><i>${esc(m.featured.eyebrow)}</i><b>${esc(m.featured.title)}</b><small>${esc(m.featured.desc)}</small></span>${icon("arrow-up-right")}</a>` : ""}</div>`;
     if (m.type === "contact") return `<div class="mm-panel mm-contact" id="${id}" role="region" aria-label="${esc(m.label)}">
-      <p class="mm-hello">${esc(m.hello)}</p><p class="mm-title">${esc(m.title)} <em>${esc(m.highlight)}</em></p><p class="mm-sub">${esc(m.sub)}</p>
-      <div class="mm-visual">${m.chips.map((c, i) => `<span class="mm-float mm-f${i}">${esc(c)}</span>`).join("")}</div>
-      <p class="mm-text">${esc(m.text)}</p>
-      <div class="mm-social">${m.social.map((s) => `<a href="${esc(s.href)}" aria-label="${esc(s.name)}" target="_blank" rel="noopener">${SOCIAL[s.name] || esc(s.name)}</a>`).join("")}</div>
-      <div class="mm-btns"><a class="mm-btn is-primary" href="${esc(m.primary.href)}">${esc(m.primary.label)}</a><a class="mm-btn" href="${esc(m.secondary.href)}">${esc(m.secondary.label)}</a></div></div>`;
+      ${m.links.map((l) => `<a class="mm-item" href="${esc(l.href)}"${attrs(l)}><span class="mm-ic">${icon(l.icon)}</span><span><b>${esc(l.title)}</b><small>${esc(l.desc)}</small></span></a>`).join("")}
+      <div class="mm-social">${m.social.map((s) => `<a href="${esc(s.href)}" aria-label="${esc(s.name)}" target="_blank" rel="noopener">${SOCIAL[s.name] || esc(s.name)}</a>`).join("")}</div></div>`;
     return "";
   }
 
@@ -116,13 +119,19 @@
 
   links.classList.add("mm");
   links.innerHTML = MENU.map((m, i) => {
-    if (!m.type) return `<div class="mm-tab"><a class="mm-btn-tab" href="${esc(m.href)}">${esc(m.label)}</a></div>`;
+    if (!m.type) return `<div class="mm-tab"><a class="mm-btn-tab" href="${esc(m.href)}"${m.planHref ? ` data-plan-swap="${i}"` : ""}><span>${esc(m.label)}</span>${m.badge ? `<span class="mm-badge"${np}>${esc(m.badge)}</span>` : ""}</a></div>`;
     const id = `mm-p${i}`;
     return `<div class="mm-tab mm-has" data-mm><button class="mm-btn-tab" type="button" aria-expanded="false" aria-controls="${id}">${esc(m.label)}${CHEV}</button>${panel(m, id)}</div>`;
   }).join("");
 
   if (member) window.SCP_entitlements?.().then(({ data }) => {
-    if (data && !data.plan && !data.is_staff) links.querySelectorAll("[data-noplan]").forEach((el) => { el.hidden = false; });
+    if (!data) return;
+    const hasPlan = !!(data.plan || data.is_staff);
+    links.querySelectorAll(hasPlan ? "[data-plan]" : "[data-noplan]").forEach((el) => { el.hidden = false; });
+    if (hasPlan) links.querySelectorAll("[data-plan-swap]").forEach((a) => {
+      const m = MENU[a.dataset.planSwap];
+      a.href = m.planHref; a.removeAttribute("aria-current"); a.firstElementChild.textContent = m.planLabel;
+    });
   }).catch(() => {});
 
   // open on hover (mouse) or click / tap / keyboard; one at a time; Esc or outside closes
