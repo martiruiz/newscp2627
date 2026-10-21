@@ -1995,7 +1995,7 @@
   // 1 credit = 1 AI analysis. "credit" is the internal name only: on screen it is always "analyses".
   const ai = { ent: null, unlocked: new Set(), mine: new Map(), team: new Map() };
   async function loadAi() {
-    const [{ data: ent }, { data: ids }] = await Promise.all([db.rpc("my_entitlements"), db.rpc("my_unlocked_posts")]);
+    const [{ data: ent }, { data: ids }] = await Promise.all([window.SCP_entitlements(), db.rpc("my_unlocked_posts")]);
     ai.ent = ent || null;
     ai.unlocked = new Set((ids || []).map(Number));
     if (!ai.ent?.has_ai) { renderAiMine(); return; }
@@ -2020,12 +2020,15 @@
   function renderAiMine() {
     const b = $("[data-ai-mine]");
     if (!b) return;
-    b.hidden = !ai.ent?.has_ai;
+    const locked = !!ai.ent && !ai.ent.has_ai;
+    b.hidden = !ai.ent;
+    b.classList.toggle("is-locked", locked);
+    $("[data-plan-toggle]")?.classList.toggle("is-locked", !!ai.ent && !ai.ent.has_planner);
     b.setAttribute("aria-pressed", String(!!ui.aiMode));
     const n = $("[data-ai-mine-n]", b), rem = credits();
     n.textContent = ai.ent?.is_staff ? "∞" : String(rem);
     n.classList.toggle("is-out", !ai.ent?.is_staff && rem === 0);
-    b.title = ai.ent?.is_staff ? tx("AI · team access") : tx(rem === 1 ? "{n} analysis left" : "{n} analyses left", { n: rem });
+    b.title = locked ? tx("Not in your plan") : ai.ent?.is_staff ? tx("AI · team access") : tx(rem === 1 ? "{n} analysis left" : "{n} analyses left", { n: rem });
     root.classList.toggle("ai-mode", !!ui.aiMode);
     const strip = $("[data-ai-strip]");
     if (!ui.aiMode) { strip.hidden = true; return; }
@@ -2306,7 +2309,7 @@
     if (!ai.ent?.has_ai) {
       area().innerHTML = `<div class="ai-gate">${icon("lock")}<div><b>AI analyses are part of Library + AI and All Access</b>
         <p>Hook, why it works, format, angle, visual breakdown and how to adapt it to your club, for any post in the library.</p>
-        <a class="btn btn-gold" href="pricing.html">See plans</a></div></div>`;
+        <a class="btn btn-gold" href="${esc(window.SCP_upgradeHref("ai", ai.ent?.plan))}">${esc(tx("Get AI analyses"))}</a></div></div>`;
       return;
     }
     if (ai.unlocked.has(n)) return loadUnlocked(n);
@@ -2526,7 +2529,17 @@
     pop.addEventListener("click", (e) => { if (e.target.closest("[data-ai-out-see]")) { pop.remove(); setAiMode("mine"); } });
     setTimeout(() => document.addEventListener("pointerdown", function off(e) { if (!e.target.closest("[data-ai-out], [data-ai-mine]")) { $("[data-ai-out]")?.remove(); document.removeEventListener("pointerdown", off); } }), 0);
   }
-  $("[data-ai-mine]").addEventListener("click", () => {
+  // a feature not in the plan: a tab under its button saying what it is, with the way to get it
+  function lockedPop(b, title, text, feature) {
+    let pop = $("[data-ai-out]");
+    if (pop) { pop.remove(); return; }
+    b.insertAdjacentHTML("afterend", `<div class="ai-out is-locked" data-ai-out role="dialog" aria-label="${esc(title)}">
+      <b>${icon("lock")}${esc(title)}</b><p>${esc(text)}</p>
+      <a class="btn btn-gold btn-sm" href="${esc(window.SCP_upgradeHref(feature, ai.ent?.plan))}">${icon("sparkles")}${esc(tx(feature === "ai" ? "Get AI analyses" : "Get the Content Plan"))}</a></div>`);
+    setTimeout(() => document.addEventListener("pointerdown", function off(e) { if (!e.target.closest("[data-ai-out], [data-ai-mine]")) { $("[data-ai-out]")?.remove(); document.removeEventListener("pointerdown", off); } }), 0);
+  }
+  $("[data-ai-mine]").addEventListener("click", (e) => {
+    if (ai.ent && !ai.ent.has_ai) return lockedPop(e.currentTarget, tx("AI analyses aren't in your plan"), tx("Hook, why it works, format, angle and how to adapt it to your club, for any post in the library."), "ai");
     if (!ui.aiMode && ai.ent?.has_ai && !ai.ent.is_staff && credits() === 0) return outOfAnalyses();
     setAiMode(ui.aiMode ? null : "mine");
   });

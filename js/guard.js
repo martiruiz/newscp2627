@@ -46,9 +46,29 @@
       const role = r?.profile?.role;
       if (role === "superadmin") {
         document.querySelectorAll("[data-admin-link]").forEach((a) => (a.hidden = false));
-      }
+        viewAsSwitch();
+      } else { try { localStorage.removeItem("scp-view-as"); } catch {} }
     });
   };
+  // Superadmin: "View as" a plan — the platform as a member of that plan sees it (locks and notices included).
+  // Saved in this browser (js/auth.js SCP_entitlements); a bar at the bottom says it's on and turns it off.
+  function viewAsSwitch() {
+    const T = (t) => (window.tx ? window.tx(t) : t);
+    const plans = window.SCP_VIEW_AS_PLANS || {}, cur = window.SCP_viewAs?.() || "";
+    const link = document.querySelector("[data-admin-link]");
+    if (link && !document.querySelector("[data-view-as]")) {
+      link.insertAdjacentHTML("beforebegin", `<label class="view-as" title="${T("See the platform as each plan sees it")}"><span>${T("View as")}</span>
+        <select data-view-as><option value="">${T("Superadmin")}</option>${Object.entries(plans).map(([k, p]) => `<option value="${k}"${k === cur ? " selected" : ""}>${T(p.name)}</option>`).join("")}</select></label>`);
+      document.querySelector("[data-view-as]").addEventListener("change", (e) => {
+        try { e.target.value ? localStorage.setItem("scp-view-as", e.target.value) : localStorage.removeItem("scp-view-as"); } catch {}
+        location.reload();
+      });
+    }
+    if (cur && !document.querySelector("[data-view-as-bar]")) {
+      document.body.insertAdjacentHTML("beforeend", `<div class="view-as-bar" data-view-as-bar>${T("Viewing as")} <b>${T(plans[cur].name)}</b><button type="button" data-view-as-off>${T("Back to superadmin")}</button></div>`);
+      document.querySelector("[data-view-as-off]").addEventListener("click", () => { try { localStorage.removeItem("scp-view-as"); } catch {} location.reload(); });
+    }
+  }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", ready);
   else ready();
 

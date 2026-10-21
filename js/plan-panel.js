@@ -13,6 +13,7 @@
   const T = window.SCP_THUMB;
   const icon = (n) => (window.SCP_ICONS ? window.SCP_ICONS(n) : "");
   const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+  const tx = (t, v) => (window.tx ? window.tx(t, v) : t);
   const $ = (s, el = document) => el.querySelector(s);
   const $$ = (s, el = document) => [...el.querySelectorAll(s)];
   const store = { get: (k) => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
@@ -92,7 +93,7 @@
   // ---------- Data ----------
   function ready() {
     S.ready ||= (async () => {
-      const { data: ent, error } = await db.rpc("my_entitlements");
+      const { data: ent, error } = await window.SCP_entitlements();
       if (!error) S.ent = ent;
       if (!allowed()) return;
       const { data, error: e1 } = await db.from("org_plans").select("id,name").order("created_at");
@@ -313,7 +314,7 @@
     if (!allowed()) {
       panel.innerHTML = `${headHtml()}<div class="pp-gate">${icon("lock")}<b>The Content Plan is part of Library + Content Plan and All Access</b>
         <p>Drag posts from the library onto the days of your week, keep ideas for later and track every post from idea to published.</p>
-        <a class="btn btn-gold" href="pricing.html">See plans</a></div>`;
+        <a class="btn btn-gold" href="${window.SCP_upgradeHref("planner", S.ent?.plan)}">${tx("Get the Content Plan")}</a></div>`;
       return;
     }
     const [from, to] = range();
@@ -621,7 +622,7 @@
     try { await ready(); } catch (e) { pop.innerHTML = `<p class="pp-error">${esc(errText(e))}</p>`; return; }
     if (!pop) return;
     if (!allowed()) {
-      pop.innerHTML = `<div class="pp-gate is-small">${icon("lock")}<b>Plan this post in your Content Plan</b><p>Part of Library + Content Plan and All Access.</p><a class="btn btn-gold" href="pricing.html">See plans</a></div>`;
+      pop.innerHTML = `<div class="pp-gate is-small">${icon("lock")}<b>Plan this post in your Content Plan</b><p>Part of Library + Content Plan and All Access.</p><a class="btn btn-gold" href="${window.SCP_upgradeHref("planner", S.ent?.plan)}">${tx("Get the Content Plan")}</a></div>`;
       return place(btn);
     }
     const st = { planId: S.planId, month: new Date(), counts: new Map() };

@@ -66,7 +66,7 @@
       ? [tx("{n} users × {price}", { n: seats, price: fmt(price.amount, currency) }), save].filter(Boolean).join(" · ")
       : [save ? `${fmt(price.amount / 12, currency)}/${per("month")}` : "", save, tx("VAT incl.")].filter(Boolean).join(" · ");
     const tool = (on, cls, label, extra = "") => `<li class="pt ${cls}${on ? "" : " is-off"}"><i></i><span>${label}</span>${extra ? `<em>${extra}</em>` : ""}</li>`;
-    return `<article class="plan-card v2${p.highlighted ? " is-best" : ""}${isCurrent ? " is-current" : ""}">
+    return `<article class="plan-card v2${p.highlighted ? " is-best" : ""}${isCurrent ? " is-current" : ""}${p.key === wanted ? " is-wanted" : ""}" data-plan-key="${esc(p.key)}">
       ${flag}
       <h3>${esc(p.name)}</h3>
       <p class="plan-blurb">${tx(who)}</p>
@@ -252,6 +252,9 @@
     });
   }
 
+  // ?plan=library_ai (from a locked feature: "Get AI analyses"): that plan marked, and scrolled to once drawn
+  const wanted = new URLSearchParams(location.search).get("plan");
+  if (wanted) new MutationObserver((_, o) => { const c = document.querySelector(`.plan-card[data-plan-key="${CSS.escape(wanted)}"]`); if (c) { o.disconnect(); setTimeout(() => c.scrollIntoView({ behavior: "smooth", block: "center" }), 200); } }).observe(document.body, { childList: true, subtree: true });
   (async () => {
     const q = new URLSearchParams(location.search), h = new URLSearchParams(location.hash.slice(1));
     privateToken = h.get("private") || q.get("private");
