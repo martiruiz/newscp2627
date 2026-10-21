@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Prototipo · Constructor de frases</title>
+<link rel="stylesheet" href="../css/fonts.css?v=1">
+<script src="../js/i18n.js?v=20261021n"></script>
+<script src="../js/vendor/supabase-2.117.0.min.js"></script>
+<script src="../js/config.js?v=20261020lf"></script>
+<script src="../js/auth.js?v=20261018p"></script>
+<style>
+  /* the platform's own colours (css/styles.css :root) */
+  :root { --bg: #121b33; --surface: #17213b; --surface-2: #1d2845; --gold: #f0b84a;
+    --grad: linear-gradient(90deg, #d99a2b, #f0b84a 55%, #ffe0a0); --text: #fff; --muted: #b4c0d3; --line: rgba(255,255,255,.1); --line-soft: rgba(255,255,255,.05);
+    --display: "Host Grotesk", Inter, sans-serif; --ease: cubic-bezier(.2,.8,.2,1); }
+  * { box-sizing: border-box; margin: 0; }
+  body { color: var(--text); font: 14px/1.45 Inter, system-ui, sans-serif; background: var(--bg); padding: 0 16px 80px; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+  .page { max-width: 1180px; margin: 0 auto; }
+  header.top { padding: 44px 0 22px; }
+  .ptag { font: 700 11px Inter; letter-spacing: .18em; text-transform: uppercase; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  header.top h1 { font: 600 30px/1.15 var(--display); margin-top: 6px; }
+  header.top p { color: var(--muted); max-width: 780px; margin-top: 10px; }
+  .stage { border-radius: 22px; padding: 22px; background: radial-gradient(120% 80% at 50% -10%, rgba(240,184,74,.07), transparent 60%), var(--surface); border: 1px solid var(--line); }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px); } }
+  .fade { animation: fade .45s var(--ease); }
+
+  /* the sentence */
+  .sb { font: 500 30px/1.75 var(--display); letter-spacing: -.01em; padding: 10px 6px 4px; }
+  .slot { display: inline-flex; align-items: center; gap: 8px; padding: 0 16px; height: 50px; border-radius: 14px; vertical-align: middle; font: 600 26px var(--display); border: 1px dashed rgba(240,184,74,.55); color: var(--gold); transition: all .3s var(--ease); }
+  .slot:hover { background: rgba(240,184,74,.08); }
+  .slot.set { border-style: solid; border-color: transparent; color: #1a1206; background: var(--grad); }
+  .slot.open { box-shadow: 0 0 0 4px rgba(240,184,74,.2); }
+  .slot i { font-style: normal; font-size: 15px; opacity: .7; }
+
+  /* the open slot: its groups, then real example posts for each option */
+  .pop { margin-top: 14px; border-radius: 18px; padding: 16px; background: rgba(18,27,51,.8); border: 1px solid var(--line); }
+  .grp { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+  .grp button { padding: 6px 12px; border-radius: 999px; font-size: 12.5px; color: var(--muted); border: 1px solid var(--line-soft); transition: all .2s; }
+  .grp button:hover { color: #fff; }
+  .grp button.on { color: #fff; border-color: rgba(240,184,74,.6); background: rgba(240,184,74,.08); }
+  .opts { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+  .opt { position: relative; aspect-ratio: 4/5; border-radius: 14px; overflow: hidden; text-align: left; background: #1b2541 center / cover no-repeat; border: 1px solid var(--line-soft); transition: transform .35s var(--ease), box-shadow .3s; }
+  .opt::after { content: ""; position: absolute; inset: 45% 0 0; background: linear-gradient(transparent, rgba(8,12,26,.94)); }
+  .opt span { position: absolute; z-index: 1; left: 11px; right: 11px; bottom: 10px; font: 600 14px/1.25 var(--display); }
+  .opt small { display: block; margin-top: 2px; font: 500 11.5px Inter; color: var(--muted); }
+  .opt:hover { transform: translateY(-3px); box-shadow: 0 18px 30px -18px rgba(0,0,0,.9); }
+  .opt.sel { box-shadow: 0 0 0 2px var(--gold); }
+  .opt.loading { background-image: linear-gradient(110deg, #1b2541 30%, #24304f 50%, #1b2541 70%); background-size: 200% 100%; animation: shimmer 1.2s linear infinite; }
+  @keyframes shimmer { to { background-position: -200% 0; } }
+
+  /* the result: what the sentence finds */
+  .res { margin-top: 18px; }
+  .res-h { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 13px; }
+  .res-h b { color: #fff; font: 600 16px var(--display); }
+  .res-h button { padding: 0 20px; height: 44px; border-radius: 999px; font: 600 14px var(--display); color: #1a1206; background: var(--grad); }
+  .posts { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-top: 12px; }
+  .post { position: relative; aspect-ratio: 4/5; border-radius: 12px; overflow: hidden; background: #1b2541 center / cover no-repeat; border: 1px solid var(--line-soft); }
+  .post em { position: absolute; left: 8px; bottom: 8px; font: 600 11px Inter; font-style: normal; padding: 3px 7px; border-radius: 999px; background: rgba(8,12,26,.75); }
+  .note { color: var(--muted); font-size: 13px; padding: 30px 0; text-align: center; }
+  .posts .note { grid-column: 1 / -1; }
+
+  @media (max-width: 800px) {
+    .sb { font-size: 22px; } .slot { font-size: 18px; height: 40px; }
+    .opts { grid-template-columns: repeat(2, 1fr); } .posts { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="top">
+    <span class="ptag">Prototip · Proposta 6 amb continguts reals</span>
+    <h1>Constructor de frases</h1>
+    <p>Cada opció es veu amb la portada del seu post més vist (dades reals de la Content Library). A mesura que omples la frase, a sota surten els posts que hi encaixen, ordenats per visualitzacions.</p>
+  </header>
+  <div class="stage">
+    <div class="sb"></div>
+    <div class="pop"></div>
+    <div class="res"></div>
+  </div>
+</div>
+
+<script>
+(async () => {
+  const db = window.SCP_AUTH?.client;
+  const T = (s) => (window.tx ? window.tx(s) : s);
+  const $ = (s) => document.querySelector(s);
+  const k = (n) => Number(n).toLocaleString("es-ES", { notation: "compact", maximumFractionDigits: 1 });
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  if (!db || !(await db.auth.getSession()).data.session) { $(".pop").innerHTML = `<p class="note">Inicia sesión en la plataforma (en esta misma pestaña) para ver los contenidos reales.</p>`; return; }
+
+  // the catalog with its counts (same source as the Content Library)
+  const cat = [];
+  for (let from = 0; ; from += 1000) {
+    const { data } = await db.rpc("catalog_with_counts").range(from, from + 999);
+    cat.push(...(data || []));
+    if (!data || data.length < 1000) break;
+  }
+  const byCat = {};
+  for (const r of cat) if (Number(r.ideas) > 0) (byCat[r.category] ||= []).push({ id: Number(r.id), category: r.category, name: r.name, n: Number(r.ideas) });
+  const named = (c, n) => (byCat[c] || []).find((v) => v.name.toLowerCase() === n.toLowerCase());
+  const top = (c, max = 10) => [...(byCat[c] || [])].sort((a, b) => b.n - a.n).slice(0, max);
+
+  // the three slots and their groups (the order agreed for the three tabs)
+  const SLOTS = [
+    { ph: "un momento", groups: [
+      ["Día de partido", () => ["Matchday preview", "Matchday poster", "Starting XI", "Goal", "Full-time", "Match coverage", "MOTM vote", "Stats card"].map((n) => named("matchday_graphic", n) || named("moment", n)).filter(Boolean)],
+      ["Diseño gráfico", () => [named("campaign", "Graphic Design"), ...top("matchday_graphic", 9)].filter(Boolean)],
+      ["Mercado", () => top("transfer")], ["Equipaciones", () => top("kit")], ["Temporada", () => top("season_moment")],
+      ["Fechas y campañas", () => top("moment")], ["Tono", () => top("angle")], ["Prensa", () => top("comms")] ] },
+    { ph: "un referente", groups: [
+      ["Deporte", () => top("sport")], ["Competición", () => top("competition")], ["Club", () => top("club")],
+      ["Jugadores", () => [named("campaign", "Player Appearance"), named("entity", "Player")].filter(Boolean)],
+      ["Patrocinadores", () => top("sponsor_integration")],
+      ["Quién lo publica", () => ["Media", "Content Creators", "Brand", "Meme"].map((n) => named("entity", n)).filter(Boolean)] ] },
+    { ph: "un objetivo", groups: [
+      ["Objetivo de negocio", () => top("goal")], ["Llamada a la acción", () => top("cta")], ["Patrocinadores", () => top("sponsor")],
+      ["Integración", () => top("sponsor_integration")], ["Sector del sponsor", () => top("sponsor_sector")], ["Colaboraciones", () => top("collab")] ] },
+  ];
+  SLOTS.forEach((s) => (s.groups = s.groups.filter(([, f]) => f().length)));
+  const val = [null, null, null], grp = [0, 0, 0];
+  let open = 0;
+
+  // the cover of each option's most viewed post (supabase/value-covers.sql), asked once per option
+  const covers = new Map();
+  async function loadCovers(list) {
+    const ids = list.map((v) => v.id).filter((id) => !covers.has(id));
+    if (!ids.length) return;
+    ids.forEach((id) => covers.set(id, null));
+    // three at a time: big values (Football: 367k posts) are slow, and a long list at once hits the time limit
+    for (let i = 0; i < ids.length; i += 3) {
+      const part = ids.slice(i, i + 3);
+      const { data } = await db.rpc("value_covers", { p_ids: part });
+      part.forEach((id) => covers.set(id, ""));
+      for (const r of data || []) covers.set(Number(r.id), r.cover || "");
+      $$(".opt[data-id]").forEach((b) => { const c = covers.get(Number(b.dataset.id)); if (c != null) { b.classList.remove("loading"); if (c) b.style.backgroundImage = `url('${c}')`; } });
+    }
+  }
+  const $$ = (s) => document.querySelectorAll(s);
+
+  const slot = (i) => `<button class="slot${val[i] ? " set" : ""}${open === i ? " open" : ""}" data-s="${i}">${esc(val[i] ? T(val[i].name) : SLOTS[i].ph)} <i data-x="${i}">${val[i] ? "✕" : "▾"}</i></button>`;
+  function draw() {
+    $(".sb").innerHTML = `Quiero ideas de ${slot(0)} como las de ${slot(1)} para ${slot(2)}`;
+    const s = SLOTS[open], list = s.groups[grp[open]][1]();
+    const p = $(".pop");
+    p.innerHTML = `<div class="grp">${s.groups.map(([t], i) => `<button data-g="${i}" class="${i === grp[open] ? "on" : ""}">${esc(t)}</button>`).join("")}</div>
+      <div class="opts">${list.map((v) => { const c = covers.get(v.id); return `<button class="opt${c == null ? " loading" : ""}${val[open]?.id === v.id ? " sel" : ""}" data-id="${v.id}"${c ? ` style="background-image:url('${esc(c)}')"` : ""}><span>${esc(T(v.name))}<small>${k(v.n)} posts</small></span></button>`; }).join("")}</div>`;
+    p.classList.remove("fade"); void p.offsetWidth; p.classList.add("fade");
+    loadCovers(list);
+  }
+
+  // what the sentence finds: the most viewed posts with every filled slot
+  let resKey = "";
+  async function results() {
+    const picked = val.filter(Boolean);
+    const key = picked.map((v) => v.id).join(",");
+    if (key === resKey) return;
+    resKey = key;
+    const r = $(".res");
+    if (!picked.length) { r.innerHTML = ""; return; }
+    r.innerHTML = `<div class="res-h"><span>Buscando…</span></div>`;
+    const f = {};
+    picked.forEach((v) => (f[v.category] = { ids: [...(f[v.category]?.ids || []), v.id], mode: "any" }));
+    const { data, error } = await db.rpc("library_ideas", { p_filters: f, p_q: null, p_from: null, p_to: null, p_order: "views", p_seed: "", p_ids: null, p_limit: 6, p_offset: 0, p_min_views: null, p_max_views: null });
+    if (key !== resKey) return;
+    if (error) { r.innerHTML = `<p class="note">No se han podido cargar los posts (${esc(error.message)}).</p>`; return; }
+    const rows = data?.data || [];
+    r.innerHTML = `<div class="res-h"><span><b>${Number(data.total).toLocaleString("es-ES")} posts</b> encajan con tu frase · los más vistos</span>${rows.length ? "<button>Ver todos</button>" : ""}</div>
+      <div class="posts fade">${rows.map((p) => `<div class="post"${p.cover_url ? ` style="background-image:url('${esc(p.cover_url)}')"` : ""}>${p.views ? `<em>${k(p.views)} views</em>` : ""}</div>`).join("") || `<p class="note">Ningún post encaja con las tres a la vez: quita o cambia una.</p>`}</div>`;
+  }
+
+  document.querySelector(".stage").addEventListener("click", (e) => {
+    const x = e.target.closest("[data-x]");
+    if (x && val[+x.dataset.x]) { val[+x.dataset.x] = null; open = +x.dataset.x; draw(); return results(); }
+    const s = e.target.closest("[data-s]"); if (s) { open = +s.dataset.s; return draw(); }
+    const g = e.target.closest("[data-g]"); if (g) { grp[open] = +g.dataset.g; return draw(); }
+    const o = e.target.closest(".opt");
+    if (o) {
+      const v = SLOTS[open].groups[grp[open]][1]().find((x) => x.id === Number(o.dataset.id));
+      val[open] = val[open]?.id === v.id ? null : v;
+      const next = val.findIndex((x) => !x);
+      if (val[open] && next >= 0) open = next;
+      draw(); results();
+    }
+  });
+  draw();
+})();
+</script>
+</body>
+</html>
