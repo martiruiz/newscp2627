@@ -73,6 +73,8 @@
   }
   const postInfo = (id) => S.refs.get(Number(id)) || (window.SCP_LIB?.post(id) ? norm(window.SCP_LIB.post(id)) : null);
   const refId = (e) => (/^ci-\d+$/.test(e?.inspiration || "") ? Number(e.inspiration.slice(3)) : null);
+  // a post that was analysed with AI (its adaptation went into the notes, or I / my team analysed it): AI-coloured in the plan
+  const isAi = (e) => /^AI · /.test(e?.notes || "") || !!(refId(e) && window.SCP_LIB?.adapt?.(refId(e)));
   const typeFor = (fmt) => { const f = (fmt || "").toLowerCase(); return /reel|video/.test(f) ? "reel" : /carousel/.test(f) ? "carousel" : /image|photo|post/.test(f) ? "post" : null; };
   async function loadRefs(ids) {
     const missing = [];
@@ -272,7 +274,7 @@
   }
   function entryHtml(e) {
     const r = S.refs.get(refId(e));
-    return `<div class="pp-entry s-${e.status}" draggable="true" data-pp-entry="${e.id}" aria-label="${esc(e.label || "Untitled")} · open in the Content Plan">
+    return `<div class="pp-entry s-${e.status}${isAi(e) ? " is-ai" : ""}" draggable="true" data-pp-entry="${e.id}" aria-label="${esc(e.label || "Untitled")} · open in the Content Plan">
       ${r?.cover ? `<span class="pp-thumb pp-thumb-img" style="background-image:url('${esc(r.cover)}')"></span>` : r ? T.html(r, "pp-thumb") : `<span class="pp-thumb pp-thumb-none">${icon(TYPE_ICON[e.content_type] || "layout-grid")}</span>`}
       <span class="pp-entry-txt"><b>${esc(e.label || "Untitled")}</b><small><i></i>${STATUS[e.status] || ""}${e.entry_date ? `<select class="pp-time" data-pp-time-of="${e.id}" aria-label="Time" title="Change the time">${QUARTERS.map((t) => `<option${t === e.time_slot ? " selected" : ""}>${t}</option>`).join("")}${QUARTERS.includes(e.time_slot) ? "" : `<option selected>${esc(e.time_slot || "12:00")}</option>`}</select>` : ""}</small></span>
       <button type="button" class="pp-entry-x" data-pp-del="${e.id}" aria-label="Remove from the plan" title="Remove from the plan">${icon("x")}</button>
@@ -287,7 +289,7 @@
       const r = S.refs.get(refId(e));
       const media = r?.cover ? `<span class="pp-big-img" style="background-image:url('${esc(r.cover)}')"></span>`
         : r ? T.html(r, "pp-big-img") : `<span class="pp-big-img pp-thumb-none">${icon(TYPE_ICON[e.content_type] || "layout-grid")}</span>`;
-      return `<div class="pp-big s-${e.status}" draggable="true" data-pp-entry="${e.id}" aria-label="${esc(e.label || "Untitled")} · open in the Content Plan">
+      return `<div class="pp-big s-${e.status}${isAi(e) ? " is-ai" : ""}" draggable="true" data-pp-entry="${e.id}" aria-label="${esc(e.label || "Untitled")} · open in the Content Plan">
         ${media}
         <select class="pp-time pp-big-time" data-pp-time-of="${e.id}" aria-label="Time" title="Change the time">${QUARTERS.map((t) => `<option${t === e.time_slot ? " selected" : ""}>${t}</option>`).join("")}${QUARTERS.includes(e.time_slot) ? "" : `<option selected>${esc(e.time_slot || "12:00")}</option>`}</select>
         <button type="button" class="pp-entry-x" data-pp-del="${e.id}" aria-label="Remove from the plan" title="Remove from the plan">${icon("x")}</button>

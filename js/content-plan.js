@@ -177,7 +177,7 @@
   function entryHtml(e, compact = false) {
     const t = typeOf(e.content_type);
     const ref = !compact && T ? thumbPost(refOf(e)) : null;
-    return `<div class="org-entry org-s-${e.status}${compact ? " is-compact" : ""}${ref ? " has-thumb" : ""}" draggable="true" data-entry="${e.id}" aria-label="${esc(e.label || "Untitled")}">
+    return `<div class="org-entry org-s-${e.status}${compact ? " is-compact" : ""}${ref ? " has-thumb" : ""}${/^AI · /.test(e.notes || "") ? " is-ai" : ""}" draggable="true" data-entry="${e.id}" aria-label="${esc(e.label || "Untitled")}">
       ${ref ? T.html(ref, "org-entry-thumb") : ""}
       <div class="org-entry-tools">
         <button type="button" data-dup="${e.id}" aria-label="Duplicate">${icon("copy")}</button>
