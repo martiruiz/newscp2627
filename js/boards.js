@@ -47,7 +47,9 @@ window.SCP_BOARDS = (() => {
     items = items.filter((it) => !(it.folder_id === boardId && it.post_id === key(id)));
     index(); emit(key(id));
   }
+  // board names are always in capitals
   async function create(name) {
+    name = String(name).trim().toLocaleUpperCase();
     const { data, error } = await db.from("folders").insert({ name }).select("id,name,created_at").single();
     if (error) throw new Error(/duplicate/i.test(error.message) ? "You already have a board with that name." : error.message);
     boards.push(data);
@@ -55,6 +57,7 @@ window.SCP_BOARDS = (() => {
     return data;
   }
   async function rename(boardId, name) {
+    name = String(name).trim().toLocaleUpperCase();
     const { error } = await db.from("folders").update({ name }).eq("id", boardId);
     if (error) throw new Error(/duplicate/i.test(error.message) ? "You already have a board with that name." : error.message);
     boards.find((b) => b.id === boardId).name = name;
