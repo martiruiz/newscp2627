@@ -1049,7 +1049,7 @@
       if (my !== token) return;
     }
     crBox.innerHTML = list.length
-      ? `<p class="cr-count">${esc(tx(list.length === 1 ? "{n} creator" : "{n} creators", { n: list.length.toLocaleString(window.SCP_LOC || "en-GB") }))}</p><div class="cr-grid${cr.layout === "list" ? " is-list" : ""}">${shown.map(crRow).join("")}</div>`
+      ? `<div class="cr-grid${cr.layout === "list" ? " is-list" : ""}">${shown.map(crRow).join("")}</div>`
       : `<p class="posts-empty">${esc(tx("No creators match these filters."))}</p>`;
     cr.more = list.length > shown.length;
   }

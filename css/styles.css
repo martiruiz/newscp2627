@@ -6715,7 +6715,7 @@ a.lf-sp-favs { text-decoration: none; }
 .cr-switch { display: inline-flex; gap: 4px; padding: 4px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); }
 .cr-switch button { height: 34px; padding: 0 16px; border-radius: 9px; color: var(--muted); font: 600 13px var(--font-body); cursor: pointer; transition: background 0.2s, color 0.2s; }
 .cr-switch button.is-on { background: var(--surface-3); color: var(--text); box-shadow: inset 0 0 0 1px rgba(var(--fg), 0.12); }
-.cr-count, .cr-loading { margin: 0 0 10px; font-size: 13px; color: var(--muted); }
+.cr-loading { margin: 0 0 10px; font-size: 13px; color: var(--muted); }
 .cr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr)); gap: 16px; }
 .cr-card { display: flex; flex-direction: column; gap: 12px; padding: 16px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); transition: border-color 0.2s, box-shadow 0.2s; }
 .cr-card:hover { border-color: rgba(240, 184, 74, 0.35); box-shadow: 0 18px 40px -26px rgba(0, 0, 0, 0.8); }
@@ -6759,7 +6759,7 @@ a.lf-sp-favs { text-decoration: none; }
 /* creators' header and cards: room between the active bar, the switch, the count and the cards, and inside the cards */
 .cr-switch { padding: 5px; border-radius: 14px; }
 .cr-switch button { height: 40px; padding: 0 22px; border-radius: 10px; font-size: 13.5px; }
-.cr-count, .cr-loading { margin: 0 0 22px 4px; font-size: 13.5px; }
+.cr-loading { margin: 0 0 22px 4px; font-size: 13.5px; }
 .cr-grid { gap: 24px; }
 .cr-card { padding: 24px; gap: 20px; border-radius: 20px; }
 .cr-top { gap: 18px 16px; }
