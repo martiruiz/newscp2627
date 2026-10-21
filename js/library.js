@@ -396,20 +396,16 @@
   // Content Creators on: the filters that describe creators' posts, right under the button (counts are already
   // limited to creators' posts, because the button is one of the active filters)
   function creatorsHtml() {
-    // Content type: only the three that describe creators' posts
-    // Players (Player-focused, Player collab) is one filter in Inspiration → Players (supabase/players-merge.sql)
-    const only = { angle: ["skills / tutorial", "behind the scenes"] }, skip = { collab: ["player collab"] };
-    // "Brand collab" (Creator × brand) sits with the sponsors, not with the collaborations
-    const brandCollab = valByName("collab", "Brand collab");
+    // Content type: only the ones that describe creators' posts. Players (Player-focused, Player collab) is one filter in
+    // Inspiration → Players (supabase/players-merge.sql); "Brand collab" (Creator × brand) sits with the sponsors
+    const only = { angle: ["skills / tutorial", "behind the scenes"] }, skip = { collab: ["player collab", "brand collab"] };
     const chips = (cat, max = 8) => {
-      const first = cat === "sponsor" ? brandCollab : null;
-      const list = [...(first && (countOf(first) > 0 || isOn(first)) ? [first] : []),
-        ...byCount((catalog.byCat[cat] || []).filter((v) => (countOf(v) > 0 || isOn(v)) && (!only[cat] || only[cat].includes(v.name.toLowerCase())) && !skip[cat]?.includes(v.name.toLowerCase()) && v !== brandCollab)).slice(0, max)];
+      const list = byCount((catalog.byCat[cat] || []).filter((v) => (countOf(v) > 0 || isOn(v)) && (!only[cat] || only[cat].includes(v.name.toLowerCase())) && !skip[cat]?.includes(v.name.toLowerCase()))).slice(0, max);
       return list.map((v) => `<button type="button" class="lf-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="${v.category}" data-id="${v.id}">${esc(pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`).join("");
     };
     // the creators' own accounts (from the post URL or the import; supabase/scraped-profiles.sql)
     if (!ui.accts) { ui.accts = []; db?.rpc("creator_accounts").then((r) => { ui.accts = r.data || []; if (ui.accts.length) renderFacets(); }, () => {}); }
-    const groups = [["Content type", "angle"], ["Collaboration", "collab"], ["Brands", "sponsor", 10]]
+    const groups = [["Content type", "angle"], ["Collaboration", "collab"]]
       .map(([label, cat, max, h]) => [label, h ?? chips(cat, max)]).filter(([, h]) => h);
     if (!groups.length) return "";
     return `<div class="lf-cc-sub">${acctRowHtml()}
