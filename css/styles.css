@@ -6918,3 +6918,18 @@ a.lf-sp-favs { text-decoration: none; }
 @media (max-width: 960px) { .an-modal { padding: 0; } .an-panel { max-height: 100vh; } .an-grid { columns: 1; } }
 .an-cap-h { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .an-more .an-cap-copy { position: static; transform: none; }
+/* the analysis' blocks: a responsive grid that fills the width — cards of a row share their height.
+   Wide: Hook · Why it works · Angle / Format across (its facts in a row) / Slide by slide · Scroll stoppers / How to adapt.
+   Medium: two columns. Phone: one. */
+.an-grid { columns: auto; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px; align-items: stretch; }
+.an-grid > .an-block { margin: 0; grid-column: span 4; }
+.an-grid > .an-b-format, .an-grid > .an-b-adapt { grid-column: 1 / -1; }
+.an-grid > .an-b-slides, .an-grid > .an-b-stop { grid-column: span 6; }
+.an-b-format .an-facts { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+.an-chip { height: auto; min-height: 26px; padding-block: 3px; line-height: 1.35; white-space: normal; }
+@media (max-width: 1400px) {
+  .an-grid > .an-block { grid-column: span 6; }
+  .an-grid > .an-b-format, .an-grid > .an-b-adapt { grid-column: 1 / -1; }
+}
+@media (max-width: 960px) { .an-grid { grid-template-columns: minmax(0, 1fr); } .an-grid > .an-block { grid-column: 1 / -1 !important; } }
+.an-grid { grid-auto-flow: row dense; }   /* Angle fills the place next to Hook and Why it works */
