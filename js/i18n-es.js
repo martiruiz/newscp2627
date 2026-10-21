@@ -1625,7 +1625,7 @@ window.SCP_ES = {
   "Fan content (UGC)": "Contenido de fans (UGC)",
   "Influencer / creator": "Influencer / creador",
   "Club collab": "Colaboración entre clubes",
-  "Brand collab": "Colaboración con marca",
+  "Brand collab": "Creador con marca",
   "Link in bio": "Enlace en la bio",
   "Buy tickets": "Comprar entradas",
   "Shop now": "Comprar ahora",

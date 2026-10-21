@@ -398,9 +398,12 @@
   function creatorsHtml() {
     // Content type: only the three that describe creators' posts
     const only = { angle: ["player-focused", "skills / tutorial", "behind the scenes"] };
+    // "Brand collab" (Creator × brand) sits with the sponsors, not with the collaborations
+    const brandCollab = valByName("collab", "Brand collab");
     const chips = (cat, max = 8) => {
-      const list = byCount((catalog.byCat[cat] || []).filter((v) => (countOf(v) > 0 || isOn(v)) && (!only[cat] || only[cat].includes(v.name.toLowerCase())))).slice(0, max);
-      return list.map((v) => `<button type="button" class="lf-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="${cat}" data-id="${v.id}">${esc(pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`).join("");
+      const list = [...(cat === "sponsor" && brandCollab && (countOf(brandCollab) > 0 || isOn(brandCollab)) ? [brandCollab] : []),
+        ...byCount((catalog.byCat[cat] || []).filter((v) => (countOf(v) > 0 || isOn(v)) && (!only[cat] || only[cat].includes(v.name.toLowerCase())) && v !== brandCollab)).slice(0, max)];
+      return list.map((v) => `<button type="button" class="lf-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="${v.category}" data-id="${v.id}">${esc(pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`).join("");
     };
     // the creators' own accounts (from the post URL or the import; supabase/scraped-profiles.sql)
     if (!ui.accts) { ui.accts = []; db?.rpc("creator_accounts").then((r) => { ui.accts = r.data || []; if (ui.accts.length) renderFacets(); }, () => {}); }
@@ -701,9 +704,9 @@
       { key: "goal", label: "Business goal", ico: "target", desc: "What the post should achieve", cats: ["goal"] },
       { key: "cta", label: "Call to action", ico: "cursor", desc: "What it asks the fans to do", cats: ["cta"] },
       { key: "sponsor", label: "Sponsors", ico: "tag", desc: "Brands on other clubs' posts", cats: ["sponsor"], logos: true },
-      { key: "sponsor_integration", label: "Integration", ico: "badge", desc: "How the sponsor appears", cats: ["sponsor_integration"] },
+      { key: "sponsor_integration", label: "Integration", ico: "badge", desc: "How the sponsor appears", cats: ["sponsor_integration"], plus: [["collab", "Brand collab"]] },
       { key: "sponsor_sector", label: "Sponsor sector", ico: "briefcase", desc: "Partners by industry", cats: ["sponsor_sector"] },
-      { key: "collab", label: "Collaborations", ico: "users", desc: "Posts made with others", cats: ["collab"] },
+      { key: "collab", label: "Collaborations", ico: "users", desc: "Posts made with others", cats: ["collab"], skip: ["brand collab"] },
     ],
     benchmark: [
       { key: "sport", label: "Sport", ico: "ball", desc: "Every sport in the library", cats: ["sport"], tiles: true, head: "Where it's played" },
@@ -711,7 +714,7 @@
       { key: "club", label: "Club", ico: "shield", desc: "Clubs and teams", cats: ["club"], logos: true },
       // vals: [category, name] (every value of the category when name is null)
       { key: "players", label: "Players", ico: "user", desc: "Posts starring the players", vals: [["campaign", "Player Appearance"]], head: "What's published" },
-      { key: "sponsors", label: "Sponsors", ico: "tag", desc: "Posts where a sponsor shows, by how it appears", vals: [["sponsor_integration", null]] },
+      { key: "sponsors", label: "Sponsors", ico: "tag", desc: "Posts where a sponsor shows, by how it appears", vals: [["sponsor_integration", null], ["collab", "Brand collab"]] },
       { key: "media", label: "Media", ico: "megaphone", desc: "What sports media publish", vals: [["entity", "Media"]], head: "Who publishes it" },
       { key: "brands", label: "Brands", ico: "badge", desc: "Posts by the brands' own accounts", vals: [["entity", "Brand"]] },
       // the club's squad (women's team, academy…) shows inside Club; cities only through the search box
@@ -725,7 +728,8 @@
     if (g.vals) return g.vals.flatMap(([c, n]) => (n ? [valByName(c, n)] : catalog.byCat[c] || [])).filter((v) => v && live(v));
     if (g.key === "matchday") { const md = MD_IDS(); return [...[...md].map((id) => catalog.byId.get(id)), ...(catalog.byCat.matchday_graphic || []), ...(catalog.byCat.outcome || [])].filter((v, i, a) => v && a.indexOf(v) === i && live(v)); }
     const md = g.key === "moment" ? MD_IDS() : null;   // matchday previews / coverage live in Matchday
-    return g.cats.flatMap((k) => (catalog.byCat[k] || []).filter((v) => live(v) && !(md && md.has(v.id)) && !(k === "entity" && REPEATED.entity.includes(v.name.toLowerCase()) && !isOn(v))));
+    return [...g.cats.flatMap((k) => (catalog.byCat[k] || []).filter((v) => live(v) && !(md && md.has(v.id)) && !g.skip?.includes(v.name.toLowerCase()) && !(k === "entity" && REPEATED.entity.includes(v.name.toLowerCase()) && !isOn(v)))),
+      ...(g.plus || []).map(([c, n]) => valByName(c, n)).filter((v) => v && live(v))];
   }
   const groupsOf = (sec) => (BAR_GROUPS[sec] || []).filter((g) => groupVals(g).length || (g.key === "matchday" && has("opponent")));
   const covers = new Map();   // value id → cover url ("" = none)
