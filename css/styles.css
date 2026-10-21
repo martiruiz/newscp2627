@@ -6790,3 +6790,7 @@ a.lf-sp-favs { text-decoration: none; }
 .cr-grid.is-list .cr-see { margin-left: 0; }
 .cr-grid.is-list .cr-posts { flex: none; width: 300px; }
 @media (max-width: 1280px) { .cr-grid.is-list .cr-card { flex-direction: column; align-items: stretch; } .cr-grid.is-list .cr-posts { width: auto; } .cr-grid.is-list .cr-top { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "ava name stat" "collabs collabs acts"; } }
+/* creators' view: the same side margins as the posts' grid (not stuck to the filters column's line) */
+.cr-head, .cr-list { padding-inline: 38px; }
+.cr-list { padding-bottom: 60px; }
+@media (max-width: 960px) { .cr-head, .cr-list { padding-inline: var(--gutter); } }
