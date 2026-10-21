@@ -304,10 +304,10 @@
     const qi = (n) => `<svg viewBox="0 0 24 24" aria-hidden="true">${QI[n]}</svg>`;
     const QORG = [["club", "Club", "shield"], ["league", "League / Federation", "trophy"], ["agency", "Agency", "briefcase"], ["event", "Event organiser", "ticket"], ["creator", "Content creator", "video"], ["other", "Other", "sparkles"]];
     const QSIZE = [["1", "Just me", "user"], ["2-5", "2–5 people", "users"], ["6-15", "6–15 people", "team"], ["15+", "More than 15", "building"]];
-    function bubbles(key, title, list, n) {
+    function bubbles(key, title, list, n, breakAfter = 0) {
       show(`<h2 class="lead-q lead-q-big" tabindex="-1">${esc(t(title))}</h2>
         <div class="lead-bubbles" role="radiogroup" aria-label="${esc(t(title))}">
-        ${list.map(([v, l, ic], i) => `<button type="button" class="lead-bubble" role="radio" aria-checked="${st.a[key] === v}" data-v="${v}" style="--i:${i}"><span class="lead-bubble-ic">${qi(ic)}</span>${esc(t(l))}</button>`).join("")}</div>`,
+        ${list.map(([v, l, ic], i) => `<button type="button" class="lead-bubble" role="radio" aria-checked="${st.a[key] === v}" data-v="${v}" style="--i:${i}"><span class="lead-bubble-ic">${qi(ic)}</span>${esc(t(l))}</button>${i + 1 === breakAfter ? `<span class="lead-break" aria-hidden="true"></span>` : ""}`).join("")}</div>`,
         { n, of: 3, title: t(title) });
       const pick = (v) => {
         st.a[key] = v;
@@ -318,7 +318,7 @@
       stage.onclick = (e) => { const b = e.target.closest(".lead-bubble"); if (b) pick(b.dataset.v); };
       stage.onkeydown = (e) => { const i = Number(e.key) - 1; if (i >= 0 && i < list.length) { e.preventDefault(); pick(list[i][0]); } };
     }
-    const qorg = () => bubbles("org_type", "What best describes your organization?", QORG, 1);
+    const qorg = () => bubbles("org_type", "What best describes your organization?", QORG, 1, 3);   // 2 rows: Club · League · Agency / the rest
     const qsize = () => bubbles("team_size", "How big is your content team?", QSIZE, 2);
     const CODES = ["+34", "+376", "+1", "+44", "+33", "+39", "+49", "+351", "+31", "+32", "+41", "+52", "+54", "+55", "+57", "+56", "+971"];
     function qphone() {
