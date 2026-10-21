@@ -1004,7 +1004,7 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
 
 /* ---------- Content Library (app view) ---------- */
 
-.library-page .site-nav { position: relative; top: 0; margin-bottom: 29px; }
+.library-page .site-nav { position: relative; top: 0; margin-bottom: 0; }
 .library {
   display: grid;
   grid-template-columns: 544px 1fr;
