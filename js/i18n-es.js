@@ -1658,7 +1658,7 @@ window.SCP_ES = {
   "Skills / tutorial": "Tutorial",
   "Player collab": "Colaboración con jugador",
   "Athlete takeover": "Takeover de deportista",
-  "Fan content (UGC)": "Contenido de fans (UGC)",
+  "Fan content (UGC)": "Contenido UGC",
   "Influencer / creator": "Influencer / creador",
   "Club collab": "Colaboración entre clubes",
   "Brand collab": "Creador con marca",
