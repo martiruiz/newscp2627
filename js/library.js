@@ -1436,7 +1436,8 @@
   const showBtn = $("[data-show-filters]");
   if (showBtn) {
     showBtn.addEventListener("click", () => setCollapsed(false));
-    const placeShow = () => { showBtn.style.top = `${Math.max(root.getBoundingClientRect().top, 0) + 18}px`; };
+    // centred on the head's row (period, Algorithm, the filter bar)
+    const placeShow = () => { const h = $("[data-lib-head]").getBoundingClientRect(); showBtn.style.top = `${Math.max(h.top, 0) + (h.height - (showBtn.offsetHeight || 34)) / 2}px`; };
     window.addEventListener("scroll", placeShow, { passive: true });
     window.addEventListener("resize", placeShow);
     placeShow();
