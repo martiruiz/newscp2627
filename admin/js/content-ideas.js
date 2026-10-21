@@ -243,22 +243,76 @@
     const { data, error } = await A.db.from("content_removals").select("*").order("removed_at", { ascending: false });
     if (error || !data?.length) { box.hidden = true; return; }
     box.hidden = false;
-    box.innerHTML = `<span><b>${num(data.length)} post${data.length === 1 ? "" : "s"}</b> removed from the Content Library for quality. They stay hidden in future imports.</span>
-      <button class="btn btn-sm" type="button" data-toggle-removed>Review</button>
-      <div class="removed-list" hidden data-removed-list>${data.map((r) => `<div class="removed-row">
-        <div><a href="${esc(r.url || "#")}" target="_blank" rel="noopener">${esc((r.title || r.external_id || "").slice(0, 90) || "Post")}</a>
-          <div class="muted">${esc(r.reason || "No reason")} · ${new Date(r.removed_at).toLocaleDateString("en-GB")}</div></div>
-        <button class="btn btn-sm" type="button" data-restore="${esc(r.external_id)}">${icon("undo")}Restore</button></div>`).join("")}</div>`;
-    $("[data-toggle-removed]", box).addEventListener("click", () => { const l = $("[data-removed-list]", box); l.hidden = !l.hidden; });
-    box.addEventListener("click", async (e) => {
-      const b = e.target.closest("[data-restore]");
-      if (!b) return;
-      b.disabled = true;
-      const { error: err } = await A.db.rpc("restore_content_idea", { p_external_id: b.dataset.restore });
-      if (err) { b.disabled = false; return A.toast(A.errMsg(err), "err"); }
-      A.toast("Post restored to the Content Library.");
-      loadRemoved();
-    });
+    // the posts' covers, to recognise them at a glance (content_ideas, by their last known id)
+    const ids = [...new Set(data.map((r) => r.post_id).filter(Boolean))], cover = {};
+    for (let i = 0; i < ids.length; i += 200) {
+      const { data: c } = await A.db.from("content_ideas").select("id,cover_url").in("id", ids.slice(i, i + 200));
+      (c || []).forEach((x) => (cover[x.id] = x.cover_url));
+    }
+    const TONE = { "Low quality": "amber", "Not sports content": "blue", Duplicate: "violet", "Off-brand": "red" };
+    const reasons = [...data.reduce((m, r) => m.set(r.reason || "No reason", (m.get(r.reason || "No reason") || 0) + 1), new Map())].sort((x, y) => y[1] - x[1]);
+    const ui = { open: box.dataset.open === "1", reason: "", q: "", picked: new Set() };
+    const host = (u) => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return ""; } };
+    const shown = () => data.filter((r) => (!ui.reason || (r.reason || "No reason") === ui.reason)
+      && (!ui.q || `${r.title || ""} ${r.url || ""}`.toLowerCase().includes(ui.q)));
+    box.innerHTML = `
+      <div class="rmv-head">
+        <span class="rmv-ic">${icon("trash")}</span>
+        <div class="rmv-t"><b>Removed for quality</b><span><b>${num(data.length)}</b> post${data.length === 1 ? "" : "s"} hidden from the Content Library · they stay hidden in future imports</span></div>
+        <button class="btn btn-sm rmv-toggle" type="button" data-rmv-toggle aria-expanded="${ui.open}">${ui.open ? "Hide" : "Review"}${icon("chevron")}</button>
+      </div>
+      <div class="rmv-body" ${ui.open ? "" : "hidden"} data-rmv-body>
+        <div class="rmv-tools">
+          <div class="rmv-chips" data-rmv-chips></div>
+          <input class="input input-sm rmv-search" type="search" placeholder="Search title or link" aria-label="Search removed posts" data-rmv-q>
+        </div>
+        <div class="rmv-bar"><label class="rmv-all"><input class="check" type="checkbox" data-rmv-all> Select all</label><span class="spacer"></span>
+          <button class="btn btn-sm" type="button" hidden data-rmv-restore-sel>${icon("undo")}<span></span></button></div>
+        <div class="rmv-list" data-rmv-list></div>
+      </div>`;
+    const el = (k) => $(`[data-rmv-${k}]`, box);
+    const draw = () => {
+      el("chips").innerHTML = [["", data.length], ...reasons].map(([k, n]) => `<button type="button" class="rmv-chip${ui.reason === k ? " is-on" : ""}${k && TONE[k] ? ` t-${TONE[k]}` : ""}" data-rmv-reason="${esc(k)}">${esc(k || "All")}<em>${num(n)}</em></button>`).join("");
+      const list = shown();
+      el("list").innerHTML = list.length ? list.map((r) => `<div class="rmv-row${ui.picked.has(r.external_id) ? " is-picked" : ""}">
+          <input class="check" type="checkbox" data-rmv-pick="${esc(r.external_id)}"${ui.picked.has(r.external_id) ? " checked" : ""} aria-label="Select">
+          <span class="rmv-thumb"${cover[r.post_id] ? ` style="background-image:url('${esc(cover[r.post_id])}')"` : ""}>${cover[r.post_id] ? "" : icon("ideas")}</span>
+          <div class="rmv-info"><b title="${esc(r.title || "")}">${esc((r.title || r.external_id || "Post").slice(0, 120))}</b>
+            <span><i class="rmv-reason${TONE[r.reason] ? ` t-${TONE[r.reason]}` : ""}">${esc(r.reason || "No reason")}</i>${new Date(r.removed_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}${host(r.url) ? ` · ${esc(host(r.url))}` : ""}</span></div>
+          <div class="rmv-acts">${r.url ? `<a class="icon-btn" href="${esc(r.url)}" target="_blank" rel="noopener" title="Open the original post" aria-label="Open the original post">${icon("external")}</a>` : ""}
+            <button class="btn btn-sm rmv-restore" type="button" data-restore="${esc(r.external_id)}">${icon("undo")}Restore</button></div>
+        </div>`).join("") : `<p class="rmv-empty">No removed posts match.</p>`;
+      const vis = list.map((r) => r.external_id);
+      el("all").checked = vis.length > 0 && vis.every((x) => ui.picked.has(x));
+      el("all").indeterminate = !el("all").checked && vis.some((x) => ui.picked.has(x));
+      el("restore-sel").hidden = !ui.picked.size;
+      $("span", el("restore-sel")).textContent = `Restore ${num(ui.picked.size)} selected`;
+    };
+    // restore one or several: they go back to the Content Library for everyone
+    const restore = async (list, btn) => {
+      btn.disabled = true;
+      let ok = 0;
+      for (const ext of list) { const { error: err } = await A.db.rpc("restore_content_idea", { p_external_id: ext }); if (err) { A.toast(A.errMsg(err), "err"); break; } ok++; }
+      if (ok) A.toast(ok === 1 ? "Post restored to the Content Library." : `${num(ok)} posts restored to the Content Library.`);
+      box.dataset.open = "1"; loadRemoved();
+    };
+    box.onclick = (e) => {
+      const t = e.target;
+      if (t.closest("[data-rmv-toggle]")) { ui.open = !ui.open; box.dataset.open = ui.open ? "1" : ""; el("body").hidden = !ui.open; el("toggle").setAttribute("aria-expanded", String(ui.open)); el("toggle").innerHTML = `${ui.open ? "Hide" : "Review"}${icon("chevron")}`; return; }
+      const chip = t.closest("[data-rmv-reason]");
+      if (chip) { ui.reason = chip.dataset.rmvReason; return draw(); }
+      const one = t.closest("[data-restore]");
+      if (one) return restore([one.dataset.restore], one);
+      const sel = t.closest("[data-rmv-restore-sel]");
+      if (sel) return restore([...ui.picked], sel);
+    };
+    box.onchange = (e) => {
+      const pick = e.target.closest("[data-rmv-pick]");
+      if (pick) { pick.checked ? ui.picked.add(pick.dataset.rmvPick) : ui.picked.delete(pick.dataset.rmvPick); return draw(); }
+      if (e.target.matches("[data-rmv-all]")) { shown().forEach((r) => (e.target.checked ? ui.picked.add(r.external_id) : ui.picked.delete(r.external_id))); draw(); }
+    };
+    el("q").addEventListener("input", (e) => { ui.q = e.target.value.trim().toLowerCase(); draw(); });
+    draw();
   }
   loadRemoved();
 
