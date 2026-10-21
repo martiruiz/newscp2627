@@ -980,8 +980,10 @@
   // photo, name, followers, recent collabs (the brands most tagged on their posts), their 4 most viewed posts;
   // the creators' filters (type, language, gender, country, followers, the search box) narrow the rows
   const crBox = $("[data-creators]"), crHead = $("[data-cview]");
-  const cr = { rows: null, shown: 10 };
-  const crSwitch = () => `<div class="cr-switch" role="tablist">${[["creators", "Creators"], ["posts", "Posts"]].map(([k, l]) => `<button type="button" role="tab" aria-selected="${(ui.cview || "creators") === k}" class="${(ui.cview || "creators") === k ? "is-on" : ""}" data-cview-set="${k}">${esc(tx(l))}</button>`).join("")}</div>`;
+  const cr = { rows: null, shown: 10, layout: (() => { try { return localStorage.getItem("scp-cr-layout") || "grid"; } catch { return "grid"; } })() };
+  const LIST_ICO = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="6" rx="1.5"/><rect x="3" y="14" width="18" height="6" rx="1.5"/></svg>`;
+  const crSwitch = () => `<div class="cr-switch" role="tablist">${[["creators", "Creators"], ["posts", "Posts"]].map(([k, l]) => `<button type="button" role="tab" aria-selected="${(ui.cview || "creators") === k}" class="${(ui.cview || "creators") === k ? "is-on" : ""}" data-cview-set="${k}">${esc(tx(l))}</button>`).join("")}</div>
+    ${(ui.cview || "creators") === "creators" ? `<div class="cr-layout" role="group" aria-label="${esc(tx("Layout"))}">${[["grid", icon("layout-grid"), "Boxes"], ["list", LIST_ICO, "List"]].map(([k, ico, l]) => `<button type="button" class="${cr.layout === k ? "is-on" : ""}" aria-pressed="${cr.layout === k}" data-cr-layout="${k}" title="${esc(tx(l))}" aria-label="${esc(tx(l))}">${ico}</button>`).join("")}</div>` : ""}`;
   function crMatch(r, q) {
     const low = (x) => String(x || "").trim().toLowerCase();
     const sel = (k) => [...selected[k]].map((id) => low(catalog.byId.get(id)?.name)).filter(Boolean);
@@ -1035,7 +1037,7 @@
       if (my !== token) return;
     }
     crBox.innerHTML = list.length
-      ? `<p class="cr-count">${esc(tx(list.length === 1 ? "{n} creator" : "{n} creators", { n: list.length.toLocaleString(window.SCP_LOC || "en-GB") }))}</p><div class="cr-grid">${shown.map(crRow).join("")}</div>`
+      ? `<p class="cr-count">${esc(tx(list.length === 1 ? "{n} creator" : "{n} creators", { n: list.length.toLocaleString(window.SCP_LOC || "en-GB") }))}</p><div class="cr-grid${cr.layout === "list" ? " is-list" : ""}">${shown.map(crRow).join("")}</div>`
       : `<p class="posts-empty">${esc(tx("No creators match these filters."))}</p>`;
     cr.more = list.length > shown.length;
   }
@@ -1049,6 +1051,14 @@
     if (nearEnd) moreCreators();
   }
   crHead.addEventListener("click", (e) => {
+    const lay = e.target.closest("[data-cr-layout]");
+    if (lay) {
+      cr.layout = lay.dataset.crLayout;
+      try { localStorage.setItem("scp-cr-layout", cr.layout); } catch {}
+      crHead.innerHTML = crSwitch();
+      $(".cr-grid", crBox)?.classList.toggle("is-list", cr.layout === "list");
+      return;
+    }
     const b = e.target.closest("[data-cview-set]");
     if (!b || (ui.cview || "creators") === b.dataset.cviewSet) return;
     ui.cview = b.dataset.cviewSet;
