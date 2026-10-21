@@ -263,7 +263,7 @@
     body.innerHTML = data.map((r) => `
       <tr data-imp-row="${r.id}">
         <td class="td-check"><input class="check" type="checkbox" data-imp-pick="${r.id}" aria-label="Select ${esc(r.filename)}"></td>
-        <td class="td-title" title="${esc(r.filename)}">${esc(r.filename)}</td>
+        <td class="td-title" title="${esc(r.filename)}"><button class="link imp-open" type="button" data-imp-open="${r.id}">${esc(r.filename)}</button></td>
         <td><span class="status status-${r.status}">${LABEL[r.status] || r.status}</span>${r.status === "completed" && r.review_status === "pending" ? ` <span class="status status-importing">Loading covers</span>` : ""}${r.cover_issues ? ` <span class="status status-failed" title="Posts without a cover: no image available or removed from the platform">${num(r.cover_issues)} without cover</span>` : ""}</td>
         <td>${r.status === "analyzed" ? 0 : num(r.total_rows)}</td>
         <td>${dash(r.rows_created, r.status)}</td>
@@ -367,6 +367,9 @@
     body.addEventListener("click", async (e) => {
       const del = e.target.closest("[data-imp-del]");
       if (del) return deleteImports(data.filter((r) => r.id === Number(del.dataset.impDel)));
+      // a row (outside its checkbox and buttons) opens the import's details
+      const open = e.target.closest("[data-imp-open]") || (!e.target.closest("button, a, input, label") && e.target.closest("[data-imp-row]"));
+      if (open) return showImport(data.find((x) => x.id === Number(open.dataset.impOpen || open.dataset.impRow)));
       const rv = e.target.closest("[data-review-imp]");
       if (rv) {
         const r = data.find((x) => x.id === Number(rv.dataset.reviewImp));
@@ -404,6 +407,49 @@
           showHistory();
         } catch (err) { A.toast(`Revert failed: ${A.errMsg(err)}`, "err"); rev.disabled = false; }
       }
+    });
+  }
+
+  // ---------- One import: its numbers, dates, covers (and issues), errors and new filter values ----------
+  async function showImport(r) {
+    let stop = null;
+    const m = A.modal({ title: r.filename, sub: "Import details", body: `<div class="imp-detail"><p class="muted"><span class="spinner sm"></span> Loading…</p></div>`, onClose: () => { stop?.(); showHistory(); } });
+    const host = $(".imp-detail", m.el);
+    const { data: d, error } = await A.db.from("idea_imports").select("*").eq("id", r.id).single();
+    if (error) { host.innerHTML = `<p class="error-text">${esc(A.errMsg(error))}</p>`; return; }
+    const LABEL = { analyzed: "Pending", importing: "Importing", completed: "Completed", reverted: "Reverted", failed: "Failed" };
+    const errs = d.errors || [];
+    const nv = Object.entries(d.new_values || {}).filter(([, v]) => v?.length);
+    const nvCount = nv.reduce((n, [, v]) => n + v.length, 0);
+    const when = (v) => (v ? A.fmtDateTime(v) : "—");
+    host.innerHTML = `
+      <div class="vstack">
+        <div class="stats">
+          <div class="stat"><p>Rows</p><b>${num(d.total_rows || 0)}</b></div>
+          <div class="stat green"><p>Created</p><b>${num(d.rows_created || 0)}</b></div>
+          <div class="stat accent"><p>Replaced</p><b>${num(d.rows_replaced || 0)}</b></div>
+          <div class="stat ${d.rows_skipped ? "amber" : ""}"><p>Skipped</p><b>${num(d.rows_skipped || 0)}</b></div>
+          <div class="stat ${errs.length ? "red" : ""}"><p>Errors</p><b>${num(errs.length)}</b></div>
+          <div class="stat ${d.cover_issues ? "red" : ""}"><p>Without cover</p><b>${d.cover_issues == null ? "—" : num(d.cover_issues)}</b></div>
+        </div>
+        <dl class="imp-meta">
+          <div><dt>Status</dt><dd><span class="status status-${d.status}">${LABEL[d.status] || d.status}</span>${d.review_status === "pending" ? ` <span class="status status-importing">Loading covers</span>` : d.review_status === "approved" ? ` <span class="status status-completed">Published</span>` : ""}</dd></div>
+          <div><dt>Uploaded</dt><dd>${when(d.created_at)}</dd></div>
+          <div><dt>Imported</dt><dd>${when(d.completed_at)}</dd></div>
+          <div><dt>Published</dt><dd>${when(d.approved_at)}</dd></div>
+        </dl>
+        ${d.status === "completed" && (d.rows_created || d.rows_replaced) ? `<section data-imp-covers></section>` : ""}
+        ${errs.length ? accordion({ title: "Errors", count: num(errs.length), tone: "bad",
+          body: miniTable(["Row", "External ID", "Error"], errs.slice(0, LIMIT).map((x) => `<tr><td>${x.row ?? "—"}</td><td class="mono">${esc(x.external_id || "—")}</td><td>${esc(x.error)}</td></tr>`)) + more(errs.length) + `<p style="margin-top:10px"><button class="btn btn-sm" type="button" data-imp-errcsv>${icon("download")}Download errors CSV</button></p>` }) : ""}
+        ${nvCount ? accordion({ title: "New filter values", count: `${num(nvCount)} created`, tone: "good", body: nv.map(([k, vals]) => `<p class="label" style="margin-top:8px">${A.CAT_LABEL[k] || esc(k)}</p><div class="value-chips">${vals.map((v) => `<span class="chip">${esc(v)}</span>`).join("")}</div>`).join("") }) : ""}
+        ${d.file_path ? `<p><button class="btn btn-sm" type="button" data-imp-csv>${icon("download")}Download the imported file</button></p>` : ""}
+      </div>`;
+    if ($("[data-imp-covers]", host)) stop = reviewPanel($("[data-imp-covers]", host), d.id);
+    $("[data-imp-errcsv]", host)?.addEventListener("click", () => downloadErrors(errs, d.filename));
+    $("[data-imp-csv]", host)?.addEventListener("click", async () => {
+      const { data: blob, error: err } = await A.db.storage.from("imports").download(d.file_path);
+      if (err) return A.toast("Download failed — file may no longer be available", "err");
+      A.downloadBlob(blob, d.filename);
     });
   }
 

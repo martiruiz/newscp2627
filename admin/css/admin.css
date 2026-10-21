@@ -653,3 +653,11 @@ tr.pf-gone td { opacity: 0.55; }
 .rv-issues li { display: flex; align-items: center; gap: 10px; min-width: 0; font-size: 13px; }
 .rv-issues li a { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); }
 .rv-issues li a:hover { color: var(--text); }
+/* Import history: each import opens its details (js/import.js showImport) */
+tr[data-imp-row] { cursor: pointer; }
+.imp-open { all: unset; cursor: pointer; font-weight: 500; }
+.imp-open:hover, .imp-open:focus-visible { color: var(--accent-text); text-decoration: underline; text-underline-offset: 2px; }
+.imp-detail .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.imp-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 0; }
+.imp-meta dt { font-size: 12px; color: var(--muted); }
+.imp-meta dd { margin: 4px 0 0; font-size: 14px; }
