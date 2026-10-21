@@ -199,7 +199,9 @@
         <p class="side-user" title="${esc(session.user.email)}">${esc(session.user.email)}${profile?.role ? ` · ${esc(profile.role)}` : ""}</p>
         <a href="account.html"${pageKey === "account" ? ' aria-current="page"' : ""}>${icon("account")}Account</a>
         <button class="side-btn" type="button" data-logout>${icon("logout")}Logout</button>
+        <div class="side-lang" role="group" aria-label="${esc(window.SCPA_t ? window.SCPA_t("Language") : "Language")}" data-i18n-skip>${["en", "es", "ca"].map((l) => `<button type="button" data-admin-lang="${l}" aria-pressed="${(window.SCPA_LANG || "en") === l}">${l.toUpperCase()}</button>`).join("")}</div>
       </div>`;
+    side.addEventListener("click", (e) => { const b = e.target.closest("[data-admin-lang]"); if (b && b.dataset.adminLang !== window.SCPA_LANG) window.SCPA_setLang?.(b.dataset.adminLang); });
     $("[data-logout]", side).addEventListener("click", async () => {
       loggingOut = true;
       await db.auth.signOut();

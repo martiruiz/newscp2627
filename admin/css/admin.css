@@ -951,3 +951,8 @@ select.cs-native { display: none !important; }
 .nl-actions .spacer { flex: 1; }
 .nl-frame { display: block; width: 100%; height: min(78vh, 900px); border: 0; border-radius: 12px; background: #0b1122; }
 @media (max-width: 900px) { .nl-grid, .nl-posts { grid-template-columns: 1fr; } }
+/* Sidebar: admin language (EN · ES · CA, js/i18n-admin.js) */
+.side-lang { display: inline-flex; gap: 2px; margin-top: 10px; padding: 3px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--border-2); }
+.side-lang button { min-width: 36px; height: 28px; padding: 0 10px; border: 0; border-radius: 999px; background: transparent; color: var(--muted); font: 600 11.5px var(--font); letter-spacing: 0.06em; cursor: pointer; }
+.side-lang button:hover { color: var(--text); background: rgba(255, 255, 255, 0.05); }
+.side-lang button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent-light); box-shadow: inset 0 0 0 1px rgba(240, 184, 74, 0.4); }

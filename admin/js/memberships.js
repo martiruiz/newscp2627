@@ -698,7 +698,10 @@
     ["Library access", "Whether using the Content Library requires a membership (switch it on only after the MemberPress members are migrated)."],
     ["Checkout and legal", "Checkout options and the legal texts customers accept."],
   ];
-  const tipFor = (text) => (TIPS.find(([k]) => text.startsWith(k)) || [])[1];
+  // titles may already be translated (js/i18n-admin.js): map them back to the English one to find the tip
+  const col = { es: 0, ca: 1 }[window.SCPA_LANG];
+  const toEn = new Map(col == null ? [] : Object.entries(window.SCPA_DICT || {}).map(([en, v]) => [v?.[col], en]).filter(([t]) => t));
+  const tipFor = (text) => { const en = toEn.get(text) || [...toEn].find(([t]) => t && text.startsWith(t))?.[1] || text; return (TIPS.find(([k]) => en.startsWith(k)) || [])[1]; };
   const decorate = () => {
     view.querySelectorAll("h2, h3, .bill-kpi > span").forEach((h) => {
       if (h.querySelector(".info-i")) return;
