@@ -4297,7 +4297,7 @@ button.plan-cta { width: 100%; cursor: pointer; font: inherit; }
 /* Top Picks / Replicable ideas / Overperforming (home page badges) */
 .lf-sp-top { --g: linear-gradient(90deg, #d62839, #ff4d4d); --g-soft: linear-gradient(90deg, rgba(214, 40, 57, 0.8), rgba(255, 77, 77, 0.8)); --glow: 255, 77, 77; }   /* Favs: red */
 .lf-sp-rep { --g: linear-gradient(90deg, #00d85b, #00ccdd); --g-soft: linear-gradient(90deg, rgba(0, 216, 91, 0.7), rgba(0, 204, 221, 0.7)); --glow: 0, 216, 91; }
-.lf-sp-over { --g: linear-gradient(90deg, #4d5bff, #7a5cff); --g-soft: linear-gradient(90deg, rgba(77, 91, 255, 0.8), rgba(122, 92, 255, 0.8)); --glow: 122, 92, 255; }
+.lf-sp-over { --g: linear-gradient(90deg, #ff5f1f, #ffb02e); --g-soft: linear-gradient(90deg, rgba(255, 95, 31, 0.8), rgba(255, 176, 46, 0.8)); --glow: 255, 128, 40; }   /* Overperforming: fire orange (AI is purple) */
 .lf-sp { position: relative; overflow: hidden; width: 100%; display: flex; align-items: center; gap: 10px; height: 56px; margin-bottom: 7px; padding: 0 12px; border-radius: 13px; border: 1px solid transparent; background: linear-gradient(var(--surface), var(--surface)) padding-box, var(--g-soft) border-box; color: var(--text); text-align: left; transition: transform 0.2s, box-shadow 0.3s; }
 .lf-sp:hover { background: linear-gradient(var(--surface-2), var(--surface-2)) padding-box, var(--g-soft) border-box; }
 .lf-sp-ic { width: 28px; height: 28px; flex: none; border-radius: 8px; display: grid; place-items: center; background: var(--g); }
@@ -6819,10 +6819,21 @@ a.lf-sp-favs { text-decoration: none; }
 .my-space-btns .pill:hover { background: linear-gradient(var(--surface-2), var(--surface-2)) padding-box, var(--g-soft) border-box !important; }
 .my-space-btns .pill > [data-icon] { flex: none; width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: var(--g); }
 .my-space-btns .pill > [data-icon] svg { width: 15px !important; height: 15px !important; color: #fff !important; stroke: #fff; }
-.my-space-btns .ai-mine { --g: linear-gradient(90deg, #7c5cff, #a78bfa); --g-soft: linear-gradient(90deg, rgba(74, 103, 224, 0.8), rgba(167, 139, 250, 0.8)); --glow: 167, 139, 250; }
+/* the same two-tone gradients as the filters column's buttons (Favs red, Replicable green→cyan, Creators gold) */
+.my-space-btns .ai-mine { --g: linear-gradient(90deg, #7c3aed, #d946ef); --g-soft: linear-gradient(90deg, rgba(124, 58, 237, 0.8), rgba(217, 70, 239, 0.8)); --glow: 167, 139, 250; }
 .my-space-btns .ai-mine::after { display: none; }
 .my-space-btns .ai-mine b { background: rgba(167, 139, 250, 0.22); color: #ddd3ff; }
-.my-space-btns .plan-toggle { --g: linear-gradient(90deg, #4a67e0, #7aa2ff); --g-soft: linear-gradient(90deg, rgba(74, 103, 224, 0.8), rgba(122, 162, 255, 0.8)); --glow: 122, 162, 255; }
+.my-space-btns .plan-toggle { --g: linear-gradient(90deg, #2563eb, #38bdf8); --g-soft: linear-gradient(90deg, rgba(37, 99, 235, 0.8), rgba(56, 189, 248, 0.8)); --glow: 122, 162, 255; }
+.my-space-btns .saved-link { --g: linear-gradient(90deg, #d99a2b, #f0b84a 45%, #ffd98a); --g-soft: linear-gradient(90deg, rgba(217, 154, 43, 0.85), rgba(255, 217, 138, 0.85)); --glow: 240, 184, 74; }
 .my-space-btns .pill[aria-pressed="true"] { background: var(--g) border-box !important; color: #fff !important; box-shadow: 0 10px 26px -12px rgba(var(--glow), 0.9) !important; }
 .my-space-btns .pill[aria-pressed="true"] > [data-icon] { background: rgba(255, 255, 255, 0.2); }
 .my-space-btns .pill[aria-pressed="true"] b { background: rgba(255, 255, 255, 0.22); color: #fff; }
+/* My space: filled with their gradient, as the filters column's buttons look when on; the open one adds a ring */
+.my-space-btns .pill, .my-space-btns .pill:hover { background: var(--g) border-box !important; color: #fff !important; }
+.my-space-btns .pill:hover { filter: brightness(1.08); }
+.my-space-btns .pill > [data-icon] { background: rgba(255, 255, 255, 0.2); }
+.my-space-btns .pill b, .my-space-btns .ai-mine b { background: rgba(255, 255, 255, 0.22); color: #fff; }
+.my-space-btns .pill[aria-pressed="true"] { box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85), 0 10px 26px -10px rgba(var(--glow), 0.95) !important; }
+.my-space-btns .saved-link, .my-space-btns .saved-link:hover { color: #1a1206 !important; }
+.my-space-btns .saved-link > [data-icon] svg { color: #1a1206 !important; stroke: #1a1206; }
+.lf-sp-over.is-zero { opacity: 0.6; cursor: default; }

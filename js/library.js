@@ -368,6 +368,12 @@
         <span class="lf-sp-ic">${svg(s.ico)}</span><span class="lf-sp-tx"><b>${esc(pretty(v.name))}</b></span>${s.desc ? `<span class="lf-sp-info" data-sp-info role="button" tabindex="0" aria-label="${esc(tx("What is this?"))}" title="${esc(tx("What is this?"))}">i</span>` : ""}
         <span class="lf-sp-n">${zero ? "No matches" : kfmt(n)}</span>${svg("check", "lf-sp-ck")}</button>`;
     })];
+    // Overperforming: always shown; until the catalog has the value (no post tagged yet) a placeholder that can't be clicked
+    if (!sp.some((v) => v.name.toLowerCase() === "overperforming")) {
+      const s = SPECIAL.overperforming;
+      rows.push(`<button type="button" class="lf-sp ${s.cls} is-zero" aria-disabled="true" disabled title="${esc(tx(s.desc))}">
+        <span class="lf-sp-ic">${svg(s.ico)}</span><span class="lf-sp-tx"><b>Overperforming</b></span><span class="lf-sp-n">${esc(tx("Soon"))}</span></button>`);
+    }
     // "Content Creators" (Publisher type): its own gold button right under Replicable ideas
     const cc = (catalog.byCat.entity || []).find((v) => v.name.toLowerCase() === "content creators");
     if (cc) {
