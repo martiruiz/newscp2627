@@ -4,6 +4,18 @@
   const { $, $$, esc, icon, num, rpc } = A;
   try { await A.boot("filters"); } catch { return; }
   const main = $("[data-main]");
+  // every filter category of the Content Library (same names as there, js/library.js), in groups; a category found in the
+  // catalog but not listed here still shows, under "Other"
+  const GROUPS = [
+    ["Where & how", [["platform", "Platform"], ["format", "Format"], ["aspect_ratio", "Aspect ratio"], ["duration", "Duration"], ["language", "Language"], ["trend", "Trend"]]],
+    ["Who", [["sport", "Sport"], ["entity", "Publisher type"], ["competition", "Competition"], ["club", "Club"], ["team", "Team"]]],
+    ["Occasion", [["campaign", "Campaign"], ["moment", "Campaign moment"], ["matchday_graphic", "Matchday graphic"], ["season_moment", "Season moment"], ["outcome", "Result"], ["opponent", "Opponent"], ["city", "City"], ["transfer", "Transfers"], ["kit", "Kit"]]],
+    ["Story", [["angle", "Angle and tone"], ["comms", "Press and comms"], ["crisis", "Sensitive topics"]]],
+    ["Brands & goals", [["sponsor", "Sponsors"], ["sponsor_sector", "Sponsor sector"], ["sponsor_integration", "Integration"], ["collab", "Collaborations"], ["goal", "Business goal"], ["cta", "Call to action"]]],
+    ["Content creators", [["creator_type", "Creator type"], ["creator_language", "Creator's language"], ["creator_country", "Country"], ["creator_gender", "Gender"]]],
+  ];
+  const LABEL = Object.fromEntries(GROUPS.flatMap(([, cats]) => cats));
+  const labelOf = (k) => LABEL[k] || A.CAT_LABEL[k] || k.replace(/_/g, " ").replace(/^./, (c) => c.toUpperCase());
   let current = A.store.get("scpa-filters-cat", "sport");
   let catalog, totals = {}, sort = A.store.get("scpa-filters-sort", "az"), unusedOnly = false;
 
@@ -25,14 +37,18 @@
   }
 
   function renderCats() {
-    $("[data-cats]").innerHTML = `<p class="cap">Categories</p>` + A.CATALOG_ORDER.map((k) =>
-      `<button type="button" data-cat="${k}" aria-current="${k === current}"><span class="cat-t"><b>${A.CAT_LABEL[k]}</b><small>${num(totals[k] || 0)} ideas</small></span><span class="n">${num(catalog.byCat[k].length)}</span></button>`).join("");
+    const listed = new Set(Object.keys(LABEL));
+    const other = Object.keys(catalog.byCat).filter((k) => !listed.has(k) && catalog.byCat[k].length).sort();
+    const groups = [...GROUPS.map(([g, cats]) => [g, cats.map(([k]) => k)]), ...(other.length ? [["Other", other]] : [])];
+    if (!groups.some(([, ks]) => ks.includes(current))) current = "sport";
+    $("[data-cats]").innerHTML = groups.map(([g, ks]) => `<p class="cap">${esc(g)}</p>` + ks.map((k) =>
+      `<button type="button" data-cat="${k}" aria-current="${k === current}"><span class="cat-t"><b>${esc(labelOf(k))}</b><small>${num(totals[k] || 0)} ideas</small></span><span class="n">${num((catalog.byCat[k] || []).length)}</span></button>`).join("")).join("");
     $$("[data-cat]").forEach((b) => b.addEventListener("click", () => { current = b.dataset.cat; unusedOnly = false; A.store.set("scpa-filters-cat", current); renderCats(); renderValues(); }));
   }
 
   function renderValues() {
-    const label = A.CAT_LABEL[current];
-    const values = catalog.byCat[current];
+    const label = labelOf(current);
+    const values = catalog.byCat[current] || [];
     const box = $("[data-values]");
     const unused = values.filter((v) => !v.ideas).length;
     const max = Math.max(1, ...values.map((v) => v.ideas || 0));
