@@ -6905,3 +6905,7 @@ a.lf-sp-favs { text-decoration: none; }
 .an-cap b { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
 .an-cap p { margin-top: 4px; font-size: 13.5px; line-height: 1.5; color: var(--muted); white-space: pre-line; }
 .an-actions .an-remove { width: 38px; padding: 0; justify-content: center; }
+/* analysis block titles (HOOK, WHY IT WORKS…): a bit more presence — bigger, bolder, brighter, the icon in a small purple tile */
+.an-block h3 { font-size: 14.5px; font-weight: 700; letter-spacing: 0.09em; color: #e4dcff; margin-bottom: 12px; gap: 10px; }
+.an-block h3 svg { width: 26px; height: 26px; padding: 5px; border-radius: 8px; background: linear-gradient(135deg, #8b5cf6, #c38cf9); color: #fff; box-shadow: 0 6px 14px -8px rgba(139, 92, 246, 0.9); }
+.an-adapt h3 svg { background: linear-gradient(135deg, #16b364, #3ccfc0); box-shadow: 0 6px 14px -8px rgba(22, 179, 100, 0.9); }
