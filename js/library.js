@@ -292,7 +292,8 @@
   };
   const crestImg = (v, cls = "lf-crest") => `<span class="${cls}">${v.logo ? `<img src="${esc(v.logo)}" alt="" loading="lazy">` : `<b>${esc(initials(v.name))}</b>`}</span>`;
 
-  const REPEATED = { entity: ["clubs", "competitions", "content creators"] };
+  // values not shown in the column's lists (repeated elsewhere, or dropped: collab "Influencer / creator", "Athlete takeover")
+  const REPEATED = { entity: ["clubs", "competitions", "content creators"], collab: ["influencer / creator", "athlete takeover"] };
   function listHtml(c) {
     const all = (catalog.byCat[c.key] || []).filter((v) => LAYOUT_BEFORE || !REPEATED[c.key]?.includes(v.name.toLowerCase()) || isOn(v));
     const q = (ui.q[c.key] || "").toLowerCase();
@@ -737,7 +738,7 @@
       { key: "sponsor", label: "Brands", ico: "tag", desc: "", cats: ["sponsor"], logos: true, head: "The brands", chips: [["entity", "Brand", "Brand accounts"]] },
       { key: "sponsor_sector", label: "Sponsor sector", ico: "briefcase", desc: "Partners by industry", cats: ["sponsor_sector"] },
       { key: "sponsors", label: "How the brand shows", ico: "badge", desc: "Logo on a graphic, giveaway, a creator with a brand…", vals: [["collab", "Brand collab"], ["sponsor_integration", null]], head: "How they show" },
-      { key: "collab", label: "Collaborations", ico: "users", desc: "Posts made with others", cats: ["collab"], skip: ["brand collab", "player collab"] },   // Player collab → Players
+      { key: "collab", label: "Collaborations", ico: "users", desc: "Posts made with others", cats: ["collab"], skip: ["brand collab", "player collab", "influencer / creator", "athlete takeover"] },   // Player collab → Players; the last two dropped
       { key: "goal", label: "Business goal", ico: "target", desc: "What the post should achieve", cats: ["goal"], head: "What for" },
     ],
     benchmark: [
@@ -802,7 +803,7 @@
     const g = shown.find((x) => x.key === ui.barG?.[sec]) || shown[0];
     if (!g) return "";
     const total = groupVals(g).reduce((s, v) => s + (g.key === "matchday" && v.category === "outcome" ? 0 : countOf(v)), 0);
-    const head = `<div class="lfp-head"><div><h3>${esc(tx(g.label))}</h3>${g.desc ? `<p>${esc(tx(g.desc))}</p>` : ""}</div>${total ? `<span>${esc(tx("{n} posts", { n: total.toLocaleString(window.SCP_LOC || "en-GB") }))}</span>` : ""}</div>`;
+    const head = `<div class="lfp-head"><div><h3>${esc(tx(g.label))}</h3></div>${total ? `<span>${esc(tx("{n} posts", { n: total.toLocaleString(window.SCP_LOC || "en-GB") }))}</span>` : ""}</div>`;
     if (g.key === "matchday") return head + lfpMatchday(g);
     // Club: the squad as quick chips above the clubs
     const teamG = g.key === "club" && groups.find((x) => x.key === "team");
