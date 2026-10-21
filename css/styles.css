@@ -6703,14 +6703,9 @@ a.lf-sp-favs { text-decoration: none; }
 .lf-sec-v2 .lf-grp + .lf-grp { margin-top: 18px; }
 .lf-grp .lf-fmt-tiles { margin-bottom: 18px; }
 .lf-grp > .lf-row-gap + .lf-row-gap { margin-top: 10px; }
-/* Content Creators → Followers: from / to */
+/* Content Creators → Followers: a range slider (as Views) */
 .lf-fol-h { display: flex; align-items: center; justify-content: space-between; }
 .lf-fol-clear { color: #4f8cff; font: 500 12.5px var(--font-body); cursor: pointer; }
-.lf-fol { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
-.lf-fol span { color: var(--muted); }
-.lf-fol input { flex: 1; min-width: 0; height: 38px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface-2); color: var(--text); font: 13.5px var(--font-body); outline: 0; transition: border-color 0.15s, box-shadow 0.15s; }
-.lf-fol input:focus { border-color: rgba(240, 184, 74, 0.6); box-shadow: 0 0 0 3px rgba(240, 184, 74, 0.12); }
-.lf-fol input::placeholder { color: var(--muted-dim); }
 /* Content Library → Content Creators: one card per creator (js/library.js crRow) — header, collabs, 3 posts */
 .cr-switch { display: inline-flex; gap: 4px; padding: 4px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); }
 .cr-switch button { height: 34px; padding: 0 16px; border-radius: 9px; color: var(--muted); font: 600 13px var(--font-body); cursor: pointer; transition: background 0.2s, color 0.2s; }
@@ -6773,7 +6768,6 @@ a.lf-sp-favs { text-decoration: none; }
 .lf-cc-sub > :first-child { margin-top: 4px; }
 .lf-cc-sub > .lf-sub { margin: 22px 0 10px; }
 .lf-cc-sub .lf-stack > * + * { margin-top: 12px; }
-.lf-cc-sub > .lf-fol { margin-bottom: 0; }
 /* the creators' filters: their own box under the gold button, not stuck to it */
 .lf-cc-sub { margin: 12px 0 14px; border-radius: 14px; border: 1px solid rgba(240, 184, 74, 0.28); background: linear-gradient(180deg, rgba(240, 184, 74, 0.06), rgba(var(--surface-rgb), 0.4) 70%); }
 /* creators: boxes / list */
@@ -6802,3 +6796,4 @@ a.lf-sp-favs { text-decoration: none; }
 .cr-layout.is-off { opacity: 0.4; }
 .cr-layout.is-off button { cursor: default; }
 .cr-layout.is-off button.is-on { background: transparent; box-shadow: none; }
+.lf-fol-box { padding: 2px 2px 0; }

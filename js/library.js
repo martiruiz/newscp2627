@@ -400,19 +400,26 @@
   }
   // Content Creators on: the filters that describe creators' posts, right under the button (counts are already
   // limited to creators' posts, because the button is one of the active filters)
-  // Followers: from / to, any number ("500,000", "500k", "1.5M") → the posts of the creators in that range
-  const folNum = (v) => { const m = /^([\d.,]+)\s*([kmb])?$/i.exec(String(v || "").trim()); if (!m) return null; const k = { k: 1e3, m: 1e6, b: 1e9 }[(m[2] || "").toLowerCase()];
-    return Math.round(k ? Number(m[1].replace(/,/g, "")) * k : Number(m[1].replace(/[.,]/g, ""))) || null; };
-  const folFmt = (n) => (n ? Number(n).toLocaleString(window.SCP_LOC || "en-GB") : "");
-  const folHtml = () => { const f = ui.fol || {};
-    return `<div class="lf-sub lf-fol-h">${esc(tx("Followers"))}${f.min || f.max ? `<button type="button" class="lf-fol-clear" data-fol-clear>${esc(tx("Clear"))}</button>` : ""}</div>
-      <div class="lf-fol"><input type="text" inputmode="numeric" placeholder="${esc(tx("From"))}" value="${esc(folFmt(f.min))}" data-fol="min" aria-label="${esc(tx("Followers from"))}"><span>-</span><input type="text" inputmode="numeric" placeholder="${esc(tx("To"))}" value="${esc(folFmt(f.max))}" data-fol="max" aria-label="${esc(tx("Followers to"))}"></div>`; };
-  async function setFollowers(min, max) {
-    if (min && max && min > max) [min, max] = [max, min];
-    if (!min && !max) ui.fol = null;
+  // Followers: a range slider (as Views) on steps 0 · 1K · 2K · 5K … 10M+, with the creators per step above it
+  const FOL = [0, 1e3, 2e3, 5e3, 1e4, 2e4, 5e4, 1e5, 2e5, 5e5, 1e6, 2e6, 5e6, 1e7], FB = FOL.length - 1;
+  const folA = () => ui.fol?.a ?? 0, folB = () => ui.fol?.b ?? FB;
+  const folLbl = (i) => (i === FB ? `${kfmt(FOL[FB])}+` : kfmt(FOL[i]));
+  const folHtml = () => {
+    const a = folA(), b = folB();
+    const h = FOL.slice(0, FB).map((lo, i) => (cr.rows || []).filter((r) => r.followers != null && r.followers >= lo && (i === FB - 1 || r.followers < FOL[i + 1])).length);
+    const mx = Math.max(1, ...h);
+    return `<div class="lf-sub lf-fol-h">${esc(tx("Followers"))}${a > 0 || b < FB ? `<button type="button" class="lf-fol-clear" data-fol-clear>${esc(tx("Clear"))}</button>` : ""}</div>
+      <div class="lf-fol-box">${cr.rows ? `<div class="lf-hist" aria-hidden="true">${h.map((n, i) => `<i class="${i >= a && i < b ? "is-in" : ""}" style="height:${Math.max(5, (n / mx) * 100)}%"></i>`).join("")}</div>` : ""}
+      <div class="lf-rng"><div class="lf-tr"></div><div class="lf-fl" style="left:${(a / FB) * 100}%;right:${100 - (b / FB) * 100}%"></div>
+        <input type="range" min="0" max="${FB}" step="1" value="${a}" aria-label="${esc(tx("Followers from"))}" data-fol-lo><input type="range" min="0" max="${FB}" step="1" value="${b}" aria-label="${esc(tx("Followers to"))}" data-fol-hi></div>
+      <div class="lf-rl"><span data-fol-lo-l>${folLbl(a)}</span><span data-fol-hi-l>${folLbl(b)}</span></div></div>`;
+  };
+  async function setFollowers(a, b) {
+    if (a <= 0 && b >= FB) ui.fol = null;
     else {
+      const min = a > 0 ? FOL[a] : null, max = b < FB ? FOL[b] : null;
       const { data } = await db.rpc("followers_post_ids", { p_min: min, p_max: max });
-      ui.fol = { min, max, ids: (data || []).map(Number) };
+      ui.fol = { a, b, min, max, ids: (data || []).map(Number) };
     }
     renderFacets();
     load(true);
@@ -425,6 +432,7 @@
       return list.map((v) => `<button type="button" class="lf-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="${v.category}" data-id="${v.id}">${esc(pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`).join("");
     };
     // the creators' own accounts (from the post URL or the import; supabase/scraped-profiles.sql)
+    if (!cr.rows && !cr.asked && db) { cr.asked = true; db.rpc("creator_rows").then((r) => { if (Array.isArray(r.data)) { cr.rows = r.data; renderFacets(); } }, () => {}); }
     if (!ui.accts) { ui.accts = []; db?.rpc("creator_accounts").then((r) => { ui.accts = r.data || []; if (ui.accts.length) renderFacets(); }, () => {}); }
     const groups = [["Content type", "angle"]]
       .map(([label, cat, max, h]) => [label, h ?? chips(cat, max)]).filter(([, h]) => h);
@@ -1098,7 +1106,7 @@
       if (ui.cview === "creators") ui.acct = null;
       renderFacets(); return load(true);
     }
-    if (e.target.closest("[data-fol-clear]")) return setFollowers(null, null);
+    if (e.target.closest("[data-fol-clear]")) return setFollowers(0, FB);
     if (e.target.closest("[data-favs]")) {   // all the favourite profiles on / off
       const pf = favNetwork(), f = [...favVals(), ...(pf ? [pf] : [])], on = favsOn();
       f.forEach((v) => (on ? selected[v.category].delete(v.id) : selected[v.category].add(v.id)));
@@ -1165,6 +1173,18 @@
       again.focus(); again.setSelectionRange(pos, pos);
       return;
     }
+    const fo = e.target.closest("[data-fol-lo], [data-fol-hi]");
+    if (fo) {
+      const lo = $("[data-fol-lo]"), hi = $("[data-fol-hi]");
+      let a = Number(lo.value), b = Number(hi.value);
+      if (a > b - 1) { if (fo.matches("[data-fol-lo]")) a = b - 1; else b = a + 1; }
+      lo.value = a = Math.max(0, a); hi.value = b = Math.min(FB, b);
+      const box = fo.closest(".lf-fol-box");
+      $$(".lf-hist i", box).forEach((x, i) => x.classList.toggle("is-in", i >= a && i < b));
+      const fl = $(".lf-fl", box); fl.style.left = `${(a / FB) * 100}%`; fl.style.right = `${100 - (b / FB) * 100}%`;
+      $("[data-fol-lo-l]").textContent = folLbl(a); $("[data-fol-hi-l]").textContent = folLbl(b);
+      return;
+    }
     const lo = e.target.closest("[data-views-lo], [data-views-hi]");
     if (lo) {
       let a = Number($("[data-views-lo]").value), b = Number($("[data-views-hi]").value);
@@ -1193,9 +1213,10 @@
     }
   };
   column.addEventListener("input", onFilterInput);
+  // Followers' slider: moves live (input), filters when let go (change)
   column.addEventListener("change", (e) => {
-    if (!e.target.closest("[data-fol]")) return;
-    setFollowers(folNum($("[data-fol=min]")?.value), folNum($("[data-fol=max]")?.value));
+    if (!e.target.closest("[data-fol-lo], [data-fol-hi]")) return;
+    setFollowers(Number($("[data-fol-lo]").value), Number($("[data-fol-hi]").value));
   });
   filterBar.addEventListener("input", onFilterInput);
 
@@ -2407,7 +2428,7 @@
 
   // ---------- Filter events ----------
   root.addEventListener("change", (e) => {
-    if (e.target.closest("[data-saved-searches], [data-facet-search], [data-lf-search], [data-acct-q], [data-lfb-q], [data-fol]")) return;
+    if (e.target.closest("[data-saved-searches], [data-facet-search], [data-lf-search], [data-acct-q], [data-lfb-q], [data-fol-lo], [data-fol-hi]")) return;
     if (e.target.closest("[data-order]")) seed = String(Math.random()).slice(2, 10); // new shuffle each "Surprise me"
     load(true);
   });
