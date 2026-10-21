@@ -241,9 +241,10 @@
       <div class="selbar" hidden data-imp-selbar><span data-imp-selcount></span><span class="spacer"></span>
         <button class="btn btn-ghost btn-sm" type="button" data-imp-clear>Clear</button>
         <button class="btn btn-danger btn-sm" type="button" data-imp-delete-sel>${icon("trash")}Delete selected</button></div>
-      <section class="panel"><div class="table-wrap"><table class="data">
-        <thead><tr><th class="td-check"><input class="check" type="checkbox" data-imp-all aria-label="Select all imports"></th><th>File</th><th>Status</th><th>Rows</th><th>Created</th><th>Replaced</th><th>Skipped</th><th>Date</th><th class="td-actions">Actions</th></tr></thead>
-        <tbody data-history><tr><td class="table-empty" colspan="9"><span class="spinner sm"></span> Loading...</td></tr></tbody>
+      <div class="imp-sum" data-imp-sum></div>
+      <section class="panel imp-panel"><div class="table-wrap"><table class="data imp-table">
+        <thead><tr><th class="td-check"><input class="check" type="checkbox" data-imp-all aria-label="Select all imports"></th><th>File</th><th>Status</th><th class="num">Created</th><th class="num">Replaced</th><th class="num">Skipped</th><th class="td-actions"></th></tr></thead>
+        <tbody data-history><tr><td class="table-empty" colspan="7"><span class="spinner sm"></span> Loading...</td></tr></tbody>
       </table></div></section>`;
     $("[data-new]").addEventListener("click", () => showWizard());
     const cols = "id,filename,file_path,status,total_rows,rows_created,rows_replaced,rows_skipped,error_count,created_at,completed_at";
@@ -252,32 +253,52 @@
     if (error && /cover_issues/.test(error.message)) ({ data, error } = await load(`${cols},review_status`));   // import-autopublish.sql not run yet
     if (error && /review_status/.test(error.message)) ({ data, error } = await load(cols));   // import-review.sql not run yet
     const body = $("[data-history]");
-    if (error) { body.innerHTML = `<tr><td class="table-empty error-text" colspan="9">${esc(A.errMsg(error))}</td></tr>`; return; }
+    if (error) { body.innerHTML = `<tr><td class="table-empty error-text" colspan="7">${esc(A.errMsg(error))}</td></tr>`; return; }
     if (!data.length) {
-      body.innerHTML = `<tr><td class="table-empty" colspan="9">No imports yet<br><button class="link" type="button" data-first style="margin-top:8px">Start your first import</button></td></tr>`;
+      body.innerHTML = `<tr><td class="table-empty" colspan="7">No imports yet<br><button class="link" type="button" data-first style="margin-top:8px">Start your first import</button></td></tr>`;
       $("[data-first]").addEventListener("click", () => showWizard());
       return;
     }
     const dash = (v, s) => (s === "analyzed" || v == null ? "—" : num(v));
-    const LABEL = { analyzed: "Pending", importing: "Importing", completed: "Completed", reverted: "Reverted", failed: "Failed" };
-    body.innerHTML = data.map((r) => `
+    // one clear state per import: published, loading covers, issues to check, or the import's own state
+    const state = (r) => r.status !== "completed" ? { cls: r.status === "failed" ? "bad" : "mute", t: { analyzed: "Pending", importing: "Importing", reverted: "Reverted", failed: "Failed" }[r.status] || r.status }
+      : r.review_status === "pending" ? { cls: "wait", t: "Loading covers" } : { cls: "ok", t: "Published" };
+    const pending = data.filter((r) => r.status === "completed" && r.review_status === "pending").length;
+    const issues = data.reduce((n, r) => n + (r.cover_issues || 0), 0);
+    $("[data-imp-sum]").innerHTML = [
+      ["Imports", num(data.length), ""],
+      ["Posts imported", num(data.reduce((n, r) => n + (r.status === "completed" ? r.rows_created || 0 : 0), 0)), "gold"],
+      ["Loading covers", num(pending), pending ? "wait" : ""],
+      ["Posts without cover", num(issues), issues ? "bad" : ""],
+    ].map(([k, v, c]) => `<div class="imp-sum-c${c ? ` is-${c}` : ""}"><span>${k}</span><b>${v}</b></div>`).join("");
+    // grouped by day: Today, Yesterday, then the date
+    const dayKey = (d) => new Date(d).toDateString();
+    const dayName = (d) => { const t = new Date(), y = new Date(t); y.setDate(t.getDate() - 1); const k = dayKey(d);
+      return k === t.toDateString() ? "Today" : k === y.toDateString() ? "Yesterday" : new Date(d).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" }); };
+    const time = (d) => new Date(d).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+    const FILE = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>`;
+    let lastDay = "";
+    body.innerHTML = data.map((r) => {
+      const st = state(r), day = dayKey(r.created_at), head = day !== lastDay ? `<tr class="imp-day"><td colspan="7">${dayName(r.created_at)}</td></tr>` : "";
+      lastDay = day;
+      return `${head}
       <tr data-imp-row="${r.id}">
         <td class="td-check"><input class="check" type="checkbox" data-imp-pick="${r.id}" aria-label="Select ${esc(r.filename)}"></td>
-        <td class="td-title" title="${esc(r.filename)}"><button class="link imp-open" type="button" data-imp-open="${r.id}">${esc(r.filename)}</button></td>
-        <td><span class="status status-${r.status}">${LABEL[r.status] || r.status}</span>${r.status === "completed" && r.review_status === "pending" ? ` <span class="status status-importing">Loading covers</span>` : ""}${r.cover_issues ? ` <span class="status status-failed" title="Posts without a cover: no image available or removed from the platform">${num(r.cover_issues)} without cover</span>` : ""}</td>
-        <td>${r.status === "analyzed" ? 0 : num(r.total_rows)}</td>
-        <td>${dash(r.rows_created, r.status)}</td>
-        <td>${dash(r.rows_replaced, r.status)}</td>
-        <td>${dash(r.rows_skipped, r.status)}</td>
-        <td class="td-date">${A.fmtDateTime(r.created_at)}</td>
-        <td class="td-actions">
-          ${r.status === "completed" && (r.review_status === "pending" || r.cover_issues) ? `<button class="btn btn-sm" type="button" data-review-imp="${r.id}">${icon("eye")}${r.review_status === "pending" ? "Covers" : "Issues"}</button>` : ""}
+        <td class="imp-file"><span class="imp-ic st-${st.cls}">${FILE}</span><span class="imp-name"><button class="imp-open" type="button" data-imp-open="${r.id}" title="${esc(r.filename)}">${esc(r.filename.replace(/\.csv$/i, ""))}</button><small>${time(r.created_at)} · ${r.status === "analyzed" ? 0 : num(r.total_rows)} rows</small></span></td>
+        <td><span class="imp-st st-${st.cls}"><i></i>${st.t}</span>${r.cover_issues ? `<span class="imp-st st-bad" title="Posts without a cover: no image available or removed from the platform"><i></i>${num(r.cover_issues)} without cover</span>` : ""}</td>
+        <td class="num imp-n is-new">${r.rows_created ? "+" : ""}${dash(r.rows_created, r.status)}</td>
+        <td class="num imp-n">${dash(r.rows_replaced, r.status)}</td>
+        <td class="num imp-n${r.rows_skipped ? " is-skip" : ""}">${dash(r.rows_skipped, r.status)}</td>
+        <td class="td-actions"><div class="imp-acts">
+          ${r.status === "completed" && (r.review_status === "pending" || r.cover_issues) ? `<button class="imp-cta${r.review_status === "pending" ? "" : " is-bad"}" type="button" data-review-imp="${r.id}">${icon(r.review_status === "pending" ? "eye" : "alert")}${r.review_status === "pending" ? "Covers" : "Issues"}</button>` : ""}
+          <span class="imp-more">
           ${r.file_path ? `<button class="icon-btn" type="button" data-dl="${r.id}" title="Download CSV" aria-label="Download CSV">${icon("download")}</button>` : ""}
           ${r.error_count ? `<button class="icon-btn" type="button" data-errs="${r.id}" title="Download ${num(r.error_count)} errors as CSV" aria-label="Download errors">${icon("alert")}</button>` : ""}
           ${["completed", "failed"].includes(r.status) ? `<button class="icon-btn danger" type="button" data-revert="${r.id}" title="Revert import" aria-label="Revert import">${icon("undo")}</button>` : ""}
-          <button class="icon-btn danger" type="button" data-imp-del="${r.id}" title="Delete import" aria-label="Delete import">${icon("trash")}</button>
-        </td>
-      </tr>`).join("");
+          <button class="icon-btn danger" type="button" data-imp-del="${r.id}" title="Delete import" aria-label="Delete import">${icon("trash")}</button></span>
+        </div></td>
+      </tr>`;
+    }).join("");
 
     // ---------- Delete imports (one or several) ----------
     const picked = new Set();
