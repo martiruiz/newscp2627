@@ -6703,3 +6703,8 @@ a.lf-sp-favs { text-decoration: none; }
 .lfp-prev-p { position: relative; height: 84px; border-radius: 9px; background: var(--surface-2) center / cover no-repeat; border: 1px solid var(--line-soft); }
 .lfp-prev-p em { position: absolute; left: 5px; bottom: 5px; padding: 1px 6px; border-radius: 999px; background: rgba(8, 12, 26, 0.78); color: #fff; font: 600 10px var(--font-body); font-style: normal; }
 @media (prefers-reduced-motion: reduce) { .lfp-img.is-loading { animation: none; } }
+/* Filters column without group headings: room between the groups (Who publishes · Views · networks · formats · rows) */
+.lf-sec-v2 > .lf-who { margin: 18px 0 16px; }
+.lf-sec-v2 .lf-grp + .lf-grp { margin-top: 18px; }
+.lf-grp .lf-fmt-tiles { margin-bottom: 18px; }
+.lf-grp > .lf-row-gap + .lf-row-gap { margin-top: 10px; }
