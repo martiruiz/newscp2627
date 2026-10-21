@@ -976,6 +976,76 @@
     renderFacets();
     if (ui.open) $(`[data-lf-rowbox="${CSS.escape(ui.open)}"]`)?.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }
+  // ---------- Content Creators on: one row per creator (supabase/creator-rows.sql) ----------
+  // photo, name, followers, recent collabs (the brands most tagged on their posts), their 4 most viewed posts;
+  // the creators' filters (type, language, gender, country, followers, the search box) narrow the rows
+  const crBox = $("[data-creators]"), crHead = $("[data-cview]");
+  const cr = { rows: null, shown: 10 };
+  const crSwitch = () => `<div class="cr-switch" role="tablist">${[["creators", "Creators"], ["posts", "Posts"]].map(([k, l]) => `<button type="button" role="tab" aria-selected="${(ui.cview || "creators") === k}" class="${(ui.cview || "creators") === k ? "is-on" : ""}" data-cview-set="${k}">${esc(tx(l))}</button>`).join("")}</div>`;
+  function crMatch(r, q) {
+    const low = (x) => String(x || "").trim().toLowerCase();
+    const sel = (k) => [...selected[k]].map((id) => low(catalog.byId.get(id)?.name)).filter(Boolean);
+    for (const [k, f] of [["creator_type", "type"], ["creator_language", "language"], ["creator_gender", "gender"], ["creator_country", "country"]]) { const s = sel(k); if (s.length && !s.includes(low(r[f]))) return false; }
+    if (ui.fol && (r.followers == null || (ui.fol.min && r.followers < ui.fol.min) || (ui.fol.max && r.followers > ui.fol.max))) return false;
+    return !q || low(r.handle).includes(low(q).replace(/^@/, "")) || low(r.name).includes(low(q));
+  }
+  function crRow(r) {
+    const k = `${r.platform}|${r.handle}`, name = r.name || r.handle;
+    const ini = name.replace(/[^\p{L}\p{N} ]/gu, "").split(/[\s._]+/).filter(Boolean).map((w) => w[0]).join("").slice(0, 2).toUpperCase() || "?";
+    const brands = (r.collabs || []).map((id) => catalog.byId.get(Number(id))).filter(Boolean);
+    const posts = (r.top || []).map((id) => cache.get(String(id))).filter(Boolean);
+    const star = starKeys().includes(k);
+    return `<article class="cr-row">
+      <header class="cr-top">
+        <span class="cr-ava">${r.avatar ? `<img src="${esc(r.avatar)}" alt="" loading="lazy">` : `<b>${esc(ini)}</b>`}</span>
+        <span class="cr-name"><b>${esc(name)}</b><small><i class="lf-pfi is-brand lf-pf-${esc(r.platform)}" style="-webkit-mask-image:url(assets/pf-${esc(r.platform)}.svg);mask-image:url(assets/pf-${esc(r.platform)}.svg)"></i>@${esc(r.handle)}</small></span>
+        <span class="cr-stat"><b>${r.followers ? kfmt(r.followers) : "—"}</b><small>${esc(tx("Followers"))}</small></span>
+        <span class="cr-collabs">${brands.length ? `<span class="cr-logos">${brands.map((v) => `<i title="${esc(pretty(v.name))}">${v.logo ? `<img src="${esc(v.logo)}" alt="" loading="lazy">` : esc(initials(v.name))}</i>`).join("")}</span>` : ""}<small>${esc(tx(brands.length ? "Recent collabs" : "No brand collabs yet"))}</small></span>
+        <span class="cr-acts">
+          <button type="button" class="lf-star${star ? " is-on" : ""}" data-acct-star="${esc(k)}" aria-pressed="${star}" aria-label="${esc(tx(star ? "Remove from favourites" : "Add to favourites"))}" title="${esc(tx(star ? "Remove from favourites" : "Add to favourites"))}">${svg("star")}</button>
+          ${saveBtn(`cr-${k}`)}
+          <button type="button" class="pill pill-gold cr-see" data-cr-posts="${esc(k)}">${esc(tx("See their posts"))}</button>
+        </span>
+      </header>
+      <div class="cr-posts">${posts.map((p) => `<button type="button" class="cr-post" data-open="${esc(p.id)}" style="background-image:url('${esc(p.cover_url)}')" aria-label="${esc(tx("Details"))}">${isVideo(p) ? `<span class="cr-vid">${icon("video")}</span>` : ""}</button>`).join("")}</div>
+    </article>`;
+  }
+  async function renderCreators(my) {
+    if (!cr.rows) {
+      crBox.innerHTML = `<p class="cr-loading">${esc(tx("Loading creators…"))}</p>`;
+      const { data } = await db.rpc("creator_rows").then((r) => r, () => ({}));
+      if (my !== token) return;
+      if (!Array.isArray(data)) { crBox.innerHTML = `<p class="posts-empty">${esc(tx("Creators can't be loaded right now."))}</p>`; return; }
+      cr.rows = data;
+    }
+    const list = cr.rows.filter((r) => crMatch(r, state().q));
+    const shown = list.slice(0, cr.shown);
+    // their posts, as the grid has them (tags, cover), so a click opens the post's detail
+    const need = shown.flatMap((r) => r.top || []).map(String).filter((id) => !cache.has(id));
+    if (need.length) {
+      const { data } = await fetchIdeas({ p_filters: {}, p_q: null, p_from: null, p_to: null, p_order: "latest", p_seed: "", p_ids: need.map(Number), p_limit: need.length, p_offset: 0 }).catch(() => ({}));
+      (data?.data || []).forEach((p) => cache.set(String(p.id), p));
+      if (my !== token) return;
+    }
+    crBox.innerHTML = list.length
+      ? `<p class="cr-count">${esc(tx(list.length === 1 ? "{n} creator" : "{n} creators", { n: list.length.toLocaleString(window.SCP_LOC || "en-GB") }))}</p>${shown.map(crRow).join("")}${list.length > shown.length ? `<div class="load-more"><button class="pill pill-dark" type="button" data-cr-more>${esc(tx("Load more"))}</button></div>` : ""}`
+      : `<p class="posts-empty">${esc(tx("No creators match these filters."))}</p>`;
+  }
+  crHead.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-cview-set]");
+    if (!b || (ui.cview || "creators") === b.dataset.cviewSet) return;
+    ui.cview = b.dataset.cviewSet;
+    if (ui.cview === "creators") ui.acct = null;
+    renderFacets(); load(true);
+  });
+  crBox.addEventListener("click", async (e) => {
+    const st = e.target.closest("[data-acct-star]");
+    if (st) { await toggleStar(st.dataset.acctStar); return renderCreators(token); }
+    const see = e.target.closest("[data-cr-posts]");
+    if (see) { ui.cview = "posts"; window.scrollTo({ top: 0, behavior: "smooth" }); return toggleAccount(see.dataset.crPosts); }
+    if (e.target.closest("[data-cr-more]")) { cr.shown += 10; renderCreators(token); }
+  });
+
   // one creator account at a time: only its posts (their ids, then the other filters still apply)
   async function toggleAccount(k) {
     if (ui.acct?.key === k) ui.acct = null;
@@ -1508,6 +1578,12 @@
     const args = queryArgs(s);
     const cc = (catalog.byCat.entity || []).find((v) => v.name.toLowerCase() === "content creators");
     if (!(cc && isOn(cc))) { ui.acct = null; ui.fol = null; }   // the account and followers filters live under Content Creators
+    // Content Creators on: one row per creator (or their posts, with the switch above)
+    crHead.hidden = !(cc && isOn(cc)) || !!ui.aiMode;
+    if (!crHead.hidden) crHead.innerHTML = crSwitch();
+    const crView = !crHead.hidden && ui.cview !== "posts" && !ui.acct;
+    grid.hidden = crView; crBox.hidden = !crView;
+    if (crView) { grid.querySelectorAll(".lib-skel").forEach((x) => x.remove()); grid.removeAttribute("aria-busy"); empty.hidden = true; return renderCreators(my); }
     let ids = ui.aiMode ? [...aiList().keys()] : null;
     if (ui.acct) ids = ids ? ids.filter((id) => ui.acct.ids.includes(Number(id))) : ui.acct.ids;
     if (ui.fol) { const f = new Set(ui.fol.ids); ids = ids ? ids.filter((id) => f.has(Number(id))) : ui.fol.ids; }

@@ -53,6 +53,30 @@
     .map((it) => posts.get(Number(it.post_id.replace(/^ci-/, ""))))
     .filter((p, i, arr) => p && !p.unavailable_at && arr.indexOf(p) === i);
 
+  // ---------- Saved creators (folder_items "cr-<platform>|<handle>", saved from the Content Library's creators' rows) ----------
+  const creators = new Map();   // "platform|handle" -> row of creator_rows() (photo, name, followers)
+  const creatorsOf = (boardId) => [...new Set(B.itemsOf(boardId === "all" ? null : boardId).filter((it) => it.post_id.startsWith("cr-")).map((it) => it.post_id.slice(3)))];
+  async function loadCreators() {
+    if (creators.size || !creatorsOf("all").length) return;
+    const { data } = await db.rpc("creator_rows");
+    for (const r of Array.isArray(data) ? data : []) creators.set(`${r.platform}|${r.handle}`, r);
+  }
+  const T = (s, v) => (window.tx ? window.tx(s, v) : s);
+  const compact = (n) => Number(n).toLocaleString(window.SCP_LOC || "en-GB", { notation: "compact", maximumFractionDigits: 1 });
+  const PROFILE = { instagram: (h) => `https://www.instagram.com/${h}/`, tiktok: (h) => `https://www.tiktok.com/@${h}`, youtube: (h) => `https://www.youtube.com/@${h}`, x: (h) => `https://x.com/${h}` };
+  function creatorsHtml(keys) {
+    if (!keys.length) return "";
+    return `<section class="sv-cr"><h2>${esc(T("Saved creators"))} <span>${keys.length}</span></h2><div class="sv-cr-list">${keys.map((k) => {
+      const [platform, handle] = k.split("|"), r = creators.get(k) || {}, name = r.name || handle;
+      return `<article class="sv-cr-card">
+        <span class="cr-ava">${r.avatar ? `<img src="${esc(r.avatar)}" alt="" loading="lazy">` : `<b>${esc(name.slice(0, 2).toUpperCase())}</b>`}</span>
+        <span class="cr-name"><b>${esc(name)}</b><small>@${esc(handle)} · ${esc(pretty(platform))}</small></span>
+        <span class="cr-stat"><b>${r.followers ? compact(r.followers) : "—"}</b><small>${esc(T("Followers"))}</small></span>
+        <span class="sv-cr-acts">${B.button(`cr-${k}`)}${PROFILE[platform] ? `<a class="pill pill-dark" href="${esc(PROFILE[platform](handle))}" target="_blank" rel="noopener">${esc(T("Profile"))} ↗</a>` : ""}</span>
+      </article>`;
+    }).join("")}</div></section>`;
+  }
+
   // ---------- Mini previews for board covers: Instagram's embed page scaled + cropped to "cover" the tile ----------
   const W0 = 360, HEADER = 55;
   function mini(p) {
@@ -110,7 +134,8 @@
           <div class="bd-meta"><input type="text" maxlength="60" placeholder="New board name" aria-label="New board name" required data-create-name><button class="pill pill-gold" type="submit">Create</button></div>
         </form>
       </div>
-      ${!all.length ? `<div class="sv-empty">${icon("bookmark-plus")}<div><b>Save ideas you want to make</b><p>Tap the <span class="sv-inline">${icon("bookmark-plus")}</span> button on any post in the <a href="content-library.html">Content Library</a> to save it to a board.</p></div></div>` : ""}`;
+      ${creatorsHtml(creatorsOf("all"))}
+      ${!all.length && !creatorsOf("all").length ? `<div class="sv-empty">${icon("bookmark-plus")}<div><b>Save ideas you want to make</b><p>Tap the <span class="sv-inline">${icon("bookmark-plus")}</span> button on any post in the <a href="content-library.html">Content Library</a> to save it to a board.</p></div></div>` : ""}`;
     requestAnimationFrame(() => fitMinis());
   }
 
@@ -157,7 +182,8 @@
           <button class="pill pill-dark sv-danger" type="button" data-delete>${icon("trash-2")}Delete board</button>
         </div>`}
       </header>
-      ${list.length ? `<div class="pins" data-pins></div>` : `<div class="sv-empty">${icon("layers")}<div><b>This board is empty</b><p>Save posts from the <a href="content-library.html">Content Library</a> with the <span class="sv-inline">${icon("bookmark-plus")}</span> button.</p></div></div>`}`;
+      ${creatorsHtml(creatorsOf(id))}
+      ${list.length ? `<div class="pins" data-pins></div>` : creatorsOf(id).length ? "" : `<div class="sv-empty">${icon("layers")}<div><b>This board is empty</b><p>Save posts from the <a href="content-library.html">Content Library</a> with the <span class="sv-inline">${icon("bookmark-plus")}</span> button.</p></div></div>`}`;
     if (list.length) layoutPins(list);
   }
   // Masonry: each pin goes to the shortest column
@@ -230,12 +256,12 @@
   }
   window.addEventListener("hashchange", route);
   // Saving / unsaving from a pin's picker changes board contents: refresh the current view
-  B.onChange(async () => { await loadPosts(); if (!boardId) renderBoards(); });
+  B.onChange(async () => { await loadPosts(); await loadCreators(); if (!boardId) renderBoards(); });
 
   (async () => {
     if (!db) { root.innerHTML = `<p class="sv-empty">Not connected.</p>`; return; }
     await B.load();
-    await loadPosts();
+    await Promise.all([loadPosts(), loadCreators()]);
     route();
   })();
 })();

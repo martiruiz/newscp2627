@@ -1,10 +1,11 @@
 // Saved boards (Pinterest-style) shared by the Content Library and the Saved page.
-// Tables: folders (= boards, per user) and folder_items (post_id "ci-<content idea id>").
+// Tables: folders (= boards, per user) and folder_items (post_id "ci-<content idea id>", or "cr-<platform>|<handle>"
+// for a content creator saved from the Content Library's creators' rows).
 window.SCP_BOARDS = (() => {
   const db = window.SCP_AUTH?.client;
   const icon = (n) => (window.SCP_ICONS ? window.SCP_ICONS(n) : "");
   const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
-  const key = (id) => `ci-${id}`;
+  const key = (id) => (String(id).startsWith("cr-") ? String(id) : `ci-${id}`);
 
   let boards = [];            // [{ id, name, created_at }]
   let items = [];             // [{ folder_id, post_id, added_at }]
@@ -91,7 +92,7 @@ window.SCP_BOARDS = (() => {
           const n = itemsOf(b.id).length;
           return `<li><button type="button" class="bp-row${on.has(b.id) ? " is-on" : ""}" data-bp-board="${b.id}">
             <span class="bp-tile" style="--h:${tint(b.name)}">${esc(b.name.slice(0, 1).toUpperCase())}</span>
-            <span class="bp-name">${esc(b.name)}<small>${n} post${n === 1 ? "" : "s"}</small></span>
+            <span class="bp-name">${esc(b.name)}<small>${n} saved</small></span>
             <span class="bp-state">${on.has(b.id) ? `${icon("check")}Saved` : "Save"}</span>
           </button></li>`;
         }).join("") || `<li class="bp-empty">${boards.length ? "No boards match." : "No boards yet — create your first one."}</li>`}
