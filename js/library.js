@@ -1620,6 +1620,7 @@
     offset += rows.length;
     more.hidden = offset >= data.total;
     saveKeep();
+    if (nearEnd && !more.hidden && !grid.hidden) load(false);   // the page is still short of the screen: the next ones
   }
 
   // ---------- Keep the place on refresh (this tab): filters, sort and its shuffle, posts loaded and scroll ----------
@@ -2408,6 +2409,12 @@
     if (e.target.closest("[data-ai-pdf]")) aiPdf();
   });
   more.addEventListener("click", () => load(false));
+  // endless scroll: the next posts load a little before the end of the page (the button stays as a fallback)
+  let nearEnd = false;
+  new IntersectionObserver(([en]) => {
+    nearEnd = en.isIntersecting;
+    if (nearEnd && !more.hidden && !grid.hidden) load(false);
+  }, { rootMargin: "0px 0px 1200px 0px" }).observe(more.parentElement);
   function clearAll() {
     applyState({ order: state().order });
     load(true);

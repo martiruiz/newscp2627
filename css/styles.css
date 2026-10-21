@@ -6752,3 +6752,16 @@ a.lf-sp-favs { text-decoration: none; }
 .sv-cr-acts { grid-column: 1 / -1; display: flex; gap: 8px; }
 .sv-cr-acts .save-btn { position: static; }
 .cr-post.is-empty { background-image: linear-gradient(110deg, var(--surface-2) 30%, var(--surface-3) 50%, var(--surface-2) 70%); background-size: 200% 100%; animation: lfp-shimmer 1.6s linear infinite; }
+/* Content Library: endless scroll — the "Load more" button only shows if the automatic loading can't start */
+.load-more [data-more] { opacity: 0; pointer-events: none; }
+.posts[aria-busy="true"] ~ .load-more::before { content: ""; width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--line); border-top-color: var(--gold); animation: lm-spin 0.8s linear infinite; }
+@keyframes lm-spin { to { transform: rotate(360deg); } }
+/* creators' header: more room between the switch, the count and the cards */
+.cr-head { margin: 8px 0 22px; }
+.cr-switch { padding: 5px; border-radius: 14px; }
+.cr-switch button { height: 38px; padding: 0 20px; border-radius: 10px; }
+.cr-count, .cr-loading { margin: 0 0 16px 4px; font-size: 13.5px; }
+.cr-grid { gap: 20px; }
+.cr-card { padding: 20px; gap: 16px; }
+.cr-top { gap: 12px 14px; }
+.cr-collabs { padding-top: 2px; }
