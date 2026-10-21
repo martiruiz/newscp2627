@@ -6837,3 +6837,16 @@ a.lf-sp-favs { text-decoration: none; }
 .my-space-btns .saved-link, .my-space-btns .saved-link:hover { color: #1a1206 !important; }
 .my-space-btns .saved-link > [data-icon] svg { color: #1a1206 !important; stroke: #1a1206; }
 .lf-sp-over.is-zero { opacity: 0.6; cursor: default; }
+/* Softer, more modern gradients for the coloured buttons (filters column specials + My space): a diagonal two-tone a
+   little less saturated, and a light sheen at the top */
+.lf-sp-top { --g: linear-gradient(135deg, #e5484d, #ff8a7a); --g-soft: linear-gradient(135deg, rgba(229, 72, 77, 0.7), rgba(255, 138, 122, 0.7)); --glow: 229, 72, 77; }
+.lf-sp-rep { --g: linear-gradient(135deg, #16b364, #3ccfc0); --g-soft: linear-gradient(135deg, rgba(22, 179, 100, 0.65), rgba(60, 207, 192, 0.65)); --glow: 22, 179, 100; }
+.lf-sp-creators { --g: linear-gradient(135deg, #d6a03c, #f4cf7a); --g-soft: linear-gradient(135deg, rgba(214, 160, 60, 0.75), rgba(244, 207, 122, 0.75)); --glow: 240, 184, 74; }
+.lf-sp-over { --g: linear-gradient(135deg, #f2711c, #fbbf4a); --g-soft: linear-gradient(135deg, rgba(242, 113, 28, 0.7), rgba(251, 191, 74, 0.7)); --glow: 242, 113, 28; }
+.my-space-btns .ai-mine { --g: linear-gradient(135deg, #8b5cf6, #c38cf9); --glow: 139, 92, 246; }
+.my-space-btns .plan-toggle { --g: linear-gradient(135deg, #3b82f6, #6cb8f8); --glow: 59, 130, 246; }
+.my-space-btns .saved-link { --g: linear-gradient(135deg, #d6a03c, #f4cf7a); --glow: 240, 184, 74; }
+.lf-sp.is-on, .my-space-btns .pill, .my-space-btns .pill:hover {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 55%) border-box, var(--g) border-box !important; }
+.lf-sp.is-on { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 8px 22px -14px rgba(var(--glow), 0.9); }
+.my-space-btns .pill { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 8px 22px -14px rgba(var(--glow), 0.9) !important; }
