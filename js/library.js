@@ -2159,29 +2159,14 @@
   const body = $("[data-drawer-body]");
   const PLATFORM_NAMES = { instagram: "Instagram", tiktok: "TikTok", youtube: "YouTube", x: "X", facebook: "Facebook", linkedin: "LinkedIn" };
   function embedHtml(p) {
-    // every network: the poster with ▶; the post itself (embed code or the platform's player) loads on click
+    // the post itself, as the platform shows it, straight away (no cover): its embed code, or the platform's player
     const blockquote = /^\s*<blockquote class="(instagram-media|tiktok-embed|twitter-tweet)/.test(p.embed || "");
+    if (blockquote) return `<div class="an-embed">${p.embed}</div>`;
     const pl = playerSrc(p) || (previewSrc(p) ? { src: previewSrc(p) } : null);
-    if (!blockquote && !pl) return p.url ? `<a class="btn btn-outline" href="${esc(p.url)}" target="_blank" rel="noopener">Open post</a>` : "";
+    if (!pl) return p.url ? `<a class="btn btn-outline" href="${esc(p.url)}" target="_blank" rel="noopener">Open post</a>` : "";
     const vertical = shape(p).ratio > 1.05;
-    return `<div class="an-poster${vertical ? " is-vertical" : ""}" data-cover-box data-embed-id="${esc(p.id)}"${pl && !blockquote ? ` data-embed-src="${esc(pl.src)}"${pl.ig ? " data-embed-ig" : ""}` : ""}>
-      ${posterHtml(p, first(p, "club") || first(p, "competition") || first(p, "entity"))}
-      <button type="button" class="an-play" data-embed-play aria-label="${esc(isVideo(p) ? tx("Play video") : tx("Show the post"))}"></button></div>`;
+    return `<div class="an-poster is-live${vertical ? " is-vertical" : ""}" data-embed-id="${esc(p.id)}"><iframe src="${esc(pl.src)}" title="Post" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen scrolling="${pl.ig ? "no" : "auto"}"></iframe></div>`;
   }
-  body.addEventListener("click", (e) => {
-    const play = e.target.closest("[data-embed-play]");
-    if (!play) return;
-    const box = play.closest("[data-embed-id]");
-    refreshViews(box.dataset.embedId);
-    const p = cache.get(String(box.dataset.embedId));
-    if (box.dataset.embedSrc) {
-      box.classList.add("is-live");
-      box.innerHTML = `<iframe src="${esc(box.dataset.embedSrc)}" title="Post" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen scrolling="${box.hasAttribute("data-embed-ig") ? "no" : "auto"}"></iframe>`;
-    } else if (p?.embed) {
-      box.outerHTML = `<div class="an-embed">${p.embed}</div>`;
-      runEmbedScript();
-    }
-  });
   const SCRIPTS = { "instagram-media": "https://www.instagram.com/embed.js", "tiktok-embed": "https://www.tiktok.com/embed.js", "twitter-tweet": "https://platform.twitter.com/widgets.js" };
   function runEmbedScript() {
     if ($(".instagram-media", body) && window.instgrm) return window.instgrm.Embeds.process();
@@ -2251,7 +2236,7 @@
     drawer.hidden = false;
     document.body.style.overflow = "hidden";
     runEmbedScript();
-    window.SCP_COVERS?.observe(body);
+    refreshViews(p.id);
     showAnalysisArea(p.id);
   }
 

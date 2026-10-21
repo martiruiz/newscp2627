@@ -6909,3 +6909,4 @@ a.lf-sp-favs { text-decoration: none; }
 .an-block h3 { font-size: 14.5px; font-weight: 700; letter-spacing: 0.09em; color: #e4dcff; margin-bottom: 12px; gap: 10px; }
 .an-block h3 svg { width: 26px; height: 26px; padding: 5px; border-radius: 8px; background: linear-gradient(135deg, #8b5cf6, #c38cf9); color: #fff; box-shadow: 0 6px 14px -8px rgba(139, 92, 246, 0.9); }
 .an-adapt h3 svg { background: linear-gradient(135deg, #16b364, #3ccfc0); box-shadow: 0 6px 14px -8px rgba(22, 179, 100, 0.9); }
+.an-summary { font-size: 15px; line-height: 1.55; }   /* same size as the rest of the analysis */
