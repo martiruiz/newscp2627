@@ -2182,7 +2182,7 @@
   const MOMENT_NAMES = { matchday: "Matchday", signing: "Signing", kit: "Kit", sponsor: "Sponsor", behind_the_scenes: "Behind the scenes", fans: "Fans", milestone: "Milestone", community: "Community", ticketing: "Tickets", training: "Training", humour: "Humour", other: "Other" };
   const STYLE_NAMES = { talking_head: "Talking head", pov: "POV", meme: "Meme", graphic: "Graphic", montage: "Montage", interview: "Interview", challenge: "Challenge", vlog: "Vlog", live_action: "Live action", other: "Other" };
   const block = (title, ico, html, cls = "") => (html ? `<section class="an-block ${cls}"><h3>${icon(ico)}${title}</h3>${html}</section>` : "");
-  const stamp = (t, basis) => (basis === "video" ? `${t}s` : `#${t}`);
+  const stamp = (t, basis) => (basis === "video" ? `${t}s` : Number(t) > 0 ? `#${t}` : "-");
 
   function analysisHtml(a) {
     if (!a) return `<div class="an-empty">${icon("sparkles")}<div><b>Analysis not available</b><p>Please try again later.</p></div></div>`;
@@ -2212,6 +2212,7 @@
     if (!p) return;
     const who = first(p, "club") || first(p, "competition") || first(p, "entity");
     const groups = CATEGORIES.filter((c) => p.tags?.[c.key]?.length).map((c) => `<div class="dr-tag-row"><dt>${esc(c.label)}</dt><dd>${tagChips(p, [c.key])}</dd></div>`).join("");
+    body.dataset.post = p.id;
     body.innerHTML = `
       <div class="an-media">${embedHtml(p)}
         ${groups || p.title ? `<details class="an-more">
@@ -2228,6 +2229,7 @@
           <div class="an-actions">
             <button class="pill pill-gold" type="button" data-more-like="${esc(p.id)}">${icon("sparkles")}More like this</button>
             ${saveBtn(p.id)}
+            <button class="pill an-pdf" type="button" hidden data-an-pdf>${icon("download")}${esc(tx("Download PDF"))}</button>
             ${me.isSuper ? `<button class="pill pill-danger an-remove" type="button" data-remove="${esc(p.id)}" title="${esc(tx("Remove from library"))}" aria-label="${esc(tx("Remove from library"))}">${icon("trash-2")}</button>` : ""}
           </div>
         </header>
@@ -2242,7 +2244,56 @@
 
   const area = () => body.querySelector("[data-analysis]");
   // the analysis on the right, its topics in the drop-down under the post
-  const showAnalysis = (a, before = "") => { area().innerHTML = before + analysisHtml(a); const t = body.querySelector("[data-topics]"); if (t) t.innerHTML = topicsHtml(a); };
+  let shown = null;   // the analysis on screen (for its PDF)
+  const showAnalysis = (a, before = "") => {
+    area().innerHTML = before + analysisHtml(a);
+    const t = body.querySelector("[data-topics]"); if (t) t.innerHTML = topicsHtml(a);
+    shown = a ? { id: Number(body.dataset.post || 0), a } : null;
+    const b = body.querySelector("[data-an-pdf]"); if (b) b.hidden = !a;
+  };
+  // one analysis as a printable page, laid out like the panel (the browser saves it as PDF)
+  function analysisPdf(p, a) {
+    const w = window.open("", "_blank");
+    if (!w) return toast(tx("Allow pop-ups to download the PDF."));
+    const T = (x) => esc(tx(x));
+    const sec = (title, html) => (html ? `<section><h3>${T(title)}</h3>${html}</section>` : "");
+    const para = (v) => (v ? `<p>${esc(v)}</p>` : "");
+    const fmt = a.format || {};
+    const facts = [["Category", fmt.category], ["Type", fmt.type], ["Layout", fmt.visualLayout], ["Pacing", fmt.pacing], ["Moment", MOMENT_NAMES[a.moment]], ["Style", STYLE_NAMES[a.style]]].filter(([, v]) => v);
+    const who = first(p, "club") || first(p, "competition") || first(p, "entity") || "Post";
+    const list = (items, key) => (items?.length ? `<ol>${items.map((v) => `<li><b>${esc(stamp(v.t, a.basis))} · ${esc(v[key])}</b>${v.onScreenText ? `<q>${esc(v.onScreenText)}</q>` : ""}${para(v.why)}</li>`).join("")}</ol>` : "");
+    w.document.write(`<!doctype html><html lang="${document.documentElement.lang}"><head><meta charset="utf-8"><title>${esc(who)} · ${T("AI analysis")} · Sports Content Playbook</title>
+      <style>@page{margin:16mm}body{font:13px/1.55 -apple-system,Segoe UI,Inter,sans-serif;color:#121b33;margin:0 auto;max-width:820px;padding:24px}
+      header{display:flex;gap:20px;align-items:flex-start;padding-bottom:16px;border-bottom:2px solid #8b5cf6;margin-bottom:16px}
+      header img{width:150px;border-radius:10px;object-fit:cover}.tag{display:inline-block;padding:3px 10px;border-radius:99px;background:#8b5cf6;color:#fff;font-size:11px;font-weight:700}
+      h1{font-size:24px;margin:8px 0 2px}.m{color:#6b7488;font-size:12px}a{color:#7c3aed;font-size:12px;word-break:break-all}
+      .sum{font-size:14px;margin:0 0 14px}.grid{columns:2;column-gap:18px}section{break-inside:avoid;margin:0 0 14px;padding:12px 14px;border:1px solid #e3dcfb;border-radius:10px;background:#faf8ff}
+      h3{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#7c3aed;margin:0 0 6px}p{margin:4px 0}q{display:block;font-weight:600;font-size:15px;margin:2px 0 6px}
+      .chip{display:inline-block;margin:2px 4px 2px 0;padding:2px 9px;border-radius:99px;background:#efe9ff;color:#5b3fc4;font-size:11px}
+      dl{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0}dt{font-size:10px;text-transform:uppercase;color:#6b7488}dd{margin:0}ol{margin:0;padding-left:16px}li{margin:0 0 6px}
+      .tpl{margin-top:6px;padding:8px;border:1px dashed #c9bdf5;border-radius:8px}footer{margin-top:18px;color:#6b7488;font-size:11px}</style></head><body>
+      <header>${p.cover_url ? `<img src="${esc(p.cover_url)}" alt="">` : ""}<div><span class="tag">✦ ${T("AI analysis")}</span><h1>${esc(who)}</h1>
+        <p class="m">${esc(pretty(first(p, "format")) || "Post")}${p.published_at ? ` · ${esc(date(p.published_at))}` : ""}</p>${p.url ? `<a href="${esc(p.url)}">${esc(p.url)}</a>` : ""}</div></header>
+      ${a.summary ? `<p class="sum">${esc(a.summary)}</p>` : ""}
+      <div class="grid">
+      ${sec("Hook", a.hook ? `${a.hook.text ? `<q>“${esc(a.hook.text)}”</q>` : ""}${a.hook.category ? `<span class="chip">${esc(a.hook.category)}</span>` : ""}${para(a.hook.whyItWorks)}${a.hook.template ? `<div class="tpl"><b>${T("Template")}:</b> ${esc(a.hook.template)}</div>` : ""}` : "")}
+      ${sec("Why it works", para(a.whyItWorks))}
+      ${sec("Format", facts.length ? `<dl>${facts.map(([k, v]) => `<div><dt>${T(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>` : "")}
+      ${sec("Angle", a.angle?.angle || a.angle?.topic ? `${a.angle.topic ? `<span class="chip">${esc(a.angle.topic)}</span>` : ""}${para(a.angle.angle)}` : "")}
+      ${sec(a.basis === "video" ? "Visual breakdown" : "Slide by slide", list(a.visualBreakdown, "shot"))}
+      ${sec("Scroll stoppers", list(a.scrollStoppers, "moment"))}
+      ${sec(a.replicable?.is === false ? "Hard to replicate" : "How to adapt it to your club", para(a.replicable?.howToAdapt))}
+      </div>
+      ${a.topics?.length ? `<p>${a.topics.map((t) => `<span class="chip">${esc(t)}</span>`).join("")}</p>` : ""}
+      <footer>Sports Content Playbook · ${esc(new Date().toLocaleDateString(window.SCP_LOC || "en-GB"))}</footer>
+      <script>onload=()=>setTimeout(()=>print(),400)<\/script></body></html>`);
+    w.document.close();
+  }
+  body.addEventListener("click", (e) => {
+    if (!e.target.closest("[data-an-pdf]") || !shown) return;
+    const p = cache.get(String(shown.id));
+    if (p) analysisPdf(p, shown.a);
+  });
   const balanceLine = () => ai.ent?.is_staff ? tx("Team access: unlimited analyses.")
     : ai.ent?.pack_left ? tx(credits() === 1 ? "You have <b>{n} analysis</b> left ({m} monthly + {p} from packs)." : "You have <b>{n} analyses</b> left ({m} monthly + {p} from packs).", { n: credits(), m: ai.ent.monthly_left, p: ai.ent.pack_left })
     : tx(credits() === 1 ? "You have <b>{n} analysis</b> left this month." : "You have <b>{n} analyses</b> left this month.", { n: credits() });
