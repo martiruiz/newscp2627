@@ -149,9 +149,26 @@
       return d;
     };
     const head = (extra = "") => `<header class="aud-h aud-h-lg"><h2>Newsletter</h2>${A.info("The weekly newsletter. Every week a script writes the issue with AI (intro, top story, news, 4 featured posts, 3 articles) and leaves it as a draft in Resend. Here you edit its texts, preview it, save, update the Resend draft and send yourself a test. It reaches the subscribers only when someone sends it from Resend → Broadcasts.")}${extra}</header>`;
+    const busy = async (b, work) => { const t = b.innerHTML; b.disabled = true; b.textContent = "Working…"; try { await work(); } catch (e) { A.toast(e.message, "err"); } finally { b.disabled = false; b.innerHTML = t; } };
+    // who receives it: website sign-ups + imported contacts still subscribed + members who opted in (supabase/newsletter-contacts.sql)
+    let recipients = null;
+    const loadRecipients = async () => { const { data } = await A.db.rpc("admin_newsletter_recipients"); recipients = data || null; };
+    const subsHtml = () => {
+      const by = (src) => (recipients || []).filter((r) => (src === "website" ? !["old-scp", "member"].includes(r.source) : r.source === src)).length;
+      return `<div class="nl-subs">
+        <div class="nl-subs-n"><b>${recipients ? num(recipients.length) : "—"}</b><span>subscribers ${A.info("Everyone who gets the newsletter, one per e-mail: people who signed up on the website, contacts imported from the old SCP and members who opted in on their profile. People who unsubscribe (link in every e-mail) are taken out by Resend.")}</span></div>
+        ${recipients ? `<span class="nl-subs-by">Website <b>${num(by("website"))}</b></span><span class="nl-subs-by">Old SCP <b>${num(by("old-scp"))}</b></span><span class="nl-subs-by">Members <b>${num(by("member"))}</b></span>` : `<span class="nl-subs-by">Run supabase/newsletter-contacts.sql in Supabase first.</span>`}
+        <span class="spacer"></span>
+        <label class="btn btn-sm">${icon("import")}Import contacts (CSV)<input type="file" accept=".csv" hidden data-nl-import></label>
+      </div>`;
+    };
+    await loadRecipients().catch(() => {});
+    if (!host._nlImport) { host._nlImport = true; host.addEventListener("change", (e) => { const f = e.target.closest("[data-nl-import]")?.files?.[0]; if (f) { e.target.value = ""; importDialog(f); } }); }
     const { data: issues, error } = await A.db.from("newsletter_issues").select("*").order("week_start", { ascending: false }).limit(12);
-    if (error) { host.innerHTML = `${head()}<p class="aud-empty panel-pad">${esc(/does not exist|schema cache/i.test(error.message) ? "Run supabase/newsletter.sql in Supabase first." : A.errMsg(error))}</p>`; return; }
-    if (!issues.length) { host.innerHTML = `${head()}<p class="aud-empty panel-pad">No issue yet. The weekly script (<span class="mono">node newsletter/weekly.mjs</span> in the pipeline) writes it and leaves the draft in Resend; then it shows here to edit.</p>`; return; }
+    if (error) { host.innerHTML = `${head()}${subsHtml()}<p class="aud-empty panel-pad">${esc(/does not exist|schema cache/i.test(error.message) ? "Run supabase/newsletter.sql in Supabase first." : A.errMsg(error))}</p>`; return; }
+    const empty = () => { host.innerHTML = `${head()}${subsHtml()}<p class="aud-empty panel-pad">No issue yet. The weekly script (<span class="mono">node newsletter/weekly.mjs</span> in the pipeline) writes it and leaves the draft in Resend; then it shows here to edit.</p>`; };
+    const refresh = () => (issues.length ? draw() : empty());
+    if (!issues.length) return empty();
     let cur = issues[0];
     const draw = () => {
       const it = cur.items || {};
@@ -159,8 +176,9 @@
       const field = (k, label, v, tip, area) => `<label class="nl-f"><span>${label} ${A.info(tip)}</span>${area ? `<textarea class="input" rows="${area}" data-k="${k}">${esc(v || "")}</textarea>` : `<input class="input" data-k="${k}" value="${esc(v || "")}">`}</label>`;
       host.innerHTML = `${head(`<span class="spacer"></span>
           <select class="select" data-nl-week aria-label="Issue">${issues.map((x) => `<option value="${x.id}"${x.id === cur.id ? " selected" : ""}>Week of ${esc(x.week_start)} · ${esc(x.subject)}</option>`).join("")}</select>`)}
+        ${subsHtml()}
         <div class="nl-body">
-          <p class="nl-status">${cur.broadcast_id ? `<span class="imp-st st-wait"><i></i>Draft in Resend</span>` : `<span class="imp-st st-mute"><i></i>No Resend draft</span>`}
+          <p class="nl-status">${cur.sent_at ? `<span class="imp-st st-ok"><i></i>Sent ${A.fmtDateTime(cur.sent_at)} to ${num(cur.sent_to || 0)}</span>` : cur.broadcast_id ? `<span class="imp-st st-wait"><i></i>Draft in Resend</span>` : `<span class="imp-st st-mute"><i></i>No Resend draft</span>`}
             ${cur.edited_at ? `<span>Edited ${A.fmtDateTime(cur.edited_at)}</span>` : ""}${cur.draft_synced_at ? `<span>Draft updated ${A.fmtDateTime(cur.draft_synced_at)}</span>` : ""}
             ${cur.edited_at && (!cur.draft_synced_at || cur.draft_synced_at < cur.edited_at) ? `<span class="nl-warn">Saved changes aren't in the Resend draft yet</span>` : ""}</p>
           <div class="nl-grid">
@@ -184,7 +202,8 @@
             <span class="spacer"></span>
             <button class="btn" type="button" data-nl-test>Send me a test</button>
             <button class="btn" type="button" data-nl-save>Save</button>
-            <button class="btn btn-primary" type="button" data-nl-push ${cur.broadcast_id ? "" : "disabled"}>${icon("check")}Save &amp; update the Resend draft</button>
+            ${cur.sent_at ? "" : cur.broadcast_id ? `<button class="btn btn-primary" type="button" data-nl-push>${icon("check")}Save &amp; update the Resend draft</button>
+              <button class="btn btn-danger nl-send" type="button" data-nl-send>Send to subscribers</button>` : `<button class="btn btn-primary" type="button" data-nl-draft>${icon("plus")}Save &amp; create the Resend draft</button>`}
           </div>
         </div>`;
     };
@@ -205,7 +224,6 @@
       if (err) throw new Error(/does not exist|schema cache|Could not find/i.test(err.message) ? "Run supabase/newsletter-editor.sql in Supabase first." : err.message);
       Object.assign(cur, { items, subject: items.subject, edited_at: new Date().toISOString() });
     };
-    const busy = async (b, work) => { const t = b.innerHTML; b.disabled = true; b.textContent = "Working…"; try { await work(); } catch (e) { A.toast(e.message, "err"); } finally { b.disabled = false; b.innerHTML = t; } };
     host.addEventListener("change", (e) => { if (e.target.matches("[data-nl-week]")) { cur = issues.find((x) => x.id === Number(e.target.value)); draw(); } });
     host.addEventListener("click", (e) => {
       const rm = e.target.closest("[data-rm]");
@@ -218,8 +236,72 @@
       });
       if (b.matches("[data-nl-save]")) return busy(b, async () => { await save(); A.toast("Newsletter saved."); draw(); });
       if (b.matches("[data-nl-push]")) return busy(b, async () => { await save(); await fn({ action: "push", id: cur.id }); cur.draft_synced_at = new Date().toISOString(); A.toast("Saved and the Resend draft is updated. Send it from Resend → Broadcasts."); draw(); });
-      if (b.matches("[data-nl-test]")) return busy(b, async () => { await save(); const r = await fn({ action: "test", id: cur.id }); A.toast(`Test sent to ${r.to}.`); draw(); });
+      if (b.matches("[data-nl-test]")) return busy(b, async () => { if (!cur.sent_at) await save(); const r = await fn({ action: "test", id: cur.id }); A.toast(`Test sent to ${r.to}.`); draw(); });
+      if (b.matches("[data-nl-draft]")) return busy(b, async () => { await save(); const r = await fn({ action: "create_draft", id: cur.id }); cur.broadcast_id = r.broadcast_id; cur.draft_synced_at = new Date().toISOString(); A.toast("Resend draft created."); draw(); });
+      if (b.matches("[data-nl-send]")) return sendDialog();
     });
+    // sending: two steps (confirm the count, then type SEND), and the issue is saved and the draft updated first
+    function sendDialog() {
+      const n = recipients ? recipients.length : 0;
+      const m = A.modal({ title: "Send the newsletter?", size: "sm", body: `<p>“${esc(cur.items?.subject || cur.subject)}” goes to <b>${num(n)}</b> subscribers now. It can't be undone.</p>
+        <label class="ms-check"><input type="checkbox" data-sd-ok> I've checked the test e-mail</label>
+        <label class="nl-f" style="margin-top:12px"><span>Type SEND to confirm</span><input class="input" data-sd-word autocomplete="off"></label>`,
+        foot: `<button class="btn btn-ghost" type="button" data-sd-no>Cancel</button><button class="btn btn-danger" type="button" data-sd-yes disabled>Send to ${num(n)}</button>` });
+      const yes = $("[data-sd-yes]", m.el);
+      const check = () => { yes.disabled = !($("[data-sd-ok]", m.el).checked && $("[data-sd-word]", m.el).value.trim().toUpperCase() === "SEND"); };
+      m.el.addEventListener("input", check); m.el.addEventListener("change", check);
+      $("[data-sd-no]", m.el).onclick = () => m.close();
+      yes.onclick = () => busy(yes, async () => {
+        await save();
+        const r = await fn({ action: "send", id: cur.id, confirm: "SEND" });
+        Object.assign(cur, { sent_at: new Date().toISOString(), sent_to: r.sent_to });
+        m.close(); A.toast(`Sent to ${num(r.sent_to)} subscribers.`); draw();
+      });
+    }
+
+    // import contacts from a CSV (the old SCP's FluentCRM export, or any list with an e-mail column)
+    function importDialog(file) {
+      window.Papa.parse(file, { header: true, skipEmptyLines: true, complete: ({ data, meta }) => {
+        const col = (...names) => meta.fields.find((f) => names.some((n) => f.trim().toLowerCase() === n.toLowerCase()));
+        const C = { email: col("Envíe un correo electrónico a", "Email", "E-mail", "Email address", "Correo electrónico"), first: col("Nombre", "First name", "First Name", "Name"),
+          last: col("Apellido", "Last name", "Last Name"), status: col("Estatus", "Status"), lists: col("Listas", "Lists"), country: col("País", "Country"),
+          org: col("Organization", "Organización", "Company"), created: col("Creado en", "Created at", "Created") };
+        if (!C.email) return A.toast("The CSV needs an e-mail column.", "err");
+        const valid = (e) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e);
+        const have = new Set((recipients || []).map((r) => r.email.toLowerCase()));
+        const rows = data.map((r) => ({ email: String(r[C.email] || "").trim().toLowerCase(), status: String(r[C.status] || "subscribed").trim().toLowerCase(), r }));
+        const groups = { ok: rows.filter((x) => valid(x.email) && x.status === "subscribed"), pending: rows.filter((x) => valid(x.email) && x.status === "pending"),
+          other: rows.filter((x) => valid(x.email) && !["subscribed", "pending"].includes(x.status)), bad: rows.filter((x) => !valid(x.email)) };
+        const m = A.modal({ title: "Import contacts", sub: esc(file.name), body: `
+          <p>${num(rows.length)} rows. Contacts already on the list are kept as they are; new ones are added as subscribers and get <b>no welcome e-mail</b>.</p>
+          <ul class="nl-imp">
+            <li><b>${num(groups.ok.length)}</b> subscribed <small>${num(groups.ok.filter((x) => have.has(x.email)).length)} already on the list</small></li>
+            <li><label class="ms-check"><input type="checkbox" data-imp-pending> Also the <b>${num(groups.pending.length)}</b> pending</label> <small>they didn't confirm their subscription in the old SCP</small></li>
+            ${groups.other.length ? `<li><b>${num(groups.other.length)}</b> with another status (unsubscribed…) <small>not imported</small></li>` : ""}
+            ${groups.bad.length ? `<li><b>${num(groups.bad.length)}</b> without a valid e-mail <small>not imported</small></li>` : ""}
+          </ul>`, foot: `<button class="btn btn-ghost" type="button" data-imp-no>Cancel</button><button class="btn btn-primary" type="button" data-imp-yes>Import</button>` });
+        const go = $("[data-imp-yes]", m.el);
+        const label = () => { go.textContent = `Import ${num(groups.ok.length + ($("[data-imp-pending]", m.el).checked ? groups.pending.length : 0))} contacts`; };
+        label(); m.el.addEventListener("change", label);
+        $("[data-imp-no]", m.el).onclick = () => m.close();
+        go.onclick = () => busy(go, async () => {
+          const pick = [...groups.ok, ...($("[data-imp-pending]", m.el).checked ? groups.pending : [])];
+          const payload = pick.map(({ email, status, r }) => {
+            const d = r[C.created] ? new Date(String(r[C.created]).replace(" ", "T")) : null;
+            return { email, first_name: r[C.first] || "", last_name: r[C.last] || "", country: r[C.country] || "", organization: r[C.org] || "", lists: r[C.lists] || "",
+              created_at: d && !isNaN(d) ? d.toISOString() : "", consent_text: `Imported from the old SCP (${file.name}): status ${status}${r[C.lists] ? `, lists: ${r[C.lists]}` : ""}.` };
+          });
+          let added = 0;
+          for (let i = 0; i < payload.length; i += 200) {
+            const { data: res, error: err } = await A.db.rpc("admin_import_newsletter_contacts", { p_rows: payload.slice(i, i + 200) });
+            if (err) throw new Error(/does not exist|schema cache|Could not find/i.test(err.message) ? "Run supabase/newsletter-contacts.sql in Supabase first." : err.message);
+            added += res.added;
+          }
+          m.close(); A.toast(`${num(added)} contacts added (${num(payload.length - added)} were already on the list).`);
+          await loadRecipients().catch(() => {}); refresh();
+        });
+      } });
+    }
     draw();
   }
 })();
