@@ -6308,14 +6308,15 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 @media (min-width: 961px) {
   .library { grid-template-rows: auto 1fr; }
   .library > .filters { grid-column: 1; grid-row: 1 / span 2; }
-  .library > .lib-head { grid-column: 2 / -1; grid-row: 1; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: stretch; }
+  .library > .lib-head { grid-column: 2 / -1; grid-row: 1; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: stretch; }
   .library > .feed { grid-column: 2; grid-row: 2; }
   .library > .pp { grid-column: 3; grid-row: 2; top: var(--lib-head-h, 150px); height: calc(100vh - var(--lib-head-h, 150px)); }
   /* one row: the filter bar (Occasion, Goal, Sponsors, Get inspired by) next to "My space"; period and sort live in the
      filters column, so the feed-bar (only the phones' "Hide filters" pill) isn't shown */
   .lib-head .feed-bar { display: none; }
-  .lib-head .my-space { grid-column: 2; grid-row: 1; border-left: 1px solid var(--line-soft); }
-  .lib-head .lfb { grid-column: 1; grid-row: 1; }
+  .lib-head .my-space { grid-column: 3; grid-row: 1; border-left: 1px solid var(--line-soft); }
+  .lib-head .lfb { grid-column: 2; grid-row: 1; }
+  .lib-head .lf-sortbar { grid-column: 1; grid-row: 1; }
   /* "My space" stays in this row, also with the Content Plan open */
   .lib-head .my-space { flex-direction: row; align-items: center; gap: 10px; }
 }
@@ -6427,7 +6428,6 @@ a.lf-sp-favs { text-decoration: none; }
 .lf-sortbar .lf-dd { flex: 0 1 auto; min-width: 0; }
 .lf-sortbar .lf-dd:last-child { flex: 1 1 0; }
 .lf-sortbar .lf-dd-btn { width: 100%; justify-content: space-between; gap: 6px; padding: 0 10px; color: var(--muted); font-weight: 700; font-size: 13px; }
-.lf-sortbar .lf-dd-btn > span:first-child:empty, .lf-sortbar .lf-dd-btn > svg:first-child { display: none; }
 .lf-sortbar .lf-dd-btn > span:not(.lf-dd-k) { overflow: hidden; text-overflow: ellipsis; }
 .lf-sortbar .lf-dd:first-child .lf-menu { left: 0; right: auto; }
 
@@ -7032,3 +7032,13 @@ p.lead { display: block; min-height: 0; }   /* the intro paragraphs share the na
   .my-space-btns .pill > [data-icon] { width: 23px; height: 23px; border-radius: 7px; }
   .my-space-btns .pill > [data-icon] svg { width: 13px !important; height: 13px !important; }
 }
+/* Content Library head: period (calendar icon; the label only when a period is chosen) and Algorithm, left of the filter bar */
+.lib-head .lf-sortbar { align-items: center; margin: 0; padding: 0 0 0 20px; background: var(--surface); border-bottom: 1px solid var(--line-soft); }
+.lib-head .lf-sortbar .lf-dd { flex: none; }
+@media (min-width: 961px) {
+  .lib-head .lfb { padding-left: 14px; padding-right: 14px; } .lib-head .lfb-panel { left: 14px; right: 14px; }
+  .lib-head .lfb-glass .lfb-btn { padding: 0 8px; } .lib-head .lfb-glass .lfb-tx b { font-size: 14px; }
+}
+.lib-head .lf-sortbar .lf-dd-btn { height: 35px; }
+.lib-head .lf-sortbar [data-period-label]:empty { display: none; }
+@media (max-width: 960px) { .lib-head .lf-sortbar { padding: 10px 16px 0; border-bottom: 0; } }

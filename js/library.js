@@ -1454,7 +1454,7 @@
   });
   document.addEventListener("click", (e) => { if (!e.target.closest("[data-dd], .dp-pop")) $$("[data-dd-menu]").forEach((m) => { m.hidden = true; m.previousElementSibling.setAttribute("aria-expanded", "false"); }); });
   function paintDropdowns(s) {
-    $("[data-period-label]").textContent = s.period === "all" ? "All time" : s.period === "custom" ? (s.from || s.to ? `${shortDate(s.from) || "…"} → ${shortDate(s.to) || "…"}` : "Custom dates") : PERIODS[s.period];
+    $("[data-period-label]").textContent = s.period === "all" ? "" : s.period === "custom" ? (s.from || s.to ? `${shortDate(s.from) || "…"} → ${shortDate(s.to) || "…"}` : "Custom dates") : PERIODS[s.period];
     $("[data-order-label]").textContent = $(`[data-order] [data-value="${s.order}"]`)?.textContent.trim() || "Latest";
   }
 
