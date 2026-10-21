@@ -7041,6 +7041,7 @@ p.lead { display: block; min-height: 0; }   /* the intro paragraphs share the na
   .lib-head .lfb-glass .lfb-btn { padding: 0 8px; } .lib-head .lfb-glass .lfb-tx b { font-size: 14px; }
 }
 .lib-head .lf-sortbar .lf-dd-btn { height: 35px; }
+.lib-head .lf-sortbar .lf-menu { left: 0; right: auto; }   /* both menus open from the button's left edge */
 .lib-head .lf-sortbar [data-period-label]:empty { display: none; }
 .lib-head .lf-sortbar [data-order-label] { display: none; }   /* the button says just "Sort"; the choice shows in its menu */
 .lib-head .lf-sortbar .lf-dd-k { display: inline; color: var(--text); font-weight: 600; }
