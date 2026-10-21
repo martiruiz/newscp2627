@@ -724,7 +724,8 @@
       { key: "transfer", label: "Transfer market", ico: "swap", desc: "Signings, renewals and farewells", cats: ["transfer"] },
       { key: "kit", label: "Kit launches", ico: "shirt", desc: "Shirts and collections", cats: ["kit"] },
       { key: "season_moment", label: "Season", ico: "flag", desc: "The big moments of the year", cats: ["season_moment"] },
-      { key: "moment", label: "Dates & campaigns", ico: "star", desc: "Records, tributes and calendar dates", cats: ["moment"] },
+      { key: "moment", label: "Dates & campaigns", ico: "star", desc: "Records, tributes and birthdays", cats: ["moment"],
+        skip: ["christmas", "halloween", "black friday", "valentine's day", "pride", "ramadan / eid", "international women's day", "lunar new year", "new year"] },   // no calendar holidays
       { key: "angle", label: "How do you tell it?", ico: "smile", desc: "The tone of the post", cats: ["angle"], skip: ["player-focused"] },   // → Players
       { key: "comms", label: "Press and comms", ico: "message", desc: "Announcements, press and practical info", cats: ["comms"] },
       { key: "crisis", label: "Sensitive topics", ico: "alert", desc: "How other clubs handle them, with care", cats: ["crisis"] },
