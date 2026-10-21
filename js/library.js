@@ -732,10 +732,12 @@
       { key: "design", label: "Graphic design", ico: "image", desc: "Matchday graphics, posters and cards", vals: [["campaign", "Graphic Design"]] },
     ],
     goal: [
-      { key: "goal", label: "Business goal", ico: "target", desc: "What the post should achieve", cats: ["goal"] },
-      { key: "sponsor", label: "Sponsors", ico: "tag", desc: "Brands on other clubs' posts", cats: ["sponsor"], logos: true },
+      // Sponsors: the brands · how they show (what was Inspiration → Sponsors) · the goal
+      { key: "sponsor", label: "Brands", ico: "tag", desc: "Brands on other clubs' posts", cats: ["sponsor"], logos: true, head: "The brands" },
       { key: "sponsor_sector", label: "Sponsor sector", ico: "briefcase", desc: "Partners by industry", cats: ["sponsor_sector"] },
+      { key: "sponsors", label: "How the brand shows", ico: "badge", desc: "Logo on a graphic, giveaway, a creator with a brand…", vals: [["collab", "Brand collab"], ["sponsor_integration", null]], head: "How they show" },
       { key: "collab", label: "Collaborations", ico: "users", desc: "Posts made with others", cats: ["collab"], skip: ["brand collab", "player collab"] },   // Player collab → Players
+      { key: "goal", label: "Business goal", ico: "target", desc: "What the post should achieve", cats: ["goal"], head: "What for" },
     ],
     benchmark: [
       { key: "sport", label: "Sport", ico: "ball", desc: "Every sport in the library", cats: ["sport"], tiles: true, head: "Where it's played" },
@@ -743,7 +745,6 @@
       { key: "club", label: "Club", ico: "shield", desc: "Clubs and teams", cats: ["club"], logos: true },
       // vals: [category, name] (every value of the category when name is null)
       { key: "players", label: "Players", ico: "user", desc: "Posts starring the players", vals: [["campaign", "Player Appearance"]], head: "What's published" },
-      { key: "sponsors", label: "Sponsors", ico: "tag", desc: "Posts where a sponsor shows, by how it appears", vals: [["sponsor_integration", null], ["collab", "Brand collab"]] },
       { key: "media", label: "Media", ico: "megaphone", desc: "What sports media publish", vals: [["entity", "Media"]], head: "Who publishes it" },
       { key: "brands", label: "Brands", ico: "badge", desc: "Posts by the brands' own accounts", vals: [["entity", "Brand"]] },
       // the club's squad (women's team, academy…) shows inside Club; cities only through the search box
