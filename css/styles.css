@@ -6708,3 +6708,11 @@ a.lf-sp-favs { text-decoration: none; }
 .lf-sec-v2 .lf-grp + .lf-grp { margin-top: 18px; }
 .lf-grp .lf-fmt-tiles { margin-bottom: 18px; }
 .lf-grp > .lf-row-gap + .lf-row-gap { margin-top: 10px; }
+/* Content Creators → Followers: from / to */
+.lf-fol-h { display: flex; align-items: center; justify-content: space-between; }
+.lf-fol-clear { color: #4f8cff; font: 500 12.5px var(--font-body); cursor: pointer; }
+.lf-fol { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.lf-fol span { color: var(--muted); }
+.lf-fol input { flex: 1; min-width: 0; height: 38px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface-2); color: var(--text); font: 13.5px var(--font-body); outline: 0; transition: border-color 0.15s, box-shadow 0.15s; }
+.lf-fol input:focus { border-color: rgba(240, 184, 74, 0.6); box-shadow: 0 0 0 3px rgba(240, 184, 74, 0.12); }
+.lf-fol input::placeholder { color: var(--muted-dim); }

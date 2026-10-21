@@ -53,10 +53,9 @@
     { key: "cta", label: "Call to action", sec: "brands", ico: "cursor", more: true },
     // the creator's profile (Admin → Scraped profiles; supabase/creator-filters.sql): only under Content Creators
     { key: "creator_type", label: "Creator type", sec: "creators" },
-    { key: "creator_followers", label: "Followers", sec: "creators" },
-    { key: "creator_language", label: "Creator's language", sec: "creators" },
+    { key: "creator_language", label: "Creator's language", sec: "creators", logo: true, ico: "message" },
     { key: "creator_country", label: "Country", sec: "creators" },
-    { key: "creator_gender", label: "Gender", sec: "creators" },
+    { key: "creator_gender", label: "Gender", sec: "creators", ico: "user" },
   ];
   // New layout (default): the filters follow the questions a club's social team asks —
   //   What works · Occasion (matchday timeline, transfers, kit…) · Goal & sponsors · Where & how · Inspiration from.
@@ -250,7 +249,7 @@
     const byId = new Map();
     for (const r of data || []) {
       if (!CAT[r.category]) continue;
-      const v = { id: Number(r.id), category: r.category, name: fixText(r.name), total: Number(r.ideas), logo: logo.get(Number(r.id)) || (r.category === "language" ? flagOf(r.name) : null), ig: igHandle.get(Number(r.id)) || null };
+      const v = { id: Number(r.id), category: r.category, name: fixText(r.name), total: Number(r.ideas), logo: logo.get(Number(r.id)) || (r.category === "language" || r.category === "creator_language" ? flagOf(r.name) : null), ig: igHandle.get(Number(r.id)) || null };
       if (!v.total) continue;
       (byCat[v.category] ||= []).push(v);
       byId.set(v.id, v);
@@ -401,21 +400,39 @@
   }
   // Content Creators on: the filters that describe creators' posts, right under the button (counts are already
   // limited to creators' posts, because the button is one of the active filters)
-  const FOLLOWERS = ["Under 10K", "10K–100K", "100K–1M", "Over 1M"];
+  // Followers: from / to, any number ("500,000", "500k", "1.5M") → the posts of the creators in that range
+  const folNum = (v) => { const m = /^([\d.,]+)\s*([kmb])?$/i.exec(String(v || "").trim()); if (!m) return null; const k = { k: 1e3, m: 1e6, b: 1e9 }[(m[2] || "").toLowerCase()];
+    return Math.round(k ? Number(m[1].replace(/,/g, "")) * k : Number(m[1].replace(/[.,]/g, ""))) || null; };
+  const folFmt = (n) => (n ? Number(n).toLocaleString(window.SCP_LOC || "en-GB") : "");
+  const folHtml = () => { const f = ui.fol || {};
+    return `<div class="lf-sub lf-fol-h">${esc(tx("Followers"))}${f.min || f.max ? `<button type="button" class="lf-fol-clear" data-fol-clear>${esc(tx("Clear"))}</button>` : ""}</div>
+      <div class="lf-fol"><input type="text" inputmode="numeric" placeholder="${esc(tx("From"))}" value="${esc(folFmt(f.min))}" data-fol="min" aria-label="${esc(tx("Followers from"))}"><span>-</span><input type="text" inputmode="numeric" placeholder="${esc(tx("To"))}" value="${esc(folFmt(f.max))}" data-fol="max" aria-label="${esc(tx("Followers to"))}"></div>`; };
+  async function setFollowers(min, max) {
+    if (min && max && min > max) [min, max] = [max, min];
+    if (!min && !max) ui.fol = null;
+    else {
+      const { data } = await db.rpc("followers_post_ids", { p_min: min, p_max: max });
+      ui.fol = { min, max, ids: (data || []).map(Number) };
+    }
+    renderFacets();
+    load(true);
+  }
   function creatorsHtml() {
     // Content type: only the ones that describe creators' posts (Players is one filter in Inspiration → Players)
     const only = { angle: ["skills / tutorial", "behind the scenes"] };
     const chips = (cat, max = 8) => {
-      const vals = (catalog.byCat[cat] || []).filter((v) => (countOf(v) > 0 || isOn(v)) && (!only[cat] || only[cat].includes(v.name.toLowerCase())));
-      const list = (cat === "creator_followers" ? vals.sort((a, b) => FOLLOWERS.indexOf(a.name) - FOLLOWERS.indexOf(b.name)) : byCount(vals)).slice(0, max);
+      const list = byCount((catalog.byCat[cat] || []).filter((v) => (countOf(v) > 0 || isOn(v)) && (!only[cat] || only[cat].includes(v.name.toLowerCase())))).slice(0, max);
       return list.map((v) => `<button type="button" class="lf-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="${v.category}" data-id="${v.id}">${esc(pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`).join("");
     };
     // the creators' own accounts (from the post URL or the import; supabase/scraped-profiles.sql)
     if (!ui.accts) { ui.accts = []; db?.rpc("creator_accounts").then((r) => { ui.accts = r.data || []; if (ui.accts.length) renderFacets(); }, () => {}); }
-    const groups = [["Content type", "angle"], ["Creator type", "creator_type"], ["Followers", "creator_followers"], ["Creator's language", "creator_language"], ["Country", "creator_country", 10], ["Gender", "creator_gender"]]
+    const groups = [["Content type", "angle"], ["Creator type", "creator_type"], ["Country", "creator_country", 10]]
       .map(([label, cat, max, h]) => [label, h ?? chips(cat, max)]).filter(([, h]) => h);
     if (!groups.length) return "";
-    return `<div class="lf-cc-sub">${acctRowHtml()}
+    // language (with flags) and gender as dropdowns
+    const rows = ["creator_language", "creator_gender"].filter(has).map((k) => rowHtml(CAT[k])).join("");
+    const lang = rows ? `<div class="lf-stack lf-row-gap">${rows}</div>` : "";
+    return `<div class="lf-cc-sub">${acctRowHtml()}${folHtml()}${lang}
       ${groups.map(([label, h]) => `<div class="lf-sub">${esc(tx(label))}</div><div class="lf-chips">${h}</div>`).join("")}</div>`;
   }
   // Creators' accounts: a dropdown with a search box on top; a star marks up to 5 favourites (Profile → Favourites,
@@ -985,6 +1002,7 @@
   const column = $("[data-filters]");
   const filterBar = $("[data-lf-bar]");
   const onFilterClick = (e) => {
+    if (e.target.closest("[data-fol-clear]")) return setFollowers(null, null);
     if (e.target.closest("[data-favs]")) {   // all the favourite profiles on / off
       const pf = favNetwork(), f = [...favVals(), ...(pf ? [pf] : [])], on = favsOn();
       f.forEach((v) => (on ? selected[v.category].delete(v.id) : selected[v.category].add(v.id)));
@@ -1079,6 +1097,10 @@
     }
   };
   column.addEventListener("input", onFilterInput);
+  column.addEventListener("change", (e) => {
+    if (!e.target.closest("[data-fol]")) return;
+    setFollowers(folNum($("[data-fol=min]")?.value), folNum($("[data-fol=max]")?.value));
+  });
   filterBar.addEventListener("input", onFilterInput);
 
   // ---------- Search a sentence: "reels de fitxatges amb sponsor que hagin funcionat" → filters ----------
@@ -1497,12 +1519,13 @@
 
     const args = queryArgs(s);
     const cc = (catalog.byCat.entity || []).find((v) => v.name.toLowerCase() === "content creators");
-    if (ui.acct && !(cc && isOn(cc))) ui.acct = null;   // the account filter lives under Content Creators
+    if (!(cc && isOn(cc))) { ui.acct = null; ui.fol = null; }   // the account and followers filters live under Content Creators
     let ids = ui.aiMode ? [...aiList().keys()] : null;
     if (ui.acct) ids = ids ? ids.filter((id) => ui.acct.ids.includes(Number(id))) : ui.acct.ids;
+    if (ui.fol) { const f = new Set(ui.fol.ids); ids = ids ? ids.filter((id) => f.has(Number(id))) : ui.fol.ids; }
     if (ids && !ids.length) {
       grid.querySelectorAll(".lib-skel").forEach((x) => x.remove());
-      return showEmpty(tx(!ui.aiMode ? "No posts from this account yet." : ui.aiMode === "team" ? "Your team hasn't analysed any post yet." : "You haven't analysed any post yet. Open a post and press “Unlock AI Analysis”."));
+      return showEmpty(tx(!ui.aiMode ? (ui.fol && !ui.acct ? "No creators' posts in this followers range yet." : "No posts from this account yet.") : ui.aiMode === "team" ? "Your team hasn't analysed any post yet." : "You haven't analysed any post yet. Open a post and press “Unlock AI Analysis”."));
     }
     if (reset) refreshCounts(args);
     const boost = s.order === "foryou" ? { p_boost: me.boost, p_boost2: me.boost2 } : {};
@@ -2283,7 +2306,7 @@
 
   // ---------- Filter events ----------
   root.addEventListener("change", (e) => {
-    if (e.target.closest("[data-saved-searches], [data-facet-search], [data-lf-search], [data-acct-q], [data-lfb-q]")) return;
+    if (e.target.closest("[data-saved-searches], [data-facet-search], [data-lf-search], [data-acct-q], [data-lfb-q], [data-fol]")) return;
     if (e.target.closest("[data-order]")) seed = String(Math.random()).slice(2, 10); // new shuffle each "Surprise me"
     load(true);
   });
