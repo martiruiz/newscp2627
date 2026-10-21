@@ -879,3 +879,10 @@ tr[data-imp-row]:hover .imp-more, .imp-more:focus-within { opacity: 1; }
 .us-role.is-superadmin { color: var(--accent-light); background: var(--accent-soft); border-color: rgba(240, 184, 74, 0.4); }
 @media (max-width: 1000px) { .us-grid { grid-template-columns: 1fr; } .us-kpis { grid-template-columns: 1fr 1fr; } }
 .stack.us-grid { max-width: none; }
+/* Admin → Scraped profiles (premium) */
+.pf-card { margin-top: 16px; border-radius: 16px; }
+.pf-table { overflow: hidden; }
+.aud-kpi.is-bad::before { background: linear-gradient(90deg, #f32f71, #ff685c); } .aud-kpi.is-bad b { color: var(--red); }
+.pf-sub { font-size: 12px; color: var(--dim); }
+.pf-views { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin: -4px 0 0; font-size: 13px; color: var(--muted); }
+.pf-head h2 { display: flex; align-items: center; gap: 8px; }
