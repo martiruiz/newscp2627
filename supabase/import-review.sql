@@ -56,7 +56,7 @@ begin
       and not exists (select 1 from public.content_removals r where r.external_id = c.external_id);
   get diagnostics n = row_count;
   update public.idea_imports set review_status = 'approved', approved_at = now(), approved_by = auth.uid() where id = p_import_id;
-  delete from public.library_total_cache;
+  delete from public.library_total_cache where true;   -- "where true": the API refuses a DELETE without WHERE
   return n;
 end $$;
 

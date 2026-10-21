@@ -51,7 +51,7 @@ begin
   if p_part in ('all', 'values') then refresh materialized view concurrently public.library_value_counts; end if;
   if p_part in ('all', 'totals') then refresh materialized view concurrently public.library_totals; end if;
   if p_part in ('all', 'pairs') then refresh materialized view concurrently public.library_pair_counts; end if;
-  delete from public.library_total_cache;
+  delete from public.library_total_cache where true;   -- "where true": the API refuses a DELETE without WHERE
 end $$;
 
 -- ---------- 2. "For you" in tiers ----------
