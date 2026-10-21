@@ -54,7 +54,7 @@
         { icon: "life-buoy", title: "Support", desc: "Questions about your account or your plan.", href: "contact.html?topic=support", plan: true },
         { icon: "mail", title: "Write to us", desc: "Send us a message.", href: "contact.html" },
       ],
-      social: [{ name: "Instagram", href: "#" }, { name: "LinkedIn", href: "#" }],
+      social: [{ name: "Instagram", href: "https://www.instagram.com/sportscontentplaybook" }, { name: "LinkedIn", href: "https://www.linkedin.com/company/sportscontentplaybook" }],
     },
   ];
 
