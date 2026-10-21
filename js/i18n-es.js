@@ -467,6 +467,8 @@ window.SCP_ES = {
   "billed yearly": "facturación anual",
   "or {price}/year": "o {price}/año",
   "Recommended": "Recomendado",
+  "Caption": "Texto del post",
+  "Tags and caption": "Etiquetas y texto del post",
   "Soon": "Pronto",
   "Meme accounts and humour pages": "Cuentas de memes y humor",
   "Memes": "Memes",

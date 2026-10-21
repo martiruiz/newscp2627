@@ -2217,9 +2217,10 @@
       ${block(a.basis === "video" ? "Visual breakdown" : "Slide by slide", "clapperboard", a.visualBreakdown?.length ? `<ol class="an-timeline">${a.visualBreakdown.map((v) => `<li><span class="an-t">${stamp(v.t, a.basis)}</span><div><b>${esc(v.shot)}</b>${v.onScreenText ? `<q>${esc(v.onScreenText)}</q>` : ""}${v.why ? `<p>${esc(v.why)}</p>` : ""}</div></li>`).join("")}</ol>` : "")}
       ${block("Scroll stoppers", "hand", a.scrollStoppers?.length ? `<ul class="an-stoppers">${a.scrollStoppers.map((v) => `<li><span class="an-t">${stamp(v.t, a.basis)}</span><div><b>${esc(v.moment)}</b>${v.why ? `<p>${esc(v.why)}</p>` : ""}</div></li>`).join("")}</ul>` : "")}
       ${block(a.replicable?.is === false ? "Hard to replicate" : "How to adapt it to your club", "repeat", a.replicable?.howToAdapt ? `<p>${esc(a.replicable.howToAdapt)}</p>` : "", "an-adapt")}
-      </div>
-      ${a.topics?.length ? `<div class="an-topics">${a.topics.map((t) => `<span class="an-chip">${esc(t)}</span>`).join("")}</div>` : ""}`;
+      </div>`;
   }
+  // the analysis' topics: in the "Tags and caption" drop-down under the post
+  const topicsHtml = (a) => (a?.topics?.length ? `<div class="an-topics">${a.topics.map((t) => `<span class="an-chip">${esc(t)}</span>`).join("")}</div>` : "");
 
   async function openPost(id) {
     const p = cache.get(String(id));
@@ -2228,7 +2229,13 @@
     const who = first(p, "club") || first(p, "competition") || first(p, "entity");
     const groups = CATEGORIES.filter((c) => p.tags?.[c.key]?.length).map((c) => `<div class="dr-tag-row"><dt>${esc(c.label)}</dt><dd>${tagChips(p, [c.key])}</dd></div>`).join("");
     body.innerHTML = `
-      <div class="an-media">${embedHtml(p)}</div>
+      <div class="an-media">${embedHtml(p)}
+        ${groups || p.title ? `<details class="an-more">
+          <summary>${icon("tags")}<span>${esc(tx("Tags and caption"))}</span>${icon("chevron-down")}</summary>
+          <div class="an-more-body"><div data-topics></div>
+          ${groups ? `<dl class="dr-tags">${groups}</dl><p class="dr-hint">Click a tag to see more posts like it.</p>` : ""}
+          ${p.title ? `<div class="an-cap"><b>${esc(tx("Caption"))}</b><p>${esc(p.title)}</p></div>` : ""}</div>
+        </details>` : ""}</div>
       <div class="an-info">
         <header class="an-head">
           <span class="an-ai-badge">${icon("sparkles")}${esc(tx("AI analysis"))}</span>
@@ -2242,8 +2249,6 @@
           </div>
         </header>
         <div data-analysis><div class="an-loading"></div></div>
-        ${groups ? `<section class="an-block"><h3>${icon("tags")}Tags</h3><dl class="dr-tags">${groups}</dl><p class="dr-hint">Click a tag to see more posts like it.</p></section>` : ""}
-        ${p.title ? `<details class="an-caption"><summary>Caption</summary><p>${esc(p.title)}</p></details>` : ""}
       </div>`;
     drawer.hidden = false;
     document.body.style.overflow = "hidden";
@@ -2253,6 +2258,8 @@
   }
 
   const area = () => body.querySelector("[data-analysis]");
+  // the analysis on the right, its topics in the drop-down under the post
+  const showAnalysis = (a, before = "") => { area().innerHTML = before + analysisHtml(a); const t = body.querySelector("[data-topics]"); if (t) t.innerHTML = topicsHtml(a); };
   const balanceLine = () => ai.ent?.is_staff ? tx("Team access: unlimited analyses.")
     : ai.ent?.pack_left ? tx(credits() === 1 ? "You have <b>{n} analysis</b> left ({m} monthly + {p} from packs)." : "You have <b>{n} analyses</b> left ({m} monthly + {p} from packs).", { n: credits(), m: ai.ent.monthly_left, p: ai.ent.pack_left })
     : tx(credits() === 1 ? "You have <b>{n} analysis</b> left this month." : "You have <b>{n} analyses</b> left this month.", { n: credits() });
@@ -2269,7 +2276,7 @@
     if (ai.unlocked.has(n)) return loadUnlocked(n);
     if (ai.team.has(n)) {   // a teammate already analysed it: free to read
       const t = ai.team.get(n);
-      area().innerHTML = `<p class="ai-team-note">${icon("users")}${esc(tx("Analysed by {name} from your team", { name: t.by }))}</p>${analysisHtml(t.result)}`;
+      showAnalysis(t.result, `<p class="ai-team-note">${icon("users")}${esc(tx("Analysed by {name} from your team", { name: t.by }))}</p>`);
       return;
     }
     area().innerHTML = `<div class="ai-unlock">
@@ -2289,10 +2296,10 @@
   async function loadUnlocked(n) {
     const { data } = await db.rpc("get_unlocked_analysis", { p_post_id: n });
     if (!area()) return;
-    if (data?.status === "unlocked") { area().innerHTML = analysisHtml(data.analysis); return; }
+    if (data?.status === "unlocked") { showAnalysis(data.analysis); return; }
     if (data?.status === "pending") return waitFor(n);
     if (data?.status === "failed") { ai.unlocked.delete(n); refreshAiButtons(n); return showAnalysisArea(n); }
-    area().innerHTML = analysisHtml(null);
+    showAnalysis(null);
   }
   // A pending unlock: ask the server to generate it (only the first request actually runs) and poll until it's ready
   async function waitFor(n) {
@@ -2313,7 +2320,7 @@
       done = false;
       if (!area()) return;
       const { data } = await db.rpc("get_unlocked_analysis", { p_post_id: n });
-      if (data?.status === "unlocked") { area().innerHTML = analysisHtml(data.analysis); return; }
+      if (data?.status === "unlocked") { showAnalysis(data.analysis); return; }
       if (data?.status === "failed") {
         ai.unlocked.delete(n); refreshAiButtons(n); await loadAi();
         area().innerHTML = `<div class="ai-empty"><b>We couldn't generate this analysis</b><p>It hasn't counted towards your analyses. Please try again in a few minutes.</p>
@@ -2333,7 +2340,7 @@
     if (data.status === "no_access") return showAnalysisArea(n);
     if (data.status === "no_credits") { area().innerHTML = noCreditsHtml(); return; }
     ai.unlocked.add(n); refreshAiButtons(n);
-    if (data.status === "unlocked") { area().innerHTML = analysisHtml(data.analysis); return; }
+    if (data.status === "unlocked") { showAnalysis(data.analysis); return; }
     if (data.status === "pending") return waitFor(n);
   }
   body.addEventListener("click", async (e) => {

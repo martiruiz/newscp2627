@@ -6891,3 +6891,16 @@ a.lf-sp-favs { text-decoration: none; }
 .an-loading { background: linear-gradient(110deg, var(--surface-2) 30%, rgba(139, 92, 246, 0.18) 50%, var(--surface-2) 70%); background-size: 200% 100%; }
 @media (max-width: 960px) { .an-body { grid-template-columns: 1fr; } .an-grid { columns: 1; } }
 @media (prefers-reduced-motion: reduce) { .an-panel::before, .an-ai-badge::after { animation: none; } }
+/* Post detail: tags, the analysis' topics and the caption in a drop-down under the post */
+.an-more { width: 100%; max-width: 460px; margin-top: 16px; border-radius: 14px; border: 1px solid rgba(167, 139, 250, 0.25); background: linear-gradient(160deg, rgba(139, 92, 246, 0.08), transparent 55%), var(--surface-2); }
+.an-more > summary { list-style: none; display: flex; align-items: center; gap: 10px; padding: 12px 14px; cursor: pointer; font: 600 14px var(--font-body); color: var(--text); }
+.an-more > summary::-webkit-details-marker { display: none; }
+.an-more > summary svg { width: 16px; height: 16px; color: #c4b5fd; }
+.an-more > summary span { flex: 1; }
+.an-more > summary svg:last-child { transition: transform 0.25s; color: var(--muted); }
+.an-more[open] > summary svg:last-child { transform: rotate(180deg); }
+.an-more-body { padding: 0 14px 14px; display: grid; gap: 12px; }
+.an-more .an-topics { margin-top: 0; }
+.an-more .dr-tags { margin: 0; }
+.an-cap b { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.an-cap p { margin-top: 4px; font-size: 13.5px; line-height: 1.5; color: var(--muted); white-space: pre-line; }
