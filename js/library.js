@@ -741,12 +741,11 @@
       { key: "goal", label: "Business goal", ico: "target", desc: "What the post should achieve", cats: ["goal"], head: "What for" },
     ],
     benchmark: [
-      { key: "sport", label: "Sport", ico: "ball", desc: "Every sport in the library", cats: ["sport"], tiles: true, head: "Where it's played" },
-      { key: "competition", label: "Competition", ico: "trophy", desc: "Leagues and cups", cats: ["competition"], logos: true },
-      { key: "club", label: "Club", ico: "shield", desc: "Clubs and teams", cats: ["club"], logos: true },
+      { key: "sport", label: "Sport", ico: "ball", desc: "Every sport in the library", cats: ["sport"], tiles: true, head: "Where it's played", chips: [["campaign", "Player Appearance", "Players"]] },   // Players: a chip in Sport, Competition and Club
+      { key: "competition", label: "Competition", ico: "trophy", desc: "Leagues and cups", cats: ["competition"], logos: true, chips: [["campaign", "Player Appearance", "Players"]] },
+      { key: "club", label: "Club", ico: "shield", desc: "Clubs and teams", cats: ["club"], logos: true, chips: [["campaign", "Player Appearance", "Players"]] },
       // vals: [category, name] (every value of the category when name is null)
-      { key: "players", label: "Players", ico: "user", desc: "Posts starring the players", vals: [["campaign", "Player Appearance"]], head: "What's published" },
-      { key: "memes", label: "Memes", ico: "smile", desc: "Meme accounts and humour pages", vals: [["entity", "Meme"]] },
+      { key: "memes", label: "Memes", ico: "smile", desc: "Meme accounts and humour pages", vals: [["entity", "Meme"]], head: "What's published" },
       { key: "media", label: "Media", ico: "megaphone", desc: "What sports media publish", vals: [["entity", "Media"]], head: "Who publishes it" },
       // the club's squad (women's team, academy…) shows inside Club; cities only through the search box
       { key: "team", label: "Team", ico: "user", desc: "Women's team, academy, legends…", cats: ["team"], hidden: true },
