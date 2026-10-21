@@ -6821,7 +6821,6 @@ a.lf-sp-favs { text-decoration: none; }
 .my-space-btns .pill > [data-icon] svg { width: 15px !important; height: 15px !important; color: #fff !important; stroke: #fff; }
 /* the same two-tone gradients as the filters column's buttons (Favs red, Replicable green→cyan, Creators gold) */
 .my-space-btns .ai-mine { --g: linear-gradient(90deg, #7c3aed, #d946ef); --g-soft: linear-gradient(90deg, rgba(124, 58, 237, 0.8), rgba(217, 70, 239, 0.8)); --glow: 167, 139, 250; }
-.my-space-btns .ai-mine::after { display: none; }
 .my-space-btns .ai-mine b { background: rgba(167, 139, 250, 0.22); color: #ddd3ff; }
 .my-space-btns .plan-toggle { --g: linear-gradient(90deg, #2563eb, #38bdf8); --g-soft: linear-gradient(90deg, rgba(37, 99, 235, 0.8), rgba(56, 189, 248, 0.8)); --glow: 122, 162, 255; }
 .my-space-btns .saved-link { --g: linear-gradient(90deg, #d99a2b, #f0b84a 45%, #ffd98a); --g-soft: linear-gradient(90deg, rgba(217, 154, 43, 0.85), rgba(255, 217, 138, 0.85)); --glow: 240, 184, 74; }
@@ -6850,3 +6849,7 @@ a.lf-sp-favs { text-decoration: none; }
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 55%) border-box, var(--g) border-box !important; }
 .lf-sp.is-on { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 8px 22px -14px rgba(var(--glow), 0.9); }
 .my-space-btns .pill { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 8px 22px -14px rgba(var(--glow), 0.9) !important; }
+/* My AI analyses: its shine sweeping across and its glow, in the current purple */
+.my-space-btns .ai-mine::after { display: block; content: ""; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.45) 50%, transparent 70%); transform: translateX(-120%); animation: aiShine 3.2s ease-in-out infinite; pointer-events: none; }
+.my-space-btns .ai-mine { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 0 0 1px rgba(195, 140, 249, 0.4), 0 8px 26px -8px rgba(139, 92, 246, 0.85) !important; }
+@media (prefers-reduced-motion: reduce) { .my-space-btns .ai-mine::after { animation: none; display: none; } }
