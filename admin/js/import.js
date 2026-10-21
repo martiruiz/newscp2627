@@ -722,7 +722,7 @@
       const issues = s.issues || [];
       el("issues").hidden = !issues.length;
       el("issues").innerHTML = issues.length ? `<div class="rv-issues-h"><p class="label">Issues · ${num(s.issues_n ?? s.no_image + s.removed)} posts without a cover</p><button class="btn btn-ghost btn-sm" type="button" data-rv-ok-all>${icon("check")}Mark all as seen</button></div>
-        <ul>${issues.map((x) => `<li><span class="status status-failed">${x.removed ? "Removed from the platform" : "No image available"}</span><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.url)}</a><button class="btn btn-ghost btn-sm" type="button" data-rv-retry="${x.id}" title="Try its cover again">Retry</button>${x.removed ? `<button class="btn btn-ghost btn-sm" type="button" data-rv-keep="${x.id}" title="The post exists: show it in the library without a cover">It's active</button>` : ""}<button class="icon-btn danger" type="button" data-rv-ok="${x.id}" title="Discard: remove it from the issues" aria-label="Discard">${icon("trash")}</button></li>`).join("")}</ul>` : "";
+        <ul>${issues.map((x) => `<li><span class="status status-failed">${x.removed ? "Removed from the platform" : "No image available"}</span><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.url)}</a><button class="btn btn-ghost btn-sm" type="button" data-rv-retry="${x.id}" title="Try its cover again">Retry</button><button class="icon-btn danger" type="button" data-rv-ok="${x.id}" title="Discard: remove it from the issues" aria-label="Discard">${icon("trash")}</button></li>`).join("")}</ul>` : "";
       const approved = s.status === "approved";
       el("status").textContent = approved ? "Published" : finished ? "Publishing…" : "Loading covers";
       el("status").className = `status status-${approved ? "completed" : "importing"}`;
@@ -761,11 +761,11 @@
     // an issue seen (OK) or all of them: they leave the list and the import's "without cover" warning (supabase/import-issues-ok.sql)
     el("issues").addEventListener("click", async (e) => {
       const one = e.target.closest("[data-rv-ok]"), all = e.target.closest("[data-rv-ok-all]");
-      // a post that is active after all: try its cover again (back to the queue) or keep it without a cover (supabase/import-issue-retry.sql)
-      const again = e.target.closest("[data-rv-retry], [data-rv-keep]");
+      // a post that is active after all: try its cover again (back to the queue, supabase/import-issue-retry.sql)
+      const again = e.target.closest("[data-rv-retry]");
       if (again) {
         again.disabled = true;
-        const { error } = await A.db.rpc("admin_import_issue_retry", { p_id: Number(again.dataset.rvRetry || again.dataset.rvKeep), p_keep: !!again.dataset.rvKeep });
+        const { error } = await A.db.rpc("admin_import_issue_retry", { p_id: Number(again.dataset.rvRetry) });
         if (error) { again.disabled = false; return A.toast(/does not exist|schema cache|Could not find/i.test(error.message) ? "Run supabase/import-issue-retry.sql in Supabase first." : A.errMsg(error), "err"); }
         stopped = false; paused = false; return step();
       }
