@@ -6756,12 +6756,15 @@ a.lf-sp-favs { text-decoration: none; }
 .load-more [data-more] { opacity: 0; pointer-events: none; }
 .posts[aria-busy="true"] ~ .load-more::before { content: ""; width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--line); border-top-color: var(--gold); animation: lm-spin 0.8s linear infinite; }
 @keyframes lm-spin { to { transform: rotate(360deg); } }
-/* creators' header: more room between the switch, the count and the cards */
-.cr-head { margin: 8px 0 22px; }
+/* creators' header and cards: room between the active bar, the switch, the count and the cards, and inside the cards */
+.cr-head { margin: 30px 0 26px; }
 .cr-switch { padding: 5px; border-radius: 14px; }
-.cr-switch button { height: 38px; padding: 0 20px; border-radius: 10px; }
-.cr-count, .cr-loading { margin: 0 0 16px 4px; font-size: 13.5px; }
-.cr-grid { gap: 20px; }
-.cr-card { padding: 20px; gap: 16px; }
-.cr-top { gap: 12px 14px; }
-.cr-collabs { padding-top: 2px; }
+.cr-switch button { height: 40px; padding: 0 22px; border-radius: 10px; font-size: 13.5px; }
+.cr-count, .cr-loading { margin: 0 0 22px 4px; font-size: 13.5px; }
+.cr-grid { gap: 24px; }
+.cr-card { padding: 24px; gap: 20px; border-radius: 20px; }
+.cr-top { gap: 18px 16px; }
+.cr-ava { width: 56px; height: 56px; }
+.cr-name { gap: 3px; }
+.cr-acts { gap: 10px; padding-top: 2px; }
+.cr-posts { gap: 10px; }
