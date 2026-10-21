@@ -2219,7 +2219,7 @@
           <summary>${icon("tags")}<span>${esc(tx("Tags and caption"))}</span>${icon("chevron-down")}</summary>
           <div class="an-more-body">
           ${p.title ? `<figure class="an-cap"><figcaption><span>${icon("message-circle")}${esc(tx("Caption"))}</span><button class="an-cap-copy" type="button" data-copy="${esc(p.title)}" aria-label="${esc(tx("Copy"))}" title="${esc(tx("Copy"))}">${icon("copy")}<b>Copy</b></button></figcaption><p>${esc(p.title)}</p></figure>` : ""}
-          <div class="an-more-sec" data-topics-sec hidden><p class="an-more-h">${esc(tx("Topics"))}</p><div data-topics></div></div>
+          <div class="an-more-sec" data-topics-sec hidden><p class="an-more-h">${esc(tx("Hashtags"))}</p><div data-topics></div></div>
           ${groups ? `<div class="an-more-sec"><p class="an-more-h">${esc(tx("Tags"))}<small>${esc(tx("Click one to see more posts like it"))}</small></p><dl class="dr-tags an-tags">${groups}</dl></div>` : ""}
           </div>
         </details>` : ""}</div>
