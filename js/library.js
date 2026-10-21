@@ -768,13 +768,15 @@
     const on = isOn(v), n = countOf(v);
     const st = `${on ? " is-on" : ""}${n === 0 && !on ? " is-zero" : ""}${n < 20 && !on ? " is-low" : ""}`;
     const meta = `<span class="lfp-meta"><b>${esc(pretty(v.name))}</b><small>${esc(tx("{n} posts", { n: kfmt(n) }))}</small></span><span class="lfp-ck">${svg("check")}</span>`;
+    // competitions, clubs, brands: their logo, in a small tile
+    if (g.logos) return `<button type="button" class="lfp-logo${st}" aria-pressed="${on}" data-facet="${v.category}" data-id="${v.id}">${v.logo ? `<span class="lfp-lg${v.ig ? " is-photo" : ""}"><img src="${esc(v.logo)}" alt="" loading="lazy"></span>` : `<span class="lfp-lg"><b>${esc(initials(v.name))}</b></span>`}${meta}</button>`;
     const c = covers.get(v.id);
     const ph = g.logos && v.logo ? `<img class="lfp-img-logo" src="${esc(v.logo)}" alt="" loading="lazy">` : svg(g.tiles ? sportIco(v.name) : g.ico);
     return `<button type="button" class="lfp-card${st}" aria-pressed="${on}" data-facet="${v.category}" data-id="${v.id}">
       <span class="lfp-img${c === undefined ? " is-loading" : ""}" data-cover="${v.id}"${c ? ` style="background-image:url('${esc(c)}')"` : ""}>${c ? "" : ph}</span>${hot ? `<span class="lfp-hot">${esc(tx("Popular"))}</span>` : ""}${meta}</button>`;
   }
   const lfpCards = (list, g, max = 0) => { const l = byCount(list), shown = max ? [...l.slice(0, max), ...l.slice(max).filter(isOn)] : l, hot = l.length > 2 ? l[0] : null;
-    return `<div class="lfp-cards">${shown.map((v) => lfpCard(v, g, v === hot && !g.logos && !g.tiles)).join("")}</div>`; };
+    return `<div class="lfp-cards${g.logos ? " lfp-cards-logo" : g.tiles ? " lfp-cards-sm" : ""}">${shown.map((v) => lfpCard(v, g, v === hot && !g.logos && !g.tiles)).join("")}</div>`; };
   function lfpMatchday(g) {
     const phases = MATCHDAY.map((ph) => ({ ...ph, list: ph.vals.map(([cat, name]) => valByName(cat, name)).filter((v) => v && live(v)) })).filter((ph) => ph.list.length);
     const nOn = (ph) => ph.list.filter(isOn).length;
@@ -1644,7 +1646,7 @@
     // Content Creators on: one row per creator (or their posts, with the switch above)
     const crView = cc && isOn(cc) && !ui.aiMode && ui.cview !== "posts" && !ui.acct;
     grid.hidden = crView; crBox.hidden = !crView;
-    if (crView) { grid.querySelectorAll(".lib-skel").forEach((x) => x.remove()); grid.removeAttribute("aria-busy"); empty.hidden = true; if (reset) cr.shown = 10; return renderCreators(my).then(() => { if (nearEnd) moreCreators(); }); }
+    if (crView) { grid.querySelectorAll(".lib-skel").forEach((x) => x.remove()); grid.removeAttribute("aria-busy"); empty.hidden = true; if (reset) { cr.shown = 10; panelCount(args, my); } return renderCreators(my).then(() => { if (nearEnd) moreCreators(); }); }
     let ids = ui.aiMode ? [...aiList().keys()] : null;
     if (ui.acct) ids = ids ? ids.filter((id) => ui.acct.ids.includes(Number(id))) : ui.acct.ids;
     if (ui.fol) { const f = new Set(ui.fol.ids); ids = ids ? ids.filter((id) => f.has(Number(id))) : ui.fol.ids; }
@@ -1676,6 +1678,15 @@
     more.hidden = offset >= data.total;
     saveKeep();
     if (nearEnd && !more.hidden && !grid.hidden) load(false);   // the page is still short of the screen: the next ones
+  }
+
+  // the filter panels' count and most viewed posts while the creators are shown (the grid isn't loaded then)
+  async function panelCount(args, my) {
+    const { data } = await fetchIdeas({ ...args, p_order: "views", p_seed: "", p_ids: null, p_limit: 12, p_offset: 0 }).catch(() => ({}));
+    if (my !== token || !data) return;
+    ui.total = data.total;
+    ui.peek = (data.data || []).filter((p) => p.cover_url).slice(0, 4);
+    const res = $("[data-lfp-res]"); if (res) res.innerHTML = resHtml();
   }
 
   // ---------- Keep the place on refresh (this tab): filters, sort and its shuffle, posts loaded and scroll ----------

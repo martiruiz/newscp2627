@@ -6800,3 +6800,13 @@ a.lf-sp-favs { text-decoration: none; }
 .lfp-res .lfp-go { margin-top: auto; width: 100%; justify-content: center; }
 .lfp-go-foot { display: none; }
 @media (max-width: 1280px) { .lfp-body { grid-template-columns: 200px minmax(0, 1fr); } .lfp-res { display: none; } .lfp-go-foot { display: inline-flex; } }
+/* panels: sports in small cards (two rows), competitions / clubs / brands as small logo tiles */
+.lfp-cards.lfp-cards-sm { grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
+.lfp-cards-sm .lfp-card .lfp-meta b { line-height: 1.15; }
+.lfp-cards-sm .lfp-card { border-radius: 11px; }
+.lfp-cards-sm .lfp-card .lfp-meta { padding: 6px 6px 7px; }
+.lfp-cards-sm .lfp-card .lfp-meta b { font-size: 11px; }
+.lfp-cards-sm .lfp-card .lfp-meta small { font-size: 9.5px; }
+.lfp-cards-sm .lfp-ck { top: 6px; right: 6px; width: 18px; height: 18px; }
+.lfp-cards-sm .lfp-img .lf-i { width: 22px; height: 22px; }
+.lfp-cards.lfp-cards-logo { grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 8px; }
