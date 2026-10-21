@@ -720,7 +720,7 @@
   // show their logo, sports their icon. A search box looks through every group; the footer lists what's chosen.
   const BAR_GROUPS = {
     occasion: [
-      { key: "matchday", label: "Matchday", ico: "ball", desc: "Before, during and after the game" },
+      { key: "matchday", label: "Matchday", ico: "ball", desc: "" },
       { key: "transfer", label: "Transfer market", ico: "swap", desc: "Signings, renewals and farewells", cats: ["transfer"] },
       { key: "kit", label: "Kit launches", ico: "shirt", desc: "Shirts and collections", cats: ["kit"] },
       { key: "season_moment", label: "Season", ico: "flag", desc: "The big moments of the year", cats: ["season_moment"] },
@@ -734,16 +734,16 @@
     goal: [
       // Sponsors: the brands · how they show (what was Inspiration → Sponsors) · the goal
       // the brands' own accounts (was Inspiration → Brands) as a chip above the sponsors' logos
-      { key: "sponsor", label: "Brands", ico: "tag", desc: "Sponsors on other clubs' posts, and the brands' own accounts", cats: ["sponsor"], logos: true, head: "The brands", chips: [["entity", "Brand", "Brand accounts"]] },
+      { key: "sponsor", label: "Brands", ico: "tag", desc: "", cats: ["sponsor"], logos: true, head: "The brands", chips: [["entity", "Brand", "Brand accounts"]] },
       { key: "sponsor_sector", label: "Sponsor sector", ico: "briefcase", desc: "Partners by industry", cats: ["sponsor_sector"] },
       { key: "sponsors", label: "How the brand shows", ico: "badge", desc: "Logo on a graphic, giveaway, a creator with a brand…", vals: [["collab", "Brand collab"], ["sponsor_integration", null]], head: "How they show" },
       { key: "collab", label: "Collaborations", ico: "users", desc: "Posts made with others", cats: ["collab"], skip: ["brand collab", "player collab"] },   // Player collab → Players
       { key: "goal", label: "Business goal", ico: "target", desc: "What the post should achieve", cats: ["goal"], head: "What for" },
     ],
     benchmark: [
-      { key: "sport", label: "Sport", ico: "ball", desc: "Every sport in the library", cats: ["sport"], tiles: true, head: "Where it's played", chips: [["campaign", "Player Appearance", "Players"]] },   // Players: a chip in Sport, Competition and Club
+      { key: "sport", label: "Sport", ico: "ball", desc: "", cats: ["sport"], tiles: true, head: "Where it's played", chips: [["campaign", "Player Appearance", "Players"]] },   // Players: a chip in Sport, Competition and Club
       { key: "competition", label: "Competition", ico: "trophy", desc: "Leagues and cups", cats: ["competition"], logos: true, chips: [["campaign", "Player Appearance", "Players"]] },
-      { key: "club", label: "Club", ico: "shield", desc: "Clubs and teams", cats: ["club"], logos: true, chips: [["campaign", "Player Appearance", "Players"]] },
+      { key: "club", label: "Club", ico: "shield", desc: "", cats: ["club"], logos: true, chips: [["campaign", "Player Appearance", "Players"]] },
       // vals: [category, name] (every value of the category when name is null)
       { key: "memes", label: "Memes", ico: "smile", desc: "Meme accounts and humour pages", vals: [["entity", "Meme"]], head: "What's published" },
       { key: "media", label: "Media", ico: "megaphone", desc: "What sports media publish", vals: [["entity", "Media"]], head: "Who publishes it" },
@@ -802,7 +802,7 @@
     const g = shown.find((x) => x.key === ui.barG?.[sec]) || shown[0];
     if (!g) return "";
     const total = groupVals(g).reduce((s, v) => s + (g.key === "matchday" && v.category === "outcome" ? 0 : countOf(v)), 0);
-    const head = `<div class="lfp-head"><div><h3>${esc(tx(g.label))}</h3><p>${esc(tx(g.desc))}</p></div>${total ? `<span>${esc(tx("{n} posts", { n: total.toLocaleString(window.SCP_LOC || "en-GB") }))}</span>` : ""}</div>`;
+    const head = `<div class="lfp-head"><div><h3>${esc(tx(g.label))}</h3>${g.desc ? `<p>${esc(tx(g.desc))}</p>` : ""}</div>${total ? `<span>${esc(tx("{n} posts", { n: total.toLocaleString(window.SCP_LOC || "en-GB") }))}</span>` : ""}</div>`;
     if (g.key === "matchday") return head + lfpMatchday(g);
     // Club: the squad as quick chips above the clubs
     const teamG = g.key === "club" && groups.find((x) => x.key === "team");
