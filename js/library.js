@@ -432,7 +432,7 @@
     // language (with flags) and gender as dropdowns
     const rows = ["creator_language", "creator_gender"].filter(has).map((k) => rowHtml(CAT[k])).join("");
     const lang = rows ? `<div class="lf-stack lf-row-gap">${rows}</div>` : "";
-    return `<div class="lf-cc-sub">${acctRowHtml()}${folHtml()}${lang}
+    return `<div class="lf-cc-sub"><div class="lf-cc-view">${crSwitch()}</div>${acctRowHtml()}${folHtml()}${lang}
       ${groups.map(([label, h]) => `<div class="lf-sub">${esc(tx(label))}</div><div class="lf-chips">${h}</div>`).join("")}</div>`;
   }
   // Creators' accounts: a dropdown with a search box on top; a star marks up to 5 favourites (Profile → Favourites,
@@ -846,22 +846,34 @@
 
   // ---------- Bar above the posts (wide screens): one button per section, its filters in a wide panel ----------
   const secOf = (c) => (c.key === "angle" || c.key === "campaign" ? "occasion" : ["format", "platform"].includes(c.sec) ? "where" : c.sec);
-  const SENTENCE = [["occasion", "I want ideas for", "a moment"], ["benchmark", "like the ones from", "a reference"], ["goal", "to achieve", "a goal"]];
   function renderBar(list, parts) {
     const bar = $("[data-lf-bar]");
     if (!list.length) { bar.hidden = true; bar.innerHTML = ""; ui.bar = null; return; }
-    const items = list.map((s) => ({ key: s.key, label: tx(s.label), q: s.q ? tx(s.q) : "", n: CATEGORIES.filter((c) => secOf(c) === s.key).reduce((t, c) => t + selected[c.key].size, 0), html: parts[s.key] }));
+    const items = list.map((s) => ({ key: s.key, label: tx(s.label), q: s.q ? tx(s.q) : "", n: selOf(s.key).length, html: parts[s.key] }));
     if (!items.some((it) => it.key === ui.bar)) ui.bar = null;
     const open = items.find((it) => it.key === ui.bar);
     const keep = $(".lfp-main", bar)?.scrollTop || 0;
     bar.hidden = false;
-    // a sentence: "I want ideas for [moment] like the ones from [reference] to achieve [goal]"; each slot opens its panel
-    if (!$(".lfs", bar)) bar.innerHTML = `<div class="lfs" role="toolbar" aria-label="${esc(tx("Filters"))}"></div><div data-lfb-host></div>`;
-    $(".lfs", bar).innerHTML = SENTENCE.filter(([k]) => items.some((it) => it.key === k)).map(([k, word, ph]) => {
-      const sel = selOf(k), it = items.find((x) => x.key === k);
-      const label = sel.length ? `${pretty(sel[0].name)}${sel.length > 1 ? ` +${sel.length - 1}` : ""}` : tx(ph);
-      return `<span class="lfs-w">${esc(tx(word))}</span><span class="lfs-slot${sel.length ? " is-set" : ""}${open === it ? " is-open" : ""}"><button type="button" data-lfb="${k}" aria-expanded="${open === it}" title="${esc(it.label)}">${esc(label)}${sel.length ? "" : svg("chev", "lfs-chev")}</button>${sel.length ? `<button type="button" class="lfs-x" data-lfb-clear="${k}" aria-label="${esc(tx("Clear"))}">${icon("x")}</button>` : ""}</span>`;
-    }).join("");
+    // one outlined capsule; the open section sits under a lens that glides between them. The capsule is built once and
+    // then only updated (rebuilding it would cut the lens's movement short); the panel below is replaced.
+    const oi = items.indexOf(open);
+    const keys = items.map((it) => it.key).join();
+    let row = $(".lfb-row", bar);
+    if (!row || row.dataset.keys !== keys) {
+      bar.innerHTML = `<div class="lfb-row lfb-glass" role="toolbar" aria-label="${esc(tx("Filters"))}" style="--n:${items.length}" data-keys="${keys}"><span class="lfb-lens"></span>${items.map((it) => `<button type="button" class="lfb-btn" data-lfb="${it.key}"><span class="lfb-tx"><b>${esc(it.label)}</b></span><em hidden></em></button>`).join("")}</div><div data-lfb-host></div>`;
+      row = $(".lfb-row", bar);
+    }
+    items.forEach((it, k) => {
+      const b = row.querySelectorAll("[data-lfb]")[k], em = b.querySelector("em");
+      b.classList.toggle("is-set", !!it.n); b.classList.toggle("is-open", open === it); b.setAttribute("aria-expanded", String(open === it));
+      em.hidden = !it.n; em.textContent = it.n || "";
+    });
+    const lens = $(".lfb-lens", row);
+    if (oi >= 0) {
+      if (!lens.classList.contains("is-on")) { lens.style.transition = "none"; lens.style.setProperty("--x", oi); void lens.offsetWidth; lens.style.transition = ""; }   // appears where it is, then glides
+      lens.style.setProperty("--x", oi);
+    }
+    lens.classList.toggle("is-on", oi >= 0);
     // the open panel is kept and only its content changes (a new panel would replay its opening animation on every
     // click inside it — the panel seemed to blink); a new panel only when another section opens
     const host = $("[data-lfb-host]", bar);
@@ -979,11 +991,11 @@
   // ---------- Content Creators on: one row per creator (supabase/creator-rows.sql) ----------
   // photo, name, followers, recent collabs (the brands most tagged on their posts), their 4 most viewed posts;
   // the creators' filters (type, language, gender, country, followers, the search box) narrow the rows
-  const crBox = $("[data-creators]"), crHead = $("[data-cview]");
+  const crBox = $("[data-creators]");
   const cr = { rows: null, shown: 10, layout: (() => { try { return localStorage.getItem("scp-cr-layout") || "grid"; } catch { return "grid"; } })() };
   const LIST_ICO = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="6" rx="1.5"/><rect x="3" y="14" width="18" height="6" rx="1.5"/></svg>`;
   const crSwitch = () => `<div class="cr-switch" role="tablist">${[["creators", "Creators"], ["posts", "Posts"]].map(([k, l]) => `<button type="button" role="tab" aria-selected="${(ui.cview || "creators") === k}" class="${(ui.cview || "creators") === k ? "is-on" : ""}" data-cview-set="${k}">${esc(tx(l))}</button>`).join("")}</div>
-    ${(ui.cview || "creators") === "creators" ? `<div class="cr-layout" role="group" aria-label="${esc(tx("Layout"))}">${[["grid", icon("layout-grid"), "Boxes"], ["list", LIST_ICO, "List"]].map(([k, ico, l]) => `<button type="button" class="${cr.layout === k ? "is-on" : ""}" aria-pressed="${cr.layout === k}" data-cr-layout="${k}" title="${esc(tx(l))}" aria-label="${esc(tx(l))}">${ico}</button>`).join("")}</div>` : ""}`;
+    ${`<div class="cr-layout${(ui.cview || "creators") === "posts" ? " is-off" : ""}" role="group" aria-label="${esc(tx("Layout"))}">${[["grid", icon("layout-grid"), "Boxes"], ["list", LIST_ICO, "List"]].map(([k, ico, l]) => `<button type="button" class="${cr.layout === k ? "is-on" : ""}" aria-pressed="${cr.layout === k}"${(ui.cview || "creators") === "posts" ? " disabled" : ""} data-cr-layout="${k}" title="${esc(tx(l))}" aria-label="${esc(tx(l))}">${ico}</button>`).join("")}</div>`}`;
   function crMatch(r, q) {
     const low = (x) => String(x || "").trim().toLowerCase();
     const sel = (k) => [...selected[k]].map((id) => low(catalog.byId.get(id)?.name)).filter(Boolean);
@@ -1050,21 +1062,6 @@
     cr.busy = false;
     if (nearEnd) moreCreators();
   }
-  crHead.addEventListener("click", (e) => {
-    const lay = e.target.closest("[data-cr-layout]");
-    if (lay) {
-      cr.layout = lay.dataset.crLayout;
-      try { localStorage.setItem("scp-cr-layout", cr.layout); } catch {}
-      crHead.innerHTML = crSwitch();
-      $(".cr-grid", crBox)?.classList.toggle("is-list", cr.layout === "list");
-      return;
-    }
-    const b = e.target.closest("[data-cview-set]");
-    if (!b || (ui.cview || "creators") === b.dataset.cviewSet) return;
-    ui.cview = b.dataset.cviewSet;
-    if (ui.cview === "creators") ui.acct = null;
-    renderFacets(); load(true);
-  });
   crBox.addEventListener("click", async (e) => {
     const st = e.target.closest("[data-acct-star]");
     if (st) { await toggleStar(st.dataset.acctStar); return renderCreators(token); }
@@ -1086,6 +1083,21 @@
   const column = $("[data-filters]");
   const filterBar = $("[data-lf-bar]");
   const onFilterClick = (e) => {
+    // Content Creators: Creators / Posts, boxes / list (at the top of its box in the filters column)
+    const lay = e.target.closest("[data-cr-layout]");
+    if (lay) {
+      cr.layout = lay.dataset.crLayout;
+      try { localStorage.setItem("scp-cr-layout", cr.layout); } catch {}
+      $(".cr-grid", crBox)?.classList.toggle("is-list", cr.layout === "list");
+      return renderFacets();
+    }
+    const cv = e.target.closest("[data-cview-set]");
+    if (cv) {
+      if ((ui.cview || "creators") === cv.dataset.cviewSet) return;
+      ui.cview = cv.dataset.cviewSet;
+      if (ui.cview === "creators") ui.acct = null;
+      renderFacets(); return load(true);
+    }
     if (e.target.closest("[data-fol-clear]")) return setFollowers(null, null);
     if (e.target.closest("[data-favs]")) {   // all the favourite profiles on / off
       const pf = favNetwork(), f = [...favVals(), ...(pf ? [pf] : [])], on = favsOn();
@@ -1605,9 +1617,7 @@
     const cc = (catalog.byCat.entity || []).find((v) => v.name.toLowerCase() === "content creators");
     if (!(cc && isOn(cc))) { ui.acct = null; ui.fol = null; }   // the account and followers filters live under Content Creators
     // Content Creators on: one row per creator (or their posts, with the switch above)
-    crHead.hidden = !(cc && isOn(cc)) || !!ui.aiMode;
-    if (!crHead.hidden) crHead.innerHTML = crSwitch();
-    const crView = !crHead.hidden && ui.cview !== "posts" && !ui.acct;
+    const crView = cc && isOn(cc) && !ui.aiMode && ui.cview !== "posts" && !ui.acct;
     grid.hidden = crView; crBox.hidden = !crView;
     if (crView) { grid.querySelectorAll(".lib-skel").forEach((x) => x.remove()); grid.removeAttribute("aria-busy"); empty.hidden = true; if (reset) cr.shown = 10; return renderCreators(my).then(() => { if (nearEnd) moreCreators(); }); }
     let ids = ui.aiMode ? [...aiList().keys()] : null;
