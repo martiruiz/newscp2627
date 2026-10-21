@@ -5,7 +5,7 @@
   try { await A.boot("filters"); } catch { return; }
   const main = $("[data-main]");
   let current = A.store.get("scpa-filters-cat", "sport");
-  let catalog, totals = {};
+  let catalog, totals = {}, sort = A.store.get("scpa-filters-sort", "az"), unusedOnly = false;
 
   main.innerHTML = `
     <div class="page-head"><div><h1>Filters</h1><p>Manage catalog values for all filter categories</p></div></div>
@@ -26,26 +26,42 @@
 
   function renderCats() {
     $("[data-cats]").innerHTML = `<p class="cap">Categories</p>` + A.CATALOG_ORDER.map((k) =>
-      `<button type="button" data-cat="${k}" aria-current="${k === current}">${A.CAT_LABEL[k]}<span class="n">${num(catalog.byCat[k].length)}</span></button>`).join("");
-    $$("[data-cat]").forEach((b) => b.addEventListener("click", () => { current = b.dataset.cat; A.store.set("scpa-filters-cat", current); renderCats(); renderValues(); }));
+      `<button type="button" data-cat="${k}" aria-current="${k === current}"><span class="cat-t"><b>${A.CAT_LABEL[k]}</b><small>${num(totals[k] || 0)} ideas</small></span><span class="n">${num(catalog.byCat[k].length)}</span></button>`).join("");
+    $$("[data-cat]").forEach((b) => b.addEventListener("click", () => { current = b.dataset.cat; unusedOnly = false; A.store.set("scpa-filters-cat", current); renderCats(); renderValues(); }));
   }
 
   function renderValues() {
     const label = A.CAT_LABEL[current];
     const values = catalog.byCat[current];
     const box = $("[data-values]");
+    const unused = values.filter((v) => !v.ideas).length;
+    const max = Math.max(1, ...values.map((v) => v.ideas || 0));
     box.innerHTML = `
-      <div class="values-head"><h2>${label}</h2><span class="muted">${num(values.length)} values · ${num(totals[current] || 0)} linked content ideas</span></div>
-      <form class="values-add" data-add><input class="input" placeholder="Add new ${esc(label)} value..." maxlength="120" required><button class="btn btn-primary" type="submit">${icon("plus")}Add</button></form>
-      ${values.length > 15 ? `<div class="values-search"><input class="input" type="search" placeholder="Search ${num(values.length)} values..." data-search></div>` : ""}
-      <div data-list></div>`;
+      <div class="values-head">
+        <div><p class="cap">Filter category</p><h2>${label}</h2></div>
+        <div class="values-stats">
+          <span><b>${num(values.length)}</b>values</span>
+          <span><b>${num(totals[current] || 0)}</b>linked ideas</span>
+          <span class="${unused ? "is-warn" : ""}"><b>${num(unused)}</b>unused</span>
+        </div>
+      </div>
+      <form class="values-add" data-add><span class="values-add-ic">${icon("plus")}</span><input class="input" placeholder="Add a new ${esc(label)} value…" maxlength="120" required><button class="btn btn-primary" type="submit">Add value</button></form>
+      <div class="values-tools">
+        <input class="input values-q" type="search" placeholder="Search ${num(values.length)} values…" data-search>
+        <div class="seg" role="group" aria-label="Sort"><button type="button" data-sort="az" aria-pressed="${sort === "az"}">A–Z</button><button type="button" data-sort="used" aria-pressed="${sort === "used"}">Most used</button></div>
+        ${unused ? `<button class="vchip${unusedOnly ? " is-on" : ""}" type="button" data-unused>Unused <em>${num(unused)}</em></button>` : ""}
+      </div>
+      <div class="values-list" data-list></div>`;
     const list = $("[data-list]", box);
-    const draw = (q = "") => {
-      const shown = values.filter((v) => v.name.toLowerCase().includes(q.toLowerCase()));
+    let q = "";
+    const draw = () => {
+      const shown = values.filter((v) => v.name.toLowerCase().includes(q.toLowerCase()) && (!unusedOnly || !v.ideas))
+        .sort((a, b) => sort === "used" ? (b.ideas || 0) - (a.ideas || 0) : a.name.localeCompare(b.name, undefined, { sensitivity: "base" }));
       list.innerHTML = shown.length ? shown.map((v) => `
-        <div class="value-row" data-row="${v.id}">
+        <div class="value-row${v.ideas ? "" : " is-unused"}" data-row="${v.id}">
           <span class="name">${esc(v.name)}</span>
-          <span class="ideas">${num(v.ideas)} idea${v.ideas === 1 ? "" : "s"}</span>
+          <span class="usage" aria-hidden="true"><i style="width:${v.ideas ? Math.max(2, Math.round((v.ideas / max) * 100)) : 0}%"></i></span>
+          <span class="ideas">${v.ideas ? `<b>${num(v.ideas)}</b> idea${v.ideas === 1 ? "" : "s"}` : "Unused"}</span>
           <span class="acts">
             <button class="icon-btn" type="button" data-rename="${v.id}" title="Rename" aria-label="Rename">${icon("edit")}</button>
             <button class="icon-btn danger" type="button" data-del="${v.id}" title="Delete" aria-label="Delete">${icon("trash")}</button>
@@ -53,7 +69,12 @@
         </div>`).join("") : `<p class="table-empty">No values${q ? " match your search" : " yet"}.</p>`;
     };
     draw();
-    $("[data-search]", box)?.addEventListener("input", (e) => draw(e.target.value.trim()));
+    $("[data-search]", box).addEventListener("input", (e) => { q = e.target.value.trim(); draw(); });
+    box.querySelectorAll("[data-sort]").forEach((b) => b.addEventListener("click", () => {
+      sort = b.dataset.sort; A.store.set("scpa-filters-sort", sort);
+      box.querySelectorAll("[data-sort]").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); draw();
+    }));
+    $("[data-unused]", box)?.addEventListener("click", (e) => { unusedOnly = !unusedOnly; e.currentTarget.classList.toggle("is-on", unusedOnly); draw(); });
 
     $("[data-add]", box).addEventListener("submit", async (e) => {
       e.preventDefault();
