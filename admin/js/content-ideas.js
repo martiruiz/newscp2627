@@ -240,7 +240,8 @@
   // ---------- Posts a superadmin removed from the Content Library (supabase/quality.sql) ----------
   async function loadRemoved() {
     const box = $("[data-removed]");
-    const { data, error } = await A.db.from("content_removals").select("*").order("removed_at", { ascending: false });
+    let { data, error } = await A.db.from("content_removals").select("*").is("deleted_at", null).order("removed_at", { ascending: false });
+    if (error && /deleted_at/.test(error.message)) ({ data, error } = await A.db.from("content_removals").select("*").order("removed_at", { ascending: false }));   // removed-delete.sql not run yet
     if (error || !data?.length) { box.hidden = true; return; }
     box.hidden = false;
     // the posts' covers, to recognise them at a glance (content_ideas, by their last known id)
@@ -267,7 +268,8 @@
           <input class="input input-sm rmv-search" type="search" placeholder="Search title or link" aria-label="Search removed posts" data-rmv-q>
         </div>
         <div class="rmv-bar"><label class="rmv-all"><input class="check" type="checkbox" data-rmv-all> Select all</label><span class="spacer"></span>
-          <button class="btn btn-sm" type="button" hidden data-rmv-restore-sel>${icon("undo")}<span></span></button></div>
+          <button class="btn btn-sm" type="button" hidden data-rmv-restore-sel>${icon("undo")}<span></span></button>
+          <button class="btn btn-danger btn-sm" type="button" hidden data-rmv-delete-sel>${icon("trash")}<span></span></button></div>
         <div class="rmv-list" data-rmv-list></div>
       </div>`;
     const el = (k) => $(`[data-rmv-${k}]`, box);
@@ -280,13 +282,16 @@
           <div class="rmv-info"><b title="${esc(r.title || "")}">${esc((r.title || r.external_id || "Post").slice(0, 120))}</b>
             <span><i class="rmv-reason${TONE[r.reason] ? ` t-${TONE[r.reason]}` : ""}">${esc(r.reason || "No reason")}</i>${new Date(r.removed_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}${host(r.url) ? ` · ${esc(host(r.url))}` : ""}</span></div>
           <div class="rmv-acts">${r.url ? `<a class="icon-btn" href="${esc(r.url)}" target="_blank" rel="noopener" title="Open the original post" aria-label="Open the original post">${icon("external")}</a>` : ""}
-            <button class="btn btn-sm rmv-restore" type="button" data-restore="${esc(r.external_id)}">${icon("undo")}Restore</button></div>
+            <button class="btn btn-sm rmv-restore" type="button" data-restore="${esc(r.external_id)}">${icon("undo")}Restore</button>
+            <button class="icon-btn rmv-del" type="button" data-rmv-del="${esc(r.external_id)}" title="Delete for good" aria-label="Delete for good">${icon("trash")}</button></div>
         </div>`).join("") : `<p class="rmv-empty">No removed posts match.</p>`;
       const vis = list.map((r) => r.external_id);
       el("all").checked = vis.length > 0 && vis.every((x) => ui.picked.has(x));
       el("all").indeterminate = !el("all").checked && vis.some((x) => ui.picked.has(x));
       el("restore-sel").hidden = !ui.picked.size;
       $("span", el("restore-sel")).textContent = `Restore ${num(ui.picked.size)} selected`;
+      el("delete-sel").hidden = !ui.picked.size;
+      $("span", el("delete-sel")).textContent = `Delete ${num(ui.picked.size)} selected`;
     };
     // restore one or several: they go back to the Content Library for everyone
     const restore = async (list, btn) => {
@@ -294,6 +299,21 @@
       let ok = 0;
       for (const ext of list) { const { error: err } = await A.db.rpc("restore_content_idea", { p_external_id: ext }); if (err) { A.toast(A.errMsg(err), "err"); break; } ok++; }
       if (ok) A.toast(ok === 1 ? "Post restored to the Content Library." : `${num(ok)} posts restored to the Content Library.`);
+      box.dataset.open = "1"; loadRemoved();
+    };
+    // delete for good: the posts are erased, but they stay blocked from future imports (supabase/removed-delete.sql)
+    const erase = async (list, btn) => {
+      const one = list.length === 1;
+      const ok = await A.confirmDialog({
+        title: one ? "Delete this post for good?" : `Delete ${num(list.length)} posts for good?`,
+        text: `${one ? "It's" : "They're"} erased from the database, with ${one ? "its" : "their"} filters, AI analyses and Content Plan entries. ${one ? "It stays" : "They stay"} blocked, so future imports won't bring ${one ? "it" : "them"} back. This can't be undone.`,
+        confirm: one ? "Delete" : `Delete ${num(list.length)}`, danger: true,
+      });
+      if (!ok) return;
+      btn.disabled = true;
+      const { data: n, error: err } = await A.db.rpc("delete_removed_ideas", { p_external_ids: list });
+      if (err) { btn.disabled = false; return A.toast(/does not exist|schema cache|Could not find/i.test(err.message) ? "Run supabase/removed-delete.sql in Supabase first." : A.errMsg(err), "err"); }
+      A.toast(`${num(list.length)} post${one ? "" : "s"} deleted for good.`);
       box.dataset.open = "1"; loadRemoved();
     };
     box.onclick = (e) => {
@@ -305,6 +325,10 @@
       if (one) return restore([one.dataset.restore], one);
       const sel = t.closest("[data-rmv-restore-sel]");
       if (sel) return restore([...ui.picked], sel);
+      const del = t.closest("[data-rmv-del]");
+      if (del) return erase([del.dataset.rmvDel], del);
+      const delSel = t.closest("[data-rmv-delete-sel]");
+      if (delSel) return erase([...ui.picked], delSel);
     };
     box.onchange = (e) => {
       const pick = e.target.closest("[data-rmv-pick]");
