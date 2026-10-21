@@ -413,7 +413,7 @@
     const groups = [["Content type", "angle"], ["Collaboration", "collab"], ["Brands", "sponsor", 10]]
       .map(([label, cat, max, h]) => [label, h ?? chips(cat, max)]).filter(([, h]) => h);
     if (!groups.length) return "";
-    return `<div class="lf-cc-sub"><p class="lf-cc-h">${esc(tx("Refine creators' posts"))}</p>${acctRowHtml()}
+    return `<div class="lf-cc-sub">${acctRowHtml()}
       ${groups.map(([label, h]) => `<div class="lf-sub">${esc(tx(label))}</div><div class="lf-chips">${h}</div>`).join("")}</div>`;
   }
   // Creators' accounts: a dropdown with a search box on top; a star marks up to 5 favourites (Profile → Favourites,

@@ -6219,7 +6219,6 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 
 /* Content Library: filters for creators' posts, under the gold "Content Creators" button when it's on */
 .lf-cc-sub { margin: -2px 0 8px; padding: 10px 12px 12px; border-radius: 0 0 14px 14px; border: 0.5px solid rgba(240, 184, 74, 0.35); border-top: 0; background: linear-gradient(180deg, rgba(240, 184, 74, 0.08), transparent 80%); }
-.lf-cc-h { margin: 0 2px 2px; font-size: 12px; font-weight: 600; color: var(--gold); }
 .lf-cc-sub .lf-sub { margin: 10px 2px 6px; }
 
 /* Content Library: a format chosen → its proportions open right under the format tiles */
