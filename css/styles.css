@@ -6364,6 +6364,7 @@ th .org-kd { display: flex; justify-content: center; margin: 4px auto 0; width: 
   .feed-bar .collapse { display: none; }
   .library.filters-collapsed .filters-show { display: grid; }
   .library.filters-collapsed .feed-bar { padding-left: 64px; }
+  .library.filters-collapsed .lib-head .lf-sortbar { padding-left: 64px; }   /* room for the floating "show filters" arrow */
 }
 
 /* Content Library: "Saved boards" side panel (js/boards-panel.js) — same column as the Content Plan */
