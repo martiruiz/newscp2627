@@ -732,14 +732,13 @@
     const on = isOn(v), n = countOf(v);
     const st = `${on ? " is-on" : ""}${n === 0 && !on ? " is-zero" : ""}${n < 20 && !on ? " is-low" : ""}`;
     const meta = `<span class="lfp-meta"><b>${esc(pretty(v.name))}</b><small>${esc(tx("{n} posts", { n: kfmt(n) }))}</small></span><span class="lfp-ck">${svg("check")}</span>`;
-    if (g.tiles) return `<button type="button" class="lfp-logo${st}" aria-pressed="${on}" data-facet="${v.category}" data-id="${v.id}"><span class="lfp-lg lfp-lg-ic">${svg(sportIco(v.name))}</span>${meta}</button>`;
-    if (g.logos) return `<button type="button" class="lfp-logo${st}" aria-pressed="${on}" data-facet="${v.category}" data-id="${v.id}">${v.logo ? `<span class="lfp-lg${v.ig ? " is-photo" : ""}"><img src="${esc(v.logo)}" alt="" loading="lazy"></span>` : `<span class="lfp-lg"><b>${esc(initials(v.name))}</b></span>`}${meta}</button>`;
     const c = covers.get(v.id);
+    const ph = g.logos && v.logo ? `<img class="lfp-img-logo" src="${esc(v.logo)}" alt="" loading="lazy">` : svg(g.tiles ? sportIco(v.name) : g.ico);
     return `<button type="button" class="lfp-card${st}" aria-pressed="${on}" data-facet="${v.category}" data-id="${v.id}">
-      <span class="lfp-img" data-cover="${v.id}"${c ? ` style="background-image:url('${esc(c)}')"` : ""}>${c ? "" : svg(g.ico)}</span>${hot ? `<span class="lfp-hot">${esc(tx("Popular"))}</span>` : ""}${meta}</button>`;
+      <span class="lfp-img${c === undefined ? " is-loading" : ""}" data-cover="${v.id}"${c ? ` style="background-image:url('${esc(c)}')"` : ""}>${c ? "" : ph}</span>${hot ? `<span class="lfp-hot">${esc(tx("Popular"))}</span>` : ""}${meta}</button>`;
   }
   const lfpCards = (list, g, max = 0) => { const l = byCount(list), shown = max ? [...l.slice(0, max), ...l.slice(max).filter(isOn)] : l, hot = l.length > 2 ? l[0] : null;
-    return `<div class="lfp-cards${g.logos || g.tiles ? " lfp-cards-logo" : ""}">${shown.map((v) => lfpCard(v, g, v === hot && !g.logos && !g.tiles)).join("")}</div>`; };
+    return `<div class="lfp-cards">${shown.map((v) => lfpCard(v, g, v === hot && !g.logos && !g.tiles)).join("")}</div>`; };
   function lfpMatchday(g) {
     const phases = MATCHDAY.map((ph) => ({ ...ph, list: ph.vals.map(([cat, name]) => valByName(cat, name)).filter((v) => v && live(v)) })).filter((ph) => ph.list.length);
     const nOn = (ph) => ph.list.filter(isOn).length;
@@ -771,18 +770,15 @@
     const teamG = g.key === "club" && groups.find((x) => x.key === "team");
     const squadVals = teamG ? [...byCount(groupVals(teamG)), ...["Player"].map((n) => valByName("entity", n)).filter((v) => v && (countOf(v) > 0 || isOn(v)))] : [];
     const squad = teamG ? `<div class="lfp-chips lfp-squad">${squadVals.map((v) => `<button type="button" class="lfp-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="${v.category}" data-id="${v.id}">${esc(v.category === "entity" ? tx(v.name === "Player" ? "Players' accounts" : "Brand accounts") : pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`).join("")}</div>` : "";
-    const many = g.logos && groupVals(g).length > 30;
-    return head + squad + (g.key === "city" ? "" : lfpCards(groupVals(g), g, many ? 30 : 0))
+    const many = g.logos && groupVals(g).length > 20;
+    return head + squad + (g.key === "city" ? "" : lfpCards(groupVals(g), g, many ? 20 : 0))
       + (many || g.key === "city" ? `<p class="lfp-tip">${svg("search")}${esc(tx("Search above to find any of the {n}", { n: groupVals(g).length.toLocaleString(window.SCP_LOC || "en-GB") }))}</p>` : "");
   }
   function lfpTop(sec) {
     let pills = "";
     if (sec === "occasion" && planHints?.length) pills = planHints.map((h) => `<button type="button" class="lfp-pill${isOn(h.v) ? " is-on" : ""}" data-facet="${h.v.category}" data-id="${h.v.id}">${svg("calendar")}${esc(pretty(h.v.name))}</button>`).join("");
-    if (!pills && sec !== "benchmark") {   // Inspiration: just the search   // the most posted options of the section
-      const top = groupsOf(sec).filter((g) => !g.logos && !g.tiles).flatMap(groupVals).filter((v) => v.category !== "outcome").sort((a, b) => countOf(b) - countOf(a)).slice(0, 4);
-      pills = top.map((v) => `<button type="button" class="lfp-pill${isOn(v) ? " is-on" : ""}" data-facet="${v.category}" data-id="${v.id}">${esc(pretty(v.name))} <em>${kfmt(countOf(v))}</em></button>`).join("");
-    }
-    const lbl = sec === "occasion" && planHints?.length ? "In your Content Plan" : "Popular";
+    // no "Popular" row: the options already show their posts; Match Day keeps the occasions of your Content Plan
+    const lbl = "In your Content Plan";
     return `<label class="lfp-search">${svg("search")}<input type="search" data-lfb-q value="${esc(ui.barQ || "")}" placeholder="${esc(tx(sec === "occasion" ? "Search an occasion: derby, signing, birthday…" : sec === "goal" ? "Search a goal, a sponsor or a sector…" : "Search a sport, a competition, a club or a city…"))}" autocomplete="off"></label>
       ${pills ? `<div class="lfp-now"><span class="lfp-now-l">${svg("trend")}${esc(tx(lbl))}</span>${pills}</div>` : ""}`;
   }
@@ -795,31 +791,46 @@
   }
   // the options of the groups picked by name (Players, Sponsors, Media, Brands, Graphic design) that are on
   const valsOn = (sec) => groupsOf(sec).filter((g) => g.vals).flatMap(groupVals).filter(isOn);
+  const selOf = (sec) => [...new Set([...CATEGORIES.filter((c) => secOf(c) === sec).flatMap((c) => [...selected[c.key]].map((id) => catalog.byId.get(id)).filter(Boolean)), ...valsOn(sec)])];
   function lfpFoot(sec) {
-    const sel = [...new Set([...CATEGORIES.filter((c) => secOf(c) === sec).flatMap((c) => [...selected[c.key]].map((id) => catalog.byId.get(id)).filter(Boolean)), ...valsOn(sec)])];
+    const sel = selOf(sec);
     return `<div class="lfp-sel">${sel.length ? sel.map((v) => `<span class="lfp-tag">${esc(pretty(v.name))}<button type="button" data-facet="${v.category}" data-id="${v.id}" aria-label="${esc(tx("Remove"))}">${icon("x")}</button></span>`).join("") : `<span class="lfp-hint">${esc(tx("Pick one or more options"))}</span>`}</div>
       ${sel.length ? `<button type="button" class="lfp-clear" data-lfb-clear="${sec}">${esc(tx("Clear"))}</button>` : ""}
       <button type="button" class="lfp-go" data-lfb-close><span data-lfb-go>${esc(goLabel())}</span>${icon("arrow-up-right")}</button>`;
   }
   const goLabel = () => (ui.total == null ? tx("Show posts") : ui.total ? tx("Show {n} posts", { n: Number(ui.total).toLocaleString(window.SCP_LOC || "en-GB") }) : tx("No posts — change the filters"));
-  const lfpHtml = (sec) => `<div class="lfp-top">${lfpTop(sec)}</div><div class="lfp-body"><nav class="lfp-rail" aria-label="${esc(tx("Groups"))}">${lfpRail(sec)}</nav><div class="lfp-main" data-lfp-main>${lfpMain(sec)}</div></div><div class="lfp-foot">${lfpFoot(sec)}</div>`;
-  async function loadCovers(sec) {
-    const ids = groupsOf(sec).filter((g) => !g.logos && !g.tiles).flatMap(groupVals).map((v) => v.id).filter((id) => !covers.has(id));
+  const lfpHtml = (sec) => `<div class="lfp-top">${lfpTop(sec)}</div><div class="lfp-body"><nav class="lfp-rail" aria-label="${esc(tx("Groups"))}">${lfpRail(sec)}</nav><div class="lfp-main" data-lfp-main>${lfpMain(sec)}</div></div><div class="lfp-prev" data-lfp-prev>${prevHtml()}</div><div class="lfp-foot">${lfpFoot(sec)}</div>`;
+  // the most viewed posts with the filters chosen so far (an example of what the sentence finds)
+  const prev = { key: "", rows: null };
+  const prevHtml = () => (prev.rows?.length ? `<span class="lfp-prev-l">${esc(tx("Most viewed with your filters"))}</span><div class="lfp-prev-row">${prev.rows.map((p) => `<span class="lfp-prev-p"${p.cover_url ? ` style="background-image:url('${esc(p.cover_url)}')"` : ""}>${p.views ? `<em>${kfmt(p.views)}</em>` : ""}</span>`).join("")}</div>` : "");
+  async function loadPrev() {
+    const key = JSON.stringify(state());
+    if (key === prev.key) return;
+    prev.key = key;
+    const { data } = await fetchIdeas({ ...queryArgs(state()), p_order: "views", p_seed: "", p_ids: null, p_limit: 20, p_offset: 0 }).catch(() => ({}));
+    if (key !== prev.key) return;
+    prev.rows = (data?.data || []).filter((p) => p.cover_url).slice(0, 8);   // only the ones with a cover
+    const el = $("[data-lfp-prev]"); if (el) el.innerHTML = prevHtml();
+  }
+  const coverAsked = new Set();
+  async function loadCovers() {
+    const ids = [...new Set($$("[data-lfb-host] [data-cover]").map((el) => Number(el.dataset.cover)))].filter((id) => !coverAsked.has(id));
     if (!ids.length || !db) return;
-    ids.forEach((id) => covers.set(id, ""));
-    for (let i = 0; i < ids.length; i += 60) {
-      const { data, error } = await db.rpc("value_covers", { p_ids: ids.slice(i, i + 60) });
-      if (error) return;   // supabase/value-covers.sql not run yet: the cards keep their icon
-      for (const r of data || []) {
-        if (!r.cover) continue;
-        covers.set(Number(r.id), r.cover);
-        $$(`[data-cover="${r.id}"]`).forEach((el) => { el.style.backgroundImage = `url('${r.cover}')`; el.innerHTML = ""; });
-      }
-    }
+    ids.forEach((id) => coverAsked.add(id));
+    // three at a time, three requests in parallel: a big value (Football: 367k posts) is slow, a long list times out
+    const parts = []; for (let i = 0; i < ids.length; i += 3) parts.push(ids.slice(i, i + 3));
+    const run = async () => { for (let part; (part = parts.shift()); ) {
+      const { data } = await db.rpc("value_covers", { p_ids: part }).then((r) => r, () => ({}));
+      part.forEach((id) => covers.set(id, ""));
+      for (const r of data || []) if (r.cover) covers.set(Number(r.id), r.cover);
+      for (const id of part) $$(`[data-cover="${id}"]`).forEach((el) => { el.classList.remove("is-loading"); const c = covers.get(id); if (c) { el.style.backgroundImage = `url('${c}')`; el.innerHTML = ""; } });
+    } };
+    await Promise.all([run(), run(), run()]);
   }
 
   // ---------- Bar above the posts (wide screens): one button per section, its filters in a wide panel ----------
   const secOf = (c) => (c.key === "angle" || c.key === "campaign" ? "occasion" : ["format", "platform"].includes(c.sec) ? "where" : c.sec);
+  const SENTENCE = [["occasion", "I want ideas for", "a moment"], ["benchmark", "like the ones from", "a reference"], ["goal", "to achieve", "a goal"]];
   function renderBar(list, parts) {
     const bar = $("[data-lf-bar]");
     if (!list.length) { bar.hidden = true; bar.innerHTML = ""; ui.bar = null; return; }
@@ -828,26 +839,13 @@
     const open = items.find((it) => it.key === ui.bar);
     const keep = $(".lfp-main", bar)?.scrollTop || 0;
     bar.hidden = false;
-    // one outlined capsule; the open section sits under a lens that glides between them. The capsule is built once and
-    // then only updated (rebuilding it would cut the lens's movement short); the panel below is replaced.
-    const oi = items.indexOf(open);
-    const keys = items.map((it) => it.key).join();
-    let row = $(".lfb-row", bar);
-    if (!row || row.dataset.keys !== keys) {
-      bar.innerHTML = `<div class="lfb-row lfb-glass" role="toolbar" aria-label="${esc(tx("Filters"))}" style="--n:${items.length}" data-keys="${keys}"><span class="lfb-lens"></span>${items.map((it) => `<button type="button" class="lfb-btn" data-lfb="${it.key}"><span class="lfb-tx"><b>${esc(it.label)}</b></span><em hidden></em></button>`).join("")}</div><div data-lfb-host></div>`;
-      row = $(".lfb-row", bar);
-    }
-    items.forEach((it, k) => {
-      const b = row.querySelectorAll("[data-lfb]")[k], em = b.querySelector("em");
-      b.classList.toggle("is-set", !!it.n); b.classList.toggle("is-open", open === it); b.setAttribute("aria-expanded", String(open === it));
-      em.hidden = !it.n; em.textContent = it.n || "";
-    });
-    const lens = $(".lfb-lens", row);
-    if (oi >= 0) {
-      if (!lens.classList.contains("is-on")) { lens.style.transition = "none"; lens.style.setProperty("--x", oi); void lens.offsetWidth; lens.style.transition = ""; }   // appears where it is, then glides
-      lens.style.setProperty("--x", oi);
-    }
-    lens.classList.toggle("is-on", oi >= 0);
+    // a sentence: "I want ideas for [moment] like the ones from [reference] to achieve [goal]"; each slot opens its panel
+    if (!$(".lfs", bar)) bar.innerHTML = `<div class="lfs" role="toolbar" aria-label="${esc(tx("Filters"))}"></div><div data-lfb-host></div>`;
+    $(".lfs", bar).innerHTML = SENTENCE.filter(([k]) => items.some((it) => it.key === k)).map(([k, word, ph]) => {
+      const sel = selOf(k), it = items.find((x) => x.key === k);
+      const label = sel.length ? `${pretty(sel[0].name)}${sel.length > 1 ? ` +${sel.length - 1}` : ""}` : tx(ph);
+      return `<span class="lfs-w">${esc(tx(word))}</span><span class="lfs-slot${sel.length ? " is-set" : ""}${open === it ? " is-open" : ""}"><button type="button" data-lfb="${k}" aria-expanded="${open === it}" title="${esc(it.label)}">${esc(label)}${sel.length ? "" : svg("chev", "lfs-chev")}</button>${sel.length ? `<button type="button" class="lfs-x" data-lfb-clear="${k}" aria-label="${esc(tx("Clear"))}">${icon("x")}</button>` : ""}</span>`;
+    }).join("");
     // the open panel is kept and only its content changes (a new panel would replay its opening animation on every
     // click inside it — the panel seemed to blink); a new panel only when another section opens
     const host = $("[data-lfb-host]", bar);
@@ -855,7 +853,7 @@
     if (!open) host.innerHTML = "";
     else if (cur && cur.dataset.sec === open.key) cur.innerHTML = lfpHtml(open.key);
     else host.innerHTML = `<div class="lfb-panel lfp" role="dialog" aria-label="${esc(open.label)}" data-sec="${open.key}">${lfpHtml(open.key)}</div>`;
-    if (open) { $(".lfp-main", bar).scrollTop = keep; loadCovers(open.key); }
+    if (open) { $(".lfp-main", bar).scrollTop = keep; loadCovers(); loadPrev(); }
   }
 
   // Mobile: the three specials as quick chips above the posts
@@ -1031,7 +1029,7 @@
     const aq = e.target.closest("[data-acct-q]");
     if (aq) { ui.acctQ = aq.value; const l = $("[data-acct-list]"); if (l) l.innerHTML = acctListHtml(); return; }
     const bq = e.target.closest("[data-lfb-q]");
-    if (bq) { ui.barQ = bq.value.trim(); $("[data-lfp-main]").innerHTML = lfpMain(ui.bar); $(".lfp-rail").innerHTML = lfpRail(ui.bar); loadCovers(ui.bar); return; }
+    if (bq) { ui.barQ = bq.value.trim(); $("[data-lfp-main]").innerHTML = lfpMain(ui.bar); $(".lfp-rail").innerHTML = lfpRail(ui.bar); loadCovers(); return; }
     const s = e.target.closest("[data-facet-search]");
     if (s) {
       const k = s.dataset.facetSearch, pos = s.selectionStart;
