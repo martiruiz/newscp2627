@@ -902,3 +902,26 @@ select.cs-native { display: none !important; }
 .cs-opt.is-on { background: var(--accent-soft); color: var(--accent-light); font-weight: 600; }
 .cs-opt svg { flex: none; width: 15px; height: 15px; fill: none; stroke: var(--accent); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
 .cs-opt:disabled { opacity: 0.4; cursor: not-allowed; }
+/* Admin → Smart filters · Review (premium, easier): guide with steps + legend, headers with info, ✓ / ✗ on the labels, visible keys */
+.sr-guide { margin-bottom: 16px; padding: 16px 18px; border-radius: 16px; background: linear-gradient(180deg, rgba(240, 184, 74, 0.08), transparent), var(--panel); border-color: rgba(240, 184, 74, 0.25); }
+.sr-guide .aud-h .icon-btn { margin-left: 8px; font-size: 18px; }
+.sr-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.sr-steps li { display: flex; gap: 12px; align-items: flex-start; padding: 12px; border-radius: 12px; background: var(--panel-2); border: 1px solid var(--border); font-size: 13px; color: var(--muted); line-height: 1.5; }
+.sr-steps li > b { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); font: 700 14px var(--display); }
+.sr-steps strong { color: var(--text); }
+.sr-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 12px 0 0; }
+.sr-legend .sr-chip { pointer-events: none; }
+.sr-post, .sr-form { border-radius: 16px; }
+.sr-post .aud-h, .sr-form .aud-h { margin-bottom: 10px; }
+.sr-cat { padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255, 255, 255, 0.015); }
+.sr-cat-h { font-size: 13.5px; }
+.sr-chip { height: 30px; transition: background 0.12s, border-color 0.12s, color 0.12s, transform 0.08s; }
+.sr-chip:active { transform: scale(0.96); }
+.sr-chip.on::before { content: "✓ "; font-weight: 700; }
+.sr-chip.rej::before { content: "✗ "; font-weight: 700; text-decoration: none; display: inline-block; margin-right: 2px; }
+.sr-bar { gap: 14px; }
+.sr-keys { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 12.5px; color: var(--muted); margin-right: auto; }
+.sr-keys kbd { display: inline-grid; place-items: center; min-width: 24px; height: 22px; padding: 0 6px; border-radius: 6px; border: 1px solid var(--border-2); border-bottom-width: 2px; background: var(--panel-2); color: var(--text); font: 600 11px var(--font); }
+.sr-keys kbd:not(:first-child) { margin-left: 8px; }
+.sr-progress > span { display: inline-flex; align-items: center; gap: 6px; }
+@media (max-width: 1000px) { .sr-steps { grid-template-columns: 1fr; } }

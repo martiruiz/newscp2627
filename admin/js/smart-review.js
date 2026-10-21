@@ -64,19 +64,31 @@
   const tone = (v) => (v == null ? "" : v >= 0.85 ? "good" : v >= 0.65 ? "mid" : "bad");
 
   // ---------- Layout ----------
+  const guideOpen = () => { try { return localStorage.getItem("scp-smart-guide") !== "0"; } catch { return true; } };
   function render() {
     const done = items.filter((r) => r.status === "done").length;
     const skipped = items.filter((r) => r.status === "skipped").length;
     main.innerHTML = `
       <div class="page-head">
-        <div><h1>Smart filters · Review</h1><p>Check the AI's labels. What you confirm becomes the reference to measure and improve each filter.</p></div>
+        <div><h1>Smart filters · Review</h1><p>Check the AI's labels. What you confirm becomes the reference to measure and improve each filter. <button class="link" type="button" data-guide-open>How it works</button></p></div>
         <div class="head-actions">
           ${batches.length > 1 ? `<select class="select" data-batch aria-label="Review set">${batches.map((b) => `<option${b === batch ? " selected" : ""}>${esc(b)}</option>`).join("")}</select>` : ""}
-          <div class="sr-progress"><b>${done}</b> / ${items.length} reviewed${skipped ? ` · ${skipped} skipped` : ""}<i><span style="width:${items.length ? (done / items.length) * 100 : 0}%"></span></i></div>
+          <div class="sr-progress"><span><b>${done}</b> / ${items.length} reviewed${skipped ? ` · ${skipped} skipped` : ""} ${A.info("Posts of this review set you've saved (Reviewed) or skipped. The set is a sample of posts the AI labelled; when every post is done, Accuracy shows how good the AI is per filter.")}</span><i><span style="width:${items.length ? (done / items.length) * 100 : 0}%"></span></i></div>
           <div class="seg"><button type="button" class="${view === "review" ? "on" : ""}" data-view="review">Review</button><button type="button" class="${view === "accuracy" ? "on" : ""}" data-view="accuracy">Accuracy</button>${items.some((r) => r.ai_b) ? `<button type="button" class="${view === "compare" ? "on" : ""}" data-view="compare">Compare</button>` : ""}</div>
         </div>
       </div>
+      ${guideOpen() ? `<section class="panel sr-guide" data-guide>
+        <header class="aud-h"><h2>How it works</h2><span class="aud-n">3 steps per post</span><button class="icon-btn" type="button" data-guide-close aria-label="Hide the guide" title="Hide the guide">×</button></header>
+        <ol class="sr-steps">
+          <li><b>1</b><span><strong>Look at the post</strong> on the left: the image or video, and its caption.</span></li>
+          <li><b>2</b><span><strong>Check the labels</strong> on the right. The dashed ones are the AI's guess: click once if it's right (✓), twice if it's wrong (✗). Click any other value to add one the AI missed.</span></li>
+          <li><b>3</b><span><strong>Save &amp; next</strong> (Enter or →). Not sure? Skip it (S). ← goes back.</span></li>
+        </ol>
+        <p class="sr-legend"><span class="sr-chip ai pend">AI guess</span><span class="sr-chip on">✓ Right</span><span class="sr-chip rej">✗ Wrong</span><span class="sr-chip">Not chosen</span></p>
+      </section>` : ""}
       <div data-body></div>`;
+    $("[data-guide-close]")?.addEventListener("click", () => { try { localStorage.setItem("scp-smart-guide", "0"); } catch {} render(); });
+    $("[data-guide-open]")?.addEventListener("click", () => { try { localStorage.removeItem("scp-smart-guide"); } catch {} render(); });
     $$("[data-view]").forEach((b) => b.addEventListener("click", () => { view = b.dataset.view; render(); }));
     $("[data-batch]")?.addEventListener("change", (e) => {
       batch = e.target.value;
@@ -107,7 +119,7 @@
     const p = posts.get(r.post_id) || { tags: {} };
     const chip = (vals) => [...setOf(vals)].map((v) => `<span class="sr-chip on">${esc(v)}</span>`).join("") || `<span class="muted">— nothing —</span>`;
     $("[data-body]").innerHTML = `
-      <p class="hint" style="margin:0 0 12px"><b>${decided}</b> of ${total} decisions · ${pending.length} posts left. For each filter, pick the better option. A and B are shuffled: you don't know which version is which.</p>
+      <p class="hint" style="margin:0 0 12px">${A.info("Two versions of the AI labelled the same posts. A and B are shuffled so you don't know which is which: pick the better one per filter (1 = A, 2 = B, 3 = both right, 4 = both wrong).")} <b>${decided}</b> of ${total} decisions · ${pending.length} posts left. For each filter, pick the better option. A and B are shuffled: you don't know which version is which.</p>
       <div class="sr-grid">
         <section class="panel sr-post">
           <div class="sr-meta"><b>${esc(String(p.published_at || "").slice(0, 10))}</b>${p.url ? `<a class="link" href="${esc(p.url)}" target="_blank" rel="noopener">Open original ↗</a>` : ""}</div>
@@ -167,7 +179,7 @@
     const version = items.find((r) => r.ai_b_version)?.ai_b_version || "new";
     const verdict = (x) => (x.neu > x.old ? `<span class="sr-pct good">New better</span>` : x.old > x.neu ? `<span class="sr-pct bad">Old better</span>` : `<span class="sr-pct mid">Tie</span>`);
     $("[data-body]").innerHTML = `
-      <section class="panel"><div class="values-head" style="justify-content:space-between"><h2 style="font-size:16px">Blind comparison · old vs ${esc(version)}</h2><span class="muted">${rows.reduce((n, x) => n + x.total, 0)} decisions on the filters where the two versions disagreed</span></div>
+      <section class="panel"><div class="values-head" style="justify-content:space-between"><h2 style="font-size:16px">Blind comparison · old vs ${esc(version)} ${A.info("Results of the A/B comparison: for each filter, how often you preferred the old prompt's labels or the new one's, without knowing which was which.")}</h2><span class="muted">${rows.reduce((n, x) => n + x.total, 0)} decisions on the filters where the two versions disagreed</span></div>
       <div class="table-wrap"><table class="data"><thead><tr><th>Filter</th><th>Old wins</th><th>New wins</th><th>Both OK</th><th>Neither</th><th>Result</th></tr></thead>
       <tbody>${rows.map((x) => `<tr><td><b>${esc(x.label)}</b></td><td>${x.old}</td><td>${x.neu}</td><td>${x.both}</td><td>${x.none}</td><td>${verdict(x)}</td></tr>`).join("")}</tbody></table></div></section>
       <p class="hint" style="margin-top:12px">"Neither" means both versions were wrong on that post: those cases show what the next prompt must fix.</p>`;
@@ -177,7 +189,7 @@
     const acc = accuracy();
     const n = acc[0]?.n || 0;
     $("[data-body]").innerHTML = `
-      <section class="panel"><div class="values-head" style="justify-content:space-between"><h2 style="font-size:16px">Accuracy per filter</h2><span class="muted">${n} reviewed posts · green ≥ 85% · amber ≥ 65%</span></div>
+      <section class="panel"><div class="values-head" style="justify-content:space-between"><h2 style="font-size:16px">Accuracy per filter ${A.info("How often the AI agrees with your reviewed labels, per filter. Precision: of what the AI marked, how much was right. Recall: of what's right, how much the AI found. Green ≥ 80%, amber ≥ 60%, red below. Use it to decide which filters are ready to run at scale.")}</h2><span class="muted">${n} reviewed posts · green ≥ 85% · amber ≥ 65%</span></div>
       <div class="table-wrap"><table class="data sr-acc"><thead><tr><th>Filter</th><th title="Of the labels the AI gave, how many were right">Precision</th><th title="Of the right labels, how many the AI found">Recall</th><th title="Posts where the AI got this filter exactly right">Exact</th><th>AI right</th><th>AI wrong</th><th>AI missed</th></tr></thead>
       <tbody>${acc.map((c) => `<tr><td><b>${esc(c.label)}</b></td>
         <td><span class="sr-pct ${tone(c.precision)}">${pct(c.precision)}</span></td>
@@ -229,6 +241,7 @@
     $("[data-body]").innerHTML = `
       <div class="sr-grid">
         <section class="panel sr-post">
+          <header class="aud-h"><h2>The post</h2>${A.info("The post the AI labelled, as it looks on the network, with its caption. The grey tags come from the import (network, format, sport, competition, club) and aren't reviewed here.")}</header>
           <div class="sr-meta"><span class="status status-${r.status === "done" ? "completed" : r.status === "skipped" ? "reverted" : "importing"}">${r.status === "done" ? "Reviewed" : r.status === "skipped" ? "Skipped" : "To review"}</span>
             <b>#${idx + 1}</b> of ${items.length} · ${esc(String(p.published_at || "").slice(0, 10))}
             ${p.url ? `<a class="link" href="${esc(p.url)}" target="_blank" rel="noopener">Open original ↗</a>` : ""}</div>
@@ -237,6 +250,7 @@
           <details class="sr-caption" open><summary>Caption</summary><p>${esc(p.title || "(no caption)")}</p></details>
         </section>
         <section class="panel sr-form">
+          <header class="aud-h"><h2>Labels</h2>${A.info("Every smart filter and its possible values. Dashed = the AI's guess, to confirm (✓) or reject (✗). Gold = chosen. Filters marked “one” take a single value. Free-text filters (opponent, city, sponsor) take names separated by commas. Your answers become the reference the AI is measured against.")}</header>
           <p class="hint" style="margin:0 0 10px">${verify ? `<b>Verify:</b> the dashed labels are the AI's. Click once to confirm (✓), twice to reject (✗). Click any other value to add a missing one. You can save when no dashed label is left.` : Object.keys(ai).length ? `<span class="sr-dot"></span> = suggested by the AI. Click to turn a label on or off.` : `<b>Blind review:</b> nothing is pre-selected. Mark the labels that apply to this post (leave a filter empty if none applies).`}</p>
           ${CATS.map(catRow).join("")}
           <label class="sr-note">Note (optional)<input class="input" data-note value="${esc(r.note || "")}" placeholder="Anything odd about this post?"></label>
@@ -244,7 +258,7 @@
       </div>
       <div class="sr-bar">
         <button class="btn btn-ghost" type="button" data-prev ${idx ? "" : "disabled"}>← Previous</button>
-        <span class="muted">Enter = save &amp; next · S = skip</span>
+        <span class="sr-keys"><kbd>←</kbd> previous <kbd>Enter</kbd> or <kbd>→</kbd> save &amp; next <kbd>S</kbd> skip</span>
         <button class="btn btn-ghost" type="button" data-skip>Skip</button>
         <button class="btn btn-primary" type="button" data-save>${icon("check")}Save &amp; next</button>
       </div>`;
@@ -304,7 +318,8 @@
   document.addEventListener("keydown", (e) => {
     if (view === "compare" && compareKeys && !e.target.matches("input, textarea")) return compareKeys(e);
     if (view !== "review" || e.target.matches("input, textarea")) return;
-    if (e.key === "Enter") { e.preventDefault(); $("[data-save]")?.click(); }
+    if (e.key === "Enter" || e.key === "ArrowRight") { e.preventDefault(); $("[data-save]")?.click(); }
+    if (e.key === "ArrowLeft") { e.preventDefault(); $("[data-prev]")?.click(); }
     if (e.key.toLowerCase() === "s") $("[data-skip]")?.click();
   });
 
