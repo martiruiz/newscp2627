@@ -2245,7 +2245,7 @@
             <button class="pill pill-gold" type="button" data-more-like="${esc(p.id)}">${icon("sparkles")}More like this</button>
             ${saveBtn(p.id)}
             ${p.url ? `<a class="pill pill-dark" href="${esc(p.url)}" target="_blank" rel="noopener">Open on ${esc(PLATFORM_NAMES[pf] || "the platform")} ↗</a>` : ""}
-            ${me.isSuper ? `<button class="pill pill-danger" type="button" data-remove="${esc(p.id)}">${icon("trash-2")}Remove from library</button>` : ""}
+            ${me.isSuper ? `<button class="pill pill-danger an-remove" type="button" data-remove="${esc(p.id)}" title="${esc(tx("Remove from library"))}" aria-label="${esc(tx("Remove from library"))}">${icon("trash-2")}</button>` : ""}
           </div>
         </header>
         <div data-analysis><div class="an-loading"></div></div>

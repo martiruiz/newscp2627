@@ -6904,3 +6904,4 @@ a.lf-sp-favs { text-decoration: none; }
 .an-more .dr-tags { margin: 0; }
 .an-cap b { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
 .an-cap p { margin-top: 4px; font-size: 13.5px; line-height: 1.5; color: var(--muted); white-space: pre-line; }
+.an-actions .an-remove { width: 38px; padding: 0; justify-content: center; }
