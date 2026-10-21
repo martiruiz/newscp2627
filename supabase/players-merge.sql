@@ -1,6 +1,7 @@
 -- Content Library → one filter "Players" (Jugadores) for the three that meant almost the same:
---   campaign "Player Appearance" (the one shown as Players) + angle "Player-focused" + collab "Player collab".
--- Every post with Player-focused or Player collab also gets Player Appearance (only added, nothing is removed), now and
+--   campaign "Player Appearance" (the one shown as Players) + angle "Player-focused" + collab "Player collab"
+--   + entity "Player" (the players' own accounts, added 23/10/2026).
+-- Every post with Player-focused, Player collab or from a player's account also gets Player Appearance (only added, nothing is removed), now and
 -- from now on (trigger). The posts that got the tag are logged in players_merge_log, so it can be undone (end of file).
 -- Run once in Supabase > SQL editor. Safe to run again.
 
@@ -11,7 +12,7 @@ do $$
 declare pa bigint; src bigint[];
 begin
   select id into pa from public.idea_catalog where category = 'campaign' and name = 'Player Appearance';
-  select array_agg(id) into src from public.idea_catalog where (category, name) in (('angle', 'Player-focused'), ('collab', 'Player collab'));
+  select array_agg(id) into src from public.idea_catalog where (category, name) in (('angle', 'Player-focused'), ('collab', 'Player collab'), ('entity', 'Player'));
   if pa is null or src is null then raise exception 'Player values not found'; end if;
   with ins as (
     insert into public.content_idea_tags (idea_id, value_id)
@@ -21,11 +22,11 @@ begin
   insert into public.players_merge_log (idea_id) select idea_id from ins on conflict do nothing;
 end $$;
 
--- new posts tagged Player-focused / Player collab (imports, AI enrichment) get Players too
+-- new posts tagged Player-focused / Player collab / a player's account (imports, AI enrichment) get Players too
 create or replace function public.tag_players() returns trigger
 language plpgsql security definer set search_path = public as $$
 begin
-  if exists (select 1 from public.idea_catalog where id = new.value_id and (category, name) in (('angle', 'Player-focused'), ('collab', 'Player collab'))) then
+  if exists (select 1 from public.idea_catalog where id = new.value_id and (category, name) in (('angle', 'Player-focused'), ('collab', 'Player collab'), ('entity', 'Player'))) then
     with ins as (
       insert into public.content_idea_tags (idea_id, value_id)
       select new.idea_id, id from public.idea_catalog where category = 'campaign' and name = 'Player Appearance'
