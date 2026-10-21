@@ -6674,7 +6674,7 @@ a.lf-sp-favs { text-decoration: none; }
 .lfs-slot .lfs-x { padding: 0 10px 0 4px; color: #1a1206; opacity: 0.7; }
 .lfs-slot .lfs-x:hover { opacity: 1; }
 .lfs-x svg { width: 14px; height: 14px; }
-/* its panel: the groups as tabs on top, every option an example post (its most viewed), a preview of what's found */
+/* its panel: the groups as tabs on top, every option an example post (its most viewed) */
 .lfp-body { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); }
 .lfp-rail { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 10px 16px; border-right: 0; border-bottom: 1px solid var(--line-soft); overflow: visible; }
 .lfp-rail .lfp-rh { margin: 0 2px 0 10px; }
@@ -6696,12 +6696,6 @@ a.lf-sp-favs { text-decoration: none; }
 .lfp-card .lfp-meta { position: absolute; left: 0; right: 0; bottom: 0; z-index: 1; padding: 10px 11px; }
 .lfp-card .lfp-meta b { color: #fff; font: 600 13.5px/1.25 var(--font-display); }
 .lfp-card .lfp-meta small { color: rgba(255, 255, 255, 0.7); }
-.lfp-prev { border-top: 1px solid var(--line-soft); padding: 10px 16px 0; }
-.lfp-prev:empty { display: none; }
-.lfp-prev-l { font: 700 10.5px var(--font-body); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted-dim); }
-.lfp-prev-row { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 8px; margin-top: 8px; }
-.lfp-prev-p { position: relative; height: 84px; border-radius: 9px; background: var(--surface-2) center / cover no-repeat; border: 1px solid var(--line-soft); }
-.lfp-prev-p em { position: absolute; left: 5px; bottom: 5px; padding: 1px 6px; border-radius: 999px; background: rgba(8, 12, 26, 0.78); color: #fff; font: 600 10px var(--font-body); font-style: normal; }
 @media (prefers-reduced-motion: reduce) { .lfp-img.is-loading { animation: none; } }
 /* Filters column without group headings: room between the groups (Who publishes · Views · networks · formats · rows) */
 .lf-sec-v2 > .lf-who { margin: 18px 0 16px; }

@@ -827,19 +827,7 @@
       <button type="button" class="lfp-go" data-lfb-close><span data-lfb-go>${esc(goLabel())}</span>${icon("arrow-up-right")}</button>`;
   }
   const goLabel = () => (ui.total == null ? tx("Show posts") : ui.total ? tx("Show {n} posts", { n: Number(ui.total).toLocaleString(window.SCP_LOC || "en-GB") }) : tx("No posts — change the filters"));
-  const lfpHtml = (sec) => `<div class="lfp-top">${lfpTop(sec)}</div><div class="lfp-body"><nav class="lfp-rail" aria-label="${esc(tx("Groups"))}">${lfpRail(sec)}</nav><div class="lfp-main" data-lfp-main>${lfpMain(sec)}</div></div><div class="lfp-prev" data-lfp-prev>${prevHtml()}</div><div class="lfp-foot">${lfpFoot(sec)}</div>`;
-  // the most viewed posts with the filters chosen so far (an example of what the sentence finds)
-  const prev = { key: "", rows: null };
-  const prevHtml = () => (prev.rows?.length ? `<span class="lfp-prev-l">${esc(tx("Most viewed with your filters"))}</span><div class="lfp-prev-row">${prev.rows.map((p) => `<span class="lfp-prev-p"${p.cover_url ? ` style="background-image:url('${esc(p.cover_url)}')"` : ""}>${p.views ? `<em>${kfmt(p.views)}</em>` : ""}</span>`).join("")}</div>` : "");
-  async function loadPrev() {
-    const key = JSON.stringify(state());
-    if (key === prev.key) return;
-    prev.key = key;
-    const { data } = await fetchIdeas({ ...queryArgs(state()), p_order: "views", p_seed: "", p_ids: null, p_limit: 20, p_offset: 0 }).catch(() => ({}));
-    if (key !== prev.key) return;
-    prev.rows = (data?.data || []).filter((p) => p.cover_url).slice(0, 8);   // only the ones with a cover
-    const el = $("[data-lfp-prev]"); if (el) el.innerHTML = prevHtml();
-  }
+  const lfpHtml = (sec) => `<div class="lfp-top">${lfpTop(sec)}</div><div class="lfp-body"><nav class="lfp-rail" aria-label="${esc(tx("Groups"))}">${lfpRail(sec)}</nav><div class="lfp-main" data-lfp-main>${lfpMain(sec)}</div></div><div class="lfp-foot">${lfpFoot(sec)}</div>`;
   const coverAsked = new Set();
   async function loadCovers() {
     const ids = [...new Set($$("[data-lfb-host] [data-cover]").map((el) => Number(el.dataset.cover)))].filter((id) => !coverAsked.has(id));
@@ -881,7 +869,7 @@
     if (!open) host.innerHTML = "";
     else if (cur && cur.dataset.sec === open.key) cur.innerHTML = lfpHtml(open.key);
     else host.innerHTML = `<div class="lfb-panel lfp" role="dialog" aria-label="${esc(open.label)}" data-sec="${open.key}">${lfpHtml(open.key)}</div>`;
-    if (open) { $(".lfp-main", bar).scrollTop = keep; loadCovers(); loadPrev(); }
+    if (open) { $(".lfp-main", bar).scrollTop = keep; loadCovers(); }
   }
 
   // Mobile: the three specials as quick chips above the posts
