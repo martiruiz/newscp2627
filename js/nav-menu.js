@@ -35,7 +35,8 @@
       featured: { eyebrow: "What is SCP?", title: "Sports Content Playbook in 2 minutes", desc: "The platform, explained.", href: "index.html#what-is-scp" },
     },
     {
-      label: "Solutions", type: "about",
+      // only before buying (visitors and members without a plan)
+      label: "Solutions", type: "about", noPlan: true,
       hello: "Built for", title: "Every team that creates", highlight: "sports content", sub: "From one creator to a whole club department.",
       links: [
         { title: "Content creators", desc: "Formats and hooks that work in sports.", href: "book-a-call.html?for=creators" },
@@ -121,7 +122,7 @@
   links.innerHTML = MENU.map((m, i) => {
     if (!m.type) return `<div class="mm-tab"${attrs(m)}><a class="mm-btn-tab" href="${esc(m.href)}"><span>${esc(m.label)}</span>${m.badge ? `<span class="mm-badge">${esc(m.badge)}</span>` : ""}</a></div>`;
     const id = `mm-p${i}`;
-    return `<div class="mm-tab mm-has" data-mm><button class="mm-btn-tab" type="button" aria-expanded="false" aria-controls="${id}">${esc(m.label)}${CHEV}</button>${panel(m, id)}</div>`;
+    return `<div class="mm-tab mm-has" data-mm${attrs(m)}><button class="mm-btn-tab" type="button" aria-expanded="false" aria-controls="${id}">${esc(m.label)}${CHEV}</button>${panel(m, id)}</div>`;
   }).join("");
 
   if (member) window.SCP_entitlements?.().then(({ data }) => {
