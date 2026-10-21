@@ -6675,17 +6675,7 @@ a.lf-sp-favs { text-decoration: none; }
 .lfb-glass .lfb-btn.is-set { border: 0; }
 .lfb-glass .lfb-tx b { font: 600 15px var(--font-display); letter-spacing: -0.01em; }
 .lfb-glass .lfb-btn em { min-width: 20px; height: 20px; background: rgba(var(--fg), 0.14); color: var(--text); font-weight: 700; }
-/* its panel: the groups as tabs on top, every option an example post (its most viewed) */
-.lfp-body { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); }
-.lfp-rail { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 10px 16px; border-right: 0; border-bottom: 1px solid var(--line-soft); overflow: visible; }
-.lfp-rail .lfp-rh { margin: 0 2px 0 10px; }
-.lfp-rail .lfp-rh:first-child { margin-left: 0; }
-.lfp-rail .lfp-r { width: auto; gap: 6px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line-soft); }
-.lfp-rail .lfp-ric, .lfp-rail .lfp-rtx small { display: none; }
-.lfp-rail .lfp-rtx b { font-size: 13px; font-weight: 500; }
-.lfp-rail .lfp-r.is-on { background: rgba(240, 184, 74, 0.08); border-color: rgba(240, 184, 74, 0.6); box-shadow: none; }
-.lfp-rail .lfp-r.is-on::before { display: none; }
-.lfp-rail .lfp-r em { min-width: 18px; height: 18px; font-size: 10.5px; }
+/* its panel: groups on the left, every option an example post (its most viewed), what's found on the right */
 .lfp-cards { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
 .lfp-card { display: block; aspect-ratio: 4 / 5; }
 .lfp-card .lfp-img { position: absolute; inset: 0; background: var(--surface-2) center / cover no-repeat; color: var(--muted); }
@@ -6798,3 +6788,15 @@ a.lf-sp-favs { text-decoration: none; }
 .cr-layout.is-off button.is-on { background: transparent; box-shadow: none; }
 .lf-fol-box { padding: 2px 2px 0; }
 .lf-cc-sub > .lf-cc-chips { margin-top: 18px; }
+/* panel → right column: the count and 4 of the most viewed posts with the filters chosen, live */
+.lfp-body { grid-template-columns: 220px minmax(0, 1fr) 250px; }
+.lfp-res { display: flex; flex-direction: column; gap: 4px; padding: 20px 18px; border-left: 1px solid var(--line-soft); background: linear-gradient(180deg, rgba(240, 184, 74, 0.07), transparent 55%); overflow-y: auto; }
+.lfp-res small { font-size: 12.5px; color: var(--muted); }
+.lfp-res > b { font: 600 30px/1.1 var(--font-display); color: var(--text); letter-spacing: -0.01em; }
+.lfp-res-mini { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 12px 0 16px; }
+.lfp-res-mini span { position: relative; aspect-ratio: 4 / 5; border-radius: 10px; background: var(--surface-2) center / cover no-repeat; border: 1px solid var(--line-soft); }
+.lfp-res-mini span:not([style]) { background-image: linear-gradient(110deg, var(--surface-2) 30%, var(--surface-3) 50%, var(--surface-2) 70%); background-size: 200% 100%; animation: lfp-shimmer 1.4s linear infinite; }
+.lfp-res-mini em { position: absolute; left: 5px; bottom: 5px; padding: 1px 6px; border-radius: 999px; background: rgba(8, 12, 26, 0.78); color: #fff; font: 600 10px var(--font-body); font-style: normal; }
+.lfp-res .lfp-go { margin-top: auto; width: 100%; justify-content: center; }
+.lfp-go-foot { display: none; }
+@media (max-width: 1280px) { .lfp-body { grid-template-columns: 200px minmax(0, 1fr); } .lfp-res { display: none; } .lfp-go-foot { display: inline-flex; } }

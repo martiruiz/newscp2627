@@ -467,6 +467,8 @@ window.SCP_ES = {
   "billed yearly": "facturación anual",
   "or {price}/year": "o {price}/año",
   "Recommended": "Recomendado",
+  "posts · the most viewed:": "posts · los más vistos:",
+  "You'll find": "Encontrarás",
   "List": "Lista",
   "Boxes": "Cajas",
   "Creators can't be loaded right now.": "Ahora no se pueden cargar los creadores.",

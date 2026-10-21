@@ -832,10 +832,14 @@
     const sel = selOf(sec);
     return `<div class="lfp-sel">${sel.length ? sel.map((v) => `<span class="lfp-tag">${esc(pretty(v.name))}<button type="button" data-facet="${v.category}" data-id="${v.id}" aria-label="${esc(tx("Remove"))}">${icon("x")}</button></span>`).join("") : `<span class="lfp-hint">${esc(tx("Pick one or more options"))}</span>`}</div>
       ${sel.length ? `<button type="button" class="lfp-clear" data-lfb-clear="${sec}">${esc(tx("Clear"))}</button>` : ""}
-      <button type="button" class="lfp-go" data-lfb-close><span data-lfb-go>${esc(goLabel())}</span>${icon("arrow-up-right")}</button>`;
+      <button type="button" class="lfp-go lfp-go-foot" data-lfb-close>${esc(goLabel())}${icon("arrow-up-right")}</button>`;
   }
+  // the panel's right column: what the filters find, live — the count and 4 of the most viewed of the first page
+  const resHtml = () => `<small>${esc(tx("You'll find"))}</small><b>${ui.total == null ? "…" : Number(ui.total).toLocaleString(window.SCP_LOC || "en-GB")}</b><small>${esc(tx("posts · the most viewed:"))}</small>
+    <div class="lfp-res-mini">${(ui.peek || []).map((p) => `<span style="background-image:url('${esc(p.cover_url)}')">${p.views ? `<em>${kfmt(p.views)}</em>` : ""}</span>`).join("") || "<span></span><span></span><span></span><span></span>"}</div>
+    <button type="button" class="lfp-go" data-lfb-close><span data-lfb-go>${esc(goLabel())}</span>${icon("arrow-up-right")}</button>`;
   const goLabel = () => (ui.total == null ? tx("Show posts") : ui.total ? tx("Show {n} posts", { n: Number(ui.total).toLocaleString(window.SCP_LOC || "en-GB") }) : tx("No posts — change the filters"));
-  const lfpHtml = (sec) => `<div class="lfp-top">${lfpTop(sec)}</div><div class="lfp-body"><nav class="lfp-rail" aria-label="${esc(tx("Groups"))}">${lfpRail(sec)}</nav><div class="lfp-main" data-lfp-main>${lfpMain(sec)}</div></div><div class="lfp-foot">${lfpFoot(sec)}</div>`;
+  const lfpHtml = (sec) => `<div class="lfp-top">${lfpTop(sec)}</div><div class="lfp-body"><nav class="lfp-rail" aria-label="${esc(tx("Groups"))}">${lfpRail(sec)}</nav><div class="lfp-main" data-lfp-main>${lfpMain(sec)}</div><aside class="lfp-res" data-lfp-res>${resHtml()}</aside></div><div class="lfp-foot">${lfpFoot(sec)}</div>`;
   const coverAsked = new Set();
   async function loadCovers() {
     const ids = [...new Set($$("[data-lfb-host] [data-cover]").map((el) => Number(el.dataset.cover)))].filter((id) => !coverAsked.has(id));
@@ -1658,7 +1662,8 @@
     const rows = data?.data || [];
     if (reset) {
       ui.total = data.total;
-      const g = $("[data-lfb-go]"); if (g) g.textContent = goLabel();
+      ui.peek = rows.filter((p) => p.cover_url).sort((a, b) => (Number(b.views) || 0) - (Number(a.views) || 0)).slice(0, 4);
+      const res = $("[data-lfp-res]"); if (res) res.innerHTML = resHtml();
       $("[data-lf-go]").textContent = data.total ? `Show ${Number(data.total).toLocaleString(window.SCP_LOC || "en-GB")} results` : "No results — change the filters";
     }
     if (!rows.length && offset === 0) {
