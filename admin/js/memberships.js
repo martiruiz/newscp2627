@@ -45,6 +45,7 @@
     <div class="page-head"><div><h1>Memberships</h1><p>Plans, prices, subscribers, discounts, private links, e-mails and the MemberPress migration. Stripe is the source of truth for payments.</p></div>
       <div class="head-actions"><span class="ms-mode" data-mode></span></div></div>
     <nav class="ms-tabs" role="tablist">${TABS.map(([k, l]) => `<a href="#${k}" role="tab" data-tab="${k}">${l}</a>`).join("")}</nav>
+    <p class="ms-tabinfo" data-tab-info></p>
     <section data-view></section>`;
   const view = $("[data-view]");
   fn("stripe-admin", { action: "mode" }).then((m) => { $("[data-mode]").innerHTML = m.mode === "live" ? `<span class="ms-badge is-warn">Stripe LIVE</span>` : m.mode === "test" ? `<span class="ms-badge is-info">Stripe test mode</span>` : `<span class="ms-badge is-off">Stripe not connected</span>`; })
@@ -648,11 +649,71 @@
     draw();
   }
 
+  // ---------- The info "i": one per tab (what the tab shows) and next to every section title / KPI it knows ----------
+  const TAB_TIP = {
+    dashboard: "Key subscription numbers for the chosen period, from what Stripe confirmed (mirrored in the database): revenue, paying members, trials, cancellations and payments.",
+    plans: "The plans members can buy: EUR / USD prices, free trial, AI quota, permissions and visibility. Changes are synced to Stripe.",
+    subscribers: "Every member with a subscription, from Stripe: plan, status, price, dates and where they came from. Click a row for their account, invoices and timeline.",
+    discounts: "Discount codes (Stripe coupons and promotion codes): amount, plans they apply to, uses, dates and state.",
+    hidden: "Private links to plans that aren't on the pricing page: anyone with the link can see and subscribe to that plan.",
+    emails: "The automatic e-mails (welcome, renewal, payment problems…) in each language, and the log of every e-mail sent.",
+    events: "Every webhook event Stripe sent and how it was processed. Reconciliation compares the database with Stripe.",
+    migration: "Bringing the old MemberPress members over: upload their CSV, map each membership to an SCP plan and migrate.",
+    requests: "Requests sent from the website forms: custom plans, demos and contact messages.",
+    settings: "How memberships behave: Stripe mode, taxes, trial and payment-problem rules, library access, e-mails and checkout.",
+  };
+  const TIPS = [
+    ["MRR", "Monthly recurring revenue: subscriptions paying now (trials excluded), yearly ÷ 12, VAT included, per currency."],
+    ["ARR", "Annual recurring revenue: MRR × 12."],
+    ["Active (paying)", "Subscriptions paying now (active or with a payment problem). The small line counts the ones with a payment problem."],
+    ["In free trial", "Members in their free trial now (card added, not charged yet). The small line counts the ones who scheduled a cancellation."],
+    ["Trial → paid", "Of the trials that ended in the period, how many are paying now."],
+    ["Cancellations", "Paying subscriptions cancelled in the period; churn = those ÷ paying at the start of the period."],
+    ["Collected", "Money actually received: paid invoices in the period (cash)."],
+    ["Failed payments", "Charges that failed in the period (card declined, expired…)."],
+    ["By plan", "Members per plan now: paying, in trial, and the monthly revenue (MRR) each plan brings."],
+    ["New vs cancelled", "New subscriptions (gold) and cancellations (red) per month over the last 12 months."],
+    ["Subscription", "This member's Stripe subscription: plan, status, price, dates and payment method."],
+    ["Access now", "What this member can use right now (library, AI, Content Plan), from their plan or manual access."],
+    ["Manual access", "Give or remove access by hand, without charging anything (team, partners, invoices)."],
+    ["Invoices", "This member's Stripe invoices, with their PDF."],
+    ["Timeline", "Everything that happened to the subscription: sign-up, trial, renewals, plan changes, cancellations."],
+    ["E-mails", "Automatic e-mails sent to this member (or the e-mail settings, in Settings)."],
+    ["Notes", "Internal notes about this member, only visible to admins."],
+    ["Audit", "Who changed what on this member and when (admins, Stripe or the system)."],
+    ["Free trial", "Days of free trial for this plan; a card is always required."],
+    ["AI quota", "AI analyses included per month in this plan."],
+    ["Permissions", "What this plan unlocks: Content Library, AI analyses, Content Plan."],
+    ["Prices", "The plan's prices per currency and billing period. Each change creates a new Stripe price; current customers keep theirs."],
+    ["New private link", "Creates a secret link to one plan; the token is shown only once."],
+    ["Hidden plans", "Plans set to “Hidden”: only reachable through a private link."],
+    ["Delivery log", "Every automatic e-mail queued or sent, with its status and errors."],
+    ["Templates", "The text of each automatic e-mail, per language."],
+    ["Import from MemberPress", "Upload the CSV exported from MemberPress to start a migration batch."],
+    ["Batches", "Each uploaded MemberPress file and how far its migration went."],
+    ["Memberships → SCP plans", "Choose which SCP plan each old MemberPress membership becomes."],
+    ["Stripe", "Whether Stripe is connected and in test or live mode. Keys are Supabase secrets, never shown here."],
+    ["Taxes", "How VAT is applied to prices and invoices."],
+    ["Trials and payment problems", "Trial length rules and what happens when a payment fails (retries, grace days)."],
+    ["Library access", "Whether using the Content Library requires a membership (switch it on only after the MemberPress members are migrated)."],
+    ["Checkout and legal", "Checkout options and the legal texts customers accept."],
+  ];
+  const tipFor = (text) => (TIPS.find(([k]) => text.startsWith(k)) || [])[1];
+  const decorate = () => {
+    view.querySelectorAll("h2, h3, .bill-kpi > span").forEach((h) => {
+      if (h.querySelector(".info-i")) return;
+      const tip = tipFor((h.firstChild?.textContent || h.textContent).trim());
+      if (tip) h.insertAdjacentHTML("beforeend", ` ${A.info(tip)}`);
+    });
+  };
+  new MutationObserver(decorate).observe(view, { childList: true, subtree: true });
+
   const VIEWS = { dashboard, plans, subscribers, discounts, hidden, emails, events, migration, requests, settings };
   async function route() {
     const [tab, qs] = (location.hash.slice(1) || "dashboard").split("?");
     const k = VIEWS[tab] ? tab : "dashboard";
     $$("[data-tab]").forEach((a) => a.setAttribute("aria-selected", String(a.dataset.tab === k)));
+    $("[data-tab-info]").innerHTML = `<b>${esc(TABS.find(([t]) => t === k)[1])}</b>${A.info(TAB_TIP[k])}`;
     view.onclick = view.onsubmit = view.onchange = null;
     view.innerHTML = `<p class="muted">Loading…</p>`;
     try { await VIEWS[k](new URLSearchParams(qs || "")); }

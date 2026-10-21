@@ -853,3 +853,16 @@ tr[data-imp-row]:hover .imp-more, .imp-more:focus-within { opacity: 1; }
 .ld-status.st-customer { color: var(--green); border-color: rgba(0, 216, 91, 0.4); }
 .ld-status.st-lost { color: var(--red); border-color: rgba(255, 104, 92, 0.4); }
 @media (max-width: 900px) { .ld-filters { grid-template-columns: 1fr 1fr; } }
+/* Admin → Memberships (premium): tab title with its info, KPI cards like the other pages, rounder panels */
+.ms-tabinfo { display: flex; align-items: center; gap: 8px; margin: -4px 0 14px; }
+.ms-tabinfo b { font: 600 18px var(--display); letter-spacing: -0.01em; }
+.ms-tabinfo:empty { display: none; }
+[data-view] .panel { border-radius: 16px; }
+[data-view] h2 .info-i, [data-view] h3 .info-i { margin-left: 4px; }
+.bill-kpi { position: relative; border-radius: 16px; background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.01)), var(--panel); box-shadow: var(--inset-glow); }
+.bill-kpi > span { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: var(--dim); }
+.bill-kpi b { font: 700 28px/1.1 var(--display); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.bill-kpi:first-child::before, .bill-kpi:nth-child(2)::before { content: ""; position: absolute; left: 16px; right: 16px; top: 0; height: 2px; background: linear-gradient(90deg, #d99a2b, #ffe0a0); }
+.bill-kpi:first-child b, .bill-kpi:nth-child(2) b { color: var(--accent-mid); }
+.ms-tabs a[aria-selected="true"] { box-shadow: 0 6px 18px -8px rgba(240, 184, 74, 0.8); }
+.ms-row > .select { width: auto; min-width: 180px; }
