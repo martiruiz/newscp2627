@@ -302,7 +302,7 @@
       building: '<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4M8 6h.01M16 6h.01M12 6h.01M12 10h.01M12 14h.01M16 10h.01M16 14h.01M8 10h.01M8 14h.01"/>',
     };
     const qi = (n) => `<svg viewBox="0 0 24 24" aria-hidden="true">${QI[n]}</svg>`;
-    const QORG = [["club", "Club", "shield"], ["league", "League / Federation", "trophy"], ["agency", "Agency", "briefcase"], ["creator", "Content creator", "video"], ["event", "Event organiser", "ticket"], ["other", "Other", "sparkles"]];
+    const QORG = [["club", "Club", "shield"], ["league", "League / Federation", "trophy"], ["agency", "Agency", "briefcase"], ["event", "Event organiser", "ticket"], ["creator", "Content creator", "video"], ["other", "Other", "sparkles"]];
     const QSIZE = [["1", "Just me", "user"], ["2-5", "2–5 people", "users"], ["6-15", "6–15 people", "team"], ["15+", "More than 15", "building"]];
     function bubbles(key, title, list, n) {
       show(`<h2 class="lead-q lead-q-big" tabindex="-1">${esc(t(title))}</h2>
