@@ -7021,3 +7021,14 @@ p.lead { display: block; min-height: 0; }   /* the intro paragraphs share the na
 .pp:not(.sbp) .pp-plan-btn[aria-expanded="true"] { background: rgba(122, 162, 255, 0.08); }
 .pp:not(.sbp) .pp-menu-item.is-on { background: rgba(122, 162, 255, 0.1); }
 .pp:not(.sbp) .pp-menu-form input:focus { box-shadow: 0 0 0 3px rgba(122, 162, 255, 0.15); }
+/* Content Library: the three-tab bar (Get inspired by, Match Day, Brands & sponsors) narrower, centred in its row */
+.lfb-row.lfb-glass { max-width: 690px; margin-inline: auto; }
+/* the three-tab bar and the My space buttons: the same height as the nav's Admin / Log out buttons (35 px), on wide screens */
+@media (min-width: 961px) {
+  .lfb-row.lfb-glass { padding: 3px; }
+  .lfb-glass .lfb-lens { top: 3px; bottom: 3px; left: 3px; width: calc((100% - 6px) / var(--n, 3)); }
+  .lfb-glass .lfb-btn { height: 29px; }
+  .my-space-btns .pill { height: 35px !important; gap: 8px; padding: 0 12px 0 6px; border-radius: 11px; }
+  .my-space-btns .pill > [data-icon] { width: 23px; height: 23px; border-radius: 7px; }
+  .my-space-btns .pill > [data-icon] svg { width: 13px !important; height: 13px !important; }
+}
