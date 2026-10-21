@@ -1642,7 +1642,7 @@ window.SCP_ES = {
   "Humour / meme": "Humor / meme",
   "Emotional": "Emotivo",
   "Data & stats": "Datos y estadísticas",
-  "Skills / tutorial": "Habilidades / tutorial",
+  "Skills / tutorial": "Tutorial",
   "Player collab": "Colaboración con jugador",
   "Athlete takeover": "Takeover de deportista",
   "Fan content (UGC)": "Contenido de fans (UGC)",
