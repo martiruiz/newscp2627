@@ -648,3 +648,8 @@ tr.pf-gone td { opacity: 0.55; }
 .rv-grid a { aspect-ratio: 4 / 5; border-radius: 10px; background: var(--panel-2) center / cover no-repeat; border: 1px solid var(--border); }
 .rv-grid a:hover { border-color: var(--accent); }
 .rv-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
+.rv-issues { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); }
+.rv-issues ul { display: grid; gap: 6px; margin: 8px 0 0; padding: 0; list-style: none; max-height: 220px; overflow-y: auto; }
+.rv-issues li { display: flex; align-items: center; gap: 10px; min-width: 0; font-size: 13px; }
+.rv-issues li a { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); }
+.rv-issues li a:hover { color: var(--text); }

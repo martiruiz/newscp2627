@@ -247,8 +247,10 @@
       </table></div></section>`;
     $("[data-new]").addEventListener("click", () => showWizard());
     const cols = "id,filename,file_path,status,total_rows,rows_created,rows_replaced,rows_skipped,error_count,created_at,completed_at";
-    let { data, error } = await A.db.from("idea_imports").select(`${cols},review_status`).order("created_at", { ascending: false }).limit(500);
-    if (error && /review_status/.test(error.message)) ({ data, error } = await A.db.from("idea_imports").select(cols).order("created_at", { ascending: false }).limit(500));   // import-review.sql not run yet
+    const load = (c) => A.db.from("idea_imports").select(c).order("created_at", { ascending: false }).limit(500);
+    let { data, error } = await load(`${cols},review_status,cover_issues`);
+    if (error && /cover_issues/.test(error.message)) ({ data, error } = await load(`${cols},review_status`));   // import-autopublish.sql not run yet
+    if (error && /review_status/.test(error.message)) ({ data, error } = await load(cols));   // import-review.sql not run yet
     const body = $("[data-history]");
     if (error) { body.innerHTML = `<tr><td class="table-empty error-text" colspan="9">${esc(A.errMsg(error))}</td></tr>`; return; }
     if (!data.length) {
@@ -262,14 +264,14 @@
       <tr data-imp-row="${r.id}">
         <td class="td-check"><input class="check" type="checkbox" data-imp-pick="${r.id}" aria-label="Select ${esc(r.filename)}"></td>
         <td class="td-title" title="${esc(r.filename)}">${esc(r.filename)}</td>
-        <td><span class="status status-${r.status}">${LABEL[r.status] || r.status}</span>${r.status === "completed" && r.review_status === "pending" ? ` <span class="status status-importing">Pending review</span>` : ""}</td>
+        <td><span class="status status-${r.status}">${LABEL[r.status] || r.status}</span>${r.status === "completed" && r.review_status === "pending" ? ` <span class="status status-importing">Loading covers</span>` : ""}${r.cover_issues ? ` <span class="status status-failed" title="Posts without a cover: no image available or removed from the platform">${num(r.cover_issues)} without cover</span>` : ""}</td>
         <td>${r.status === "analyzed" ? 0 : num(r.total_rows)}</td>
         <td>${dash(r.rows_created, r.status)}</td>
         <td>${dash(r.rows_replaced, r.status)}</td>
         <td>${dash(r.rows_skipped, r.status)}</td>
         <td class="td-date">${A.fmtDateTime(r.created_at)}</td>
         <td class="td-actions">
-          ${r.status === "completed" && r.review_status === "pending" ? `<button class="btn btn-sm" type="button" data-review-imp="${r.id}">${icon("eye")}Review</button>` : ""}
+          ${r.status === "completed" && (r.review_status === "pending" || r.cover_issues) ? `<button class="btn btn-sm" type="button" data-review-imp="${r.id}">${icon("eye")}${r.review_status === "pending" ? "Covers" : "Issues"}</button>` : ""}
           ${r.file_path ? `<button class="icon-btn" type="button" data-dl="${r.id}" title="Download CSV" aria-label="Download CSV">${icon("download")}</button>` : ""}
           ${r.error_count ? `<button class="icon-btn" type="button" data-errs="${r.id}" title="Download ${num(r.error_count)} errors as CSV" aria-label="Download errors">${icon("alert")}</button>` : ""}
           ${["completed", "failed"].includes(r.status) ? `<button class="icon-btn danger" type="button" data-revert="${r.id}" title="Revert import" aria-label="Revert import">${icon("undo")}</button>` : ""}
@@ -369,7 +371,7 @@
       if (rv) {
         const r = data.find((x) => x.id === Number(rv.dataset.reviewImp));
         let stop = null;
-        const m = A.modal({ title: r.filename, sub: "Covers and review", body: "<div data-review-m></div>", onClose: () => { stop?.(); showHistory(); } });
+        const m = A.modal({ title: r.filename, sub: "Covers", body: "<div data-review-m></div>", onClose: () => { stop?.(); showHistory(); } });
         stop = reviewPanel($("[data-review-m]", m.el), r.id);
         return;
       }
@@ -598,7 +600,7 @@
         error_count: errors.length, errors, new_values: total.new_values_created, completed_at: new Date().toISOString(),
       }).eq("id", wizard.importId);
       wizard.result = { ...total, skipped, errors };
-      // members don't see the new posts until the import is reviewed (covers loaded) and approved (supabase/import-review.sql)
+      // members don't see the new posts until their covers are loaded; then they're published on their own (supabase/import-review.sql, import-autopublish.sql)
       if (total.created + total.replaced) {
         const h = await A.db.rpc("admin_import_hold", { p_import_id: wizard.importId });
         if (h.error) term.log("warn", `review: ${esc(h.error.message)} — run supabase/import-review.sql in Supabase (the posts are visible right away)`);
@@ -644,7 +646,8 @@
     if ($("[data-review]")) reviewPanel($("[data-review]"), wizard.importId);
   }
 
-  // ---------- Review: load the covers (Edge Function "covers", progress bar), then approve so members see the posts ----------
+  // ---------- Review: load the covers (Edge Function "covers", progress bar); when they're done the posts are published
+  // on their own (admin_import_approve) and the ones left without a cover are listed as issues ----------
   async function coversFn(ids) {
     const cfg = window.SCP_CONFIG || {};
     const session = (await A.db.auth.getSession()).data.session;
@@ -657,24 +660,39 @@
   function reviewPanel(host, importId, onApproved) {
     let paused = false, finished = false, stopped = false;
     host.innerHTML = `<div class="panel panel-pad rv">
-      <div class="rv-h"><div><b>Covers and review</b><p class="muted">The new posts stay hidden from members until you approve them.</p></div><span class="status status-importing" data-rv-status>Pending review</span></div>
+      <div class="rv-h"><div><b>Covers</b><p class="muted">The new posts are published as soon as their covers are loaded.</p></div><span class="status status-importing" data-rv-status>Loading covers</span></div>
       <div class="rv-bar"><i data-rv-bar style="width:0%"></i></div>
       <p class="rv-stats" data-rv-stats>Loading…</p>
       <p class="error-text" hidden data-rv-err></p>
       <div class="rv-grid" data-rv-grid></div>
-      <div class="rv-actions"><button class="btn btn-ghost btn-sm" type="button" data-rv-pause>Pause</button><button class="btn btn-primary" type="button" disabled data-rv-approve>${icon("check")}Approve and publish</button></div></div>`;
+      <div class="rv-issues" hidden data-rv-issues></div>
+      <div class="rv-actions"><button class="btn btn-ghost btn-sm" type="button" data-rv-pause>Pause</button><button class="btn btn-primary" type="button" hidden data-rv-approve>${icon("check")}Publish anyway</button></div></div>`;
     const el = (k) => $(`[data-rv-${k}]`, host);
     const draw = (s) => {
       const doneN = s.with_cover + s.no_image + s.removed;
       el("bar").style.width = `${s.total ? Math.round((doneN / s.total) * 100) : 100}%`;
       el("stats").innerHTML = `<b>${num(s.with_cover)}</b> of ${num(s.total)} posts with a cover${s.no_image ? ` · ${num(s.no_image)} without an image available` : ""}${s.removed ? ` · ${num(s.removed)} removed from the platform` : ""}${s.todo ? ` · <b>${num(s.todo)}</b> to go` : ""}`;
       el("grid").innerHTML = (s.sample || []).map((x) => `<a href="${esc(x.url)}" target="_blank" rel="noopener" style="background-image:url('${esc(x.cover)}')"></a>`).join("");
+      const issues = s.issues || [];
+      el("issues").hidden = !issues.length;
+      el("issues").innerHTML = issues.length ? `<p class="label">Issues · ${num(s.no_image + s.removed)} posts without a cover</p><ul>${issues.map((x) => `<li><span class="status status-failed">${x.removed ? "Removed from the platform" : "No image available"}</span><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.url)}</a></li>`).join("")}</ul>` : "";
       const approved = s.status === "approved";
-      el("status").textContent = approved ? "Published" : finished ? "Ready to approve" : "Loading covers";
-      el("status").className = `status status-${approved ? "completed" : finished ? "analyzed" : "importing"}`;
-      el("approve").hidden = approved;
+      el("status").textContent = approved ? "Published" : finished ? "Publishing…" : "Loading covers";
+      el("status").className = `status status-${approved ? "completed" : "importing"}`;
       el("pause").hidden = approved || finished;
-      el("approve").disabled = !finished;
+    };
+    // members see the posts: on its own when the covers are done, or with "Publish anyway" if loading them stops
+    let publishing = false;
+    const publish = async () => {
+      if (publishing) return;
+      publishing = true; el("approve").disabled = true;
+      const { data, error } = await A.db.rpc("admin_import_approve", { p_import_id: importId });
+      publishing = false;
+      if (error) { el("approve").hidden = false; el("approve").disabled = false; return A.toast(A.errMsg(error), "err"); }
+      el("approve").hidden = true;
+      A.toast(`Published: ${num(data)} posts are now visible to members.`);
+      onApproved?.();
+      step();
     };
     const step = async () => {
       if (stopped || !host.isConnected) return;
@@ -682,20 +700,14 @@
       if (error) { el("err").hidden = false; el("err").textContent = /does not exist|schema cache|Could not find/i.test(error.message) ? "Run supabase/import-review.sql in Supabase first." : error.message; return; }
       finished = !s.todo;
       draw(s);
+      if (finished && s.status !== "approved") return publish();
       if (finished || paused || s.status === "approved") return;
       const ids = s.todo_ids, parts = [ids.slice(0, 12), ids.slice(12, 24), ids.slice(24, 36)].filter((x) => x.length);
-      try { await Promise.all(parts.map(coversFn)); } catch (e) { el("err").hidden = false; el("err").textContent = A.errMsg(e); stopped = true; return; }
+      try { await Promise.all(parts.map(coversFn)); } catch (e) { el("err").hidden = false; el("err").textContent = A.errMsg(e); el("approve").hidden = false; stopped = true; return; }
       step();
     };
     el("pause").addEventListener("click", () => { paused = !paused; el("pause").textContent = paused ? "Resume" : "Pause"; if (!paused) step(); });
-    el("approve").addEventListener("click", async () => {
-      el("approve").disabled = true;
-      const { data, error } = await A.db.rpc("admin_import_approve", { p_import_id: importId });
-      if (error) { el("approve").disabled = false; return A.toast(A.errMsg(error), "err"); }
-      A.toast(`Published: ${num(data)} posts are now visible to members.`);
-      onApproved?.();
-      step();
-    });
+    el("approve").addEventListener("click", () => { stopped = false; publish(); });
     step();
     return () => { stopped = true; };
   }
