@@ -2217,9 +2217,11 @@
       <div class="an-media">${embedHtml(p)}
         ${groups || p.title ? `<details class="an-more">
           <summary>${icon("tags")}<span>${esc(tx("Tags and caption"))}</span>${icon("chevron-down")}</summary>
-          <div class="an-more-body"><div data-topics></div>
-          ${groups ? `<dl class="dr-tags">${groups}</dl><p class="dr-hint">Click a tag to see more posts like it.</p>` : ""}
-          ${p.title ? `<div class="an-cap"><div class="an-cap-h"><b>${esc(tx("Caption"))}</b><button class="an-copy an-cap-copy" type="button" data-copy="${esc(p.title)}">${icon("copy")}Copy</button></div><p>${esc(p.title)}</p></div>` : ""}</div>
+          <div class="an-more-body">
+          ${p.title ? `<figure class="an-cap"><figcaption><span>${icon("message-circle")}${esc(tx("Caption"))}</span><button class="an-cap-copy" type="button" data-copy="${esc(p.title)}" aria-label="${esc(tx("Copy"))}" title="${esc(tx("Copy"))}">${icon("copy")}<b>Copy</b></button></figcaption><p>${esc(p.title)}</p></figure>` : ""}
+          <div class="an-more-sec" data-topics-sec hidden><p class="an-more-h">${esc(tx("Topics"))}</p><div data-topics></div></div>
+          ${groups ? `<div class="an-more-sec"><p class="an-more-h">${esc(tx("Tags"))}<small>${esc(tx("Click one to see more posts like it"))}</small></p><dl class="dr-tags an-tags">${groups}</dl></div>` : ""}
+          </div>
         </details>` : ""}</div>
       <div class="an-info">
         <header class="an-head">
@@ -2247,7 +2249,7 @@
   let shown = null;   // the analysis on screen (for its PDF)
   const showAnalysis = (a, before = "") => {
     area().innerHTML = before + analysisHtml(a);
-    const t = body.querySelector("[data-topics]"); if (t) t.innerHTML = topicsHtml(a);
+    const t = body.querySelector("[data-topics]"); if (t) { t.innerHTML = topicsHtml(a); t.closest("[data-topics-sec]").hidden = !t.innerHTML; }
     shown = a ? { id: Number(body.dataset.post || 0), a } : null;
     const b = body.querySelector("[data-an-pdf]"); if (b) b.hidden = !a;
   };
