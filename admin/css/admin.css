@@ -866,3 +866,7 @@ tr[data-imp-row]:hover .imp-more, .imp-more:focus-within { opacity: 1; }
 .bill-kpi:first-child b, .bill-kpi:nth-child(2) b { color: var(--accent-mid); }
 .ms-tabs a[aria-selected="true"] { box-shadow: 0 6px 18px -8px rgba(240, 184, 74, 0.8); }
 .ms-row > .select { width: auto; min-width: 180px; }
+/* Admin → Promo codes (premium) */
+.pc-live { padding: 16px 18px; border-radius: 16px; background: linear-gradient(180deg, rgba(240, 184, 74, 0.07), transparent), var(--panel); }
+.pc-codes { margin-top: 16px; border-radius: 16px; overflow: hidden; }
+.pc-code { display: inline-flex; align-items: center; height: 26px; padding: 0 10px; border-radius: 8px; border: 1px dashed rgba(240, 184, 74, 0.55); background: var(--accent-soft); color: var(--accent-light); font: 700 12.5px var(--mono); letter-spacing: 0.06em; }

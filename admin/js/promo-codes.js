@@ -4,7 +4,7 @@
 // Stripe: the Edge Function stripe-admin creates / disables the coupon and promotion code (test mode until approved).
 (async () => {
   const A = window.SCPA;
-  const { $, $$, esc, icon, num } = A;
+  const { $, $$, esc, icon, num, info } = A;
   try { await A.boot("promo"); } catch { return; }
   const main = $("[data-main]");
   const cfg = window.SCP_CONFIG || {};
@@ -37,19 +37,27 @@
 
   main.innerHTML = `<div class="page-head"><div><h1>Promo codes</h1><p>Codes customers type at checkout (created in Stripe) and the offer bar at the top of the website.</p></div>
     <div class="head-actions"><button class="btn btn-primary" type="button" data-new>${icon("plus")}New code</button></div></div>
-    <section class="panel panel-pad pc-live" data-live></section>
-    <section class="panel table-wrap" style="margin-top:16px"><table class="data"><thead><tr><th>Code</th><th>Discount</th><th>Applies to</th><th>Uses</th><th>Dates</th><th>State</th><th>Website bar</th><th></th></tr></thead>
-      <tbody data-rows><tr><td colspan="8">Loading…</td></tr></tbody></table></section>
+    <div class="aud-kpis" data-kpis></div>
+    <section class="panel pc-live" data-live></section>
+    <section class="panel pc-codes"><header class="aud-h aud-h-lg"><h2>Codes</h2>${info("Every discount code, newest first: what it takes off and for how long, the plans and periods it works on, how many times it was used (and how many of those customers are still paying), its dates, its state in Stripe and whether it shows in the website bar.")}<span class="spacer"></span><b class="aud-count" data-count></b></header>
+      <div class="table-wrap"><table class="data"><thead><tr><th>Code</th><th>Discount</th><th>Applies to</th><th>Uses</th><th>Dates</th><th>State</th><th>Website bar</th><th></th></tr></thead>
+      <tbody data-rows><tr><td colspan="8">Loading…</td></tr></tbody></table></div></section>
     <p class="muted ms-small" style="margin-top:12px">A code works at checkout once it's created in Stripe. Its economic terms (amount, duration, plans) can't change after that — disable it and create a new one instead. Stripe runs in test mode until the products are validated.</p>`;
 
   let list = [];
   async function draw() {
     try { list = await rpc("admin_discounts"); } catch (e) { $("[data-rows]").innerHTML = `<tr><td colspan="8" class="muted">${esc(e.message)}</td></tr>`; return; }
     const shown = list.filter((d) => d.banner && d.state === "live");
-    $("[data-live]").innerHTML = `<h2>On the website now</h2>${shown.length ? shown.map((d) => `<div class="pc-bar">${sentence(d)}</div><p class="muted ms-small">${d.banner_countries ? `Visitors from ${d.banner_countries.map(country).join(", ")}` : "Every visitor"}${d.banner_priority ? ` · priority ${d.banner_priority}` : ""}</p>`).join("")
+    $("[data-count]").textContent = num(list.length);
+    const kpi = (label, tip, n, cls = "") => `<div class="aud-kpi${cls ? ` ${cls}` : ""}"><span>${label} ${info(tip)}</span><b>${n}</b></div>`;
+    $("[data-kpis]").innerHTML = kpi("Codes", "All the discount codes created here, in any state.", num(list.length))
+      + kpi("Live", "Codes created in Stripe, active and within their dates: customers can use them at checkout now.", num(list.filter((d) => d.state === "live").length), "is-green")
+      + kpi("Times used", "How many checkouts used a code, all codes together.", num(list.reduce((n, d) => n + (d.times_redeemed || 0), 0)), "is-gold")
+      + kpi("Paying with a code", "Customers who used a code and are still paying today.", num(list.reduce((n, d) => n + (d.paying || 0), 0)));
+    $("[data-live]").innerHTML = `<header class="aud-h"><h2>On the website now</h2>${info("The offer bar at the top of the public website: which live code it shows and to which visitors (by country). Press “Website bar” on a code to set it.")}</header>${shown.length ? shown.map((d) => `<div class="pc-bar">${sentence(d)}</div><p class="muted ms-small">${d.banner_countries ? `Visitors from ${d.banner_countries.map(country).join(", ")}` : "Every visitor"}${d.banner_priority ? ` · priority ${d.banner_priority}` : ""}</p>`).join("")
       : `<p class="muted">No bar on the website. Press “Website bar” on a live code to show it.</p>`}${list.some((d) => d.banner && d.state !== "live") ? `<p class="muted ms-small">Codes marked for the bar that aren't live (not in Stripe yet, expired, used up or off) stay hidden.</p>` : ""}`;
     $("[data-rows]").innerHTML = list.map((d) => `<tr>
-      <td><code>${esc(d.code)}</code><br><small class="muted">${esc(d.name)}</small></td>
+      <td><span class="pc-code">${esc(d.code)}</span><br><small class="muted">${esc(d.name)}</small></td>
       <td>${off(d)} · ${d.duration === "once" ? "first charge" : d.duration === "repeating" ? `${d.duration_months} months` : "forever"}</td>
       <td>${esc(d.plan_keys?.join(", ") || "all plans")}${d.intervals ? ` · ${esc(d.intervals.join("/"))}` : ""}</td>
       <td>${num(d.times_redeemed)}${d.max_redemptions ? ` / ${num(d.max_redemptions)}` : ""}<br><small class="muted">${num(d.paying)} paying</small></td>
