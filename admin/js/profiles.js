@@ -30,11 +30,28 @@
       || s.match(/youtube\.com\/@([\w.-]+)/i) || s.match(/(?:instagram|tiktok|x|twitter|youtube)\.com\/@?([\w.-]+)/i);
     return (m ? m[1] : s.replace(/^@/, "")).replace(/^\/+|\/+$/g, "").toLowerCase();
   };
+  // the creators' tab (Type, Gender, Age, Lenguage, Followers, Location): some rows have no Age and the rest of the row
+  // sits one column to the left, so each value is told by what it looks like, not by its column
+  const LANGS = /^(spanish|english|french|portuguese|italian|german|catalan|arabic|dutch|turkish|japanese|korean|chinese|russian|polish|indonesian|hindi|swedish|greek)$/i;
+  function creatorOf(r) {
+    const vals = Object.entries(r).filter(([k]) => !["account", "handle", "username", "sport", "entity", "competition", "club", "platform", "url", "profile_url", "link", "name", "type", "collaboration"].includes(k)).map(([, v]) => v).filter(Boolean);
+    const out = { creator_type: r.type || "" };
+    for (const v of vals) {
+      if (/^(male|female|non[- ]?binary|other)$/i.test(v) && !out.gender) out.gender = v;
+      else if (LANGS.test(v) && !out.language) out.language = v;
+      else if (/^\d{1,2}(\s*[-–]\s*\d{1,2})?$/.test(v) && !out.age) out.age = v;
+      else if (/^[\d.,]+\s*[kmb]?$/i.test(v) && !out.followers) out.followers = String(followersNum(v));
+      else if (/^[a-zà-ÿ .'-]+$/i.test(v) && !out.location) out.location = v;
+    }
+    return out;
+  }
+  const followersNum = (v) => { const m = /^([\d.,]+)\s*([kmb])?$/i.exec(v); const k = { k: 1e3, m: 1e6, b: 1e9 }[(m[2] || "").toLowerCase()]; return Math.round(k ? Number(m[1].replace(/,/g, "")) * k : Number(m[1].replace(/[.,]/g, ""))); };
+  const kf = (n) => Number(n).toLocaleString("en", { notation: "compact", maximumFractionDigits: 1 });
   async function readExcel(file) {
     const wb = XLSX.read(await file.arrayBuffer());
     const out = new Map(), sheets = [];
     for (const name of wb.SheetNames) {
-      const premium = /premium/i.test(name);
+      const premium = /premium/i.test(name), creator = /creator/i.test(name);
       const rows = XLSX.utils.sheet_to_json(wb.Sheets[name], { defval: "" });
       let n = 0;
       for (const raw of rows) {
@@ -46,9 +63,10 @@
         n++;
         const k = `${platform}|${handle}`, prev = out.get(k);
         out.set(k, { platform, handle, name: r.name || prev?.name || "", sport: r.sport || prev?.sport || "", competition: r.competition || prev?.competition || "",
-          club: r.club || prev?.club || "", url: url || prev?.url || "", premium: premium || !!prev?.premium });
+          club: r.club || prev?.club || "", url: url || prev?.url || "", premium: premium || !!prev?.premium,
+          ...(creator ? { creator: true, ...creatorOf(r) } : prev?.creator ? Object.fromEntries(Object.entries(prev).filter(([k]) => ["creator", "creator_type", "gender", "age", "language", "location", "followers"].includes(k))) : {}) });
       }
-      sheets.push({ name, premium, rows: n });
+      sheets.push({ name, premium, creator, rows: n });
     }
     return { profiles: [...out.values()], sheets };
   }
@@ -142,7 +160,7 @@
     $("[data-rows]").innerHTML = list.slice(0, 500).map((p) => {
       const w = warnOf(p);
       return `<tr${p.active ? "" : ' class="pf-gone"'}>
-        <td><b>${p.url ? `<a class="link" href="${esc(p.url)}" target="_blank" rel="noopener">@${esc(p.handle)}</a>` : `@${esc(p.handle)}`}</b>${p.premium ? ' <span class="ms-badge is-info">premium</span>' : ""}<br><small class="muted">${esc(p.club || p.name || "")}</small></td>
+        <td><b>${p.url ? `<a class="link" href="${esc(p.url)}" target="_blank" rel="noopener">@${esc(p.handle)}</a>` : `@${esc(p.handle)}`}</b>${p.premium ? ' <span class="ms-badge is-info">premium</span>' : ""}<br><small class="muted">${esc(p.club || p.name || "")}${p.creator ? esc([p.creator_type, p.followers ? `${kf(p.followers)} followers${p.followers_source === "profile" ? ` (${A.fmtDate ? A.fmtDate(p.followers_at) : "profile"})` : " (Excel)"}` : "", p.language, p.location, p.gender, p.age].filter(Boolean).join(" · ")) : ""}</small></td>
         <td>${esc(PF[p.platform] || p.platform)}</td>
         <td>${esc([p.sport, p.competition].filter(Boolean).join(" · ") || "—")}</td>
         <td title="${p.last_post ? esc(A.fmtDateTime(p.last_post)) : ""}">${ago(p.last_post)}</td>
@@ -164,7 +182,7 @@
     const names = (l) => l.slice(0, 30).map((p) => `@${esc(p.handle)} <small class="muted">${esc(PF[p.platform] || p.platform)}</small>`).join(", ") + (l.length > 30 ? ` +${l.length - 30}` : "");
     $("[data-preview]").innerHTML = `<div class="panel panel-pad pf-prev">
       <h2>${esc(file.name)}</h2>
-      <p class="muted ms-small">${x.sheets.map((s) => `${esc(s.name)}: ${num(s.rows)} profiles${s.premium ? " (premium)" : ""}`).join(" · ")}</p>
+      <p class="muted ms-small">${x.sheets.map((s) => `${esc(s.name)}: ${num(s.rows)} profiles${s.premium ? " (premium)" : s.creator ? " (content creators: type, gender, age, language, followers, location)" : ""}`).join(" · ")}</p>
       <div class="stats" style="margin-top:12px">${[["In the file", x.profiles.length], ["Premium", x.profiles.filter((p) => p.premium).length], ["New", added.length], ["No longer in the file", removed.length]].map(([l, n]) => `<div class="stat"><p>${l}</p><b>${num(n)}</b></div>`).join("")}</div>
       ${added.length ? `<p style="margin-top:12px"><b>New:</b> ${names(added)}</p>` : ""}
       ${prem.length ? `<p style="margin-top:8px"><b>Premium changes:</b> ${prem.slice(0, 30).map((p) => `@${esc(p.handle)} → ${p.premium ? "premium" : "not premium"}`).join(", ")}</p>` : ""}
