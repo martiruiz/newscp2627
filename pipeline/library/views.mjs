@@ -54,14 +54,17 @@ export async function viewsOf(url) {
 
 const t0 = Date.now();
 let done = 0, none = 0, removed = 0, throttled = 0, lastId = 0;
-while (done + none + removed < LIMIT) {
-  let q = db.from("content_ideas").select("id,url").eq("account_platform", PF).is("unavailable_at", null).gt("id", lastId).order("id").limit(200);
+// id windows of 20,000: a filter that few posts match (no likes yet) would otherwise scan the whole table and time out
+const { data: top } = await db.from("content_ideas").select("id").order("id", { ascending: false }).limit(1);
+const MAX = top?.[0]?.id || 0, WIN = 20000;
+while (done + none + removed < LIMIT && lastId < MAX) {
+  let q = db.from("content_ideas").select("id,url").eq("account_platform", PF).is("unavailable_at", null).gt("id", lastId).lte("id", lastId + WIN).order("id").limit(200);
   if (NO_LIKES) q = q.is("likes", null);   // read before likes were saved: fill them
   else if (!ALL) q = q.is("views", null);
   const { data: rows, error } = await q;
   if (error) throw error;
-  if (!rows?.length) break;
-  lastId = rows[rows.length - 1].id;
+  if (!rows?.length) { lastId += WIN; continue; }   // nothing in this window: the next one
+  lastId = rows.length < 200 ? lastId + WIN : rows[rows.length - 1].id;
   for (const r of rows) {
     if (done + none + removed >= LIMIT) break;
     const v = await viewsOf(r.url);
