@@ -704,7 +704,7 @@
     return d;
   }
   function reviewPanel(host, importId, onApproved) {
-    let paused = false, finished = false, stopped = false;
+    let paused = false, finished = false, stopped = false, loaded = false;
     host.innerHTML = `<div class="panel panel-pad rv">
       <div class="rv-h"><div><b>Covers</b><p class="muted">The new posts are published as soon as their covers are loaded.</p></div><span class="status status-importing" data-rv-status>Loading covers</span></div>
       <div class="rv-bar"><i data-rv-bar style="width:0%"></i></div>
@@ -722,11 +722,11 @@
       const issues = s.issues || [];
       el("issues").hidden = !issues.length;
       el("issues").innerHTML = issues.length ? `<div class="rv-issues-h"><p class="label">Issues · ${num(s.issues_n ?? s.no_image + s.removed)} posts without a cover</p><button class="btn btn-ghost btn-sm" type="button" data-rv-ok-all>${icon("check")}Mark all as seen</button></div>
-        <ul>${issues.map((x) => `<li><span class="status status-failed">${x.removed ? "Removed from the platform" : "No image available"}</span><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.url)}</a><button class="btn btn-ghost btn-sm" type="button" data-rv-ok="${x.id}" title="Seen: remove it from the issues">OK</button></li>`).join("")}</ul>` : "";
+        <ul>${issues.map((x) => `<li><span class="status status-failed">${x.removed ? "Removed from the platform" : "No image available"}</span><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.url)}</a><button class="btn btn-ghost btn-sm" type="button" data-rv-retry="${x.id}" title="Try its cover again">Retry</button>${x.removed ? `<button class="btn btn-ghost btn-sm" type="button" data-rv-keep="${x.id}" title="The post exists: show it in the library without a cover">It's active</button>` : ""}<button class="btn btn-ghost btn-sm" type="button" data-rv-ok="${x.id}" title="Seen: remove it from the issues">OK</button></li>`).join("")}</ul>` : "";
       const approved = s.status === "approved";
       el("status").textContent = approved ? "Published" : finished ? "Publishing…" : "Loading covers";
       el("status").className = `status status-${approved ? "completed" : "importing"}`;
-      el("pause").hidden = approved || finished;
+      el("pause").hidden = finished;
     };
     // members see the posts: on its own when the covers are done, or with "Publish anyway" if loading them stops
     let publishing = false;
@@ -748,7 +748,10 @@
       finished = !s.todo;
       draw(s);
       if (finished && s.status !== "approved") return publish();
-      if (finished || paused || s.status === "approved") return;
+      // published import whose last covers (or a retried one) just loaded: recount its issues (empty list = mark nothing)
+      if (finished && loaded) { loaded = false; await A.db.rpc("admin_import_issues_ok", { p_import_id: importId, p_ids: [] }); }
+      if (finished || paused) return;
+      loaded = true;
       const ids = s.todo_ids, parts = [ids.slice(0, 12), ids.slice(12, 24), ids.slice(24, 36)].filter((x) => x.length);
       try { await Promise.all(parts.map(coversFn)); } catch (e) { el("err").hidden = false; el("err").textContent = A.errMsg(e); el("approve").hidden = false; stopped = true; return; }
       step();
@@ -758,6 +761,14 @@
     // an issue seen (OK) or all of them: they leave the list and the import's "without cover" warning (supabase/import-issues-ok.sql)
     el("issues").addEventListener("click", async (e) => {
       const one = e.target.closest("[data-rv-ok]"), all = e.target.closest("[data-rv-ok-all]");
+      // a post that is active after all: try its cover again (back to the queue) or keep it without a cover (supabase/import-issue-retry.sql)
+      const again = e.target.closest("[data-rv-retry], [data-rv-keep]");
+      if (again) {
+        again.disabled = true;
+        const { error } = await A.db.rpc("admin_import_issue_retry", { p_id: Number(again.dataset.rvRetry || again.dataset.rvKeep), p_keep: !!again.dataset.rvKeep });
+        if (error) { again.disabled = false; return A.toast(/does not exist|schema cache|Could not find/i.test(error.message) ? "Run supabase/import-issue-retry.sql in Supabase first." : A.errMsg(error), "err"); }
+        stopped = false; paused = false; return step();
+      }
       if (!one && !all) return;
       (one || all).disabled = true;
       const { error } = await A.db.rpc("admin_import_issues_ok", { p_import_id: importId, p_ids: one ? [Number(one.dataset.rvOk)] : null });

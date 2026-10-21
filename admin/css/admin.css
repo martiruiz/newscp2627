@@ -663,3 +663,4 @@ tr[data-imp-row] { cursor: pointer; }
 .imp-meta dd { margin: 4px 0 0; font-size: 14px; }
 .rv-issues-h { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .rv-issues li a { flex: 1; min-width: 0; }
+.rv-issues li .btn { flex: none; }
