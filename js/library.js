@@ -441,7 +441,7 @@
     const rows = ["creator_language", "creator_gender"].filter(has).map((k) => rowHtml(CAT[k])).join("");
     const lang = rows ? `<div class="lf-stack lf-row-gap">${rows}</div>` : "";
     return `<div class="lf-cc-sub"><div class="lf-cc-view">${crSwitch()}</div>${acctRowHtml()}${folHtml()}${lang}
-      ${groups.map(([label, h]) => `<div class="lf-sub">${esc(tx(label))}</div><div class="lf-chips">${h}</div>`).join("")}</div>`;
+      ${groups.map(([, h]) => `<div class="lf-chips lf-cc-chips">${h}</div>`).join("")}</div>`;
   }
   // Creators' accounts: a dropdown with a search box on top; a star marks up to 5 favourites (Profile → Favourites,
   // preferences.favouriteCreatorAccounts), which come first

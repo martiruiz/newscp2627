@@ -6797,3 +6797,4 @@ a.lf-sp-favs { text-decoration: none; }
 .cr-layout.is-off button { cursor: default; }
 .cr-layout.is-off button.is-on { background: transparent; box-shadow: none; }
 .lf-fol-box { padding: 2px 2px 0; }
+.lf-cc-sub > .lf-cc-chips { margin-top: 18px; }
