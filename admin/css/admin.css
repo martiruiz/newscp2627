@@ -870,3 +870,12 @@ tr[data-imp-row]:hover .imp-more, .imp-more:focus-within { opacity: 1; }
 .pc-live { padding: 16px 18px; border-radius: 16px; background: linear-gradient(180deg, rgba(240, 184, 74, 0.07), transparent), var(--panel); }
 .pc-codes { margin-top: 16px; border-radius: 16px; overflow: hidden; }
 .pc-code { display: inline-flex; align-items: center; height: 26px; padding: 0 10px; border-radius: 8px; border: 1px dashed rgba(240, 184, 74, 0.55); background: var(--accent-soft); color: var(--accent-light); font: 700 12.5px var(--mono); letter-spacing: 0.06em; }
+/* Admin → Users (premium) */
+.us-kpis { grid-template-columns: repeat(3, 1fr); }
+.us-grid { display: grid; grid-template-columns: minmax(280px, 380px) minmax(0, 1fr); gap: 16px; align-items: start; }
+.us-create, .us-list { border-radius: 16px; overflow: hidden; }
+.us-create { background: linear-gradient(180deg, rgba(240, 184, 74, 0.06), transparent), var(--panel); }
+.us-role { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 999px; font-size: 12px; font-weight: 600; color: var(--muted); background: var(--panel-3); border: 1px solid var(--border-2); }
+.us-role.is-superadmin { color: var(--accent-light); background: var(--accent-soft); border-color: rgba(240, 184, 74, 0.4); }
+@media (max-width: 1000px) { .us-grid { grid-template-columns: 1fr; } .us-kpis { grid-template-columns: 1fr 1fr; } }
+.stack.us-grid { max-width: none; }

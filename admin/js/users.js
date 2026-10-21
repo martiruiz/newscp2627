@@ -3,7 +3,7 @@
 // A new person gets an email with a login link; they can set a password later on the Account page.
 (async () => {
   const A = window.SCPA;
-  const { $, esc, icon, num, rpc } = A;
+  const { $, esc, icon, num, rpc, info } = A;
   let me;
   try { me = await A.boot("users"); } catch { return; }
   const isSuper = me.profile.role === "superadmin";
@@ -11,9 +11,10 @@
 
   main.innerHTML = `
     <div class="page-head"><div><h1>Users</h1><p>Manage admin users who can access the admin panel</p></div></div>
-    <div class="stack">
-      <section class="panel panel-pad">
-        <h2>Create new admin</h2>
+    <div class="aud-kpis us-kpis" data-kpis></div>
+    <div class="stack us-grid">
+      <section class="panel panel-pad us-create">
+        <header class="aud-h"><h2>Create new admin</h2>${info("Gives admin access to an email. If the person has no website account yet, they get an e-mail with a login link. admin = everyday work (content, import, filters); superadmin = also audience, leads, memberships, promo codes and users. Only superadmins can do this.")}</header>
         <p class="panel-sub">New users get the <span class="mono">admin</span> role by default${isSuper ? "" : " — only a superadmin can add or remove admins"}.</p>
         <form style="display:grid;gap:12px;margin-top:16px" novalidate data-create>
           <label class="field"><span class="label label-caps">Email</span><input class="input" type="email" name="email" placeholder="admin@example.com" required ${isSuper ? "" : "disabled"}></label>
@@ -24,8 +25,8 @@
           <button class="btn btn-primary" type="submit" ${isSuper ? "" : "disabled"}>Create user</button>
         </form>
       </section>
-      <section class="panel">
-        <div class="values-head" style="justify-content:space-between"><h2 style="font-size:16px">Admin users</h2><span class="muted" data-count></span></div>
+      <section class="panel us-list">
+        <header class="aud-h aud-h-lg"><h2>Admin users</h2>${info("Everyone who can open this admin panel, oldest first, with their role. The trash removes admin access only: their website account and their data stay.")}<span class="spacer"></span><span class="muted" data-count></span></header>
         <div class="table-wrap"><table class="data">
           <thead><tr><th>Email</th><th>Roles</th><th>Created</th><th class="td-actions">Actions</th></tr></thead>
           <tbody data-rows><tr><td class="table-empty" colspan="4"><span class="spinner sm"></span> Loading...</td></tr></tbody>
@@ -38,11 +39,15 @@
     const body = $("[data-rows]");
     if (error) { body.innerHTML = `<tr><td class="table-empty error-text" colspan="4">${esc(A.errMsg(error))}</td></tr>`; return; }
     $("[data-count]").textContent = `${num(data.length)} user${data.length === 1 ? "" : "s"}`;
+    const kpi = (label, tip, n, cls = "") => `<div class="aud-kpi${cls ? ` ${cls}` : ""}"><span>${label} ${info(tip)}</span><b>${n}</b></div>`;
+    $("[data-kpis]").innerHTML = kpi("Admin users", "Everyone with access to this admin panel.", num(data.length))
+      + kpi("Superadmins", "Full access: also audience, leads, memberships, promo codes and users.", num(data.filter((u) => u.role === "superadmin").length), "is-gold")
+      + kpi("Admins", "Everyday work: content, import, filters, scraped profiles.", num(data.filter((u) => u.role === "admin").length));
     body.innerHTML = data.map((u) => {
       const self = u.id === me.session.user.id;
       return `<tr>
         <td><span class="user-cell"><span class="avatar">${esc((u.email || "?")[0].toUpperCase())}</span>${esc(u.email)}${self ? ' <span class="tag tag-you" style="margin-left:6px">YOU</span>' : ""}</span></td>
-        <td><span class="tag">ROLE_${esc(u.role.toUpperCase())}</span></td>
+        <td><span class="us-role is-${esc(u.role)}">${esc(u.role === "superadmin" ? "Superadmin" : "Admin")}</span></td>
         <td class="td-date">${A.fmtDate(u.created_at, false)}</td>
         <td class="td-actions">${self
           ? `<button class="icon-btn" type="button" disabled title="You cannot delete your own account" aria-label="You cannot delete your own account">${icon("trash")}</button>`
