@@ -1648,7 +1648,8 @@
     more.hidden = true;
     grid.setAttribute("aria-busy", "true");
 
-    const args = queryArgs(s);
+    // My / my team's AI analyses: always every analysed post, whatever filters are on (they could hide them)
+    const args = ui.aiMode ? queryArgs({ facets: {}, period: "all" }) : queryArgs(s);
     const cc = (catalog.byCat.entity || []).find((v) => v.name.toLowerCase() === "content creators");
     if (!(cc && isOn(cc))) { ui.acct = null; ui.fol = null; }   // the account and followers filters live under Content Creators
     // Content Creators on: one row per creator (or their posts, with the switch above)
