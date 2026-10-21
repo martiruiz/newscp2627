@@ -1,5 +1,6 @@
 // Lead flow: the interactive, one-question-per-screen form that replaces "Contact us" and "Book a demo".
-//   1 Organisation · 2 Team size · 3 Challenge · 4 Personalised next step (free trial or demo, rules from Admin)
+//   Contact ("message"): quick, 3 taps — organisation · team size · phone (supabase/leads-quick-contact.sql), floating bubbles.
+//   Demo: 1 Organisation · 2 Team size · 3 Challenge · 4 Personalised next step (free trial or demo, rules from Admin)
 //   → demo: name, work email, organisation → real availability (Cal.com) → booked (only once Cal.com confirms)
 //   → question: name, email, message → sent
 // Data: supabase/leads.sql (upsert_lead, lead_booking_reported, track_lead_event, lead_rules_public).
@@ -286,8 +287,83 @@
       back.hidden = true;
     }
 
+    // ---------- quick contact ("Contact" buttons): 3 taps — organisation, team size, phone — options as floating bubbles ----------
+    // line icons (Lucide shapes) instead of emojis
+    const QI = {
+      shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+      trophy: '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22M18 2H6v7a6 6 0 0 0 12 0V2Z"/>',
+      briefcase: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
+      video: '<path d="m22 8-6 4 6 4V8Z"/><rect x="2" y="6" width="14" height="12" rx="2"/>',
+      ticket: '<path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2M13 17v2M13 11v2"/>',
+      sparkles: '<path d="M9.94 15.5a2 2 0 0 0-1.44-1.44l-6.13-1.58a.5.5 0 0 1 0-.96L8.5 9.94A2 2 0 0 0 9.94 8.5l1.58-6.14a.5.5 0 0 1 .96 0l1.58 6.14a2 2 0 0 0 1.44 1.44l6.14 1.58a.5.5 0 0 1 0 .96l-6.14 1.58a2 2 0 0 0-1.44 1.44l-1.58 6.13a.5.5 0 0 1-.96 0z"/>',
+      user: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+      users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 21a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.6"/><path d="M16 14.3a5 5 0 0 1 6 4.7"/>',
+      team: '<circle cx="12" cy="7" r="3"/><circle cx="5" cy="9" r="2.3"/><circle cx="19" cy="9" r="2.3"/><path d="M7 21a5 5 0 0 1 10 0M1 19a4 4 0 0 1 5.5-3.7M23 19a4 4 0 0 0-5.5-3.7"/>',
+      building: '<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4M8 6h.01M16 6h.01M12 6h.01M12 10h.01M12 14h.01M16 10h.01M16 14h.01M8 10h.01M8 14h.01"/>',
+    };
+    const qi = (n) => `<svg viewBox="0 0 24 24" aria-hidden="true">${QI[n]}</svg>`;
+    const QORG = [["club", "Club", "shield"], ["league", "League / Federation", "trophy"], ["agency", "Agency", "briefcase"], ["creator", "Content creator", "video"], ["event", "Event organiser", "ticket"], ["other", "Other", "sparkles"]];
+    const QSIZE = [["1", "Just me", "user"], ["2-5", "2–5 people", "users"], ["6-15", "6–15 people", "team"], ["15+", "More than 15", "building"]];
+    function bubbles(key, title, list, n) {
+      show(`<h2 class="lead-q lead-q-big" tabindex="-1">${esc(t(title))}</h2>
+        <div class="lead-bubbles" role="radiogroup" aria-label="${esc(t(title))}">
+        ${list.map(([v, l, ic], i) => `<button type="button" class="lead-bubble" role="radio" aria-checked="${st.a[key] === v}" data-v="${v}" style="--i:${i}"><span class="lead-bubble-ic">${qi(ic)}</span>${esc(t(l))}</button>`).join("")}</div>`,
+        { n, of: 3, title: t(title) });
+      const pick = (v) => {
+        st.a[key] = v;
+        stage.querySelectorAll(".lead-bubble").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.v === v)));
+        window.SCP_TRACK("form_step_completed", { step: key, org_type: st.a.org_type });
+        setTimeout(() => go(key === "org_type" ? qsize : qphone), 120);
+      };
+      stage.onclick = (e) => { const b = e.target.closest(".lead-bubble"); if (b) pick(b.dataset.v); };
+      stage.onkeydown = (e) => { const i = Number(e.key) - 1; if (i >= 0 && i < list.length) { e.preventDefault(); pick(list[i][0]); } };
+    }
+    const qorg = () => bubbles("org_type", "What best describes your organization?", QORG, 1);
+    const qsize = () => bubbles("team_size", "How big is your content team?", QSIZE, 2);
+    const CODES = ["+34", "+376", "+1", "+44", "+33", "+39", "+49", "+351", "+31", "+32", "+41", "+52", "+54", "+55", "+57", "+56", "+971"];
+    function qphone() {
+      const def = "+34";
+      show(`<h2 class="lead-q lead-q-big" tabindex="-1">${esc(t("What number should we message you on?"))}</h2>
+        <form class="lead-form lead-phone" novalidate>
+          <div class="lead-tel"><select name="code" aria-label="${esc(t("Country code"))}">${CODES.map((c) => `<option${c === def ? " selected" : ""}>${c}</option>`).join("")}</select>
+            <input name="phone" type="tel" inputmode="tel" autocomplete="tel-national" required maxlength="20" placeholder="${esc(t("Your phone number"))}" autofocus></div>
+          <input class="lead-hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <label class="lead-check"><input type="checkbox" name="privacy" required><span>${esc(t("I accept the"))} <a href="privacy.html" target="_blank" rel="noopener">${esc(t("privacy policy"))}</a></span></label>
+          <p class="lead-error" role="alert" hidden></p>
+          <button class="lead-btn is-primary" type="submit">${esc(t("Send"))} <span aria-hidden="true">→</span></button>
+        </form>`, { n: 3, of: 3, title: t("Your phone number") });
+      stage.onclick = null; stage.onkeydown = null;
+      setTimeout(() => {
+        const form = stage.querySelector("form"); if (!form) return;
+        form.phone.focus();
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const err = form.querySelector(".lead-error"), fail = (m, el) => { err.hidden = false; err.textContent = t(m); el?.focus(); };
+          const num = form.phone.value.replace(/[^0-9]/g, "");
+          if (num.length < 6) return fail("Please enter a valid phone number.", form.phone);
+          if (!form.privacy.checked) return fail("Please accept the privacy policy to continue.", form.privacy);
+          const btn = form.querySelector("[type=submit]"); btn.disabled = true; btn.classList.add("is-loading");
+          try {
+            const r = await rpc("submit_quick_lead", { p: { client_id: cid, ...st.a, phone: `${form.code.value}${num}`, privacy: true, hp: form.website.value,
+              source_page: page, cta: cta || "", utm: utm(), lang: window.SCP_LANG || "en", variant, elapsed_ms: Math.round(performance.now() - st.started) } });
+            const d = await r.json().catch(() => ({}));
+            if (!r.ok || d.ok === false) throw new Error(d.error || "Something went wrong. Please try again in a moment.");
+            window.SCP_TRACK("lead_created", { org_type: st.a.org_type });
+            st.done = true; go(qdone);
+          } catch (x) { fail(x.message); }
+          finally { btn.disabled = false; btn.classList.remove("is-loading"); }
+        });
+      }, 200);
+    }
+    function qdone() {
+      show(`<div class="lead-done"><span class="lead-done-ic" aria-hidden="true">✓</span><h2 class="lead-q" tabindex="-1">${esc(t("Thanks! We’ll message you very soon."))}</h2>
+        <div class="lead-ctas"><a class="lead-btn is-primary" href="signup.html">${esc(t("Start your free trial meanwhile"))}</a></div></div>`, { n: 3, of: 3, title: t("Message sent") });
+      back.hidden = true;
+    }
+
     window.SCP_TRACK("form_started", {});
-    st.render = q1; q1();
+    if (intent === "message") { st.render = qorg; qorg(); }
+    else { st.render = q1; q1(); }
     return {
       abandon() { if (!st.done) window.SCP_TRACK("form_abandoned", { step: st.render?.name || "", org_type: st.a.org_type }); },
     };
@@ -299,7 +375,7 @@
     if (open) return;
     const last = document.activeElement;
     const wrap = document.createElement("div");
-    wrap.className = "lead-modal"; wrap.setAttribute("role", "dialog"); wrap.setAttribute("aria-modal", "true"); wrap.setAttribute("aria-label", t("Talk to Sports Content Playbook"));
+    wrap.className = `lead-modal${opts?.intent === "message" ? " is-quick" : ""}`; wrap.setAttribute("role", "dialog"); wrap.setAttribute("aria-modal", "true"); wrap.setAttribute("aria-label", t("Talk to Sports Content Playbook"));
     wrap.innerHTML = `<div class="lead-box"><button type="button" class="lead-x" aria-label="${esc(t("Close"))}">✕</button><div class="lead-host"></div></div>`;
     document.body.append(wrap);
     document.documentElement.classList.add("lead-lock");

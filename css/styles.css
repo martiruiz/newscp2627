@@ -7049,3 +7049,37 @@ p.lead { display: block; min-height: 0; }   /* the intro paragraphs share the na
 /* Links to a section (#faq, #pricing…): land right under the sticky menu (76 px + air), not hidden behind it
    (js/main.js keeps it there while the blocks above finish loading) */
 section[id], :target { scroll-margin-top: 92px; }
+/* Quick contact (js/lead-flow.js, "Contact"): big question + options as floating bubbles, one tap goes on */
+.lead-q-big { font-size: clamp(26px, 3.4vw, 34px); line-height: 1.15; text-align: center; margin: 6px auto 26px; max-width: 520px; }
+.lead-bubbles { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px 12px; padding: 6px 4px 18px; }
+.lead-bubble { display: inline-flex; align-items: center; gap: 10px; height: 54px; padding: 0 22px 0 18px; border-radius: 999px; border: 1.5px solid rgba(var(--fg), 0.12);
+  background: linear-gradient(180deg, rgba(var(--fg), 0.07), rgba(var(--fg), 0.02)); color: var(--text); font: 600 16px var(--font-body); cursor: pointer;
+  box-shadow: 0 14px 30px -18px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  animation: leadIn 0.36s cubic-bezier(0.2, 0.8, 0.2, 1) backwards, leadFloat 4s ease-in-out infinite;
+  animation-delay: calc(var(--i) * 50ms), calc(var(--i) * -0.7s); transition: border-color 0.15s, background 0.15s, box-shadow 0.15s, transform 0.15s; }
+.lead-bubble-ic { display: grid; place-items: center; width: 30px; height: 30px; margin-left: -6px; border-radius: 50%; background: rgba(240, 184, 74, 0.14); color: var(--gold); transition: background 0.15s, color 0.15s; }
+.lead-bubble-ic svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.lead-bubble[aria-checked="true"] .lead-bubble-ic { background: rgba(18, 27, 51, 0.15); color: #121b33; }
+.lead-bubble:hover, .lead-bubble:focus-visible { border-color: var(--gold); background: linear-gradient(180deg, rgba(240, 184, 74, 0.18), rgba(240, 184, 74, 0.06)); box-shadow: 0 18px 36px -16px rgba(240, 184, 74, 0.55); outline: none; animation-play-state: paused; }
+.lead-bubble[aria-checked="true"] { border-color: var(--gold); background: linear-gradient(135deg, #f0b84a, #f8cc75); color: #121b33; animation-play-state: paused; }
+@keyframes leadFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+@keyframes leadIn { from { opacity: 0; transform: translateY(14px) scale(0.94); } }
+@media (prefers-reduced-motion: reduce) { .lead-bubble { animation: none; } }
+.lead-phone { max-width: 420px; margin: 0 auto; }
+.lead-tel { display: flex; gap: 8px; }
+.lead-tel select, .lead-tel input { height: 54px; border-radius: 14px; border: 1.5px solid var(--line); background: rgba(var(--fg), 0.04); color: var(--text); font: 600 17px var(--font-body); padding: 0 14px; }
+.lead-tel select { flex: none; width: 104px; }
+.lead-tel input { flex: 1; min-width: 0; letter-spacing: 0.02em; }
+.lead-tel input:focus, .lead-tel select:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(240, 184, 74, 0.18); }
+.lead-phone .lead-btn { width: 100%; justify-content: center; }
+@media (max-width: 560px) { .lead-bubble { height: 50px; padding: 0 18px 0 14px; font-size: 15px; } }
+.lead:has(.lead-bubbles), .lead:has(.lead-phone) { min-height: 0; }   /* the quick contact is short: no empty space under it */
+/* Quick contact: no box — the question and the bubbles float over the page, blurred behind */
+.lead-modal.is-quick { background: rgba(5, 8, 18, 0.45); -webkit-backdrop-filter: blur(18px) saturate(1.1); backdrop-filter: blur(18px) saturate(1.1); }
+.lead-modal.is-quick .lead-box { background: transparent; border: 0; box-shadow: none; overflow: visible; }
+.lead-modal.is-quick .lead-q-big { text-shadow: 0 2px 24px rgba(0, 0, 0, 0.6); }
+.lead-modal.is-quick .lead-bubble { background: rgba(14, 21, 41, 0.55); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-color: rgba(255, 255, 255, 0.16); }
+.lead-modal.is-quick .lead-bubble[aria-checked="true"] { background: linear-gradient(135deg, #f0b84a, #f8cc75); }
+.lead-modal.is-quick .lead-tel select, .lead-modal.is-quick .lead-tel input { background: rgba(14, 21, 41, 0.6); border-color: rgba(255, 255, 255, 0.18); }
+.lead-modal.is-quick .lead-x { background: rgba(14, 21, 41, 0.6); border: 1px solid rgba(255, 255, 255, 0.16); }
+@media (max-width: 760px) { .lead-modal.is-quick { place-items: center; padding: 16px; } }

@@ -24,7 +24,7 @@
       <select class="select" data-f="status"><option value="">All statuses</option>${Object.entries(STATUS).map(([k, v]) => `<option value="${k}">${v}</option>`).join("")}</select>
       <select class="select" data-f="org_type"><option value="">All organisation types</option>${Object.entries(ORG).map(([k, v]) => `<option value="${k}">${v}</option>`).join("")}</select>
       <select class="select" data-f="challenge"><option value="">All needs</option>${Object.entries(CH).map(([k, v]) => `<option value="${k}">${v}</option>`).join("")}</select>
-      <label class="check-inline"><input type="checkbox" data-f="identified" checked> With email only</label>
+      <label class="check-inline"><input type="checkbox" data-f="identified" checked> With email or phone</label>
     </div>
     <section class="panel ld-list"><header class="aud-h aud-h-lg"><h2>Leads</h2>${info("People who left their details in the lead form (Book a demo / Contact / the home questions), newest activity first. Click a row for every answer, the demo and notes; change the commercial status right in the list. Filters above apply.")}<span class="spacer"></span><b class="aud-count" data-count></b></header><div data-list><p class="muted panel-pad">Loading…</p></div></section>`;
 
@@ -55,7 +55,7 @@
       <th>Updated</th><th>Person</th><th>Organisation</th><th>Type</th><th>Team</th><th>Need</th><th>Next step</th><th>Status</th><th>Demo</th><th>Source</th></tr></thead><tbody>
       ${leads.map((l) => `<tr data-id="${l.id}" class="row-click">
         <td>${fmt(l.updated_at)}</td>
-        <td><div class="ld-person"><span class="ld-av">${esc((l.name || l.email || "?").trim().charAt(0).toUpperCase())}</span><span><b>${esc(l.name || "Anonymous")}</b><small>${esc(l.email || "no email yet")}</small></span></div></td>
+        <td><div class="ld-person"><span class="ld-av">${esc((l.name || l.email || l.phone || "?").trim().charAt(0).toUpperCase())}</span><span><b>${esc(l.name || (l.phone ? "Phone lead" : "Anonymous"))}</b><small>${esc([l.email, l.phone].filter(Boolean).join(" · ") || "no email yet")}</small></span></div></td>
         <td>${esc(l.organization || "—")}</td><td>${esc(ORG[l.org_type] || "—")}</td><td>${esc(SIZE[l.team_size] || "—")}</td><td>${esc(CH[l.challenge] || "—")}</td>
         <td>${l.recommendation === "demo" ? `<span class="ld-pill is-gold">Demo</span>` : l.recommendation === "trial" ? `<span class="ld-pill is-blue">Free trial</span>` : "—"}</td>
         <td><select class="select select-sm ld-status st-${l.status}" data-status="${l.id}">${Object.entries(STATUS).map(([k, v]) => `<option value="${k}"${l.status === k ? " selected" : ""}>${v}</option>`).join("")}</select></td>
@@ -83,8 +83,8 @@
   function openLead(id) {
     const l = leads.find((x) => x.id === id); if (!l) return;
     const kv = (k, v) => `<div class="kv"><span>${k}</span><b>${v}</b></div>`;
-    const m = A.modal({ title: l.name || "Anonymous lead", sub: l.email || "No email yet", size: "lg",
-      body: `<div class="kv-grid">${kv("Organisation", esc(l.organization || "—"))}${kv("Type", esc(ORG[l.org_type] || "—"))}${kv("Team", esc(SIZE[l.team_size] || "—"))}${kv("Need", esc(CH[l.challenge] || "—"))}
+    const m = A.modal({ title: l.name || (l.phone ? "Phone lead" : "Anonymous lead"), sub: [l.email, l.phone].filter(Boolean).join(" · ") || "No email yet", size: "lg",
+      body: `<div class="kv-grid">${l.phone ? kv("Phone", `<a href="https://wa.me/${esc(l.phone.replace(/[^0-9]/g, ""))}" target="_blank" rel="noopener">${esc(l.phone)}</a>`) : ""}${kv("Organisation", esc(l.organization || "—"))}${kv("Type", esc(ORG[l.org_type] || "—"))}${kv("Team", esc(SIZE[l.team_size] || "—"))}${kv("Need", esc(CH[l.challenge] || "—"))}
         ${kv("Recommended", l.recommendation === "demo" ? "Demo" : l.recommendation === "trial" ? "Free trial" : "—")}${kv("Created", fmt(l.created_at))}
         ${kv("Demo", l.meeting_at ? `${fmt(l.meeting_at)} · ${esc(MEET[l.meeting_status])}${l.meeting_source ? ` (${esc(l.meeting_source)})` : ""}` : "—")}
         ${kv("Source page", esc(l.source_page || "—"))}${kv("CTA", esc(l.cta || "—"))}${kv("Campaign", esc(Object.entries(l.utm || {}).map(([k, v]) => `${k}: ${v}`).join(" · ") || "—"))}
