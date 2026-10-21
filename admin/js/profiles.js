@@ -194,6 +194,8 @@
       e.target.disabled = true;
       try {
         const r = await rpc("admin_scraped_profiles_save", { p_rows: x.profiles, p_filename: file.name });
+        // the Content Library's creator filters (type, followers, language…) follow the new data
+        await rpc("refresh_creator_tags").catch(() => {});
         $("[data-preview]").innerHTML = "";
         A.toast(`Saved: ${num(r.total)} profiles · ${num(r.added)} new · ${num(r.removed)} removed.`);
         draw();

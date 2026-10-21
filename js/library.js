@@ -51,6 +51,12 @@
     { key: "collab", label: "Collaborations", sec: "brands", ico: "users", more: true },
     { key: "goal", label: "Business goal", sec: "brands", ico: "target", more: true },
     { key: "cta", label: "Call to action", sec: "brands", ico: "cursor", more: true },
+    // the creator's profile (Admin → Scraped profiles; supabase/creator-filters.sql): only under Content Creators
+    { key: "creator_type", label: "Creator type", sec: "creators" },
+    { key: "creator_followers", label: "Followers", sec: "creators" },
+    { key: "creator_language", label: "Creator's language", sec: "creators" },
+    { key: "creator_country", label: "Country", sec: "creators" },
+    { key: "creator_gender", label: "Gender", sec: "creators" },
   ];
   // New layout (default): the filters follow the questions a club's social team asks —
   //   What works · Occasion (matchday timeline, transfers, kit…) · Goal & sponsors · Where & how · Inspiration from.
@@ -395,16 +401,18 @@
   }
   // Content Creators on: the filters that describe creators' posts, right under the button (counts are already
   // limited to creators' posts, because the button is one of the active filters)
+  const FOLLOWERS = ["Under 10K", "10K–100K", "100K–1M", "Over 1M"];
   function creatorsHtml() {
     // Content type: only the ones that describe creators' posts (Players is one filter in Inspiration → Players)
     const only = { angle: ["skills / tutorial", "behind the scenes"] };
     const chips = (cat, max = 8) => {
-      const list = byCount((catalog.byCat[cat] || []).filter((v) => (countOf(v) > 0 || isOn(v)) && (!only[cat] || only[cat].includes(v.name.toLowerCase())))).slice(0, max);
+      const vals = (catalog.byCat[cat] || []).filter((v) => (countOf(v) > 0 || isOn(v)) && (!only[cat] || only[cat].includes(v.name.toLowerCase())));
+      const list = (cat === "creator_followers" ? vals.sort((a, b) => FOLLOWERS.indexOf(a.name) - FOLLOWERS.indexOf(b.name)) : byCount(vals)).slice(0, max);
       return list.map((v) => `<button type="button" class="lf-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="${v.category}" data-id="${v.id}">${esc(pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`).join("");
     };
     // the creators' own accounts (from the post URL or the import; supabase/scraped-profiles.sql)
     if (!ui.accts) { ui.accts = []; db?.rpc("creator_accounts").then((r) => { ui.accts = r.data || []; if (ui.accts.length) renderFacets(); }, () => {}); }
-    const groups = [["Content type", "angle"]]
+    const groups = [["Content type", "angle"], ["Creator type", "creator_type"], ["Followers", "creator_followers"], ["Creator's language", "creator_language"], ["Country", "creator_country", 10], ["Gender", "creator_gender"]]
       .map(([label, cat, max, h]) => [label, h ?? chips(cat, max)]).filter(([, h]) => h);
     if (!groups.length) return "";
     return `<div class="lf-cc-sub">${acctRowHtml()}
