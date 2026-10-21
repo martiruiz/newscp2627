@@ -45,8 +45,8 @@
       ],
       featured: { eyebrow: "Free trial", title: "Try it free for 7 days", desc: "The full library, no commitment.", href: "signup.html" },
     },
-    // with a plan it becomes "My plan" (their membership); without one it carries the free-trial badge
-    { label: "Pricing", href: "pricing.html", badge: "7 days free", planLabel: "My plan", planHref: "profile.html#billing" },
+    // only without a plan, with the free-trial badge
+    { label: "Pricing", href: "pricing.html", badge: "7 days free", noPlan: true },
     {
       label: "Contact", type: "contact",
       links: [
@@ -119,7 +119,7 @@
 
   links.classList.add("mm");
   links.innerHTML = MENU.map((m, i) => {
-    if (!m.type) return `<div class="mm-tab"><a class="mm-btn-tab" href="${esc(m.href)}"${m.planHref ? ` data-plan-swap="${i}"` : ""}><span>${esc(m.label)}</span>${m.badge ? `<span class="mm-badge"${np}>${esc(m.badge)}</span>` : ""}</a></div>`;
+    if (!m.type) return `<div class="mm-tab"${attrs(m)}><a class="mm-btn-tab" href="${esc(m.href)}"><span>${esc(m.label)}</span>${m.badge ? `<span class="mm-badge">${esc(m.badge)}</span>` : ""}</a></div>`;
     const id = `mm-p${i}`;
     return `<div class="mm-tab mm-has" data-mm><button class="mm-btn-tab" type="button" aria-expanded="false" aria-controls="${id}">${esc(m.label)}${CHEV}</button>${panel(m, id)}</div>`;
   }).join("");
@@ -128,10 +128,6 @@
     if (!data) return;
     const hasPlan = !!(data.plan || data.is_staff);
     links.querySelectorAll(hasPlan ? "[data-plan]" : "[data-noplan]").forEach((el) => { el.hidden = false; });
-    if (hasPlan) links.querySelectorAll("[data-plan-swap]").forEach((a) => {
-      const m = MENU[a.dataset.planSwap];
-      a.href = m.planHref; a.removeAttribute("aria-current"); a.firstElementChild.textContent = m.planLabel;
-    });
   }).catch(() => {});
 
   // open on hover (mouse) or click / tap / keyboard; one at a time; Esc or outside closes
