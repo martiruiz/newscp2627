@@ -102,6 +102,9 @@
 
   // ---------- Modals ----------
   // modal({ title, sub, body (html), foot (html), size }) → { el, close, body }
+  // an "i" next to a title: what its data is and where it comes from (tooltip on hover / keyboard focus, .info-i)
+  const info = (text) => `<span class="info-i" tabindex="0" role="note" aria-label="${esc(text)}" data-tip="${esc(text)}">i</span>`;
+
   function modal({ title, sub = "", body = "", foot = "", size = "", onClose } = {}) {
     const back = document.createElement("div");
     back.className = "modal-back";
@@ -585,7 +588,7 @@
   }
 
   window.SCPA = {
-    db, auth, CATEGORIES, CAT_LABEL, CATALOG_ORDER, icon, $, $$, esc, store, fmtDate, fmtDateTime, num, debounce, chunk, errMsg, rpc,
+    db, auth, CATEGORIES, CAT_LABEL, CATALOG_ORDER, icon, info, $, $$, esc, store, fmtDate, fmtDateTime, num, debounce, chunk, errMsg, rpc,
     toast, modal, confirmDialog, boot, loadCatalog, MultiSelect, FilterPanel, pager, CSV_COLUMNS, toCSV, csvCell, downloadBlob,
     ideaToCsvRow, cleanEmbed, embedKind, activateEmbeds, platformOfUrl, postUrl, openIdeaEditor, openIdeaPreview,
     resetCatalog: () => { catalogCache = null; },

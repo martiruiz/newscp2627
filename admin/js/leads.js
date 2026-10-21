@@ -3,7 +3,7 @@
 // Data: supabase/leads.sql (admin_leads, admin_set_lead, admin_lead_rules, admin_lead_funnel).
 (async () => {
   const A = window.SCPA;
-  const { $, $$, esc, icon, num } = A;
+  const { $, $$, esc, icon, num, info } = A;
   try { await A.boot("leads"); } catch { return; }
   const main = $("[data-main]");
   const ORG = { club: "Sports Club / Team", agency: "Sports Agency", league: "League / Federation", event: "Sports Event Organizer", creator: "Content Creator", other: "Other" };
@@ -17,15 +17,16 @@
   main.innerHTML = `<div class="page-head"><div><h1>Leads &amp; Demos</h1><p data-sub>Loading…</p></div>
     <div class="head-actions"><button class="btn" type="button" data-rules>${icon("edit")}Recommendation rules</button>
     <button class="btn btn-primary" type="button" data-export>${icon("download")}Export authorised contacts</button></div></div>
-    <section class="panel panel-pad" data-funnel><p class="muted">Loading the funnel…</p></section>
-    <div class="aud-filters" style="margin:18px 0 12px">
+    <div class="aud-kpis" data-kpis></div>
+    <section class="panel ld-funnel" data-funnel><p class="muted panel-pad">Loading the funnel…</p></section>
+    <div class="aud-filters panel ld-filters">
       <input class="input" type="search" placeholder="Search name, email, organisation…" data-f="q">
       <select class="select" data-f="status"><option value="">All statuses</option>${Object.entries(STATUS).map(([k, v]) => `<option value="${k}">${v}</option>`).join("")}</select>
       <select class="select" data-f="org_type"><option value="">All organisation types</option>${Object.entries(ORG).map(([k, v]) => `<option value="${k}">${v}</option>`).join("")}</select>
       <select class="select" data-f="challenge"><option value="">All needs</option>${Object.entries(CH).map(([k, v]) => `<option value="${k}">${v}</option>`).join("")}</select>
       <label class="check-inline"><input type="checkbox" data-f="identified" checked> With email only</label>
     </div>
-    <section class="panel" data-list><p class="muted panel-pad">Loading…</p></section>`;
+    <section class="panel ld-list"><header class="aud-h aud-h-lg"><h2>Leads</h2>${info("People who left their details in the lead form (Book a demo / Contact / the home questions), newest activity first. Click a row for every answer, the demo and notes; change the commercial status right in the list. Filters above apply.")}<span class="spacer"></span><b class="aud-count" data-count></b></header><div data-list><p class="muted panel-pad">Loading…</p></div></section>`;
 
   const fmt = (iso) => (iso ? new Date(iso).toLocaleString("es-ES", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "—");
   const source = (l) => [l.utm?.utm_source, l.utm?.utm_campaign].filter(Boolean).join(" / ") || l.utm?.referrer || l.source_page || "—";
@@ -40,18 +41,24 @@
     leads = data || [];
     const booked = leads.filter((l) => l.meeting_status === "booked" || l.meeting_status === "rescheduled").length;
     $("[data-sub]").textContent = `${num(leads.length)} lead${leads.length === 1 ? "" : "s"} · ${num(booked)} upcoming demo${booked === 1 ? "" : "s"}`;
+    $("[data-count]").textContent = num(leads.length);
+    const kpi = (label, tip, n, cls = "") => `<div class="aud-kpi${cls ? ` ${cls}` : ""}"><span>${label} ${info(tip)}</span><b>${n}</b></div>`;
+    $("[data-kpis]").innerHTML = kpi("Leads", "Leads that match the filters below (with “With email only” on, just the ones who gave their email).", num(leads.length))
+      + kpi("Upcoming demos", "Leads with a demo booked or rescheduled (Cal.com sends it here; ✓ = confirmed by Cal.com).", num(booked), "is-gold")
+      + kpi("Customers", "Leads whose commercial status you set to Customer.", num(leads.filter((l) => l.status === "customer").length), "is-green")
+      + kpi("Marketing consent", "Leads who accepted receiving marketing emails. Only these go in the “Export authorised contacts” file.", num(leads.filter((l) => l.email && l.marketing_consent).length));
     render();
   }
 
   function render() {
-    $("[data-list]").innerHTML = leads.length ? `<div class="table-wrap"><table class="table"><thead><tr>
+    $("[data-list]").innerHTML = leads.length ? `<div class="table-wrap"><table class="data ld-table"><thead><tr>
       <th>Updated</th><th>Person</th><th>Organisation</th><th>Type</th><th>Team</th><th>Need</th><th>Next step</th><th>Status</th><th>Demo</th><th>Source</th></tr></thead><tbody>
       ${leads.map((l) => `<tr data-id="${l.id}" class="row-click">
         <td>${fmt(l.updated_at)}</td>
-        <td><b>${esc(l.name || "Anonymous")}</b><br><small class="muted">${esc(l.email || "no email yet")}</small></td>
+        <td><div class="ld-person"><span class="ld-av">${esc((l.name || l.email || "?").trim().charAt(0).toUpperCase())}</span><span><b>${esc(l.name || "Anonymous")}</b><small>${esc(l.email || "no email yet")}</small></span></div></td>
         <td>${esc(l.organization || "—")}</td><td>${esc(ORG[l.org_type] || "—")}</td><td>${esc(SIZE[l.team_size] || "—")}</td><td>${esc(CH[l.challenge] || "—")}</td>
-        <td>${l.recommendation === "demo" ? "Demo" : l.recommendation === "trial" ? "Free trial" : "—"}</td>
-        <td><select class="select select-sm" data-status="${l.id}">${Object.entries(STATUS).map(([k, v]) => `<option value="${k}"${l.status === k ? " selected" : ""}>${v}</option>`).join("")}</select></td>
+        <td>${l.recommendation === "demo" ? `<span class="ld-pill is-gold">Demo</span>` : l.recommendation === "trial" ? `<span class="ld-pill is-blue">Free trial</span>` : "—"}</td>
+        <td><select class="select select-sm ld-status st-${l.status}" data-status="${l.id}">${Object.entries(STATUS).map(([k, v]) => `<option value="${k}"${l.status === k ? " selected" : ""}>${v}</option>`).join("")}</select></td>
         <td>${l.meeting_at ? `${fmt(l.meeting_at)}<br><small class="muted">${esc(MEET[l.meeting_status] || "")}${l.meeting_source === "calcom-webhook" ? " ✓" : ""}</small>` : esc(MEET[l.meeting_status] || "—")}</td>
         <td><small>${esc(source(l))}</small><br><small class="muted">${esc(l.cta || "")}</small></td></tr>`).join("")}
       </tbody></table></div>` : `<p class="panel-pad muted">No leads with these filters yet.</p>`;
@@ -59,7 +66,7 @@
 
   async function funnel() {
     const { data, error } = await A.db.rpc("admin_lead_funnel", { p_days: 30 });
-    if (error) { $("[data-funnel]").innerHTML = `<p class="muted">The funnel appears once supabase/leads.sql has been run.</p>`; return; }
+    if (error) { $("[data-funnel]").innerHTML = `<p class="muted panel-pad">The funnel appears once supabase/leads.sql has been run.</p>`; return; }
     const rows = data || [];
     const variants = [...new Set(rows.map((r) => r.variant).filter(Boolean))].sort();
     const get = (event, step, v) => rows.filter((r) => r.event === event && (step == null || r.step === step) && (!v || r.variant === v)).reduce((s, r) => s + Number(r.browsers), 0);
@@ -67,9 +74,10 @@
       ["Lead (details)", "lead_created"], ["Calendar opened", "demo_booking_started"], ["Demo booked", "demo_booked"], ["Free trial started", "free_trial_started"], ["Subscription", "subscription_created"], ["Abandoned", "form_abandoned"]];
     const col = (v) => { const start = get("form_started", null, v) || 0;
       return STEPS.map(([lab, ev, step]) => { const n = get(ev, step ?? null, v); const pct = start ? Math.round((n / start) * 100) : 0;
-        return `<li><span>${lab}</span><b>${num(n)}</b><i style="width:${Math.max(3, pct)}%"></i><small>${start ? `${pct}%` : ""}</small></li>`; }).join(""); };
-    $("[data-funnel]").innerHTML = `<h2 style="margin:0 0 4px">Funnel · last 30 days</h2><p class="muted" style="margin:0 0 14px">Distinct browsers per step (no personal data). ${variants.length > 1 ? "A/B test running: " + variants.join(" vs ") : `Variant: ${variants[0] || "new"}`}.</p>
-      <div style="display:grid;grid-template-columns:repeat(${Math.max(1, variants.length)},minmax(0,1fr));gap:24px">${(variants.length ? variants : [""]).map((v) => `<div>${variants.length > 1 ? `<h3 style="margin:0 0 8px">${esc(v)}</h3>` : ""}<ol class="aud-bars">${col(v)}</ol></div>`).join("")}</div>`;
+        return `<li${ev === "form_abandoned" ? ` class="is-out"` : ""}><span>${lab}</span><b>${num(n)}</b><small>${start ? `${pct}%` : ""}</small><i style="width:${Math.max(2, pct)}%"></i></li>`; }).join(""); };
+    $("[data-funnel]").innerHTML = `<header class="aud-h aud-h-lg"><h2>Funnel · last 30 days</h2>${info("How many visitors reach each step of the lead form, counted as distinct browsers (no personal data). % = of those who started. Abandoned = left the form halfway. If an A/B test is running, each version has its own column.")}
+      <span class="aud-n">${variants.length > 1 ? "A/B test running: " + esc(variants.join(" vs ")) : `Variant: ${esc(variants[0] || "new")}`}</span></header>
+      <div class="ld-funnel-cols" style="grid-template-columns:repeat(${Math.max(1, variants.length)},minmax(0,1fr))">${(variants.length ? variants : [""]).map((v) => `<div>${variants.length > 1 ? `<h3>${esc(v)}</h3>` : ""}<ol class="ld-steps">${col(v)}</ol></div>`).join("")}</div>`;
   }
 
   function openLead(id) {
@@ -121,6 +129,7 @@
       if (error) return A.toast(A.errMsg(error), "err");
       A.toast(`Status: ${STATUS[s.value]}`);
       const l = leads.find((x) => x.id === s.dataset.status); if (l) l.status = s.value;
+      s.className = `select select-sm ld-status st-${s.value}`;
     }
   });
   main.addEventListener("click", (e) => {

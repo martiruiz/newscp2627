@@ -46,8 +46,7 @@
     for (const p of list) for (const v of [].concat(pick(prefsOf(p), p) || [])) if (v != null && v !== "") m.set(v, (m.get(v) || 0) + 1);
     return [...m.entries()].sort((a, b) => b[1] - a[1]);
   };
-  // an "i" next to each title: where its numbers come from (shown on hover or keyboard focus)
-  const info = (text) => `<span class="info-i" tabindex="0" role="note" aria-label="${esc(text)}" data-tip="${esc(text)}">i</span>`;
+  const info = A.info;   // the "i" next to each title: where its numbers come from
   const bars = (title, tip, entries, label = (k) => k, limit = 8) => {
     const max = entries[0]?.[1] || 1;
     return `<section class="panel aud-card"><header class="aud-h"><h2>${title}</h2>${info(tip)}<span class="aud-n">${entries.length ? `${num(entries.length)} answer${entries.length === 1 ? "" : "s"}` : ""}</span></header>${entries.length
