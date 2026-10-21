@@ -6812,3 +6812,17 @@ a.lf-sp-favs { text-decoration: none; }
 .lfp-cards.lfp-cards-logo { grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 8px; }
 /* panel chips the chosen filters leave without posts: switched off */
 .lfp-chip.is-off { opacity: 0.35; cursor: default; pointer-events: none; }
+/* My space: the same buttons as Favs / Replicable ideas — a gradient outline, the icon in a gradient tile, filled when on */
+.my-space-btns .pill { --g: linear-gradient(90deg, #d99a2b, #f0b84a); --g-soft: linear-gradient(90deg, rgba(217, 154, 43, 0.75), rgba(240, 184, 74, 0.75)); --glow: 240, 184, 74;
+  position: relative; overflow: hidden; height: 46px !important; gap: 10px; padding: 0 14px 0 9px; border-radius: 13px; border: 1px solid transparent !important; box-shadow: none !important;
+  background: linear-gradient(var(--surface), var(--surface)) padding-box, var(--g-soft) border-box !important; color: var(--text) !important; font: 600 13.5px var(--font-body); transition: transform 0.2s, background 0.2s; }
+.my-space-btns .pill:hover { background: linear-gradient(var(--surface-2), var(--surface-2)) padding-box, var(--g-soft) border-box !important; }
+.my-space-btns .pill > [data-icon] { flex: none; width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: var(--g); }
+.my-space-btns .pill > [data-icon] svg { width: 15px !important; height: 15px !important; color: #fff !important; stroke: #fff; }
+.my-space-btns .ai-mine { --g: linear-gradient(90deg, #4a67e0, #7aa2ff); --g-soft: linear-gradient(90deg, rgba(74, 103, 224, 0.8), rgba(122, 162, 255, 0.8)); --glow: 122, 162, 255; }
+.my-space-btns .ai-mine::after { display: none; }
+.my-space-btns .ai-mine b { background: rgba(122, 162, 255, 0.22); color: #c9d8ff; }
+.my-space-btns .saved-link { --g: linear-gradient(90deg, #8b5cf6, #c084fc); --g-soft: linear-gradient(90deg, rgba(139, 92, 246, 0.8), rgba(192, 132, 252, 0.8)); --glow: 139, 92, 246; }
+.my-space-btns .pill[aria-pressed="true"] { background: var(--g) border-box !important; color: #fff !important; box-shadow: 0 10px 26px -12px rgba(var(--glow), 0.9) !important; }
+.my-space-btns .pill[aria-pressed="true"] > [data-icon] { background: rgba(255, 255, 255, 0.2); }
+.my-space-btns .pill[aria-pressed="true"] b { background: rgba(255, 255, 255, 0.22); color: #fff; }
