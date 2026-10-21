@@ -2219,7 +2219,7 @@
           <summary>${icon("tags")}<span>${esc(tx("Tags and caption"))}</span>${icon("chevron-down")}</summary>
           <div class="an-more-body"><div data-topics></div>
           ${groups ? `<dl class="dr-tags">${groups}</dl><p class="dr-hint">Click a tag to see more posts like it.</p>` : ""}
-          ${p.title ? `<div class="an-cap"><b>${esc(tx("Caption"))}</b><p>${esc(p.title)}</p></div>` : ""}</div>
+          ${p.title ? `<div class="an-cap"><div class="an-cap-h"><b>${esc(tx("Caption"))}</b><button class="an-copy an-cap-copy" type="button" data-copy="${esc(p.title)}">${icon("copy")}Copy</button></div><p>${esc(p.title)}</p></div>` : ""}</div>
         </details>` : ""}</div>
       <div class="an-info">
         <header class="an-head">

@@ -6911,3 +6911,10 @@ a.lf-sp-favs { text-decoration: none; }
 .an-adapt h3 svg { background: linear-gradient(135deg, #16b364, #3ccfc0); box-shadow: 0 6px 14px -8px rgba(22, 179, 100, 0.9); }
 .an-summary { font-size: 15px; line-height: 1.55; }   /* same size as the rest of the analysis */
 .an-actions .an-pdf { gap: 6px; }
+/* post detail: as wide as the screen */
+.an-modal { padding: 16px; }
+.an-panel { width: 100%; max-height: calc(100vh - 32px); }
+.an-grid { columns: 3 320px; }
+@media (max-width: 960px) { .an-modal { padding: 0; } .an-panel { max-height: 100vh; } .an-grid { columns: 1; } }
+.an-cap-h { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.an-more .an-cap-copy { position: static; transform: none; }
