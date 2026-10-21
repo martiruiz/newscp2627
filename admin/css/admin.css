@@ -790,3 +790,7 @@ tr[data-imp-row]:hover .imp-more, .imp-more:focus-within { opacity: 1; }
 .cat-list { max-height: calc(100vh - 40px); overflow-y: auto; }
 .cat-list .cap:not(:first-child) { margin-top: 10px; }
 @media (max-width: 1000px) { .cat-list { position: static; max-height: 360px; } }
+/* Filters rail: the group titles (Where & how, Who…) stand out — gold, bigger, with a rule */
+.cat-list .cap { display: flex; align-items: center; gap: 10px; padding: 12px 10px 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; color: var(--accent); }
+.cat-list .cap::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, rgba(240, 184, 74, 0.45), transparent); }
+.cat-list .cap:not(:first-child) { margin-top: 14px; border-top: 1px solid var(--border); padding-top: 16px; }
