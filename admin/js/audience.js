@@ -46,11 +46,13 @@
     for (const p of list) for (const v of [].concat(pick(prefsOf(p), p) || [])) if (v != null && v !== "") m.set(v, (m.get(v) || 0) + 1);
     return [...m.entries()].sort((a, b) => b[1] - a[1]);
   };
-  const bars = (title, entries, label = (k) => k, limit = 8) => {
+  // an "i" next to each title: where its numbers come from (shown on hover or keyboard focus)
+  const info = (text) => `<span class="info-i" tabindex="0" role="note" aria-label="${esc(text)}" data-tip="${esc(text)}">i</span>`;
+  const bars = (title, tip, entries, label = (k) => k, limit = 8) => {
     const max = entries[0]?.[1] || 1;
-    return `<section class="panel panel-pad aud-card"><h2>${title}</h2>${entries.length
-      ? `<ol class="aud-bars">${entries.slice(0, limit).map(([k, n]) => `<li><span>${esc(label(k))}</span><b>${num(n)}</b><i style="width:${Math.max(6, (n / max) * 100)}%"></i></li>`).join("")}</ol>`
-      : `<p class="muted">No answers yet.</p>`}</section>`;
+    return `<section class="panel aud-card"><header class="aud-h"><h2>${title}</h2>${info(tip)}<span class="aud-n">${entries.length ? `${num(entries.length)} answer${entries.length === 1 ? "" : "s"}` : ""}</span></header>${entries.length
+      ? `<ol class="aud-bars">${entries.slice(0, limit).map(([k, n], i) => `<li><em>${i + 1}</em><span>${esc(label(k))}</span><b>${num(n)}</b><i style="width:${Math.max(4, (n / max) * 100)}%"></i></li>`).join("")}</ol>${entries.length > limit ? `<p class="aud-more">+${num(entries.length - limit)} more</p>` : ""}`
+      : `<p class="aud-empty">No answers yet.</p>`}</section>`;
   };
 
   function render() {
@@ -62,37 +64,37 @@
     $("[data-sub]").textContent = `${num(members.length)} member${members.length === 1 ? "" : "s"} · what they told us in their profile`;
     $("[data-export]").disabled = !subs.length;
     $("[data-body]").innerHTML = `
-      <div class="aud-filters">
+      <div class="aud-filters panel">
         <input class="input" type="search" placeholder="Search name, email, organisation, favourite…" value="${esc(seg.q)}" data-seg="q">
         <select class="select" data-seg="orgType"><option value="">All organisation types</option>${orgTypes.map((o) => `<option${seg.orgType === o ? " selected" : ""}>${esc(o)}</option>`).join("")}</select>
         <select class="select" data-seg="sport"><option value="">All sports</option>${sports.map(([id]) => `<option value="${id}"${String(seg.sport) === String(id) ? " selected" : ""}>${esc(nameOf(id))}</option>`).join("")}</select>
         <select class="select" data-seg="newsletter"><option value="">Newsletter: everyone</option><option value="yes"${seg.newsletter === "yes" ? " selected" : ""}>Subscribed</option><option value="no"${seg.newsletter === "no" ? " selected" : ""}>Not subscribed</option></select>
       </div>
       <div class="aud-kpis">
-        <div class="panel panel-pad"><span>Members in segment</span><b>${num(list.length)}</b></div>
-        <div class="panel panel-pad"><span>Profile filled in</span><b>${list.length ? Math.round((withProfile.length / list.length) * 100) : 0}%</b></div>
-        <div class="panel panel-pad"><span>Newsletter subscribers</span><b>${num(subs.length)}</b></div>
-        <div class="panel panel-pad"><span>With 5 favourites</span><b>${num(list.filter((p) => (prefsOf(p).favouriteProfiles || []).length >= 5).length)}</b></div>
+        <div class="aud-kpi"><span>Members in segment ${info("Accounts on the platform (team accounts included) that match the filters above. Source: member profiles.")}</span><b>${num(list.length)}</b></div>
+        <div class="aud-kpi is-gold"><span>Profile filled in ${info("Share of these members who answered at least one question of their profile (sports, organisation, goals, favourites…).")}</span><b>${list.length ? Math.round((withProfile.length / list.length) * 100) : 0}%</b></div>
+        <div class="aud-kpi is-green"><span>Newsletter subscribers ${info("Members who opted in to the newsletter in their profile (with their chosen frequency). Only these are in the newsletter export.")}</span><b>${num(subs.length)}</b></div>
+        <div class="aud-kpi"><span>With 5 favourites ${info("Members who picked the maximum of 5 favourite profiles (the Favs filter of the Content Library).")}</span><b>${num(list.filter((p) => (prefsOf(p).favouriteProfiles || []).length >= 5).length)}</b></div>
       </div>
       <section class="panel aud-signups">
-        <div class="values-head" style="justify-content:space-between"><h2 style="font-size:16px">Website sign-ups <span class="muted">· newsletter pop-up on the home page</span></h2>
-          <span><b>${num((signups || []).length)}</b> <button class="btn btn-sm" type="button" data-export-signups ${(signups || []).length ? "" : "disabled"}>${icon("download")}Export</button></span></div>
+        <header class="aud-h aud-h-lg"><h2>Website sign-ups</h2>${info("Emails left in the newsletter pop-up of the home page by visitors (they may not be members). Not affected by the filters above. The export includes the consent text they accepted.")}
+          <span class="aud-n">newsletter pop-up on the home page</span><span class="spacer"></span><b class="aud-count">${num((signups || []).length)}</b><button class="btn btn-sm" type="button" data-export-signups ${(signups || []).length ? "" : "disabled"}>${icon("download")}Export</button></header>
         ${(signups || []).length ? `<div class="table-wrap"><table class="data"><thead><tr><th>Email</th><th>Name</th><th>Resource</th><th>Signed up</th></tr></thead>
           <tbody>${signups.slice(0, 8).map((x) => `<tr><td>${esc(x.email)}</td><td>${esc(x.first_name || "—")}</td><td class="muted">${esc(x.resource || "—")}</td><td class="muted">${new Date(x.created_at).toLocaleString("en-GB")}</td></tr>`).join("")}</tbody></table></div>
           ${signups.length > 8 ? `<p class="muted" style="padding:10px 16px">+${num(signups.length - 8)} more in the export</p>` : ""}` : `<p class="muted" style="padding:14px 16px">No sign-ups yet.</p>`}
       </section>
       <div class="aud-grid">
-        ${bars("Favourite profiles", count(list, (pr) => (pr.favouriteProfiles || []).map((f) => f.name)))}
-        ${bars("Favourite creators", count(list, (pr) => (pr.favouriteCreators || []).map((f) => f.name)))}
-        ${bars("Sports", count(list, (pr) => (pr.sports || []).map(Number)), nameOf)}
-        ${bars("Organisation type", count(list, (pr) => pr.orgType))}
-        ${bars("Goals", count(list, (pr) => pr.goals))}
-        ${bars("Topics", count(list, (pr) => pr.topics))}
-        ${bars("Newsletter wants", count(subs, (pr) => pr.newsletterTopics))}
-        ${bars("Role", count(list, (pr) => pr.role))}
+        ${bars("Favourite profiles", "The accounts members starred as favourites in their profile (the Favs filter). Number = members who chose each one.", count(list, (pr) => (pr.favouriteProfiles || []).map((f) => f.name)))}
+        ${bars("Favourite creators", "Content creators members starred in their profile (from the earlier profile form). Number = members who chose each one.", count(list, (pr) => (pr.favouriteCreators || []).map((f) => f.name)))}
+        ${bars("Sports", "Sports members follow, chosen in their profile. A member can pick several.", count(list, (pr) => (pr.sports || []).map(Number)), nameOf)}
+        ${bars("Organisation type", "The kind of organisation each member works for (club, league, agency, brand, creator…), from their profile.", count(list, (pr) => pr.orgType))}
+        ${bars("Goals", "What members want to achieve with SCP, picked in their profile. A member can pick several.", count(list, (pr) => pr.goals))}
+        ${bars("Topics", "Content topics members are interested in, from their profile. A member can pick several.", count(list, (pr) => pr.topics))}
+        ${bars("Newsletter wants", "What newsletter subscribers asked to receive. Only members subscribed to the newsletter are counted.", count(subs, (pr) => pr.newsletterTopics))}
+        ${bars("Role", "Each member's job role, from their profile.", count(list, (pr) => pr.role))}
       </div>
       <section class="panel">
-        <div class="values-head" style="justify-content:space-between"><h2 style="font-size:16px">Members</h2><span class="muted">${num(list.length)}</span></div>
+        <header class="aud-h aud-h-lg"><h2>Members</h2>${info("Every account that matches the filters above, newest first: name and email, organisation, sports, favourites, newsletter and sign-up date. \"team\" marks SCP staff accounts.")}<span class="spacer"></span><b class="aud-count">${num(list.length)}</b></header>
         <div class="table-wrap"><table class="data">
           <thead><tr><th>Member</th><th>Organisation</th><th>Sports</th><th>Favourite profiles</th><th>Newsletter</th><th>Joined</th></tr></thead>
           <tbody>${list.map((p) => { const pr = prefsOf(p); return `<tr>
