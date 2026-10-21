@@ -661,3 +661,5 @@ tr[data-imp-row] { cursor: pointer; }
 .imp-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 0; }
 .imp-meta dt { font-size: 12px; color: var(--muted); }
 .imp-meta dd { margin: 4px 0 0; font-size: 14px; }
+.rv-issues-h { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.rv-issues li a { flex: 1; min-width: 0; }

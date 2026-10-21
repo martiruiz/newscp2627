@@ -721,7 +721,8 @@
       el("grid").innerHTML = (s.sample || []).map((x) => `<a href="${esc(x.url)}" target="_blank" rel="noopener" style="background-image:url('${esc(x.cover)}')"></a>`).join("");
       const issues = s.issues || [];
       el("issues").hidden = !issues.length;
-      el("issues").innerHTML = issues.length ? `<p class="label">Issues · ${num(s.no_image + s.removed)} posts without a cover</p><ul>${issues.map((x) => `<li><span class="status status-failed">${x.removed ? "Removed from the platform" : "No image available"}</span><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.url)}</a></li>`).join("")}</ul>` : "";
+      el("issues").innerHTML = issues.length ? `<div class="rv-issues-h"><p class="label">Issues · ${num(s.issues_n ?? s.no_image + s.removed)} posts without a cover</p><button class="btn btn-ghost btn-sm" type="button" data-rv-ok-all>${icon("check")}Mark all as seen</button></div>
+        <ul>${issues.map((x) => `<li><span class="status status-failed">${x.removed ? "Removed from the platform" : "No image available"}</span><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.url)}</a><button class="btn btn-ghost btn-sm" type="button" data-rv-ok="${x.id}" title="Seen: remove it from the issues">OK</button></li>`).join("")}</ul>` : "";
       const approved = s.status === "approved";
       el("status").textContent = approved ? "Published" : finished ? "Publishing…" : "Loading covers";
       el("status").className = `status status-${approved ? "completed" : "importing"}`;
@@ -754,6 +755,15 @@
     };
     el("pause").addEventListener("click", () => { paused = !paused; el("pause").textContent = paused ? "Resume" : "Pause"; if (!paused) step(); });
     el("approve").addEventListener("click", () => { stopped = false; publish(); });
+    // an issue seen (OK) or all of them: they leave the list and the import's "without cover" warning (supabase/import-issues-ok.sql)
+    el("issues").addEventListener("click", async (e) => {
+      const one = e.target.closest("[data-rv-ok]"), all = e.target.closest("[data-rv-ok-all]");
+      if (!one && !all) return;
+      (one || all).disabled = true;
+      const { error } = await A.db.rpc("admin_import_issues_ok", { p_import_id: importId, p_ids: one ? [Number(one.dataset.rvOk)] : null });
+      if (error) { (one || all).disabled = false; return A.toast(/does not exist|schema cache|Could not find/i.test(error.message) ? "Run supabase/import-issues-ok.sql in Supabase first." : A.errMsg(error), "err"); }
+      stopped = false; step();
+    });
     step();
     return () => { stopped = true; };
   }
