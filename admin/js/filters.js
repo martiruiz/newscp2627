@@ -39,7 +39,9 @@
   function renderCats() {
     const listed = new Set(Object.keys(LABEL));
     const other = Object.keys(catalog.byCat).filter((k) => !listed.has(k) && catalog.byCat[k].length).sort();
-    const groups = [...GROUPS.map(([g, cats]) => [g, cats.map(([k]) => k)]), ...(other.length ? [["Other", other]] : [])];
+    const BY_IDEAS = new Set(["Where & how"]);   // these groups list their categories by linked ideas, most first
+    const groups = [...GROUPS.map(([g, cats]) => [g, cats.map(([k]) => k)]), ...(other.length ? [["Other", other]] : [])]
+      .map(([g, ks]) => [g, BY_IDEAS.has(g) ? [...ks].sort((x, y) => (totals[y] || 0) - (totals[x] || 0)) : ks]);
     if (!groups.some(([, ks]) => ks.includes(current))) current = "sport";
     $("[data-cats]").innerHTML = groups.map(([g, ks]) => `<p class="cap">${esc(g)}</p>` + ks.map((k) =>
       `<button type="button" data-cat="${k}" aria-current="${k === current}"><span class="cat-t"><b>${esc(labelOf(k))}</b><small>${num(totals[k] || 0)} ideas</small></span><span class="n">${num((catalog.byCat[k] || []).length)}</span></button>`).join("")).join("");
