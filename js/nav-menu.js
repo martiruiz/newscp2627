@@ -5,6 +5,7 @@
 //   "contact"  greeting + title + subtitle + a visual with floating chips + text + social icons + two buttons
 //   no panel   a plain link tab
 // Items with member: true only show when signed in (pages with the profile link in the nav).
+// Items with noPlan: true (and every "featured" box) only show without a plan: visitors, or members with no plan contracted.
 // The texts below are placeholders until the final content is decided.
 (() => {
   const MENU = [
@@ -18,19 +19,17 @@
         { icon: "calendar-days", title: "Content Plan", href: "content-plan.html", acc: "122, 162, 255", vis: "cp" },
       ],
       more: [
-        { icon: "arrow-up-right", title: "Try it free for 7 days", href: "signup.html", guest: true },
+        { icon: "arrow-up-right", title: "Try it free for 7 days", href: "signup.html", noPlan: true },
       ],
     },
     {
       label: "Solutions", type: "about",
       hello: "Built for", title: "Every team that creates", highlight: "sports content", sub: "From one creator to a whole club department.",
       links: [
+        { title: "Content creators", desc: "Formats and hooks that work in sports.", href: "book-a-call.html?for=creators" },
         { title: "Clubs", desc: "Matchday, signings, kits and sponsors, all season.", href: "book-a-call.html?for=clubs" },
         { title: "Leagues & federations", desc: "Content for every club and competition you run.", href: "book-a-call.html?for=leagues" },
         { title: "Brands & sponsors", desc: "See how others activate their sports partnerships.", href: "book-a-call.html?for=brands" },
-        { title: "Content creators", desc: "Formats and hooks that work in sports.", href: "book-a-call.html?for=creators" },
-        { title: "Agencies", desc: "Ideas and benchmarks for every client.", href: "book-a-call.html?for=agencies" },
-        { title: "Athletes", desc: "Grow your personal brand with proven formats.", href: "book-a-call.html?for=athletes" },
       ],
       featured: { eyebrow: "Free trial", title: "Try it free for 7 days", desc: "The full library, no commitment.", href: "signup.html" },
     },
@@ -39,12 +38,9 @@
       hello: "Learn", title: "Ideas and trends in", highlight: "sports social media", sub: "Free, every week.",
       links: [
         { title: "Saved boards", desc: "The posts you saved, by board.", href: "saved.html", member: true },
-        { title: "How it works", desc: "From idea to published post.", href: "index.html#how-it-works" },
         { title: "Blog", desc: "Ideas and trends in sports social.", href: "blog.html" },
         { title: "Social News", desc: "What's happening on club accounts.", href: "news.html" },
         { title: "FAQ", desc: "Everything you want to know before starting.", href: "index.html#faq" },
-        { title: "Pricing & plans", desc: "Plans for creators, clubs and teams.", href: "pricing.html" },
-        { title: "Book a demo", desc: "See the platform with your use case.", href: "book-a-call.html" },
       ],
       featured: { eyebrow: "What is SCP?", title: "Sports Content Playbook in 2 minutes", desc: "The platform, explained.", href: "index.html#what-is-scp" },
     },
@@ -87,20 +83,22 @@
     ai: `<span class="tool-vis tv-ai" aria-hidden="true"><span class="tv-ai-img" style="background-image:url(assets/ai-example-messi.jpg)"><i class="tv-scan"></i></span><span class="tv-ai-rows"><span><b>Hook</b><i></i></span><span><b>Why it works</b><i></i></span><span><b>Your version</b><i></i></span></span></span>`,
     cp: `<span class="tool-vis tv-cp" aria-hidden="true"><span class="tv-week">${["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d, i) => `<span><small>${d}</small>${Array.from({ length: [2, 3, 2, 1, 2, 3, 1][i] }, (_, k) => `<i style="--k:${i + k}"></i>`).join("")}</span>`).join("")}</span><span class="tv-bar"><i></i></span></span>`,
   };
-  const show = (it) => (!it.member || member) && (!it.guest || !member);
+  const show = (it) => !it.member || member;
+  // hidden for members until their entitlements say they have no plan (staff counts as having one)
+  const np = member ? " data-noplan hidden" : "";
 
   function panel(m, id) {
     if (m.type === "pillars") return `<div class="mm-panel mm-pillars" id="${id}" role="region" aria-label="${esc(m.label)}">
       <div class="mm-pcols">${m.pillars.map((p) => `<a class="mm-pillar" href="${esc(member && p.memberHref ? p.memberHref : p.href)}" style="--acc:${p.acc}">
         ${VIS[p.vis] || ""}<span class="mm-pillar-h"><span class="mm-ic">${icon(p.icon)}</span><b>${esc(p.title)}</b></span></a>`).join("")}</div>
-      ${m.more?.filter(show).length ? `<div class="mm-ptab">${m.more.filter(show).map((l) => `<a href="${esc(l.href)}">${icon(l.icon)}${esc(l.title)}</a>`).join("")}</div>` : ""}</div>`;
+      ${m.more?.filter(show).length ? `<div class="mm-ptab"${m.more.some((l) => l.noPlan) ? np : ""}>${m.more.filter(show).map((l) => `<a href="${esc(l.href)}">${icon(l.icon)}${esc(l.title)}</a>`).join("")}</div>` : ""}</div>`;
     if (m.type === "grid") return `<div class="mm-panel mm-grid" id="${id}" role="region" aria-label="${esc(m.label)}">
       <p class="mm-eyebrow">${esc(m.eyebrow)}</p><p class="mm-title">${esc(m.title)} <em>${esc(m.highlight)}</em></p>
       <div class="mm-cols">${m.items.filter(show).map((i) => `<a class="mm-item" href="${esc(i.href)}"><span class="mm-ic">${icon(i.icon)}</span><span><b>${esc(i.title)}</b><small>${esc(i.desc)}</small></span></a>`).join("")}</div></div>`;
     if (m.type === "about") return `<div class="mm-panel mm-about" id="${id}" role="region" aria-label="${esc(m.label)}">
       <p class="mm-hello">${esc(m.hello)}</p><p class="mm-title">${esc(m.title)} <em>${esc(m.highlight)}</em></p><p class="mm-sub">${esc(m.sub)}</p>
       <div class="mm-cols">${m.links.filter(show).map((l) => `<a class="mm-link" href="${esc(l.href)}"><b>${esc(l.title)}</b><small>${esc(l.desc)}</small></a>`).join("")}</div>
-      ${m.featured ? `<a class="mm-featured" href="${esc(m.featured.href)}"><span><i>${esc(m.featured.eyebrow)}</i><b>${esc(m.featured.title)}</b><small>${esc(m.featured.desc)}</small></span>${icon("arrow-up-right")}</a>` : ""}</div>`;
+      ${m.featured ? `<a class="mm-featured"${np} href="${esc(m.featured.href)}"><span><i>${esc(m.featured.eyebrow)}</i><b>${esc(m.featured.title)}</b><small>${esc(m.featured.desc)}</small></span>${icon("arrow-up-right")}</a>` : ""}</div>`;
     if (m.type === "contact") return `<div class="mm-panel mm-contact" id="${id}" role="region" aria-label="${esc(m.label)}">
       <p class="mm-hello">${esc(m.hello)}</p><p class="mm-title">${esc(m.title)} <em>${esc(m.highlight)}</em></p><p class="mm-sub">${esc(m.sub)}</p>
       <div class="mm-visual">${m.chips.map((c, i) => `<span class="mm-float mm-f${i}">${esc(c)}</span>`).join("")}</div>
@@ -122,6 +120,10 @@
     const id = `mm-p${i}`;
     return `<div class="mm-tab mm-has" data-mm><button class="mm-btn-tab" type="button" aria-expanded="false" aria-controls="${id}">${esc(m.label)}${CHEV}</button>${panel(m, id)}</div>`;
   }).join("");
+
+  if (member) window.SCP_entitlements?.().then(({ data }) => {
+    if (data && !data.plan && !data.is_staff) links.querySelectorAll("[data-noplan]").forEach((el) => { el.hidden = false; });
+  }).catch(() => {});
 
   // open on hover (mouse) or click / tap / keyboard; one at a time; Esc or outside closes
   const tabs = [...links.querySelectorAll("[data-mm]")];
