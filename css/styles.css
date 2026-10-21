@@ -6977,3 +6977,4 @@ a.lf-sp-favs { text-decoration: none; }
   background: linear-gradient(135deg, #8b5cf6, #c38cf9); color: #fff; font: 700 9.5px var(--font-body); letter-spacing: 0.04em; pointer-events: none; }
 .org-entry.is-ai { position: relative; border-color: rgba(167, 139, 250, 0.65) !important; background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(217, 70, 239, 0.05) 70%), var(--surface-2) !important; box-shadow: 0 0 0 1px rgba(167, 139, 250, 0.3); }
 .org-entry.is-ai::after { content: "✦ AI"; position: absolute; bottom: 6px; right: 8px; padding: 1px 6px; border-radius: 999px; background: linear-gradient(135deg, #8b5cf6, #c38cf9); color: #fff; font: 700 9.5px var(--font-body); pointer-events: none; }
+p.lead { display: block; min-height: 0; }   /* the intro paragraphs share the name with the lead form box (js/lead-flow.js): not its 520 px */
