@@ -410,7 +410,7 @@
     };
     // the creators' own accounts (from the post URL or the import; supabase/scraped-profiles.sql)
     if (!ui.accts) { ui.accts = []; db?.rpc("creator_accounts").then((r) => { ui.accts = r.data || []; if (ui.accts.length) renderFacets(); }, () => {}); }
-    const groups = [["Content type", "angle"], ["Collaboration", "collab"], ["Brands", "sponsor", 10], ["Network", "platform"], ["Format", "format"], ["Sport", "sport"]]
+    const groups = [["Content type", "angle"], ["Collaboration", "collab"], ["Brands", "sponsor", 10]]
       .map(([label, cat, max, h]) => [label, h ?? chips(cat, max)]).filter(([, h]) => h);
     if (!groups.length) return "";
     return `<div class="lf-cc-sub"><p class="lf-cc-h">${esc(tx("Refine creators' posts"))}</p>${acctRowHtml()}
