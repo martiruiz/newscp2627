@@ -6810,3 +6810,5 @@ a.lf-sp-favs { text-decoration: none; }
 .lfp-cards-sm .lfp-ck { top: 6px; right: 6px; width: 18px; height: 18px; }
 .lfp-cards-sm .lfp-img .lf-i { width: 22px; height: 22px; }
 .lfp-cards.lfp-cards-logo { grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 8px; }
+/* panel chips the chosen filters leave without posts: switched off */
+.lfp-chip.is-off { opacity: 0.35; cursor: default; pointer-events: none; }

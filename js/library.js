@@ -806,11 +806,14 @@
     if (g.key === "matchday") return head + lfpMatchday(g);
     // Club: the squad as quick chips above the clubs
     const teamG = g.key === "club" && groups.find((x) => x.key === "team");
-    const squadVals = teamG ? [...byCount(groupVals(teamG)), ...["Player"].map((n) => valByName("entity", n)).filter((v) => v && (countOf(v) > 0 || isOn(v)))] : [];
-    const squad = teamG ? `<div class="lfp-chips lfp-squad">${squadVals.map((v) => `<button type="button" class="lfp-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="${v.category}" data-id="${v.id}">${esc(v.category === "entity" ? tx(v.name === "Player" ? "Players' accounts" : "Brand accounts") : pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`).join("")}</div>` : "";
-    // chips above the options (Brands: the brands' own accounts)
-    const chipVals = (g.chips || []).map(([c, n, l]) => [valByName(c, n), l]).filter(([v]) => v && (countOf(v) > 0 || isOn(v)));
-    const chips = chipVals.length ? `<div class="lfp-chips lfp-squad">${chipVals.map(([v, l]) => `<button type="button" class="lfp-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="${v.category}" data-id="${v.id}">${esc(tx(l))}<em>${kfmt(countOf(v))}</em></button>`).join("")}</div>` : "";
+    // chips above the options: the club's squad (Club), Players (Sport, Competition, Club), the brands' own accounts
+    // (Brands). They stay in place; one that the chosen filters leave without posts is switched off (greyed, not clickable)
+    const chip = (v, label) => { const on = isOn(v), off = countOf(v) === 0 && !on;
+      return `<button type="button" class="lfp-chip${on ? " is-on" : ""}${off ? " is-off" : ""}" aria-pressed="${on}"${off ? ' disabled aria-disabled="true"' : ""} data-facet="${v.category}" data-id="${v.id}">${esc(label)}<em>${off ? "0" : kfmt(countOf(v))}</em></button>`; };
+    const squadVals = teamG ? [...[...(catalog.byCat.team || [])].sort((x, y) => y.total - x.total), ...["Player"].map((n) => valByName("entity", n)).filter(Boolean)] : [];
+    const squad = squadVals.length ? `<div class="lfp-chips lfp-squad">${squadVals.map((v) => chip(v, v.category === "entity" ? tx("Players' accounts") : pretty(v.name))).join("")}</div>` : "";
+    const chipVals = (g.chips || []).map(([c, n, l]) => [valByName(c, n), l]).filter(([v]) => v);
+    const chips = chipVals.length ? `<div class="lfp-chips lfp-squad">${chipVals.map(([v, l]) => chip(v, tx(l))).join("")}</div>` : "";
     const many = g.logos && groupVals(g).length > 20;
     return head + squad + chips + (g.key === "city" ? "" : lfpCards(groupVals(g), g, many ? 20 : 0))
       + (many || g.key === "city" ? `<p class="lfp-tip">${svg("search")}${esc(tx("Search above to find any of the {n}", { n: groupVals(g).length.toLocaleString(window.SCP_LOC || "en-GB") }))}</p>` : "");
