@@ -989,13 +989,14 @@
     if (ui.fol && (r.followers == null || (ui.fol.min && r.followers < ui.fol.min) || (ui.fol.max && r.followers > ui.fol.max))) return false;
     return !q || low(r.handle).includes(low(q).replace(/^@/, "")) || low(r.name).includes(low(q));
   }
+  const crTop = (r) => ((r.top || []).length ? r.top : r.latest || []).slice(0, 3);
   function crRow(r) {
     const k = `${r.platform}|${r.handle}`, name = r.name || r.handle;
     const ini = name.replace(/[^\p{L}\p{N} ]/gu, "").split(/[\s._]+/).filter(Boolean).map((w) => w[0]).join("").slice(0, 2).toUpperCase() || "?";
     const brands = (r.collabs || []).map((id) => catalog.byId.get(Number(id))).filter(Boolean);
-    const posts = (r.top || []).map((id) => cache.get(String(id))).filter(Boolean);
+    const posts = crTop(r).map((id) => cache.get(String(id))).filter(Boolean);
     const star = starKeys().includes(k);
-    return `<article class="cr-row">
+    return `<article class="cr-card">
       <header class="cr-top">
         <span class="cr-ava">${r.avatar ? `<img src="${esc(r.avatar)}" alt="" loading="lazy">` : `<b>${esc(ini)}</b>`}</span>
         <span class="cr-name"><b>${esc(name)}</b><small><i class="lf-pfi is-brand lf-pf-${esc(r.platform)}" style="-webkit-mask-image:url(assets/pf-${esc(r.platform)}.svg);mask-image:url(assets/pf-${esc(r.platform)}.svg)"></i>@${esc(r.handle)}</small></span>
@@ -1007,7 +1008,7 @@
           <button type="button" class="pill pill-gold cr-see" data-cr-posts="${esc(k)}">${esc(tx("See their posts"))}</button>
         </span>
       </header>
-      <div class="cr-posts">${posts.map((p) => `<button type="button" class="cr-post" data-open="${esc(p.id)}" style="background-image:url('${esc(p.cover_url)}')" aria-label="${esc(tx("Details"))}">${isVideo(p) ? `<span class="cr-vid">${icon("video")}</span>` : ""}</button>`).join("")}</div>
+      <div class="cr-posts">${posts.map((p) => `<button type="button" class="cr-post${p.cover_url ? "" : " is-empty"}" data-open="${esc(p.id)}"${p.cover_url ? ` style="background-image:url('${esc(p.cover_url)}')"` : ""} aria-label="${esc(tx("Details"))}">${isVideo(p) ? `<span class="cr-vid">${icon("video")}</span>` : ""}</button>`).join("")}</div>
     </article>`;
   }
   async function renderCreators(my) {
@@ -1021,14 +1022,20 @@
     const list = cr.rows.filter((r) => crMatch(r, state().q));
     const shown = list.slice(0, cr.shown);
     // their posts, as the grid has them (tags, cover), so a click opens the post's detail
-    const need = shown.flatMap((r) => r.top || []).map(String).filter((id) => !cache.has(id));
+    // creators whose posts have no stored cover yet (Instagram): their 3 latest posts
+    await Promise.all(shown.filter((r) => !crTop(r).length && !r.latest).map(async (r) => {
+      const { data } = await db.rpc("account_post_ids", { p_platform: r.platform, p_handle: r.handle }).then((x) => x, () => ({}));
+      r.latest = (data || []).slice(0, 3);
+    }));
+    if (my !== token) return;
+    const need = shown.flatMap(crTop).map(String).filter((id) => !cache.has(id));
     if (need.length) {
       const { data } = await fetchIdeas({ p_filters: {}, p_q: null, p_from: null, p_to: null, p_order: "latest", p_seed: "", p_ids: need.map(Number), p_limit: need.length, p_offset: 0 }).catch(() => ({}));
       (data?.data || []).forEach((p) => cache.set(String(p.id), p));
       if (my !== token) return;
     }
     crBox.innerHTML = list.length
-      ? `<p class="cr-count">${esc(tx(list.length === 1 ? "{n} creator" : "{n} creators", { n: list.length.toLocaleString(window.SCP_LOC || "en-GB") }))}</p>${shown.map(crRow).join("")}${list.length > shown.length ? `<div class="load-more"><button class="pill pill-dark" type="button" data-cr-more>${esc(tx("Load more"))}</button></div>` : ""}`
+      ? `<p class="cr-count">${esc(tx(list.length === 1 ? "{n} creator" : "{n} creators", { n: list.length.toLocaleString(window.SCP_LOC || "en-GB") }))}</p><div class="cr-grid">${shown.map(crRow).join("")}</div>${list.length > shown.length ? `<div class="load-more"><button class="pill pill-dark" type="button" data-cr-more>${esc(tx("Load more"))}</button></div>` : ""}`
       : `<p class="posts-empty">${esc(tx("No creators match these filters."))}</p>`;
   }
   crHead.addEventListener("click", (e) => {

@@ -143,6 +143,42 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
     console.log(`\n${done} covers for the newest ${N} posts.`);
     process.exit(0);
   }
+  // --creators [n]: the n latest posts (default 3) of every account that has no cover yet — the creators' cards in the
+  // Content Library show them (their Instagram posts came without covers). Run again as more posts get their account.
+  if (argv.includes("--creators")) {
+    const N = Number(arg("--creators")) || 3;
+    const rows = [];
+    for (let last = 0; ; ) {
+      const { data, error } = await db.from("content_ideas").select("id,url,account,account_platform,published_at,cover_url").not("account", "is", null).is("unavailable_at", null).gt("id", last).order("id").limit(1000);
+      if (error) throw error;
+      rows.push(...data);
+      if (data.length < 1000) break;
+      last = data[data.length - 1].id;
+    }
+    const byAcc = new Map();
+    for (const r of rows.sort((a, b) => String(b.published_at).localeCompare(String(a.published_at)))) {
+      const k = `${r.account_platform}|${r.account}`;
+      if (!byAcc.has(k)) byAcc.set(k, []);
+      if (byAcc.get(k).length < N) byAcc.get(k).push(r);
+    }
+    const todo = [...byAcc.values()].flat().filter((r) => !r.cover_url).slice(0, LIMIT);
+    console.log(`${byAcc.size} accounts · ${todo.length} posts without a cover`);
+    let done = 0, missing = 0;
+    for (const r of todo) {
+      const ig = /instagram\.com/.test(r.url || "");
+      const c = await coverFor(r.url);
+      if (c?.broken) { await db.from("content_ideas").update({ unavailable_at: new Date().toISOString() }).eq("id", r.id); await sleep(ig ? 1200 : 300); continue; }
+      const stored = c?.image ? await storeCover(r.id, c.image).catch(() => null) : null;
+      if (!stored) { missing++; await sleep(ig ? 1200 : 300); continue; }
+      await db.from("content_ideas").update({ cover_url: stored.url, cover_at: new Date().toISOString(), ...(!ig && c.media_type ? { media_type: c.media_type } : {}), ...(!ig && c.width && c.height ? { media_width: c.width, media_height: c.height, media_ratio: Math.round((c.height / c.width) * 10000) / 10000 } : {}), ...(!ig && c.duration ? { duration_s: c.duration } : {}) }).eq("id", r.id);
+      if (ig) await db.rpc("apply_ig_meta", { p_rows: [{ id: r.id, media_type: c.media_type, width: c.width, height: c.height, duration: c.duration, views: c.views }] });
+      done++;
+      if (done % 50 === 0) console.log(`${done}/${todo.length} covers · ${missing} without image`);
+      await sleep(ig ? 1200 : 300);
+    }
+    console.log(`Done: ${done} covers, ${missing} without image.`);
+    process.exit(0);
+  }
   // --new [days]: every post imported in the last days (default 2) that has no cover yet, whatever its publication date.
   // Run it right after each import (Admin → Import), so no post reaches the library without its cover.
   if (argv.includes("--new")) {
