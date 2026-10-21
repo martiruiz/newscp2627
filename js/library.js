@@ -678,8 +678,8 @@
     }
   }
   function goalHtml() {
-    const top = rowsOf(["goal", "cta"]);
-    const sp = rowsOf(["sponsor", "sponsor_integration", "sponsor_sector", "collab"]);
+    const top = rowsOf(["goal"]);   // no "Call to action"
+    const sp = rowsOf(["sponsor", "sponsor_sector", "collab"]);   // no "Integration"
     return (top ? `<div class="lf-grp"><div class="lf-stack">${top}</div></div>` : "")
       + (sp ? `<div class="lf-md lf-spons"><div class="lf-md-h">${svg("tag")}<b>${esc(tx("Sponsors"))}</b><small>${esc(tx("How other clubs activate their partners"))}</small></div><div class="lf-stack">${sp}</div></div>` : "");
   }
@@ -733,9 +733,7 @@
     ],
     goal: [
       { key: "goal", label: "Business goal", ico: "target", desc: "What the post should achieve", cats: ["goal"] },
-      { key: "cta", label: "Call to action", ico: "cursor", desc: "What it asks the fans to do", cats: ["cta"] },
       { key: "sponsor", label: "Sponsors", ico: "tag", desc: "Brands on other clubs' posts", cats: ["sponsor"], logos: true },
-      { key: "sponsor_integration", label: "Integration", ico: "badge", desc: "How the sponsor appears", cats: ["sponsor_integration"], plus: [["collab", "Brand collab"]] },
       { key: "sponsor_sector", label: "Sponsor sector", ico: "briefcase", desc: "Partners by industry", cats: ["sponsor_sector"] },
       { key: "collab", label: "Collaborations", ico: "users", desc: "Posts made with others", cats: ["collab"], skip: ["brand collab", "player collab"] },   // Player collab → Players
     ],
