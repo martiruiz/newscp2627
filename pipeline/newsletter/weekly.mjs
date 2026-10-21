@@ -169,7 +169,9 @@ const blogs = blogPosts.map((b) => ({
 }));
 
 const { count: pastIssues } = await db.from("newsletter_issues").select("id", { count: "exact", head: true });
-const html = renderWeekly({ subject: out.subject, preheader: out.preheader, intro: out.intro, topStory, news, posts, blogs, dateLabel, issue: (pastIssues || 0) + 1 });
+// everything the email shows, saved with the issue so it can be edited in Admin → Audience → Newsletter (and re-rendered)
+const content = { subject: out.subject, preheader: out.preheader, intro: out.intro, topStory, news, posts, blogs, dateLabel, issue: (pastIssues || 0) + 1 };
+const html = renderWeekly(content);
 
 if (DRY) {
   const file = path.join(ROOT, "pipeline", "newsletter-preview.html");
@@ -209,7 +211,7 @@ if (!draft.ok) throw new Error(`Resend broadcast error ${draft.status}: ${JSON.s
 const broadcastId = draft.data.id;
 console.log(`Draft broadcast created: ${broadcastId}`);
 
-await db.from("newsletter_issues").insert({ week_start: weekStart, subject: out.subject, broadcast_id: broadcastId, items: { topStory, news, posts, blogs } });
+await db.from("newsletter_issues").insert({ week_start: weekStart, subject: out.subject, broadcast_id: broadcastId, items: content });
 
 if (env("NEWSLETTER_REVIEW_TO")) {
   const banner = `<div style="background:#f0b84a;color:#121b33;padding:14px 18px;font-family:Arial,sans-serif;font-size:14px;text-align:center"><b>Preview — not sent yet.</b> To send it to all subscribers: Resend → Broadcasts → “${name}” → Send.</div>`;
