@@ -6309,7 +6309,6 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
   .library { grid-template-rows: auto 1fr; }
   .library > .filters { grid-column: 1; grid-row: 1 / span 2; }
   .library > .lib-head { grid-column: 2 / -1; grid-row: 1; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: stretch; }
-  .library.plan-open > .lib-head { grid-template-columns: subgrid; }
   .library > .feed { grid-column: 2; grid-row: 2; }
   .library > .pp { grid-column: 3; grid-row: 2; top: var(--lib-head-h, 150px); height: calc(100vh - var(--lib-head-h, 150px)); }
   /* one row: the filter bar (Occasion, Goal, Sponsors, Get inspired by) next to "My space"; period and sort live in the
@@ -6317,9 +6316,8 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
   .lib-head .feed-bar { display: none; }
   .lib-head .my-space { grid-column: 2; grid-row: 1; border-left: 1px solid var(--line-soft); }
   .lib-head .lfb { grid-column: 1; grid-row: 1; }
-  /* plan open: "My space" sits right over the Content Plan, in its column */
-  .library.plan-open .lib-head .my-space { border-bottom: 0; }
-  .library:not(.plan-open) .lib-head .my-space { flex-direction: row; align-items: center; gap: 10px; }
+  /* "My space" stays in this row, also with the Content Plan open */
+  .lib-head .my-space { flex-direction: row; align-items: center; gap: 10px; }
 }
 
 /* Content Plan side panel: key dates marked on their day (js/key-dates.js) */
