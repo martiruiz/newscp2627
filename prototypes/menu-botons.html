@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Prototipo · Botones del menú</title>
+<link rel="stylesheet" href="../css/fonts.css?v=1">
+<style>
+  :root { --bg: #121b33; --surface: #17213b; --surface-2: #1d2845; --surface-3: #213050; --gold: #f0b84a;
+    --grad: linear-gradient(90deg, #d99a2b, #f0b84a 55%, #ffe0a0); --text: #fff; --muted: #b4c0d3; --line: rgba(255,255,255,.1); --line-soft: rgba(255,255,255,.05);
+    --display: "Host Grotesk", Inter, sans-serif; --ease: cubic-bezier(.2,.8,.2,1); }
+  * { box-sizing: border-box; margin: 0; }
+  body { color: var(--text); font: 14px/1.45 Inter, system-ui, sans-serif; background: var(--bg); padding: 0 16px 80px; }
+  button, a { font: inherit; color: inherit; background: none; border: 0; text-decoration: none; cursor: pointer; }
+  .page { max-width: 1240px; margin: 0 auto; }
+  header.top { padding: 44px 0 6px; }
+  .ptag { font: 700 11px Inter; letter-spacing: .18em; text-transform: uppercase; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  header.top h1 { font: 600 30px/1.15 var(--display); margin-top: 6px; }
+  header.top p { color: var(--muted); max-width: 760px; margin-top: 10px; }
+  .prop { margin-top: 48px; }
+  .prop h2 { font: 600 21px var(--display); margin: 6px 0 4px; }
+  .prop > p { color: var(--muted); max-width: 820px; margin-bottom: 14px; }
+  /* a mock of the site header around each proposal */
+  .hdr { display: flex; align-items: center; gap: 18px; padding: 16px 20px; border-radius: 18px; background: linear-gradient(180deg, #0f1730, #121b33); border: 1px solid var(--line-soft); overflow-x: auto; }
+  .logo { flex: none; font: 800 13px/0.95 var(--display); letter-spacing: -.01em; }
+  .logo b { display: block; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .right { margin-left: auto; display: flex; align-items: center; gap: 10px; flex: none; }
+  .r-btn { height: 34px; padding: 0 14px; border-radius: 999px; border: 1px solid rgba(240,184,74,.6); color: var(--gold); font-weight: 600; font-size: 13px; }
+  .r-btn.fill { border: 0; background: var(--grad); color: #1a1206; }
+  .chev { width: 10px; height: 10px; flex: none; transition: transform .3s var(--ease); }
+  nav { display: flex; align-items: center; flex: none; }
+  nav a { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
+  nav a.open .chev, nav a:hover .chev { transform: rotate(180deg); }
+
+  /* 1 · Capsule with a gliding lens (like the filter bar) */
+  .n1 { position: relative; padding: 4px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--line); }
+  .n1 .lens { position: absolute; top: 4px; bottom: 4px; border-radius: 999px; background: var(--surface-2); box-shadow: inset 0 0 0 1px rgba(255,255,255,.14); transition: left .45s var(--ease), width .45s var(--ease), opacity .2s; opacity: 0; }
+  .n1 a { position: relative; z-index: 1; height: 38px; padding: 0 16px; border-radius: 999px; font: 600 14px var(--display); color: var(--muted); transition: color .2s; }
+  .n1 a:hover, .n1 a.open { color: #fff; }
+
+  /* 2 · Text only, a gold line growing under it */
+  .n2 { gap: 6px; }
+  .n2 a { position: relative; height: 40px; padding: 0 12px; font: 500 15px var(--display); color: var(--muted); transition: color .2s; }
+  .n2 a::after { content: ""; position: absolute; left: 12px; right: 12px; bottom: 4px; height: 2px; border-radius: 2px; background: var(--grad); transform: scaleX(0); transform-origin: left; transition: transform .35s var(--ease); }
+  .n2 a:hover, .n2 a.open { color: #fff; }
+  .n2 a:hover::after, .n2 a.open::after { transform: scaleX(1); }
+
+  /* 3 · Floating glass bar */
+  .n3 { gap: 2px; padding: 5px; border-radius: 16px; background: rgba(255,255,255,.04); backdrop-filter: blur(14px); box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 10px 30px -18px rgba(0,0,0,.8); border: 1px solid var(--line-soft); }
+  .n3 a { height: 38px; padding: 0 15px; border-radius: 11px; font: 500 14px var(--display); color: #dfe5f1; transition: background .2s, color .2s; }
+  .n3 a:hover, .n3 a.open { background: rgba(255,255,255,.08); color: #fff; }
+  .n3 a.open { box-shadow: inset 0 0 0 1px rgba(240,184,74,.45); }
+
+  /* 4 · One bar with thin dividers */
+  .n4 { border-radius: 14px; border: 1px solid var(--line); background: var(--surface); overflow: hidden; }
+  .n4 a { height: 44px; padding: 0 20px; font: 600 14px var(--display); color: var(--muted); border-left: 1px solid var(--line-soft); transition: background .2s, color .2s; }
+  .n4 a:first-child { border-left: 0; }
+  .n4 a:hover, .n4 a.open { color: #fff; background: linear-gradient(180deg, rgba(240,184,74,.12), rgba(240,184,74,0)); }
+  .n4 a.open { box-shadow: inset 0 -2px 0 var(--gold); }
+
+  /* 5 · Gold text on hover with a small dot */
+  .n5 { gap: 4px; }
+  .n5 a { position: relative; height: 40px; padding: 0 14px; font: 600 14.5px var(--display); color: #e6ebf5; border-radius: 10px; transition: color .2s; }
+  .n5 a::before { content: ""; position: absolute; left: 50%; top: 4px; width: 4px; height: 4px; border-radius: 50%; background: var(--gold); transform: translateX(-50%) scale(0); transition: transform .3s var(--ease); }
+  .n5 a:hover, .n5 a.open { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .n5 a:hover .chev, .n5 a.open .chev { stroke: var(--gold); }
+  .n5 a:hover::before, .n5 a.open::before { transform: translateX(-50%) scale(1); }
+
+  @media (max-width: 760px) { .hdr { gap: 12px; } .right .r-btn:not(.fill) { display: none; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="top">
+    <span class="ptag">Prototip · Menú principal</span>
+    <h1>5 propostes per als botons del menú</h1>
+    <p>Cada una dins de la capçalera, amb el logo i els botons de la dreta. Passa el ratolí per sobre: «Plataforma» surt com si estigués obert.</p>
+  </header>
+
+  <section class="prop"><span class="ptag">Proposta 1</span><h2>Càpsula amb lent que llisca</h2>
+    <p>Un sol contorn per a tot el menú (com la barra de filtres de la Content Library); en passar el ratolí, una lent de color fosc llisca fins a l'opció. Coherent amb la resta de la plataforma.</p>
+    <div class="hdr"></div></section>
+
+  <section class="prop"><span class="ptag">Proposta 2</span><h2>Només text, amb una línia daurada</h2>
+    <p>Sense caixes: el text en gris clar i, en passar-hi, es torna blanc i hi creix una línia daurada a sota. El més net i lleuger, estil Apple / Stripe.</p>
+    <div class="hdr"></div></section>
+
+  <section class="prop"><span class="ptag">Proposta 3</span><h2>Barra de vidre flotant</h2>
+    <p>Una barra translúcida amb un difuminat del fons (efecte vidre) i les opcions a dins; l'opció activa es marca amb un contorn daurat suau. Modern i premium.</p>
+    <div class="hdr"></div></section>
+
+  <section class="prop"><span class="ptag">Proposta 4</span><h2>Una barra amb separadors</h2>
+    <p>Totes les opcions dins d'una mateixa barra amb separadors fins; l'opció oberta s'il·lumina amb un degradat daurat i una línia a sota. Molt ordenat, tipus pestanyes.</p>
+    <div class="hdr"></div></section>
+
+  <section class="prop"><span class="ptag">Proposta 5</span><h2>Text que es torna daurat, amb un punt</h2>
+    <p>Text blanc sense caixes; en passar-hi, la paraula agafa el degradat daurat de la marca i apareix un puntet a sobre. Minimal però amb el color de SCP.</p>
+    <div class="hdr"></div></section>
+</div>
+
+<script>
+  const ITEMS = [["Plataforma", true], ["Soluciones", true], ["Recursos", true], ["Precios", false], ["Contacto", true]];
+  const CHEV = `<svg class="chev" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 3.5 5 6.5 8 3.5"/></svg>`;
+  document.querySelectorAll(".hdr").forEach((h, i) => {
+    h.innerHTML = `<div class="logo">SPORTS<b>CONTENT</b>PLAYBOOK</div>
+      <nav class="n${i + 1}">${i === 0 ? '<span class="lens"></span>' : ""}${ITEMS.map(([t, dd], k) => `<a href="#"${k === 0 ? ' class="open"' : ""}>${t}${dd ? CHEV : ""}</a>`).join("")}</nav>
+      <div class="right"><a class="r-btn" href="#">Admin</a><a class="r-btn fill" href="#">Prueba gratis</a></div>`;
+  });
+  // 1 · the lens follows the hovered item, rests on the open one
+  const n1 = document.querySelector(".n1"), lens = n1.querySelector(".lens");
+  const put = (a) => { if (!a) { lens.style.opacity = 0; return; } lens.style.opacity = 1; lens.style.left = `${a.offsetLeft}px`; lens.style.width = `${a.offsetWidth}px`; };
+  n1.querySelectorAll("a").forEach((a) => a.addEventListener("mouseenter", () => put(a)));
+  n1.addEventListener("mouseleave", () => put(n1.querySelector("a.open")));
+  requestAnimationFrame(() => put(n1.querySelector("a.open")));
+  document.addEventListener("click", (e) => { const a = e.target.closest("nav a"); if (!a) return; e.preventDefault(); a.parentElement.querySelectorAll("a").forEach((x) => x.classList.toggle("open", x === a)); if (a.parentElement === n1) put(a); });
+</script>
+</body>
+</html>
