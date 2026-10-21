@@ -24,17 +24,6 @@
       ],
     },
     {
-      label: "Solutions", type: "about",
-      hello: "Built for", title: "Every team that creates", highlight: "sports content", sub: "From one creator to a whole club department.",
-      links: [
-        { title: "Content creators", desc: "Formats and hooks that work in sports.", href: "book-a-call.html?for=creators" },
-        { title: "Clubs", desc: "Matchday, signings, kits and sponsors, all season.", href: "book-a-call.html?for=clubs" },
-        { title: "Leagues & federations", desc: "Content for every club and competition you run.", href: "book-a-call.html?for=leagues" },
-        { title: "Brands & sponsors", desc: "See how others activate their sports partnerships.", href: "book-a-call.html?for=brands" },
-      ],
-      featured: { eyebrow: "Free trial", title: "Try it free for 7 days", desc: "The full library, no commitment.", href: "signup.html" },
-    },
-    {
       label: "Resources", type: "about",
       hello: "Learn", title: "Ideas and trends in", highlight: "sports social media", sub: "Free, every week.",
       links: [
@@ -44,6 +33,17 @@
         { title: "FAQ", desc: "Everything you want to know before starting.", href: "index.html#faq" },
       ],
       featured: { eyebrow: "What is SCP?", title: "Sports Content Playbook in 2 minutes", desc: "The platform, explained.", href: "index.html#what-is-scp" },
+    },
+    {
+      label: "Solutions", type: "about",
+      hello: "Built for", title: "Every team that creates", highlight: "sports content", sub: "From one creator to a whole club department.",
+      links: [
+        { title: "Content creators", desc: "Formats and hooks that work in sports.", href: "book-a-call.html?for=creators" },
+        { title: "Clubs", desc: "Matchday, signings, kits and sponsors, all season.", href: "book-a-call.html?for=clubs" },
+        { title: "Leagues & federations", desc: "Content for every club and competition you run.", href: "book-a-call.html?for=leagues" },
+        { title: "Brands & sponsors", desc: "See how others activate their sports partnerships.", href: "book-a-call.html?for=brands" },
+      ],
+      featured: { eyebrow: "Free trial", title: "Try it free for 7 days", desc: "The full library, no commitment.", href: "signup.html" },
     },
     // with a plan it becomes "My plan" (their membership); without one it carries the free-trial badge
     { label: "Pricing", href: "pricing.html", badge: "7 days free", planLabel: "My plan", planHref: "profile.html#billing" },
