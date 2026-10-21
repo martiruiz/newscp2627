@@ -2205,6 +2205,7 @@
     const facts = [["Category", fmt.category], ["Type", fmt.type], ["Layout", fmt.visualLayout], ["Pacing", fmt.pacing], ["Moment", MOMENT_NAMES[a.moment]], ["Style", STYLE_NAMES[a.style]]].filter(([, v]) => v);
     return `
       ${a.summary ? `<p class="an-summary">${esc(a.summary)}</p>` : ""}
+      <div class="an-grid">
       ${block("Hook", "zap", a.hook ? `
         <blockquote class="an-hook">${esc(a.hook.text || "")}</blockquote>
         ${a.hook.category ? `<span class="an-chip">${esc(a.hook.category)}</span>` : ""}
@@ -2216,6 +2217,7 @@
       ${block(a.basis === "video" ? "Visual breakdown" : "Slide by slide", "clapperboard", a.visualBreakdown?.length ? `<ol class="an-timeline">${a.visualBreakdown.map((v) => `<li><span class="an-t">${stamp(v.t, a.basis)}</span><div><b>${esc(v.shot)}</b>${v.onScreenText ? `<q>${esc(v.onScreenText)}</q>` : ""}${v.why ? `<p>${esc(v.why)}</p>` : ""}</div></li>`).join("")}</ol>` : "")}
       ${block("Scroll stoppers", "hand", a.scrollStoppers?.length ? `<ul class="an-stoppers">${a.scrollStoppers.map((v) => `<li><span class="an-t">${stamp(v.t, a.basis)}</span><div><b>${esc(v.moment)}</b>${v.why ? `<p>${esc(v.why)}</p>` : ""}</div></li>`).join("")}</ul>` : "")}
       ${block(a.replicable?.is === false ? "Hard to replicate" : "How to adapt it to your club", "repeat", a.replicable?.howToAdapt ? `<p>${esc(a.replicable.howToAdapt)}</p>` : "", "an-adapt")}
+      </div>
       ${a.topics?.length ? `<div class="an-topics">${a.topics.map((t) => `<span class="an-chip">${esc(t)}</span>`).join("")}</div>` : ""}`;
   }
 
@@ -2229,6 +2231,7 @@
       <div class="an-media">${embedHtml(p)}</div>
       <div class="an-info">
         <header class="an-head">
+          <span class="an-ai-badge">${icon("sparkles")}${esc(tx("AI analysis"))}</span>
           <p class="an-eyebrow">${esc(pretty(first(p, "format")) || "Post")}${p.published_at ? ` · ${date(p.published_at)}` : ""}</p>
           <h2>${esc(who || "Post")}</h2>
           <div class="an-actions">
