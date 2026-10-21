@@ -47,7 +47,7 @@
   // ---------- questions ----------
   const ORG = [
     ["club", "Sports Club / Team", "🏟️"], ["agency", "Sports Agency", "💼"], ["league", "League / Federation", "🏆"],
-    ["event", "Sports Event Organizer", "🎟️"], ["creator", "Content Creator", "🎥"], ["other", "Other", "✨"],
+    ["event", "Sports Event Organizer", "🎟️"], ["creator", "Content Creator", "🎥"], ["company", "Sports company", "🏢"], ["other", "Other", "✨"],
   ];
   const SIZE = [["1", "Just me", "👤"], ["2-5", "2–5 people", "👥"], ["6-15", "6–15 people", "🧑‍🤝‍🧑"], ["15+", "More than 15 people", "🏢"]];
   const CHALLENGE = [
@@ -302,7 +302,7 @@
       building: '<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4M8 6h.01M16 6h.01M12 6h.01M12 10h.01M12 14h.01M16 10h.01M16 14h.01M8 10h.01M8 14h.01"/>',
     };
     const qi = (n) => `<svg viewBox="0 0 24 24" aria-hidden="true">${QI[n]}</svg>`;
-    const QORG = [["club", "Club", "shield"], ["league", "League / Federation", "trophy"], ["agency", "Agency", "briefcase"], ["event", "Event organiser", "ticket"], ["creator", "Content creator", "video"], ["other", "Other", "sparkles"]];
+    const QORG = [["club", "Club", "shield"], ["league", "League / Federation", "trophy"], ["agency", "Agency", "briefcase"], ["company", "Sports company", "building"], ["event", "Event organiser", "ticket"], ["creator", "Content creator", "video"], ["other", "Other", "sparkles"]];
     const QSIZE = [["1", "Just me", "user"], ["2-5", "2–5 people", "users"], ["6-15", "6–15 people", "team"], ["15+", "More than 15", "building"]];
     function bubbles(key, title, list, n, breakAfter = 0) {
       show(`<h2 class="lead-q lead-q-big" tabindex="-1">${esc(t(title))}</h2>
@@ -318,7 +318,7 @@
       stage.onclick = (e) => { const b = e.target.closest(".lead-bubble"); if (b) pick(b.dataset.v); };
       stage.onkeydown = (e) => { const i = Number(e.key) - 1; if (i >= 0 && i < list.length) { e.preventDefault(); pick(list[i][0]); } };
     }
-    const qorg = () => bubbles("org_type", "What best describes your organization?", QORG, 1, 3);   // 2 rows: Club · League · Agency / the rest
+    const qorg = () => bubbles("org_type", "What best describes your organization?", QORG, 1, 4);   // 2 rows: Club · League · Agency · Sports company / the rest
     const qsize = () => bubbles("team_size", "How big is your content team?", QSIZE, 2);
     const CODES = ["+34", "+376", "+1", "+44", "+33", "+39", "+49", "+351", "+31", "+32", "+41", "+52", "+54", "+55", "+57", "+56", "+971"];
     function qphone() {

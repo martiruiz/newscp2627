@@ -34,4 +34,5 @@ window.SCPA_DICT = Object.assign(window.SCPA_DICT || {}, {
   "Phone": ["Teléfono", "Telèfon"],
   "Phone lead": ["Lead por teléfono", "Lead per telèfon"],
   "With email or phone": ["Con email o teléfono", "Amb correu o telèfon"],
+  "Sports company": ["Empresa deportiva", "Empresa esportiva"],
 });

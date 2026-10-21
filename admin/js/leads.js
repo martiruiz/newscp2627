@@ -6,7 +6,7 @@
   const { $, $$, esc, icon, num, info } = A;
   try { await A.boot("leads"); } catch { return; }
   const main = $("[data-main]");
-  const ORG = { club: "Sports Club / Team", agency: "Sports Agency", league: "League / Federation", event: "Sports Event Organizer", creator: "Content Creator", other: "Other" };
+  const ORG = { club: "Sports Club / Team", agency: "Sports Agency", company: "Sports company", league: "League / Federation", event: "Sports Event Organizer", creator: "Content Creator", other: "Other" };
   const SIZE = { "1": "Just me", "2-5": "2–5", "6-15": "6–15", "15+": "15+" };
   const CH = { ideas: "Fresh content ideas", ai_time: "Saving time with AI", calendar: "Content calendar", performance: "Content performance", multiple_teams: "Multiple teams", exploring: "Exploring SCP" };
   const STATUS = { new: "New", qualified: "Qualified", demo_booked: "Demo booked", demo_completed: "Demo completed", customer: "Customer", lost: "Lost" };

@@ -689,6 +689,7 @@ window.SCP_ES = {
   "Managing content for multiple teams": "Gestionar contenido para varios equipos",
   "Exploring Sports Content Playbook": "Conocer Sports Content Playbook",
   "Event organiser": "Organizador de eventos",
+  "Sports company": "Empresa deportiva",
   "More than 15": "Más de 15",
   "What number should we message you on?": "¿A qué número te escribimos?",
   "Country code": "Prefijo del país",
