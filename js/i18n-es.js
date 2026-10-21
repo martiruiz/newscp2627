@@ -467,6 +467,8 @@ window.SCP_ES = {
   "billed yearly": "facturación anual",
   "or {price}/year": "o {price}/año",
   "Recommended": "Recomendado",
+  "Meme accounts and humour pages": "Cuentas de memes y humor",
+  "Memes": "Memes",
   "Sponsors on other clubs' posts, and the brands' own accounts": "Patrocinadores en los posts de otros clubes, y las cuentas propias de las marcas",
   "What for": "Para qué",
   "How they show": "Cómo aparecen",

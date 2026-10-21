@@ -394,7 +394,7 @@
   // "Who publishes": media, memes (players' and brands' accounts are in Inspiration → Club, next to the squad)
   function whoHtml() {
     // clubs and competitions are already in "Inspiration"; Content Creators has its own button above
-    const list = byCount((catalog.byCat.entity || []).filter((v) => !["content creators", "clubs", "competitions", "player", "brand", "media"].includes(v.name.toLowerCase()) && (countOf(v) > 0 || isOn(v))));
+    const list = byCount((catalog.byCat.entity || []).filter((v) => !["content creators", "clubs", "competitions", "player", "brand", "media", "meme"].includes(v.name.toLowerCase()) && (countOf(v) > 0 || isOn(v))));
     if (!list.length) return "";
     return `<div class="lf-who"><div class="lf-chips">${list.map((v) => `<button type="button" class="lf-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="entity" data-id="${v.id}">${esc(pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`).join("")}</div></div>`;
   }
@@ -746,6 +746,7 @@
       { key: "club", label: "Club", ico: "shield", desc: "Clubs and teams", cats: ["club"], logos: true },
       // vals: [category, name] (every value of the category when name is null)
       { key: "players", label: "Players", ico: "user", desc: "Posts starring the players", vals: [["campaign", "Player Appearance"]], head: "What's published" },
+      { key: "memes", label: "Memes", ico: "smile", desc: "Meme accounts and humour pages", vals: [["entity", "Meme"]] },
       { key: "media", label: "Media", ico: "megaphone", desc: "What sports media publish", vals: [["entity", "Media"]], head: "Who publishes it" },
       // the club's squad (women's team, academy…) shows inside Club; cities only through the search box
       { key: "team", label: "Team", ico: "user", desc: "Women's team, academy, legends…", cats: ["team"], hidden: true },
