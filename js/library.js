@@ -397,13 +397,12 @@
   // limited to creators' posts, because the button is one of the active filters)
   function creatorsHtml() {
     // Content type: only the three that describe creators' posts
-    // Players = Player Appearance, which also holds Player-focused and Player collab (supabase/players-merge.sql)
+    // Players (Player-focused, Player collab) is one filter in Inspiration → Players (supabase/players-merge.sql)
     const only = { angle: ["skills / tutorial", "behind the scenes"] }, skip = { collab: ["player collab"] };
-    const players = valByName("campaign", "Player Appearance");
     // "Brand collab" (Creator × brand) sits with the sponsors, not with the collaborations
     const brandCollab = valByName("collab", "Brand collab");
     const chips = (cat, max = 8) => {
-      const first = cat === "sponsor" ? brandCollab : cat === "angle" ? players : null;
+      const first = cat === "sponsor" ? brandCollab : null;
       const list = [...(first && (countOf(first) > 0 || isOn(first)) ? [first] : []),
         ...byCount((catalog.byCat[cat] || []).filter((v) => (countOf(v) > 0 || isOn(v)) && (!only[cat] || only[cat].includes(v.name.toLowerCase())) && !skip[cat]?.includes(v.name.toLowerCase()) && v !== brandCollab)).slice(0, max)];
       return list.map((v) => `<button type="button" class="lf-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="${v.category}" data-id="${v.id}">${esc(pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`).join("");
