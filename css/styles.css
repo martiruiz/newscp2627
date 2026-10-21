@@ -7041,4 +7041,6 @@ p.lead { display: block; min-height: 0; }   /* the intro paragraphs share the na
 }
 .lib-head .lf-sortbar .lf-dd-btn { height: 35px; }
 .lib-head .lf-sortbar [data-period-label]:empty { display: none; }
+.lib-head .lf-sortbar [data-order-label] { display: none; }   /* the button says just "Algorithm"; the choice shows in its menu */
+.lib-head .lf-sortbar .lf-dd-k { display: inline; color: var(--text); font-weight: 600; }
 @media (max-width: 960px) { .lib-head .lf-sortbar { padding: 10px 16px 0; border-bottom: 0; } }
