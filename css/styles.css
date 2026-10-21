@@ -7046,3 +7046,6 @@ p.lead { display: block; min-height: 0; }   /* the intro paragraphs share the na
 .lib-head .lf-sortbar [data-order-label] { display: none; }   /* the button says just "Sort"; the choice shows in its menu */
 .lib-head .lf-sortbar .lf-dd-k { display: inline; color: var(--text); font-weight: 600; }
 @media (max-width: 960px) { .lib-head .lf-sortbar { padding: 10px 16px 0; border-bottom: 0; } }
+/* Links to a section (#faq, #pricing…): land right under the sticky menu (76 px + air), not hidden behind it
+   (js/main.js keeps it there while the blocks above finish loading) */
+section[id], :target { scroll-margin-top: 92px; }

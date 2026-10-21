@@ -631,3 +631,26 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString(window.SCP_LO
     });
   });
 })();
+
+// Links to a section (#faq, #pricing…): the blocks above it keep loading (images, live library, blog) and grow while
+// the page scrolls, so the section ended up halfway down. For a few seconds after the jump, keep it right under the
+// sticky menu whenever the page changes height; the visitor's own scrolling (wheel, touch, keys) stops it.
+(() => {
+  let stop = null;
+  const align = (id, now) => {
+    const el = id && document.getElementById(decodeURIComponent(id));
+    if (!el) return;
+    stop?.();
+    const navH = (document.querySelector(".site-nav")?.getBoundingClientRect().bottom || 0) + 16;
+    const place = () => { const d = el.getBoundingClientRect().top - navH; if (Math.abs(d) > 2) window.scrollTo({ top: scrollY + d, behavior: "instant" }); };
+    let first = true;   // the observer's first call is just the start: a link click keeps its smooth scroll
+    const ro = new ResizeObserver(() => { if (first) { first = false; if (!now) return; } place(); });
+    const quit = () => { ro.disconnect(); clearTimeout(t); ["wheel", "touchstart", "keydown", "mousedown"].forEach((e) => removeEventListener(e, quit)); stop = null; };
+    const t = setTimeout(quit, 4000);
+    ["wheel", "touchstart", "keydown", "mousedown"].forEach((e) => addEventListener(e, quit, { passive: true }));
+    stop = quit;
+    ro.observe(document.body);
+  };
+  if (location.hash.length > 1) addEventListener("load", () => align(location.hash.slice(1), true));
+  addEventListener("hashchange", () => align(location.hash.slice(1)));
+})();
