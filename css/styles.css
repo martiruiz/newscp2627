@@ -6768,3 +6768,10 @@ a.lf-sp-favs { text-decoration: none; }
 .cr-name { gap: 3px; }
 .cr-acts { gap: 10px; padding-top: 2px; }
 .cr-posts { gap: 10px; }
+/* filters column → Content Creators: each section (Accounts · Followers · Language · Gender · Content type · Creator type · Country) with room */
+.lf-cc-sub { padding: 14px 14px 18px; }
+.lf-cc-sub > .lf-row-gap, .lf-cc-sub > .lf-stack { margin-top: 18px; }
+.lf-cc-sub > :first-child { margin-top: 4px; }
+.lf-cc-sub > .lf-sub { margin: 22px 0 10px; }
+.lf-cc-sub .lf-stack > * + * { margin-top: 12px; }
+.lf-cc-sub > .lf-fol { margin-bottom: 0; }
