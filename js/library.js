@@ -391,7 +391,7 @@
     // clubs and competitions are already in "Inspiration"; Content Creators has its own button above
     const list = byCount((catalog.byCat.entity || []).filter((v) => !["content creators", "clubs", "competitions", "player", "brand", "media"].includes(v.name.toLowerCase()) && (countOf(v) > 0 || isOn(v))));
     if (!list.length) return "";
-    return `<div class="lf-who"><div class="lf-sub">${esc(tx("Who publishes"))}</div><div class="lf-chips">${list.map((v) => `<button type="button" class="lf-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="entity" data-id="${v.id}">${esc(pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`).join("")}</div></div>`;
+    return `<div class="lf-who"><div class="lf-chips">${list.map((v) => `<button type="button" class="lf-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="entity" data-id="${v.id}">${esc(pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`).join("")}</div></div>`;
   }
   // Content Creators on: the filters that describe creators' posts, right under the button (counts are already
   // limited to creators' posts, because the button is one of the active filters)
@@ -656,7 +656,7 @@
       discover: (has("trend") || views.hist) && discoverHtml(),
       occasion: !LAYOUT_BEFORE && (CATEGORIES.some((c) => c.sec === "occasion" && has(c.key))) && occasionHtml(),
       goal: !LAYOUT_BEFORE && CATEGORIES.some((c) => c.sec === "goal" && has(c.key)) && goalHtml(),
-      where: !LAYOUT_BEFORE && (has("platform") || has("format")) && `${has("platform") ? `<div class="lf-grp"><div class="lf-sub lf-sub-top">Platform</div>${platformHtml()}</div>` : ""}${has("format") || has("aspect_ratio") || has("duration") || has("language") ? `<div class="lf-grp"><div class="lf-sub">Format</div>${formatHtml()}</div>` : ""}`,
+      where: !LAYOUT_BEFORE && (has("platform") || has("format")) && `${has("platform") ? `<div class="lf-grp">${platformHtml()}</div>` : ""}${has("format") || has("aspect_ratio") || has("duration") || has("language") ? `<div class="lf-grp">${formatHtml()}</div>` : ""}`,
       benchmark: !LAYOUT_BEFORE && CATEGORIES.some((c) => c.sec === "benchmark" && has(c.key)) && likeMineHtml() + groupHtml("benchmark"),
       format: (has("format") || has("aspect_ratio") || has("duration") || has("language")) && formatHtml(),
       platform: has("platform") && platformHtml(),
