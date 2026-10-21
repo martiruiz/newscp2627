@@ -160,7 +160,6 @@
     { href: "leads.html", label: "Leads & Demos", icon: "users", key: "leads", group: "super" },
     { href: "memberships.html", label: "Memberships", icon: "billing", key: "memberships", group: "super" },
     { href: "promo-codes.html", label: "Promo codes", icon: "tag", key: "promo", group: "super" },
-    { href: "billing.html", label: "AI & packs", icon: "smart", key: "billing", group: "super" },
     { href: "users.html", label: "Users", icon: "users", key: "users", group: "super" },
   ];
   const here = () => location.pathname.split("/").pop() || "content-ideas.html";
@@ -593,4 +592,64 @@
     ideaToCsvRow, cleanEmbed, embedKind, activateEmbeds, platformOfUrl, postUrl, openIdeaEditor, openIdeaPreview,
     resetCatalog: () => { catalogCache = null; },
   };
+
+  // ---------- Own dropdowns: every <select> of the admin gets a styled button + menu (.cs-btn / .cs-menu) ----------
+  // The real <select> stays (hidden) and keeps the value, so every page reads it and listens to it as before:
+  // choosing in the menu sets select.value and fires "input" + "change" on it.
+  const csLabel = (sel) => sel.selectedOptions[0]?.textContent.trim() || sel.options[0]?.textContent.trim() || "";
+  const csSync = (sel) => { const b = sel._cs; if (!b) return; $(".cs-t", b).textContent = csLabel(sel); b.disabled = sel.disabled; };
+  let csOpen = null;
+  const csClose = () => { if (!csOpen) return; csOpen.menu.remove(); csOpen.btn.setAttribute("aria-expanded", "false"); csOpen = null; };
+  function csShow(sel) {
+    csClose();
+    const btn = sel._cs, r = btn.getBoundingClientRect();
+    const menu = document.createElement("div");
+    menu.className = "cs-menu"; menu.setAttribute("role", "listbox");
+    menu.innerHTML = [...sel.options].filter((o) => !o.hidden).map((o) => `<button type="button" role="option" class="cs-opt${o.selected ? " is-on" : ""}" data-v="${esc(o.value)}" aria-selected="${o.selected}"${o.disabled ? " disabled" : ""}>
+      <span>${esc(o.textContent.trim())}</span>${o.selected ? `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>` : ""}</button>`).join("");
+    document.body.append(menu);
+    const h = menu.offsetHeight, below = innerHeight - r.bottom - 8;
+    menu.style.minWidth = `${r.width}px`;
+    menu.style.left = `${Math.min(r.left, innerWidth - menu.offsetWidth - 8)}px`;
+    menu.style.top = `${h > below && r.top > below ? Math.max(8, r.top - h - 6) : r.bottom + 6}px`;
+    btn.setAttribute("aria-expanded", "true");
+    csOpen = { sel, btn, menu };
+    (menu.querySelector(".is-on") || menu.querySelector(".cs-opt:not([disabled])"))?.focus();
+    menu.addEventListener("click", (e) => {
+      const o = e.target.closest(".cs-opt"); if (!o || o.disabled) return;
+      if (sel.value !== o.dataset.v) { sel.value = o.dataset.v; sel.dispatchEvent(new Event("input", { bubbles: true })); sel.dispatchEvent(new Event("change", { bubbles: true })); }
+      csSync(sel); csClose(); btn.focus();
+    });
+    menu.addEventListener("keydown", (e) => {
+      const opts = [...menu.querySelectorAll(".cs-opt:not([disabled])")], i = opts.indexOf(document.activeElement);
+      if (e.key === "ArrowDown") { e.preventDefault(); opts[Math.min(opts.length - 1, i + 1)]?.focus(); }
+      if (e.key === "ArrowUp") { e.preventDefault(); opts[Math.max(0, i - 1)]?.focus(); }
+      if (e.key === "Escape" || e.key === "Tab") { csClose(); btn.focus(); }
+    });
+  }
+  function csEnhance(sel) {
+    if (sel._cs || sel.multiple || sel.closest(".cs-off")) return;
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = `${sel.className} cs-btn`.trim();
+    btn.setAttribute("aria-haspopup", "listbox"); btn.setAttribute("aria-expanded", "false");
+    if (sel.getAttribute("aria-label")) btn.setAttribute("aria-label", sel.getAttribute("aria-label"));
+    btn.innerHTML = `<span class="cs-t"></span><svg class="cs-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>`;
+    sel._cs = btn; sel.classList.add("cs-native"); sel.tabIndex = -1;
+    sel.after(btn); csSync(sel);
+    btn.addEventListener("click", () => (csOpen?.sel === sel ? csClose() : csShow(sel)));
+    btn.addEventListener("keydown", (e) => { if (["ArrowDown", "ArrowUp"].includes(e.key)) { e.preventDefault(); csShow(sel); } });
+    sel.addEventListener("change", () => csSync(sel));
+    new MutationObserver(() => csSync(sel)).observe(sel, { childList: true, subtree: true, attributes: true, attributeFilter: ["disabled"] });
+  }
+  const csScan = (root = document) => root.querySelectorAll?.("select").forEach(csEnhance);
+  // pages build their HTML after load and re-render often: enhance new selects as they appear, and refresh the labels
+  // after any interaction (a page may set select.value in code, which fires no event)
+  new MutationObserver((ms) => { for (const m of ms) for (const n of m.addedNodes) if (n.nodeType === 1) { if (n.tagName === "SELECT") csEnhance(n); else csScan(n); } })
+    .observe(document.documentElement, { childList: true, subtree: true });
+  document.addEventListener("DOMContentLoaded", () => csScan());
+  csScan();
+  ["click", "input", "change", "keyup"].forEach((t) => document.addEventListener(t, () => requestAnimationFrame(() => document.querySelectorAll("select.cs-native").forEach(csSync)), true));
+  document.addEventListener("mousedown", (e) => { if (csOpen && !csOpen.menu.contains(e.target) && !csOpen.btn.contains(e.target)) csClose(); }, true);
+  addEventListener("resize", csClose); addEventListener("scroll", (e) => { if (csOpen && !csOpen.menu.contains(e.target)) csClose(); }, true);
 })();
