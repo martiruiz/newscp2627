@@ -95,7 +95,7 @@
     { key: "explore", label: "Explore by" }, { key: "content", label: "Content", ai: true }, { key: "brands", label: "Brands", ai: true },
   ] : [
     { key: "discover", label: "What works", jump: "Works" }, { key: "occasion", label: "Match Day", ai: true, q: "What are you posting about?" },
-    { key: "goal", label: "Goal & sponsors", ai: true, jump: "Goal", q: "What should it achieve?" }, { key: "where", label: "Where & how", jump: "Where", q: "Platform and format" },
+    { key: "goal", label: "Sponsors", ai: true, jump: "Sponsors", q: "What should it achieve?" }, { key: "where", label: "Where & how", jump: "Where", q: "Platform and format" },
     { key: "benchmark", label: "Inspiration from", jump: "Inspiration", q: "Sports, competitions and clubs" },
   ];
   const PERIODS = { 7: "This week", 31: "This month", season: "This season", custom: "Custom dates" };
