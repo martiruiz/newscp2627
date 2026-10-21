@@ -6775,3 +6775,5 @@ a.lf-sp-favs { text-decoration: none; }
 .lf-cc-sub > .lf-sub { margin: 22px 0 10px; }
 .lf-cc-sub .lf-stack > * + * { margin-top: 12px; }
 .lf-cc-sub > .lf-fol { margin-bottom: 0; }
+/* the creators' filters: their own box under the gold button, not stuck to it */
+.lf-cc-sub { margin: 12px 0 14px; border-radius: 14px; border: 1px solid rgba(240, 184, 74, 0.28); background: linear-gradient(180deg, rgba(240, 184, 74, 0.06), rgba(var(--surface-rgb), 0.4) 70%); }

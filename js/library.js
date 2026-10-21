@@ -1035,8 +1035,18 @@
       if (my !== token) return;
     }
     crBox.innerHTML = list.length
-      ? `<p class="cr-count">${esc(tx(list.length === 1 ? "{n} creator" : "{n} creators", { n: list.length.toLocaleString(window.SCP_LOC || "en-GB") }))}</p><div class="cr-grid">${shown.map(crRow).join("")}</div>${list.length > shown.length ? `<div class="load-more"><button class="pill pill-dark" type="button" data-cr-more>${esc(tx("Load more"))}</button></div>` : ""}`
+      ? `<p class="cr-count">${esc(tx(list.length === 1 ? "{n} creator" : "{n} creators", { n: list.length.toLocaleString(window.SCP_LOC || "en-GB") }))}</p><div class="cr-grid">${shown.map(crRow).join("")}</div>`
       : `<p class="posts-empty">${esc(tx("No creators match these filters."))}</p>`;
+    cr.more = list.length > shown.length;
+  }
+  // endless scroll (as the posts): 10 more creators a little before the end of the page
+  async function moreCreators() {
+    if (cr.busy || !cr.more || crBox.hidden) return;
+    cr.busy = true;
+    cr.shown += 10;
+    await renderCreators(token);
+    cr.busy = false;
+    if (nearEnd) moreCreators();
   }
   crHead.addEventListener("click", (e) => {
     const b = e.target.closest("[data-cview-set]");
@@ -1050,7 +1060,6 @@
     if (st) { await toggleStar(st.dataset.acctStar); return renderCreators(token); }
     const see = e.target.closest("[data-cr-posts]");
     if (see) { ui.cview = "posts"; window.scrollTo({ top: 0, behavior: "smooth" }); return toggleAccount(see.dataset.crPosts); }
-    if (e.target.closest("[data-cr-more]")) { cr.shown += 10; renderCreators(token); }
   });
 
   // one creator account at a time: only its posts (their ids, then the other filters still apply)
@@ -1590,7 +1599,7 @@
     if (!crHead.hidden) crHead.innerHTML = crSwitch();
     const crView = !crHead.hidden && ui.cview !== "posts" && !ui.acct;
     grid.hidden = crView; crBox.hidden = !crView;
-    if (crView) { grid.querySelectorAll(".lib-skel").forEach((x) => x.remove()); grid.removeAttribute("aria-busy"); empty.hidden = true; return renderCreators(my); }
+    if (crView) { grid.querySelectorAll(".lib-skel").forEach((x) => x.remove()); grid.removeAttribute("aria-busy"); empty.hidden = true; if (reset) cr.shown = 10; return renderCreators(my).then(() => { if (nearEnd) moreCreators(); }); }
     let ids = ui.aiMode ? [...aiList().keys()] : null;
     if (ui.acct) ids = ids ? ids.filter((id) => ui.acct.ids.includes(Number(id))) : ui.acct.ids;
     if (ui.fol) { const f = new Set(ui.fol.ids); ids = ids ? ids.filter((id) => f.has(Number(id))) : ui.fol.ids; }
@@ -2414,6 +2423,7 @@
   new IntersectionObserver(([en]) => {
     nearEnd = en.isIntersecting;
     if (nearEnd && !more.hidden && !grid.hidden) load(false);
+    if (nearEnd) moreCreators();
   }, { rootMargin: "0px 0px 1200px 0px" }).observe(more.parentElement);
   function clearAll() {
     applyState({ order: state().order });
