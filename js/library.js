@@ -397,12 +397,15 @@
   // limited to creators' posts, because the button is one of the active filters)
   function creatorsHtml() {
     // Content type: only the three that describe creators' posts
-    const only = { angle: ["player-focused", "skills / tutorial", "behind the scenes"] };
+    // Players = Player Appearance, which also holds Player-focused and Player collab (supabase/players-merge.sql)
+    const only = { angle: ["skills / tutorial", "behind the scenes"] }, skip = { collab: ["player collab"] };
+    const players = valByName("campaign", "Player Appearance");
     // "Brand collab" (Creator × brand) sits with the sponsors, not with the collaborations
     const brandCollab = valByName("collab", "Brand collab");
     const chips = (cat, max = 8) => {
-      const list = [...(cat === "sponsor" && brandCollab && (countOf(brandCollab) > 0 || isOn(brandCollab)) ? [brandCollab] : []),
-        ...byCount((catalog.byCat[cat] || []).filter((v) => (countOf(v) > 0 || isOn(v)) && (!only[cat] || only[cat].includes(v.name.toLowerCase())) && v !== brandCollab)).slice(0, max)];
+      const first = cat === "sponsor" ? brandCollab : cat === "angle" ? players : null;
+      const list = [...(first && (countOf(first) > 0 || isOn(first)) ? [first] : []),
+        ...byCount((catalog.byCat[cat] || []).filter((v) => (countOf(v) > 0 || isOn(v)) && (!only[cat] || only[cat].includes(v.name.toLowerCase())) && !skip[cat]?.includes(v.name.toLowerCase()) && v !== brandCollab)).slice(0, max)];
       return list.map((v) => `<button type="button" class="lf-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="${v.category}" data-id="${v.id}">${esc(pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`).join("");
     };
     // the creators' own accounts (from the post URL or the import; supabase/scraped-profiles.sql)
@@ -695,7 +698,7 @@
       { key: "kit", label: "Kit launches", ico: "shirt", desc: "Shirts and collections", cats: ["kit"] },
       { key: "season_moment", label: "Season", ico: "flag", desc: "The big moments of the year", cats: ["season_moment"] },
       { key: "moment", label: "Dates & campaigns", ico: "star", desc: "Records, tributes and calendar dates", cats: ["moment"] },
-      { key: "angle", label: "How do you tell it?", ico: "smile", desc: "The tone of the post", cats: ["angle"] },
+      { key: "angle", label: "How do you tell it?", ico: "smile", desc: "The tone of the post", cats: ["angle"], skip: ["player-focused"] },   // → Players
       { key: "comms", label: "Press and comms", ico: "message", desc: "Announcements, press and practical info", cats: ["comms"] },
       { key: "crisis", label: "Sensitive topics", ico: "alert", desc: "How other clubs handle them, with care", cats: ["crisis"] },
       { key: "design", label: "Graphic design", ico: "image", desc: "Matchday graphics, posters and cards", vals: [["campaign", "Graphic Design"]] },
@@ -706,7 +709,7 @@
       { key: "sponsor", label: "Sponsors", ico: "tag", desc: "Brands on other clubs' posts", cats: ["sponsor"], logos: true },
       { key: "sponsor_integration", label: "Integration", ico: "badge", desc: "How the sponsor appears", cats: ["sponsor_integration"], plus: [["collab", "Brand collab"]] },
       { key: "sponsor_sector", label: "Sponsor sector", ico: "briefcase", desc: "Partners by industry", cats: ["sponsor_sector"] },
-      { key: "collab", label: "Collaborations", ico: "users", desc: "Posts made with others", cats: ["collab"], skip: ["brand collab"] },
+      { key: "collab", label: "Collaborations", ico: "users", desc: "Posts made with others", cats: ["collab"], skip: ["brand collab", "player collab"] },   // Player collab → Players
     ],
     benchmark: [
       { key: "sport", label: "Sport", ico: "ball", desc: "Every sport in the library", cats: ["sport"], tiles: true, head: "Where it's played" },

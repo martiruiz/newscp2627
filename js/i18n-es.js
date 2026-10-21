@@ -1537,7 +1537,7 @@ window.SCP_ES = {
   "Video": "Vídeo",
   "Shorts": "Shorts",
   "Carousel": "Carrusel",
-  "Player Appearance": "Aparición de jugadores",
+  "Player Appearance": "Jugadores",
   "Collabs & Partners": "Colaboraciones y partners",
   "Graphic Design": "Diseño gráfico",
   "Goals & Highlights": "Goles y resúmenes",
