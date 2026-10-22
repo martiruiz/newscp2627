@@ -2,7 +2,7 @@
 // Panel types (like the reference design):
 //   "grid"     eyebrow + title (with a highlighted part) + items in two columns (icon, title, description)
 //   "about"    greeting + title + subtitle + links in two columns + a featured box at the bottom
-//   "contact"  a short list of links (icon, title, description) + social icons
+//   "contact"  a short list of links (icon, title, description) + "Follow us" cards (Instagram, LinkedIn)
 //   no panel   a plain link tab
 // Items with member: true only show when signed in (pages with the profile link in the nav).
 // Items with noPlan: true (and every "featured" box) only show without a plan: visitors, or members with no plan contracted;
@@ -55,7 +55,10 @@
         { icon: "life-buoy", title: "Support", desc: "Questions about your account or your plan.", href: "contact.html?topic=support", plan: true },
         { icon: "mail", title: "Write to us", desc: "Send us a message.", href: "contact.html" },
       ],
-      social: [{ name: "Instagram", href: "https://www.instagram.com/sportscontentplaybook" }, { name: "LinkedIn", href: "https://www.linkedin.com/company/sportscontentplaybook" }],
+      social: [
+        { name: "Instagram", handle: "@sportscontentplaybook", desc: "The best sports posts, every day", href: "https://www.instagram.com/sportscontentplaybook" },
+        { name: "LinkedIn", handle: "Sports Content Playbook", desc: "Trends and insights for your team", href: "https://www.linkedin.com/company/sportscontentplaybook" },
+      ],
     },
   ];
 
@@ -108,7 +111,9 @@
       ${m.featured ? `<a class="mm-featured"${np} href="${esc(m.featured.href)}"><span><i>${esc(m.featured.eyebrow)}</i><b>${esc(m.featured.title)}</b><small>${esc(m.featured.desc)}</small></span>${icon("arrow-up-right")}</a>` : ""}</div>`;
     if (m.type === "contact") return `<div class="mm-panel mm-contact" id="${id}" role="region" aria-label="${esc(m.label)}">
       ${m.links.map((l) => `<a class="mm-item" href="${esc(l.href)}"${attrs(l)}><span class="mm-ic">${icon(l.icon)}</span><span><b>${esc(l.title)}</b><small>${esc(l.desc)}</small></span></a>`).join("")}
-      <div class="mm-social">${m.social.map((s) => `<a href="${esc(s.href)}" aria-label="${esc(s.name)}" target="_blank" rel="noopener">${SOCIAL[s.name] || esc(s.name)}</a>`).join("")}</div></div>`;
+      <p class="mm-follow-h">Follow us</p>
+      <div class="mm-follow">${m.social.map((s) => `<a class="mm-fl mm-fl-${s.name.toLowerCase()}" href="${esc(s.href)}" target="_blank" rel="noopener">
+        <span class="mm-fl-ic">${SOCIAL[s.name] || ""}</span><span class="mm-fl-tx"><b>${esc(s.name)}</b><small>${esc(s.desc)}</small></span>${icon("arrow-up-right")}</a>`).join("")}</div></div>`;
     return "";
   }
 
