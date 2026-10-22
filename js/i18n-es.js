@@ -1091,6 +1091,8 @@ window.SCP_ES = {
   "You save {amount} a year": "Ahorras {amount} al año",
   "Yearly: {price}/month": "Anual: {price}/mes",
   "/ {per} per user": "/ {per} por usuario",
+  "/ {per} · paid yearly": "/ {per} · pago anual",
+  "/ {per} per user · paid yearly": "/ {per} por usuario · pago anual",
   "Total for {n} users: <b>{total}</b>/{per}": "Total para {n} usuarios: <b>{total}</b>/{per}",
   "{n} AI analyses (vs {m}) · Best for teams": "{n} análisis IA (vs {m}) · Ideal para equipos",
   "Full Content Library": "Content Library completa",

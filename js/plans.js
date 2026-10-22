@@ -92,7 +92,7 @@
       ${flag}
       <h3>${builder ? tx("Library") : esc(p.name)}</h3>
       <p class="plan-blurb">${tx(builder ? "Start with the library, add what you need" : who)}</p>
-      <p class="plan-price">${was ? `<s class="plan-was">${fmt(was.amount * seats, currency)}</s>` : ""}${price ? `<b data-price="${Math.round(big * 100) / 100}" data-cur="${currency}">${fmt(Math.round(big * 100) / 100, currency)}</b><span>${seats > 1 ? `/ ${per("month")}` : tx("/ {per} per user", { per: per("month") })}</span>` : `<b>—</b>`}</p>
+      <p class="plan-price">${was ? `<s class="plan-was">${fmt(was.amount * seats, currency)}</s>` : ""}${price ? `<b data-price="${Math.round(big * 100) / 100}" data-cur="${currency}">${fmt(Math.round(big * 100) / 100, currency)}</b><span>${iv === "year" ? tx(seats > 1 ? "/ {per} · paid yearly" : "/ {per} per user · paid yearly", { per: per("month") }) : seats > 1 ? `/ ${per("month")}` : tx("/ {per} per user", { per: per("month") })}</span>` : `<b>—</b>`}</p>
       <p class="plan-sub">${sub || "&nbsp;"}</p>
       ${savePill}
       ${value}
