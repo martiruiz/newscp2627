@@ -117,7 +117,7 @@
             <div class="mc-tabs" role="tablist">
               <button type="button" role="tab" aria-selected="${st.tab === "club"}" data-mc-tab="club">${svg(ICON.shield)}<span>${esc(t("Club"))}</span><i>${(st.profiles || []).length}</i></button>
               <button type="button" role="tab" aria-selected="${st.tab === "players"}" data-mc-tab="players">${svg(ICON.grid)}<span class="mc-t-full">${esc(t("Content Library"))}</span><span class="mc-t-short">${esc(t("Players"))}</span><i>${nPlayers}</i></button>
-              <button type="button" role="tab" aria-selected="${st.tab === "sponsors"}" data-mc-tab="sponsors">${svg(ICON.deal)}<span>${esc(t("Sponsors"))}</span><i>${nSponsors}</i></button>
+              <button type="button" role="tab" aria-selected="${st.tab === "sponsors"}" data-mc-tab="sponsors">${svg(ICON.deal)}<span class="mc-t-full">${esc(t("Sponsors"))}</span><span class="mc-t-short">${esc(t("Brands"))}</span><i>${nSponsors}</i></button>
             </div>
           </div>
         </div>
@@ -146,7 +146,17 @@
       </div>`;
   }
 
+  // the library's top bar says where you are: club · tab · section / team (my-club.html .mc-crumb)
+  function crumb() {
+    const el = document.querySelector("[data-mc-crumb]"); if (!el || !st.space) return;
+    const club = st.space.club, sec = section(), team = sec?.teams.find((x) => x.id === st.team);
+    const tab = t(st.tab === "club" ? "Club" : st.tab === "sponsors" ? "Sponsors" : "Players");
+    el.innerHTML = `<span class="mc-crumb-logo">${club.logo_url ? `<img src="${esc(club.logo_url)}" alt="">` : esc(initials(club.name))}</span>
+      <span class="mc-crumb-tx"><small>${esc(t("My Club"))}</small><b>${esc(club.name)}</b></span><i></i><span class="mc-crumb-sel">${esc(tab)}${sec ? ` · ${esc(sec.name)}` : ""}${team ? ` · ${esc(team.name)}` : ""}</span>`;
+  }
+
   async function scope() {
+    crumb();
     const my = ++token, list = inSelection();
     const people = st.people.size ? [...st.people].filter((id) => list.some((p) => p.id === id)) : null;
     if (st.tab === "club") {   // the club's own profiles

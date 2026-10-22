@@ -7321,3 +7321,53 @@ section[id], :target { scroll-margin-top: 92px; }
   .mc-tip { display: none; }
 }
 .mc-net { color: var(--gold); } .mc-net svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------- My Club inside the Content Library: the club card sits in the posts column, a gold "club mode" (like the AI
+   mode's purple) tells it apart from the main library, and the top bar says where you are ---------- */
+.my-club-page .mc { padding: 18px 38px 4px; border-top: 0; position: relative; z-index: 1; }
+.my-club-page .mc-card { padding: 16px 18px 14px; border-radius: 20px; }
+.my-club-page .mc-top { gap: 14px; }
+.my-club-page .mc-logo { width: 58px; height: 58px; border-radius: 16px; box-shadow: 0 0 0 4px rgba(240, 184, 74, 0.06), 0 10px 26px -12px rgba(240, 184, 74, 0.5); }
+.my-club-page .mc-title h1 { font-size: clamp(22px, 2.2vw, 28px); }
+.my-club-page .mc-profiles { margin-top: 6px; gap: 4px; }
+.my-club-page .mc-prof { height: 24px; padding: 0 9px 0 7px; font-size: 11.5px; }
+.my-club-page .mc-side { flex-direction: row; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: flex-end; }
+.my-club-page .mc-tabs { padding: 4px; border-radius: 14px; }
+.my-club-page .mc-tabs button { height: 36px; padding: 0 13px; font-size: 13.5px; }
+.my-club-page .mc-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 26px; margin-top: 14px; padding-top: 12px; }
+.my-club-page .mc-line { gap: 10px; }
+.my-club-page .mc-k { width: auto; }
+.my-club-page .mc-seg-b { height: 34px; padding: 0 12px; }
+.my-club-page .mc-teams .mc-seg-b { height: 32px; }
+.my-club-page .mc-people { margin-top: 14px; }
+.my-club-page .mc-chips { padding-bottom: 6px; }
+/* the club mode: gold glow and grid behind the posts */
+.my-club-page .feed { position: relative; background:
+    radial-gradient(1100px 420px at 50% -8%, rgba(240, 184, 74, 0.12), transparent 70%),
+    linear-gradient(rgba(240, 184, 74, 0.045) 1px, transparent 1px) 0 0 / 34px 34px,
+    linear-gradient(90deg, rgba(240, 184, 74, 0.045) 1px, transparent 1px) 0 0 / 34px 34px; }
+.my-club-page .posts { position: relative; z-index: 1; }
+:root[data-theme="light"] .my-club-page .feed { background:
+    radial-gradient(1100px 420px at 50% -8%, rgba(214, 150, 30, 0.12), transparent 70%),
+    linear-gradient(rgba(184, 122, 12, 0.06) 1px, transparent 1px) 0 0 / 34px 34px,
+    linear-gradient(90deg, rgba(184, 122, 12, 0.06) 1px, transparent 1px) 0 0 / 34px 34px; }
+/* the main library's shortcuts that don't apply to a club: quick bar, smart picks (Favs, Replicable ideas, Creators, Overperforming) */
+.my-club-page .lib-head .lfb, .my-club-page .lf-quick { display: none !important; }
+.my-club-page [data-facets] > .lf-sec:has(.lf-sp) { display: none; }
+/* top bar: club · tab · section / team */
+.mc-crumb { display: none; }
+.my-club-page .mc-crumb { display: flex; align-items: center; gap: 12px; min-width: 0; padding: 8px 18px; border-bottom: 1px solid var(--line-soft); background: linear-gradient(90deg, rgba(240, 184, 74, 0.1), transparent 70%); }
+.mc-crumb-logo { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; overflow: hidden; border: 1px solid rgba(240, 184, 74, 0.4); background: rgba(var(--fg), 0.05); font: 700 12px var(--font-display); color: var(--gold); }
+.mc-crumb-logo img { width: 100%; height: 100%; object-fit: cover; }
+.mc-crumb-tx { display: grid; line-height: 1.15; min-width: 0; }
+.mc-crumb-tx small { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); }
+.mc-crumb-tx b { font: 600 15px var(--font-display); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mc-crumb > i { width: 1px; height: 26px; background: var(--line); flex: none; }
+.mc-crumb-sel { color: var(--muted); font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (min-width: 961px) { .my-club-page .lib-head .mc-crumb { grid-column: 2; grid-row: 1; } }
+@media (max-width: 960px) { .my-club-page .mc-crumb { display: none; } .my-club-page .mc { padding: 14px 16px 4px; } .my-club-page .mc-side { justify-content: stretch; } }
+@media (max-width: 760px) {
+  .my-club-page .mc-prof { width: 30px; height: 30px; padding: 0; justify-content: center; } .my-club-page .mc-prof span { display: none; }   /* phones: the club's profiles as icons */
+  .my-club-page .mc-tabs button { font-size: 12.5px; padding: 0 4px; }
+  .my-club-page .mc-logo { width: 52px; height: 52px; }
+}
