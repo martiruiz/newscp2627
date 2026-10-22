@@ -2198,6 +2198,7 @@ window.SCP_ES = {
   "posts from the accounts that set the standard, updated every day and sorted so you find the right one in seconds.": "posts de las cuentas que marcan el estándar, actualizados cada día y ordenados para que encuentres el adecuado en segundos.",
   "Proven formats": "Formatos probados",
   "Top Picks, Replicable ideas and posts that beat their account's average": "Top Picks, Ideas replicables y posts que superan la media de su cuenta",
+  "Replicable ideas and posts that beat their account's average": "Ideas replicables y posts que superan la media de su cuenta",
   "Your competitors": "Tu competencia",
   "Pick any of": "Elige cualquiera de los",
   "clubs by its crest and see what they post": "clubes por su escudo y mira qué publica",
