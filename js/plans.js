@@ -136,7 +136,6 @@
         <button type="button" data-seats-step="1" aria-label="${esc(tx("More users"))}">+</button>
       </div>`}
       ${curs.length > 1 ? `<div class="plan-interval plan-currency" role="tablist" aria-label="Currency">${curs.map((c) => `<button type="button" role="tab" aria-selected="${currency === c}" data-currency-pick="${c}">${c.toUpperCase()}</button>`).join("")}</div>` : ""}
-      ${!privatePlan ? `<p class="plan-common">${tx("Every plan: the full library with filters and saved boards · up to {n} users", { n: MAX_SEATS })}</p>` : ""}
       <p class="plan-seats-more" ${privatePlan ? "hidden" : ""} data-seats-more>${tx("More than {n} users?", { n: MAX_SEATS })} <a class="link-gold" href="contact.html?topic=custom-plan&users=${MAX_SEATS + 1}">${tx("Request a custom plan")}</a></p>
     </div>`;
   }
