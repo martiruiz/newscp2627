@@ -1641,6 +1641,7 @@
   let seed = String(Math.random()).slice(2, 10);
   const cache = new Map();
 
+  window.addEventListener("scp-lib-scope", () => load(true));   // My Club changed the selection
   async function load(reset) {
     const s = state();
     renderActive(s);
@@ -1664,10 +1665,18 @@
     grid.hidden = crView; crBox.hidden = !crView;
     if (crView) { grid.querySelectorAll(".lib-skel").forEach((x) => x.remove()); grid.removeAttribute("aria-busy"); empty.hidden = true; if (reset) { cr.shown = 10; panelCount(args, my); } return renderCreators(my).then(() => { if (nearEnd) moreCreators(); }); }
     let ids = ui.aiMode ? [...aiList().keys()] : null;
+    // My Club (js/my-club.js): only the posts of the selected section / team / players or sponsors
+    const scope = window.SCP_LIB_SCOPE;
+    if (scope) {
+      await scope.ready;
+      if (my !== token) return;
+      if (scope.ids) { const inScope = new Set(scope.ids); ids = ids ? ids.filter((id) => inScope.has(Number(id))) : scope.ids; }
+    }
     if (ui.acct) ids = ids ? ids.filter((id) => ui.acct.ids.includes(Number(id))) : ui.acct.ids;
     if (ui.fol) { const f = new Set(ui.fol.ids); ids = ids ? ids.filter((id) => f.has(Number(id))) : ui.fol.ids; }
     if (ids && !ids.length) {
       grid.querySelectorAll(".lib-skel").forEach((x) => x.remove());
+      if (scope && !ui.aiMode && !ui.acct && !ui.fol) return showEmpty(tx(scope.empty || "No posts yet."));
       return showEmpty(tx(!ui.aiMode ? (ui.fol && !ui.acct ? "No creators' posts in this followers range yet." : "No posts from this account yet.") : ui.aiMode === "team" ? "Your team hasn't analysed any post yet." : "You haven't analysed any post yet. Open a post and press “Unlock AI Analysis”."));
     }
     if (reset) refreshCounts(args);
@@ -1706,7 +1715,7 @@
   }
 
   // ---------- Keep the place on refresh (this tab): filters, sort and its shuffle, posts loaded and scroll ----------
-  const KEEP = "scp-lib-keep";
+  const KEEP = window.SCP_LIB_SCOPE ? "scp-club-keep" : "scp-lib-keep";   // My Club keeps its own place
   const keep = {
     get() { try { return JSON.parse(sessionStorage.getItem(KEEP) || "null"); } catch { return null; } },
     set(v) { try { sessionStorage.setItem(KEEP, JSON.stringify(v)); } catch {} },
@@ -1857,6 +1866,8 @@
     // a creator's post shows its username, not "Content Creators" (the account comes with the likes, see loadLikes)
     const isCC = /^content creators$/i.test(who || "");
     if (isCC && p.account) { who = `@${p.account}`; crest = null; }
+    const owner = window.SCP_LIB_SCOPE?.who?.(p.id);   // My Club: the player's / sponsor's name
+    if (owner) { who = owner; crest = null; }
     const video = isVideo(p);
     const favClub = (p.tags?.club || []).find((v) => me.fav.has(Number(v.id)));
     const fmt = pretty(first(p, "format"));

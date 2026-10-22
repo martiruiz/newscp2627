@@ -158,6 +158,7 @@
     { href: "smart-review.html", label: "Smart filters", icon: "smart", key: "smart" },
     { href: "audience.html", label: "Audience", icon: "audience", key: "audience", group: "super" },
     { href: "leads.html", label: "Leads & Demos", icon: "users", key: "leads", group: "super" },
+    { href: "my-club.html", label: "My Club", icon: "audience", key: "myclub", group: "super" },
     { href: "memberships.html", label: "Memberships", icon: "billing", key: "memberships", group: "super" },
     { href: "promo-codes.html", label: "Promo codes", icon: "tag", key: "promo", group: "super" },
     { href: "users.html", label: "Users", icon: "users", key: "users", group: "super" },

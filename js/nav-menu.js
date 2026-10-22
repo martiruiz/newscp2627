@@ -34,6 +34,8 @@
       ],
       featured: { eyebrow: "What is SCP?", title: "Sports Content Playbook in 2 minutes", desc: "The platform, explained.", href: "index.html#what-is-scp" },
     },
+    // only for members of a club (Admin → My Club): their players' and sponsors' posts
+    { label: "My Club", href: "my-club.html", club: true },
     {
       // only before buying (visitors and members without a plan)
       label: "Solutions", type: "about", noPlan: true,
@@ -95,7 +97,7 @@
   const show = (it) => !it.member || member;
   // hidden for members until their entitlements say they have no plan (staff counts as having one)
   const np = member ? " data-noplan hidden" : "";
-  const attrs = (it) => it.plan ? " data-plan hidden" : it.noPlan ? np : "";
+  const attrs = (it) => it.club ? " data-club hidden" : it.plan ? " data-plan hidden" : it.noPlan ? np : "";
 
   function panel(m, id) {
     if (m.type === "pillars") return `<div class="mm-panel mm-pillars" id="${id}" role="region" aria-label="${esc(m.label)}">
@@ -135,6 +137,10 @@
     const hasPlan = !!(data.plan || data.is_staff);
     links.querySelectorAll(hasPlan ? "[data-plan]" : "[data-noplan]").forEach((el) => { el.hidden = false; });
   }).catch(() => {});
+  // My Club: only when this account can open a club (supabase/my-club.sql)
+  if (member) window.SCP_AUTH?.client?.rpc("my_clubs").then(({ data }) => {
+    if (Array.isArray(data) && data.length) links.querySelectorAll("[data-club]").forEach((el) => { el.hidden = false; });
+  }, () => {});
 
   // open on hover (mouse) or click / tap / keyboard; one at a time; Esc or outside closes
   const tabs = [...links.querySelectorAll("[data-mm]")];

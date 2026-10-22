@@ -1,14 +1,14 @@
-// Website language: English (default) or Spanish. Loaded in <head> on every page, right after theme.js.
+// Website language: Spanish (default) or English. Loaded in <head> on every page, right after theme.js.
 // The pages are written in English; in Spanish this script translates them as they are drawn, from the dictionary in
 // js/i18n-es.js (exact phrases, plus patterns with {placeholders} for text built by the scripts). A MutationObserver
 // translates whatever the page scripts add later (cards, dialogs, messages), before it is painted.
-// Choice order: ?lang=es|en in the URL → saved choice (this browser) → the member's profile → browser language.
+// Choice order: ?lang=es|en in the URL → saved choice (this browser) → the member's profile → Spanish.
 //   window.SCP_LANG  "en" | "es"         window.SCP_LOC  "en-GB" | "es-ES" (dates, numbers, money)
 //   window.tx(text, vars)  translate one phrase/template from a script: tx("Pay {amount} and switch", { amount })
 //   window.SCP_setLang(lang, { save })   switch language (reloads the page); save: false skips the profile update
 (() => {
   const KEY = "scp-lang";
-  const LANGS = ["en", "es"];
+  const LANGS = ["es", "en"];   // Spanish first in the switch
   const root = document.documentElement;
   let lang = null;
   try {
@@ -16,7 +16,7 @@
     if (LANGS.includes(q)) { lang = q; localStorage.setItem(KEY, q); }
     else lang = localStorage.getItem(KEY);
   } catch {}
-  if (!LANGS.includes(lang)) lang = /^es\b/i.test(navigator.language || "") ? "es" : "en";
+  if (!LANGS.includes(lang)) lang = "es";   // Spanish by default; English when chosen (saved in this browser / ?lang=en)
   window.SCP_LANG = lang;
   window.SCP_LOC = lang === "es" ? "es-ES" : "en-GB";
   root.lang = lang;
