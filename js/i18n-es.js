@@ -2136,6 +2136,9 @@ window.SCP_ES = {
   "posts filtered by sport, competition, format, campaign moment, matchday graphic, kit, sponsor and more.": "posts filtrados por deporte, competición, formato, momento de campaña, gráfico de partido, equipación, patrocinador y más.",
   // home v2
   "The content platform for": "La plataforma de contenido para equipos de",
+  "Do you know what you’ll post": "¿Sabes qué publicarás",
+  "on Monday": "el lunes",
+  "See what’s working for the clubs in your league and make your own version in 10 minutes.": "Mira qué funciona en los clubes de tu liga y haz tu versión en 10 minutos.",
   "sports social media": "redes sociales deportivas",
   "Find the posts that work across": "Encuentra los posts que funcionan en más de",
   "clubs, understand why with AI, and plan your week, all in one place.": "clubes, entiende por qué con IA y planifica tu semana, todo en un solo lugar.",

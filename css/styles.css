@@ -7225,3 +7225,4 @@ section[id], :target { scroll-margin-top: 92px; }
 .plan-save.is-nudge:hover { background: rgba(240, 184, 74, 0.16); border-color: rgba(240, 184, 74, 0.6); }
 :root[data-theme="light"] .plan-save { color: #8a5a06; background: rgba(214, 150, 30, 0.1); border-color: rgba(214, 150, 30, 0.4); }
 :root[data-theme="light"] .plan-save span { background: rgba(214, 150, 30, 0.16); }
+.hero h1 .gold { white-space: nowrap; }   /* "on Monday" / "el lunes" stays on one line */
