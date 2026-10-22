@@ -6054,7 +6054,7 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 .site-nav.is-tight .mm-tab { max-width: none; min-width: 0; }
 /* menu fills the whole width: the tabs share all the space between the logo and the buttons */
 .mm-tab { flex: 1 1 0; min-width: 120px; max-width: none; }
-.mm-tab:last-child .mm-panel { left: auto; right: 0; }
+.mm-tab:last-child .mm-panel { left: 0; right: auto; }   /* Contact opens from its left edge like the others */
 
 /* ===== Lead flow (js/lead-flow.js): one question per screen ===== */
 .lead { --lead-pad: 32px; display: flex; flex-direction: column; min-height: 520px; color: var(--text); }
