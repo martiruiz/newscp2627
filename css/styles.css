@@ -7202,3 +7202,15 @@ section[id], :target { scroll-margin-top: 92px; }
 .plan-gets li::before { content: ""; position: absolute; left: 0; top: 2px; width: 16px; height: 16px; border-radius: 50%; background: rgba(240, 184, 74, 0.16) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f0b84a' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / 10px no-repeat; }
 @media (max-width: 1000px) { .plans.is-builder { grid-template-columns: minmax(0, 460px); } }
 .plans.is-builder .plan-card.v2 h3 { align-self: flex-start; }
+
+/* Pricing: the yearly saving at a glance (js/plans.js planCard) */
+.plan-was { align-self: center; margin-right: 2px; color: var(--muted); font-size: 18px; font-weight: 500; text-decoration-thickness: 2px; text-decoration-color: rgba(255, 104, 92, 0.8); }
+.plan-save { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; width: 100%; margin: 12px 0 0; padding: 9px 14px; border-radius: 12px;
+  background: rgba(0, 216, 91, 0.1); border: 1px solid rgba(0, 216, 91, 0.35); color: #3ee98a; font: 500 13px var(--font-body); text-align: left; }
+.plan-save b { font-weight: 700; }
+.plan-save span { padding: 2px 9px; border-radius: 999px; background: rgba(0, 216, 91, 0.16); font-size: 12px; font-weight: 600; white-space: nowrap; }
+.plan-save.is-nudge { height: auto; cursor: pointer; transition: background 0.15s, border-color 0.15s, transform 0.15s; }
+.plan-save.is-nudge:hover { background: rgba(0, 216, 91, 0.16); border-color: rgba(0, 216, 91, 0.6); transform: translateY(-1px); }
+:root[data-theme="light"] .plan-save { color: #0a8a41; background: rgba(10, 157, 74, 0.08); border-color: rgba(10, 157, 74, 0.35); }
+:root[data-theme="light"] .plan-save span { background: rgba(10, 157, 74, 0.12); }
+.plan-save + .plan-addons, .plan-save + .plan-value { margin-top: 14px; }

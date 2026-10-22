@@ -50,7 +50,7 @@
     else if (!price.ready) cta = `<a class="btn btn-outline plan-cta" href="contact.html">${tx("Coming soon — contact us")}</a>`;
     else if (cur) cta = `<a class="btn btn-outline plan-cta" href="profile.html?change=${encodeURIComponent(p.key)}&interval=${iv}#billing">${tx("Switch to {plan}", { plan: esc(p.name) })}</a>`;
     else cta = `<button class="btn ${p.highlighted || solo ? "btn-gold" : "btn-outline"} plan-cta" type="button" data-checkout-plan="${esc(p.key)}" data-interval="${iv}" data-currency="${currency}" data-seats="${seats}"${privateToken && p.key === privatePlan?.key ? ` data-link="${esc(privateToken)}"` : ""}><span>${trial ? tx("Start {n}-day free trial", { n: trial }) : tx("Get {plan}", { plan: esc(p.name) })}</span><i class="plan-cta-arrow" aria-hidden="true">→</i></button>`;
-    const flag = isCurrent ? `<span class="plan-flag is-current">${tx(cur.status === "trialing" ? "Your trial" : "Your plan")}</span>`
+    const flag = builder?.hideCurrent ? "" : isCurrent ? `<span class="plan-flag is-current">${tx(cur.status === "trialing" ? "Your trial" : "Your plan")}</span>`
       : p.highlighted ? `<span class="plan-flag">${tx("Recommended")}${times > 1 ? ` · ${tx("{n}× more AI", { n: times })}` : ""}</span>` : "";
     // the trial / billing note only where it isn't said below the cards: your current plan, or a private plan on its own
     const note = isCurrent
@@ -63,11 +63,17 @@
     // the line under the price always fits on one line: users or the yearly saving, then VAT
     // (with more users, "VAT incl." moves next to the price so the saving for all of them fits)
     // yearly: the big number is what it costs per month; the line below says what's billed once a year and the saving
-    const save = iv === "year" && monthsFree(p) > 0 ? `<b class="plan-free">${tx("save {amount}", { amount: fmt(yearSave(p) * seats, currency) })}</b>` : "";
+    // the yearly saving, easy to see: yearly → the monthly price crossed out + a green "you save" pill;
+    // monthly → a pill that switches to yearly and says what it would cost and save
+    const yearly = priceOf(p, currency, "year"), saving = yearSave(p) * seats, free = monthsFree(p);
+    const was = iv === "year" && saving > 0 ? priceOf(p, currency, "month") : null;
+    const savePill = !price || saving <= 0 ? ""
+      : iv === "year" ? `<p class="plan-save"><b>${tx("You save {amount} a year", { amount: fmt(saving, currency) })}</b>${free > 0 ? `<span>${tx("{n} months free", { n: free })}</span>` : ""}</p>`
+      : yearly ? `<button type="button" class="plan-save is-nudge" data-interval-pick="year"><b>${tx("Yearly: {price}/month", { price: fmt(Math.round(yearly.amount / 12 * seats * 100) / 100, currency) })}</b><span>${tx("save {amount}", { amount: fmt(saving, currency) })} →</span></button>` : "";
     const big = !price ? 0 : (iv === "year" ? price.amount / 12 : price.amount) * seats;
     const sub = !price ? "" : [
       seats > 1 ? tx("{n} users × {price}", { n: seats, price: fmt(iv === "year" ? price.amount / 12 : price.amount, currency) }) : tx("up to {n} users on one plan", { n: MAX_SEATS }),
-      iv === "year" ? tx("billed {amount} a year", { amount: fmt(price.amount * seats, currency) }) : "", save, tx("VAT incl."),
+      iv === "year" ? tx("billed {amount} a year", { amount: fmt(price.amount * seats, currency) }) : "", tx("VAT incl."),
     ].filter(Boolean).join(" · ");
     // what you get, in words (not just ✓ / –)
     const units = p.ai_unlimited ? tx("Unlimited") : p.ai_monthly_units;
@@ -86,8 +92,9 @@
       ${flag}
       <h3>${builder ? tx("Library") : esc(p.name)}</h3>
       <p class="plan-blurb">${tx(builder ? "Start with the library, add what you need" : who)}</p>
-      <p class="plan-price">${price ? `<b data-price="${Math.round(big * 100) / 100}" data-cur="${currency}">${fmt(Math.round(big * 100) / 100, currency)}</b><span>${seats > 1 ? `/ ${per("month")}` : tx("/ {per} per user", { per: per("month") })}</span>` : `<b>—</b>`}</p>
+      <p class="plan-price">${was ? `<s class="plan-was">${fmt(was.amount * seats, currency)}</s>` : ""}${price ? `<b data-price="${Math.round(big * 100) / 100}" data-cur="${currency}">${fmt(Math.round(big * 100) / 100, currency)}</b><span>${seats > 1 ? `/ ${per("month")}` : tx("/ {per} per user", { per: per("month") })}</span>` : `<b>—</b>`}</p>
       <p class="plan-sub">${sub || "&nbsp;"}</p>
+      ${savePill}
       ${value}
       ${builder ? builder.addons : ""}
       ${cta}
@@ -203,7 +210,7 @@
       ${row("cp", addon.cp, "library_planner", "Content Plan", "Plan your week and month")}
       ${row("ai", addon.ai, "library_ai", "AI analysis", "Know why a post works")}
       ${both ? `<p class="plan-addons-note">${tx("Both add-ons are All Access: it comes with {n} AI analyses a month.", { n: all.ai_monthly_units })}</p>` : ""}</div>`;
-    return planCard(pick, { builder: { addons } }) + planCard(all);
+    return planCard(pick, { builder: { addons, hideCurrent: both } }) + planCard(all);   // both ticked = All Access: its flag only once, on its own card
   }
 
   function draw(swap = false) {

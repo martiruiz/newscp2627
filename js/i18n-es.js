@@ -1088,6 +1088,8 @@ window.SCP_ES = {
   "This week's Fan of the Week 💛": "El aficionado de la semana 💛",
   "{n} months free": "{n} meses gratis",
   "save {amount}": "ahorras {amount}",
+  "You save {amount} a year": "Ahorras {amount} al año",
+  "Yearly: {price}/month": "Anual: {price}/mes",
   "/ {per} per user": "/ {per} por usuario",
   "Total for {n} users: <b>{total}</b>/{per}": "Total para {n} usuarios: <b>{total}</b>/{per}",
   "{n} AI analyses (vs {m}) · Best for teams": "{n} análisis IA (vs {m}) · Ideal para equipos",
