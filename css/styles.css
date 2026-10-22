@@ -4760,7 +4760,7 @@ button.plan-cta { width: 100%; cursor: pointer; font: inherit; }
 .sec-head { display: grid; justify-items: center; gap: 0; text-align: center; max-width: 760px; margin: 0 auto; }
 .sec-head .section-title { margin-top: 18px; }
 .sec-head .hx-lead { margin-left: auto; margin-right: auto; }
-.home-pricing > .hx-eyebrow { display: table; margin: 0 auto; }
+.home-pricing > .hx-eyebrow { display: flex; width: max-content; margin: 0 auto 18px; height: 30px; padding: 0 16px; box-shadow: inset 0 0 0 1px rgba(240, 184, 74, 0.32); letter-spacing: 0.12em; font-size: 12px; font-weight: 700; }   /* centred pill (display: table broke the text's vertical centring) */
 .home-pricing .section-title { margin-top: 18px; }
 .faq-intro .hx-eyebrow { margin-bottom: 18px; }
 .magic .section-title { white-space: normal; }
