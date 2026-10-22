@@ -57,23 +57,20 @@
       ? (cur.status === "trialing" && cur.trial_end ? tx("Free trial until {date}", { date: new Date(cur.trial_end).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" }) }) : cur.cancel_at_period_end ? tx("Ends on {date}", { date: new Date(cur.current_period_end).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" }) }) : "")
       : solo && trial && price?.ready ? tx(iv === "month" ? "Card required · {zero} today · then {price}/{per} · billed on the 1st" : "Card required · {zero} today · then {price}/{per}", { zero: fmt(0, currency), price: fmt(price.amount * seats, currency), per: per(iv) })
       : "";
-    // only what differs between plans: who it's for, the price, the button and the three tools (✓ or –)
-    const who = hasAi && cp ? "Everything, for teams" : hasAi ? "To know what works" : cp ? "To plan your week" : "To find ideas fast";
     // with more than one user the big number is the total; the price per user goes underneath
     // the line under the price always fits on one line: users or the yearly saving, then VAT
     // (with more users, "VAT incl." moves next to the price so the saving for all of them fits)
-    // yearly: the big number is what it costs per month; the line below says what's billed once a year and the saving
-    // the yearly saving, easy to see: yearly → the monthly price crossed out + a green "you save" pill;
+    // yearly: the big number is the total paid once a year (all users); 12 monthly payments crossed out + a green "you save" pill;
     // monthly → a pill that switches to yearly and says what it would cost and save
     const yearly = priceOf(p, currency, "year"), saving = yearSave(p) * seats, free = monthsFree(p);
-    const was = iv === "year" && saving > 0 ? priceOf(p, currency, "month") : null;
+    const was = iv === "year" && saving > 0 ? priceOf(p, currency, "month").amount * 12 : 0;
     const savePill = !price || saving <= 0 ? ""
       : iv === "year" ? `<p class="plan-save"><b>${tx("You save {amount} a year", { amount: fmt(saving, currency) })}</b>${free > 0 ? `<span>${tx("{n} months free", { n: free })}</span>` : ""}</p>`
-      : yearly ? `<button type="button" class="plan-save is-nudge" data-interval-pick="year"><b>${tx("Yearly: {price}/month", { price: fmt(Math.round(yearly.amount / 12 * seats * 100) / 100, currency) })}</b><span>${tx("save {amount}", { amount: fmt(saving, currency) })} →</span></button>` : "";
-    const big = !price ? 0 : (iv === "year" ? price.amount / 12 : price.amount) * seats;
+      : yearly ? `<button type="button" class="plan-save is-nudge" data-interval-pick="year"><b>${tx("Yearly: {price}/year", { price: fmt(yearly.amount * seats, currency) })}</b><span>${tx("save {amount}", { amount: fmt(saving, currency) })} →</span></button>` : "";
+    const big = !price ? 0 : Math.round(price.amount * seats);   // no decimals
     const sub = !price ? "" : [
-      seats > 1 ? tx("{n} users × {price}", { n: seats, price: fmt(iv === "year" ? price.amount / 12 : price.amount, currency) }) : tx("up to {n} users on one plan", { n: MAX_SEATS }),
-      iv === "year" ? tx("billed {amount} a year", { amount: fmt(price.amount * seats, currency) }) : "", tx("VAT incl."),
+      seats > 1 ? (iv === "year" ? tx("{n} users", { n: seats }) : tx("{n} users × {price}", { n: seats, price: fmt(price.amount, currency) })) : tx("up to {n} users on one plan", { n: MAX_SEATS }),
+      iv === "year" ? tx("same as {price}/month", { price: fmt(Math.round(price.amount * seats / 12), currency) }) : "", tx("VAT incl."),
     ].filter(Boolean).join(" · ");
     // what you get, in words (not just ✓ / –)
     const units = p.ai_unlimited ? tx("Unlimited") : p.ai_monthly_units;
@@ -91,8 +88,7 @@
     return `<article class="plan-card v2${p.highlighted ? " is-best" : ""}${isCurrent ? " is-current" : ""}${p.key === wanted ? " is-wanted" : ""}" data-plan-key="${esc(p.key)}">
       ${flag}
       <h3>${builder ? tx("Library") : esc(p.name)}</h3>
-      <p class="plan-blurb">${tx(builder ? "Start with the library, add what you need" : who)}</p>
-      <p class="plan-price">${was ? `<s class="plan-was">${fmt(was.amount * seats, currency)}</s>` : ""}${price ? `<b data-price="${Math.round(big * 100) / 100}" data-cur="${currency}">${fmt(Math.round(big * 100) / 100, currency)}</b><span>${iv === "year" ? tx(seats > 1 ? "/ {per} · paid yearly" : "/ {per} per user · paid yearly", { per: per("month") }) : seats > 1 ? `/ ${per("month")}` : tx("/ {per} per user", { per: per("month") })}</span>` : `<b>—</b>`}</p>
+      <p class="plan-price">${was ? `<s class="plan-was">${fmt(was * seats, currency)}</s>` : ""}${price ? `<b data-price="${big}" data-cur="${currency}">${fmt(big, currency)}</b><span>${iv === "year" ? `/ ${per("year")}` : seats > 1 ? `/ ${per("month")}` : tx("/ {per} per user", { per: per("month") })}</span>` : `<b>—</b>`}</p>
       <p class="plan-sub">${sub || "&nbsp;"}</p>
       ${savePill}
       ${value}
@@ -151,7 +147,7 @@
     el.textContent = fmt(0, cur);
     const step = (now) => {
       const t = Math.min(1, Math.max(0, (now - start) / dur));
-      el.textContent = fmt(t >= 1 ? to : Math.round(to * (1 - Math.pow(1 - t, 3)) * 100) / 100, cur);
+      el.textContent = fmt(t >= 1 ? to : Math.round(to * (1 - Math.pow(1 - t, 3))), cur);
       if (t < 1) requestAnimationFrame(step);
     };
     requestAnimationFrame(step);
@@ -202,8 +198,8 @@
     const lib = byKey(plans, "library"), all = byKey(plans, "all_access");
     const both = addon.cp && addon.ai;
     const pick = both ? all : addon.cp ? byKey(plans, "library_planner") : addon.ai ? byKey(plans, "library_ai") : lib;
-    const amount = (p) => { const x = priceOf(p); return x ? (x.interval === "year" ? x.amount / 12 : x.amount) * seats : 0; };
-    const plus = (k) => fmt(Math.round((amount(byKey(plans, k)) - amount(lib)) * 100) / 100, currency);
+    const amount = (p) => { const x = priceOf(p); return x ? x.amount * seats : 0; };
+    const plus = (k) => fmt(Math.round(amount(byKey(plans, k)) - amount(lib)), currency);
     const row = (key, on, plan, title, desc) => `<label class="plan-addon${on ? " is-on" : ""}"><input type="checkbox" data-addon="${key}"${on ? " checked" : ""}>
       <span class="plan-addon-tx"><b>${tx(title)}</b><small>${tx(desc)}</small></span><span class="plan-addon-price">+${plus(plan)}</span></label>`;
     const addons = `<div class="plan-addons"><p class="plan-addons-h">${tx("Add to your plan")}</p>
