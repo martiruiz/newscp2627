@@ -9,6 +9,8 @@
 // Analytics: window.SCP_TRACK(event, props) → dataLayer / gtag if present + our own funnel table. No personal data.
 (() => {
   const cfg = window.SCP_CONFIG || {};
+  // the SCP logo shown on top of the quick contact / demo (works from any folder: resolved from this script's address)
+  const LOGO = (() => { try { return new URL("../assets/logo-scp.png", document.currentScript.src).href; } catch { return "assets/logo-scp.png"; } })();
   const t = (s, v) => (window.tx ? window.tx(s, v) : s.replace(/\{(\w+)\}/g, (_, k) => v?.[k] ?? ""));
   const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
   const store = { get: (k, s = localStorage) => { try { return s.getItem(k); } catch { return null; } }, set: (k, v, s = localStorage) => { try { s.setItem(k, v); } catch {} } };
@@ -483,7 +485,7 @@
     const last = document.activeElement;
     const wrap = document.createElement("div");
     wrap.className = `lead-modal${opts?.intent === "message" && !opts?.message ? " is-quick" : opts?.intent !== "message" ? " is-quick is-demo" : ""}`; wrap.setAttribute("role", "dialog"); wrap.setAttribute("aria-modal", "true"); wrap.setAttribute("aria-label", t("Talk to Sports Content Playbook"));
-    wrap.innerHTML = `<div class="lead-box"><button type="button" class="lead-x" aria-label="${esc(t("Close"))}">✕</button><div class="lead-host"></div></div>`;
+    wrap.innerHTML = `<div class="lead-box"><button type="button" class="lead-x" aria-label="${esc(t("Close"))}">✕</button>${wrap.classList.contains("is-quick") ? `<img class="lead-logo" src="${LOGO}" alt="Sports Content Playbook" width="900" height="367">` : ""}<div class="lead-host"></div></div>`;
     document.body.append(wrap);
     document.documentElement.classList.add("lead-lock");
     const flow = createFlow(wrap.querySelector(".lead-host"), opts);

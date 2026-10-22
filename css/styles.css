@@ -7156,3 +7156,5 @@ section[id], :target { scroll-margin-top: 92px; }
 @media (max-width: 640px) { .dp-days { display: flex; } .dp-part { min-width: 0; flex: 1; padding: 12px 10px; } }
 .dp-back { border: 0; background: none; color: var(--muted); font: 600 14px var(--font-body); cursor: pointer; padding: 4px 8px; border-radius: 999px; }
 .dp-back:hover, .dp-back:focus-visible { color: var(--gold); outline: none; }
+.lead-logo { display: block; width: 140px; height: auto; margin: 0 auto 34px; filter: drop-shadow(0 6px 24px rgba(0, 0, 0, 0.5)); }   /* quick contact / demo: SCP logo on top */
+@media (max-width: 640px) { .lead-logo { width: 110px; margin-bottom: 16px; } }
