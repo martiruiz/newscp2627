@@ -91,6 +91,17 @@
   // premium cells: brand dot per network, tags as chips (2 + "+n"), date over time
   const NET = { instagram: "#e1306c", tiktok: "#25f4ee", facebook: "#1877f2", youtube: "#ff0033", x: "#9aa4b5", twitter: "#1d9bf0", linkedin: "#0a66c2", threads: "#9aa4b5" };
   const netColor = (name) => NET[String(name || "").toLowerCase()] || "var(--muted)";
+  // the network's logo (line drawing) instead of its initial; an unknown network keeps the initial
+  const LOGO = {
+    instagram: '<rect x="2.5" y="2.5" width="19" height="19" rx="5.5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="0.6" fill="currentColor"/>',
+    tiktok: '<path d="M9.5 11.5a4.2 4.2 0 1 0 4.2 4.2V3c.5 2.6 2.4 4.5 5.3 4.7"/>',
+    facebook: '<path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>',
+    youtube: '<path d="M2.5 17a24 24 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.6 49.6 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24 24 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.6 49.6 0 0 1-16.2 0A2 2 0 0 1 2.5 17"/><path d="m10 15 5-3-5-3z"/>',
+    linkedin: '<path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>',
+    x: '<path d="M4 4h4.5L20 20h-4.5z"/><path d="M4 20l6.6-6.6M20 4l-6.6 6.6"/>',
+  };
+  LOGO.twitter = LOGO.x;
+  const mark = (name) => { const k = String(name || "").toLowerCase(); return LOGO[k] ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${LOGO[k]}</svg>` : esc((name || "?").charAt(0).toUpperCase()); };
   const chips = (row, cat) => {
     const list = (row.tags?.[cat] || []).map((t) => t.name);
     if (!list.length) return `<span class="ci-none">—</span>`;
@@ -114,7 +125,7 @@
         const on = Boolean(allFiltered) || selected.has(r.id);
         const cell = (c) => {
           if (c.key === "title") { const net = r.tags?.platform?.[0]?.name;
-            return `<td class="td-title ci-title" title="${esc(r.title || "")}"><span class="ci-mark" style="--nc:${netColor(net)}" aria-hidden="true">${esc((net || "?").charAt(0).toUpperCase())}</span><span class="ci-tt"><b>${esc((r.title || "(no title)").replace(/\s+/g, " "))}</b>${r.url ? `<a href="${esc(r.url)}" target="_blank" rel="noopener" data-i18n-skip>${esc(r.url.replace(/^https?:\/\/(www\.)?/, "").split("/")[0])} ↗</a>` : ""}</span></td>`; }
+            return `<td class="td-title ci-title" title="${esc(r.title || "")}"><span class="ci-mark" style="--nc:${netColor(net)}" aria-hidden="true" title="${esc(net || "")}">${mark(net)}</span><span class="ci-tt"><b>${esc((r.title || "(no title)").replace(/\s+/g, " "))}</b>${r.url ? `<a href="${esc(r.url)}" target="_blank" rel="noopener" data-i18n-skip>${esc(r.url.replace(/^https?:\/\/(www\.)?/, "").split("/")[0])} ↗</a>` : ""}</span></td>`; }
           if (c.key === "id") return `<td class="td-id"><span class="ci-id mono" title="${esc(r.external_id)}">${esc(r.external_id)}</span></td>`;
           if (c.key === "published") return `<td class="td-date ci-date">${when(r.published_at)}</td>`;
           return `<td class="td-tags ci-tags">${chips(r, c.key)}</td>`;
