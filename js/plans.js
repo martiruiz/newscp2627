@@ -45,16 +45,21 @@
     const otherAi = Math.max(0, ...(data?.plans || []).filter((x) => x.key !== p.key && (x.entitlements || []).includes("ai.analyze_posts")).map((x) => x.ai_monthly_units || 0));
     const times = hasAi && !p.ai_unlimited && otherAi > 0 && p.ai_monthly_units > otherAi ? Math.floor(p.ai_monthly_units / otherAi) : 0;
     let cta;
-    if (isCurrent) cta = `<a class="btn btn-outline plan-cta" href="profile.html#billing">${tx("Manage your plan")}</a>`;
+    const btn = p.highlighted && !builder || solo ? "btn-gold" : "btn-outline";   // the main plan stands out; green is only the trial's state
+    if (isCurrent) cta = `<a class="btn ${btn} plan-cta" href="profile.html#billing">${tx("Manage your plan")}</a>`;
     else if (!price) cta = `<span class="btn btn-outline plan-cta is-current">${tx("Not available in {cur}", { cur: currency.toUpperCase() })}</span>`;
     else if (!price.ready) cta = `<a class="btn btn-outline plan-cta" href="contact.html">${tx("Coming soon — contact us")}</a>`;
-    else if (cur) cta = `<a class="btn btn-outline plan-cta" href="profile.html?change=${encodeURIComponent(p.key)}&interval=${iv}#billing">${tx("Switch to {plan}", { plan: esc(p.name) })}</a>`;
-    else cta = `<button class="btn ${p.highlighted || solo ? "btn-gold" : "btn-outline"} plan-cta" type="button" data-checkout-plan="${esc(p.key)}" data-interval="${iv}" data-currency="${currency}" data-seats="${seats}"${privateToken && p.key === privatePlan?.key ? ` data-link="${esc(privateToken)}"` : ""}><span>${trial ? tx("Start {n}-day free trial", { n: trial }) : tx("Get {plan}", { plan: esc(p.name) })}</span><i class="plan-cta-arrow" aria-hidden="true">→</i></button>`;
+    else if (cur) cta = `<a class="btn ${btn} plan-cta" href="profile.html?change=${encodeURIComponent(p.key)}&interval=${iv}#billing">${tx("Choose {plan}", { plan: esc(p.name) })}</a>`;
+    else cta = `<button class="btn ${btn} plan-cta" type="button" data-checkout-plan="${esc(p.key)}" data-interval="${iv}" data-currency="${currency}" data-seats="${seats}"${privateToken && p.key === privatePlan?.key ? ` data-link="${esc(privateToken)}"` : ""}><span>${trial ? tx("Start {n}-day free trial", { n: trial }) : tx("Get {plan}", { plan: esc(p.name) })}</span><i class="plan-cta-arrow" aria-hidden="true">→</i></button>`;
     const flag = builder?.hideCurrent ? "" : isCurrent ? `<span class="plan-flag is-current">${tx(cur.status === "trialing" ? "Your trial" : "Your plan")}</span>`
       : p.highlighted ? `<span class="plan-flag">${tx("Recommended")}${times > 1 ? ` · ${tx("{n}× more AI", { n: times })}` : ""}</span>` : "";
     // the trial / billing note only where it isn't said below the cards: your current plan, or a private plan on its own
     const note = isCurrent
-      ? (cur.status === "trialing" && cur.trial_end ? tx("Free trial until {date}", { date: new Date(cur.trial_end).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" }) }) : cur.cancel_at_period_end ? tx("Ends on {date}", { date: new Date(cur.current_period_end).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" }) }) : "")
+      ? (cur.status === "trialing" && cur.trial_end
+          ? (cur.cancel_at_period_end || !cur.amount
+            ? tx("Your trial ends on {date}. Choose a plan to continue.", { date: new Date(cur.trial_end).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "long" }) })
+            : tx("On {date} you'll be charged {price}/{per}.", { date: new Date(cur.trial_end).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "long" }), price: fmt(Math.round(cur.amount * (cur.seats || 1)), cur.currency || currency), per: per(cur.interval) }))
+        : cur.cancel_at_period_end ? tx("Ends on {date}", { date: new Date(cur.current_period_end).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" }) }) : "")
       : solo && trial && price?.ready ? tx(iv === "month" ? "Card required · {zero} today · then {price}/{per} · billed on the 1st" : "Card required · {zero} today · then {price}/{per}", { zero: fmt(0, currency), price: fmt(price.amount * seats, currency), per: per(iv) })
       : "";
     // with more than one user the big number is the total; the price per user goes underneath
@@ -69,7 +74,7 @@
       : yearly ? `<button type="button" class="plan-save is-nudge" data-interval-pick="year"><b>${tx("Yearly: {price}/year", { price: fmt(yearly.amount * seats, currency) })}</b><span>${tx("save {amount}", { amount: fmt(saving, currency) })} →</span></button>` : "";
     const big = !price ? 0 : Math.round(price.amount * seats);   // no decimals
     const sub = !price ? "" : [
-      seats > 1 ? (iv === "year" ? tx("{n} users", { n: seats }) : tx("{n} users × {price}", { n: seats, price: fmt(price.amount, currency) })) : tx("up to {n} users on one plan", { n: MAX_SEATS }),
+      seats > 1 ? tx("{n} users × {price}/user", { n: seats, price: fmt(price.amount, currency) }) : tx("From 1 to {n} users", { n: MAX_SEATS }),
       iv === "year" ? tx("same as {price}/month", { price: fmt(Math.round(price.amount * seats / 12), currency) }) : "", tx("VAT incl."),
     ].filter(Boolean).join(" · ");
     // what you get, in words (not just ✓ / –)
@@ -81,7 +86,7 @@
       lib && tx("Filters by sport, competition, format and goal"),
       has("library.save_posts") && tx("Saved boards to keep your ideas"),
       cp && tx("Content Plan: weekly and monthly calendar"),
-      hasAi && tx("{n} AI analyses a month: hook, why it works, how to adapt it", { n: units }),
+      hasAi && tx("{n} AI analyses a month per user: hook, why it works, how to adapt it", { n: units }),
     ].filter(Boolean);
     // the plan with everything: how much more AI than the next one
     const extraAi = hasAi && cp && !p.ai_unlimited && otherAi > 0 && p.ai_monthly_units > otherAi ? p.ai_monthly_units - otherAi : 0;
@@ -91,7 +96,7 @@
     return `<article class="plan-card v2${p.highlighted ? " is-best" : ""}${isCurrent ? " is-current" : ""}${p.key === wanted ? " is-wanted" : ""}" data-plan-key="${esc(p.key)}">
       ${flag}
       <h3>${builder ? tx("Library") : esc(p.name)}</h3>
-      <p class="plan-price">${was ? `<s class="plan-was">${fmt(was * seats, currency)}</s>` : ""}${price ? `<b data-price="${big}" data-cur="${currency}">${fmt(big, currency)}</b><span>${iv === "year" ? `/ ${per("year")}` : seats > 1 ? `/ ${per("month")}` : tx("/ {per} per user", { per: per("month") })}</span>` : `<b>—</b>`}</p>
+      <p class="plan-price">${seats > 1 && price ? `<em class="plan-total">${tx("Total")}</em>` : ""}${was ? `<s class="plan-was">${fmt(was * seats, currency)}</s>` : ""}${price ? `<b data-price="${big}" data-cur="${currency}">${fmt(big, currency)}</b><span>${iv === "year" ? `/ ${per("year")}` : seats > 1 ? `/ ${per("month")}` : tx("/ {per} per user", { per: per("month") })}</span>` : `<b>—</b>`}</p>
       <p class="plan-sub">${sub || "&nbsp;"}</p>
       ${savePill}
       ${value}
