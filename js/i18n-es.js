@@ -1097,6 +1097,7 @@ window.SCP_ES = {
   "{n} months free": "{n} meses gratis",
   "save {amount}": "ahorras {amount}",
   "You save {amount} a year": "Ahorras {amount} al año",
+  "Search a profile": "Busca un perfil",
   "Club profiles": "Perfiles del club",
   "Tap one or more profiles to see only theirs": "Toca uno o varios perfiles para ver solo los suyos",
   "No club profiles for this selection yet.": "Aún no hay perfiles del club en esta selección.",

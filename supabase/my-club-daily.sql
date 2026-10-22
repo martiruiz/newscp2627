@@ -87,7 +87,7 @@ end $$;
 revoke execute on function public.admin_club_accounts() from public, anon;
 grant execute on function public.admin_club_accounts() to authenticated;
 
--- ---------- the Content Library without the club-only posts (same as performance-7.sql, plus one line per query) ----------
+-- ---------- the Content Library without the club-only posts (library_tier as performance-7.sql, library_ideas as performance-8.sql, plus the My Club line) ----------
 create or replace function public.library_tier(
   p_filters jsonb, p_q text, p_from date, p_to date, p_ids bigint[], p_by_views boolean, p_min_views bigint, p_max_views bigint,
   p_has bigint[], p_not bigint[], p_by_tags boolean, p_n int)
@@ -148,8 +148,8 @@ begin
   small := tagged and est <= 20000;
   -- "Surprise me" on a big selection: shuffle 1 post in every k (k and the offset r depend on the seed)
   if p_order = 'random' and not small and p_ids is null then
-    k := public.shuffle_step(est);
-    r := (abs(hashtext(coalesce(p_seed, ''))) % k)::int;
+    k := 2;   -- read in shuffle_key order (below)
+    r := (hashtext(coalesce(p_seed, ''))::bigint & 2147483647)::int;
   end if;
 
   -- Total (always the whole selection)
@@ -159,8 +159,7 @@ begin
     select count(*) into v_total from public.content_ideas c
     where c.id in (select public.ideas_matching_tags(p_filters))
       and c.unavailable_at is null
-      and not exists (select 1 from public.content_hidden h where h.external_id = c.external_id)
-        and (p_ids is not null or not c.club_only)   -- My Club posts: only through My Club (it passes p_ids)
+      and not exists (select 1 from public.content_hidden h where h.external_id = c.external_id) and (p_ids is not null or not c.club_only)
       and (q is null or c.title ilike '%' || q || '%')
       and (p_from is null or c.published_at >= (p_from::timestamp at time zone 'UTC'))
       and (p_to is null or c.published_at < ((p_to + 1)::timestamp at time zone 'UTC'))
@@ -171,8 +170,7 @@ begin
   else
     select count(*) into v_total from public.filter_content_ideas(p_filters, q, null, p_from, p_to) c
     where c.unavailable_at is null
-      and not exists (select 1 from public.content_hidden h where h.external_id = c.external_id)
-        and (p_ids is not null or not c.club_only)   -- My Club posts: only through My Club (it passes p_ids)
+      and not exists (select 1 from public.content_hidden h where h.external_id = c.external_id) and (p_ids is not null or not c.club_only)
       and (p_ids is null or c.id = any (p_ids))
       and (not by_views or c.views is not null)
       and (p_min_views is null or c.views >= p_min_views)
@@ -192,8 +190,7 @@ begin
       from public.content_ideas c
       where c.id in (select public.ideas_matching_tags(p_filters))
         and c.unavailable_at is null
-        and not exists (select 1 from public.content_hidden h where h.external_id = c.external_id)
-        and (p_ids is not null or not c.club_only)   -- My Club posts: only through My Club (it passes p_ids)
+        and not exists (select 1 from public.content_hidden h where h.external_id = c.external_id) and (p_ids is not null or not c.club_only)
         and (q is null or c.title ilike '%' || q || '%')
         and (p_from is null or c.published_at >= (p_from::timestamp at time zone 'UTC'))
         and (p_to is null or c.published_at < ((p_to + 1)::timestamp at time zone 'UTC'))
@@ -208,22 +205,23 @@ begin
         'media_ratio', p.media_ratio, 'cover_url', p.cover_url, 'media_type', p.media_type, 'duration_s', p.duration_s, 'views', p.views) order by p.k_rank nulls last, p.k_views desc nulls last, p.k_shuffle nulls last, p.published_at desc nulls last, p.id desc), '[]'::jsonb)
     into v_data from page p;
   elsif k > 1 then
-    -- big selection, "Surprise me": 1 post in every k (the filters are checked only on those)
-    with page as (
-      select c.id, c.external_id, c.title, c.published_at, c.embed, c.url, c.media_ratio, c.cover_url, c.media_type, c.duration_s, c.views, md5(c.id::text || coalesce(p_seed, '')) as k_shuffle
-      from public.filter_content_ideas(p_filters, q, null, p_from, p_to) c
-      where c.id % k = r
-      and (not by_views or c.views is not null)
-      and (p_min_views is null or c.views >= p_min_views)
-      and (p_max_views is null or c.views < p_max_views)
-        and c.unavailable_at is null
-        and not exists (select 1 from public.content_hidden h where h.external_id = c.external_id)
-        and (p_ids is not null or not c.club_only)   -- My Club posts: only through My Club (it passes p_ids)
-      order by k_shuffle
-      limit lim offset off)
+    -- big selection, "Surprise me": posts in shuffle_key order (a fixed random number per post, indexed), starting at a
+    -- point that depends on the seed and wrapping round at the end — reads only the posts this page needs
+    with
+    a1 as (select c.*, 0 as k_lap from public.filter_content_ideas(p_filters, q, null, p_from, p_to) c
+           where c.shuffle_key >= r and c.unavailable_at is null
+             and not exists (select 1 from public.content_hidden h where h.external_id = c.external_id) and (p_ids is not null or not c.club_only)
+             and (not by_views or c.views is not null) and (p_min_views is null or c.views >= p_min_views) and (p_max_views is null or c.views < p_max_views)
+           order by c.shuffle_key limit lim + off),
+    a2 as (select c.*, 1 as k_lap from public.filter_content_ideas(p_filters, q, null, p_from, p_to) c
+           where c.shuffle_key < r and c.unavailable_at is null
+             and not exists (select 1 from public.content_hidden h where h.external_id = c.external_id) and (p_ids is not null or not c.club_only)
+             and (not by_views or c.views is not null) and (p_min_views is null or c.views >= p_min_views) and (p_max_views is null or c.views < p_max_views)
+           order by c.shuffle_key limit lim + off),
+    page as (select * from (select * from a1 union all select * from a2) u order by k_lap, shuffle_key limit lim offset off)
     select coalesce(jsonb_agg(jsonb_build_object('id', p.id, 'external_id', p.external_id, 'title', p.title,
         'published_at', p.published_at, 'embed', p.embed, 'url', p.url, 'tags', public.content_idea_tag_map(p.id),
-        'media_ratio', p.media_ratio, 'cover_url', p.cover_url, 'media_type', p.media_type, 'duration_s', p.duration_s, 'views', p.views) order by p.k_shuffle), '[]'::jsonb)
+        'media_ratio', p.media_ratio, 'cover_url', p.cover_url, 'media_type', p.media_type, 'duration_s', p.duration_s, 'views', p.views) order by p.k_lap, p.shuffle_key), '[]'::jsonb)
     into v_data from page p;
   elsif p_order = 'foryou' then
     -- big selection, "For you": favourites → their sports / competitions → the rest, newest first in each tier.
@@ -258,8 +256,7 @@ begin
         case when p_order = 'random' then md5(c.id::text || coalesce(p_seed, '')) end as k_shuffle
       from public.filter_content_ideas(p_filters, q, null, p_from, p_to) c
       where c.unavailable_at is null
-        and not exists (select 1 from public.content_hidden h where h.external_id = c.external_id)
-        and (p_ids is not null or not c.club_only)   -- My Club posts: only through My Club (it passes p_ids)
+        and not exists (select 1 from public.content_hidden h where h.external_id = c.external_id) and (p_ids is not null or not c.club_only)
         and (p_ids is null or c.id = any (p_ids))
         and (not by_views or c.views is not null)
         and (p_min_views is null or c.views >= p_min_views)
