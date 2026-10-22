@@ -1142,7 +1142,8 @@ select.cs-native { display: none !important; }
 .mcl-logo-act .input { flex: 1; min-width: 200px; }
 .mcl-accs { display: grid; gap: 8px; }
 .mcl-accs-h { font-size: 12.5px; color: var(--muted); }
-.mcl-acc-row { display: grid; grid-template-columns: 150px minmax(0, 1fr) 34px; gap: 8px; align-items: center; }
+.mcl-acc-row { display: grid; grid-template-columns: 150px minmax(0, 1fr) 170px 34px; gap: 8px; align-items: center; }
+@media (max-width: 700px) { .mcl-acc-row { grid-template-columns: 1fr 1fr 34px; } .mcl-acc-row [name=acc_handle] { grid-column: 1 / -1; grid-row: 1; } }
 .mcl-accs > .btn { justify-self: start; }
 /* My Club → Add sponsor from the library */
 .mcl-sp { display: grid; gap: 14px; }

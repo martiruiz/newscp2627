@@ -7309,7 +7309,8 @@ section[id], :target { scroll-margin-top: 92px; }
   .mc-side { width: 100%; align-items: stretch; margin-left: 0; }
   .mc-top { gap: 14px; }
   .mc-side { min-width: 0; }
-  .mc-tabs { display: grid; grid-template-columns: 1fr 1fr; width: 100%; box-sizing: border-box; }
+  .mc-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; box-sizing: border-box; }
+  .mc-tabs button svg { display: none; }
   .mc-tabs button { justify-content: center; min-width: 0; padding: 0 8px; gap: 6px; font-size: 13px; white-space: nowrap; }
   .mc-tabs button span { overflow: hidden; text-overflow: ellipsis; } .mc-tabs button i { display: none; }
   .mc-t-full { display: none; } .mc-t-short { display: inline; }
@@ -7319,3 +7320,4 @@ section[id], :target { scroll-margin-top: 92px; }
   .mc-search { margin-left: 0; width: 100%; } .mc-search input { width: 100%; }
   .mc-tip { display: none; }
 }
+.mc-net { color: var(--gold); } .mc-net svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }

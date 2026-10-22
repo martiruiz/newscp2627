@@ -366,3 +366,53 @@ begin
 end $$;
 revoke execute on function public.club_post_ids(bigint, text, bigint, bigint, bigint[], boolean) from public, anon;
 grant execute on function public.club_post_ids(bigint, text, bigint, bigint, bigint[], boolean) to authenticated;
+
+-- ---------- The club's own profiles in My Club ("Club" tab) ----------
+-- each profile can belong to a section (e.g. @fcbbasket → Basketball); without one it shows in every section
+create or replace function public.admin_club_save(p jsonb)
+returns bigint language plpgsql volatile security definer set search_path = public as $$
+declare v_id bigint := nullif(p ->> 'id', '')::bigint; hs text[]; acc jsonb;
+begin
+  if not public.is_admin() then raise exception 'Not allowed'; end if;
+  select coalesce(jsonb_agg(distinct jsonb_strip_nulls(jsonb_build_object('platform', lower(a ->> 'platform'), 'handle', public.clean_handle(a ->> 'handle'),
+      'section_id', nullif(a ->> 'section_id', '')::bigint))), '[]'::jsonb) into acc
+    from jsonb_array_elements(coalesce(p -> 'accounts', '[]'::jsonb)) a
+    where public.clean_handle(a ->> 'handle') is not null and lower(a ->> 'platform') in ('instagram', 'tiktok', 'x', 'youtube', 'facebook', 'linkedin', 'threads');
+  select coalesce(array_agg(distinct a ->> 'handle'), '{}') into hs from jsonb_array_elements(acc) a;
+  if v_id is null then
+    insert into public.clubs (name, logo_url, handles, accounts) values (trim(p ->> 'name'), nullif(trim(p ->> 'logo_url'), ''), hs, acc) returning id into v_id;
+  else
+    update public.clubs set name = trim(p ->> 'name'), logo_url = nullif(trim(p ->> 'logo_url'), ''), handles = hs, accounts = acc,
+      active = coalesce((p ->> 'active')::boolean, active), updated_at = now() where id = v_id;
+  end if;
+  return v_id;
+end $$;
+
+-- the club's profiles with their posts in SCP (for the "Club" tab chips)
+create or replace function public.club_profiles(p_club bigint)
+returns jsonb language plpgsql stable security definer set search_path = public as $$
+begin
+  if not public.club_can_view(p_club) then return '[]'::jsonb; end if;
+  return coalesce((select jsonb_agg(jsonb_build_object('platform', a ->> 'platform', 'handle', a ->> 'handle', 'section_id', (a ->> 'section_id')::bigint,
+      'posts', (select count(*) from public.content_ideas ci where ci.account_platform = a ->> 'platform' and ci.account = a ->> 'handle'))
+      order by a ->> 'platform', a ->> 'handle')
+    from public.clubs c, jsonb_array_elements(c.accounts) a where c.id = p_club), '[]'::jsonb);
+end $$;
+revoke execute on function public.club_profiles(bigint) from public, anon;
+grant execute on function public.club_profiles(bigint) to authenticated;
+
+-- the posts of the club's profiles for a section / team (a team counts as its section): { post id: "platform:handle" }
+create or replace function public.club_profile_posts(p_club bigint, p_section bigint default null, p_team bigint default null)
+returns jsonb language plpgsql stable security definer set search_path = public as $$
+declare v_section bigint := p_section; out jsonb;
+begin
+  if not public.club_can_view(p_club) then return '{}'::jsonb; end if;
+  if p_team is not null then select section_id into v_section from public.club_teams where id = p_team; end if;
+  select coalesce(jsonb_object_agg(ci.id, (a ->> 'platform') || ':' || (a ->> 'handle')), '{}'::jsonb) into out
+  from public.clubs c, jsonb_array_elements(c.accounts) a
+  join public.content_ideas ci on ci.account_platform = a ->> 'platform' and ci.account = a ->> 'handle'
+  where c.id = p_club and (v_section is null or a ->> 'section_id' is null or (a ->> 'section_id')::bigint = v_section);
+  return out;
+end $$;
+revoke execute on function public.club_profile_posts(bigint, bigint, bigint) from public, anon;
+grant execute on function public.club_profile_posts(bigint, bigint, bigint) to authenticated;

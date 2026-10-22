@@ -35,7 +35,8 @@
 
   // one row per club profile: network + account
   const accRow = (a) => `<div class="mcl-acc-row"><select class="select select-sm" name="acc_platform">${Object.entries(PF).map(([k, v]) => `<option value="${k}"${a.platform === k ? " selected" : ""}>${v}</option>`).join("")}</select>
-    <input class="input input-sm" name="acc_handle" value="${esc(a.handle || "")}" placeholder="@account"><button class="icon-btn" type="button" title="Remove" aria-label="Remove" data-acc-del>${icon("trash")}</button></div>`;
+    <input class="input input-sm" name="acc_handle" value="${esc(a.handle || "")}" placeholder="@account">
+    <select class="select select-sm" name="acc_section" title="Section of this profile (its posts show in that section; none = every section)"><option value="">All sections</option>${(club?.sections || []).map((x) => `<option value="${x.id}"${Number(a.section_id) === x.id ? " selected" : ""}>${esc(x.name)}</option>`).join("")}</select><button class="icon-btn" type="button" title="Remove" aria-label="Remove" data-acc-del>${icon("trash")}</button></div>`;
   const setLogo = (url) => {
     const f = $("[data-form]"); f.logo_url.value = url;
     $("[data-logo-prev]").innerHTML = url ? `<img src="${esc(url)}" alt="">` : `<span>${esc(club.club.name.slice(0, 2).toUpperCase())}</span>`;
@@ -266,7 +267,7 @@
     const f = e.target;
     try {
       if (f.matches("[data-form]")) {
-        const accounts = [...f.querySelectorAll(".mcl-acc-row")].map((r) => ({ platform: r.querySelector("[name=acc_platform]").value, handle: r.querySelector("[name=acc_handle]").value.trim() })).filter((a) => a.handle);
+        const accounts = [...f.querySelectorAll(".mcl-acc-row")].map((r) => ({ platform: r.querySelector("[name=acc_platform]").value, handle: r.querySelector("[name=acc_handle]").value.trim(), section_id: r.querySelector("[name=acc_section]").value || null })).filter((a) => a.handle);
         await rpc("admin_club_save", { p: { id: cur, name: f.name.value, logo_url: f.logo_url.value, accounts, active: f.active.checked } });
         A.toast("Saved"); return loadClubs(cur);
       }

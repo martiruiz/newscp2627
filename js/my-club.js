@@ -20,7 +20,7 @@
     if (!box) return;
     if (!db) return fail("The club space isn't connected yet.");
     const saved = store.get();
-    st.tab = saved.tab === "sponsors" ? "sponsors" : "players";
+    st.tab = ["club", "sponsors"].includes(saved.tab) ? saved.tab : "players";
     const { data, error } = await db.rpc("my_clubs");
     if (error) return fail(/my_clubs|does not exist|schema cache/i.test(error.message) ? "My Club isn't set up yet (run supabase/my-club.sql)." : "Couldn't load your club right now. Try again in a moment.");
     st.clubs = data || [];
@@ -41,6 +41,9 @@
     const { data, error } = await db.rpc("club_space", { p_club: st.club.id });
     if (error || !data?.ok) return fail(data?.error || "Couldn't load your club right now. Try again in a moment.");
     st.space = data;
+    // the club's own profiles ("Club" tab), with their posts in SCP (supabase/my-club-daily.sql)
+    const pr = await db.rpc("club_profiles", { p_club: st.club.id });
+    st.profiles = pr.error ? [] : (pr.data || []).map((a) => ({ id: `${a.platform}:${a.handle}`, name: `@${a.handle}`, platform: a.platform, section_id: a.section_id, posts: a.posts }));
     // the last section / team, only if it still exists (and the team belongs to the section)
     const sec = data.sections.find((s) => s.id === saved.section);
     st.section = sec ? sec.id : null;
@@ -56,6 +59,10 @@
   // the people of the current tab that belong to the selection (a global sponsor belongs everywhere)
   function inSelection() {
     const sec = section(), teamIds = sec ? sec.teams.map((x) => x.id) : [];
+    if (st.tab === "club") {   // a profile without a section shows in every section; a team counts as its section
+      const secId = st.team ? st.space.sections.find((s) => s.teams.some((x) => x.id === st.team))?.id : st.section;
+      return (st.profiles || []).filter((p) => !secId || !p.section_id || p.section_id === secId);
+    }
     return st.space.people.filter((p) => p.kind === kind() && (p.global || (!st.section && !st.team)
       || (st.team ? p.teams.includes(st.team) || p.sections.includes(st.section) : p.sections.includes(st.section) || p.teams.some((id) => teamIds.includes(id)))));
   }
@@ -85,9 +92,10 @@
     grid: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
     deal: '<path d="m11 17 2 2a1 1 0 1 0 3-3"/><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.9-3.9a3 3 0 0 0-4.2 0l-.9.9a1 1 0 1 1-3-3l2.8-2.8a5.8 5.8 0 0 1 7.1-.9l.5.3a2 2 0 0 0 1.4.3L21 4"/><path d="m21 3 1 11h-2M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3M3 4h8"/>',
     check: '<path d="M5 12.5 10 17l9-10"/>',
+    shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
   };
   // how many people of the current tab a section / team has (globals not counted: they're everywhere)
-  const countIn = (secId, teamId) => st.space.people.filter((p) => p.kind === kind() && !p.global && (teamId ? p.teams.includes(teamId)
+  const countIn = (secId, teamId) => st.tab === "club" ? (teamId ? null : (st.profiles || []).filter((p) => p.section_id === secId).length) : st.space.people.filter((p) => p.kind === kind() && !p.global && (teamId ? p.teams.includes(teamId)
     : secId ? p.sections.includes(secId) || p.teams.some((id) => st.space.sections.find((s) => s.id === secId)?.teams.some((t) => t.id === id)) : true)).length;
 
   function draw() {
@@ -107,6 +115,7 @@
           <div class="mc-side">
             ${st.clubs.length > 1 ? `<label class="mc-clubpick"><span>${esc(t("Club"))}</span><select data-mc-club>${st.clubs.map((c) => `<option value="${c.id}"${c.id === club.id ? " selected" : ""}>${esc(c.name)}</option>`).join("")}</select></label>` : ""}
             <div class="mc-tabs" role="tablist">
+              <button type="button" role="tab" aria-selected="${st.tab === "club"}" data-mc-tab="club">${svg(ICON.shield)}<span>${esc(t("Club"))}</span><i>${(st.profiles || []).length}</i></button>
               <button type="button" role="tab" aria-selected="${st.tab === "players"}" data-mc-tab="players">${svg(ICON.grid)}<span class="mc-t-full">${esc(t("Content Library"))}</span><span class="mc-t-short">${esc(t("Players"))}</span><i>${nPlayers}</i></button>
               <button type="button" role="tab" aria-selected="${st.tab === "sponsors"}" data-mc-tab="sponsors">${svg(ICON.deal)}<span>${esc(t("Sponsors"))}</span><i>${nSponsors}</i></button>
             </div>
@@ -122,14 +131,14 @@
       </div>
       <div class="mc-people">
         <div class="mc-people-h">
-          <b>${esc(t(st.tab === "sponsors" ? "Sponsors" : "Players"))}</b><span class="mc-n">${list.length}</span>
-          ${st.people.size ? `<button type="button" class="mc-clear" data-mc-clear>${esc(t("Clear"))} · ${st.people.size}</button>` : `<small class="mc-tip">${esc(t(st.tab === "sponsors" ? "Tap one or more sponsors to see only theirs" : "Tap one or more players to see only theirs"))}</small>`}
+          <b>${esc(t(st.tab === "club" ? "Club profiles" : st.tab === "sponsors" ? "Sponsors" : "Players"))}</b><span class="mc-n">${list.length}</span>
+          ${st.people.size ? `<button type="button" class="mc-clear" data-mc-clear>${esc(t("Clear"))} · ${st.people.size}</button>` : `<small class="mc-tip">${esc(t(st.tab === "club" ? "Tap one or more profiles to see only theirs" : st.tab === "sponsors" ? "Tap one or more sponsors to see only theirs" : "Tap one or more players to see only theirs"))}</small>`}
           ${list.length > 6 ? `<label class="mc-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" value="${esc(st.q)}" placeholder="${esc(t(st.tab === "sponsors" ? "Search a sponsor" : "Search a player"))}" data-mc-q></label>` : ""}
         </div>
         ${list.length ? `<div class="mc-chips">${shown.map((p) => `<button type="button" class="mc-person${p.posts ? "" : " is-empty"}${st.tab === "sponsors" ? " is-brand" : ""}" aria-pressed="${st.people.has(p.id)}" data-mc-person="${p.id}" title="${esc(p.posts ? t("{n} posts", { n: p.posts }) : t("Account linked, no posts imported yet"))}">
-            <span class="mc-ph">${p.photo_url ? `<img src="${esc(p.photo_url)}" alt="" loading="lazy">` : `<span class="mc-av">${esc(initials(p.name))}</span>`}<span class="mc-tick">${svg(ICON.check)}</span></span>
+            <span class="mc-ph">${p.platform ? `<span class="mc-av mc-net">${svg(NET[p.platform] || NET.instagram)}</span>` : p.photo_url ? `<img src="${esc(p.photo_url)}" alt="" loading="lazy">` : `<span class="mc-av">${esc(initials(p.name))}</span>`}<span class="mc-tick">${svg(ICON.check)}</span></span>
             <span class="mc-person-tx"><b>${esc(p.name)}</b><small>${p.global && st.tab === "sponsors" ? `<em>${esc(t("Global sponsor"))}</em>` : esc(p.posts ? t("{n} posts", { n: p.posts }) : t("No posts yet"))}</small></span></button>`).join("")}</div>`
-          : `<p class="mc-none">${esc(t(st.tab === "sponsors" ? "No sponsors linked to this selection yet." : "No players linked to this selection yet."))}</p>`}
+          : `<p class="mc-none">${esc(t(st.tab === "club" ? "No club profiles for this selection yet." : st.tab === "sponsors" ? "No sponsors linked to this selection yet." : "No players linked to this selection yet."))}</p>`}
         ${st.tab === "sponsors" && list.length ? `<div class="mc-mode" role="group" aria-label="${esc(t("Which posts"))}">
           <div class="mc-mode-sw"><button type="button" aria-pressed="${!st.linked}" data-mc-linked="0">${esc(t("All the brand's posts"))}</button>
           <button type="button" aria-pressed="${st.linked}" data-mc-linked="1">${esc(t("Posts linked to the club"))}</button></div>
@@ -140,6 +149,20 @@
   async function scope() {
     const my = ++token, list = inSelection();
     const people = st.people.size ? [...st.people].filter((id) => list.some((p) => p.id === id)) : null;
+    if (st.tab === "club") {   // the club's own profiles
+      SCOPE.empty = t(!list.length ? "No club profiles for this selection yet." : "The club's profiles have no posts imported yet.");
+      let map = {};
+      if (list.length) {
+        const { data, error } = await db.rpc("club_profile_posts", { p_club: st.club.id, p_section: st.section, p_team: st.team });
+        if (my !== token) return;
+        if (error) SCOPE.empty = t("Couldn't load the posts right now. Try again in a moment.");
+        else map = Object.fromEntries(Object.entries(data || {}).filter(([, k]) => !people || people.includes(k)));
+      }
+      SCOPE.ids = Object.keys(map).map(Number);
+      SCOPE.who = (id) => (map[id] ? `@${map[id].split(":")[1]}` : null);
+      resolveReady();
+      return window.dispatchEvent(new Event("scp-lib-scope"));
+    }
     SCOPE.empty = !list.length ? t(st.tab === "sponsors" ? "No sponsors linked to this selection yet." : "No players linked to this selection yet.")
       : st.linked ? t("No posts from these sponsors mention the club yet.")
       : t(st.tab === "sponsors" ? "These sponsors' accounts have no posts imported yet." : "These players' accounts have no posts imported yet.");
@@ -164,7 +187,7 @@
     if (b.matches("[data-mc-section]")) { st.section = Number(b.dataset.mcSection) || null; st.team = null; st.people.clear(); }   // another section: its own teams
     else if (b.matches("[data-mc-team]")) { st.team = Number(b.dataset.mcTeam) || null; st.people.clear(); }
     else if (b.matches("[data-mc-tab]")) { if (st.tab === b.dataset.mcTab) return; st.tab = b.dataset.mcTab; st.people.clear(); st.q = ""; st.linked = false; }   // section and team stay
-    else if (b.matches("[data-mc-person]")) { const id = Number(b.dataset.mcPerson); st.people.has(id) ? st.people.delete(id) : st.people.add(id); }
+    else if (b.matches("[data-mc-person]")) { const id = st.tab === "club" ? b.dataset.mcPerson : Number(b.dataset.mcPerson); st.people.has(id) ? st.people.delete(id) : st.people.add(id); }
     else if (b.matches("[data-mc-clear]")) st.people.clear();
     else if (b.matches("[data-mc-linked]")) st.linked = b.dataset.mcLinked === "1";
     save(); draw(); scope();
