@@ -76,42 +76,75 @@
 
     <div class="container" aria-hidden="true"><hr class="section-rule"></div>
 
-    <section class="faq faq-home pricing-faq container" id="faq">
+    <!-- The FAQ: the same as index.html #faq (the home's is the main one — keep both equal) -->
+    <section class="faq faq-home faq-split pricing-faq container" id="faq" data-reveal>
       <div class="faq-grid">
         <div class="faq-intro">
           <span class="hx-eyebrow">FAQ</span>
-          <h2 class="section-title section-title-md">Questions about<br>your plan?</h2>
-          <p>Trial, billing, users and AI analyses, explained. Anything else? Write to us or book a 30-minute demo, right here.</p>
+          <h2 class="section-title section-title-md">Questions? We've got answers.</h2>
+          <p>Still have questions? Write to us or book a 30-minute demo with our team, right here.</p>
           <div class="actions">
             <button class="btn btn-outline" type="button" data-faq-open="contact">Contact us</button>
             <button class="btn btn-gold" type="button" data-faq-open="demo">Book a demo</button>
           </div>
         </div>
         <div class="faq-stage" data-faq-stage>
-          <div class="accordion faq-pane is-on" data-accordion data-faq-pane="faq">
+          <div class="faq-pane faq-blocks is-on" data-faq-pane="faq">
+            <div class="faq-block">
+              <h3 class="faq-block-h">The platform</h3>
+              <div class="accordion" data-accordion>
             <div class="acc-item is-open">
-              <button class="acc-trigger" type="button" aria-expanded="true"><span class="faq-n">01</span><span class="faq-q">How does the free trial work?</span><span class="acc-icon"></span></button>
-              <div class="acc-panel"><div><p>You get 7 days free with full access to your plan. We ask for a card to start, but nothing is charged until the trial ends, and if you cancel before then you pay nothing. On monthly plans the first charge covers only the days until the 1st of the month; after that you're billed on the 1st.</p></div></div>
+              <button class="acc-trigger" type="button" aria-expanded="true"><span class="faq-n">01</span><span class="faq-q">What exactly do I get with SCP?</span><span class="acc-icon"></span></button>
+              <div class="acc-panel"><div><p>Three tools in one place: the <b>Content Library</b> (every plan), <b>AI analysis</b> of any post (Library + AI and All Access) and the <b>Content Plan</b> to organise your week (Library + Content Plan and All Access).</p></div></div>
             </div>
             <div class="acc-item">
-              <button class="acc-trigger" type="button" aria-expanded="false"><span class="faq-n">02</span><span class="faq-q">Can I cancel at any time?</span><span class="acc-icon"></span></button>
-              <div class="acc-panel"><div><p>Yes, from Account → Billing in two clicks. You keep access until the end of the period you've paid and you won't be charged again. Your saved boards and content plans stay in your account if you come back.</p></div></div>
+              <button class="acc-trigger" type="button" aria-expanded="false"><span class="faq-n">02</span><span class="faq-q">Where does the content come from?</span><span class="acc-icon"></span></button>
+              <div class="acc-panel"><div><p>From the public posts of <span data-stat="clubs">770+</span> clubs and <span data-stat="competitions">110+</span> competitions, plus leagues, athletes and brands, on these networks:</p><p class="faq-nets" translate="no"><span class="faq-net" title="Instagram" aria-label="Instagram"><i class="lf-pfi is-brand lf-pf-instagram" style="-webkit-mask-image:url(assets/pf-instagram.svg);mask-image:url(assets/pf-instagram.svg)" aria-hidden="true"></i></span><span class="faq-net" title="TikTok" aria-label="TikTok"><i class="lf-pfi is-brand lf-pf-tiktok" style="-webkit-mask-image:url(assets/pf-tiktok.svg);mask-image:url(assets/pf-tiktok.svg)" aria-hidden="true"></i></span><span class="faq-net" title="YouTube" aria-label="YouTube"><i class="lf-pfi is-brand lf-pf-youtube" style="-webkit-mask-image:url(assets/pf-youtube.svg);mask-image:url(assets/pf-youtube.svg)" aria-hidden="true"></i></span><span class="faq-net" title="X" aria-label="X"><i class="lf-pfi is-brand lf-pf-x" style="-webkit-mask-image:url(assets/pf-x.svg);mask-image:url(assets/pf-x.svg)" aria-hidden="true"></i></span><span class="faq-net" title="Facebook" aria-label="Facebook"><i class="lf-pfi is-brand lf-pf-facebook" style="-webkit-mask-image:url(assets/pf-facebook.svg);mask-image:url(assets/pf-facebook.svg)" aria-hidden="true"></i></span><span class="faq-net" title="LinkedIn" aria-label="LinkedIn"><i class="lf-pfi is-brand lf-pf-linkedin" style="-webkit-mask-image:url(assets/pf-linkedin.svg);mask-image:url(assets/pf-linkedin.svg)" aria-hidden="true"></i></span></p><p class="faq-daily"><b>New posts are added every day.</b></p></div></div>
             </div>
             <div class="acc-item">
-              <button class="acc-trigger" type="button" aria-expanded="false"><span class="faq-n">03</span><span class="faq-q">Can I change plan, add users or switch to yearly?</span><span class="acc-icon"></span></button>
-              <div class="acc-panel"><div><p>Yes, whenever you want. Upgrades and new users apply straight away and you only pay the difference for the rest of the period; downgrades apply at the end of the period you've paid. You'll always see the exact amount before confirming. Yearly plans give you 2 months free.</p></div></div>
+              <button class="acc-trigger" type="button" aria-expanded="false"><span class="faq-n">03</span><span class="faq-q">Is it only for football?</span><span class="acc-icon"></span></button>
+              <div class="acc-panel"><div><p>No. You'll find 17 sports: <b>football</b>, <b>basketball</b>, <b>handball</b>, <b>American football (NFL)</b>, <b>MotoGP</b>, <b>ice hockey (NHL)</b>, <b>cycling</b>, <b>baseball</b>, <b>tennis</b> and more.</p></div></div>
             </div>
             <div class="acc-item">
-              <button class="acc-trigger" type="button" aria-expanded="false"><span class="faq-n">04</span><span class="faq-q">How do payments and invoices work?</span><span class="acc-icon"></span></button>
-              <div class="acc-panel"><div><p>Prices are in euros, VAT included; if your card is in another currency, your bank converts it. Monthly plans renew on the 1st of each month and yearly plans on the same date each year. Every invoice is in Account → Billing, and companies can add their VAT number at checkout.</p></div></div>
+              <button class="acc-trigger" type="button" aria-expanded="false"><span class="faq-n">04</span><span class="faq-q">Why not just search Instagram and TikTok myself?</span><span class="acc-icon"></span></button>
+              <div class="acc-panel"><div><p>You could, <b>but it takes hours</b>, and the feed shows you what the algorithm wants, not what worked. SCP brings together the posts of <span data-stat="clubs">770+</span> clubs in one place, with their real results (views and engagement), filters by sport, competition and format, the AI analysis of why each one works and a calendar to plan yours.</p><p class="faq-after"><b>Hours of searching become minutes.</b></p></div></div>
             </div>
             <div class="acc-item">
-              <button class="acc-trigger" type="button" aria-expanded="false"><span class="faq-n">05</span><span class="faq-q">What if I run out of AI analyses?</span><span class="acc-icon"></span></button>
-              <div class="acc-panel"><div><p>Your analyses renew every month. If you need more before then, you can buy an extra pack: it's a one-time payment and the analyses never expire. Opening an analysis you've already unlocked is always free.</p></div></div>
+              <button class="acc-trigger" type="button" aria-expanded="false"><span class="faq-n">05</span><span class="faq-q">How does the AI analysis work?</span><span class="acc-icon"></span></button>
+              <div class="acc-panel"><div><p>Three steps, straight from any post in the library:</p>
+                <ol class="faq-steps">
+                  <li><span class="fs-ico"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span><b>Open a post</b><small>Any post in the library</small></li>
+                  <li><span class="fs-ico"><svg viewBox="0 0 24 24"><path d="M12 3l1.8 4.9L19 9.7l-5.2 1.8L12 16.4l-1.8-4.9L5 9.7l5.2-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg></span><b>Unlock its analysis</b><small>One click, one analysis</small></li>
+                  <li><span class="fs-ico"><svg viewBox="0 0 24 24"><path d="M4 5h6a2 2 0 0 1 2 2v12a2 2 0 0 0-2-2H4z"/><path d="M20 5h-6a2 2 0 0 0-2 2v12a2 2 0 0 1 2-2h6z"/></svg></span><b>Get the analysis</b><span class="fs-tags"><em>Hook</em><em>Why it works</em><em>Visual breakdown</em><em>How to adapt it</em></span></li>
+                </ol>
+                <p class="faq-after"><b>Library + AI includes 30 analyses a month and All Access 100, and you can add extra packs.</b></p></div></div>
+            </div>
+              </div>
+            </div>
+            <div class="faq-block">
+              <h3 class="faq-block-h">Plans &amp; your account</h3>
+              <div class="accordion" data-accordion>
+            <div class="acc-item is-open">
+              <button class="acc-trigger" type="button" aria-expanded="true"><span class="faq-n">06</span><span class="faq-q">Can my whole team use it?</span><span class="acc-icon"></span></button>
+              <div class="acc-panel"><div><p>Yes. Each plan can have up to 5 users, each with their own account, boards and AI analyses. <b>For bigger teams <a class="link-gold" href="book-a-call.html" data-faq-open="demo">we prepare a custom plan</a>.</b></p></div></div>
             </div>
             <div class="acc-item">
-              <button class="acc-trigger" type="button" aria-expanded="false"><span class="faq-n">06</span><span class="faq-q">Do you have plans for bigger teams?</span><span class="acc-icon"></span></button>
-              <div class="acc-panel"><div><p>Every plan works for up to 5 users, and each user can sign in on up to two devices. For more users, or for a club or agency with several teams, <a class="link-gold" href="book-a-call.html" data-faq-open="demo">we prepare a custom plan</a>.</p></div></div>
+              <button class="acc-trigger" type="button" aria-expanded="false"><span class="faq-n">07</span><span class="faq-q">How does the free trial work?</span><span class="acc-icon"></span></button>
+              <div class="acc-panel"><div><p><b>You get 7 days with full access.</b> We ask for a card to start, but nothing is charged if you cancel before the trial ends.</p></div></div>
+            </div>
+            <div class="acc-item">
+              <button class="acc-trigger" type="button" aria-expanded="false"><span class="faq-n">08</span><span class="faq-q">Can I cancel at any time?</span><span class="acc-icon"></span></button>
+              <div class="acc-panel"><div><p><b>Yes, from your account in two clicks.</b> You keep access until the end of the period you've paid and you won't be charged again. Your saved boards and content plans stay in your account if you come back.</p></div></div>
+            </div>
+            <div class="acc-item">
+              <button class="acc-trigger" type="button" aria-expanded="false"><span class="faq-n">09</span><span class="faq-q">Do I need to connect my club's accounts? Is our data safe?</span><span class="acc-icon"></span></button>
+              <div class="acc-panel"><div><p><b>No, you don't need to connect any social media account.</b> SCP works only with public posts, and your boards, content plans and analyses are private to your account. We handle your data in line with the GDPR: <b><a class="link-gold" href="privacy.html">see our privacy policy</a></b>.</p></div></div>
+            </div>
+            <div class="acc-item">
+              <button class="acc-trigger" type="button" aria-expanded="false"><span class="faq-n">10</span><span class="faq-q">Can you add clubs or accounts that aren't in the library yet?</span><span class="acc-icon"></span></button>
+              <div class="acc-panel"><div><p>Yes. Tell us which clubs, leagues or creators you want to follow (your own club, your rivals or anyone who inspires you). We'll go through exactly what you need together and work with you to add their posts to the library. <b><a class="link-gold" href="contact.html" data-faq-open="contact">Request it through the contact form →</a></b></p><p class="faq-after"><b>It's included in every plan.</b></p></div></div>
+            </div>
+              </div>
             </div>
           </div>
 
