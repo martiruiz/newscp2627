@@ -7214,3 +7214,7 @@ section[id], :target { scroll-margin-top: 92px; }
 :root[data-theme="light"] .plan-save { color: #0a8a41; background: rgba(10, 157, 74, 0.08); border-color: rgba(10, 157, 74, 0.35); }
 :root[data-theme="light"] .plan-save span { background: rgba(10, 157, 74, 0.12); }
 .plan-save + .plan-addons, .plan-save + .plan-value { margin-top: 14px; }
+.plan-bulk { margin: 10px 0 0; padding: 8px 12px; border-radius: 10px; border: 1px dashed rgba(167, 139, 250, 0.45); color: #c4b5fd; font-size: 12.5px; }
+.plan-bulk.is-on { border-style: solid; background: rgba(167, 139, 250, 0.14); color: #ddd6fe; font-weight: 600; }
+:root[data-theme="light"] .plan-bulk { color: #6b46c1; border-color: rgba(107, 70, 193, 0.4); }
+:root[data-theme="light"] .plan-bulk.is-on { background: rgba(107, 70, 193, 0.08); color: #553c9a; }

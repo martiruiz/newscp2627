@@ -73,7 +73,9 @@
       iv === "year" ? tx("same as {price}/month", { price: fmt(Math.round(price.amount * seats / 12), currency) }) : "", tx("VAT incl."),
     ].filter(Boolean).join(" · ");
     // what you get, in words (not just ✓ / –)
-    const units = p.ai_unlimited ? tx("Unlimited") : p.ai_monthly_units;
+    // big purchases get more AI (plans.ai_bulk_*): over the threshold (price × users) → the bulk quota per user
+    const bulk = hasAi && p.ai_bulk_units > (p.ai_monthly_units || 0) && price ? { n: p.ai_bulk_units, min: Number(p.ai_bulk_min_amount || 0), on: price.amount * seats > Number(p.ai_bulk_min_amount || 0) } : null;
+    const units = p.ai_unlimited ? tx("Unlimited") : bulk?.on ? bulk.n : p.ai_monthly_units;
     const gets = [
       lib && tx("The whole library: every sport, club and competition"),
       lib && tx("Filters by sport, competition, format and goal"),
@@ -83,7 +85,8 @@
     ].filter(Boolean);
     // the plan with everything: how much more AI than the next one
     const extraAi = hasAi && cp && !p.ai_unlimited && otherAi > 0 && p.ai_monthly_units > otherAi ? p.ai_monthly_units - otherAi : 0;
-    const value = !builder && hasAi && cp ? `<p class="plan-value">${tx("All included")}${extraAi ? ` · <b>${tx("+{n} AI analyses a month", { n: extraAi })}</b>` : ""}</p>` : "";
+    const value = (!builder && hasAi && cp ? `<p class="plan-value">${tx("All included")}${extraAi ? ` · <b>${tx("+{n} AI analyses a month", { n: extraAi })}</b>` : ""}</p>` : "")
+      + (bulk ? `<p class="plan-bulk${bulk.on ? " is-on" : ""}">${bulk.on ? `✓ ${tx("Your purchase is over {min}: {n} AI analyses a month per user", { min: fmt(bulk.min, currency), n: bulk.n })}` : tx("Over {min}: {n} AI analyses a month per user", { min: fmt(bulk.min, currency), n: bulk.n })}</p>` : "");
     const tool = (on, cls, label, extra = "") => `<li class="pt ${cls}${on ? "" : " is-off"}"><i></i><span>${label}</span>${extra ? `<em>${extra}</em>` : ""}</li>`;
     return `<article class="plan-card v2${p.highlighted ? " is-best" : ""}${isCurrent ? " is-current" : ""}${p.key === wanted ? " is-wanted" : ""}" data-plan-key="${esc(p.key)}">
       ${flag}
@@ -134,7 +137,7 @@
       </div>`}
       ${curs.length > 1 ? `<div class="plan-interval plan-currency" role="tablist" aria-label="Currency">${curs.map((c) => `<button type="button" role="tab" aria-selected="${currency === c}" data-currency-pick="${c}">${c.toUpperCase()}</button>`).join("")}</div>` : ""}
       ${!privatePlan ? `<p class="plan-common">${tx("Every plan: the full library with filters and saved boards · up to {n} users", { n: MAX_SEATS })}</p>` : ""}
-      <p class="plan-seats-more" ${seats >= MAX_SEATS && !privatePlan ? "" : "hidden"} data-seats-more>${tx("More than {n} users?", { n: MAX_SEATS })} <a class="link-gold" href="contact.html?topic=custom-plan&users=${MAX_SEATS + 1}">${tx("Request a custom plan")}</a></p>
+      <p class="plan-seats-more" ${privatePlan ? "hidden" : ""} data-seats-more>${tx("More than {n} users?", { n: MAX_SEATS })} <a class="link-gold" href="contact.html?topic=custom-plan&users=${MAX_SEATS + 1}">${tx("Request a custom plan")}</a></p>
     </div>`;
   }
 
@@ -210,7 +213,7 @@
       ${row("ai", addon.ai, "library_ai", "AI analysis", "Know why a post works")}
       ${both ? `<p class="plan-addons-note">${extra > 0 && sameOrLess
         ? tx("Both add-ons = All Access, for the same price: +{x} AI analyses a month for free ({n} in total).", { x: extra, n: all.ai_monthly_units })
-        : tx("Both add-ons are All Access: it comes with {n} AI analyses a month.", { n: all.ai_monthly_units })}</p>` : ""}</div>`;
+        : sameOrLess ? tx("Both add-ons = All Access, for the same price.") : tx("Both add-ons are All Access: it comes with {n} AI analyses a month.", { n: all.ai_monthly_units })}</p>` : ""}</div>`;
     return planCard(pick, { builder: { addons, hideCurrent: both } }) + planCard(all);   // both ticked = All Access: its flag only once, on its own card
   }
 
