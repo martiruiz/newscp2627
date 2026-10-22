@@ -69,4 +69,12 @@ window.SCPA_DICT = Object.assign(window.SCPA_DICT || {}, {
   "Club name": ["Nombre del club", "Nom del club"],
   "Create club": ["Crear club", "Crear club"],
   "Club created": ["Club creado", "Club creat"],
+  "Upload logo": ["Subir logo", "Pujar logo"],
+  "Use the SCP logo": ["Usar el logo de SCP", "Fer servir el logo de SCP"],
+  "Remove": ["Quitar", "Treure"],
+  "…or paste an image URL": ["…o pega la URL de una imagen", "…o enganxa la URL d'una imatge"],
+  "Club profiles": ["Perfiles del club", "Perfils del club"],
+  "Add profile": ["Añadir perfil", "Afegir perfil"],
+  "Logo uploaded. Press Save to keep it.": ["Logo subido. Pulsa Guardar para conservarlo.", "Logo pujat. Prem Desa per conservar-lo."],
+  "The logo must be 1 MB or less.": ["El logo debe pesar 1 MB o menos.", "El logo ha de pesar 1 MB o menys."],
 });

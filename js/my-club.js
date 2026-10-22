@@ -60,40 +60,79 @@
       || (st.team ? p.teams.includes(st.team) || p.sections.includes(st.section) : p.sections.includes(st.section) || p.teams.some((id) => teamIds.includes(id)))));
   }
 
+  // line icons: the sport of each section (by its name) and the networks of the club's profiles
+  const svg = (d, fill) => `<svg viewBox="0 0 24 24" aria-hidden="true"${fill ? ' class="is-fill"' : ""}>${d}</svg>`;
+  const SPORT = [
+    [/f[uú]tbol|football|soccer|futsal|sala/i, '<circle cx="12" cy="12" r="9"/><path d="m12 7.5 3.8 2.8-1.5 4.4H9.7l-1.5-4.4z"/><path d="M12 3v4.5M20.6 9.5l-4.8.8M3.4 9.5l4.8.8M7 19.6l2.7-4.9M17 19.6l-2.7-4.9"/>'],
+    [/b[aà]squet|basket|baloncesto/i, '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3v18M5.6 5.6a9 9 0 0 1 0 12.8M18.4 5.6a9 9 0 0 0 0 12.8"/>'],
+    [/handbol|handball|balonmano/i, '<circle cx="12" cy="12" r="9"/><path d="M4.5 8.5c5 1.6 10 1.6 15 0M4.5 15.5c5-1.6 10-1.6 15 0M12 3c-2.4 5-2.4 13 0 18"/>'],
+    [/hockey/i, '<path d="M5 3l6 13a3 3 0 0 1-2.7 4.3H4"/><path d="M19 3l-6 13a3 3 0 0 0 2.7 4.3H20"/>'],
+    [/v[oò]le|volley/i, '<circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 9 9 9 0 0 1 7.8 4.5M12 12a9 9 0 0 1-7.8 4.5M12 12h9"/>'],
+  ];
+  const sportIcon = (name) => svg((SPORT.find(([re]) => re.test(name)) || [, '<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/>'])[1]);
+  const NET = {
+    instagram: '<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.4" cy="6.6" r=".6"/>',
+    tiktok: '<path d="M9.5 11.5a4.2 4.2 0 1 0 4.2 4.2V3c.5 2.6 2.4 4.5 5.3 4.7"/>',
+    x: '<path d="M4 4h4.5L20 20h-4.5z"/><path d="M4 20l6.6-6.6M20 4l-6.6 6.6"/>',
+    youtube: '<path d="M2.5 17a24 24 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.6 49.6 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24 24 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.6 49.6 0 0 1-16.2 0A2 2 0 0 1 2.5 17"/><path d="m10 15 5-3-5-3z"/>',
+    facebook: '<path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>',
+    linkedin: '<path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>',
+    threads: '<path d="M16.5 11.5c-.6-3-2.6-4.5-5-4.5-3 0-5 2.4-5 5.5s2 5.5 5.5 5.5c3.8 0 6-2.5 6-6.2C18 6.5 15.5 3 11.5 3 6.5 3 3 6.8 3 12s3.5 9 8.5 9"/><path d="M15.5 12c0 2-1.4 3-3 3s-2.6-.8-2.6-2 1.2-2 3-2c1.3 0 2.6.3 2.6 1z"/>',
+  };
+  const URL_OF = { instagram: (h) => `https://www.instagram.com/${h}/`, tiktok: (h) => `https://www.tiktok.com/@${h}`, x: (h) => `https://x.com/${h}`, youtube: (h) => `https://www.youtube.com/@${h}`,
+    facebook: (h) => `https://www.facebook.com/${h}`, linkedin: (h) => `https://www.linkedin.com/company/${h}`, threads: (h) => `https://www.threads.net/@${h}` };
+  const ICON = {
+    grid: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+    deal: '<path d="m11 17 2 2a1 1 0 1 0 3-3"/><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.9-3.9a3 3 0 0 0-4.2 0l-.9.9a1 1 0 1 1-3-3l2.8-2.8a5.8 5.8 0 0 1 7.1-.9l.5.3a2 2 0 0 0 1.4.3L21 4"/><path d="m21 3 1 11h-2M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3M3 4h8"/>',
+    check: '<path d="M5 12.5 10 17l9-10"/>',
+  };
+  // how many people of the current tab a section / team has (globals not counted: they're everywhere)
+  const countIn = (secId, teamId) => st.space.people.filter((p) => p.kind === kind() && !p.global && (teamId ? p.teams.includes(teamId)
+    : secId ? p.sections.includes(secId) || p.teams.some((id) => st.space.sections.find((s) => s.id === secId)?.teams.some((t) => t.id === id)) : true)).length;
+
   function draw() {
     const club = st.space.club, sec = section(), list = inSelection();
-    const pill = (attr, id, label, on) => `<button type="button" class="mc-pill" ${attr}="${id ?? ""}" aria-pressed="${on}">${esc(label)}</button>`;
     const shown = list.filter((p) => !st.q || p.name.toLowerCase().includes(st.q.toLowerCase()));
+    const nPlayers = st.space.people.filter((p) => p.kind === "player").length, nSponsors = st.space.people.filter((p) => p.kind === "sponsor").length;
+    const seg = (attr, id, label, on, n, ic = "") => `<button type="button" class="mc-seg-b" ${attr}="${id ?? ""}" aria-pressed="${on}">${ic}<span>${esc(label)}</span>${n != null ? `<i>${n}</i>` : ""}</button>`;
     box.innerHTML = `
-      <div class="mc-top">
-        ${club.logo_url ? `<img class="mc-logo" src="${esc(club.logo_url)}" alt="">` : `<span class="mc-logo mc-logo-i">${esc(initials(club.name))}</span>`}
-        <div class="mc-title"><span class="mc-eyebrow">${esc(t("My Club"))}</span><h1>${esc(club.name)}</h1></div>
-        ${st.clubs.length > 1 ? `<label class="mc-clubpick"><span>${esc(t("Club"))}</span><select data-mc-club>${st.clubs.map((c) => `<option value="${c.id}"${c.id === club.id ? " selected" : ""}>${esc(c.name)}</option>`).join("")}</select></label>` : ""}
-      </div>
-      <div class="mc-filters">
-        <div class="mc-row" role="group" aria-label="${esc(t("Section"))}"><span class="mc-k">${esc(t("Section"))}</span>
-          ${pill("data-mc-section", "", t("All sections"), !st.section)}${st.space.sections.map((s) => pill("data-mc-section", s.id, s.name, st.section === s.id)).join("")}</div>
-        <div class="mc-row" role="group" aria-label="${esc(t("Team"))}"><span class="mc-k">${esc(t("Team"))}</span>
-          ${pill("data-mc-team", "", t("All teams"), !st.team)}${(sec?.teams || []).map((x) => pill("data-mc-team", x.id, x.name, st.team === x.id)).join("")}
-          ${!sec ? `<small class="mc-hint">${esc(t("Choose a section to see its teams"))}</small>` : ""}</div>
-      </div>
-      <div class="mc-tabs" role="tablist">
-        <button type="button" role="tab" aria-selected="${st.tab === "players"}" data-mc-tab="players">${esc(t("Content Library"))}</button>
-        <button type="button" role="tab" aria-selected="${st.tab === "sponsors"}" data-mc-tab="sponsors">${esc(t("Sponsors"))}</button>
+      <div class="mc-card">
+        <div class="mc-top">
+          <div class="mc-logo">${club.logo_url ? `<img src="${esc(club.logo_url)}" alt="">` : `<span>${esc(initials(club.name))}</span>`}</div>
+          <div class="mc-title">
+            <span class="mc-eyebrow">${esc(t("My Club"))}</span>
+            <h1>${esc(club.name)}</h1>
+            ${club.accounts?.length ? `<div class="mc-profiles">${club.accounts.map((a) => `<a class="mc-prof" href="${esc((URL_OF[a.platform] || URL_OF.instagram)(a.handle))}" target="_blank" rel="noopener" title="${esc(a.platform)}">${svg(NET[a.platform] || NET.instagram)}<span>@${esc(a.handle)}</span></a>`).join("")}</div>` : ""}
+          </div>
+          <div class="mc-side">
+            ${st.clubs.length > 1 ? `<label class="mc-clubpick"><span>${esc(t("Club"))}</span><select data-mc-club>${st.clubs.map((c) => `<option value="${c.id}"${c.id === club.id ? " selected" : ""}>${esc(c.name)}</option>`).join("")}</select></label>` : ""}
+            <div class="mc-tabs" role="tablist">
+              <button type="button" role="tab" aria-selected="${st.tab === "players"}" data-mc-tab="players">${svg(ICON.grid)}<span class="mc-t-full">${esc(t("Content Library"))}</span><span class="mc-t-short">${esc(t("Players"))}</span><i>${nPlayers}</i></button>
+              <button type="button" role="tab" aria-selected="${st.tab === "sponsors"}" data-mc-tab="sponsors">${svg(ICON.deal)}<span>${esc(t("Sponsors"))}</span><i>${nSponsors}</i></button>
+            </div>
+          </div>
+        </div>
+        <div class="mc-filters">
+          <div class="mc-line"><span class="mc-k">${esc(t("Section"))}</span>
+            <div class="mc-seg" role="group" aria-label="${esc(t("Section"))}">${seg("data-mc-section", "", t("All sections"), !st.section, null)}${st.space.sections.map((s) => seg("data-mc-section", s.id, s.name, st.section === s.id, countIn(s.id), sportIcon(s.name))).join("")}</div></div>
+          <div class="mc-line"><span class="mc-k">${esc(t("Team"))}</span>
+            ${sec ? `<div class="mc-teams" role="group" aria-label="${esc(t("Team"))}">${seg("data-mc-team", "", t("All teams"), !st.team, null)}${sec.teams.map((x) => seg("data-mc-team", x.id, x.name, st.team === x.id, countIn(null, x.id))).join("")}</div>`
+              : `<span class="mc-hint">${esc(t("Choose a section to see its teams"))}</span>`}</div>
+        </div>
       </div>
       <div class="mc-people">
         <div class="mc-people-h">
           <b>${esc(t(st.tab === "sponsors" ? "Sponsors" : "Players"))}</b><span class="mc-n">${list.length}</span>
+          ${st.people.size ? `<button type="button" class="mc-clear" data-mc-clear>${esc(t("Clear"))} · ${st.people.size}</button>` : `<small class="mc-tip">${esc(t(st.tab === "sponsors" ? "Tap one or more sponsors to see only theirs" : "Tap one or more players to see only theirs"))}</small>`}
           ${list.length > 6 ? `<label class="mc-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" value="${esc(st.q)}" placeholder="${esc(t(st.tab === "sponsors" ? "Search a sponsor" : "Search a player"))}" data-mc-q></label>` : ""}
-          ${st.people.size ? `<button type="button" class="mc-clear" data-mc-clear>${esc(t("Clear"))} (${st.people.size})</button>` : ""}
         </div>
-        ${list.length ? `<div class="mc-chips">${shown.map((p) => `<button type="button" class="mc-person${p.posts ? "" : " is-empty"}" aria-pressed="${st.people.has(p.id)}" data-mc-person="${p.id}" title="${esc(p.posts ? t("{n} posts", { n: p.posts }) : t("Account linked, no posts imported yet"))}">
-            ${p.photo_url ? `<img src="${esc(p.photo_url)}" alt="" loading="lazy">` : `<span class="mc-av">${esc(initials(p.name))}</span>`}
+        ${list.length ? `<div class="mc-chips">${shown.map((p) => `<button type="button" class="mc-person${p.posts ? "" : " is-empty"}${st.tab === "sponsors" ? " is-brand" : ""}" aria-pressed="${st.people.has(p.id)}" data-mc-person="${p.id}" title="${esc(p.posts ? t("{n} posts", { n: p.posts }) : t("Account linked, no posts imported yet"))}">
+            <span class="mc-ph">${p.photo_url ? `<img src="${esc(p.photo_url)}" alt="" loading="lazy">` : `<span class="mc-av">${esc(initials(p.name))}</span>`}<span class="mc-tick">${svg(ICON.check)}</span></span>
             <span class="mc-person-tx"><b>${esc(p.name)}</b><small>${p.global && st.tab === "sponsors" ? `<em>${esc(t("Global sponsor"))}</em>` : esc(p.posts ? t("{n} posts", { n: p.posts }) : t("No posts yet"))}</small></span></button>`).join("")}</div>`
           : `<p class="mc-none">${esc(t(st.tab === "sponsors" ? "No sponsors linked to this selection yet." : "No players linked to this selection yet."))}</p>`}
         ${st.tab === "sponsors" && list.length ? `<div class="mc-mode" role="group" aria-label="${esc(t("Which posts"))}">
-          <button type="button" aria-pressed="${!st.linked}" data-mc-linked="0">${esc(t("All the brand's posts"))}</button>
-          <button type="button" aria-pressed="${st.linked}" data-mc-linked="1">${esc(t("Posts linked to the club"))}</button>
+          <div class="mc-mode-sw"><button type="button" aria-pressed="${!st.linked}" data-mc-linked="0">${esc(t("All the brand's posts"))}</button>
+          <button type="button" aria-pressed="${st.linked}" data-mc-linked="1">${esc(t("Posts linked to the club"))}</button></div>
           <small>${esc(t(st.linked ? "Only posts that mention the club's accounts." : "Everything the brand posts, about the club or not."))}</small></div>` : ""}
       </div>`;
   }

@@ -15,6 +15,19 @@ create table if not exists public.clubs (
   updated_at  timestamptz not null default now()
 );
 
+-- the club's own profiles, as many per network as it has: [{ platform, handle }]; handles (above) is kept from them for mentions
+alter table public.clubs add column if not exists accounts jsonb not null default '[]'::jsonb;
+update public.clubs set accounts = (select coalesce(jsonb_agg(jsonb_build_object('platform', 'instagram', 'handle', h)), '[]'::jsonb) from unnest(handles) h)
+  where accounts = '[]'::jsonb and cardinality(handles) > 0;
+
+-- the club logo can be uploaded from the admin: bucket "logos" (public, library-filters.sql), folder clubs/, admins only
+drop policy if exists "Admins upload club logos" on storage.objects;
+create policy "Admins upload club logos" on storage.objects for insert to authenticated with check (bucket_id = 'logos' and name like 'clubs/%' and public.is_admin());
+drop policy if exists "Admins replace club logos" on storage.objects;
+create policy "Admins replace club logos" on storage.objects for update to authenticated using (bucket_id = 'logos' and name like 'clubs/%' and public.is_admin());
+drop policy if exists "Admins delete club logos" on storage.objects;
+create policy "Admins delete club logos" on storage.objects for delete to authenticated using (bucket_id = 'logos' and name like 'clubs/%' and public.is_admin());
+
 create table if not exists public.club_members (
   club_id     bigint not null references public.clubs (id) on delete cascade,
   user_id     uuid not null references auth.users (id) on delete cascade,
@@ -131,7 +144,7 @@ begin
     group by p.id
   )
   select jsonb_build_object('ok', true,
-    'club', (select jsonb_build_object('id', c.id, 'name', c.name, 'logo_url', c.logo_url) from public.clubs c where c.id = p_club),
+    'club', (select jsonb_build_object('id', c.id, 'name', c.name, 'logo_url', c.logo_url, 'accounts', c.accounts) from public.clubs c where c.id = p_club),
     'sections', coalesce((select jsonb_agg(jsonb_build_object('id', s.id, 'name', s.name,
         'teams', coalesce((select jsonb_agg(jsonb_build_object('id', t.id, 'name', t.name) order by t.sort, t.name) from public.club_teams t where t.section_id = s.id), '[]'::jsonb))
         order by s.sort, s.name) from public.club_sections s where s.club_id = p_club), '[]'::jsonb),
@@ -191,15 +204,18 @@ end $$;
 
 create or replace function public.admin_club_save(p jsonb)
 returns bigint language plpgsql volatile security definer set search_path = public as $$
-declare v_id bigint := nullif(p ->> 'id', '')::bigint; hs text[];
+declare v_id bigint := nullif(p ->> 'id', '')::bigint; hs text[]; acc jsonb;
 begin
   if not public.is_admin() then raise exception 'Not allowed'; end if;
-  select coalesce(array_agg(distinct lower(regexp_replace(trim(h), '^@', ''))) filter (where trim(h) <> ''), '{}') into hs
-    from jsonb_array_elements_text(coalesce(p -> 'handles', '[]'::jsonb)) h;
+  -- profiles: [{ platform, handle }] (cleaned, no duplicates); the handles for mentions come from them
+  select coalesce(jsonb_agg(distinct jsonb_build_object('platform', lower(a ->> 'platform'), 'handle', public.clean_handle(a ->> 'handle'))), '[]'::jsonb) into acc
+    from jsonb_array_elements(coalesce(p -> 'accounts', '[]'::jsonb)) a
+    where public.clean_handle(a ->> 'handle') is not null and lower(a ->> 'platform') in ('instagram', 'tiktok', 'x', 'youtube', 'facebook', 'linkedin', 'threads');
+  select coalesce(array_agg(distinct a ->> 'handle'), '{}') into hs from jsonb_array_elements(acc) a;
   if v_id is null then
-    insert into public.clubs (name, logo_url, handles) values (trim(p ->> 'name'), nullif(trim(p ->> 'logo_url'), ''), hs) returning id into v_id;
+    insert into public.clubs (name, logo_url, handles, accounts) values (trim(p ->> 'name'), nullif(trim(p ->> 'logo_url'), ''), hs, acc) returning id into v_id;
   else
-    update public.clubs set name = trim(p ->> 'name'), logo_url = nullif(trim(p ->> 'logo_url'), ''), handles = hs,
+    update public.clubs set name = trim(p ->> 'name'), logo_url = nullif(trim(p ->> 'logo_url'), ''), handles = hs, accounts = acc,
       active = coalesce((p ->> 'active')::boolean, active), updated_at = now() where id = v_id;
   end if;
   return v_id;
@@ -211,7 +227,10 @@ returns jsonb language plpgsql stable security definer set search_path = public 
 begin
   if not public.is_admin() then raise exception 'Not allowed'; end if;
   return jsonb_build_object(
-    'club', (select jsonb_build_object('id', c.id, 'name', c.name, 'logo_url', c.logo_url, 'handles', to_jsonb(c.handles), 'active', c.active) from public.clubs c where c.id = p_club),
+    'club', (select jsonb_build_object('id', c.id, 'name', c.name, 'logo_url', c.logo_url, 'handles', to_jsonb(c.handles), 'accounts', c.accounts, 'active', c.active,
+      -- the club's logo in the Content Library (a club filter with the same name), to reuse it
+      'library_logo', (select ic.logo_url from public.idea_catalog ic where ic.category = 'club' and lower(ic.name) = lower(c.name) and ic.logo_url is not null limit 1))
+      from public.clubs c where c.id = p_club),
     'members', coalesce((select jsonb_agg(jsonb_build_object('user_id', m.user_id, 'email', u.email, 'added', m.created_at) order by u.email)
       from public.club_members m join auth.users u on u.id = m.user_id where m.club_id = p_club), '[]'::jsonb),
     'sections', coalesce((select jsonb_agg(jsonb_build_object('id', s.id, 'name', s.name,

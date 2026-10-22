@@ -33,6 +33,23 @@
     if (cur) loadClub(); else $("[data-club]").innerHTML = "";
   }
 
+  // one row per club profile: network + account
+  const accRow = (a) => `<div class="mcl-acc-row"><select class="select select-sm" name="acc_platform">${Object.entries(PF).map(([k, v]) => `<option value="${k}"${a.platform === k ? " selected" : ""}>${v}</option>`).join("")}</select>
+    <input class="input input-sm" name="acc_handle" value="${esc(a.handle || "")}" placeholder="@account"><button class="icon-btn" type="button" title="Remove" aria-label="Remove" data-acc-del>${icon("trash")}</button></div>`;
+  const setLogo = (url) => {
+    const f = $("[data-form]"); f.logo_url.value = url;
+    $("[data-logo-prev]").innerHTML = url ? `<img src="${esc(url)}" alt="">` : `<span>${esc(club.club.name.slice(0, 2).toUpperCase())}</span>`;
+  };
+  async function uploadLogo(file) {
+    if (file.size > 1048576) return fail(new Error("The logo must be 1 MB or less."));
+    const ext = (file.name.split(".").pop() || "png").toLowerCase().replace(/[^a-z]/g, "");
+    const path = `clubs/${cur}-${Date.now()}.${ext}`;
+    const { error } = await A.db.storage.from("logos").upload(path, file, { contentType: file.type, upsert: true });
+    if (error) return fail(new Error(/policy|row-level|not allowed/i.test(error.message) ? "Run supabase/my-club.sql again (it adds the logo upload)." : error.message));
+    setLogo(A.db.storage.from("logos").getPublicUrl(path).data.publicUrl);
+    A.toast("Logo uploaded. Press Save to keep it.");
+  }
+
   async function loadClub() {
     try { club = await rpc("admin_club", { p_club: cur }); } catch (e) { return fail(e); }
     const c = club.club, people = club.people;
@@ -53,11 +70,21 @@
         </tbody></table></div>`;
     };
     $("[data-club]").innerHTML = `
-      <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Club</h2>${info("Name and logo shown on the club's page. The club's own accounts (comma separated): a sponsor post that mentions one of them counts as “linked to the club”.")}</header>
+      <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Club</h2>${info("Name, logo and profiles shown on the club's page. The club's profiles (as many per network as it has) also tell which sponsor posts are “linked to the club”: the ones that mention one of them.")}</header>
         <form class="mcl-form" data-form>
+          <div class="mcl-logo-edit">
+            <span class="mcl-logo-prev" data-logo-prev>${c.logo_url ? `<img src="${esc(c.logo_url)}" alt="">` : `<span>${esc(c.name.slice(0, 2).toUpperCase())}</span>`}</span>
+            <div class="mcl-logo-act">
+              <label class="btn btn-sm">${icon("import")}Upload logo<input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden data-logo-file></label>
+              ${c.library_logo && c.library_logo !== c.logo_url ? `<button class="btn btn-sm" type="button" data-logo-lib="${esc(c.library_logo)}">Use the SCP logo</button>` : ""}
+              ${c.logo_url ? `<button class="btn btn-ghost btn-sm" type="button" data-logo-clear>Remove</button>` : ""}
+              <input class="input input-sm" name="logo_url" value="${esc(c.logo_url || "")}" placeholder="…or paste an image URL">
+            </div>
+          </div>
           <label>Name<input class="input" name="name" value="${esc(c.name)}" required></label>
-          <label>Logo URL<input class="input" name="logo_url" value="${esc(c.logo_url || "")}" placeholder="https://…"></label>
-          <label>Club accounts<input class="input" name="handles" value="${esc((c.handles || []).join(", "))}" placeholder="fcbarcelona, fcbbasket, fcbhandbol"></label>
+          <div class="mcl-accs"><span class="mcl-accs-h">Club profiles</span>
+            <div data-accs>${(c.accounts?.length ? c.accounts : [{ platform: "instagram", handle: "" }]).map(accRow).join("")}</div>
+            <button class="btn btn-ghost btn-sm" type="button" data-acc-add>${icon("plus")}Add profile</button></div>
           <label class="check-inline"><input type="checkbox" name="active"${c.active ? " checked" : ""}> Active</label>
           <div class="mcl-form-act"><button class="btn btn-primary" type="submit">Save</button><button class="btn btn-danger" type="button" data-club-del>${icon("trash")}Delete club</button></div>
         </form></section>
@@ -121,7 +148,7 @@
         const input = m.el.querySelector("[name=name]"); input.focus();
         const create = async () => {
           if (!input.value.trim()) return input.focus();
-          try { const id = await rpc("admin_club_save", { p: { name: input.value.trim(), handles: [] } }); m.close(); A.toast("Club created"); loadClubs(id); } catch (x) { fail(x); }
+          try { const id = await rpc("admin_club_save", { p: { name: input.value.trim(), accounts: [] } }); m.close(); A.toast("Club created"); loadClubs(id); } catch (x) { fail(x); }
         };
         m.el.querySelector("[data-new-save]").addEventListener("click", create);
         m.el.querySelector("[data-new-form]").addEventListener("submit", (ev) => { ev.preventDefault(); create(); });
@@ -129,6 +156,10 @@
       }
       if (b.dataset.pick) { cur = Number(b.dataset.pick); return loadClubs(cur); }
       if (b.matches("[data-template]")) return template();
+      if (b.matches("[data-acc-add]")) { $("[data-accs]").insertAdjacentHTML("beforeend", accRow({ platform: "instagram", handle: "" })); return $("[data-accs] .mcl-acc-row:last-child input").focus(); }
+      if (b.matches("[data-acc-del]")) return b.closest(".mcl-acc-row").remove();
+      if (b.dataset.logoLib) return setLogo(b.dataset.logoLib);
+      if (b.matches("[data-logo-clear]")) return setLogo("");
       if (b.matches("[data-scraper]")) return scraperFile();
       if (b.matches("[data-club-del]")) {
         if (!(await A.confirmDialog({ title: `Delete ${club.club.name}?`, text: "Deletes the club's space, sections, teams, players, sponsors and members. The posts stay in the library.", confirm: "Delete", danger: true }))) return;
@@ -146,6 +177,7 @@
   });
   main.addEventListener("change", async (e) => {
     try {
+      if (e.target.matches("[data-logo-file]")) { const file = e.target.files[0]; e.target.value = ""; if (file) await uploadLogo(file); return; }
       if (e.target.dataset.active) { await rpc("admin_club_edit", { p_what: "person", p_id: Number(e.target.dataset.active), p: { active: e.target.checked } }); return loadClub(); }
       if (e.target.matches("[data-file]")) {
         const file = e.target.files[0]; e.target.value = ""; if (!file) return;
@@ -162,7 +194,8 @@
     const f = e.target;
     try {
       if (f.matches("[data-form]")) {
-        await rpc("admin_club_save", { p: { id: cur, name: f.name.value, logo_url: f.logo_url.value, handles: f.handles.value.split(/[,\s]+/), active: f.active.checked } });
+        const accounts = [...f.querySelectorAll(".mcl-acc-row")].map((r) => ({ platform: r.querySelector("[name=acc_platform]").value, handle: r.querySelector("[name=acc_handle]").value.trim() })).filter((a) => a.handle);
+        await rpc("admin_club_save", { p: { id: cur, name: f.name.value, logo_url: f.logo_url.value, accounts, active: f.active.checked } });
         A.toast("Saved"); return loadClubs(cur);
       }
       if (f.matches("[data-member]")) {

@@ -1097,6 +1097,8 @@ window.SCP_ES = {
   "{n} months free": "{n} meses gratis",
   "save {amount}": "ahorras {amount}",
   "You save {amount} a year": "Ahorras {amount} al año",
+  "Tap one or more players to see only theirs": "Toca uno o varios jugadores para ver solo los suyos",
+  "Tap one or more sponsors to see only theirs": "Toca uno o varios patrocinadores para ver solo los suyos",
   "My Club": "Mi club",
   "Section": "Sección",
   "All sections": "Todas las secciones",

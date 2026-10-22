@@ -1132,3 +1132,15 @@ select.cs-native { display: none !important; }
 .mcl-link.is-ended { opacity: 0.6; text-decoration: line-through; } .mcl-link.is-ended small, .mcl-link.is-ended button { text-decoration: none; }
 @media (max-width: 900px) { .mcl-form { grid-template-columns: 1fr; } }
 .mcl-new label { display: grid; gap: 6px; font-size: 13px; color: var(--muted); }
+/* My Club → Club: logo (upload / SCP logo / URL) and the club's profiles, one row each */
+.mcl-form { grid-template-columns: minmax(0, 1fr); max-width: 760px; }
+.mcl-logo-edit { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.mcl-logo-prev { flex: none; display: grid; place-items: center; width: 84px; height: 84px; border-radius: 20px; background: var(--panel-2); border: 1px solid var(--border); overflow: hidden; }
+.mcl-logo-prev img { width: 100%; height: 100%; object-fit: contain; padding: 10px; }
+.mcl-logo-prev span { font: 700 22px var(--display); color: var(--accent-light); }
+.mcl-logo-act { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; flex: 1; min-width: 240px; }
+.mcl-logo-act .input { flex: 1; min-width: 200px; }
+.mcl-accs { display: grid; gap: 8px; }
+.mcl-accs-h { font-size: 12.5px; color: var(--muted); }
+.mcl-acc-row { display: grid; grid-template-columns: 150px minmax(0, 1fr) 34px; gap: 8px; align-items: center; }
+.mcl-accs > .btn { justify-self: start; }
