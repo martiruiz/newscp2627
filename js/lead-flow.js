@@ -395,16 +395,19 @@
         const today = slots.days.find((x) => x.day === slots.day);
         box.innerHTML = `<div class="dp-days" role="radiogroup" aria-label="${esc(t("Day"))}">${slots.days.slice(0, 14).map((x, i) => { const p = dayParts(x.day);
             return `<button type="button" class="dp-day" role="radio" aria-checked="${x.day === slots.day}" data-day="${x.day}" style="--i:${i}"><small>${esc(p.wd)}</small><b>${p.n}</b><small>${esc(p.m)}</small></button>`; }).join("")}</div>
-          <div class="dp-parts" role="radiogroup" aria-label="${esc(t("Time"))}">${[["am", "Morning", "9–13 h"], ["pm", "Afternoon", "13–17 h"]].map(([k, l, h]) => {
+          ${slots.part
+            ? `<button type="button" class="dp-back" data-part-back>← ${esc(t(slots.part === "am" ? "Morning" : "Afternoon"))} · ${esc(t("change"))}</button>
+               <div class="dp-times" role="radiogroup" aria-label="${esc(t("Time"))}">${today.times.filter((iso) => partOf(iso) === slots.part).map((iso, i) => `<button type="button" class="dp-time" role="radio" aria-checked="false" data-time="${esc(iso)}" style="--i:${i}">${esc(timeOf(iso))}</button>`).join("")}</div>`
+            : `<div class="dp-parts" role="radiogroup" aria-label="${esc(t("Time"))}">${[["am", "Morning", "9–13 h"], ["pm", "Afternoon", "13–17 h"]].map(([k, l, h]) => {
               const n = today.times.filter((iso) => partOf(iso) === k).length;
-              return `<button type="button" class="dp-part" role="radio" aria-checked="${slots.part === k}" data-part="${k}"${n ? "" : " disabled"}><b>${esc(t(l))}</b><small>${esc(h)} · ${esc(t(n === 1 ? "{n} time" : "{n} times", { n }))}</small></button>`; }).join("")}</div>
-          ${slots.part ? `<div class="dp-times" role="radiogroup" aria-label="${esc(t("Time"))}">${today.times.filter((iso) => partOf(iso) === slots.part).map((iso, i) => `<button type="button" class="dp-time" role="radio" aria-checked="false" data-time="${esc(iso)}" style="--i:${i}">${esc(timeOf(iso))}</button>`).join("")}</div>` : ""}
+              return `<button type="button" class="dp-part" role="radio" aria-checked="false" data-part="${k}"${n ? "" : " disabled"}><b>${esc(t(l))}</b><small>${esc(h)} · ${esc(t(n === 1 ? "{n} time" : "{n} times", { n }))}</small></button>`; }).join("")}</div>`}
           <p class="dp-tz">${esc(t("Times in your time zone ({tz})", { tz: TZ.replace(/_/g, " ") }))}</p>`;
       };
       draw();
       stage.onclick = (e) => {
         const d = e.target.closest("[data-day]"); if (d) { slots.day = d.dataset.day; slots.part = null; return draw(); }
-        const pt = e.target.closest("[data-part]"); if (pt && !pt.disabled) { slots.part = slots.part === pt.dataset.part ? null : pt.dataset.part; return draw(); }
+        const pt = e.target.closest("[data-part]"); if (pt && !pt.disabled) { slots.part = pt.dataset.part; return draw(); }
+        if (e.target.closest("[data-part-back]")) { slots.part = null; return draw(); }   // back to Morning / Afternoon
         const tm = e.target.closest("[data-time]"); if (tm) { slots.pick = tm.dataset.time; return go(demoForm); }
         if (e.target.closest("[data-fallback]")) { st.history.push(st.render); st.render = qorg; qorg(); }
       };

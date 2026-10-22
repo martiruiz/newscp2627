@@ -692,6 +692,7 @@ window.SCP_ES = {
   "30 minutes with our team, set up for your sport. Pick a day and a time.": "30 minutos con nuestro equipo, preparados para tu deporte. Elige día y hora.",
   "No free times in the next weeks. Leave us your number and we’ll find one.": "No quedan horas libres en las próximas semanas. Déjanos tu número y buscamos una.",
   "Leave my number": "Dejar mi número",
+  "change": "cambiar",
   "Morning": "Mañana",
   "Afternoon": "Tarde",
   "{n} time": "{n} hora",

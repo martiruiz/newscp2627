@@ -7154,3 +7154,5 @@ section[id], :target { scroll-margin-top: 92px; }
 .dp-part[aria-checked="true"] b { color: var(--gold); }
 .dp-part:disabled { opacity: 0.4; cursor: not-allowed; }
 @media (max-width: 640px) { .dp-days { display: flex; } .dp-part { min-width: 0; flex: 1; padding: 12px 10px; } }
+.dp-back { border: 0; background: none; color: var(--muted); font: 600 14px var(--font-body); cursor: pointer; padding: 4px 8px; border-radius: 999px; }
+.dp-back:hover, .dp-back:focus-visible { color: var(--gold); outline: none; }
