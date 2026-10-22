@@ -1097,6 +1097,7 @@ window.SCP_ES = {
   "{n} months free": "{n} meses gratis",
   "save {amount}": "ahorras {amount}",
   "You save {amount} a year": "Ahorras {amount} al año",
+  "The club's posts where the sponsor is tagged and the brand's posts that mention the club.": "Los posts del club donde aparece etiquetado el patrocinador y los posts de la marca que mencionan al club.",
   "Tap one or more players to see only theirs": "Toca uno o varios jugadores para ver solo los suyos",
   "Tap one or more sponsors to see only theirs": "Toca uno o varios patrocinadores para ver solo los suyos",
   "My Club": "Mi club",

@@ -19,7 +19,7 @@
   let clubs = [], cur = null, club = null;
 
   main.innerHTML = `<div class="page-head"><div><h1>My Club</h1><p>Each club's space: who can open it, its sections and teams, its players and sponsors.</p></div>
-    <div class="head-actions"><button class="btn btn-primary" type="button" data-new>${icon("plus")}New club</button></div></div>
+    <div class="head-actions"><button class="btn" type="button" data-daily title="Every active club's accounts, for the daily scraping run">${icon("download")}Daily accounts (all clubs)</button><button class="btn btn-primary" type="button" data-new>${icon("plus")}New club</button></div></div>
     <div class="mcl-clubs" data-clubs><p class="muted">Loading…</p></div>
     <div data-club></div>`;
 
@@ -52,6 +52,10 @@
 
   async function loadClub() {
     try { club = await rpc("admin_club", { p_club: cur }); } catch (e) { return fail(e); }
+    // each account's last imported post (supabase/my-club-daily.sql), to see that the daily scraping keeps it fresh
+    const last = new Map();
+    try { for (const a of await rpc("admin_club_accounts")) last.set(`${a.platform}|${a.handle}`, a.last_post); } catch {}
+    const age = (d) => { if (!d) return ""; const n = Math.floor((Date.now() - new Date(d)) / 864e5); return n <= 0 ? "today" : n === 1 ? "1 day ago" : `${n} days ago`; };
     const c = club.club, people = club.people;
     const secName = new Map(club.sections.map((s) => [s.id, s.name]));
     const teamName = new Map(club.sections.flatMap((s) => s.teams.map((t) => [t.id, `${s.name} · ${t.name}`])));
@@ -64,7 +68,7 @@
         ${list.map((p) => `<tr${p.active ? "" : ' class="is-off"'}>
           <td><div class="ld-person">${p.photo_url ? `<img class="mcl-ph" src="${esc(p.photo_url)}" alt="">` : `<span class="ld-av">${esc(p.name.charAt(0).toUpperCase())}</span>`}<span><b>${esc(p.name)}</b></span></div></td>
           <td>${p.links.map((l) => `<span class="mcl-link${l.live ? "" : " is-ended"}" title="${esc([l.starts_on && `from ${l.starts_on}`, l.ends_on && `until ${l.ends_on}`].filter(Boolean).join(" ") || "no dates")}">${esc(linkLabel(l))}${l.live ? `<button type="button" title="End this link today (keeps the history)" data-end="${l.id}">✕</button>` : ` <small>ended</small><button type="button" title="Active again" data-relink="${l.id}">↺</button>`}</span>`).join("")}</td>
-          <td>${p.accounts.length ? p.accounts.map((a) => `<span class="mcl-acc${a.posts ? "" : " is-zero"}">${esc(PF[a.platform] || a.platform)} @${esc(a.handle)} · <b>${a.posts ? num(a.posts) + " posts" : "not scraped yet"}</b></span>`).join("") : `<span class="muted">—</span>`}</td>
+          <td>${p.accounts.length ? p.accounts.map((a) => `<span class="mcl-acc${a.posts ? "" : " is-zero"}">${esc(PF[a.platform] || a.platform)} @${esc(a.handle)} · <b title="${esc(last.get(`${a.platform}|${a.handle}`) ? `Last post imported ${age(last.get(`${a.platform}|${a.handle}`))}` : "")}">${a.posts ? num(a.posts) + " posts" : "not scraped yet"}</b></span>`).join("") : `<span class="muted">—</span>`}</td>
           <td><input class="check" type="checkbox" aria-label="Active" data-active="${p.id}"${p.active ? " checked" : ""}></td>
           <td class="td-actions"><button class="icon-btn" type="button" title="Delete" aria-label="Delete" data-del="${p.id}">${icon("trash")}</button></td></tr>`).join("")}
         </tbody></table></div>`;
@@ -98,7 +102,7 @@
         ${pending ? `<div class="mcl-pending">${icon("alert")}<span><b>${num(pending)} account${pending === 1 ? "" : "s"} not scraped yet.</b> Their posts aren't in SCP: add them to the scraping Excel and import their posts as usual.</span><button class="btn btn-sm" type="button" data-scraper>${icon("download")}Accounts for the scraper</button></div>` : ""}
       </section>
       <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Players</h2><span class="aud-count">${num(people.filter((p) => p.kind === "player").length)}</span></header>${table("player")}</section>
-      <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Sponsors</h2><span class="aud-count">${num(people.filter((p) => p.kind === "sponsor").length)}</span></header>${table("sponsor")}</section>`;
+      <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Sponsors</h2><span class="aud-count">${num(people.filter((p) => p.kind === "sponsor").length)}</span><span class="spacer"></span><button class="btn btn-primary btn-sm" type="button" data-add-sponsor>${icon("plus")}Add sponsor from the library</button></header>${table("sponsor")}</section>`;
   }
 
   // the Excel: headers in EN / ES / CA, any order
@@ -139,6 +143,70 @@
     XLSX.writeFile(wb, `scp-${club.club.name.toLowerCase().replace(/\W+/g, "-")}-accounts-to-scrape.xlsx`);
   }
 
+  // every active club's accounts for the daily scraping run (same columns as the accounts Excel)
+  async function dailyFile() {
+    const list = await rpc("admin_club_accounts");
+    if (!list.length) return fail(new Error("No club accounts yet."));
+    const url = { instagram: (h) => `https://www.instagram.com/${h}/`, tiktok: (h) => `https://www.tiktok.com/@${h}`, x: (h) => `https://x.com/${h}`, youtube: (h) => `https://www.youtube.com/@${h}`, facebook: (h) => `https://www.facebook.com/${h}`, linkedin: (h) => `https://www.linkedin.com/company/${h}` };
+    const rows = [["account", "platform", "url", "name", "sport", "club", "entity", "posts in SCP", "last post imported"],
+      ...list.map((a) => [a.handle, PF[a.platform] || a.platform, url[a.platform]?.(a.handle) || "", a.person, a.section || "", a.club, a.kind === "player" ? "Player" : "Brand", a.posts, a.last_post ? a.last_post.slice(0, 10) : ""])];
+    const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), "Club accounts");
+    XLSX.writeFile(wb, `scp-clubs-accounts-${new Date().toISOString().slice(0, 10)}.xlsx`);
+  }
+
+  // a sponsor from the library: its scraped accounts and / or its sponsor tag, and where it belongs
+  function addSponsor() {
+    const pick = { accounts: new Map(), tag: null };
+    const scopes = [["", "Whole club (global sponsor)"], ...club.sections.flatMap((s) => [[`s${s.id}`, `${s.name} · all teams`], ...s.teams.map((t) => [`t${t.id}`, `${s.name} · ${t.name}`])])];
+    const m = A.modal({ title: "Add sponsor from the library", sub: "Search a brand: its scraped accounts (their posts) and its sponsor tag (the club's posts where it appears).", size: "lg",
+      body: `<div class="mcl-sp">
+        <label class="mcl-sp-q">${icon("filters")}<input class="input" type="search" placeholder="Search a brand: nike, spotify, @redbull…" data-sp-q autofocus></label>
+        <div class="mcl-sp-res" data-sp-res><p class="muted">Type at least 2 letters.</p></div>
+        <div class="mcl-sp-form">
+          <label>Name<input class="input" data-sp-name placeholder="Brand name"></label>
+          <label>Logo URL<input class="input" data-sp-logo placeholder="https://…"></label>
+          <label>Where<select class="select" data-sp-scope>${scopes.map(([v, l]) => `<option value="${v}">${esc(l)}</option>`).join("")}</select></label>
+          <label>Since<input class="input" type="date" data-sp-from></label>
+        </div>
+        <p class="mcl-sp-sum" data-sp-sum></p></div>`,
+      foot: `<button class="btn btn-primary" type="button" data-sp-save>Add sponsor</button>` });
+    const el = m.el, res = el.querySelector("[data-sp-res]");
+    const sum = () => { el.querySelector("[data-sp-sum]").textContent = [pick.accounts.size ? `${pick.accounts.size} account${pick.accounts.size === 1 ? "" : "s"}` : "", pick.tag ? `tag “${pick.tag.name}”` : ""].filter(Boolean).join(" · ") || "Pick at least one account or the sponsor tag."; };
+    let data = { accounts: [], sponsors: [] };
+    const draw = () => {
+      res.innerHTML = (data.accounts.length ? `<p class="mcl-sp-h">Scraped accounts</p>${data.accounts.map((a) => { const k = `${a.platform}|${a.handle}`; return `<button type="button" class="mcl-sp-item${pick.accounts.has(k) ? " is-on" : ""}" data-sp-acc="${esc(k)}"><b>${esc(PF[a.platform] || a.platform)} @${esc(a.handle)}</b>${a.name ? `<small>${esc(a.name)}</small>` : ""}<span>${num(a.posts)} posts</span></button>`; }).join("")}` : "")
+        + (data.sponsors.length ? `<p class="mcl-sp-h">Sponsor tags</p>${data.sponsors.map((t) => `<button type="button" class="mcl-sp-item${pick.tag?.id === t.id ? " is-on" : ""}" data-sp-tag="${t.id}">${t.logo_url ? `<img src="${esc(t.logo_url)}" alt="">` : ""}<b>${esc(t.name)}</b><span>${num(t.posts)} posts</span></button>`).join("")}` : "")
+        || `<p class="muted">Nothing in the library with that name.</p>`;
+      sum();
+    };
+    let timer;
+    el.querySelector("[data-sp-q]").addEventListener("input", (e) => {
+      clearTimeout(timer);
+      const q = e.target.value.trim();
+      if (q.length < 2) { res.innerHTML = `<p class="muted">Type at least 2 letters.</p>`; return; }
+      timer = setTimeout(async () => { try { data = await rpc("admin_brand_search", { p_q: q }); draw(); } catch (x) { fail(x); } }, 250);
+    });
+    res.addEventListener("click", (e) => {
+      const a = e.target.closest("[data-sp-acc]"), t = e.target.closest("[data-sp-tag]");
+      const name = el.querySelector("[data-sp-name]"), logo = el.querySelector("[data-sp-logo]");
+      if (a) { const k = a.dataset.spAcc; pick.accounts.has(k) ? pick.accounts.delete(k) : pick.accounts.set(k, { platform: k.split("|")[0], handle: k.split("|")[1] }); if (!name.value) name.value = data.accounts.find((x) => `${x.platform}|${x.handle}` === k)?.name || k.split("|")[1]; }
+      if (t) { const tag = data.sponsors.find((x) => x.id === Number(t.dataset.spTag)); pick.tag = pick.tag?.id === tag.id ? null : tag; if (pick.tag) { name.value = tag.name; if (tag.logo_url && !logo.value) logo.value = tag.logo_url; } }
+      draw();
+    });
+    sum();
+    el.querySelector("[data-sp-save]").addEventListener("click", async () => {
+      const name = el.querySelector("[data-sp-name]").value.trim(), scope = el.querySelector("[data-sp-scope]").value;
+      if (!name) return fail(new Error("The sponsor needs a name."));
+      if (!pick.accounts.size && !pick.tag) return fail(new Error("Pick at least one account or the sponsor tag."));
+      try {
+        const r = await rpc("admin_club_add_sponsor", { p_club: cur, p: { name, photo_url: el.querySelector("[data-sp-logo]").value, catalog_value_id: pick.tag?.id || null,
+          accounts: [...pick.accounts.values()], section_id: scope.startsWith("s") ? scope.slice(1) : null, team_id: scope.startsWith("t") ? scope.slice(1) : null, starts_on: el.querySelector("[data-sp-from]").value } });
+        if (!r.ok) return fail(new Error(r.error));
+        m.close(); A.toast(`${name} added`); loadClubs(cur);
+      } catch (x) { fail(/admin_club_add_sponsor|admin_brand_search/.test(x.message) ? new Error("Run supabase/my-club-daily.sql in Supabase first.") : x); }
+    });
+  }
+
   main.addEventListener("click", async (e) => {
     const b = e.target.closest("button"); if (!b) return;
     try {
@@ -156,6 +224,8 @@
       }
       if (b.dataset.pick) { cur = Number(b.dataset.pick); return loadClubs(cur); }
       if (b.matches("[data-template]")) return template();
+      if (b.matches("[data-daily]")) return dailyFile();
+      if (b.matches("[data-add-sponsor]")) return addSponsor();
       if (b.matches("[data-acc-add]")) { $("[data-accs]").insertAdjacentHTML("beforeend", accRow({ platform: "instagram", handle: "" })); return $("[data-accs] .mcl-acc-row:last-child input").focus(); }
       if (b.matches("[data-acc-del]")) return b.closest(".mcl-acc-row").remove();
       if (b.dataset.logoLib) return setLogo(b.dataset.logoLib);
@@ -185,6 +255,7 @@
         if (!rows.length) return fail(new Error("No rows with a Name in that file. Use the Excel template."));
         const r = await rpc("admin_club_import", { p_club: cur, p_rows: rows });
         A.toast(`${num(r.people)} rows · ${num(r.accounts)} accounts${r.skipped ? ` · ${r.skipped} without a name skipped` : ""}`);
+        A.db.rpc("club_mark_posts", { p_ids: null }).then(() => {}, () => {});   // tags for the club-only posts of these accounts (my-club-daily.sql)
         return loadClubs(cur);
       }
     } catch (x) { fail(x); }

@@ -672,6 +672,16 @@
         const h = await A.db.rpc("admin_import_hold", { p_import_id: wizard.importId });
         if (h.error) term.log("warn", `review: ${esc(h.error.message)} — run supabase/import-review.sql in Supabase (the posts are visible right away)`);
       }
+      // My Club (supabase/my-club-daily.sql): the clubs' players' and sponsors' posts → only in My Club, with the tags they miss
+      if (total.created + total.replaced) {
+        let club = { posts: 0, club_only: 0, tags_added: 0 };
+        for (const part of A.chunk(rows.map((r) => r.external_id), 1000)) {
+          const r = await A.db.rpc("club_mark_imported", { p_external_ids: part });
+          if (r.error) { if (!/does not exist|schema cache|Could not find/i.test(r.error.message)) term.log("warn", `My Club: ${esc(r.error.message)}`); club = null; break; }
+          for (const k of Object.keys(club)) club[k] += r.data?.[k] || 0;
+        }
+        if (club?.posts) term.log("ok", `My Club: ${num(club.posts)} posts from club accounts · ${num(club.club_only)} only in My Club · ${num(club.tags_added)} tags added`);
+      }
       // Cached counts of the library (supabase/performance.sql)
       term.log("sys", "refreshing library counts…");
       for (const part of ["values", "totals"]) { const r = await A.db.rpc("refresh_library_stats", { p_part: part }); if (r.error) term.log("warn", `refresh ${part}: ${esc(r.error.message)}`); }

@@ -133,7 +133,7 @@
         ${st.tab === "sponsors" && list.length ? `<div class="mc-mode" role="group" aria-label="${esc(t("Which posts"))}">
           <div class="mc-mode-sw"><button type="button" aria-pressed="${!st.linked}" data-mc-linked="0">${esc(t("All the brand's posts"))}</button>
           <button type="button" aria-pressed="${st.linked}" data-mc-linked="1">${esc(t("Posts linked to the club"))}</button></div>
-          <small>${esc(t(st.linked ? "Only posts that mention the club's accounts." : "Everything the brand posts, about the club or not."))}</small></div>` : ""}
+          <small>${esc(t(st.linked ? "The club's posts where the sponsor is tagged and the brand's posts that mention the club." : "Everything the brand posts, about the club or not."))}</small></div>` : ""}
       </div>`;
   }
 
