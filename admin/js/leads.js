@@ -12,7 +12,10 @@
   const STATUS = { new: "New", qualified: "Qualified", demo_booked: "Demo booked", demo_completed: "Demo completed", customer: "Customer", lost: "Lost" };
   const MEET = { none: "—", booked: "Booked", rescheduled: "Rescheduled", cancelled: "Cancelled", completed: "Completed", no_show: "No-show" };
   const f = { q: "", status: "", org_type: "", challenge: "", identified: true };
-  let leads = [];
+  let leads = [], tab = "all";
+  // tabs: what came in from the website, by kind (a lead can be in more than one: a demo with a message…)
+  const TABS = [["all", "All", () => true], ["demos", "Booked demos", (l) => !!l.meeting_at || (l.meeting_status && l.meeting_status !== "none")],
+    ["phone", "Phone contacts", (l) => !!l.phone], ["messages", "Messages", (l) => !!(l.message || "").trim()]];
 
   main.innerHTML = `<div class="page-head"><div><h1>Leads &amp; Demos</h1><p data-sub>Loading…</p></div>
     <div class="head-actions"><button class="btn" type="button" data-rules>${icon("edit")}Recommendation rules</button>
@@ -26,6 +29,7 @@
       <select class="select" data-f="challenge"><option value="">All needs</option>${Object.entries(CH).map(([k, v]) => `<option value="${k}">${v}</option>`).join("")}</select>
       <label class="check-inline"><input type="checkbox" data-f="identified" checked> With email or phone</label>
     </div>
+    <nav class="ms-tabs ld-tabs" role="tablist" data-tabs></nav>
     <section class="panel ld-list"><header class="aud-h aud-h-lg"><h2>Leads</h2>${info("People who left their details in the lead form (Book a demo / Contact / the home questions), newest activity first. Click a row for every answer, the demo and notes; change the commercial status right in the list. Filters above apply.")}<span class="spacer"></span><b class="aud-count" data-count></b></header><div data-list><p class="muted panel-pad">Loading…</p></div></section>`;
 
   const fmt = (iso) => (iso ? new Date(iso).toLocaleString("es-ES", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "—");
@@ -41,7 +45,6 @@
     leads = data || [];
     const booked = leads.filter((l) => l.meeting_status === "booked" || l.meeting_status === "rescheduled").length;
     $("[data-sub]").textContent = `${num(leads.length)} lead${leads.length === 1 ? "" : "s"} · ${num(booked)} upcoming demo${booked === 1 ? "" : "s"}`;
-    $("[data-count]").textContent = num(leads.length);
     const kpi = (label, tip, n, cls = "") => `<div class="aud-kpi${cls ? ` ${cls}` : ""}"><span>${label} ${info(tip)}</span><b>${n}</b></div>`;
     $("[data-kpis]").innerHTML = kpi("Leads", "Leads that match the filters below (with “With email only” on, just the ones who gave their email).", num(leads.length))
       + kpi("Upcoming demos", "Leads with a demo booked or rescheduled (Cal.com sends it here; ✓ = confirmed by Cal.com).", num(booked), "is-gold")
@@ -51,11 +54,14 @@
   }
 
   function render() {
-    $("[data-list]").innerHTML = leads.length ? `<div class="table-wrap"><table class="data ld-table"><thead><tr>
+    $("[data-tabs]").innerHTML = TABS.map(([k, label, ok]) => `<a href="#" role="tab" data-tab="${k}" aria-selected="${tab === k}">${label} <b>${num(leads.filter(ok).length)}</b></a>`).join("");
+    const list = leads.filter(TABS.find(([k]) => k === tab)[2]);
+    $("[data-count]").textContent = num(list.length);
+    $("[data-list]").innerHTML = list.length ? `<div class="table-wrap"><table class="data ld-table"><thead><tr>
       <th>Updated</th><th>Person</th><th>Organisation</th><th>Type</th><th>Team</th><th>Need</th><th>Next step</th><th>Status</th><th>Demo</th><th>Source</th></tr></thead><tbody>
-      ${leads.map((l) => `<tr data-id="${l.id}" class="row-click">
+      ${list.map((l) => `<tr data-id="${l.id}" class="row-click">
         <td>${fmt(l.updated_at)}</td>
-        <td><div class="ld-person"><span class="ld-av">${esc((l.name || l.email || l.phone || "?").trim().charAt(0).toUpperCase())}</span><span><b>${esc(l.name || (l.phone ? "Phone lead" : "Anonymous"))}</b><small>${esc([l.email, l.phone].filter(Boolean).join(" · ") || "no email yet")}</small></span></div></td>
+        <td><div class="ld-person"><span class="ld-av">${esc((l.name || l.email || l.phone || "?").trim().charAt(0).toUpperCase())}</span><span><b>${esc(l.name || (l.phone ? "Phone lead" : "Anonymous"))}</b><small>${esc([l.email, l.phone].filter(Boolean).join(" · ") || "no email yet")}</small>${tab === "messages" ? `<small class="ld-msg">“${esc(l.message.trim().slice(0, 90))}${l.message.trim().length > 90 ? "…" : ""}”</small>` : ""}</span></div></td>
         <td>${esc(l.organization || "—")}</td><td>${esc(ORG[l.org_type] || "—")}</td><td>${esc(SIZE[l.team_size] || "—")}</td><td>${esc(CH[l.challenge] || "—")}</td>
         <td>${l.recommendation === "demo" ? `<span class="ld-pill is-gold">Demo</span>` : l.recommendation === "trial" ? `<span class="ld-pill is-blue">Free trial</span>` : "—"}</td>
         <td><select class="select select-sm ld-status st-${l.status}" data-status="${l.id}">${Object.entries(STATUS).map(([k, v]) => `<option value="${k}"${l.status === k ? " selected" : ""}>${v}</option>`).join("")}</select></td>
@@ -133,6 +139,8 @@
     }
   });
   main.addEventListener("click", (e) => {
+    const tb = e.target.closest("[data-tab]");
+    if (tb) { e.preventDefault(); tab = tb.dataset.tab; return render(); }
     if (e.target.closest("[data-rules]")) return editRules();
     if (e.target.closest("[data-export]")) {
       // only people who gave marketing consent

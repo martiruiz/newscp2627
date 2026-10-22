@@ -2223,6 +2223,8 @@ window.SCP_ES = {
   "We'll get back to you as soon as possible.": "Te responderemos lo antes posible.",
   "How can we help?": "¿En qué podemos ayudarte?",
   "Send message": "Enviar mensaje",
+  "Your organization": "Tu organización",
+  "Send me the SCP newsletter (optional)": "Quiero recibir la newsletter de SCP (opcional)",
   "Message sent": "Mensaje enviado",
   "Book a 30-minute demo": "Reserva una demo de 30 minutos",
   "A live tour with filters set up for your sport. We'll confirm a time by email.": "Un recorrido en directo con los filtros preparados para tu deporte. Te confirmaremos la hora por email.",

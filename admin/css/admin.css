@@ -967,3 +967,8 @@ select.cs-native { display: none !important; }
 .nl-imp li { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); font-size: 13.5px; }
 .nl-imp li small { color: var(--dim); }
 .nl-send { margin-left: 4px; }
+
+/* Leads & Demos: tabs by kind (All · Booked demos · Phone contacts · Messages) */
+.ld-tabs { margin: 0 0 14px; }
+.ld-tabs a b { margin-left: 4px; font-weight: 600; opacity: 0.7; font-variant-numeric: tabular-nums; }
+.ld-msg { display: block; max-width: 340px; margin-top: 3px; color: var(--muted); font-style: italic; white-space: normal; }

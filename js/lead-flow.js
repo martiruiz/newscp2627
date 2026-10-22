@@ -39,6 +39,11 @@
   // ---------- analytics (no personal data ever leaves through here) ----------
   const rpc = (fn, body) => cfg.supabaseUrl ? fetch(`${cfg.supabaseUrl}/rest/v1/rpc/${fn}`, { method: "POST", keepalive: true,
     headers: { apikey: cfg.supabaseAnonKey, Authorization: `Bearer ${cfg.supabaseAnonKey}`, "Content-Type": "application/json" }, body: JSON.stringify(body) }) : Promise.reject(new Error("Not connected"));
+  // the newsletter box (unticked; only when they tick it) → straight into the subscribers (Admin → Audience). 409 = already in.
+  const NL_TEXT = "Send me the SCP newsletter: sports content ideas and news. I can unsubscribe at any time.";
+  const subscribe = (email, first_name, source) => cfg.supabaseUrl && fetch(`${cfg.supabaseUrl}/rest/v1/newsletter_signups`, { method: "POST", keepalive: true,
+    headers: { apikey: cfg.supabaseAnonKey, Authorization: `Bearer ${cfg.supabaseAnonKey}`, "Content-Type": "application/json", Prefer: "return=minimal" },
+    body: JSON.stringify({ email, first_name: first_name.slice(0, 80) || null, source, consent: true, consent_text: NL_TEXT }) }).catch(() => {});
   window.SCP_TRACK = (event, props = {}) => {
     const safe = { event, step: props.step, variant, source_page: page, org_type: props.org_type, recommendation: props.recommendation };
     try { (window.dataLayer = window.dataLayer || []).push({ ...safe, event: `scp_${event}` }); } catch {}
@@ -95,6 +100,7 @@
       bar.querySelector("i").style.width = `${Math.round((n / of) * 100)}%`;
       bar.setAttribute("aria-valuenow", String(Math.round((n / of) * 100)));
       count.textContent = t("Step {x} of {y}", { x: n, y: of });
+      bar.hidden = count.hidden = of === 1;   // a single step (the message form, "sent"): no "Step 1 of 1"
     }
     function show(html, { n, of, title }) {
       progress(n, of);
@@ -422,6 +428,7 @@
           <input class="dp-in" name="email" type="email" inputmode="email" autocomplete="email" required maxlength="200" placeholder="${esc(t("Your work email"))}" value="${esc(signed?.email || "")}">
           <input class="lead-hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
           <label class="lead-check"><input type="checkbox" name="privacy" required><span>${esc(t("I accept the"))} <a href="privacy.html" target="_blank" rel="noopener">${esc(t("privacy policy"))}</a></span></label>
+          <label class="lead-check"><input type="checkbox" name="newsletter"><span>${esc(t("Send me the SCP newsletter (optional)"))}</span></label>
           <p class="lead-error" role="alert" hidden></p>
           <button class="lead-btn is-primary" type="submit">${esc(t("Confirm demo"))} <span aria-hidden="true">→</span></button>
         </form>`, { n: 2, of: 2, title: t("Confirm your demo") });
@@ -439,7 +446,8 @@
           if (!form.privacy.checked) return fail("Please accept the privacy policy to continue.", form.privacy);
           const btn = form.querySelector("[type=submit]"); btn.disabled = true; btn.classList.add("is-loading");
           try {
-            await save({ name, email, privacy: true, hp: form.website.value }).catch(() => {});   // the lead, even if the booking fails
+            await save({ name, email, privacy: true, marketing: form.newsletter.checked, hp: form.website.value }).catch(() => {});   // the lead, even if the booking fails
+            if (form.newsletter.checked && !form.website.value) subscribe(email, name, "demo");
             const r = await fetch("https://api.cal.com/v2/bookings", { method: "POST", headers: { "Content-Type": "application/json", "cal-api-version": "2024-08-13" },
               body: JSON.stringify({ start: new Date(slots.pick).toISOString(), eventTypeSlug: CAL_SLUG, username: CAL_USER,
                 attendee: { name, email, timeZone: TZ, language: window.SCP_LANG === "es" ? "es" : "en" },
@@ -461,6 +469,47 @@
       }, 200);
     }
 
+    // ---------- Write to us with a message (e.g. a custom plan): the same floating look as the quick contact ----------
+    function qmsg() {
+      show(`<h2 class="lead-q lead-q-big" tabindex="-1">${esc(t("How can we help?"))}</h2>
+        <form class="lead-form lead-phone dp-form" novalidate>
+          <input class="dp-in" name="name" autocomplete="name" required maxlength="120" placeholder="${esc(t("Your name"))}" value="${esc(signed?.user_metadata?.full_name || "")}">
+          <input class="dp-in" name="email" type="email" inputmode="email" autocomplete="email" required maxlength="200" placeholder="${esc(t("Your email"))}" value="${esc(signed?.email || "")}">
+          <input class="dp-in" name="organization" autocomplete="organization" maxlength="160" placeholder="${esc(t("Your organization"))}">
+          <textarea class="dp-in dp-msg" name="message" rows="3" maxlength="4000" required placeholder="${esc(t("Your message"))}">${esc(st.prefill)}</textarea>
+          <input class="lead-hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <label class="lead-check"><input type="checkbox" name="privacy" required><span>${esc(t("I accept the"))} <a href="privacy.html" target="_blank" rel="noopener">${esc(t("privacy policy"))}</a></span></label>
+          <label class="lead-check"><input type="checkbox" name="newsletter"><span>${esc(t("Send me the SCP newsletter (optional)"))}</span></label>
+          <p class="lead-error" role="alert" hidden></p>
+          <button class="lead-btn is-primary" type="submit">${esc(t("Send message"))} <span aria-hidden="true">→</span></button>
+        </form>`, { n: 1, of: 1, title: t("Your message") });
+      stage.onclick = null; stage.onkeydown = null;
+      setTimeout(() => {
+        const form = stage.querySelector("form"); if (!form) return;
+        (form.name.value ? form.email.value ? form.organization : form.email : form.name).focus();
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const err = form.querySelector(".lead-error"), fail = (m, el) => { err.hidden = false; err.textContent = t(m); el?.focus(); };
+          const name = form.name.value.trim(), email = form.email.value.trim(), organization = form.organization.value.trim(), message = form.message.value.trim();
+          if (!name) return fail("Please enter your name.", form.name);
+          if (!/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(email)) return fail("Please enter a valid email.", form.email);
+          if (!message) return fail("Please write your message.", form.message);
+          if (!form.privacy.checked) return fail("Please accept the privacy policy to continue.", form.privacy);
+          const btn = form.querySelector("[type=submit]"); btn.disabled = true; btn.classList.add("is-loading");
+          try {
+            await save({ name, email, organization, message, privacy: true, marketing: form.newsletter.checked, hp: form.website.value });
+            if (form.newsletter.checked && !form.website.value) subscribe(email, name, "contact");
+            window.SCP_TRACK("lead_created", {});
+            // keep the existing inbox (Admin → Memberships → Requests) receiving messages too
+            rpc("submit_contact_request", { p: { kind: q.get("topic") === "custom-plan" ? "custom_plan" : "contact", name, email, company: organization,
+              message, lang: window.SCP_LANG || "en", page: `${page} ← lead flow${cta ? ` · ${cta}` : ""}`.slice(0, 200) } }).catch(() => {});
+            st.done = true; go(sent);
+          } catch (x) { fail(x.message || "Something went wrong. Please try again in a moment."); }
+          finally { btn.disabled = false; btn.classList.remove("is-loading"); }
+        });
+      }, 200);
+    }
+
     function qdone() {
       show(`<div class="lead-done"><span class="lead-done-ic" aria-hidden="true">✓</span><h2 class="lead-q" tabindex="-1">${esc(t("Thanks! We’ll message you very soon."))}</h2>
         <div class="lead-ctas"><a class="lead-btn is-primary" href="signup.html">${esc(t("Start your free trial meanwhile"))}</a></div></div>`, { n: 3, of: 3, title: t("Message sent") });
@@ -471,7 +520,7 @@
     // Contact: the quick 3 taps (a prefilled message, e.g. a custom plan, keeps the full message form).
     // Book a demo: straight to Cal.com's day and time; Cal.com asks for the name and e-mail to confirm.
     if (intent === "message" && !message) { st.render = qorg; qorg(); }
-    else if (intent === "message") { st.mode = "message"; st.render = details; details(); }
+    else if (intent === "message") { st.mode = "message"; st.render = qmsg; qmsg(); }
     else { st.mode = "demo"; host.classList.add("is-direct-demo"); st.render = demoPick; demoPick(); }
     return {
       abandon() { if (!st.done) window.SCP_TRACK("form_abandoned", { step: st.render?.name || "", org_type: st.a.org_type }); },
@@ -484,7 +533,7 @@
     if (open) return;
     const last = document.activeElement;
     const wrap = document.createElement("div");
-    wrap.className = `lead-modal${opts?.intent === "message" && !opts?.message ? " is-quick" : opts?.intent !== "message" ? " is-quick is-demo" : ""}`; wrap.setAttribute("role", "dialog"); wrap.setAttribute("aria-modal", "true"); wrap.setAttribute("aria-label", t("Talk to Sports Content Playbook"));
+    wrap.className = `lead-modal${opts?.intent === "message" ? " is-quick" : " is-quick is-demo"}`; wrap.setAttribute("role", "dialog"); wrap.setAttribute("aria-modal", "true"); wrap.setAttribute("aria-label", t("Talk to Sports Content Playbook"));
     wrap.innerHTML = `<div class="lead-box"><button type="button" class="lead-x" aria-label="${esc(t("Close"))}">✕</button>${wrap.classList.contains("is-quick") ? `<img class="lead-logo" src="${LOGO}" alt="Sports Content Playbook" width="900" height="367">` : ""}<div class="lead-host"></div></div>`;
     document.body.append(wrap);
     document.documentElement.classList.add("lead-lock");
