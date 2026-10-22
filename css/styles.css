@@ -258,11 +258,13 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
   letter-spacing: -0.02em;
 }
 .hero-sub {
-  max-width: 720px;
-  margin: 36px auto 0;
-  color: var(--muted);
-  font-size: 18px;
-  line-height: 1.6;
+  max-width: 640px;
+  margin: 28px auto 0;
+  color: rgba(var(--fg), 0.86);   /* brighter than --muted: it's the promise, it has to be read */
+  font-size: clamp(19px, 1.7vw, 23px);
+  font-weight: 500;
+  line-height: 1.5;
+  text-wrap: balance;
 }
 .hero .btn-gold { margin-top: 68px; }
 
