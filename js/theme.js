@@ -40,6 +40,9 @@ try {
     // next to the account buttons in the main nav (and in the admin top bar)
     const spot = document.querySelector(".nav-actions") || document.querySelector("[data-theme-slot]");
     if (spot && !spot.querySelector("[data-theme-toggle]")) spot.insertAdjacentHTML("afterbegin", BUTTON);
-    document.querySelectorAll("[data-theme-toggle]").forEach((b) => { paint(b); b.addEventListener("click", () => set(isLight() ? "dark" : "light")); });
+    document.querySelectorAll("[data-theme-toggle]").forEach(paint);
   });
+  // one listener for every switch, also the ones drawn later (the admin sidebar)
+  document.addEventListener("click", (e) => { if (e.target.closest?.("[data-theme-toggle]")) set(isLight() ? "dark" : "light"); });
+  window.SCP_THEME = { button: BUTTON, paint };
 })();
