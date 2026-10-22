@@ -32,7 +32,8 @@
   const saving = (p) => { const m = priceOf(p, currency, "month"), y = priceOf(p, currency, "year"); return m && y ? Math.round((1 - y.amount / (m.amount * 12)) * 100) : 0; };
   const currentSub = () => mine?.subscription && ["active", "trialing", "past_due", "unpaid"].includes(mine.subscription.status) && mine.subscription.source === "stripe" ? mine.subscription : null;
 
-  function planCard(p, { solo = false } = {}) {
+  // builder: the "Library + add-ons" card (addons html, the plan it stands for); value: a line on the plan that has everything
+  function planCard(p, { solo = false, builder = null } = {}) {
     const price = priceOf(p) || priceOf(p, currency, "month");
     const iv = price?.interval || interval;
     const cur = currentSub();
@@ -61,24 +62,37 @@
     // with more than one user the big number is the total; the price per user goes underneath
     // the line under the price always fits on one line: users or the yearly saving, then VAT
     // (with more users, "VAT incl." moves next to the price so the saving for all of them fits)
+    // yearly: the big number is what it costs per month; the line below says what's billed once a year and the saving
     const save = iv === "year" && monthsFree(p) > 0 ? `<b class="plan-free">${tx("save {amount}", { amount: fmt(yearSave(p) * seats, currency) })}</b>` : "";
-    const sub = !price ? "" : seats > 1
-      ? [tx("{n} users × {price}", { n: seats, price: fmt(price.amount, currency) }), save].filter(Boolean).join(" · ")
-      : [save ? `${fmt(price.amount / 12, currency)}/${per("month")}` : "", save, tx("VAT incl.")].filter(Boolean).join(" · ");
+    const big = !price ? 0 : (iv === "year" ? price.amount / 12 : price.amount) * seats;
+    const sub = !price ? "" : [
+      seats > 1 ? tx("{n} users × {price}", { n: seats, price: fmt(iv === "year" ? price.amount / 12 : price.amount, currency) }) : tx("up to {n} users on one plan", { n: MAX_SEATS }),
+      iv === "year" ? tx("billed {amount} a year", { amount: fmt(price.amount * seats, currency) }) : "", save, tx("VAT incl."),
+    ].filter(Boolean).join(" · ");
+    // what you get, in words (not just ✓ / –)
+    const units = p.ai_unlimited ? tx("Unlimited") : p.ai_monthly_units;
+    const gets = [
+      lib && tx("The whole library: every sport, club and competition"),
+      lib && tx("Filters by sport, competition, format and goal"),
+      has("library.save_posts") && tx("Saved boards to keep your ideas"),
+      cp && tx("Content Plan: weekly and monthly calendar"),
+      hasAi && tx("{n} AI analyses a month: hook, why it works, how to adapt it", { n: units }),
+    ].filter(Boolean);
+    // the plan with everything: how much more AI than the next one
+    const extraAi = hasAi && cp && !p.ai_unlimited && otherAi > 0 && p.ai_monthly_units > otherAi ? p.ai_monthly_units - otherAi : 0;
+    const value = !builder && hasAi && cp ? `<p class="plan-value">${tx("All included")}${extraAi ? ` · <b>${tx("+{n} AI analyses a month", { n: extraAi })}</b>` : ""}</p>` : "";
     const tool = (on, cls, label, extra = "") => `<li class="pt ${cls}${on ? "" : " is-off"}"><i></i><span>${label}</span>${extra ? `<em>${extra}</em>` : ""}</li>`;
     return `<article class="plan-card v2${p.highlighted ? " is-best" : ""}${isCurrent ? " is-current" : ""}${p.key === wanted ? " is-wanted" : ""}" data-plan-key="${esc(p.key)}">
       ${flag}
-      <h3>${esc(p.name)}</h3>
-      <p class="plan-blurb">${tx(who)}</p>
-      <p class="plan-price">${price ? `<b data-price="${price.amount * seats}" data-cur="${currency}">${fmt(price.amount * seats, currency)}</b><span>${seats > 1 ? `/ ${per(iv)} · ${tx("VAT incl.")}` : tx("/ {per} per user", { per: per(iv) })}</span>` : `<b>—</b>`}</p>
+      <h3>${builder ? tx("Library") : esc(p.name)}</h3>
+      <p class="plan-blurb">${tx(builder ? "Start with the library, add what you need" : who)}</p>
+      <p class="plan-price">${price ? `<b data-price="${Math.round(big * 100) / 100}" data-cur="${currency}">${fmt(Math.round(big * 100) / 100, currency)}</b><span>${seats > 1 ? `/ ${per("month")}` : tx("/ {per} per user", { per: per("month") })}</span>` : `<b>—</b>`}</p>
       <p class="plan-sub">${sub || "&nbsp;"}</p>
+      ${value}
+      ${builder ? builder.addons : ""}
       ${cta}
-      <p class="plan-note">${note || (trial && price?.ready && !cur ? tx("Cancel anytime") : "")}</p>
-      <ul class="plan-tools">
-        ${tool(lib, "pt-lib", tx("Content Library"))}
-        ${tool(cp, "pt-cp", tx("Content Plan"))}
-        ${tool(hasAi, "pt-ai", tx("AI analysis"), hasAi ? (p.ai_unlimited ? tx("Unlimited") : tx("{n}/month", { n: p.ai_monthly_units })) : "")}
-      </ul>
+      ${note ? `<p class="plan-note">${note}</p>` : ""}
+      <ul class="plan-gets">${gets.map((g) => `<li>${g}</li>`).join("")}</ul>
     </article>`;
   }
 
@@ -170,13 +184,36 @@
     return r.json();
   }
 
+  // ---------- Library + add-ons: one card where the Content Plan and AI analyses are ticked on, and All Access next to it ----------
+  // (only when the four usual plans exist; prices always come from them, nothing is calculated)
+  const addon = { cp: false, ai: false };
+  if (["library_planner", "all_access"].includes(new URLSearchParams(location.search).get("plan"))) addon.cp = true;
+  if (["library_ai", "all_access"].includes(new URLSearchParams(location.search).get("plan"))) addon.ai = true;
+  const byKey = (plans, k) => plans.find((p) => p.key === k);
+  const builderPlans = (plans) => !privatePlan && ["library", "library_planner", "library_ai", "all_access"].every((k) => byKey(plans, k));
+  function builderHtml(plans) {
+    const lib = byKey(plans, "library"), all = byKey(plans, "all_access");
+    const both = addon.cp && addon.ai;
+    const pick = both ? all : addon.cp ? byKey(plans, "library_planner") : addon.ai ? byKey(plans, "library_ai") : lib;
+    const amount = (p) => { const x = priceOf(p); return x ? (x.interval === "year" ? x.amount / 12 : x.amount) * seats : 0; };
+    const plus = (k) => fmt(Math.round((amount(byKey(plans, k)) - amount(lib)) * 100) / 100, currency);
+    const row = (key, on, plan, title, desc) => `<label class="plan-addon${on ? " is-on" : ""}"><input type="checkbox" data-addon="${key}"${on ? " checked" : ""}>
+      <span class="plan-addon-tx"><b>${tx(title)}</b><small>${tx(desc)}</small></span><span class="plan-addon-price">+${plus(plan)}</span></label>`;
+    const addons = `<div class="plan-addons"><p class="plan-addons-h">${tx("Add to your plan")}</p>
+      ${row("cp", addon.cp, "library_planner", "Content Plan", "Plan your week and month")}
+      ${row("ai", addon.ai, "library_ai", "AI analysis", "Know why a post works")}
+      ${both ? `<p class="plan-addons-note">${tx("Both add-ons are All Access: it comes with {n} AI analyses a month.", { n: all.ai_monthly_units })}</p>` : ""}</div>`;
+    return planCard(pick, { builder: { addons } }) + planCard(all);
+  }
+
   function draw(swap = false) {
     const plans = privatePlan ? [privatePlan] : data.plans;
     boxes.forEach((b) => {
       b.classList.toggle("is-solo", plans.length === 1);
-      b.innerHTML = plans.length ? plans.map((p) => planCard(p, { solo: plans.length === 1 })).join("") : `<p class="plans-empty">Plans will be published here soon. <a class="link-gold" href="contact.html">Contact us</a> in the meantime.</p>`;
+      b.innerHTML = plans.length ? (builderPlans(plans) ? builderHtml(plans) : plans.map((p) => planCard(p, { solo: plans.length === 1 })).join("")) : `<p class="plans-empty">Plans will be published here soon. <a class="link-gold" href="contact.html">Contact us</a> in the meantime.</p>`;
       decorate(b, swap);
       b.classList.toggle("is-v2", !privatePlan && plans.length > 1);
+      b.classList.toggle("is-builder", !!builderPlans(plans));
       // not sure which plan? one line under the cards opens the demo form (FAQ) or the demo page
       if (!privatePlan && plans.length > 1 && !b.nextElementSibling?.matches?.(".plan-help")) {
         const inPage = document.querySelector('[data-faq-pane="demo"]');
@@ -291,6 +328,8 @@
         if (next > MAX_SEATS) { document.querySelector("[data-seats-more]")?.removeAttribute("hidden"); document.querySelector("[data-seats-more] a")?.focus(); return; }
         if (next >= 1 && next !== seats) { seats = next; store.set("scp-seats", String(seats)); draw(true); }
       }
+      const ad = e.target.closest("[data-addon]");
+      if (ad) { addon[ad.dataset.addon] = ad.checked; draw(true); return; }
       const c = e.target.closest("[data-currency-pick]");
       if (c && c.dataset.currencyPick !== currency) { currency = c.dataset.currencyPick; store.set("scp-currency", currency); draw(true); }
     });
