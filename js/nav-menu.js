@@ -37,16 +37,15 @@
     // only for members of a club (Admin → My Club): their players' and sponsors' posts
     { label: "My Club", href: "my-club.html", club: true },
     {
-      // only before buying (visitors and members without a plan)
+      // only before buying (visitors and members without a plan); no heading, like Resources (four links: two columns)
       label: "Solutions", type: "about", noPlan: true,
-      hello: "Built for", title: "Every team that creates", highlight: "sports content", sub: "From one creator to a whole club department.",
       links: [
         { title: "Content creators", desc: "Formats and hooks that work in sports.", href: "book-a-call.html?for=creators" },
         { title: "Clubs", desc: "Matchday, signings, kits and sponsors, all season.", href: "book-a-call.html?for=clubs" },
         { title: "Leagues & federations", desc: "Content for every club and competition you run.", href: "book-a-call.html?for=leagues" },
         { title: "Brands & sponsors", desc: "See how others activate their sports partnerships.", href: "book-a-call.html?for=brands" },
       ],
-      featured: { eyebrow: "Free trial", title: "Try it free for 7 days", desc: "The full library, no commitment.", href: "signup.html" },
+      featured: { eyebrow: "Free trial", title: "Try it free for 7 days", href: "signup.html" },
     },
     // only without a plan, with the free-trial badge
     { label: "Pricing", href: "pricing.html", badge: "7 days free", noPlan: true },
