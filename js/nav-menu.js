@@ -32,7 +32,7 @@
         { title: "Social News", desc: "What's happening on club accounts.", href: "news.html" },
         { title: "FAQ", desc: "Everything you want to know before starting.", href: "index.html#faq" },
       ],
-      featured: { eyebrow: "What is SCP?", title: "Sports Content Playbook in 2 minutes", desc: "The platform, explained.", href: "index.html#what-is-scp" },
+      featured: { eyebrow: "What is SCP?", title: "Sports Content Playbook in 2 minutes", href: "index.html#what-is-scp" },
     },
     // only for members of a club (Admin → My Club): their players' and sponsors' posts
     { label: "My Club", href: "my-club.html", club: true },
@@ -110,7 +110,7 @@
     if (m.type === "about") return `<div class="mm-panel mm-about" id="${id}" role="region" aria-label="${esc(m.label)}">
       ${m.title ? `<p class="mm-hello">${esc(m.hello)}</p><p class="mm-title">${esc(m.title)} <em>${esc(m.highlight)}</em></p><p class="mm-sub">${esc(m.sub)}</p>` : ""}
       <div class="mm-cols${!m.title && m.links.filter(show).length === 3 ? " mm-cols-3" : ""}">${m.links.filter(show).map((l) => `<a class="mm-link" href="${esc(l.href)}"><b>${esc(l.title)}</b><small>${esc(l.desc)}</small></a>`).join("")}</div>
-      ${m.featured ? `<a class="mm-featured"${np} href="${esc(m.featured.href)}"><span><i>${esc(m.featured.eyebrow)}</i><b>${esc(m.featured.title)}</b><small>${esc(m.featured.desc)}</small></span>${icon("arrow-up-right")}</a>` : ""}</div>`;
+      ${m.featured ? `<a class="mm-featured${m.featured.desc ? "" : " mm-featured-sm"}"${np} href="${esc(m.featured.href)}"><span><i>${esc(m.featured.eyebrow)}</i><b>${esc(m.featured.title)}</b>${m.featured.desc ? `<small>${esc(m.featured.desc)}</small>` : ""}</span>${icon("arrow-up-right")}</a>` : ""}</div>`;
     if (m.type === "contact") return `<div class="mm-panel mm-contact" id="${id}" role="region" aria-label="${esc(m.label)}">
       ${m.links.map((l) => `<a class="mm-item" href="${esc(l.href)}"${attrs(l)}><span class="mm-ic">${icon(l.icon)}</span><span><b>${esc(l.title)}</b><small>${esc(l.desc)}</small></span></a>`).join("")}
       <p class="mm-follow-h">Follow us</p>

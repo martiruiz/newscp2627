@@ -6024,6 +6024,9 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 .mm-featured i { font-style: normal; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); }
 .mm-featured b { font-size: 15px; } .mm-featured small { font-size: 13px; color: var(--muted); }
 .mm-featured svg { color: var(--gold); }
+/* box without a description line (Resources): a little less padding so it sits level with the links above */
+.mm-featured-sm { margin-top: 10px; padding: 13px 18px; }
+.mm-featured-sm > span { gap: 4px; }
 /* main call to action: white pill with the arrow in a circle */
 .nav-actions .nav-cta { display: inline-flex; align-items: center; gap: 12px; height: 50px; padding: 0 6px 0 22px; border-radius: 100px; background: #fff; color: #0b1020; border: 0; font-weight: 600; box-shadow: none; }
 .nav-actions .nav-cta:hover { background: #fff; color: #0b1020; transform: translateY(-1px); }
