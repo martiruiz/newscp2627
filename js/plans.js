@@ -199,13 +199,18 @@
     const both = addon.cp && addon.ai;
     const pick = both ? all : addon.cp ? byKey(plans, "library_planner") : addon.ai ? byKey(plans, "library_ai") : lib;
     const amount = (p) => { const x = priceOf(p); return x ? x.amount * seats : 0; };
+    // ticking both = All Access: say so when it costs no more than the two add-ons, and how much more AI it brings
+    const extra = (all.ai_monthly_units || 0) - (byKey(plans, "library_ai").ai_monthly_units || 0);
+    const sameOrLess = amount(all) <= amount(byKey(plans, "library_planner")) + amount(byKey(plans, "library_ai")) - amount(lib);
     const plus = (k) => fmt(Math.round(amount(byKey(plans, k)) - amount(lib)), currency);
     const row = (key, on, plan, title, desc) => `<label class="plan-addon${on ? " is-on" : ""}"><input type="checkbox" data-addon="${key}"${on ? " checked" : ""}>
       <span class="plan-addon-tx"><b>${tx(title)}</b><small>${tx(desc)}</small></span><span class="plan-addon-price">+${plus(plan)}</span></label>`;
     const addons = `<div class="plan-addons"><p class="plan-addons-h">${tx("Add to your plan")}</p>
       ${row("cp", addon.cp, "library_planner", "Content Plan", "Plan your week and month")}
       ${row("ai", addon.ai, "library_ai", "AI analysis", "Know why a post works")}
-      ${both ? `<p class="plan-addons-note">${tx("Both add-ons are All Access: it comes with {n} AI analyses a month.", { n: all.ai_monthly_units })}</p>` : ""}</div>`;
+      ${both ? `<p class="plan-addons-note">${extra > 0 && sameOrLess
+        ? tx("Both add-ons = All Access, for the same price: +{x} AI analyses a month for free ({n} in total).", { x: extra, n: all.ai_monthly_units })
+        : tx("Both add-ons are All Access: it comes with {n} AI analyses a month.", { n: all.ai_monthly_units })}</p>` : ""}</div>`;
     return planCard(pick, { builder: { addons, hideCurrent: both } }) + planCard(all);   // both ticked = All Access: its flag only once, on its own card
   }
 

@@ -706,6 +706,7 @@ window.SCP_ES = {
   "Plan your week and month": "Planifica tu semana y tu mes",
   "Know why a post works": "Descubre por qué funciona un post",
   "Both add-ons are All Access: it comes with {n} AI analyses a month.": "Con los dos complementos es Acceso total: incluye {n} análisis de IA al mes.",
+  "Both add-ons = All Access, for the same price: +{x} AI analyses a month for free ({n} in total).": "Los dos complementos = Acceso total, al mismo precio: +{x} análisis de IA al mes gratis ({n} en total).",
   "Follow us": "Síguenos",
   "The best sports posts, every day": "Los mejores posts deportivos, cada día",
   "Trends and insights for your team": "Tendencias e ideas para tu equipo",
