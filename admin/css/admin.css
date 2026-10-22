@@ -1131,3 +1131,4 @@ select.cs-native { display: none !important; }
 .mcl-acc.is-zero b { color: var(--amber); }
 .mcl-link.is-ended { opacity: 0.6; text-decoration: line-through; } .mcl-link.is-ended small, .mcl-link.is-ended button { text-decoration: none; }
 @media (max-width: 900px) { .mcl-form { grid-template-columns: 1fr; } }
+.mcl-new label { display: grid; gap: 6px; font-size: 13px; color: var(--muted); }

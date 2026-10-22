@@ -115,9 +115,17 @@
   main.addEventListener("click", async (e) => {
     const b = e.target.closest("button"); if (!b) return;
     try {
-      if (b.matches("[data-new]")) {
-        const name = prompt("Club name"); if (!name?.trim()) return;
-        const id = await rpc("admin_club_save", { p: { name: name.trim(), handles: [] } }); A.toast("Club created"); return loadClubs(id);
+      if (b.matches("[data-new]")) {   // a small form (the app's browser has no prompt())
+        const m = A.modal({ title: "New club", size: "sm", body: `<form class="mcl-new" data-new-form><label>Club name<input class="input" name="name" required maxlength="120" placeholder="FC Barcelona"></label></form>`,
+          foot: `<button class="btn btn-primary" type="button" data-new-save>Create club</button>` });
+        const input = m.el.querySelector("[name=name]"); input.focus();
+        const create = async () => {
+          if (!input.value.trim()) return input.focus();
+          try { const id = await rpc("admin_club_save", { p: { name: input.value.trim(), handles: [] } }); m.close(); A.toast("Club created"); loadClubs(id); } catch (x) { fail(x); }
+        };
+        m.el.querySelector("[data-new-save]").addEventListener("click", create);
+        m.el.querySelector("[data-new-form]").addEventListener("submit", (ev) => { ev.preventDefault(); create(); });
+        return;
       }
       if (b.dataset.pick) { cur = Number(b.dataset.pick); return loadClubs(cur); }
       if (b.matches("[data-template]")) return template();

@@ -1440,6 +1440,7 @@
     const placeShow = () => { const h = $("[data-lib-head]").getBoundingClientRect(); showBtn.style.top = `${Math.max(h.top, 0) + (h.height - (showBtn.offsetHeight || 34)) / 2}px`; };
     window.addEventListener("scroll", placeShow, { passive: true });
     window.addEventListener("resize", placeShow);
+    if (window.ResizeObserver) new ResizeObserver(placeShow).observe(document.body);   // content above the head can grow later (My Club)
     placeShow();
   }
   if (store.get("scp-filters-collapsed") === "1") setCollapsed(true);

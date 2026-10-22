@@ -66,4 +66,7 @@ window.SCPA_DICT = Object.assign(window.SCPA_DICT || {}, {
   "Each club's space: who can open it, its sections and teams, its players and sponsors.": ["El espacio de cada club: quién puede entrar, sus secciones y equipos, sus jugadores y patrocinadores.", "L'espai de cada club: qui hi pot entrar, les seves seccions i equips, els seus jugadors i patrocinadors."],
   "No clubs yet. Press “New club”.": ["Aún no hay clubs. Pulsa «Nuevo club».", "Encara no hi ha clubs. Prem «Club nou»."],
   "{a} players · {b} sponsors · {c} members": ["{a} jugadores · {b} patrocinadores · {c} miembros", "{a} jugadors · {b} patrocinadors · {c} membres"],
+  "Club name": ["Nombre del club", "Nom del club"],
+  "Create club": ["Crear club", "Crear club"],
+  "Club created": ["Club creado", "Club creat"],
 });
