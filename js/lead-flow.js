@@ -361,6 +361,95 @@
         });
       }, 200);
     }
+    // ---------- Book a demo, our own calendar: Cal.com's public API gives the real free times and makes the booking ----------
+    // (same availability, Google Calendar sync, invite and reminders as Cal.com; nothing secret needed)
+    const [CAL_USER, CAL_SLUG] = (calLink || "").split("/");
+    const TZ = (() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || "Europe/Madrid"; } catch { return "Europe/Madrid"; } })();
+    const LOC = window.SCP_LOC || undefined;
+    const ymd = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    const slots = { days: null, day: null, pick: null };
+    async function loadSlots() {
+      const from = new Date(), to = new Date(); to.setDate(to.getDate() + 28);
+      const r = await fetch(`https://api.cal.com/v2/slots?eventTypeSlug=${encodeURIComponent(CAL_SLUG)}&username=${encodeURIComponent(CAL_USER)}&start=${ymd(from)}&end=${ymd(to)}&timeZone=${encodeURIComponent(TZ)}`, { headers: { "cal-api-version": "2024-09-04" } });
+      if (!r.ok) throw new Error("slots");
+      const d = (await r.json()).data || {};
+      slots.days = Object.entries(d).filter(([, l]) => l.length).map(([day, l]) => ({ day, times: l.map((x) => x.start) }));
+      if (!slots.days.some((x) => x.day === slots.day)) slots.day = slots.days[0]?.day || null;
+    }
+    const dayParts = (day) => { const dt = new Date(`${day}T12:00:00`); return { wd: dt.toLocaleDateString(LOC, { weekday: "short" }), n: dt.getDate(), m: dt.toLocaleDateString(LOC, { month: "short" }) }; };
+    const timeOf = (iso) => new Date(iso).toLocaleTimeString(LOC, { hour: "2-digit", minute: "2-digit", timeZone: TZ });
+    const whenOf = (iso) => new Date(iso).toLocaleString(LOC, { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit", timeZone: TZ });
+
+    async function demoPick() {
+      window.SCP_TRACK("demo_booking_started", {});
+      show(`<h2 class="lead-q lead-q-big" tabindex="-1">${esc(t("Book your demo"))}</h2>
+        <p class="lead-text lead-center">${esc(t("30 minutes with our team, set up for your sport. Pick a day and a time."))}</p>
+        <div class="dp" data-dp><div class="lead-loading"><span class="lead-spin"></span>${esc(t("Loading real availability…"))}</div></div>`, { n: 1, of: 2, title: t("Book your demo") });
+      stage.onkeydown = null;
+      try { if (!slots.days) await loadSlots(); } catch { const box = stage.querySelector("[data-dp]"); if (box) box.innerHTML = errorBox(); stage.onclick = (e) => { if (e.target.closest("[data-retry]")) { slots.days = null; demoPick(); } if (e.target.closest("[data-fallback]")) { st.history.push(st.render); st.render = qorg; qorg(); } }; return; }
+      const draw = () => {
+        const box = stage.querySelector("[data-dp]"); if (!box) return;
+        if (!slots.days.length) { box.innerHTML = `<p class="lead-text lead-center">${esc(t("No free times in the next weeks. Leave us your number and we’ll find one."))}</p><div class="lead-ctas" style="justify-content:center"><button type="button" class="lead-btn is-primary" data-fallback>${esc(t("Leave my number"))}</button></div>`; return; }
+        const today = slots.days.find((x) => x.day === slots.day);
+        box.innerHTML = `<div class="dp-days" role="radiogroup" aria-label="${esc(t("Day"))}">${slots.days.slice(0, 14).map((x, i) => { const p = dayParts(x.day);
+            return `<button type="button" class="dp-day" role="radio" aria-checked="${x.day === slots.day}" data-day="${x.day}" style="--i:${i}"><small>${esc(p.wd)}</small><b>${p.n}</b><small>${esc(p.m)}</small></button>`; }).join("")}</div>
+          <div class="dp-times" role="radiogroup" aria-label="${esc(t("Time"))}">${today.times.map((iso, i) => `<button type="button" class="dp-time" role="radio" aria-checked="false" data-time="${esc(iso)}" style="--i:${i}">${esc(timeOf(iso))}</button>`).join("")}</div>
+          <p class="dp-tz">${esc(t("Times in your time zone ({tz})", { tz: TZ.replace(/_/g, " ") }))}</p>`;
+      };
+      draw();
+      stage.onclick = (e) => {
+        const d = e.target.closest("[data-day]"); if (d) { slots.day = d.dataset.day; return draw(); }
+        const tm = e.target.closest("[data-time]"); if (tm) { slots.pick = tm.dataset.time; return go(demoForm); }
+        if (e.target.closest("[data-fallback]")) { st.history.push(st.render); st.render = qorg; qorg(); }
+      };
+    }
+    function demoForm() {
+      show(`<h2 class="lead-q lead-q-big" tabindex="-1">${esc(t("Confirm your demo"))}</h2>
+        <p class="dp-when"><span>${esc(whenOf(slots.pick))}</span><button type="button" class="dp-change" data-lead-change>${esc(t("Change"))}</button></p>
+        <form class="lead-form lead-phone dp-form" novalidate>
+          <input class="dp-in" name="name" autocomplete="name" required maxlength="120" placeholder="${esc(t("Your name"))}" value="${esc(signed?.user_metadata?.full_name || "")}">
+          <input class="dp-in" name="email" type="email" inputmode="email" autocomplete="email" required maxlength="200" placeholder="${esc(t("Your work email"))}" value="${esc(signed?.email || "")}">
+          <input class="lead-hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <label class="lead-check"><input type="checkbox" name="privacy" required><span>${esc(t("I accept the"))} <a href="privacy.html" target="_blank" rel="noopener">${esc(t("privacy policy"))}</a></span></label>
+          <p class="lead-error" role="alert" hidden></p>
+          <button class="lead-btn is-primary" type="submit">${esc(t("Confirm demo"))} <span aria-hidden="true">→</span></button>
+        </form>`, { n: 2, of: 2, title: t("Confirm your demo") });
+      stage.onkeydown = null;
+      stage.onclick = (e) => { if (e.target.closest("[data-lead-change]")) back.click(); };
+      setTimeout(() => {
+        const form = stage.querySelector("form"); if (!form) return;
+        (form.name.value ? form.email : form.name).focus();
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const err = form.querySelector(".lead-error"), fail = (m, el) => { err.hidden = false; err.textContent = t(m); el?.focus(); };
+          const name = form.name.value.trim(), email = form.email.value.trim();
+          if (!name) return fail("Please enter your name.", form.name);
+          if (!/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(email)) return fail("Please enter a valid email.", form.email);
+          if (!form.privacy.checked) return fail("Please accept the privacy policy to continue.", form.privacy);
+          const btn = form.querySelector("[type=submit]"); btn.disabled = true; btn.classList.add("is-loading");
+          try {
+            await save({ name, email, privacy: true, hp: form.website.value }).catch(() => {});   // the lead, even if the booking fails
+            const r = await fetch("https://api.cal.com/v2/bookings", { method: "POST", headers: { "Content-Type": "application/json", "cal-api-version": "2024-08-13" },
+              body: JSON.stringify({ start: new Date(slots.pick).toISOString(), eventTypeSlug: CAL_SLUG, username: CAL_USER,
+                attendee: { name, email, timeZone: TZ, language: window.SCP_LANG === "es" ? "es" : "en" },
+                metadata: { lead_id: String(st.leadId || ""), source: page } }) });
+            const d = await r.json().catch(() => ({}));
+            if (!r.ok || d.status === "error") {
+              slots.days = null;   // that time may be gone: reload the free times
+              throw new Error(r.status === 400 || r.status === 409 ? "That time was just taken. Please pick another one." : "We couldn’t book it right now. Please try again in a moment.");
+            }
+            const b = d.data || {};
+            st.contact = { name, email, organization: "" };
+            st.booking = { start: b.start || slots.pick, uid: b.uid || null };
+            rpc("lead_booking_reported", { p: { lead_id: st.leadId, client_id: cid, start: st.booking.start, uid: st.booking.uid, email, name } }).catch(() => {});
+            window.SCP_TRACK("demo_booked", {});
+            st.done = true; go(booked);
+          } catch (x) { fail(x.message); }
+          finally { btn.disabled = false; btn.classList.remove("is-loading"); }
+        });
+      }, 200);
+    }
+
     function qdone() {
       show(`<div class="lead-done"><span class="lead-done-ic" aria-hidden="true">✓</span><h2 class="lead-q" tabindex="-1">${esc(t("Thanks! We’ll message you very soon."))}</h2>
         <div class="lead-ctas"><a class="lead-btn is-primary" href="signup.html">${esc(t("Start your free trial meanwhile"))}</a></div></div>`, { n: 3, of: 3, title: t("Message sent") });
@@ -372,7 +461,7 @@
     // Book a demo: straight to Cal.com's day and time; Cal.com asks for the name and e-mail to confirm.
     if (intent === "message" && !message) { st.render = qorg; qorg(); }
     else if (intent === "message") { st.mode = "message"; st.render = details; details(); }
-    else { st.mode = "demo"; host.classList.add("is-direct-demo"); st.render = calendar; calendar(); }
+    else { st.mode = "demo"; host.classList.add("is-direct-demo"); st.render = demoPick; demoPick(); }
     return {
       abandon() { if (!st.done) window.SCP_TRACK("form_abandoned", { step: st.render?.name || "", org_type: st.a.org_type }); },
     };
