@@ -231,30 +231,36 @@
     function calendar() {
       window.SCP_TRACK("demo_booking_started", { org_type: st.a.org_type, recommendation: st.rec });
       const id = `lead-cal-${++calN}`;
-      show(`<p class="lead-kicker">${esc(t("Step 6 · Pick a time"))}</p><h2 class="lead-q" tabindex="-1">${esc(t("Choose a day and time for your demo"))}</h2>
-        <p class="lead-text">${esc(t("Times are shown in your time zone. You’ll get the invite by email as soon as it’s booked."))}</p>
+      const direct = !st.contact;
+      show(`${direct ? "" : `<p class="lead-kicker">${esc(t("Step 6 · Pick a time"))}</p>`}<h2 class="lead-q${direct ? " lead-q-big" : ""}" tabindex="-1">${esc(t(direct ? "Book your demo" : "Choose a day and time for your demo"))}</h2>
+        <p class="lead-text${direct ? " lead-center" : ""}">${esc(t(direct ? "Pick a day and time, then add your name and email to confirm. 30 minutes, in your time zone." : "Times are shown in your time zone. You’ll get the invite by email as soon as it’s booked."))}</p>
         <div class="lead-cal" id="${id}"><div class="lead-loading"><span class="lead-spin"></span>${esc(t("Loading real availability…"))}</div></div>`, { n: 6, of: 6, title: t("Pick a time") });
       stage.onclick = null; stage.onkeydown = null;
       setTimeout(() => {
         const box = document.getElementById(id); if (!box) return;
         if (!calLink) { box.innerHTML = errorBox(); return; }
-        const notes = [`Organization type: ${label(ORG, st.a.org_type)}`, `Team size: ${label(SIZE, st.a.team_size)}`, `Main challenge: ${label(CHALLENGE, st.a.challenge)}`,
-          `Organization: ${st.contact.organization}`, `Source: ${page}${cta ? ` · ${cta}` : ""}`, utm().utm_campaign ? `Campaign: ${utm().utm_campaign}` : ""].filter(Boolean).join("\n");
-        const params = new URLSearchParams({ name: st.contact.name, email: st.contact.email, notes, "metadata[lead_id]": st.leadId || "", "metadata[source]": page });
+        const c = st.contact || { name: signed?.user_metadata?.full_name || "", email: signed?.email || "", organization: "" };
+        const notes = [st.a.org_type && `Organization type: ${label(ORG, st.a.org_type)}`, st.a.team_size && `Team size: ${label(SIZE, st.a.team_size)}`, st.a.challenge && `Main challenge: ${label(CHALLENGE, st.a.challenge)}`,
+          c.organization && `Organization: ${c.organization}`, `Source: ${page}${cta ? ` · ${cta}` : ""}`, utm().utm_campaign ? `Campaign: ${utm().utm_campaign}` : ""].filter(Boolean).join("\n");
+        const params = new URLSearchParams({ ...(c.name ? { name: c.name } : {}), ...(c.email ? { email: c.email } : {}), notes, "metadata[lead_id]": st.leadId || "", "metadata[source]": page });
         loadCal();
         const ns = id.replace(/-/g, "");
         window.Cal("init", ns, { origin: "https://cal.com" });
-        window.Cal.ns[ns]("inline", { elementOrSelector: `#${id}`, calLink: `${calLink}?${params}`, config: { layout: "month_view", theme: "dark", locale: window.SCP_LANG === "es" ? "es" : "en", name: st.contact.name, email: st.contact.email, notes } });
+        window.Cal.ns[ns]("inline", { elementOrSelector: `#${id}`, calLink: `${calLink}?${params}`, config: { layout: "month_view", theme: "dark", locale: window.SCP_LANG === "es" ? "es" : "en", name: c.name, email: c.email, notes } });
         window.Cal.ns[ns]("ui", { theme: "dark", layout: "month_view", hideEventTypeDetails: true,
           cssVarsPerTheme: { dark: { "cal-brand": "#f0b84a", "cal-brand-emphasis": "#f8cc75", "cal-brand-text": "#0b0f1c", "cal-bg": "transparent", "cal-bg-muted": "#17213b", "cal-bg-emphasis": "#1f2b48", "cal-border-booker": "transparent", "cal-border-booker-width": "0px", "cal-border": "rgba(180,192,211,0.18)", "cal-border-subtle": "rgba(180,192,211,0.12)", "cal-text": "#ffffff", "cal-text-subtle": "#b4c0d3", "cal-text-muted": "#8b98ae" } } });
         let ready = false;
         window.Cal.ns[ns]("on", { action: "linkReady", callback: () => { ready = true; box.querySelector(".lead-loading")?.remove(); } });
         window.Cal.ns[ns]("on", { action: "linkFailed", callback: () => { box.innerHTML = errorBox(); } });
         // only Cal.com's confirmation turns this into "booked"
-        window.Cal.ns[ns]("on", { action: "bookingSuccessful", callback: (e) => {
-          const b = e?.detail?.data?.booking || {}, start = b.startTime || e?.detail?.data?.date || null;
+        window.Cal.ns[ns]("on", { action: "bookingSuccessful", callback: async (e) => {
+          const d = e?.detail?.data || {}, b = d.booking || {}, start = b.startTime || d.date || null;
+          const who = b.attendees?.[0] || {}, email = who.email || b.responses?.email || d.email || c.email || "", name = who.name || b.responses?.name || d.name || c.name || "";
           st.booking = { start, uid: b.uid || null };
-          rpc("lead_booking_reported", { p: { lead_id: st.leadId, client_id: cid, start, uid: b.uid } }).catch(() => {});
+          st.contact = st.contact || { name, email, organization: "" };
+          // booked straight from "Book a demo": create the lead now, then report the booking with who booked
+          if (!st.leadId) await save({}).catch(() => {});
+          rpc("lead_booking_reported", { p: { lead_id: st.leadId, client_id: cid, start, uid: b.uid, email, name } }).catch(() => {});
           window.SCP_TRACK("demo_booked", { org_type: st.a.org_type, recommendation: st.rec });
           st.done = true; go(booked);
         } });
@@ -276,7 +282,7 @@
       const day = when && !isNaN(when) ? when.toLocaleString(window.SCP_LOC || undefined, { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" }) : "";
       show(`<div class="lead-done"><span class="lead-done-ic" aria-hidden="true">✓</span><h2 class="lead-q" tabindex="-1">${esc(t("Your demo is booked"))}</h2>
         ${day ? `<p class="lead-when">${esc(day)}</p>` : ""}
-        <p class="lead-text">${esc(t("We’ve sent the invite with the video call link to {email}. See you there!", { email: st.contact.email }))}</p>
+        <p class="lead-text">${esc(st.contact.email ? t("We’ve sent the invite with the video call link to {email}. See you there!", { email: st.contact.email }) : t("You’ll get the invite with the video call link by email. See you there!"))}</p>
         <div class="lead-ctas"><a class="lead-btn is-primary" href="content-library.html">${esc(t("Explore the Content Library"))}</a></div></div>`, { n: 6, of: 6, title: t("Your demo is booked") });
       back.hidden = true;
     }
@@ -362,8 +368,11 @@
     }
 
     window.SCP_TRACK("form_started", {});
-    if (intent === "message") { st.render = qorg; qorg(); }
-    else { st.render = q1; q1(); }
+    // Contact: the quick 3 taps (a prefilled message, e.g. a custom plan, keeps the full message form).
+    // Book a demo: straight to Cal.com's day and time; Cal.com asks for the name and e-mail to confirm.
+    if (intent === "message" && !message) { st.render = qorg; qorg(); }
+    else if (intent === "message") { st.mode = "message"; st.render = details; details(); }
+    else { st.mode = "demo"; host.classList.add("is-direct-demo"); st.render = calendar; calendar(); }
     return {
       abandon() { if (!st.done) window.SCP_TRACK("form_abandoned", { step: st.render?.name || "", org_type: st.a.org_type }); },
     };
@@ -375,7 +384,7 @@
     if (open) return;
     const last = document.activeElement;
     const wrap = document.createElement("div");
-    wrap.className = `lead-modal${opts?.intent === "message" ? " is-quick" : ""}`; wrap.setAttribute("role", "dialog"); wrap.setAttribute("aria-modal", "true"); wrap.setAttribute("aria-label", t("Talk to Sports Content Playbook"));
+    wrap.className = `lead-modal${opts?.intent === "message" && !opts?.message ? " is-quick" : opts?.intent !== "message" ? " is-quick is-demo" : ""}`; wrap.setAttribute("role", "dialog"); wrap.setAttribute("aria-modal", "true"); wrap.setAttribute("aria-label", t("Talk to Sports Content Playbook"));
     wrap.innerHTML = `<div class="lead-box"><button type="button" class="lead-x" aria-label="${esc(t("Close"))}">✕</button><div class="lead-host"></div></div>`;
     document.body.append(wrap);
     document.documentElement.classList.add("lead-lock");

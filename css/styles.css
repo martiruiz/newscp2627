@@ -7104,3 +7104,8 @@ section[id], :target { scroll-margin-top: 92px; }
 .lead-modal .lead-phone .lead-error { margin: -8px 0 0; text-align: center; }
 @media (max-width: 560px) { .lead-modal.is-quick .lead-tel { height: 58px; } .lead-modal.is-quick .lead-tel select { padding: 0 30px 0 16px; font-size: 16px; } .lead-modal.is-quick .lead-tel input { font-size: 16px; } }
 @media (max-width: 640px) { .lead-modal.is-quick { background: rgba(5, 8, 18, 0.86); } .lead-modal.is-quick .lead-box { height: auto; min-height: 100dvh; display: flex; flex-direction: column; justify-content: center; } }   /* phones: a darker veil so the page behind never competes with the form */
+/* Book a demo, direct: no steps — the title and Cal.com's calendar float over the blurred page */
+.lead.is-direct-demo .lead-top { display: none; }
+.lead-center { text-align: center; max-width: 520px; margin-left: auto; margin-right: auto; }
+.lead-modal.is-demo .lead-box { width: min(1000px, 100%); }
+.lead-modal.is-demo .lead-cal { min-height: 520px; }
