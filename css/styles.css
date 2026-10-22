@@ -598,6 +598,9 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
 
 .magic { padding: 60px 0 40px; }
 .magic .section-title { white-space: nowrap; }
+/* the lead in one line on wide screens (wraps on phones) */
+.magic .sec-head .hx-lead { max-width: none; }
+@media (min-width: 720px) { .magic .sec-head .hx-lead { white-space: nowrap; } }
 .magic-grid {
   display: grid;
   grid-template-columns: 366px 1fr;
