@@ -597,7 +597,7 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
 /* ---------- Magic section ---------- */
 
 .magic { padding: 60px 0 40px; }
-.magic .section-title { white-space: nowrap; }
+.magic .section-title { max-width: 820px; margin-left: auto; margin-right: auto; text-wrap: balance; }
 .magic-grid {
   display: grid;
   grid-template-columns: 366px 1fr;
