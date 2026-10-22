@@ -4,6 +4,7 @@
   const { $, $$, esc, icon, num, rpc } = A;
   try { await A.boot("ideas"); } catch { return; }
   const main = $("[data-main]");
+  main.classList.add("ci-page");
 
   const COLUMNS = [
     { key: "title", label: "Title", on: true },
@@ -87,7 +88,16 @@
     }
   }
 
-  const tagNames = (row, cat) => (row.tags?.[cat] || []).map((t) => t.name).join(", ") || "—";
+  // premium cells: brand dot per network, tags as chips (2 + "+n"), date over time
+  const NET = { instagram: "#e1306c", tiktok: "#25f4ee", facebook: "#1877f2", youtube: "#ff0033", x: "#9aa4b5", twitter: "#1d9bf0", linkedin: "#0a66c2", threads: "#9aa4b5" };
+  const netColor = (name) => NET[String(name || "").toLowerCase()] || "var(--muted)";
+  const chips = (row, cat) => {
+    const list = (row.tags?.[cat] || []).map((t) => t.name);
+    if (!list.length) return `<span class="ci-none">—</span>`;
+    return list.slice(0, 2).map((n) => cat === "platform" ? `<span class="ci-chip ci-net" style="--nc:${netColor(n)}"><i></i>${esc(n)}</span>` : `<span class="ci-chip">${esc(n)}</span>`).join("")
+      + (list.length > 2 ? `<span class="ci-chip ci-more" title="${esc(list.slice(2).join(", "))}">+${list.length - 2}</span>` : "");
+  };
+  const when = (iso) => { if (!iso) return "—"; const d = new Date(iso); return `<b>${d.toLocaleDateString("es-ES", { day: "2-digit", month: "short", year: "numeric" })}</b><small>${d.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}</small>`; };
 
   function render() {
     const cols = COLUMNS.filter((c) => visible.includes(c.key));
@@ -103,10 +113,11 @@
       $("[data-tbody]").innerHTML = rows.map((r) => {
         const on = Boolean(allFiltered) || selected.has(r.id);
         const cell = (c) => {
-          if (c.key === "title") return `<td class="td-title" title="${esc(r.title || "")}">${esc(r.title || "(no title)")}</td>`;
-          if (c.key === "id") return `<td class="td-id mono" title="${esc(r.external_id)}">${esc(r.external_id)}</td>`;
-          if (c.key === "published") return `<td class="td-date">${A.fmtDate(r.published_at)}</td>`;
-          return `<td class="td-tags">${esc(tagNames(r, c.key))}</td>`;
+          if (c.key === "title") { const net = r.tags?.platform?.[0]?.name;
+            return `<td class="td-title ci-title" title="${esc(r.title || "")}"><span class="ci-mark" style="--nc:${netColor(net)}" aria-hidden="true">${esc((net || "?").charAt(0).toUpperCase())}</span><span class="ci-tt"><b>${esc((r.title || "(no title)").replace(/\s+/g, " "))}</b>${r.url ? `<a href="${esc(r.url)}" target="_blank" rel="noopener" data-i18n-skip>${esc(r.url.replace(/^https?:\/\/(www\.)?/, "").split("/")[0])} ↗</a>` : ""}</span></td>`; }
+          if (c.key === "id") return `<td class="td-id"><span class="ci-id mono" title="${esc(r.external_id)}">${esc(r.external_id)}</span></td>`;
+          if (c.key === "published") return `<td class="td-date ci-date">${when(r.published_at)}</td>`;
+          return `<td class="td-tags ci-tags">${chips(r, c.key)}</td>`;
         };
         return `<tr data-row="${r.id}" class="${on ? "is-selected" : ""}">
           <td class="td-check"><input class="check" type="checkbox" data-check="${r.id}" aria-label="Select" ${on ? "checked" : ""}></td>

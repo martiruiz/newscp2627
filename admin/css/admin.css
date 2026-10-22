@@ -1060,3 +1060,44 @@ select.cs-native { display: none !important; }
 .crm-when { margin-left: auto; color: var(--dim); font-size: 11px; }
 .crm-empty { margin: 4px 0; text-align: center; color: var(--dim); }
 @media (max-width: 900px) { .crm-board { grid-template-columns: repeat(6, 220px); } }
+
+/* ---------- Admin → Content Ideas, premium (js/content-ideas.js: main.ci-page) ---------- */
+.ci-page .page-head h1 { font-size: 28px; }
+.ci-page [data-total] { display: inline-flex; align-items: center; gap: 8px; margin-top: 8px; padding: 4px 12px 4px 10px; border-radius: 999px; font-size: 12.5px; font-weight: 600; color: var(--accent-light);
+  background: var(--accent-soft); border: 1px solid rgba(240, 184, 74, 0.35); font-variant-numeric: tabular-nums; }
+.ci-page [data-total]::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+.ci-page [data-total]:empty { display: none; }
+/* filters: category headers as small caps, ALL / ANY as a pill switch */
+.ci-page .filter-item .fhead { flex-direction: row; align-items: center; justify-content: space-between; }
+.ci-page .filter-item .fhead > span { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dim); }
+.ci-page .mode { padding: 2px; border-radius: 999px; background: var(--panel-2); border: 1px solid var(--border); }
+.ci-page .mode button { height: 18px; padding: 0 8px; border-radius: 999px; font-size: 10px; letter-spacing: 0.04em; }
+/* table */
+.ci-page section.panel:has(table.data) { border-radius: 16px; overflow: hidden; }
+.ci-page table.data th { position: sticky; top: 0; z-index: 1; background: var(--panel); padding-top: 14px; padding-bottom: 14px; }
+.ci-page table.data td { padding: 12px 14px; }
+.ci-page table.data tbody tr { transition: background 0.12s; }
+.ci-page table.data tbody tr:hover { background: linear-gradient(90deg, rgba(240, 184, 74, 0.06), transparent 60%); }
+.ci-page table.data tbody tr.is-selected { background: linear-gradient(90deg, rgba(240, 184, 74, 0.12), rgba(240, 184, 74, 0.03)); box-shadow: inset 3px 0 0 var(--accent); }
+.ci-title { min-width: 300px; max-width: 400px; white-space: normal; }
+.ci-title > .ci-mark { float: left; display: grid; place-items: center; width: 34px; height: 34px; margin-right: 12px; border-radius: 10px; font: 700 13px var(--display); color: var(--nc);
+  background: color-mix(in srgb, var(--nc) 14%, transparent); border: 1px solid color-mix(in srgb, var(--nc) 35%, transparent); }
+.ci-tt { display: grid; gap: 2px; min-width: 0; }
+.ci-tt b { font-weight: 600; font-size: 13.5px; line-height: 1.35; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.ci-tt a { width: max-content; max-width: 100%; overflow: hidden; text-overflow: ellipsis; font-size: 11.5px; color: var(--dim); }
+.ci-tt a:hover { color: var(--accent-light); }
+.ci-id { display: inline-block; max-width: 118px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle; padding: 3px 8px; border-radius: 7px; background: var(--panel-2); border: 1px solid var(--border); color: var(--muted); font-size: 11px; }
+.ci-date { line-height: 1.3; }
+.ci-date b { display: block; font-weight: 600; color: var(--text); font-size: 13px; }
+.ci-date small { color: var(--dim); font-size: 11.5px; }
+.ci-tags { max-width: 170px; }
+.ci-chip { display: inline-flex; align-items: center; gap: 6px; margin: 2px 4px 2px 0; padding: 3px 9px; border-radius: 999px; background: var(--panel-2); border: 1px solid var(--border); color: var(--text); font-size: 12px; white-space: nowrap; }
+.ci-net i { width: 7px; height: 7px; border-radius: 50%; background: var(--nc); box-shadow: 0 0 8px var(--nc); }
+.ci-more { color: var(--muted); cursor: help; }
+.ci-none { color: var(--dim); }
+.ci-page .td-actions .icon-btn { width: 32px; height: 32px; border-radius: 9px; border: 1px solid var(--border); background: var(--panel-2); transition: border-color 0.12s, color 0.12s, background 0.12s; }
+.ci-page .td-actions .icon-btn:hover { border-color: rgba(240, 184, 74, 0.5); color: var(--accent-light); background: var(--accent-soft); }
+.ci-page .selbar { position: sticky; top: 10px; z-index: 5; border-radius: 14px; padding: 10px 16px; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  background: color-mix(in srgb, var(--accent) 16%, var(--panel)); box-shadow: 0 16px 34px -18px rgba(0, 0, 0, 0.6); }
+.ci-page .pager { padding: 14px 18px; }
+.ci-page .pager-btns button, .ci-page .pager-btns .cur { border-radius: 999px; }
