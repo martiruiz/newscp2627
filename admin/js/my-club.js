@@ -96,6 +96,7 @@
         <div class="mcl-members">${club.members.map((m) => `<span class="mcl-member">${esc(m.email)}<button type="button" title="Remove" data-unmember="${esc(m.email)}">✕</button></span>`).join("") || `<span class="muted">Nobody yet.</span>`}</div>
         <form class="mcl-add" data-member><input class="input" type="email" name="email" placeholder="name@club.com" required><button class="btn" type="submit">${icon("plus")}Add member</button></form></section>
       <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Players &amp; sponsors</h2>${info("Upload an Excel with one row per person and team: Type (player / sponsor), Name, Photo, Section, Team, Instagram, TikTok, X, YouTube, Facebook, LinkedIn, Active, From, To. The same name again adds a link, it never duplicates the person. A sponsor with no section is a global sponsor.")}<span class="spacer"></span>
+          <a class="btn" href="import.html?club=${cur}" title="The daily scraping CSV (same as Admin → Import): its players' and sponsors' posts go to this club's My Club">${icon("import")}Import posts (CSV)</a>
           <button class="btn" type="button" data-template>${icon("download")}Excel template</button>
           <label class="btn btn-primary">${icon("import")}Upload Excel<input type="file" accept=".xlsx,.xls,.csv" hidden data-file></label></header>
         <p class="mcl-sum">${club.sections.length ? club.sections.map((s) => `<b>${esc(s.name)}</b> ${s.teams.map((t) => esc(t.name)).join(", ") || "—"}`).join(" · ") : "No sections yet."}</p>

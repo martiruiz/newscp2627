@@ -19,6 +19,14 @@
     { key: "account", required: false, aliases: ["account", "username", "user_posted", "profile", "profile_url", "handle", "author", "owner_username"] },
     ...A.CATEGORIES.map((c) => ({ key: c.key, required: false, aliases: [c.key, `${c.key}s`] })),
   ];
+  // Admin → My Club → "Import posts": the same import, for one club (?club=id). Its players' and sponsors' posts go to its
+  // My Club; the results list the posts of accounts that aren't linked to the club yet.
+  const CLUB = Number(new URLSearchParams(location.search).get("club")) || null;
+  let club = null;   // { id, name, handles: Set }
+  if (CLUB) {
+    const { data } = await A.db.rpc("admin_club", { p_club: CLUB });
+    if (data?.club) club = { id: CLUB, name: data.club.name, handles: new Set(data.people.flatMap((p) => p.accounts.map((a) => a.handle))) };
+  }
   const BATCH = 200;
   const PREVIEW_ROWS = 10;
   let view = "history";
@@ -493,6 +501,7 @@
         <div><h1>Import</h1><p>Import content ideas from CSV</p></div>
         <button class="btn btn-ghost" type="button" data-back>← Back to History</button>
       </div>
+      ${club ? `<div class="imp-club">${icon("audience")}<span>Importing for <b>${esc(club.name)}</b>: its players' and sponsors' posts go to its My Club, private and tagged.</span><a class="btn btn-sm" href="my-club.html">← ${esc(club.name)}</a></div>` : ""}
       ${stepsHtml(wizard.step)}
       ${inner}`;
     $("[data-back]").addEventListener("click", showHistory);
@@ -667,6 +676,13 @@
         error_count: errors.length, errors, new_values: total.new_values_created, completed_at: new Date().toISOString(),
       }).eq("id", wizard.importId);
       wizard.result = { ...total, skipped, errors };
+      if (club) {   // which posts are this club's (by account) and which accounts aren't linked to it
+        const handle = (r) => String(r.account || "").trim().replace(/^@/, "").replace(/^https?:\/\/[^/]+\/@?/, "").replace(/\/.*$/, "").toLowerCase();
+        const withAcc = rows.filter((r) => handle(r));
+        const out = new Map();
+        for (const r of withAcc) if (!club.handles.has(handle(r))) out.set(handle(r), (out.get(handle(r)) || 0) + 1);
+        wizard.result.club = { matched: withAcc.length - [...out.values()].reduce((a, b) => a + b, 0), noAccount: rows.length - withAcc.length, unlinked: [...out.entries()].sort((a, b) => b[1] - a[1]) };
+      }
       // members don't see the new posts until their covers are loaded; then they're published on their own (supabase/import-review.sql, import-autopublish.sql)
       if (total.created + total.replaced) {
         const h = await A.db.rpc("admin_import_hold", { p_import_id: wizard.importId });
@@ -674,13 +690,13 @@
       }
       // My Club (supabase/my-club-daily.sql): the clubs' players' and sponsors' posts → only in My Club, with the tags they miss
       if (total.created + total.replaced) {
-        let club = { posts: 0, club_only: 0, tags_added: 0 };
+        let mark = { posts: 0, club_only: 0, tags_added: 0 };
         for (const part of A.chunk(rows.map((r) => r.external_id), 1000)) {
           const r = await A.db.rpc("club_mark_imported", { p_external_ids: part });
-          if (r.error) { if (!/does not exist|schema cache|Could not find/i.test(r.error.message)) term.log("warn", `My Club: ${esc(r.error.message)}`); club = null; break; }
-          for (const k of Object.keys(club)) club[k] += r.data?.[k] || 0;
+          if (r.error) { if (!/does not exist|schema cache|Could not find/i.test(r.error.message)) term.log("warn", `My Club: ${esc(r.error.message)}`); mark = null; break; }
+          for (const k of Object.keys(mark)) mark[k] += r.data?.[k] || 0;
         }
-        if (club?.posts) term.log("ok", `My Club: ${num(club.posts)} posts from club accounts · ${num(club.club_only)} only in My Club · ${num(club.tags_added)} tags added`);
+        if (mark?.posts) term.log("ok", `My Club: ${num(mark.posts)} posts from club accounts · ${num(mark.club_only)} only in My Club · ${num(mark.tags_added)} tags added`);
       }
       // Cached counts of the library (supabase/performance.sql)
       term.log("sys", "refreshing library counts…");
@@ -710,6 +726,11 @@
           <div class="stat ${R.skipped ? "amber" : ""}"><p>Skipped</p><b>${num(R.skipped)}</b></div>
           <div class="stat ${R.errors.length ? "red" : ""}"><p>Errors</p><b>${num(R.errors.length)}</b></div>
         </div>
+        ${R.club ? `<section class="panel imp-club-res"><header class="aud-h aud-h-lg"><h2>${esc(club.name)} · My Club</h2></header><div class="panel-pad">
+          <p><b>${num(R.club.matched)}</b> posts from ${esc(club.name)}'s players and sponsors.${R.club.noAccount ? ` <span class="muted">${num(R.club.noAccount)} rows have no account column: they can't be assigned to a player or sponsor.</span>` : ""}</p>
+          ${R.club.unlinked.length ? `<p class="imp-club-warn">${icon("alert")}<span><b>${num(R.club.unlinked.reduce((n, [, c]) => n + c, 0))} posts from ${num(R.club.unlinked.length)} accounts not linked to ${esc(club.name)}</b> — they're in the library but not in its My Club. Add them to a player or sponsor in <a href="my-club.html">Admin → My Club</a>.</span></p>
+            <div class="value-chips">${R.club.unlinked.slice(0, 40).map(([h, n]) => `<span class="chip">@${esc(h)} · ${num(n)}</span>`).join("")}</div>` : `<p class="success-text">Every post is from an account of the club.</p>`}
+        </div></section>` : ""}
         ${R.created + R.replaced ? `<section data-review></section>` : ""}
         ${nvCount ? accordion({ title: "New filter values", count: `${num(nvCount)} created`, tone: "good", body: nv.map(([k, vals]) => `<p class="label" style="margin-top:8px">${A.CAT_LABEL[k]}</p><div class="value-chips">${vals.map((v) => `<span class="chip">${esc(v)}</span>`).join("")}</div>`).join("") }) : ""}
         ${R.errors.length ? accordion({
@@ -717,7 +738,7 @@
           body: miniTable(["Row", "External ID", "Error"], R.errors.slice(0, LIMIT).map((x) => `<tr><td>${x.row ?? "—"}</td><td class="mono">${esc(x.external_id || "—")}</td><td>${esc(x.error)}</td></tr>`)) + more(R.errors.length) + `<p style="margin-top:10px"><button class="btn btn-sm" type="button" data-err-csv>${icon("download")}Download errors CSV</button></p>`,
         }) : ""}
       </div>
-      <div class="wizard-actions"><button class="btn btn-primary" type="button" data-done>Back to History</button></div>`);
+      <div class="wizard-actions">${club ? `<a class="btn" href="my-club.html">← ${esc(club.name)}</a>` : ""}<button class="btn btn-primary" type="button" data-done>Back to History</button></div>`);
     $("[data-done]").addEventListener("click", showHistory);
     $("[data-err-csv]")?.addEventListener("click", () => downloadErrors(R.errors, wizard.file.name));
     if ($("[data-review]")) reviewPanel($("[data-review]"), wizard.importId);
@@ -810,5 +831,5 @@
     return () => { stopped = true; };
   }
 
-  showHistory();
+  if (club) showWizard(); else showHistory();
 })();
