@@ -182,6 +182,7 @@ window.SCP_ES = {
   "The": "La",
   "magic": "magia",
   "behind SCP": "detrás de SCP",
+  "Sports posts analysed and tagged to filter content in seconds.": "Posts deportivos analizados y etiquetados para filtrar contenido en segundos.",
   "STEP 01": "PASO 01",
   "STEP 02": "PASO 02",
   "STEP 03": "PASO 03",
