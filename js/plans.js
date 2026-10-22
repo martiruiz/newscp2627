@@ -32,8 +32,8 @@
   const saving = (p) => { const m = priceOf(p, currency, "month"), y = priceOf(p, currency, "year"); return m && y ? Math.round((1 - y.amount / (m.amount * 12)) * 100) : 0; };
   const currentSub = () => mine?.subscription && ["active", "trialing", "past_due", "unpaid"].includes(mine.subscription.status) && mine.subscription.source === "stripe" ? mine.subscription : null;
 
-  // builder: the "Library + add-ons" card (addons html, the plan it stands for); value: a line on the plan that has everything
-  function planCard(p, { solo = false, builder = null } = {}) {
+  // value: a line on the plan that has everything
+  function planCard(p, { solo = false } = {}) {
     const price = priceOf(p) || priceOf(p, currency, "month");
     const iv = price?.interval || interval;
     const cur = currentSub();
@@ -45,13 +45,13 @@
     const otherAi = Math.max(0, ...(data?.plans || []).filter((x) => x.key !== p.key && (x.entitlements || []).includes("ai.analyze_posts")).map((x) => x.ai_monthly_units || 0));
     const times = hasAi && !p.ai_unlimited && otherAi > 0 && p.ai_monthly_units > otherAi ? Math.floor(p.ai_monthly_units / otherAi) : 0;
     let cta;
-    const btn = p.highlighted && !builder || solo ? "btn-gold" : "btn-outline";   // the main plan stands out; green is only the trial's state
+    const btn = p.highlighted || solo ? "btn-gold" : "btn-outline";   // the main plan stands out; green is only the trial's state
     if (isCurrent) cta = `<a class="btn ${btn} plan-cta" href="profile.html#billing">${tx("Manage your plan")}</a>`;
     else if (!price) cta = `<span class="btn btn-outline plan-cta is-current">${tx("Not available in {cur}", { cur: currency.toUpperCase() })}</span>`;
     else if (!price.ready) cta = `<a class="btn btn-outline plan-cta" href="contact.html">${tx("Coming soon — contact us")}</a>`;
     else if (cur) cta = `<a class="btn ${btn} plan-cta" href="profile.html?change=${encodeURIComponent(p.key)}&interval=${iv}#billing">${tx("Choose {plan}", { plan: esc(p.name) })}</a>`;
     else cta = `<button class="btn ${btn} plan-cta" type="button" data-checkout-plan="${esc(p.key)}" data-interval="${iv}" data-currency="${currency}" data-seats="${seats}"${privateToken && p.key === privatePlan?.key ? ` data-link="${esc(privateToken)}"` : ""}><span>${trial ? tx("Start {n}-day free trial", { n: trial }) : tx("Get {plan}", { plan: esc(p.name) })}</span><i class="plan-cta-arrow" aria-hidden="true">→</i></button>`;
-    const flag = builder?.hideCurrent ? "" : isCurrent ? `<span class="plan-flag is-current">${tx(cur.status === "trialing" ? "Your trial" : "Your plan")}</span>`
+    const flag = isCurrent ? `<span class="plan-flag is-current">${tx(cur.status === "trialing" ? "Your trial" : "Your plan")}</span>`
       : p.highlighted ? `<span class="plan-flag">${tx("Recommended")}${times > 1 ? ` · ${tx("{n}× more AI", { n: times })}` : ""}</span>` : "";
     // the trial / billing note only where it isn't said below the cards: your current plan, or a private plan on its own
     const note = isCurrent
@@ -90,19 +90,17 @@
     ].filter(Boolean);
     // the plan with everything: how much more AI than the next one
     const extraAi = hasAi && cp && !p.ai_unlimited && otherAi > 0 && p.ai_monthly_units > otherAi ? p.ai_monthly_units - otherAi : 0;
-    const value = (!builder && hasAi && cp ? `<p class="plan-value">${tx("All included")}${extraAi ? ` · <b>${tx("+{n} AI analyses a month", { n: extraAi })}</b>` : ""}</p>` : "")
+    const value = (hasAi && cp ? `<p class="plan-value">${tx("All included")}${extraAi ? ` · <b>${tx("+{n} AI analyses a month", { n: extraAi })}</b>` : ""}</p>` : "")
       + (bulk ? `<p class="plan-bulk${bulk.on ? " is-on" : ""}">${bulk.on ? `✓ ${tx("Your purchase is over {min}: {n} AI analyses a month per user", { min: fmt(bulk.min, currency), n: bulk.n })}` : tx("Over {min}: {n} AI analyses a month per user", { min: fmt(bulk.min, currency), n: bulk.n })}</p>` : "");
     const tool = (on, cls, label, extra = "") => `<li class="pt ${cls}${on ? "" : " is-off"}"><i></i><span>${label}</span>${extra ? `<em>${extra}</em>` : ""}</li>`;
     return `<article class="plan-card v2${p.highlighted ? " is-best" : ""}${isCurrent ? " is-current" : ""}${p.key === wanted ? " is-wanted" : ""}" data-plan-key="${esc(p.key)}">
       ${flag}
-      <h3>${builder ? tx("Library") : esc(p.name)}</h3>
+      <h3>${esc(p.name)}</h3>
       <p class="plan-price">${seats > 1 && price ? `<em class="plan-total">${tx("Total")}</em>` : ""}${was ? `<s class="plan-was">${fmt(was * seats, currency)}</s>` : ""}${price ? `<b data-price="${big}" data-cur="${currency}">${fmt(big, currency)}</b><span>${iv === "year" ? `/ ${per("year")}` : seats > 1 ? `/ ${per("month")}` : tx("/ {per} per user", { per: per("month") })}</span>` : `<b>—</b>`}</p>
       <p class="plan-sub">${sub || "&nbsp;"}</p>
-      ${savePill}
-      ${value}
-      ${builder ? builder.addons : ""}
+      <div class="plan-extras">${savePill}${value}</div>
       ${cta}
-      ${note ? `<p class="plan-note">${note}</p>` : ""}
+      <p class="plan-note">${note}</p>
       <ul class="plan-gets">${gets.map((g) => `<li>${g}</li>`).join("")}</ul>
     </article>`;
   }
@@ -194,41 +192,13 @@
     return r.json();
   }
 
-  // ---------- Library + add-ons: one card where the Content Plan and AI analyses are ticked on, and All Access next to it ----------
-  // (only when the four usual plans exist; prices always come from them, nothing is calculated)
-  const addon = { cp: false, ai: false };
-  if (["library_planner", "all_access"].includes(new URLSearchParams(location.search).get("plan"))) addon.cp = true;
-  if (["library_ai", "all_access"].includes(new URLSearchParams(location.search).get("plan"))) addon.ai = true;
-  const byKey = (plans, k) => plans.find((p) => p.key === k);
-  const builderPlans = (plans) => !privatePlan && ["library", "library_planner", "library_ai", "all_access"].every((k) => byKey(plans, k));
-  function builderHtml(plans) {
-    const lib = byKey(plans, "library"), all = byKey(plans, "all_access");
-    const both = addon.cp && addon.ai;
-    const pick = both ? all : addon.cp ? byKey(plans, "library_planner") : addon.ai ? byKey(plans, "library_ai") : lib;
-    const amount = (p) => { const x = priceOf(p); return x ? x.amount * seats : 0; };
-    // ticking both = All Access: say so when it costs no more than the two add-ons, and how much more AI it brings
-    const extra = (all.ai_monthly_units || 0) - (byKey(plans, "library_ai").ai_monthly_units || 0);
-    const sameOrLess = amount(all) <= amount(byKey(plans, "library_planner")) + amount(byKey(plans, "library_ai")) - amount(lib);
-    const plus = (k) => fmt(Math.round(amount(byKey(plans, k)) - amount(lib)), currency);
-    const row = (key, on, plan, title, desc) => `<label class="plan-addon${on ? " is-on" : ""}"><input type="checkbox" data-addon="${key}"${on ? " checked" : ""}>
-      <span class="plan-addon-tx"><b>${tx(title)}</b><small>${tx(desc)}</small></span><span class="plan-addon-price">+${plus(plan)}</span></label>`;
-    const addons = `<div class="plan-addons"><p class="plan-addons-h">${tx("Add to your plan")}</p>
-      ${row("cp", addon.cp, "library_planner", "Content Plan", "Plan your week and month")}
-      ${row("ai", addon.ai, "library_ai", "AI analysis", "Know why a post works")}
-      ${both ? `<p class="plan-addons-note">${extra > 0 && sameOrLess
-        ? tx("Both add-ons = All Access, for the same price: +{x} AI analyses a month for free ({n} in total).", { x: extra, n: all.ai_monthly_units })
-        : sameOrLess ? tx("Both add-ons = All Access, for the same price.") : tx("Both add-ons are All Access: it comes with {n} AI analyses a month.", { n: all.ai_monthly_units })}</p>` : ""}</div>`;
-    return planCard(pick, { builder: { addons, hideCurrent: both } }) + planCard(all);   // both ticked = All Access: its flag only once, on its own card
-  }
-
   function draw(swap = false) {
     const plans = privatePlan ? [privatePlan] : data.plans;
     boxes.forEach((b) => {
       b.classList.toggle("is-solo", plans.length === 1);
-      b.innerHTML = plans.length ? (builderPlans(plans) ? builderHtml(plans) : plans.map((p) => planCard(p, { solo: plans.length === 1 })).join("")) : `<p class="plans-empty">Plans will be published here soon. <a class="link-gold" href="contact.html">Contact us</a> in the meantime.</p>`;
+      b.innerHTML = plans.length ? plans.map((p) => planCard(p, { solo: plans.length === 1 })).join("") : `<p class="plans-empty">Plans will be published here soon. <a class="link-gold" href="contact.html">Contact us</a> in the meantime.</p>`;
       decorate(b, swap);
       b.classList.toggle("is-v2", !privatePlan && plans.length > 1);
-      b.classList.toggle("is-builder", !!builderPlans(plans));
       // not sure which plan? one line under the cards opens the demo form (FAQ) or the demo page
       if (!privatePlan && plans.length > 1 && !b.nextElementSibling?.matches?.(".plan-help")) {
         const inPage = document.querySelector('[data-faq-pane="demo"]');
@@ -343,8 +313,6 @@
         if (next > MAX_SEATS) { document.querySelector("[data-seats-more]")?.removeAttribute("hidden"); document.querySelector("[data-seats-more] a")?.focus(); return; }
         if (next >= 1 && next !== seats) { seats = next; store.set("scp-seats", String(seats)); draw(true); }
       }
-      const ad = e.target.closest("[data-addon]");
-      if (ad) { addon[ad.dataset.addon] = ad.checked; draw(true); return; }
       const c = e.target.closest("[data-currency-pick]");
       if (c && c.dataset.currencyPick !== currency) { currency = c.dataset.currencyPick; store.set("scp-currency", currency); draw(true); }
     });
