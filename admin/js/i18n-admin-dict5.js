@@ -38,4 +38,7 @@ window.SCPA_DICT = Object.assign(window.SCPA_DICT || {}, {
   "Booked demos": ["Demos reservadas", "Demos reservades"],
   "Phone contacts": ["Contactos por teléfono", "Contactes per telèfon"],
   "Messages": ["Mensajes", "Missatges"],
+  "Pipeline": ["Pipeline (CRM)", "Pipeline (CRM)"],
+  "Demo · {a}": ["Demo · {a}", "Demo · {a}"],
+  "Your CRM: every lead as a card in its commercial stage. Drag a card to another column to change its status (or use the status in the list below); click a card for every answer, the demo and notes. The filters below apply here too.": ["Tu CRM: cada lead es una tarjeta en su etapa comercial. Arrastra una tarjeta a otra columna para cambiar su estado (o usa el estado de la lista de abajo); haz clic en una tarjeta para ver todas las respuestas, la demo y las notas. Los filtros de abajo también se aplican aquí.", "El teu CRM: cada lead és una targeta a la seva etapa comercial. Arrossega una targeta a una altra columna per canviar-ne l'estat (o fes servir l'estat de la llista de sota); fes clic en una targeta per veure totes les respostes, la demo i les notes. Els filtres de sota també s'hi apliquen."],
 });

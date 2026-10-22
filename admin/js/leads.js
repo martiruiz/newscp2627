@@ -21,6 +21,7 @@
     <div class="head-actions"><button class="btn" type="button" data-rules>${icon("edit")}Recommendation rules</button>
     <button class="btn btn-primary" type="button" data-export>${icon("download")}Export authorised contacts</button></div></div>
     <div class="aud-kpis" data-kpis></div>
+    <section class="panel ld-crm"><header class="aud-h aud-h-lg"><h2>Pipeline</h2>${info("Your CRM: every lead as a card in its commercial stage. Drag a card to another column to change its status (or use the status in the list below); click a card for every answer, the demo and notes. The filters below apply here too.")}<span class="spacer"></span><b class="aud-count" data-crm-count></b></header><div class="crm-board" data-board></div></section>
     <section class="panel ld-funnel" data-funnel><p class="muted panel-pad">Loading the funnel…</p></section>
     <div class="aud-filters panel ld-filters">
       <input class="input" type="search" placeholder="Search name, email, organisation…" data-f="q">
@@ -53,7 +54,38 @@
     render();
   }
 
+  // CRM board: one column per commercial status; drag a card to move it
+  const COLS = { new: "", qualified: "is-gold", demo_booked: "is-gold", demo_completed: "is-blue", customer: "is-green", lost: "is-red" };
+  function board() {
+    $("[data-crm-count]").textContent = num(leads.length);
+    $("[data-board]").innerHTML = Object.entries(STATUS).map(([k, label]) => {
+      const list = leads.filter((l) => (l.status || "new") === k);
+      return `<div class="crm-col ${COLS[k]}" data-col="${k}"><header><span class="crm-dot"></span><b>${label}</b><span class="crm-n">${num(list.length)}</span></header>
+        <div class="crm-cards">${list.map((l) => `<article class="crm-card" draggable="true" data-card="${l.id}">
+          <div class="ld-person"><span class="ld-av">${esc((l.name || l.email || l.phone || "?").trim().charAt(0).toUpperCase())}</span><span><b>${esc(l.name || (l.phone ? "Phone lead" : "Anonymous"))}</b><small>${esc(l.organization || ORG[l.org_type] || l.email || l.phone || "—")}</small></span></div>
+          <div class="crm-meta">${l.meeting_at ? `<span class="ld-pill is-gold">Demo · ${fmt(l.meeting_at)}</span>` : ""}${l.phone ? `<span class="crm-tag">Phone</span>` : ""}${(l.message || "").trim() ? `<span class="crm-tag">Message</span>` : ""}<span class="crm-when">${fmt(l.updated_at)}</span></div>
+        </article>`).join("") || `<p class="crm-empty">—</p>`}</div></div>`;
+    }).join("");
+  }
+  async function setStatus(id, status) {
+    const { error } = await A.db.rpc("admin_set_lead", { p_id: id, p: { status } });
+    if (error) { A.toast(A.errMsg(error), "err"); return false; }
+    A.toast(`Status: ${STATUS[status]}`);
+    const l = leads.find((x) => x.id === id); if (l) l.status = status;
+    return true;
+  }
+  main.addEventListener("dragstart", (e) => { const c = e.target.closest?.("[data-card]"); if (c) { e.dataTransfer.setData("text/plain", c.dataset.card); c.classList.add("is-drag"); } });
+  main.addEventListener("dragend", (e) => { e.target.closest?.("[data-card]")?.classList.remove("is-drag"); $$(".crm-col.is-over").forEach((x) => x.classList.remove("is-over")); });
+  main.addEventListener("dragover", (e) => { const col = e.target.closest?.("[data-col]"); if (!col) return; e.preventDefault(); $$(".crm-col.is-over").forEach((x) => x !== col && x.classList.remove("is-over")); col.classList.add("is-over"); });
+  main.addEventListener("drop", async (e) => {
+    const col = e.target.closest?.("[data-col]"); if (!col) return;
+    e.preventDefault(); col.classList.remove("is-over");
+    const id = e.dataTransfer.getData("text/plain"), l = leads.find((x) => x.id === id);
+    if (l && (l.status || "new") !== col.dataset.col && await setStatus(id, col.dataset.col)) render();
+  });
+
   function render() {
+    board();
     $("[data-tabs]").innerHTML = TABS.map(([k, label, ok]) => `<a href="#" role="tab" data-tab="${k}" aria-selected="${tab === k}">${label} <b>${num(leads.filter(ok).length)}</b></a>`).join("");
     const list = leads.filter(TABS.find(([k]) => k === tab)[2]);
     $("[data-count]").textContent = num(list.length);
@@ -130,13 +162,7 @@
     const el = e.target.closest("[data-f]");
     if (el && el.type !== "search") { f[el.dataset.f] = el.type === "checkbox" ? el.checked : el.value; return load(); }
     const s = e.target.closest("[data-status]");
-    if (s) {
-      const { error } = await A.db.rpc("admin_set_lead", { p_id: s.dataset.status, p: { status: s.value } });
-      if (error) return A.toast(A.errMsg(error), "err");
-      A.toast(`Status: ${STATUS[s.value]}`);
-      const l = leads.find((x) => x.id === s.dataset.status); if (l) l.status = s.value;
-      s.className = `select select-sm ld-status st-${s.value}`;
-    }
+    if (s && await setStatus(s.dataset.status, s.value)) { s.className = `select select-sm ld-status st-${s.value}`; board(); }
   });
   main.addEventListener("click", (e) => {
     const tb = e.target.closest("[data-tab]");
@@ -151,6 +177,7 @@
       A.downloadBlob(new Blob([csv], { type: "text/csv;charset=utf-8" }), `scp-leads-authorised-${new Date().toISOString().slice(0, 10)}.csv`);
       return;
     }
+    const card = e.target.closest("[data-card]"); if (card) return openLead(card.dataset.card);
     const row = e.target.closest("tr[data-id]");
     if (row && !e.target.closest("select")) openLead(row.dataset.id);
   });
