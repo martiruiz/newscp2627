@@ -35,7 +35,7 @@
 
   // one row per club profile: network + account
   const accRow = (a) => `<div class="mcl-acc-row"><select class="select select-sm" name="acc_platform">${Object.entries(PF).map(([k, v]) => `<option value="${k}"${a.platform === k ? " selected" : ""}>${v}</option>`).join("")}</select>
-    <input class="input input-sm" name="acc_handle" value="${esc(a.handle || "")}" placeholder="@account">
+    <div class="mcl-acc-q"><input class="input input-sm" name="acc_handle" value="${esc(a.handle || "")}" placeholder="@account" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false"><div class="mcl-acc-dd" role="listbox" hidden></div></div>
     <select class="select select-sm" name="acc_section" title="Section of this profile (its posts show in that section; none = every section)"><option value="">All sections</option>${(club?.sections || []).map((x) => `<option value="${x.id}"${Number(a.section_id) === x.id ? " selected" : ""}>${esc(x.name)}</option>`).join("")}</select><button class="icon-btn" type="button" title="Remove" aria-label="Remove" data-acc-del>${icon("trash")}</button></div>`;
   const setLogo = (url) => {
     const f = $("[data-form]"); f.logo_url.value = url;
@@ -228,7 +228,7 @@
       if (b.matches("[data-template]")) return template();
       if (b.matches("[data-daily]")) return dailyFile();
       if (b.matches("[data-add-sponsor]")) return addSponsor();
-      if (b.matches("[data-acc-add]")) { $("[data-accs]").insertAdjacentHTML("beforeend", accRow({ platform: "instagram", handle: "" })); return $("[data-accs] .mcl-acc-row:last-child input").focus(); }
+      if (b.matches("[data-acc-add]")) { $("[data-accs]").insertAdjacentHTML("beforeend", accRow({ platform: "instagram", handle: "" })); return $("[data-accs] .mcl-acc-row:last-child [name=acc_handle]").focus(); }
       if (b.matches("[data-acc-del]")) return b.closest(".mcl-acc-row").remove();
       if (b.dataset.logoLib) return setLogo(b.dataset.logoLib);
       if (b.matches("[data-logo-clear]")) return setLogo("");
@@ -247,7 +247,58 @@
       }
     } catch (x) { fail(x); }
   });
+  // Club profiles: typing in @account searches that network's accounts on the platform (library + scraped profiles);
+  // pick one from the drop-down (click, or arrows + Enter). Any other handle can still be typed by hand.
+  // Data: admin_account_search (supabase/club-account-search.sql); before it runs, admin_brand_search filtered by network.
+  const accSearch = async (platform, q) => {
+    try { return await rpc("admin_account_search", { p_platform: platform, p_q: q }); }
+    catch (x) {
+      if (!/Run supabase|admin_account_search/.test(x.message)) throw x;
+      return ((await rpc("admin_brand_search", { p_q: q })).accounts || []).filter((a) => a.platform === platform);
+    }
+  };
+  let accTimer, accSeq = 0;
+  const ddOf = (input) => input.closest(".mcl-acc-q").querySelector(".mcl-acc-dd");
+  const ddClose = (input) => { const dd = ddOf(input); dd.hidden = true; dd.innerHTML = ""; input.setAttribute("aria-expanded", "false"); };
+  const ddPick = (input, opt) => { input.value = opt.dataset.handle; ddClose(input); input.focus(); };
+  function accLookup(input) {
+    clearTimeout(accTimer);
+    const q = input.value.trim().replace(/^@/, ""), dd = ddOf(input);
+    const platform = input.closest(".mcl-acc-row").querySelector("[name=acc_platform]").value;
+    if (q.length < 2) return ddClose(input);
+    accTimer = setTimeout(async () => {
+      const seq = ++accSeq;
+      dd.hidden = false; input.setAttribute("aria-expanded", "true");
+      dd.innerHTML = `<p class="mcl-acc-dd-msg">Searching…</p>`;
+      let list;
+      try { list = await accSearch(platform, q); } catch (x) { ddClose(input); return fail(x); }
+      if (seq !== accSeq || document.activeElement !== input) return;
+      dd.innerHTML = list.length ? list.map((a, i) => `<button type="button" class="mcl-acc-opt${i === 0 ? " is-act" : ""}" role="option" data-handle="${esc(a.handle)}" tabindex="-1">
+          <span class="mcl-acc-av">${esc((a.name || a.handle).replace(/^[^a-z0-9]+/i, "").charAt(0).toUpperCase() || "@")}</span>
+          <span class="mcl-acc-tx"><b>@${esc(a.handle)}</b>${a.name ? `<small>${esc(a.name)}</small>` : ""}</span>
+          <span class="mcl-acc-n">${a.posts ? `${num(a.posts)} posts` : "not scraped yet"}</span></button>`).join("")
+        : `<p class="mcl-acc-dd-msg">No ${esc(PF[platform] || platform)} accounts with that name. You can still type it by hand.</p>`;
+    }, 220);
+  }
+  main.addEventListener("input", (e) => { if (e.target.matches("[name=acc_handle]")) accLookup(e.target); });
+  main.addEventListener("focusin", (e) => { if (e.target.matches("[name=acc_handle]") && e.target.value.trim().length >= 2 && ddOf(e.target).hidden) accLookup(e.target); });
+  main.addEventListener("focusout", (e) => { if (e.target.matches("[name=acc_handle]")) setTimeout(() => { if (document.activeElement !== e.target) ddClose(e.target); }, 150); });
+  // mousedown so the pick happens before the input loses focus
+  main.addEventListener("mousedown", (e) => { const o = e.target.closest(".mcl-acc-opt"); if (!o) return; e.preventDefault(); ddPick(o.closest(".mcl-acc-q").querySelector("input"), o); });
+  main.addEventListener("keydown", (e) => {
+    if (!e.target.matches("[name=acc_handle]")) return;
+    const dd = ddOf(e.target); if (dd.hidden) return;
+    const opts = [...dd.querySelectorAll(".mcl-acc-opt")], i = opts.findIndex((o) => o.classList.contains("is-act"));
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      e.preventDefault(); if (!opts.length) return;
+      const n = (i + (e.key === "ArrowDown" ? 1 : -1) + opts.length) % opts.length;
+      opts.forEach((o, k) => o.classList.toggle("is-act", k === n)); opts[n].scrollIntoView({ block: "nearest" });
+    } else if (e.key === "Enter" && opts[i]) { e.preventDefault(); ddPick(e.target, opts[i]); }
+    else if (e.key === "Escape") { e.preventDefault(); ddClose(e.target); }
+  });
   main.addEventListener("change", async (e) => {
+    // another network: search the same text again on it
+    if (e.target.matches("[name=acc_platform]")) { const h = e.target.closest(".mcl-acc-row").querySelector("[name=acc_handle]"); if (h.value.trim().length >= 2) { h.focus(); accLookup(h); } return; }
     try {
       if (e.target.matches("[data-logo-file]")) { const file = e.target.files[0]; e.target.value = ""; if (file) await uploadLogo(file); return; }
       if (e.target.dataset.active) { await rpc("admin_club_edit", { p_what: "person", p_id: Number(e.target.dataset.active), p: { active: e.target.checked } }); return loadClub(); }
