@@ -367,7 +367,7 @@
     const TZ = (() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || "Europe/Madrid"; } catch { return "Europe/Madrid"; } })();
     const LOC = window.SCP_LOC || undefined;
     const ymd = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-    const slots = { days: null, day: null, pick: null, part: null };   // part: "am" (until 12h) | "pm" (12–17h), chosen by the visitor
+    const slots = { days: null, day: null, pick: null, part: null };   // part: "am" (until 13h) | "pm" (13–17h), chosen by the visitor
     async function loadSlots() {
       const from = new Date(), to = new Date(); to.setDate(to.getDate() + 28);
       const r = await fetch(`https://api.cal.com/v2/slots?eventTypeSlug=${encodeURIComponent(CAL_SLUG)}&username=${encodeURIComponent(CAL_USER)}&start=${ymd(from)}&end=${ymd(to)}&timeZone=${encodeURIComponent(TZ)}`, { headers: { "cal-api-version": "2024-09-04" } });
@@ -377,8 +377,8 @@
       if (!slots.days.some((x) => x.day === slots.day)) slots.day = slots.days[0]?.day || null;
     }
     const dayParts = (day) => { const dt = new Date(`${day}T12:00:00`); return { wd: dt.toLocaleDateString(LOC, { weekday: "short" }), n: dt.getDate(), m: dt.toLocaleDateString(LOC, { month: "short" }) }; };
-    // morning = starts before 12:00, afternoon = the rest (meetings end at 17:00), in the visitor's time zone
-    const partOf = (iso) => (Number(new Date(iso).toLocaleTimeString("en-GB", { hour: "2-digit", hour12: false, timeZone: TZ }).slice(0, 2)) < 12 ? "am" : "pm");
+    // morning = starts before 13:00, afternoon = the rest (meetings end at 17:00), in the visitor's time zone
+    const partOf = (iso) => (Number(new Date(iso).toLocaleTimeString("en-GB", { hour: "2-digit", hour12: false, timeZone: TZ }).slice(0, 2)) < 13 ? "am" : "pm");
     const timeOf = (iso) => new Date(iso).toLocaleTimeString(LOC, { hour: "2-digit", minute: "2-digit", timeZone: TZ });
     const whenOf = (iso) => new Date(iso).toLocaleString(LOC, { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit", timeZone: TZ });
 
@@ -395,7 +395,7 @@
         const today = slots.days.find((x) => x.day === slots.day);
         box.innerHTML = `<div class="dp-days" role="radiogroup" aria-label="${esc(t("Day"))}">${slots.days.slice(0, 14).map((x, i) => { const p = dayParts(x.day);
             return `<button type="button" class="dp-day" role="radio" aria-checked="${x.day === slots.day}" data-day="${x.day}" style="--i:${i}"><small>${esc(p.wd)}</small><b>${p.n}</b><small>${esc(p.m)}</small></button>`; }).join("")}</div>
-          <div class="dp-parts" role="radiogroup" aria-label="${esc(t("Time"))}">${[["am", "Morning", "9–12 h"], ["pm", "Afternoon", "12–17 h"]].map(([k, l, h]) => {
+          <div class="dp-parts" role="radiogroup" aria-label="${esc(t("Time"))}">${[["am", "Morning", "9–13 h"], ["pm", "Afternoon", "13–17 h"]].map(([k, l, h]) => {
               const n = today.times.filter((iso) => partOf(iso) === k).length;
               return `<button type="button" class="dp-part" role="radio" aria-checked="${slots.part === k}" data-part="${k}"${n ? "" : " disabled"}><b>${esc(t(l))}</b><small>${esc(h)} · ${esc(t(n === 1 ? "{n} time" : "{n} times", { n }))}</small></button>`; }).join("")}</div>
           ${slots.part ? `<div class="dp-times" role="radiogroup" aria-label="${esc(t("Time"))}">${today.times.filter((iso) => partOf(iso) === slots.part).map((iso, i) => `<button type="button" class="dp-time" role="radio" aria-checked="false" data-time="${esc(iso)}" style="--i:${i}">${esc(timeOf(iso))}</button>`).join("")}</div>` : ""}
