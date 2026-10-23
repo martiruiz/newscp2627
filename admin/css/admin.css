@@ -1596,3 +1596,4 @@ select.cs-native { display: none !important; }
 :root[data-theme="light"] .login-card2 .login-card { background: #fff; }
 :root[data-theme="light"] .login-logo img { filter: brightness(0); }
 :root[data-theme="light"] .login-logo span { background: #0c0c0d; color: #fff; box-shadow: none; }
+.login-lang { margin: 0 0 0 auto !important; }

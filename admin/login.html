@@ -10,7 +10,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="../assets/favicon-s-192.png">
   <link rel="apple-touch-icon" href="../assets/apple-touch-icon-s.png">
   <link rel="stylesheet" href="../css/fonts.css?v=1">
-  <link rel="stylesheet" href="css/admin.css?v=20261024b">
+  <link rel="stylesheet" href="css/admin.css?v=20261024c">
   <script src="../js/theme.js?v=20261101a"></script>
 </head>
 <body>
@@ -21,7 +21,8 @@
         <p class="login-small">Internal panel · Sports Content Playbook</p>
       </div>
       <div class="login-card">
-        <div class="login-logo"><img src="../assets/logo-scp.png" alt="Sports Content Playbook"><span>Admin</span></div>
+        <div class="login-logo"><img src="../assets/logo-scp.png" alt="Sports Content Playbook"><span>Admin</span>
+          <div class="side-lang login-lang" role="group" aria-label="Language" data-i18n-skip><button type="button" data-admin-lang="en">EN</button><button type="button" data-admin-lang="es">ES</button><button type="button" data-admin-lang="ca">CA</button></div></div>
         <h1>Admin Panel</h1>
         <p class="sub">Internal access for the SCP team.</p>
         <form novalidate data-login>
@@ -46,6 +47,11 @@
   <script src="../js/config.js"></script>
   <script src="../js/auth.js"></script>
   <script>
+    // language: the same switch as the sidebar (js/i18n-admin.js)
+    document.querySelectorAll("[data-admin-lang]").forEach((b) => {
+      b.setAttribute("aria-pressed", String(b.dataset.adminLang === (window.SCPA_LANG || "en")));
+      b.addEventListener("click", () => { if (b.dataset.adminLang !== window.SCPA_LANG) window.SCPA_setLang?.(b.dataset.adminLang); });
+    });
     // the tagline in the admin's language (its words in gold italics)
     document.querySelector("[data-login-tag]").innerHTML = { es: "Todo tu <em>contenido</em>,<br>un solo <em>acceso</em>.", ca: "Tot el teu <em>contingut</em>,<br>un sol <em>accés</em>." }[window.SCPA_LANG] || document.querySelector("[data-login-tag]").innerHTML;
     (async () => {
