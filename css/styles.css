@@ -7844,3 +7844,7 @@ section[id], :target { scroll-margin-top: 92px; }
 .plan-gets li::before { top: 1px; width: 21px; height: 21px; background: radial-gradient(64% 64% at 50% 100%, var(--gold-light) 0%, var(--gold-mid) 50%, var(--gold) 100%); box-shadow: 0 4px 12px -4px rgba(240, 184, 74, 0.7); }
 .plan-gets li::after { content: ""; position: absolute; left: 0; top: 1px; width: 21px; height: 21px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23101828' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / 12px no-repeat; }
 :root[data-theme="light"] .plan-gets li b { color: #101828; }
+/* Pricing: no empty gap under the price when there's no line under it (one user, monthly) */
+.plan-card.v2 .plan-sub:empty, .plan-card.v2 .plan-extras:empty { margin: 0; min-height: 0; }
+.plan-card.v2 .plan-price { margin-top: 18px; }
+.plan-card.v2 .plan-gets { margin-top: 18px; }

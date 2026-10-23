@@ -93,7 +93,7 @@
       ${flag}
       <h3>${pic(p.highlighted ? "all" : "lib")}${esc(p.name)}</h3>
       <p class="plan-price">${seats > 1 && price ? `<em class="plan-total">${tx("Total")}</em>` : ""}${was ? `<s class="plan-was">${fmt(was * seats, currency)}</s>` : ""}${price ? `<b data-price="${big}" data-cur="${currency}">${fmt(big, currency)}</b><span>${iv === "year" ? `/ ${per("year")}` : seats > 1 ? `/ ${per("month")}` : tx("/ {per} per user", { per: per("month") })}</span>` : `<b>—</b>`}</p>
-      <p class="plan-sub">${sub || "&nbsp;"}</p>
+      <p class="plan-sub">${sub}</p>
       <div class="plan-extras"></div>
       <ul class="plan-gets">${gets.map(keyPoint).join("")}</ul>
       <p class="plan-note">${note}</p>
