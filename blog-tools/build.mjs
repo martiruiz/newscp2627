@@ -5,6 +5,7 @@
 //   - news.html          3 latest posts (between BLOG:START / BLOG:END markers)
 //   - news/<slug>.html   one page per published Social News item (content/news.json, from the admin) + the latest ones
 //                        written into news.html (NEWS:START / NEWS:END) so Google and AI crawlers read them without JS
+//   - the main pages' title / description (Admin → SEO) and missing canonical, social preview and schema
 //   - sitemap.xml, robots.txt (AI crawlers allowed / blocked in Admin → SEO), llms.txt, Organization schema on the home
 // Checks each post: word count for its type, all 15 keywords present, CTAs.
 //
@@ -566,6 +567,32 @@ ${KEY_PAGES.map(([t, u, d]) => `- [${t}](${SITE}/${u}): ${d}`).join("\n")}
 
 ${posts.map((p) => `- [${p.title}](${SITE}/blog/${p.slug}.html): ${p.excerpt}`).join("\n")}
 ${news?.length ? `\n## Latest Social News\n\n${news.slice(0, 30).map((n) => `- [${n.title}](${SITE}/news/${n.slug}.html): ${cut(newsDesc(n), 160)}`).join("\n")}\n` : ""}`);
+
+// ---------- The website's main pages (Admin → SEO → Page check): title and description chosen there (seo.pages), and
+// whatever Google needs that a page lacks — canonical, social preview, WebPage schema — written between SEO-META markers ----------
+const MAIN_PAGES = { "index.html": "Home", "pricing.html": "Pricing", "blog.html": "Blog", "news.html": "Social News", "book-a-call.html": "Book a demo", "contact.html": "Contact", "signup.html": "Sign up" };
+for (const [file, name] of Object.entries(MAIN_PAGES)) {
+  let html = read(file);
+  const o = (seo.pages || {})[file] || {};
+  html = html.replace(/\n?\s*<!-- SEO-META:START -->[\s\S]*?<!-- SEO-META:END -->/, "");
+  if (o.title) html = html.replace(/<title>[\s\S]*?<\/title>/, `<title>${esc(o.title)}</title>`);
+  if (o.description) html = /<meta name="description"[^>]*>/.test(html) ? html.replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${esc(o.description)}">`) : html.replace("</title>", `</title>\n  <meta name="description" content="${esc(o.description)}">`);
+  const head = html.slice(0, html.indexOf("</head>")), has = (re) => re.test(head);
+  const url = `${SITE}/${file === "index.html" ? "" : file}`, title = (head.match(/<title>([\s\S]*?)<\/title>/) || [, ""])[1].trim(), desc = (head.match(/<meta name="description" content="([^"]*)"/) || [, ""])[1];
+  const tags = [
+    !has(/rel="canonical"/) && `<link rel="canonical" href="${url}">`,
+    !has(/property="og:title"/) && `<meta property="og:title" content="${title}">`,
+    !has(/property="og:description"/) && desc && `<meta property="og:description" content="${desc}">`,
+    !has(/property="og:url"/) && `<meta property="og:url" content="${url}">`,
+    !has(/property="og:type"/) && `<meta property="og:type" content="website">`,
+    !has(/property="og:site_name"/) && `<meta property="og:site_name" content="Sports Content Playbook">`,
+    !has(/property="og:image"/) && `<meta property="og:image" content="${seo.og_image || `${SITE}/assets/hero-library.png`}">`,
+    !has(/name="twitter:card"/) && `<meta name="twitter:card" content="summary_large_image">`,
+    !has(/application\/ld\+json/) && `<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@type": "WebPage", name: title, description: desc, url, isPartOf: { "@type": "WebSite", name: "Sports Content Playbook", url: `${SITE}/` } })}</script>`,
+  ].filter(Boolean);
+  if (tags.length) html = html.replace("</head>", `  <!-- SEO-META:START -->\n  ${tags.join("\n  ")}\n  <!-- SEO-META:END -->\n</head>`);
+  write(file, html);
+}
 
 // ---------- Sitemap & robots ----------
 const pages = ["", "pricing.html", "blog.html", "news.html", "contact.html", "signup.html"];

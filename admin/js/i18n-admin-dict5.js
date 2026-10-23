@@ -413,4 +413,9 @@ window.SCPA_DICT = Object.assign(window.SCPA_DICT || {}, {
   "Saved automatically · {a}": ["Guardado automáticamente · {a}", "Desat automàticament · {a}"],
   "Saved automatically once it has a title": ["Se guarda solo en cuanto tenga título", "Es desa sol quan tingui títol"],
   "Not saved: it needs a title and the original article": ["No guardada: necesita un título y el artículo original", "No desada: necessita un títol i l'article original"],
+  "Live within the hour": ["En la web en menos de una hora", "A la web en menys d'una hora"],
+  " — needs a change in the page's design": [" — necesita un cambio en el diseño de la página", " — necessita un canvi al disseny de la pàgina"],
+  "Fix it in the editor": ["Arreglarlo en el editor", "Arreglar-ho a l'editor"],
+  "Improved to 100 — live within the hour": ["Mejorado a 100: en la web en menos de una hora", "Millorat a 100: a la web en menys d'una hora"],
+  "Improved — live within the hour. The rest needs a change in the page": ["Mejorado: en la web en menos de una hora. El resto necesita un cambio en la página", "Millorat: a la web en menys d'una hora. La resta necessita un canvi a la pàgina"],
 });

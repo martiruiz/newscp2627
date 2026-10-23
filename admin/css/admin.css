@@ -1496,3 +1496,5 @@ select.cs-native { display: none !important; }
 .bl-side { grid-template-columns: minmax(0, 1fr); min-width: 0; }
 .bl-side > *, .bl-side-card > * { min-width: 0; }
 .bl-serp b, .bl-serp p { overflow-wrap: anywhere; }
+.seo-page-acts { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.seo-pend { font-style: normal; color: var(--accent-light); }

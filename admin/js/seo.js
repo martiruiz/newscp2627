@@ -68,30 +68,75 @@
   // ---------- page check: reads the published pages like a crawler ----------
   const { data: posts } = await A.db.from("blog_posts").select("slug,data,draft").eq("draft", false);
   const pages = PAGES.concat((posts || []).map((p) => [p.data?.title || p.slug, `blog/${p.slug}.html`, p]));
+  // the checks of one page; a title / description chosen here (settings.pages) counts already — it goes live within the hour
+  const MAIN = PAGES.map(([, f]) => f);
+  function checkPage(a) {
+    const o = (settings.pages || {})[a.file] || {}, title = o.title || a.title, desc = o.description || a.desc, built = MAIN.includes(a.file) && o.at;
+    a.pending = !!(o.at && ((o.title && o.title !== a.title) || (o.description && o.description !== a.desc)));
+    a.checks = [
+      [`Title ${title.length} characters (30–65)`, title.length >= 30 && title.length <= 65, "meta_title"],
+      [`Description ${desc.length} characters (120–160)`, desc.length >= 120 && desc.length <= 160, "meta_description"],
+      [`${a.h1} main heading (H1)`, a.h1 === 1, ""],
+      ["Canonical link", a.canonical || built, ""],
+      ["Social preview (og:title + og:image)", a.og || built, ""],
+      ["Structured data (schema)", a.ld || built, ""],
+      ...(a.post ? [["Key takeaways for AI", (a.post.data?.takeaways || []).length >= 3, ""], ["FAQ for AI", (a.post.data?.faq || []).length >= 3, ""]] : []),
+    ];
+    a.score = Math.round((a.checks.filter((c) => c[1]).length / a.checks.length) * 100);
+    return a;
+  }
   const audits = await Promise.all(pages.map(async ([name, file, post]) => {
     try {
       const r = await fetch(`../${file}`, { cache: "no-store" }); if (!r.ok) throw new Error(r.status);
       const doc = new DOMParser().parseFromString(await r.text(), "text/html");
       const meta = (sel) => doc.querySelector(sel)?.getAttribute("content")?.trim() || "";
-      const title = doc.title.trim(), desc = meta('meta[name="description"]'), h1 = doc.querySelectorAll("h1").length;
-      const checks = [
-        [`Title ${title.length} characters (30–65)`, title.length >= 30 && title.length <= 65],
-        [`Description ${desc.length} characters (120–160)`, desc.length >= 120 && desc.length <= 160],
-        [`${h1} main heading (H1)`, h1 === 1],
-        ["Canonical link", !!doc.querySelector('link[rel="canonical"]')],
-        ["Social preview (og:title + og:image)", !!meta('meta[property="og:title"]') && !!meta('meta[property="og:image"]')],
-        ["Structured data (schema)", doc.querySelectorAll('script[type="application/ld+json"]').length > 0],
-        ...(post ? [["Key takeaways for AI", (post.data?.takeaways || []).length >= 3], ["FAQ for AI", (post.data?.faq || []).length >= 3]] : []),
-      ];
-      return { name, file, checks, score: Math.round((checks.filter((c) => c[1]).length / checks.length) * 100) };
-    } catch (e) { return { name, file, checks: [[`Couldn't read the page (${e.message})`, false]], score: 0 }; }
+      const page = { name, file, post, title: doc.title.trim(), desc: meta('meta[name="description"]'), h1: doc.querySelectorAll("h1").length,
+        canonical: !!doc.querySelector('link[rel="canonical"]'), og: !!meta('meta[property="og:title"]') && !!meta('meta[property="og:image"]'),
+        ld: doc.querySelectorAll('script[type="application/ld+json"]').length > 0 };
+      doc.querySelectorAll("script, style, noscript, svg, header.site-nav, footer").forEach((x) => x.remove());   // the page's own text, for the AI
+      page.text = (doc.body?.textContent || "").replace(/\s+/g, " ").trim().slice(0, 6000);
+      return checkPage(page);
+    } catch (e) { return { name, file, checks: [[`Couldn't read the page (${e.message})`, false, ""]], score: 0 }; }
   }));
   const tone = (s) => (s >= 80 ? "ok" : s >= 50 ? "mid" : "bad");
-  $("[data-audit]").innerHTML = `<div class="seo-pages">${audits.map((a) => `<details class="seo-page">
+  const card = (a) => {
+    const miss = a.checks.filter((c) => !c[1]), canAi = MAIN.includes(a.file) && miss.some((c) => c[2]), slug = a.file.startsWith("blog/") ? a.file.slice(5, -5) : "";
+    return `<details class="seo-page" data-page="${esc(a.file)}">
       <summary><span class="seo-sc is-${tone(a.score)}">${a.score}</span><span class="seo-pn"><b>${esc(a.name)}</b><small class="muted">${esc(a.file)}</small></span>
-        <span class="seo-miss">${a.checks.filter((c) => !c[1]).length ? `${a.checks.filter((c) => !c[1]).length} to fix` : "All good"}</span>${icon("chevron")}</summary>
-      <ul class="bl-checks">${a.checks.map(([t, v]) => `<li class="${v ? "ok" : ""}">${icon(v ? "check" : "alert")}<span>${esc(t)}</span></li>`).join("")}</ul>
-      <a class="link" href="../${esc(a.file)}" target="_blank" rel="noopener">Open the page ↗</a></details>`).join("")}</div>`;
+        <span class="seo-miss">${a.pending ? `<i class="seo-pend">Live within the hour</i>` : miss.length ? `${miss.length} to fix` : "All good"}</span>${icon("chevron")}</summary>
+      <ul class="bl-checks">${a.checks.map(([t, v, f]) => `<li class="${v ? "ok" : ""}">${icon(v ? "check" : "alert")}<span>${esc(t)}${!v && !f && t.includes("H1") ? " — needs a change in the page's design" : ""}</span></li>`).join("")}</ul>
+      <div class="seo-page-acts">${canAi ? `<button type="button" class="btn btn-primary btn-sm" data-improve-page="${esc(a.file)}">${icon("sparkles")}Improve with AI</button>` : ""}
+        ${slug && miss.length ? `<a class="btn btn-sm" href="blog.html#post=${esc(slug)}">${icon("edit")}Fix it in the editor</a>` : ""}
+        <a class="link" href="../${esc(a.file)}" target="_blank" rel="noopener">Open the page ↗</a></div></details>`;
+  };
+  $("[data-audit]").innerHTML = `<div class="seo-pages">${audits.map(card).join("")}</div>`;
+  // "Improve with AI" on a main page: the AI writes the title and description from the page's own text; the rest
+  // (canonical, social preview, schema) the publish adds by itself. Saved in the settings, live within the hour.
+  $("[data-audit]").addEventListener("click", async (e) => {
+    const b = e.target.closest("[data-improve-page]"); if (!b) return;
+    if (!ready) return fail(new Error("Run supabase/seo.sql in Supabase first."));
+    const a = audits.find((x) => x.file === b.dataset.improvePage), label = b.innerHTML;
+    const fix = a.checks.filter(([, v, f]) => !v && f).map(([, , f]) => f);
+    b.disabled = true; b.innerHTML = `${icon("sparkles")}Improving…`;
+    try {
+      let x = {};
+      if (fix.length) {
+        const cfg = await (await fetch("../blog-tools/keywords.json", { cache: "no-store" })).json().catch(() => ({ keywords: [] }));
+        const mine = (cfg.keywords || []).filter((k) => k.link.split("#")[0] === a.file).map((k) => k.keyword);
+        const res = await A.db.functions.invoke("seo-improve", { body: { fix, site_keywords: (cfg.keywords || []).map((k) => k.keyword), primary_keyword: mine[0] || "",
+          title: a.title, meta_title: a.title, meta_description: a.desc, body_html: `<p>Page "${a.name}" of Sports Content Playbook (${SITE}/${a.file}). Write the page's Google title and description, not an article's. Its text:</p><p>${esc(a.text)}</p>` } });
+        if (res.error || res.data?.error) throw new Error(res.data?.error || res.error.message);
+        x = res.data;
+      }
+      const prev = (settings.pages || {})[a.file] || {};
+      settings.pages = { ...(settings.pages || {}), [a.file]: { ...prev, ...(fix.includes("meta_title") && x.meta_title ? { title: x.meta_title } : {}), ...(fix.includes("meta_description") && x.meta_description ? { description: x.meta_description } : {}), at: new Date().toISOString() } };
+      await save();
+      checkPage(a);
+      const el = main.querySelector(`[data-page="${CSS.escape(a.file)}"]`); el.outerHTML = card(a);
+      main.querySelector(`[data-page="${CSS.escape(a.file)}"]`).open = true;
+      A.toast(a.score === 100 ? "Improved to 100 — live within the hour" : "Improved — live within the hour. The rest needs a change in the page");
+    } catch (err) { fail(err); b.disabled = false; b.innerHTML = label; }
+  });
 
   // ---------- KPIs ----------
   const avg = Math.round(audits.reduce((s, a) => s + a.score, 0) / audits.length);
