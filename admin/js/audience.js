@@ -5,7 +5,7 @@
   const { $, esc, icon, num } = A;
   try { await A.boot("audience"); } catch { return; }
   const main = $("[data-main]");
-  main.innerHTML = `<div class="page-head"><div><h1>Audience</h1><p data-sub>Loading…</p></div>
+  main.innerHTML = `<div class="page-head"><div><h1>Newsletter</h1><p data-sub>Loading…</p></div>
     <div class="head-actions"><button class="btn btn-primary" type="button" data-export disabled>${icon("download")}Export newsletter list</button></div></div>
     <section class="panel nl" data-nl></section>
     <div data-body></div>`;
