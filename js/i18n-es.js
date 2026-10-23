@@ -2455,4 +2455,10 @@ window.SCP_ES = {
   "Loading plans…": "Cargando planes…",
   "Library, AI analyses and Content Plan": "Biblioteca, análisis con IA y Plan de contenido",
   "Compare all plans": "Comparar todos los planes",
+  "My Club · the next level": "Mi club · el siguiente nivel",
+  "Your club's own content library": "La biblioteca de contenido propia de tu club",
+  "A private space built around your club, with the plan tailored to the max: every team, section, player and sponsor, uploaded by us every day.": "Un espacio privado creado alrededor de tu club, con el plan personalizado al máximo: cada equipo, sección, jugador y patrocinador, subidos por nosotros cada día.",
+  "First team, sections and academy": "Primer equipo, secciones y cantera",
+  "Unlock My Club": "Desbloquea Mi club",
+  "Book a 30-minute demo: we tailor the plan to your club": "Reserva una demo de 30 min: adaptamos el plan a tu club",
 };
