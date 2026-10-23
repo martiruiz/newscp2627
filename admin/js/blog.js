@@ -15,19 +15,57 @@
   const day = (v) => (v ? new Date(v).toLocaleString("es-ES", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "");
   const status = (p) => p.draft ? ["Draft", ""] : p.publish_error ? ["Publish failed", "is-err"] : !p.published_at || new Date(p.updated_at) > new Date(p.published_at) ? ["Changes waiting to publish", "is-wait"] : ["Live on the website", "is-pub"];
 
+  // ---------- the posts: summary, how publishing works, filters and a card per post ----------
+  const view = { tab: "all", q: "" };
+  const KIND = (p) => p.draft ? "draft" : p.publish_error ? "error" : status(p)[1] === "is-wait" ? "wait" : "live";
+  const TYPE_SHORT = { news: "News & updates", trends: "Social media trends", ideas: "Sports content ideas" };
   async function list() {
     const { data, error } = await A.db.from("blog_posts").select("slug,data,draft,updated_at,published_at,publish_error").order("updated_at", { ascending: false });
     if (error) { main.innerHTML = `<div class="page-head"><div><h1>Blog</h1></div></div><p class="panel panel-pad muted">${esc(/blog_posts|does not exist|schema cache/i.test(error.message) ? "Run supabase/admin-content.sql in Supabase first." : error.message)}</p>`; return; }
     posts = data || [];
+    drawList();
+  }
+  function drawList() {
+    const n = (k) => posts.filter((p) => KIND(p) === k).length;
+    const shown = posts.filter((p) => (view.tab === "all" || KIND(p) === view.tab) && (!view.q || `${p.data.title} ${p.slug}`.toLowerCase().includes(view.q.toLowerCase())));
+    const tab = (k, label, count) => `<button type="button" class="bl-tab" data-tab="${k}" aria-pressed="${view.tab === k}">${label}<b>${count}</b></button>`;
     main.innerHTML = `<div class="page-head"><div><h1>Blog</h1><p>Write and edit the blog posts. Changes are published on the website within the hour.</p></div>
       <div class="head-actions"><a class="btn" href="${ACTIONS}" target="_blank" rel="noopener">${icon("external")}Publish now (GitHub)</a><button class="btn btn-primary" type="button" data-new>${icon("plus")}New post</button></div></div>
-      <section class="panel ld-list"><header class="aud-h aud-h-lg"><h2>Posts</h2>${info("“Changes waiting to publish”: saved here, on the website within the hour (GitHub → Actions → Publish blog → Run workflow publishes now). “Publish failed”: a post didn't pass the blog's checks (words, keywords, cover…) and nothing was published — open it to see why.")}<span class="spacer"></span><b class="aud-count">${num(posts.length)}</b></header>
-      ${posts.length ? `<div class="table-wrap"><table class="data bl-table"><thead><tr><th>Post</th><th>Type</th><th>Date</th><th>Status</th><th>Saved</th></tr></thead><tbody>
-        ${posts.map((p) => { const [s, c] = status(p); return `<tr class="row-click" data-slug="${esc(p.slug)}">
-          <td><div class="bl-post">${p.data.image?.file ? `<img src="${esc(p.data.image.url || `../assets/blog/${p.data.image.file}`)}" alt="" loading="lazy">` : `<span class="bl-noimg">${icon("file-text")}</span>`}<span><b>${esc(p.data.title || p.slug)}</b><small class="muted">/blog/${esc(p.slug)}.html</small></span></div></td>
-          <td>${esc((TYPES[p.data.type] || p.data.type || "—").split(" · ")[0])}</td><td class="td-date">${esc(p.data.date || "—")}</td>
-          <td><span class="bl-st ${c}">${s}</span></td><td class="td-date">${day(p.updated_at)}</td></tr>`; }).join("")}
-        </tbody></table></div>` : `<p class="panel-pad muted">No posts yet.</p>`}</section>`;
+      <div class="aud-kpis bl-kpis">
+        <div class="aud-kpi is-green"><span>Live on the website</span><b>${num(n("live"))}</b></div>
+        <div class="aud-kpi is-gold"><span>Waiting to publish</span><b>${num(n("wait"))}</b></div>
+        <div class="aud-kpi"><span>Drafts</span><b>${num(n("draft"))}</b></div>
+        <div class="aud-kpi${n("error") ? " is-red" : ""}"><span>Publish failed</span><b>${num(n("error"))}</b></div>
+      </div>
+      <ol class="bl-steps">
+        <li><span>1</span><div><b>Write or edit</b><small>Open a post or create a new one.</small></div></li>
+        <li><span>2</span><div><b>Save</b><small>Untick “Draft” when it's ready.</small></div></li>
+        <li><span>3</span><div><b>On the website within the hour</b><small>Or “Publish now” on GitHub → Run workflow.</small></div></li>
+      </ol>
+      <div class="bl-bar">
+        <div class="bl-tabs">${tab("all", "All", posts.length)}${tab("live", "Live", n("live"))}${tab("wait", "Waiting", n("wait"))}${tab("draft", "Drafts", n("draft"))}${n("error") ? tab("error", "Failed", n("error")) : ""}</div>
+        <label class="bl-search">${icon("filters")}<input type="search" placeholder="Search a post…" value="${esc(view.q)}" data-q></label>
+      </div>
+      <div class="bl-grid">
+        <button type="button" class="bl-card bl-new" data-new><span class="bl-new-ic">${icon("plus")}</span><b>New post</b><small>Write one from scratch</small></button>
+        ${shown.map((p) => { const [s, c] = status(p), d = p.data, cover = d.image?.file ? (d.image.url || `../assets/blog/${d.image.file}`) : "";
+          return `<article class="bl-card" data-slug="${esc(p.slug)}">
+            <div class="bl-cv">${cover ? `<img src="${esc(cover)}" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'bl-cv-none',textContent:'No cover'}))">` : `<span class="bl-cv-none">No cover</span>`}
+              <span class="bl-st ${c}">${esc(s)}</span></div>
+            <div class="bl-cd">
+              <small class="bl-meta">${esc(TYPE_SHORT[d.type] || d.type || "—")} · ${esc(d.date || "—")}</small>
+              <b class="bl-tt">${esc(d.title || p.slug)}</b>
+              ${p.publish_error ? `<p class="bl-why">${icon("alert")}Didn't pass the checks — open it to see why.</p>` : `<p class="bl-ex">${esc(d.excerpt || "")}</p>`}
+              <div class="bl-acts">
+                <button type="button" class="btn btn-sm btn-primary" data-open="${esc(p.slug)}">${icon("edit")}Edit</button>
+                ${!p.draft && p.published_at ? `<a class="btn btn-sm" href="../blog/${esc(p.slug)}.html" target="_blank" rel="noopener">${icon("eye")}See it</a>` : ""}
+                <button type="button" class="btn btn-sm btn-ghost" data-draft="${esc(p.slug)}">${p.draft ? "Publish" : "Back to draft"}</button>
+                <small class="bl-saved">Saved ${esc(day(p.updated_at))}</small>
+              </div>
+            </div>
+          </article>`; }).join("")}
+      </div>
+      ${!shown.length ? `<p class="panel panel-pad muted">No posts here.</p>` : ""}`;
   }
 
   // one post: every field of content/blog/<slug>.json
@@ -110,9 +148,25 @@
     $("[data-back]").addEventListener("click", (e) => { e.preventDefault(); list(); });
   }
 
-  main.addEventListener("click", (e) => {
+  main.addEventListener("click", async (e) => {
     if (e.target.closest("[data-new]")) return editor(null);
-    const row = e.target.closest("tr[data-slug]"); if (row) editor(posts.find((x) => x.slug === row.dataset.slug));
+    const t = e.target.closest("[data-tab]"); if (t) { view.tab = t.dataset.tab; return drawList(); }
+    const dr = e.target.closest("[data-draft]");
+    if (dr) {   // publish / back to draft right from the card
+      const p = posts.find((x) => x.slug === dr.dataset.draft);
+      const { error } = await A.db.from("blog_posts").update({ draft: !p.draft, updated_at: new Date().toISOString(), publish_error: null }).eq("slug", p.slug);
+      if (error) return fail(error);
+      A.toast(p.draft ? "On the website within the hour" : "Back to draft — it leaves the website within the hour");
+      return list();
+    }
+    if (e.target.closest("a")) return;
+    const card = e.target.closest("[data-open], .bl-card[data-slug]");
+    if (card) editor(posts.find((x) => x.slug === (card.dataset.open || card.dataset.slug)));
+  });
+  main.addEventListener("input", (e) => {
+    if (!e.target.matches("[data-q]")) return;
+    view.q = e.target.value; const pos = e.target.selectionStart; drawList();
+    const q = main.querySelector("[data-q]"); q.focus(); q.setSelectionRange(pos, pos);
   });
   list();
 })();

@@ -35,6 +35,12 @@ const posts = fs.readdirSync(dir)
   .map((f) => ({ file: f, ...JSON.parse(fs.readFileSync(path.join(dir, f), "utf8")) }))
   .filter((p) => !p.draft)
   .sort((a, b) => b.date.localeCompare(a.date));
+// a post sent back to draft (Admin → Blog) leaves the website: its page is removed too
+for (const f of fs.readdirSync(dir).filter((f) => f.endsWith(".json"))) {
+  const d = JSON.parse(fs.readFileSync(path.join(dir, f), "utf8"));
+  const page = path.join(ROOT, "blog", `${d.slug}.html`);
+  if (d.draft && fs.existsSync(page) && !CHECK_ONLY) { fs.unlinkSync(page); console.log(`  − blog/${d.slug}.html (draft)`); }
+}
 
 // ---------- Keyword casing ----------
 // Keywords are written in normal sentence case inside articles: lowercase, except proper
