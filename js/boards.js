@@ -7,7 +7,7 @@ window.SCP_BOARDS = (() => {
   const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
   const key = (id) => (String(id).startsWith("cr-") ? String(id) : `ci-${id}`);
 
-  let boards = [];            // [{ id, name, created_at }]
+  let boards = [];            // [{ id, name, created_at, pinned?, icon?, cover_post? (supabase/boards-extras.sql) }]
   let items = [];             // [{ folder_id, post_id, added_at }]
   let saved = new Map();      // post key -> Set(board id)
   const listeners = new Set();
@@ -23,7 +23,7 @@ window.SCP_BOARDS = (() => {
   async function load() {
     if (!db) return;
     const [{ data: f }, { data: i }] = await Promise.all([
-      db.from("folders").select("id,name,created_at").order("created_at"),
+      db.from("folders").select("*").order("created_at"),
       db.from("folder_items").select("folder_id,post_id,added_at").order("added_at", { ascending: false }),
     ]);
     boards = f || [];
@@ -47,20 +47,26 @@ window.SCP_BOARDS = (() => {
     items = items.filter((it) => !(it.folder_id === boardId && it.post_id === key(id)));
     index(); emit(key(id));
   }
-  // board names are always in capitals
   async function create(name) {
-    name = String(name).trim().toLocaleUpperCase();
-    const { data, error } = await db.from("folders").insert({ name }).select("id,name,created_at").single();
+    name = String(name).trim();
+    const { data, error } = await db.from("folders").insert({ name }).select("*").single();
     if (error) throw new Error(/duplicate/i.test(error.message) ? "You already have a board with that name." : error.message);
     boards.push(data);
     emit();
     return data;
   }
   async function rename(boardId, name) {
-    name = String(name).trim().toLocaleUpperCase();
+    name = String(name).trim();
     const { error } = await db.from("folders").update({ name }).eq("id", boardId);
     if (error) throw new Error(/duplicate/i.test(error.message) ? "You already have a board with that name." : error.message);
     boards.find((b) => b.id === boardId).name = name;
+    emit();
+  }
+  // pinned / icon / cover_post (supabase/boards-extras.sql)
+  async function update(boardId, patch) {
+    const { error } = await db.from("folders").update(patch).eq("id", boardId);
+    if (error) throw new Error(/column|schema cache/i.test(error.message) ? "Run supabase/boards-extras.sql in Supabase first." : error.message);
+    Object.assign(boards.find((b) => b.id === boardId), patch);
     emit();
   }
   async function destroy(boardId) {
@@ -165,7 +171,7 @@ window.SCP_BOARDS = (() => {
   }));
 
   return {
-    load, isSaved, boardsOf, itemsOf, add, remove, create, rename, destroy, button, key,
+    load, isSaved, boardsOf, itemsOf, add, remove, create, rename, update, destroy, button, key,
     get boards() { return boards; },
     onChange: (fn) => listeners.add(fn),
   };
