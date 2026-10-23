@@ -7959,3 +7959,9 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .pf-done-pill { display: inline-flex; align-items: center; gap: 7px; height: 32px; padding: 0 14px 0 10px; border-radius: 999px; background: rgba(0, 216, 91, 0.12); border: 1px solid rgba(0, 216, 91, 0.35); color: #7cf0b0; font-size: 13px; font-weight: 600; }
 .pf-done-pill svg { width: 15px; height: 15px; }
 :root[data-theme="light"] .pf-done-pill { color: #04773a; }
+/* the ring's glow is round: the SVG doesn't clip it, and the 100% "breath" is a round light, not a filter on the square SVG */
+.pf-meter svg { overflow: visible; }
+.pf-meter.is-full svg { animation: none; }
+.pf-meter.is-full::before { content: ""; position: absolute; inset: 2px; z-index: -1; border-radius: 50%; animation: pfBreathRound 2.6s ease-in-out infinite; }
+@keyframes pfBreathRound { 0%, 100% { box-shadow: 0 0 0 0 rgba(240, 184, 74, 0); } 50% { box-shadow: 0 0 26px 4px rgba(240, 184, 74, 0.45); } }
+@media (prefers-reduced-motion: reduce) { .pf-meter.is-full::before { animation: none; } }
