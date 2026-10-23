@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mi club bloqueado — propuestas</title>
+<link rel="stylesheet" href="../css/fonts.css?v=1">
+<link rel="stylesheet" href="../css/styles.css">
+<style>
+  body { margin: 0; background: #0e1424; color: #f1f4f9; font-family: var(--font-body); }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 36px 20px 90px; }
+  h1 { margin: 0 0 6px; font: 600 28px var(--font-display); letter-spacing: -0.02em; }
+  .lead { margin: 0 0 26px; color: #9aa4b8; }
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+  .opt { padding: 16px; border-radius: 22px; background: #111a2c; border: 1px solid rgba(255,255,255,.06); }
+  .opt.wide { grid-column: 1 / -1; }
+  .lbl { display: flex; align-items: center; gap: 10px; margin: 0 0 14px; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #9aa4b8; }
+  .lbl b { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: #f1f4f9; color: #0e1424; font-size: 11px; }
+  .lbl .rec { padding: 3px 9px; border-radius: 999px; background: #f0b84a; color: #0c0c0d; letter-spacing: 0; text-transform: none; }
+  .stage { position: relative; display: grid; place-items: center; min-height: 330px; padding: 24px; border-radius: 16px; overflow: hidden; background: #0b1120; }
+  .blur { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 10px; filter: blur(12px); opacity: .5; }
+  .blur i { border-radius: 12px; background: linear-gradient(160deg, rgba(240,184,74,.35), rgba(122,162,255,.15)); }
+  .blur i:nth-child(odd) { background: linear-gradient(200deg, rgba(167,139,250,.28), rgba(240,184,74,.12)); }
+  .note { margin: 12px 4px 0; color: #9aa4b8; font-size: 13.5px; line-height: 1.5; }
+  .lock { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .btn-g { display: inline-flex; align-items: center; gap: 8px; height: 46px; padding: 0 22px; border-radius: 999px; background: linear-gradient(180deg, #f6cf7d, #f0b84a); color: #1a1205; font: 600 15px var(--font-body); text-decoration: none; box-shadow: 0 10px 26px -12px rgba(240,184,74,.8); }
+  .gold { color: #f0b84a; }
+  .muted { color: #9aa4b8; }
+  .t { margin: 0; font: 600 26px/1.15 var(--font-display); letter-spacing: -.02em; }
+  .s { margin: 0; color: #9aa4b8; font-size: 15px; line-height: 1.5; }
+
+  /* 0 now */
+  .c0 { position: relative; max-width: 420px; padding: 22px; border-radius: 18px; text-align: center; background: #141c2e; border: 1px solid rgba(240,184,74,.45); font-size: 12px; }
+  .c0 .ic { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 13px; background: radial-gradient(circle at 30% 25%, #fff1c9, #f0b84a 45%, #b07a1c); color: #2a1d05; margin-bottom: 8px; }
+  .c0 ul { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 0; margin: 10px 0; list-style: none; text-align: left; }
+  .c0 li { padding: 7px 8px; border-radius: 9px; background: #1a2338; border: 1px solid rgba(255,255,255,.06); font-size: 11px; }
+
+  /* 1 minimal: one line + button */
+  .c1 { position: relative; display: grid; justify-items: center; gap: 12px; text-align: center; max-width: 380px; }
+  .c1 .ic { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; border: 1px solid rgba(240,184,74,.5); color: #f0b84a; background: rgba(240,184,74,.08); }
+
+  /* 2 glass card, padlock in the button */
+  .c2 { position: relative; display: grid; gap: 14px; max-width: 420px; padding: 26px; border-radius: 20px; background: rgba(20,28,46,.72); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,.1); }
+  .c2 .btn-g { justify-self: start; }
+
+  /* 3 horizontal banner */
+  .c3 { position: relative; display: flex; align-items: center; gap: 18px; width: 100%; max-width: 760px; padding: 20px 22px; border-radius: 18px; background: #141c2e; border: 1px solid rgba(240,184,74,.4); }
+  .c3 .ic { flex: none; display: grid; place-items: center; width: 52px; height: 52px; border-radius: 14px; background: radial-gradient(circle at 30% 25%, #fff1c9, #f0b84a 45%, #b07a1c); color: #2a1d05; }
+  .c3 > div { flex: 1; } .c3 .t { font-size: 20px; }
+
+  /* 4 big padlock only */
+  .c4 { position: relative; display: grid; justify-items: center; gap: 16px; text-align: center; }
+  .c4 .ic { display: grid; place-items: center; width: 92px; height: 92px; border-radius: 28px; background: radial-gradient(circle at 30% 25%, #fff1c9, #f0b84a 45%, #b07a1c); color: #2a1d05; box-shadow: 0 20px 50px -18px rgba(240,184,74,.8); }
+  .c4 .ic .lock { width: 44px; height: 44px; stroke-width: 2.2; }
+
+  /* 5 three short ticks */
+  .c5 { position: relative; display: grid; gap: 14px; max-width: 400px; padding: 26px; border-radius: 20px; background: #141c2e; border: 1px solid rgba(255,255,255,.08); }
+  .c5 .top { display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+  .c5 ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+  .c5 li { display: flex; gap: 10px; align-items: center; font-size: 15px; } .c5 li::before { content: "✓"; color: #f0b84a; font-weight: 700; }
+  .c5 .btn-g { justify-self: stretch; justify-content: center; }
+
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } .c3 { flex-direction: column; text-align: center; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Mi club bloqueado — 5 propuestas más sencillas</h1>
+  <p class="lead">En todas: el botón abre el candado y lleva a reservar la demo. Debajo, la biblioteca del club desenfocada.</p>
+  <div class="grid">
+    <div class="opt"><p class="lbl"><b>0</b>Ahora</p><div class="stage"><div class="blur"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="c0"><span class="ic"><svg class="lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
+        <p class="gold" style="margin:0;font-size:10px;font-weight:700;letter-spacing:.1em">MI CLUB · EL SIGUIENTE NIVEL</p><p style="margin:4px 0;font:600 16px var(--font-display)">La biblioteca de contenido propia de tu club</p>
+        <p class="muted" style="margin:0">Un espacio privado creado alrededor de tu club, con el plan personalizado al máximo…</p>
+        <ul><li>Primer equipo, secciones y cantera</li><li>Los posts de tus jugadores…</li><li>Subimos los posts cada día</li><li>Privado: solo lo ve tu club</li></ul>
+        <a class="btn-g" style="height:34px;font-size:12px" href="#">Desbloquea Mi club →</a></div></div>
+      <p class="note">Mucho texto: título, subtítulo largo, cuatro cajas y una nota.</p></div>
+
+    <div class="opt"><p class="lbl"><b>1</b>Mínima <span class="rec">Mi recomendación</span></p><div class="stage"><div class="blur"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="c1"><span class="ic"><svg class="lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
+        <p class="t">Tu club, con su propia biblioteca</p>
+        <p class="s">El plan más completo, hecho a medida de tu club.</p>
+        <a class="btn-g" href="#">Desbloquea Mi club →</a></div></div>
+      <p class="note">Sin tarjeta: candado, una frase y el botón, encima de la biblioteca desenfocada. Lo más limpio.</p></div>
+
+    <div class="opt"><p class="lbl"><b>2</b>Tarjeta de cristal</p><div class="stage"><div class="blur"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="c2"><span class="gold" style="font-size:12px;font-weight:700;letter-spacing:.08em">MI CLUB</span>
+        <p class="t">La biblioteca propia de tu club</p>
+        <p class="s">Cada equipo, jugador y patrocinador, subido por nosotros cada día.</p>
+        <a class="btn-g" href="#"><svg class="lock" style="width:17px;height:17px" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Desbloquear</a></div></div>
+      <p class="note">Tarjeta translúcida alineada a la izquierda; el candado vive dentro del botón y se abre al pulsar.</p></div>
+
+    <div class="opt"><p class="lbl"><b>3</b>Banner horizontal</p><div class="stage"><div class="blur"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="c3"><span class="ic"><svg class="lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
+        <div><p class="t">Desbloquea la biblioteca de tu club</p><p class="s">El plan a medida para clubes.</p></div>
+        <a class="btn-g" href="#">Reservar demo →</a></div></div>
+      <p class="note">Una sola fila: candado, frase y botón. Ocupa poco y se lee de un vistazo.</p></div>
+
+    <div class="opt"><p class="lbl"><b>4</b>Solo el candado</p><div class="stage"><div class="blur"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="c4"><span class="ic"><svg class="lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
+        <p class="t">Mi club</p>
+        <a class="btn-g" href="#">Desbloquear →</a></div></div>
+      <p class="note">El candado dorado grande como protagonista y casi sin texto. Muy visual, muy premium.</p></div>
+
+    <div class="opt"><p class="lbl"><b>5</b>Tres ventajas</p><div class="stage"><div class="blur"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="c5"><span class="top gold"><svg class="lock" style="width:16px;height:16px" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Mi club</span>
+        <p class="t">La biblioteca de tu club</p>
+        <ul><li>Todos tus equipos y secciones</li><li>Jugadores y patrocinadores</li><li>Actualizada cada día</li></ul>
+        <a class="btn-g" href="#">Desbloquea Mi club →</a></div></div>
+      <p class="note">Tres ventajas cortas en lista simple (sin cajas) y el botón a lo ancho.</p></div>
+  </div>
+</div>
+</body>
+</html>
