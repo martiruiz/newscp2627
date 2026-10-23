@@ -24,7 +24,8 @@
 <div class="mk-top">
   <b>Modo claro · propuesta “tinta”: negro + un toque de dorado</b>
   <button type="button" data-v="before" aria-pressed="false">Antes</button>
-  <button type="button" data-v="after" aria-pressed="true">Después</button>
+  <button type="button" data-v="after" aria-pressed="false">Idea “tinta”</button>
+  <button type="button" data-v="final" aria-pressed="true">Propuesta final</button>
   <span class="sep"></span>
   <button type="button" data-p="index.html" aria-pressed="true">Inicio</button>
   <button type="button" data-p="pricing.html" aria-pressed="false">Precios</button>
@@ -35,7 +36,16 @@
 </div>
 <iframe data-frame title="Vista"></iframe>
 <aside class="mk-ideas" data-ideas-box>
-  <h3>La idea</h3>
+  <h3>Propuesta final: lo que cambia</h3>
+  <ol style="margin-bottom:12px">
+    <li><b>Logo en negro</b> en el menú (el dorado se queda para el modo noche).</li>
+    <li><b>Menú de cristal</b> blanco translúcido con sombra suave; los desplegables, blancos.</li>
+    <li><b>Tarjetas blancas con sombra</b> en lugar de bordes: planes, noticias, blog, tableros.</li>
+    <li><b>Lo elegido, en negro:</b> filtros, Mensual / Anual, pestañas.</li>
+    <li><b>El dorado, solo 3 sitios:</b> el subrayado de las palabras clave, el sello “Recomendado” y el subrayado del precio del mejor plan.</li>
+    <li><b>Pie de página negro</b> con el newsletter y los números en dorado: cierra la página con fuerza.</li>
+  </ol>
+  <h3>La base (idea “tinta”)</h3>
   <div class="sw"><i style="background:#f6f5f1"></i><i style="background:#fff"></i><i style="background:#0c0c0d"></i><i style="background:#5b5b60"></i><i style="background:#f0b84a"></i></div>
   <ol>
     <li><b>Fondo cálido casi blanco</b> (#F6F5F1) y tarjetas blancas: más editorial y limpio que el gris azulado de ahora.</li>
@@ -71,13 +81,45 @@
     :root[data-theme="light"] .plan-gets li::after { filter: invert(1); }
     :root[data-theme="light"] .site-nav, :root[data-theme="light"] .nav-links { background: rgba(255,255,255,.85) !important; }
   `;
+  // "Propuesta final": the ink idea, finished — black logo, a quiet glass menu, black chips for what's chosen, gold only as
+  // the highlighter and the "Recommended" seal, soft shadows instead of borders, and a black footer that closes the page
+  const FINAL = `
+    :root[data-theme="light"] { --bg: #f7f6f3; --surface-2: #f2f1ed; --line: rgba(12,12,13,.10); --line-soft: rgba(12,12,13,.06); --shadow-soft: 0 1px 2px rgba(12,12,13,.04), 0 12px 32px -12px rgba(12,12,13,.14); }
+    :root[data-theme="light"] .site-nav .brand-logo { filter: brightness(0); }
+    :root[data-theme="light"] .nav-links { background: rgba(255,255,255,.7) !important; backdrop-filter: blur(14px); border: 1px solid rgba(12,12,13,.08) !important; box-shadow: 0 1px 2px rgba(12,12,13,.04), 0 10px 30px -18px rgba(12,12,13,.25) !important; }
+    :root[data-theme="light"] .mm-panel { background: #fff !important; border-color: rgba(12,12,13,.08) !important; box-shadow: 0 30px 60px -28px rgba(12,12,13,.3) !important; }
+    :root[data-theme="light"] h1, :root[data-theme="light"] .section-title { letter-spacing: -0.035em; }
+    :root[data-theme="light"] .lead, :root[data-theme="light"] p { color: #4a4a50; }
+    /* cards: white, soft shadow, no heavy border */
+    :root[data-theme="light"] .plan-card, :root[data-theme="light"] .news-row, :root[data-theme="light"] .blog-card, :root[data-theme="light"] .sv3-b, :root[data-theme="light"] .tool-card {
+      background: #fff !important; border-color: rgba(12,12,13,.07) !important; box-shadow: 0 1px 2px rgba(12,12,13,.04), 0 18px 40px -24px rgba(12,12,13,.22) !important; }
+    /* chosen things: black with white text (filters, monthly / yearly, tabs) */
+    :root[data-theme="light"] .plan-interval button[aria-selected="true"], :root[data-theme="light"] .seg-btn[aria-pressed="true"], :root[data-theme="light"] .pill[aria-pressed="true"] {
+      background: #0c0c0d !important; color: #fff !important; box-shadow: none !important; animation: none !important; }
+    :root[data-theme="light"] .plan-interval button[aria-selected="true"] em { background: #f0b84a !important; color: #0c0c0d !important; }
+    :root[data-theme="light"] .plan-interval button[aria-selected="true"]::before { display: none; }
+    /* the only gold that stays: the highlighter, the Recommended seal, the price of the best plan underlined */
+    :root[data-theme="light"] .plan-card.is-best .plan-flag { background: #f0b84a !important; color: #0c0c0d !important; }
+    :root[data-theme="light"] .plan-ic { background: #f2f1ed !important; color: #0c0c0d !important; border-color: rgba(12,12,13,.1) !important; }
+    :root[data-theme="light"] .plan-card.is-best .plan-ic { background: #0c0c0d !important; color: #f0b84a !important; }
+    :root[data-theme="light"] .plan-card.is-best .plan-price b { text-decoration: underline; text-decoration-color: #f0b84a; text-decoration-thickness: 3px; text-underline-offset: 6px; }
+    :root[data-theme="light"] .sec-pill { background: #fff !important; border-color: rgba(12,12,13,.1) !important; box-shadow: 0 8px 24px -14px rgba(12,12,13,.3) !important; }
+    :root[data-theme="light"] .sec-pill b { color: #0c0c0d !important; } :root[data-theme="light"] .sec-pill-ic { background: #0c0c0d !important; } :root[data-theme="light"] .sec-pill-ic img, :root[data-theme="light"] .sec-pill-ic svg { filter: invert(1); }
+    /* the footer: black, closing the page with weight */
+    :root[data-theme="light"] .site-footer.sf { background: #0c0c0d !important; color: #fff; margin-top: 140px; }
+    :root[data-theme="light"] .site-footer.sf, :root[data-theme="light"] .site-footer.sf p, :root[data-theme="light"] .site-footer.sf span, :root[data-theme="light"] .site-footer.sf a, :root[data-theme="light"] .site-footer.sf h2, :root[data-theme="light"] .site-footer.sf h3 { color: #e9e9ec !important; }
+    :root[data-theme="light"] .site-footer.sf .sf-news { background: #17171a !important; border-color: rgba(255,255,255,.08) !important; box-shadow: none !important; }
+    :root[data-theme="light"] .site-footer.sf .btn-gold { background: #f0b84a !important; color: #0c0c0d !important; }
+    :root[data-theme="light"] .site-footer.sf input { background: #0c0c0d !important; color: #fff !important; border-color: rgba(255,255,255,.15) !important; }
+    :root[data-theme="light"] .site-footer.sf .sf-stats b { color: #f0b84a !important; }
+  `;
   const frame = document.querySelector("[data-frame]");
-  let page = "index.html", view = "after";
+  let page = "index.html", view = "final";
   const load = () => { frame.src = `../${page}?preview=${Date.now()}`; };
   frame.addEventListener("load", () => {
     const d = frame.contentDocument; if (!d) return;
     d.documentElement.setAttribute("data-theme", "light");      // day colours in the preview only (not saved)
-    if (view === "after") { const st = d.createElement("style"); st.textContent = INK; d.head.appendChild(st); }
+    if (view !== "before") { const st = d.createElement("style"); st.textContent = INK + (view === "final" ? FINAL : ""); d.head.appendChild(st); }
   });
   document.querySelector(".mk-top").addEventListener("click", (e) => {
     const b = e.target.closest("button"); if (!b) return;
