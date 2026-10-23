@@ -8235,3 +8235,19 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
   box-shadow: 0 1px 2px rgba(12,12,13,.04), 0 18px 40px -26px rgba(12,12,13,.28) !important; }
 :root[data-theme="light"] .pf-card:not(.pf-billing) .pf-grid .pf-in, :root[data-theme="light"] .pf-card:not(.pf-billing) .pf-country-btn { background: #f7f6f3; }
 :root[data-theme="light"] .pf-acc-box { background: #fff !important; border-color: rgba(12,12,13,.08) !important; box-shadow: 0 1px 2px rgba(12,12,13,.04), 0 18px 40px -26px rgba(12,12,13,.28) !important; }
+
+/* "Get the Content Plan" → the plans that include it, in short, under the button (js/checkout.js plansPicker) */
+.pp-plans { display: grid; gap: 10px; width: 100%; margin-top: 12px; }
+.pp-plans-msg { margin: 0; color: var(--muted); font-size: 13px; }
+.pp-pick { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 14px; padding: 14px 16px; border-radius: 14px; background: var(--surface-1, rgba(255,255,255,.03)); border: 1px solid var(--line-soft); }
+.pp-pick-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.pp-plans .pp-pick-top b { font-family: var(--font-display); font-size: 15px; }
+.pp-pick-top span { color: var(--muted); font-size: 13px; }
+.pp-pick-top strong { color: var(--text); font-size: 16px; }
+.pp-pick p { grid-column: 1; margin: 0 !important; color: var(--muted); font-size: 13px; line-height: 1.4; }
+.pp-pick .btn { grid-column: 2; grid-row: 1 / span 2; white-space: nowrap; min-height: 38px; padding: 0 16px; font-size: 13.5px; }
+.pp-plans-all { justify-self: start; font-size: 13px; font-weight: 600; color: var(--muted); text-decoration: none; }
+.pp-plans-all:hover { color: var(--text); }
+@media (max-width: 560px) { .pp-pick { grid-template-columns: 1fr; } .pp-pick .btn { grid-column: 1; grid-row: auto; justify-self: start; margin-top: 6px; } }
+.pp .pp-pick { grid-template-columns: 1fr; } .pp .pp-pick .btn { grid-column: 1; grid-row: auto; justify-self: start; margin-top: 6px; }
+:root[data-theme="light"] .pp-pick { background: #fff; border-color: rgba(12,12,13,.08); box-shadow: 0 1px 2px rgba(12,12,13,.04), 0 12px 30px -22px rgba(12,12,13,.3); }

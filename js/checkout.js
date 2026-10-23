@@ -184,6 +184,31 @@ window.SCP_CHECKOUT = (() => {
     t.innerHTML = `<span>${tx("<b>Payment received.</b> It's taking a little longer to activate — refresh in a minute, or <a href=\"contact.html\">contact us</a> if it doesn't show.")}</span>`;
   }
 
+  // "Get the Content Plan" (locked Content Plan): the plans that include it, in short, right under the button, to buy in one click.
+  // Markup: <button data-plans-picker> followed by <div data-plans-picker-list hidden>. Plans from public_membership_plans().
+  let plansP = null;
+  async function plansPicker(btn) {
+    const box = btn.parentElement.querySelector("[data-plans-picker-list]");
+    if (!box) return;
+    const open = box.hidden;
+    box.hidden = !open; btn.setAttribute("aria-expanded", String(open));
+    if (!open || box.dataset.done) return;
+    box.innerHTML = `<p class="pp-plans-msg">${tx("Loading plans…")}</p>`;
+    plansP ||= auth.client.rpc("public_membership_plans").then(({ data }) => data?.plans || []).catch(() => []);
+    const list = (await plansP).filter((p) => (p.entitlements || []).includes("planner.access"));
+    box.dataset.done = list.length ? "1" : "";
+    const label = (p) => (p.trial_days > 0 ? tx("Start {n}-day free trial", { n: p.trial_days }) : tx("Get {plan}", { plan: esc(p.name) }));
+    box.innerHTML = list.map((p) => {
+      const m = p.prices?.find((x) => x.currency === "eur" && x.interval === "month");
+      const cta = m?.ready ? `<button class="btn btn-gold" type="button" data-checkout-plan="${esc(p.key)}" data-interval="month" data-currency="eur">${label(p)}</button>`
+        : `<a class="btn btn-gold" href="signup.html?plan=${encodeURIComponent(p.key)}&interval=month">${label(p)}</a>`;
+      return `<div class="pp-pick"><div class="pp-pick-top"><b>${esc(p.name)}</b>${m ? `<span><strong>${money(m.amount, "eur").replace(/[.,]00(?=\D|$)/, "")}</strong> / ${tx("month")}</span>` : ""}</div>
+        <p>${tx("Library, AI analyses and Content Plan")}</p>${cta}</div>`;
+    }).join("") + `<div class="pp-pick is-club"><div class="pp-pick-top"><b>${tx("My Club")}</b><span>${tx("Custom plan")}</span></div>
+        <p>${tx("Your club's own library: first team, sections and academy")}</p><a class="btn btn-outline" href="book-a-call.html?for=clubs">${tx("Book a demo")}</a></div>
+      <a class="pp-plans-all" href="pricing.html">${tx("Compare all plans")} →</a>`;
+  }
+
   const api = {
     plan: (plan, interval = "month", btn, extra = {}) => start({ kind: "plan", plan, interval, ...extra }, btn),
     pack: (pack, btn) => start({ kind: "pack", pack }, btn),
@@ -195,6 +220,8 @@ window.SCP_CHECKOUT = (() => {
     if (p) { e.preventDefault(); return api.plan(p.dataset.checkoutPlan, p.dataset.interval || "month", p, { currency: p.dataset.currency || "eur", ...(Number(p.dataset.seats) > 1 ? { seats: Number(p.dataset.seats) } : {}), ...(p.dataset.link ? { link: p.dataset.link } : {}) }); }
     const k = e.target.closest("[data-checkout-pack]");
     if (k) { e.preventDefault(); return api.pack(k.dataset.checkoutPack, k); }
+    const pk = e.target.closest("[data-plans-picker]");
+    if (pk) { e.preventDefault(); return plansPicker(pk); }
     const b = e.target.closest("[data-billing-portal]");
     if (b) { e.preventDefault(); return api.portal(b); }
   });

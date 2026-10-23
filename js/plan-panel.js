@@ -316,7 +316,8 @@
     if (!allowed()) {
       panel.innerHTML = `${headHtml()}<div class="pp-gate">${icon("lock")}<b>The Content Plan is part of Library + AI + Content Plan</b>
         <p>Drag posts from the library onto the days of your week, keep ideas for later and track every post from idea to published.</p>
-        <a class="btn btn-gold" href="${window.SCP_upgradeHref("planner", S.ent?.plan)}">${tx("Get the Content Plan")}</a></div>`;
+        <button class="btn btn-gold" type="button" data-plans-picker aria-expanded="false">${tx("Get the Content Plan")}</button>
+        <div class="pp-plans" data-plans-picker-list hidden></div></div>`;
       return;
     }
     const [from, to] = range();

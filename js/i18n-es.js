@@ -2452,4 +2452,7 @@ window.SCP_ES = {
   "{n} day left": "queda {n} día",
   "See plan": "Ver plan",
   "Choose a new one with at least 8 characters.": "Elige una nueva de al menos 8 caracteres.",
+  "Loading plans…": "Cargando planes…",
+  "Library, AI analyses and Content Plan": "Biblioteca, análisis con IA y Plan de contenido",
+  "Compare all plans": "Comparar todos los planes",
 };

@@ -805,7 +805,7 @@
     if (!db) return fail(new Error("not connected"));
     const { data: ent, error } = await window.SCP_entitlements();
     if (error && !/schema cache|does not exist/i.test(error.message)) return fail(error);
-    if (ent && !ent.has_planner) { const g = $("[data-gate] .btn"); if (g) { g.href = window.SCP_upgradeHref("planner", ent.plan); g.textContent = (window.tx ? window.tx("Get the Content Plan") : "Get the Content Plan"); } $("[data-gate]").hidden = false; $("[data-planner]").hidden = true; $(".org-controls").hidden = true; return; }
+    if (ent && !ent.has_planner) { const g = $("[data-gate] .btn"); if (g) { g.textContent = (window.tx ? window.tx("Get the Content Plan") : "Get the Content Plan"); } $("[data-gate]").hidden = false; $("[data-planner]").hidden = true; $(".org-controls").hidden = true; return; }
     await loadPlans();
     await openFromHash() || await loadEntries();
     loadInspiration();
