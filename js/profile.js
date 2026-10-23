@@ -277,7 +277,10 @@
     $("[data-pf-status]").textContent = tx("Saving…");
     saveTimer = setTimeout(save, 900);
   }
-  window.addEventListener("beforeunload", (e) => { if (dirty()) { e.preventDefault(); e.returnValue = ""; } });
+  let leaving = false;
+  window.addEventListener("beforeunload", (e) => { if (!leaving && dirty()) { e.preventDefault(); e.returnValue = ""; } });
+  // switching the website's language reloads the page: save what's pending first, without the "Leave site?" warning
+  window.SCP_beforeLangSwitch = async () => { if (dirty()) await save().catch(() => {}); leaving = true; };
 
   $("[data-pf-discard]").addEventListener("click", () => { state = structuredClone(saved); fillText(); renderChips(); $$("[data-picker]").forEach((el) => renderPicker(el)); changed(); });
   $("[data-pf-save]").addEventListener("click", () => save());

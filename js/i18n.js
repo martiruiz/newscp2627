@@ -151,6 +151,7 @@
   window.SCP_setLang = async (next, opts = {}) => {
     if (!LANGS.includes(next)) return;
     try { localStorage.setItem(KEY, next); } catch {}
+    try { await window.SCP_beforeLangSwitch?.(); } catch {}   // e.g. the profile saves its pending changes first
     if (opts.save !== false) { try { await window.SCP_saveLang?.(next); } catch {} }
     const u = new URL(location.href);
     if (u.searchParams.has("lang")) u.searchParams.set("lang", next);
