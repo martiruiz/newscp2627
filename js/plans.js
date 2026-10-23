@@ -71,10 +71,12 @@
     // the yearly price / saving, "All included" and the bulk-AI note are no longer shown on the cards (kept short)
     const was = iv === "year" && yearSave(p) > 0 ? priceOf(p, currency, "month").amount * 12 : 0;
     const big = !price ? 0 : Math.round(price.amount * seats);   // no decimals
-    const sub = !price ? "" : [
-      seats > 1 ? tx("{n} users × {price}/user", { n: seats, price: fmt(price.amount, currency) }) : tx("As many users as you need"),
-      iv === "year" ? tx("same as {price}/month", { price: fmt(Math.round(price.amount * seats / 12), currency) }) : "", tx("VAT incl."),
-    ].filter(Boolean).join(" · ");
+    // one user, monthly: nothing under the price; more users or yearly: the breakdown and "VAT incl."
+    const parts = !price ? [] : [
+      seats > 1 ? tx("{n} users × {price}/user", { n: seats, price: fmt(price.amount, currency) }) : "",
+      iv === "year" ? tx("same as {price}/month", { price: fmt(Math.round(price.amount * seats / 12), currency) }) : "",
+    ].filter(Boolean);
+    const sub = parts.length ? [...parts, tx("VAT incl.")].join(" · ") : "";
     // what you get, in words (not just ✓ / –)
     // big purchases get more AI (plans.ai_bulk_*): over the threshold (price × users) → the bulk quota per user
     const bulk = hasAi && p.ai_bulk_units > (p.ai_monthly_units || 0) && price ? { n: p.ai_bulk_units, min: Number(p.ai_bulk_min_amount || 0), on: price.amount * seats > Number(p.ai_bulk_min_amount || 0) } : null;
