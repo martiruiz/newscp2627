@@ -1427,3 +1427,15 @@ select.cs-native { display: none !important; }
 .bl-cv-checks { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 16px; padding: 12px 14px; border-radius: 12px; background: var(--panel-2); border: 1px solid var(--border); }
 .bl-sub { display: block; margin-top: 2px; font-weight: 400; }
 @media (max-width: 900px) { .bl-cv { grid-template-columns: 1fr; } .bl-cv-checks { grid-template-columns: 1fr; } }
+/* Admin → Blog → a post: header (back · breadcrumb, title, state and details) */
+.bl-ed-head { align-items: flex-end; padding-bottom: 18px; margin-bottom: 18px; border-bottom: 1px solid var(--border); }
+.bl-eh { display: grid; gap: 10px; min-width: 0; }
+.bl-eh-crumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+.bl-eh-crumb a { color: var(--muted); text-decoration: none; } .bl-eh-crumb a:hover { color: var(--accent-light); }
+.bl-eh-crumb span:last-child { color: var(--accent-light); font-weight: 600; }
+.bl-eh-back { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--panel); border: 1px solid var(--border); }
+.bl-eh-back svg { width: 15px; height: 15px; transform: rotate(90deg); } .bl-eh-back:hover { border-color: var(--accent); }
+.bl-eh h1 { margin: 0; font: 700 clamp(22px, 2.4vw, 30px)/1.2 var(--display); letter-spacing: -0.01em; max-width: 900px; text-wrap: balance; }
+.bl-eh-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; font-size: 12.5px; color: var(--muted); }
+.bl-eh-meta > span { display: inline-flex; align-items: center; gap: 6px; } .bl-eh-meta svg { width: 13px; height: 13px; color: var(--dim); }
+.bl-eh-meta .mono { font-size: 12px; color: var(--dim); }

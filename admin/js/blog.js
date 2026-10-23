@@ -77,7 +77,11 @@
     const takeawaysOf = (v) => (Array.isArray(v) ? v : String(v || "").split("\n")).filter(Boolean).join("\n");
     const [s, c] = p ? status(p) : ["New", ""];
     const faqRow = (f = {}) => `<div class="bl-faq-row"><input class="input" name="faq_q" value="${esc(f.q || "")}" placeholder="Question people ask (e.g. How often should a club post on TikTok?)"><textarea class="input" name="faq_a" rows="2" placeholder="Short, direct answer (2–3 sentences)">${esc(f.a || "")}</textarea><button type="button" class="icon-btn" data-faq-del title="Remove" aria-label="Remove">${icon("trash")}</button></div>`;
-    main.innerHTML = `<div class="page-head bl-ed-head"><div><a class="link" href="#" data-back>← Blog</a><h1>${esc(isNew ? "New post" : d.title)}</h1></div>
+    main.innerHTML = `<div class="page-head bl-ed-head"><div class="bl-eh">
+        <nav class="bl-eh-crumb"><a href="#" data-back class="bl-eh-back" aria-label="Back to the blog">${icon("chevron")}</a><a href="#" data-back>Blog</a><span>/</span><span>${esc((TYPES[d.type] || "").split(" · ")[0] || "Post")}</span></nav>
+        <h1>${esc(isNew ? "New post" : d.title)}</h1>
+        <div class="bl-eh-meta"><span class="bl-st ${c}">${esc(s)}</span>${d.date ? `<span>${icon("edit")}${esc(new Date(`${d.date}T12:00:00`).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }))}</span>` : ""}${d.author ? `<span>${icon("account")}${esc(d.author)}</span>` : ""}${!isNew ? `<span class="mono">/blog/${esc(p.slug)}</span>` : ""}</div>
+      </div>
       <div class="head-actions">${!isNew && !p.draft && p.published_at ? `<a class="btn" href="../blog/${esc(p.slug)}.html" target="_blank" rel="noopener">${icon("eye")}See it on the website</a>` : ""}<button class="btn btn-primary" type="button" data-save>${icon("check")}Save</button></div></div>
       ${p?.publish_error ? `<div class="bl-err">${icon("alert")}<div><b>The last publish failed — fix this and save again</b><pre>${esc(p.publish_error)}</pre></div></div>` : ""}
       <div class="bl-ed">
@@ -373,7 +377,7 @@
       const { data: fresh } = await A.db.from("blog_posts").select("slug,data,draft,updated_at,published_at,publish_error").order("updated_at", { ascending: false });
       posts = fresh || posts; editor(posts.find((x) => x.slug === slug));
     });
-    $("[data-back]").addEventListener("click", (e) => { e.preventDefault(); list(); });
+    main.querySelectorAll("[data-back]").forEach((b) => b.addEventListener("click", (e) => { e.preventDefault(); list(); }));
   }
 
   main.addEventListener("click", async (e) => {
