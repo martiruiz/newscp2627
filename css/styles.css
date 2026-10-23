@@ -8248,7 +8248,7 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .pp-plans-all { justify-self: start; font-size: 13px; font-weight: 600; color: var(--muted); text-decoration: none; }
 .pp-plans-all:hover { color: var(--text); }
 @media (max-width: 560px) { .pp-pick { grid-template-columns: 1fr; } .pp-pick .btn { grid-column: 1; grid-row: auto; justify-self: start; margin-top: 6px; } }
-.pp .pp-pick { grid-template-columns: 1fr; } .pp .pp-pick .btn { grid-column: 1; grid-row: auto; justify-self: start; margin-top: 6px; }
+:is(.pp, .ai-out) .pp-pick { grid-template-columns: 1fr; } :is(.pp, .ai-out) .pp-pick .btn { grid-column: 1; grid-row: auto; justify-self: start; margin-top: 6px; }
 :root[data-theme="light"] .pp-pick { background: #fff; border-color: rgba(12,12,13,.08); box-shadow: 0 1px 2px rgba(12,12,13,.04), 0 12px 30px -22px rgba(12,12,13,.3); }
 
 /* Menu "My Club" (the top plan): premium touch — on hover a gold border runs round the button, the name turns gold metal and

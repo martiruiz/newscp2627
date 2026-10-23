@@ -2322,7 +2322,8 @@
     if (!ai.ent?.has_ai) {
       area().innerHTML = `<div class="ai-gate">${icon("lock")}<div><b>AI analyses are part of Library + AI + Content Plan</b>
         <p>Hook, why it works, format, angle, visual breakdown and how to adapt it to your club, for any post in the library.</p>
-        <a class="btn btn-gold" href="${esc(window.SCP_upgradeHref("ai", ai.ent?.plan))}">${esc(tx("Get AI analyses"))}</a></div></div>`;
+        <button class="btn btn-gold" type="button" data-plans-picker="ai.analyze_posts" aria-expanded="false">${esc(tx("Get AI analyses"))}</button>
+        <div class="pp-plans" data-plans-picker-list hidden></div></div></div>`;
       return;
     }
     if (ai.unlocked.has(n)) return loadUnlocked(n);
@@ -2548,7 +2549,8 @@
     if (pop) { pop.remove(); return; }
     b.insertAdjacentHTML("afterend", `<div class="ai-out is-locked" data-ai-out role="dialog" aria-label="${esc(title)}">
       <b>${icon("lock")}${esc(title)}</b><p>${esc(text)}</p>
-      <a class="btn btn-gold btn-sm" href="${esc(window.SCP_upgradeHref(feature, ai.ent?.plan))}">${icon("sparkles")}${esc(tx(feature === "ai" ? "Get AI analyses" : "Get the Content Plan"))}</a></div>`);
+      <button class="btn btn-gold btn-sm" type="button" data-plans-picker="${feature === "ai" ? "ai.analyze_posts" : "planner.access"}" aria-expanded="false">${icon("sparkles")}${esc(tx(feature === "ai" ? "Get AI analyses" : "Get the Content Plan"))}</button>
+      <div class="pp-plans" data-plans-picker-list hidden></div></div>`);
     setTimeout(() => document.addEventListener("pointerdown", function off(e) { if (!e.target.closest("[data-ai-out], [data-ai-mine]")) { $("[data-ai-out]")?.remove(); document.removeEventListener("pointerdown", off); } }), 0);
   }
   $("[data-ai-mine]").addEventListener("click", (e) => {

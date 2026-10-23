@@ -184,8 +184,9 @@ window.SCP_CHECKOUT = (() => {
     t.innerHTML = `<span>${tx("<b>Payment received.</b> It's taking a little longer to activate — refresh in a minute, or <a href=\"contact.html\">contact us</a> if it doesn't show.")}</span>`;
   }
 
-  // "Get the Content Plan" (locked Content Plan): the plans that include it, in short, right under the button, to buy in one click.
-  // Markup: <button data-plans-picker> followed by <div data-plans-picker-list hidden>. Plans from public_membership_plans().
+  // "Get the Content Plan" / "Get AI analyses" (a locked feature): the plans that include it, in short, right under the button, to
+  // buy in one click. Markup: <button data-plans-picker="ai.analyze_posts"> (the entitlement; Content Plan when empty) followed by
+  // <div data-plans-picker-list hidden>. Plans from public_membership_plans().
   let plansP = null;
   async function plansPicker(btn) {
     const box = btn.parentElement.querySelector("[data-plans-picker-list]");
@@ -195,7 +196,7 @@ window.SCP_CHECKOUT = (() => {
     if (!open || box.dataset.done) return;
     box.innerHTML = `<p class="pp-plans-msg">${tx("Loading plans…")}</p>`;
     plansP ||= auth.client.rpc("public_membership_plans").then(({ data }) => data?.plans || []).catch(() => []);
-    const list = (await plansP).filter((p) => (p.entitlements || []).includes("planner.access"));
+    const list = (await plansP).filter((p) => (p.entitlements || []).includes(btn.dataset.plansPicker || "planner.access"));
     box.dataset.done = list.length ? "1" : "";
     const label = (p) => (p.trial_days > 0 ? tx("Start {n}-day free trial", { n: p.trial_days }) : tx("Get {plan}", { plan: esc(p.name) }));
     box.innerHTML = list.map((p) => {
