@@ -74,8 +74,9 @@
     // one user, monthly: nothing under the price; more users or yearly: the breakdown and "VAT incl."
     const parts = !price ? [] : [
       seats > 1 ? tx("{n} users × {price}/user", { n: seats, price: fmt(price.amount, currency) }) : "",
-      iv === "year" ? tx("same as {price}/month", { price: fmt(Math.round(price.amount * seats / 12), currency) }) : "",
     ].filter(Boolean);
+    // yearly: "same as X/month" only when hovering (or tapping) the price, not at first sight
+    const tip = price && iv === "year" ? `${tx("same as {price}/month", { price: fmt(Math.round(price.amount * seats / 12), currency) })} · ${tx("VAT incl.")}` : "";
     const sub = parts.length ? [...parts, tx("VAT incl.")].join(" · ") : "";
     // what you get, in words (not just ✓ / –)
     // big purchases get more AI (plans.ai_bulk_*): over the threshold (price × users) → the bulk quota per user
@@ -92,7 +93,7 @@
     return `<article class="plan-card v2${p.highlighted ? " is-best" : ""}${isCurrent ? " is-current" : ""}${p.key === wanted ? " is-wanted" : ""}" data-plan-key="${esc(p.key)}">
       ${flag}
       <h3>${pic(p.highlighted ? "all" : "lib")}${esc(p.name)}</h3>
-      <p class="plan-price">${seats > 1 && price ? `<em class="plan-total">${tx("Total")}</em>` : ""}${was ? `<s class="plan-was">${fmt(was * seats, currency)}</s>` : ""}${price ? `<b data-price="${big}" data-cur="${currency}">${fmt(big, currency)}</b><span>${iv === "year" ? `/ ${per("year")}` : seats > 1 ? `/ ${per("month")}` : tx("/ {per} per user", { per: per("month") })}</span>` : `<b>—</b>`}</p>
+      <p class="plan-price">${seats > 1 && price ? `<em class="plan-total">${tx("Total")}</em>` : ""}${was ? `<s class="plan-was">${fmt(was * seats, currency)}</s>` : ""}${price ? `<b data-price="${big}" data-cur="${currency}"${tip ? ` class="has-tip" tabindex="0" data-tip="${esc(tip)}"` : ""}>${fmt(big, currency)}</b><span>${iv === "year" ? `/ ${per("year")}` : seats > 1 ? `/ ${per("month")}` : tx("/ {per} per user", { per: per("month") })}</span>` : `<b>—</b>`}</p>
       <p class="plan-sub">${sub}</p>
       <div class="plan-extras"></div>
       <ul class="plan-gets">${gets.map(keyPoint).join("")}</ul>
