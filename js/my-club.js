@@ -24,7 +24,8 @@
     st.tab = ["club", "sponsors"].includes(saved.tab) ? saved.tab : "players";
     const { data, error } = await db.rpc("my_clubs");
     if (error) return fail(/my_clubs|does not exist|schema cache/i.test(error.message) ? "My Club isn't set up yet (run supabase/my-club.sql)." : "Couldn't load your club right now. Try again in a moment.");
-    st.clubs = data || [];
+    // Superadmin → "View as" a plan: the page as a member of that plan without a club sees it
+    st.clubs = window.SCP_viewAs?.() ? [] : data || [];
     if (!st.clubs.length) return fail("Your account isn't linked to a club yet. Write to us and we'll set up your club's space.", true);
     st.club = st.clubs.find((c) => c.id === saved.club) || st.clubs[0];
     await openClub(saved);
