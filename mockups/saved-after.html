@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tableros guardados — antes / después</title>
+<link rel="stylesheet" href="../css/fonts.css?v=1">
+<link rel="stylesheet" href="../css/styles.css">
+<style>
+  body { background: var(--bg, #0b1120); color: var(--text, #fff); margin: 0; }
+  .mk-top { position: sticky; top: 0; z-index: 9; display: flex; gap: 8px; align-items: center; padding: 12px 24px; background: rgba(11, 17, 32, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+  .mk-top b { font-family: var(--font-display); margin-right: auto; }
+  .mk-top button { height: 34px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--text); cursor: pointer; }
+  .mk-top button[aria-pressed="true"] { background: radial-gradient(64% 64% at 50% 100%, var(--gold-light) 0%, var(--gold-mid) 50%, var(--gold) 100%); color: #101828; border: 0; font-weight: 600; }
+  .mk-pane[hidden] { display: none; }
+  .mk-before iframe { width: 100%; height: calc(100vh - 59px); border: 0; display: block; }
+  .mk-note { max-width: 1240px; margin: 0 auto; padding: 18px 24px 0; color: var(--muted); font-size: 13px; }
+  .mk-note b { color: var(--gold); }
+
+  /* ---------- AFTER ---------- */
+  .sv2 { max-width: 1240px; margin: 0 auto; padding: 36px 24px 80px; }
+  .sv2-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: end; }
+  .sv2-eyebrow { display: inline-flex; align-items: center; gap: 10px; padding: 6px 14px 6px 6px; border-radius: 999px; background: linear-gradient(135deg, rgba(240,184,74,.16), rgba(240,184,74,.04)); border: 1px solid rgba(240,184,74,.45); font-size: 13px; }
+  .sv2-eyebrow i { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: radial-gradient(64% 64% at 50% 100%, var(--gold-light), var(--gold-mid) 50%, var(--gold)); color: #101828; font-style: normal; font-size: 14px; }
+  .sv2-eyebrow b { color: var(--gold); font-family: var(--font-display); }
+  .sv2 h1 { margin: 16px 0 6px; font-family: var(--font-display); font-weight: 500; font-size: 52px; letter-spacing: -0.03em; line-height: 1; }
+  .sv2 h1 span { background: linear-gradient(180deg, var(--gold-light), var(--gold)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .sv2-sub { color: var(--muted); margin: 0; }
+  .sv2-actions { display: flex; gap: 10px; }
+  .sv2-btn { display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 20px; border-radius: 999px; font-weight: 600; font-size: 14px; border: 1px solid var(--line); background: var(--surface); color: var(--text); }
+  .sv2-btn.gold { background: radial-gradient(64% 64% at 50% 100%, var(--gold-light) 0%, var(--gold-mid) 50%, var(--gold) 100%); color: #101828; border: 0; box-shadow: 0 12px 30px -12px rgba(240,184,74,.8); }
+
+  .sv2-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 28px; }
+  .sv2-stat { padding: 16px 18px; border-radius: 16px; background: linear-gradient(180deg, rgba(255,255,255,.03), transparent), var(--surface); border: .5px solid var(--line); }
+  .sv2-stat small { display: block; color: var(--muted); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; }
+  .sv2-stat b { display: block; margin-top: 6px; font-family: var(--font-display); font-size: 28px; font-weight: 500; }
+  .sv2-stat .pfs { display: flex; gap: 6px; margin-top: 8px; }
+  .sv2-stat .pfs span { display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; border-radius: 999px; background: var(--surface-2); font-size: 12px; color: var(--muted); }
+  .sv2-stat .pfs img { width: 13px; height: 13px; }
+
+  .sv2-bar { display: flex; gap: 12px; align-items: center; margin: 32px 0 18px; flex-wrap: wrap; }
+  .sv2-search { flex: 1; min-width: 240px; display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 16px; border-radius: 999px; background: var(--surface); border: .5px solid var(--line); color: var(--muted); font-size: 14px; }
+  .sv2-seg { display: inline-flex; padding: 4px; border-radius: 999px; background: var(--surface); border: .5px solid var(--line); }
+  .sv2-seg span { padding: 8px 14px; border-radius: 999px; font-size: 13px; color: var(--muted); }
+  .sv2-seg span.on { background: var(--gold-tint); color: var(--gold); }
+
+  .sv2-feat { display: grid; grid-template-columns: 1.3fr 1fr; gap: 18px; margin-bottom: 18px; }
+  .sv2-all { position: relative; display: grid; grid-template-columns: 2fr 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 4px; height: 320px; border-radius: 22px; overflow: hidden; border: .5px solid var(--line); }
+  .sv2-all img, .sv2-b-cov img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .sv2-all > img:first-child { grid-row: 1 / span 2; }
+  .sv2-all-cap { position: absolute; inset: auto 0 0 0; padding: 60px 24px 22px; background: linear-gradient(180deg, transparent, rgba(8,12,24,.92)); display: flex; align-items: end; justify-content: space-between; }
+  .sv2-all-cap b { font-family: var(--font-display); font-size: 28px; font-weight: 500; display: block; }
+  .sv2-all-cap small { color: rgba(255,255,255,.75); }
+  .sv2-pill { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border-radius: 999px; background: rgba(255,255,255,.14); backdrop-filter: blur(8px); font-size: 13px; font-weight: 600; }
+  .sv2-plan { display: grid; align-content: space-between; padding: 26px; border-radius: 22px; background: radial-gradient(80% 90% at 100% 0%, rgba(240,184,74,.28), transparent 60%), linear-gradient(160deg, #18233f, #0f1730); border: 1px solid rgba(240,184,74,.35); }
+  .sv2-plan small { color: var(--gold); letter-spacing: .1em; text-transform: uppercase; font-size: 12px; font-weight: 700; }
+  .sv2-plan h3 { font-family: var(--font-display); font-weight: 500; font-size: 26px; margin: 10px 0 8px; letter-spacing: -.02em; }
+  .sv2-plan p { color: var(--muted); font-size: 14px; margin: 0; }
+  .sv2-week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin: 18px 0; }
+  .sv2-week span { aspect-ratio: 3/4; border-radius: 8px; background: var(--surface-2); border: .5px dashed var(--line); display: grid; place-items: end center; padding-bottom: 4px; font-size: 10px; color: var(--muted); overflow: hidden; position: relative; }
+  .sv2-week span img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+  .sv2-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+  .sv2-b { position: relative; border-radius: 20px; padding: 10px; background: linear-gradient(180deg, rgba(255,255,255,.03), transparent), var(--surface); border: .5px solid var(--line); transition: transform .25s, box-shadow .25s, border-color .25s; }
+  .sv2-b:hover, .sv2-b.hov { transform: translateY(-4px); border-color: rgba(240,184,74,.5); box-shadow: 0 24px 50px -28px rgba(240,184,74,.6); }
+  .sv2-b-cov { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 3px; aspect-ratio: 4/3.2; border-radius: 14px; overflow: hidden; }
+  .sv2-b-cov img:first-child { grid-row: 1 / span 2; }
+  .sv2-b-acts { position: absolute; top: 18px; right: 18px; display: flex; gap: 6px; opacity: 0; transition: opacity .2s; }
+  .sv2-b:hover .sv2-b-acts, .sv2-b.hov .sv2-b-acts { opacity: 1; }
+  .sv2-b-acts span { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: rgba(10,15,30,.75); backdrop-filter: blur(8px); font-size: 14px; }
+  .sv2-b-pin { position: absolute; top: 18px; left: 18px; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; background: radial-gradient(64% 64% at 50% 100%, var(--gold-light), var(--gold-mid) 50%, var(--gold)); color: #101828; }
+  .sv2-b-meta { padding: 12px 6px 4px; display: grid; gap: 6px; }
+  .sv2-b-meta b { font-family: var(--font-display); font-weight: 500; font-size: 18px; display: flex; align-items: center; gap: 8px; }
+  .sv2-b-meta b em { font-style: normal; font-size: 16px; }
+  .sv2-b-meta small { color: var(--muted); font-size: 13px; }
+  .sv2-b-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .sv2-b-tags span { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 999px; background: var(--surface-2); color: var(--muted); font-size: 11.5px; }
+  .sv2-b-tags img { width: 12px; height: 12px; }
+  .sv2-new { display: grid; align-content: center; justify-items: center; gap: 12px; padding: 22px; border-radius: 20px; border: 1.5px dashed rgba(240,184,74,.45); background: radial-gradient(70% 60% at 50% 0%, rgba(240,184,74,.12), transparent), var(--surface); text-align: center; }
+  .sv2-new i { display: grid; place-items: center; width: 54px; height: 54px; border-radius: 16px; background: var(--gold-tint); color: var(--gold); font-style: normal; font-size: 26px; }
+  .sv2-new b { font-family: var(--font-display); font-weight: 500; font-size: 18px; }
+  .sv2-new .sug { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+  .sv2-new .sug span { padding: 5px 10px; border-radius: 999px; border: .5px solid var(--line); font-size: 12px; color: var(--muted); }
+  .sv2-input { display: flex; gap: 6px; width: 100%; }
+  .sv2-input span { flex: 1; height: 38px; display: flex; align-items: center; padding: 0 14px; border-radius: 999px; background: var(--surface-2); color: var(--muted); font-size: 13px; text-align: left; }
+  .sv2-input em { font-style: normal; height: 38px; display: grid; place-items: center; padding: 0 14px; border-radius: 999px; background: radial-gradient(64% 64% at 50% 100%, var(--gold-light), var(--gold-mid) 50%, var(--gold)); color: #101828; font-weight: 600; font-size: 13px; }
+
+  .sv2-h2 { display: flex; align-items: baseline; gap: 10px; margin: 44px 0 14px; font-family: var(--font-display); font-weight: 500; font-size: 24px; }
+  .sv2-h2 small { color: var(--muted); font-family: var(--font-body); font-size: 13px; font-weight: 400; }
+  .sv2-smart { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+  .sv2-sm { display: flex; gap: 14px; align-items: center; padding: 14px; border-radius: 16px; background: var(--surface); border: .5px solid var(--line); }
+  .sv2-sm .ic { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 14px; font-size: 20px; flex: none; }
+  .sv2-sm b { display: block; font-size: 15px; } .sv2-sm small { color: var(--muted); font-size: 12.5px; }
+
+  .mk-ideas { max-width: 1240px; margin: 0 auto; padding: 0 24px 80px; }
+  .mk-ideas h2 { font-family: var(--font-display); font-weight: 500; font-size: 28px; margin: 0 0 16px; }
+  .mk-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .mk-list div { padding: 16px 18px; border-radius: 16px; background: var(--surface); border: .5px solid var(--line); font-size: 14px; color: var(--muted); }
+  .mk-list b { display: block; color: var(--text); margin-bottom: 4px; font-size: 15px; }
+  .mk-list i { font-style: normal; color: var(--gold); font-weight: 700; margin-right: 6px; }
+  @media (max-width: 900px) { .sv2-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } .sv2-feat, .sv2-head, .mk-list { grid-template-columns: 1fr; } .sv2-stats { grid-template-columns: repeat(2, minmax(0,1fr)); } .sv2-smart { grid-template-columns: 1fr; } .sv2 h1 { font-size: 38px; } }
+</style>
+</head>
+<body>
+<div class="mk-top"><b>Tableros guardados · propuesta</b>
+  <button type="button" aria-pressed="false" data-show="before">Antes (la página de ahora)</button>
+  <button type="button" aria-pressed="true" data-show="after">Después (propuesta)</button>
+</div>
+
+<section class="mk-pane mk-before" data-pane="before" hidden>
+  <iframe src="../saved.html" title="Antes"></iframe>
+</section>
+
+<section class="mk-pane" data-pane="after">
+  <p class="mk-note">Maqueta con imágenes de ejemplo. <b>Los números</b> (ideas 1–12) están explicados abajo.</p>
+  <div class="sv2">
+    <div class="sv2-head">
+      <div>
+        <span class="sv2-eyebrow"><i>★</i>Estás en <b>Tus ideas guardadas</b></span>
+        <h1>Tus <span>tableros</span></h1>
+        <p class="sv2-sub">Las ideas que quieres hacer, ordenadas para tu equipo. <b style="color:var(--gold)">①</b></p>
+      </div>
+      <div class="sv2-actions"><span class="sv2-btn">↗ Compartir</span><span class="sv2-btn gold">＋ Nuevo tablero</span></div>
+    </div>
+
+    <div class="sv2-stats"> <!-- ② -->
+      <div class="sv2-stat"><small>Posts guardados</small><b>7</b></div>
+      <div class="sv2-stat"><small>Tableros</small><b>3</b></div>
+      <div class="sv2-stat"><small>Redes</small><b>3</b><div class="pfs"><span><img src="../assets/pf-instagram.svg" alt="">4</span><span><img src="../assets/pf-tiktok.svg" alt="">2</span><span><img src="../assets/pf-youtube.svg" alt="">1</span></div></div>
+      <div class="sv2-stat"><small>Último guardado</small><b>Hoy</b></div>
+    </div>
+
+    <div class="sv2-bar"> <!-- ③ -->
+      <span class="sv2-search">⌕ Buscar en tus tableros…</span>
+      <span class="sv2-seg"><span class="on">Recientes</span><span>A–Z</span><span>Más posts</span></span>
+    </div>
+
+    <div class="sv2-feat">
+      <div class="sv2-all"> <!-- ④ -->
+        <img src="../assets/lib-example-ucl.jpg" alt=""><img src="../assets/post-2.png" alt=""><img src="../assets/post-3.png" alt=""><img src="../assets/post-4.png" alt=""><img src="../assets/post-5.png" alt="">
+        <div class="sv2-all-cap"><div><b>Todo lo guardado</b><small>7 posts · hoy</small></div><span class="sv2-pill">Ver todo →</span></div>
+      </div>
+      <div class="sv2-plan"> <!-- ⑤ -->
+        <div><small>Del tablero al calendario</small><h3>Convierte tus ideas en la semana</h3><p>Arrastra posts guardados a un día y tendrás tu plan de contenido listo.</p></div>
+        <div class="sv2-week"><span><img src="../assets/post-1.png" alt=""></span><span>Ma</span><span><img src="../assets/post-6.png" alt=""></span><span>Ju</span><span>Vi</span><span><img src="../assets/post-3.png" alt=""></span><span>Do</span></div>
+        <span class="sv2-btn gold" style="justify-self:start">Planificar esta semana →</span>
+      </div>
+    </div>
+
+    <div class="sv2-grid"> <!-- ⑥ ⑦ ⑧ -->
+      <div class="sv2-b hov"><span class="sv2-b-pin">★ Fijado</span><span class="sv2-b-acts"><span>✎</span><span>↗</span><span>⋯</span></span>
+        <div class="sv2-b-cov"><img src="../assets/lib-example-nba.jpg" alt=""><img src="../assets/post-1.png" alt=""><img src="../assets/post-6.png" alt=""></div>
+        <div class="sv2-b-meta"><b><em>⚽</em>Match day</b><small>3 posts · hace 2 días</small><div class="sv2-b-tags"><span><img src="../assets/pf-instagram.svg" alt="">2</span><span><img src="../assets/pf-tiktok.svg" alt="">1</span><span>Reels</span><span>Previa</span></div></div></div>
+      <div class="sv2-b"><span class="sv2-b-acts"><span>✎</span><span>↗</span><span>⋯</span></span>
+        <div class="sv2-b-cov"><img src="../assets/lib-example-messi.jpg" alt=""><img src="../assets/post-4.png" alt=""><img src="../assets/post-5.png" alt=""></div>
+        <div class="sv2-b-meta"><b><em>🎨</em>Diseño</b><small>2 posts · hace 2 días</small><div class="sv2-b-tags"><span><img src="../assets/pf-instagram.svg" alt="">2</span><span>Carrusel</span></div></div></div>
+      <div class="sv2-b"><span class="sv2-b-acts"><span>✎</span><span>↗</span><span>⋯</span></span>
+        <div class="sv2-b-cov"><img src="../assets/post-2.png" alt=""><img src="../assets/post-3.png" alt=""><img src="../assets/thumb-1.png" alt=""></div>
+        <div class="sv2-b-meta"><b><em>📌</em>Ejemplo</b><small>3 posts · hoy</small><div class="sv2-b-tags"><span><img src="../assets/pf-youtube.svg" alt="">1</span><span><img src="../assets/pf-instagram.svg" alt="">2</span></div></div></div>
+      <div class="sv2-new"> <!-- ⑨ -->
+        <i>＋</i><b>Nuevo tablero</b>
+        <div class="sv2-input"><span>Nombre del tablero</span><em>Crear</em></div>
+        <div class="sug"><span>Fichajes</span><span>Patrocinadores</span><span>Behind the scenes</span><span>Previas</span></div>
+      </div>
+    </div>
+
+    <h2 class="sv2-h2">Tableros inteligentes <small>Se llenan solos con lo que guardas ⑩</small></h2>
+    <div class="sv2-smart">
+      <div class="sv2-sm"><span class="ic" style="background:rgba(225,48,108,.18)">▶</span><div><b>Tus Reels y TikToks</b><small>5 vídeos guardados</small></div></div>
+      <div class="sv2-sm"><span class="ic" style="background:rgba(240,184,74,.18)">⚡</span><div><b>Guardado esta semana</b><small>4 posts nuevos</small></div></div>
+      <div class="sv2-sm"><span class="ic" style="background:rgba(37,211,102,.16)">✓</span><div><b>Ya planificados</b><small>3 en tu calendario</small></div></div>
+    </div>
+
+    <h2 class="sv2-h2">Ideas parecidas a las que guardas <small>Recomendadas de la biblioteca ⑪</small></h2>
+    <div class="sv2-grid">
+      <div class="sv2-b"><div class="sv2-b-cov" style="grid-template-columns:1fr;grid-template-rows:1fr"><img src="../assets/lib-example-ucl.jpg" alt=""></div><div class="sv2-b-meta"><b style="font-size:15px">Previa de Champions</b><small>Instagram · Reel · +38% interacción</small></div></div>
+      <div class="sv2-b"><div class="sv2-b-cov" style="grid-template-columns:1fr;grid-template-rows:1fr"><img src="../assets/post-6.png" alt=""></div><div class="sv2-b-meta"><b style="font-size:15px">Presentación de fichaje</b><small>TikTok · Vídeo</small></div></div>
+      <div class="sv2-b"><div class="sv2-b-cov" style="grid-template-columns:1fr;grid-template-rows:1fr"><img src="../assets/lib-example-nba.jpg" alt=""></div><div class="sv2-b-meta"><b style="font-size:15px">Media day</b><small>Instagram · Carrusel</small></div></div>
+      <div class="sv2-b"><div class="sv2-b-cov" style="grid-template-columns:1fr;grid-template-rows:1fr"><img src="../assets/post-1.png" alt=""></div><div class="sv2-b-meta"><b style="font-size:15px">Matchday graphic</b><small>X · Imagen</small></div></div>
+    </div>
+  </div>
+
+  <div class="mk-ideas">
+    <h2>Ideas de mejora</h2>
+    <div class="mk-list">
+      <div><b><i>①</i>Cabecera a la altura de la web</b>Distintivo "Estás en", título con el dorado degradado de la marca y una frase de para qué sirve.</div>
+      <div><b><i>②</i>Resumen en tarjetas</b>Posts guardados, tableros, redes (con logos y cuántos de cada una) y último guardado.</div>
+      <div><b><i>③</i>Buscar y ordenar</b>Buscar en todos los tableros y ordenar por recientes, A–Z o los que tienen más posts.</div>
+      <div><b><i>④</i>"Todo lo guardado" destacado</b>Grande, con mosaico de 5 fotos y "Ver todo", en lugar de un tablero más.</div>
+      <div><b><i>⑤</i>Del tablero al calendario</b>Un acceso directo para llevar lo guardado al Plan de contenido de la semana (la función ya existe en la web).</div>
+      <div><b><i>⑥</i>Tarjetas de tablero premium</b>Mosaico de 3 fotos, se elevan al pasar el ratón con brillo dorado; nombres en formato normal (no en MAYÚSCULAS).</div>
+      <div><b><i>⑦</i>Acciones rápidas</b>Al pasar el ratón: renombrar, compartir y más (borrar, cambiar portada) sin entrar en el tablero.</div>
+      <div><b><i>⑧</i>Qué hay dentro de un vistazo</b>Logos de las redes con cuántos posts, formato y temática más repetidos; tablero fijado arriba y emoji opcional.</div>
+      <div><b><i>⑨</i>Crear tablero más fácil</b>Tarjeta clara con sugerencias de nombre (Fichajes, Patrocinadores, Previas…) con un clic.</div>
+      <div><b><i>⑩</i>Tableros inteligentes</b>Se llenan solos: tus vídeos, lo guardado esta semana y lo ya planificado.</div>
+      <div><b><i>⑪</i>Ideas parecidas</b>Recomendaciones de la biblioteca según lo que guardas: más tiempo en la web y más ideas.</div>
+      <div><b><i>⑫</i>Arreglos que ya se ven ahora</b>"hace 3 posts · 2 días" (traducción rota), "today" en inglés, "NEW BOARD NAME" en mayúsculas y el botón Crear apagado.</div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll("[data-show]").forEach((b) => b.addEventListener("click", () => {
+    document.querySelectorAll("[data-show]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    document.querySelectorAll("[data-pane]").forEach((p) => { p.hidden = p.dataset.pane !== b.dataset.show; });
+  }));
+</script>
+</body>
+</html>
