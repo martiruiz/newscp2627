@@ -23,6 +23,11 @@ const plain = (html) => html.replace(/<[^>]+>/g, " ").replace(/&[a-z#0-9]+;/gi, 
 const words = (html) => plain(html).split(" ").filter(Boolean).length;
 const fmtDate = (d) => new Date(d + "T12:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
 
+// ---------- Cache versions: the posts load the same css/js versions as the home (index.html), so a new build never
+// brings back an old "?v=" (and the browser's old copy with it) ----------
+const SITE_V = new Map([...read("index.html").matchAll(/(?:href|src)="((?:css|js)\/[\w.-]+\.(?:css|js))\?v=([\w-]+)"/g)].map((m) => [m[1], m[2]]));
+const withSiteVersions = (html) => html.replace(/(href|src)="((?:css|js)\/[\w.-]+\.(?:css|js))(?:\?v=[\w-]+)?"/g, (all, attr, file) => (SITE_V.has(file) ? `${attr}="${file}?v=${SITE_V.get(file)}"` : all));
+
 // ---------- Load posts ----------
 const dir = path.join(ROOT, "content/blog");
 const posts = fs.readdirSync(dir)
@@ -360,7 +365,7 @@ ${related.map(card).join("\n")}
 </body>
 </html>
 `;
-  write(`blog/${p.slug}.html`, page);
+  write(`blog/${p.slug}.html`, withSiteVersions(page));
   console.log(`  → blog/${p.slug}.html`);
 }
 
