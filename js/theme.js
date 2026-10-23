@@ -13,12 +13,14 @@ try {
   const root = document.documentElement;
   let saved = null;
   try { saved = localStorage.getItem(KEY); } catch {}
-  if (saved === "light") root.setAttribute("data-theme", "light");
+  // sign-up / log-in (<html data-always-dark>) always keep the night colours, whatever the saved choice
+  const alwaysDark = root.hasAttribute("data-always-dark");
+  if (saved === "light" && !alwaysDark) root.setAttribute("data-theme", "light");
 
   // the old colours blur away while the new ones come into focus (View Transitions); older browsers / reduced motion: at once
   const set = (theme) => {
     const apply = () => {
-      if (theme === "light") root.setAttribute("data-theme", "light"); else root.removeAttribute("data-theme");
+      if (theme === "light" && !alwaysDark) root.setAttribute("data-theme", "light"); else root.removeAttribute("data-theme");
       try { localStorage.setItem(KEY, theme); } catch {}
       document.querySelectorAll("[data-theme-toggle]").forEach(paint);
     };

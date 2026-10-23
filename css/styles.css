@@ -7980,3 +7980,81 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .pf-acc .lang-switch button { flex: 1; justify-content: center; }
 .pf-acc .pf-row { margin-top: 0; } .pf-acc .pf-row .btn { height: 42px; padding: 0 20px; }
 @media (max-width: 860px) { .pf-acc { grid-template-columns: 1fr; } }
+
+
+/* ================= Day colours: "ink" — warm off-white, black for what matters, gold only as an accent =================
+   (mockups/light-ink.html "Propuesta final"). Night colours don't change. Base tokens, then the finishing touches. */
+:root[data-theme="light"] {
+      --bg: #f6f5f1; --surface: #ffffff; --surface-2: #f1f0eb; --surface-3: #e7e5de;
+      --text: #0c0c0d; --muted: #5b5b60; --muted-dim: rgba(12,12,13,.45); --white-dim: rgba(12,12,13,.5);
+      --line: rgba(12,12,13,.12); --line-soft: rgba(12,12,13,.07); --fg: 12, 12, 13;
+      --gold: #0c0c0d; --gold-light: #3a3a3e; --gold-mid: #1d1d20; --gold-tint: rgba(12,12,13,.06); --gold-dim: rgba(12,12,13,.3);
+      --on-gold: #ffffff; --inset-glow: inset 0 1px 0 0 rgba(255,255,255,1); --shadow-soft: 0 14px 40px rgba(12,12,13,.10);
+    }
+    :root[data-theme="light"] body { background: var(--bg); }
+    /* the highlighted words: black, with a gold highlighter stroke underneath */
+    :root[data-theme="light"] .gold, :root[data-theme="light"] .section-title span.gold, :root[data-theme="light"] h1 .gold, :root[data-theme="light"] h2 .gold {
+      color: #0c0c0d !important; -webkit-text-fill-color: #0c0c0d; background: linear-gradient(transparent 64%, rgba(240,184,74,.55) 64%, rgba(240,184,74,.55) 92%, transparent 92%) !important; -webkit-background-clip: border-box !important; background-clip: border-box !important; }
+    /* main buttons: solid black, white text */
+    :root[data-theme="light"] .btn-gold, :root[data-theme="light"] .nav-cta, :root[data-theme="light"] .plan-help-btn, :root[data-theme="light"] .nwc-more {
+      background: #0c0c0d !important; color: #fff !important; box-shadow: 0 10px 24px -12px rgba(12,12,13,.6) !important; }
+    :root[data-theme="light"] .btn-outline { border-color: #0c0c0d !important; color: #0c0c0d !important; background: transparent !important; }
+    :root[data-theme="light"] .link-gold, :root[data-theme="light"] .news-link { color: #0c0c0d !important; text-decoration: underline; text-decoration-color: #f0b84a; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+    :root[data-theme="light"] .eyebrow, :root[data-theme="light"] .hx-eyebrow { background: #0c0c0d !important; color: #fff !important; border-color: #0c0c0d !important; }
+    :root[data-theme="light"] .plan-card.is-best { border-color: #0c0c0d !important; box-shadow: 0 24px 50px -24px rgba(12,12,13,.35) !important; background: #fff !important; }
+    :root[data-theme="light"] .plan-flag { background: #0c0c0d !important; color: #fff !important; }
+    :root[data-theme="light"] .plan-gets li::before { background: #0c0c0d !important; box-shadow: none !important; }
+    :root[data-theme="light"] .plan-gets li::after { filter: invert(1); }
+    :root[data-theme="light"] .site-nav, :root[data-theme="light"] .nav-links { background: rgba(255,255,255,.85) !important; }
+
+/* finishing touches: black logo, glass menu, white cards with soft shadows, chosen things in black, black footer */
+:root[data-theme="light"] { --bg: #f7f6f3; --surface-2: #f2f1ed; --line: rgba(12,12,13,.10); --line-soft: rgba(12,12,13,.06); --shadow-soft: 0 1px 2px rgba(12,12,13,.04), 0 12px 32px -12px rgba(12,12,13,.14); }
+    :root[data-theme="light"] .site-nav .brand-logo { filter: brightness(0); }
+    :root[data-theme="light"] .nav-links { background: rgba(255,255,255,.7) !important; backdrop-filter: blur(14px); border: 1px solid rgba(12,12,13,.08) !important; box-shadow: 0 1px 2px rgba(12,12,13,.04), 0 10px 30px -18px rgba(12,12,13,.25) !important; }
+    :root[data-theme="light"] .mm-panel { background: #fff !important; border-color: rgba(12,12,13,.08) !important; box-shadow: 0 30px 60px -28px rgba(12,12,13,.3) !important; }
+    :root[data-theme="light"] h1, :root[data-theme="light"] .section-title { letter-spacing: -0.035em; }
+    :root[data-theme="light"] .lead, :root[data-theme="light"] p { color: #4a4a50; }
+    /* cards: white, soft shadow, no heavy border */
+    :root[data-theme="light"] .plan-card, :root[data-theme="light"] .news-row, :root[data-theme="light"] .blog-card, :root[data-theme="light"] .sv3-b, :root[data-theme="light"] .tool-card {
+      background: #fff !important; border-color: rgba(12,12,13,.07) !important; box-shadow: 0 1px 2px rgba(12,12,13,.04), 0 18px 40px -24px rgba(12,12,13,.22) !important; }
+    /* chosen things: black with white text (filters, monthly / yearly, tabs) */
+    :root[data-theme="light"] .plan-interval button[aria-selected="true"], :root[data-theme="light"] .seg-btn[aria-pressed="true"], :root[data-theme="light"] .pill[aria-pressed="true"] {
+      background: #0c0c0d !important; color: #fff !important; box-shadow: none !important; animation: none !important; }
+    :root[data-theme="light"] .plan-interval button[aria-selected="true"] em { background: #f0b84a !important; color: #0c0c0d !important; }
+    :root[data-theme="light"] .plan-interval button[aria-selected="true"]::before { display: none; }
+    /* the only gold that stays: the highlighter, the Recommended seal, the price of the best plan underlined */
+    :root[data-theme="light"] .plan-card.is-best .plan-flag { background: #f0b84a !important; color: #0c0c0d !important; }
+    :root[data-theme="light"] .plan-ic { background: #f2f1ed !important; color: #0c0c0d !important; border-color: rgba(12,12,13,.1) !important; }
+    :root[data-theme="light"] .plan-card.is-best .plan-ic { background: #0c0c0d !important; color: #f0b84a !important; }
+    :root[data-theme="light"] .plan-card.is-best .plan-price b { text-decoration: underline; text-decoration-color: #f0b84a; text-decoration-thickness: 3px; text-underline-offset: 6px; }
+    :root[data-theme="light"] .sec-pill { background: #fff !important; border-color: rgba(12,12,13,.1) !important; box-shadow: 0 8px 24px -14px rgba(12,12,13,.3) !important; }
+    :root[data-theme="light"] .sec-pill b { color: #0c0c0d !important; } :root[data-theme="light"] .sec-pill-ic { background: #0c0c0d !important; } :root[data-theme="light"] .sec-pill-ic img, :root[data-theme="light"] .sec-pill-ic svg { filter: invert(1); }
+    /* the footer: black, closing the page with weight */
+    :root[data-theme="light"] .site-footer.sf { background: #0c0c0d !important; color: #fff; margin-top: 140px; }
+    :root[data-theme="light"] .site-footer.sf, :root[data-theme="light"] .site-footer.sf p, :root[data-theme="light"] .site-footer.sf span, :root[data-theme="light"] .site-footer.sf a, :root[data-theme="light"] .site-footer.sf h2, :root[data-theme="light"] .site-footer.sf h3 { color: #e9e9ec !important; }
+    :root[data-theme="light"] .site-footer.sf .sf-news { background: #17171a !important; border-color: rgba(255,255,255,.08) !important; box-shadow: none !important; }
+    :root[data-theme="light"] .site-footer.sf .btn-gold { background: #f0b84a !important; color: #0c0c0d !important; }
+    :root[data-theme="light"] .site-footer.sf input { background: #0c0c0d !important; color: #fff !important; border-color: rgba(255,255,255,.15) !important; }
+    :root[data-theme="light"] .site-footer.sf .sf-stats b { color: #f0b84a !important; }
+/* day colours: the "All" network tile chosen = black with white text and logo */
+:root[data-theme="light"] .news-filters .ptile[data-platform="all"][aria-pressed="true"] { background: #0c0c0d !important; border-color: #0c0c0d !important; color: #fff !important; box-shadow: 0 14px 30px -16px rgba(12,12,13,.6) !important; }
+:root[data-theme="light"] .news-filters .ptile[data-platform="all"][aria-pressed="true"] img { filter: brightness(0) invert(1) !important; background: rgba(255,255,255,.14) !important; border-color: rgba(255,255,255,.25) !important; box-shadow: none !important; }
+:root[data-theme="light"] .news-filters .ptile[data-platform="all"][aria-pressed="true"]::before { opacity: 0 !important; }
+/* day colours: what had a gold fill now has a black one — its text and icons go white; the dark "plan your week" card keeps gold */
+:root[data-theme="light"] :is(.sv3-pin, .sv3-folders-ic, .sv3-new-go, .sec-pill-ic, .pf-pc-ic, .mm-featured i, .sv3-plan .btn-gold) { color: #fff !important; }
+:root[data-theme="light"] :is(.sv3-folders-ic, .sec-pill-ic, .pf-pc-ic) svg { color: #fff !important; stroke: currentColor; }
+:root[data-theme="light"] .sv3-plan small { color: #f0b84a !important; }
+:root[data-theme="light"] .sv3-plan .btn-gold { background: #f0b84a !important; color: #0c0c0d !important; }
+:root[data-theme="light"] .sec-pill-ic img { filter: brightness(0) invert(1) !important; }
+/* day colours — profile: white hero, chosen tiles / chips in black, section icons neutral */
+:root[data-theme="light"] .pf-hero { background: #fff !important; border-color: rgba(12,12,13,.08) !important; box-shadow: 0 1px 2px rgba(12,12,13,.04), 0 18px 40px -24px rgba(12,12,13,.22) !important; }
+:root[data-theme="light"] .pf-role[aria-pressed="true"] { border-color: #0c0c0d !important; background: #fff !important; box-shadow: 0 0 0 1px #0c0c0d !important; }
+:root[data-theme="light"] :is(.pf-chip, .pf-seg-b)[aria-pressed="true"] { background: #0c0c0d !important; border-color: #0c0c0d !important; color: #fff !important; }
+:root[data-theme="light"] .pf-head-ic { background: #f2f1ed !important; color: #0c0c0d !important; border-color: rgba(12,12,13,.08) !important; box-shadow: none !important; }
+:root[data-theme="light"] .pf-nav a[aria-current="page"], :root[data-theme="light"] .pf-nav a.is-active { background: #0c0c0d !important; color: #fff !important; }
+:root[data-theme="light"] .pf-nav a.is-active svg { color: #fff !important; }
+/* day colours — the big CTA box: white and bright (no navy tint), soft shadow, the turning gold edge kept thin, lighter glows */
+:root[data-theme="light"] .cta-box { background: radial-gradient(120% 90% at 50% 0%, #ffffff 55%, #fbf6ea 100%) !important; border-color: rgba(12,12,13,.08) !important;
+  box-shadow: 0 1px 2px rgba(12,12,13,.04), 0 30px 70px -36px rgba(12,12,13,.28) !important; }
+:root[data-theme="light"] .cta-box::after { opacity: .45; }
+:root[data-theme="light"] .cta-box::before { opacity: .7; }
