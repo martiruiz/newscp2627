@@ -22,8 +22,8 @@ jobs:
     env:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-      # Spanish versions translated by AI per run (blog-tools/sync-db.mjs); 0 = paused while the first ones are reviewed
-      TRANSLATE_PER_RUN: "0"
+      # Spanish versions translated by AI per run (blog-tools/sync-db.mjs): what is new or edited, at most this many
+      TRANSLATE_PER_RUN: "15"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
