@@ -92,9 +92,9 @@
       <p class="plan-price">${seats > 1 && price ? `<em class="plan-total">${tx("Total")}</em>` : ""}${was ? `<s class="plan-was">${fmt(was * seats, currency)}</s>` : ""}${price ? `<b data-price="${big}" data-cur="${currency}">${fmt(big, currency)}</b><span>${iv === "year" ? `/ ${per("year")}` : seats > 1 ? `/ ${per("month")}` : tx("/ {per} per user", { per: per("month") })}</span>` : `<b>—</b>`}</p>
       <p class="plan-sub">${sub || "&nbsp;"}</p>
       <div class="plan-extras"></div>
-      ${cta}
-      <p class="plan-note">${note}</p>
       <ul class="plan-gets">${gets.map((g) => `<li>${g}</li>`).join("")}</ul>
+      <p class="plan-note">${note}</p>
+      ${cta}
     </article>`;
   }
 
@@ -107,9 +107,9 @@
       <p class="plan-price"><b class="plan-price-text">${tx("Price to be agreed")}</b></p>
       <p class="plan-sub">${tx("Clubs, leagues, federations and agencies")}</p>
       <div class="plan-extras"></div>
-      <a class="btn btn-outline plan-cta" href="contact.html?topic=custom-plan" data-cta="pricing-custom"><span>${tx("Contact us")}</span><i class="plan-cta-arrow" aria-hidden="true">→</i></a>
-      <p class="plan-note"></p>
       <ul class="plan-gets">${gets.map((g) => `<li>${g}</li>`).join("")}</ul>
+      <p class="plan-note"></p>
+      <a class="btn btn-outline plan-cta" href="contact.html?topic=custom-plan" data-cta="pricing-custom"><span>${tx("Contact us")}</span><i class="plan-cta-arrow" aria-hidden="true">→</i></a>
     </article>`;
   }
 

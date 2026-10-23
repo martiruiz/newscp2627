@@ -7396,3 +7396,6 @@ section[id], :target { scroll-margin-top: 92px; }
 .plan-card.v2 .plan-sub { margin: 4px 0 16px; }
 .plan-card.v2 .plan-gets { margin-top: 16px; padding-top: 14px; gap: 8px; }
 .plan-card.v2 .plan-gets li { font-size: 13.5px; }
+/* the button at the bottom of each card (after the list), all at the same height */
+.plan-card.v2 .plan-gets { align-self: start; margin-bottom: 4px; }
+.plan-card.v2 .plan-cta { align-self: end; margin-top: 18px; }
