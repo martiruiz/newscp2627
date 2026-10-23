@@ -1,1 +1,26 @@
-{}
+{
+  "bots": {
+    "CCBot": true,
+    "GPTBot": true,
+    "ClaudeBot": true,
+    "ChatGPT-User": true,
+    "OAI-SearchBot": true,
+    "PerplexityBot": true,
+    "Google-Extended": true,
+    "Claude-SearchBot": true,
+    "Applebot-Extended": true,
+    "meta-externalagent": true
+  },
+  "logo": "",
+  "email": "info@sportscontentplaybook.com",
+  "pages": {
+    "contact.html": {
+      "at": "2026-10-23T15:56:07.277Z",
+      "description": "Contact the Sports Content Playbook team or book a demo to see how our sports social media tools help you find better content and track competitors."
+    }
+  },
+  "same_as": [],
+  "org_name": "",
+  "llms_about": "",
+  "description": ""
+}
