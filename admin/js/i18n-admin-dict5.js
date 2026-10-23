@@ -429,4 +429,12 @@ window.SCPA_DICT = Object.assign(window.SCPA_DICT || {}, {
   "You'll need to log in again to use SCP.": ["Tendrás que volver a iniciar sesión para usar SCP.", "Hauràs de tornar a iniciar sessió per fer servir SCP."],
   "Log out": ["Cerrar sesión", "Tanca la sessió"],
   "Home page": ["Página de inicio", "Pàgina d'inici"],
+  "Welcome email": ["Correo de bienvenida", "Correu de benvinguda"],
+  "What new newsletter sign-ups receive, in the language they signed up in.": ["Lo que reciben las nuevas altas de la newsletter, en el idioma en que se apuntaron.", "El que reben les noves altes de la newsletter, en l'idioma en què es van apuntar."],
+  "Blank line = new paragraph · the first one is the headline · {{name}} = first name (left out if there's none) · [Button text](https://…) = button": ["Línea en blanco = párrafo nuevo · el primero es el titular · {{name}} = nombre (se omite si no hay) · [Texto del botón](https://…) = botón", "Línia en blanc = paràgraf nou · el primer és el titular · {{name}} = nom (s'omet si no n'hi ha) · [Text del botó](https://…) = botó"],
+  "Send the welcome email": ["Enviar el correo de bienvenida", "Envia el correu de benvinguda"],
+  "Spanish welcome email saved.": ["Correo de bienvenida en español guardado.", "Correu de benvinguda en castellà desat."],
+  "English welcome email saved.": ["Correo de bienvenida en inglés guardado.", "Correu de benvinguda en anglès desat."],
+  "Run supabase/newsletter-welcome-template.sql in Supabase to edit it here.": ["Ejecuta supabase/newsletter-welcome-template.sql en Supabase para editarlo aquí.", "Executa supabase/newsletter-welcome-template.sql a Supabase per editar-lo aquí."],
+  "Body": ["Texto", "Text"],
 });

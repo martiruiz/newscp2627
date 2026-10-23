@@ -1566,3 +1566,13 @@ select.cs-native { display: none !important; }
 .side a.side-home:hover { color: var(--accent-light); background: var(--panel-2); box-shadow: inset 0 0 0 1px rgba(240, 184, 74, 0.45); }
 :root[data-theme="light"] .side a.side-home { color: #3b3f47; box-shadow: inset 0 0 0 1px rgba(18, 27, 51, 0.14); }
 :root[data-theme="light"] .side a.side-home:hover { color: #0c0c0d; background: #fff; }
+
+/* Newsletter → welcome email editor (js/newsletter-welcome.js): form on the left, live preview on the right */
+.nlw { margin-top: 18px; }
+.nlw-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+.nlw-head h2 { margin: 0 0 2px; }
+.nlw-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.nlw-form { display: grid; gap: 12px; }
+.nlw-form .textarea { min-height: 240px; font-family: var(--font); line-height: 1.5; }
+.nlw-preview { width: 100%; height: 520px; border: 1px solid var(--border); border-radius: 14px; background: #0e1529; }
+@media (max-width: 1000px) { .nlw-grid { grid-template-columns: 1fr; } }

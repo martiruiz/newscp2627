@@ -10,7 +10,7 @@
 // SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are provided by Supabase automatically.
 
 const RESEND = "https://api.resend.com";
-const SITE = "https://sportscontentplaybook.com";
+const SITE = "https://martiruiz.github.io/newscp2627";   // GitHub Pages: keeps working (redirects) once the domain points here
 const env = (k: string) => Deno.env.get(k) ?? "";
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 
@@ -47,6 +47,28 @@ function welcomeHtml(firstName: string, lang: "es" | "en") {
 </td></tr></table></body></html>`;
 }
 
+// The version edited in Admin → Newsletter (email_templates "newsletter_welcome", supabase/newsletter-welcome-template.sql);
+// the built-in one above while there's none. Body: paragraphs, the first = headline, {{name}}, [Button](url).
+async function edited(lang: "es" | "en") {
+  const r = await fetch(`${env("SUPABASE_URL")}/rest/v1/email_templates?select=subject,body,enabled&key=eq.newsletter_welcome&locale=eq.${lang}`, {
+    headers: { apikey: env("SUPABASE_SERVICE_ROLE_KEY"), Authorization: `Bearer ${env("SUPABASE_SERVICE_ROLE_KEY")}` } }).catch(() => null);
+  const rows = r?.ok ? await r.json().catch(() => []) : [];
+  return rows?.[0] || null;
+}
+function editedHtml(body: string, firstName: string, lang: "es" | "en") {
+  const name = (t: string) => t.replace(/\s?\{\{name\}\}/g, firstName ? ` ${firstName}` : "");
+  const paras = body.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+  const rows = paras.map((p, i) => {
+    const btn = p.match(/^\[(.+)\]\((https?:\/\/[^)\s]+)\)$/);
+    if (btn) return `<tr><td style="padding:6px 0 4px"><a href="${esc(btn[2])}" style="display:inline-block;padding:14px 26px;border-radius:999px;background:#f0b84a;color:#1a1205;font-weight:700;font-size:15px;text-decoration:none">${esc(name(btn[1]))}</a></td></tr>`;
+    const text = esc(name(p)).replace(/\n/g, "<br>");
+    return i === 0 ? `<tr><td style="color:#fff;font-size:28px;line-height:1.2;font-weight:700;padding-bottom:16px">${text}</td></tr>`
+      : `<tr><td style="color:#b4c0d3;font-size:15px;line-height:1.6;padding-bottom:16px">${text}</td></tr>`;
+  }).join("");
+  return welcomeHtml(firstName, lang).replace(/<tr><td style="padding:16px 32px 0"><table role="presentation" width="100%">[\s\S]*?<\/table><\/td><\/tr>/,
+    `<tr><td style="padding:16px 32px 0"><table role="presentation" width="100%"><tr><td style="color:#f0b84a;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;padding-bottom:10px">${T[lang].eyebrow}</td></tr>${rows}</table></td></tr>`);
+}
+
 Deno.serve(async (req) => {
   if (!env("WEBHOOK_SECRET") || req.headers.get("x-webhook-secret") !== env("WEBHOOK_SECRET")) return new Response("Unauthorized", { status: 401 });
   const { type, table, record } = await req.json().catch(() => ({}));
@@ -62,14 +84,16 @@ Deno.serve(async (req) => {
     body: JSON.stringify({ email: record.email, first_name: firstName || undefined, segments: env("RESEND_SEGMENT_ID") ? [{ id: env("RESEND_SEGMENT_ID") }] : undefined }),
   }).catch(() => null);
 
-  // 2. Welcome email
+  // 2. Welcome email (switched off in the admin → none)
+  const tpl = await edited(lang);
+  if (tpl && !tpl.enabled) return new Response("Welcome email switched off");
   const sent = await fetch(`${RESEND}/emails`, {
     method: "POST", headers,
     body: JSON.stringify({
       from: env("NEWSLETTER_FROM"),
       to: [record.email],
-      subject: T[lang].subject,
-      html: welcomeHtml(firstName, lang),
+      subject: tpl?.subject || T[lang].subject,
+      html: tpl?.body ? editedHtml(tpl.body, firstName, lang) : welcomeHtml(firstName, lang),
     }),
   });
   if (!sent.ok) return new Response(`Resend error ${sent.status}: ${await sent.text()}`, { status: 502 });
