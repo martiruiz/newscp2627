@@ -119,7 +119,7 @@
       <span class="plan-flag is-club">${tx("For clubs")}</span>
       <h3>${pic("club")}${tx("My Club")}</h3>
       <p class="plan-price"><b class="plan-price-text">${tx("Custom plan")}</b></p>
-      <p class="plan-sub">${tx("A private space for your whole club")}</p>
+      <p class="plan-sub"></p>
       <div class="plan-extras"></div>
       <ul class="plan-gets">${gets.map(keyPoint).join("")}</ul>
       <p class="plan-note"></p>
