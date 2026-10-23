@@ -155,6 +155,8 @@
     { href: "library.html", label: "Content Library", icon: "library", key: "library" },
     { href: "filters.html", label: "Filters", icon: "filters", key: "filters" },
     { href: "profiles.html", label: "Scraped profiles", icon: "audience", key: "profiles" },
+    { href: "blog.html", label: "Blog", icon: "edit", key: "blog" },
+    { href: "news.html", label: "Social News", icon: "external", key: "news" },
     { href: "smart-review.html", label: "Smart filters", icon: "smart", key: "smart" },
     { href: "audience.html", label: "Audience", icon: "audience", key: "audience", group: "super" },
     { href: "leads.html", label: "Leads & Demos", icon: "users", key: "leads", group: "super" },
