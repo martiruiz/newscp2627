@@ -150,10 +150,10 @@
 
   // ---------- Auth guard + layout ----------
   const NAV = [
+    { href: "import.html", label: "Import", icon: "import", key: "import" },
     { href: "content-ideas.html", label: "Content Ideas", icon: "ideas", key: "ideas" },
     { href: "library.html", label: "Content Library", icon: "library", key: "library" },
     { href: "filters.html", label: "Filters", icon: "filters", key: "filters" },
-    { href: "import.html", label: "Import", icon: "import", key: "import" },
     { href: "profiles.html", label: "Scraped profiles", icon: "audience", key: "profiles" },
     { href: "smart-review.html", label: "Smart filters", icon: "smart", key: "smart" },
     { href: "audience.html", label: "Audience", icon: "audience", key: "audience", group: "super" },
