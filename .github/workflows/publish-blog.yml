@@ -2,6 +2,7 @@ name: Publish blog
 
 # The blog posts edited in Admin → Blog (Supabase, table blog_posts) → content/blog/*.json → blog-tools/build.mjs (its
 # checks) → static pages committed to main (GitHub Pages publishes them). Every hour, or "Run workflow" to publish now.
+# Also the published Social News (one page each in news/), robots.txt / llms.txt and the home's schema (Admin → SEO).
 on:
   schedule:
     - cron: "17 * * * *"
@@ -38,13 +39,15 @@ jobs:
           cat build.log
       - name: Publish if something changed
         run: |
-          if [ -z "$(git status --porcelain -- content/blog blog blog.html news.html sitemap.xml robots.txt assets/blog)" ]; then
+          if [ -z "$(git status --porcelain -- content/blog content/news.json content/seo.json blog news blog.html news.html index.html sitemap.xml robots.txt llms.txt assets/blog)" ]; then
             echo "Nothing changed."
           else
             git config user.name "SCP blog"
             git config user.email "actions@users.noreply.github.com"
-            git add content/blog blog blog.html news.html sitemap.xml robots.txt assets/blog
-            git commit -m "Blog: publish the posts edited in the admin"
+            for p in content/blog content/news.json content/seo.json blog news blog.html news.html index.html sitemap.xml robots.txt llms.txt assets/blog; do
+              git add -A -- "$p" 2>/dev/null || true   # a path that doesn't exist yet (no news before supabase/seo.sql) is skipped
+            done
+            git commit -m "Blog + Social News: publish what was edited in the admin"
             git pull --rebase
             git push
           fi

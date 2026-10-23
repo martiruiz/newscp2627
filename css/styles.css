@@ -7564,3 +7564,10 @@ section[id], :target { scroll-margin-top: 92px; }
 .post-author { display: flex; align-items: center; gap: 14px; margin-top: 34px; padding: 16px 18px; border-radius: 16px; background: var(--surface); border: 0.5px solid var(--line); }
 .post-author-av { flex: none; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 50%; background: radial-gradient(64% 64% at 50% 100%, #ffe0a0, #f0b84a); color: var(--on-gold); font: 700 18px var(--font-display); }
 .post-author p { margin: 0; display: grid; gap: 2px; } .post-author span { color: var(--muted); font-size: 14px; }
+
+/* ---------- Social News → one news item (news/<slug>.html, built by blog-tools/build.mjs) ---------- */
+.news-page-pf { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px; border-radius: 999px; background: var(--surface-2); border: 0.5px solid var(--line-soft); font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--gold, #f0b84a); }
+.news-page-pf img { width: 24px; height: 24px; padding: 4px; border-radius: 50%; background: rgba(255, 255, 255, 0.06); }
+.news-page-src { margin-top: 26px; }
+.news-more { margin-top: 70px; }
+.news-row h2 a { color: inherit; text-decoration: none; } .news-row h2 a:hover { color: var(--gold, #f0b84a); }

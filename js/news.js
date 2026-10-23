@@ -28,7 +28,7 @@
       <article class="news-row" id="news-${esc(n.id)}" data-platform="${esc(n.platform)}">
         <div class="news-row-text">
           <span class="news-meta"><b>${esc((LABELS[n.platform] || n.platform).toUpperCase())}</b> ${esc(fmtDate(n.published_at))}</span>
-          <h2>${esc(n.title)}</h2>
+          <h2>${n.slug ? `<a href="news/${esc(n.slug)}.html">${esc(n.title)}</a>` : esc(n.title)}</h2>
           ${(n.paragraphs || []).map((p) => `<p>${esc(p)}</p>`).join("")}
           <a class="news-source" href="${esc(n.url)}" target="_blank" rel="noopener">Source: ${esc(n.source_name)} ↗</a>
         </div>
@@ -54,7 +54,7 @@
 
     let query = auth.client
       .from("news")
-      .select("id,url,source_name,platform,title,paragraphs,published_at")
+      .select("*")   // with slug once supabase/seo.sql is run: the title links to the news page
       .order("published_at", { ascending: false })
       .range(state.offset, state.offset + PAGE - 1);
     if (state.platform !== "all") query = query.eq("platform", state.platform);

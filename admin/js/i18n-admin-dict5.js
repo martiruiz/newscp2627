@@ -244,4 +244,12 @@ window.SCPA_DICT = Object.assign(window.SCPA_DICT || {}, {
   "Write a meta description: it's the text under the link on Google.": ["Escribe una meta descripción: es el texto bajo el enlace en Google.", "Escriu una meta descripció: és el text sota l'enllaç a Google."],
   "Cover uploaded. Save to keep it.": ["Portada subida. Guarda para conservarla.", "Portada pujada. Desa per conservar-la."],
   "Published {a}": ["Publicado {a}", "Publicat {a}"],
+  "Each published news item has its own page for Google and AI assistants": ["Cada noticia publicada tiene su propia página para Google y los asistentes de IA", "Cada notícia publicada té la seva pròpia pàgina per a Google i els assistents d'IA"],
+  "see it": ["verla", "veure-la"],
+  "Empty = the title. 30–60 characters": ["Vacío = el título. 30–60 caracteres", "Buit = el títol. 30–60 caràcters"],
+  "Empty = the first lines. 120–160 characters": ["Vacío = las primeras líneas. 120–160 caracteres", "Buit = les primeres línies. 120–160 caràcters"],
+  "2–4 short sentences, one per line. AI assistants quote them.": ["2–4 frases cortas, una por línea. Los asistentes de IA las citan.", "2–4 frases curtes, una per línia. Els assistents d'IA les citen."],
+  "Optional. What a sports team would ask about this news.": ["Opcional. Lo que preguntaría un equipo deportivo sobre esta noticia.", "Opcional. El que preguntaria un equip esportiu sobre aquesta notícia."],
+  "Question": ["Pregunta", "Pregunta"],
+  "Run supabase/seo.sql in Supabase to add the SEO fields.": ["Ejecuta supabase/seo.sql en Supabase para añadir los campos SEO.", "Executa supabase/seo.sql a Supabase per afegir els camps SEO."],
 });

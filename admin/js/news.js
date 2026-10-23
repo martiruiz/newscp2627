@@ -1,6 +1,7 @@
 // SCP Admin — Social News: every news item the pipeline brought in (published = relevant, hidden = not), to edit its title,
 // source, link, network and paragraphs, publish / hide it or delete it. Data: table news (supabase/news.sql, admin rights
-// in supabase/admin-content.sql). The public page (news.html) shows the published ones.
+// in supabase/admin-content.sql). The public page (news.html) shows the published ones; each one also gets its own page
+// news/<slug>.html with the SEO & AI fields (supabase/seo.sql), built by the "Publish blog" Action.
 (async () => {
   const A = window.SCPA;
   const { $, esc, icon, num, info } = A;
@@ -62,8 +63,10 @@
       </article>`).join("") : `<p class="panel panel-pad muted">No news with these filters.</p>`;
   }
 
+  const faqRow = (f = {}) => `<div class="bl-faq-row"><input class="input" name="faq_q" value="${esc(f.q || "")}" placeholder="Question"><textarea class="input" name="faq_a" rows="2" placeholder="Short, direct answer (2–3 sentences)">${esc(f.a || "")}</textarea><button type="button" class="icon-btn" data-faq-del title="Remove" aria-label="Remove">${icon("trash")}</button></div>`;
   function edit(id) {
     const r = rows.find((x) => x.id === id); if (!r) return;
+    const hasSeo = "meta_title" in r;   // the SEO columns exist (supabase/seo.sql)
     const m = A.modal({ title: "Edit news", sub: `<a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.url)}</a>`, size: "lg",
       body: `<form class="nw-form" data-form>
         <label>Title<input class="input" name="title" value="${esc(r.title)}" required maxlength="300"></label>
@@ -73,14 +76,34 @@
         <label>Original article<input class="input" name="url" type="url" value="${esc(r.url)}" required></label>
         <label>Text <small class="muted">One paragraph per block; leave an empty line between paragraphs.</small><textarea class="input" name="paragraphs" rows="12">${esc((r.paragraphs || []).join("\n\n"))}</textarea></label>
         <label class="check-inline"><input type="checkbox" name="relevant"${r.relevant ? " checked" : ""}> Published on the website</label>
+        <div class="nw-seo">
+          <b class="nw-seo-h">${icon("sparkles")}SEO &amp; AI <small class="muted">Each published news item has its own page for Google and AI assistants${r.slug ? ` · <a href="../news/${esc(r.slug)}.html" target="_blank" rel="noopener">see it</a>` : ""}.</small></b>
+          ${hasSeo ? `<label>Meta title <span class="bl-len" data-len="meta_title"></span><input class="input" name="meta_title" value="${esc(r.meta_title || "")}" maxlength="80" placeholder="Empty = the title. 30–60 characters"></label>
+          <label>Meta description <span class="bl-len" data-len="meta_description"></span><textarea class="input" name="meta_description" rows="2" maxlength="200" placeholder="Empty = the first lines. 120–160 characters">${esc(r.meta_description || "")}</textarea></label>
+          <label>Key takeaways <small class="muted">2–4 short sentences, one per line. AI assistants quote them.</small><textarea class="input" name="takeaways" rows="3">${esc((r.takeaways || []).join("\n"))}</textarea></label>
+          <div class="bl-faq"><span class="bl-faq-h">Frequently asked questions <small class="muted">Optional. What a sports team would ask about this news.</small></span>
+            <div data-faq>${(r.faq || []).map(faqRow).join("")}</div>
+            <button type="button" class="btn btn-ghost btn-sm" data-faq-add>${icon("plus")}Add a question</button></div>`
+          : `<p class="muted">Run supabase/seo.sql in Supabase to add the SEO fields.</p>`}
+        </div>
       </form>`,
       foot: `<button class="btn btn-primary" type="button" data-save>Save</button>` });
+    const fm0 = m.el.querySelector("[data-form]");
+    const lens = () => { if (!hasSeo) return; for (const [k, a, b] of [["meta_title", 30, 60], ["meta_description", 120, 160]]) { const v = fm0[k].value.trim().length, el = fm0.querySelector(`[data-len="${k}"]`); el.textContent = v ? `${v} / ${b}` : ""; el.className = `bl-len ${v >= a && v <= b ? "ok" : v ? "warn" : ""}`; } };
+    lens(); fm0.addEventListener("input", lens);
+    fm0.addEventListener("click", (e) => {
+      if (e.target.closest("[data-faq-add]")) fm0.querySelector("[data-faq]").insertAdjacentHTML("beforeend", faqRow());
+      if (e.target.closest("[data-faq-del]")) e.target.closest(".bl-faq-row").remove();
+    });
     m.el.querySelector("[data-save]").addEventListener("click", async () => {
-      const fm = m.el.querySelector("[data-form]");
+      const fm = fm0;
       if (!fm.title.value.trim() || !fm.url.value.trim()) return fail(new Error("The news needs a title and the original article."));
       const body = { title: fm.title.value.trim(), source_name: fm.source_name.value.trim(), platform: fm.platform.value, url: fm.url.value.trim(),
         paragraphs: fm.paragraphs.value.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean), relevant: fm.relevant.checked, edited_at: new Date().toISOString(),
-        ...(fm.published_at.value ? { published_at: new Date(`${fm.published_at.value}T12:00:00Z`).toISOString() } : {}) };
+        ...(fm.published_at.value ? { published_at: new Date(`${fm.published_at.value}T12:00:00Z`).toISOString() } : {}),
+        ...(hasSeo ? { meta_title: fm.meta_title.value.trim() || null, meta_description: fm.meta_description.value.trim() || null,
+          takeaways: fm.takeaways.value.split("\n").map((t) => t.trim()).filter(Boolean),
+          faq: [...fm.querySelectorAll(".bl-faq-row")].map((x) => ({ q: x.querySelector("[name=faq_q]").value.trim(), a: x.querySelector("[name=faq_a]").value.trim() })).filter((f) => f.q && f.a) } : {}) };
       const { error } = await A.db.from("news").update(body).eq("id", id);
       if (error) return fail(/policy|permission|row-level/i.test(error.message) ? new Error("Run supabase/admin-content.sql in Supabase first.") : error);
       m.close(); A.toast("Saved"); load();

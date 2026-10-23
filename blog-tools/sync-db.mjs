@@ -2,7 +2,9 @@
 // Blog posts edited in Admin → Blog live in Supabase (table blog_posts, supabase/admin-content.sql). The GitHub Action
 // "Publish blog" uses this script around blog-tools/build.mjs:
 //   node blog-tools/sync-db.mjs export         → content/blog/<slug>.json for every post (drafts keep "draft": true) and the
-//                                               covers uploaded from the admin copied into assets/blog; prints how many
+//                                               covers uploaded from the admin copied into assets/blog; prints how many.
+//                                               Also content/news.json (published Social News, each with its fixed slug)
+//                                               and content/seo.json (Admin → SEO settings) when supabase/seo.sql is run
 //   node blog-tools/sync-db.mjs ok             → the posts changed since their last publish are marked published
 //   node blog-tools/sync-db.mjs fail <logfile> → those posts get the build's error (shown in the admin)
 // Needs SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (GitHub secrets). No files are ever deleted: hiding a post = draft.
@@ -22,6 +24,24 @@ const rest = async (q, init = {}) => {
 const pending = (p) => !p.published_at || new Date(p.updated_at) > new Date(p.published_at);
 
 const [mode, logFile] = process.argv.slice(2);
+const missing = (e) => /PGRST205|PGRST204|42P01|42703|schema cache|: 404 /.test(e.message);
+const slugify = (t) => { const s = String(t).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); return s.length > 70 ? s.slice(0, 70).replace(/-[^-]*$/, "") : s; };
+
+// Social News (published) and the SEO settings → content/news.json and content/seo.json (skipped until seo.sql is run)
+if (mode === "export") {
+  try {
+    const news = await rest("news?select=id,slug,url,source_name,platform,title,paragraphs,published_at,created_at,edited_at,meta_title,meta_description,takeaways,faq&relevant=eq.true&order=published_at.desc.nullslast&limit=1000");
+    for (const n of news.filter((x) => !x.slug)) {   // the page's URL is fixed the first time: editing the title later doesn't break links
+      n.slug = `${slugify(n.title) || "news"}-${n.id}`;
+      await rest(`news?id=eq.${n.id}`, { method: "PATCH", body: JSON.stringify({ slug: n.slug }), headers: { Prefer: "return=minimal" } });
+    }
+    fs.writeFileSync(path.join(ROOT, "content/news.json"), `${JSON.stringify(news, null, 2)}\n`);
+    console.log(`${news.length} published news exported`);
+    const [seo] = await rest("seo_settings?select=data&id=eq.1");
+    fs.writeFileSync(path.join(ROOT, "content/seo.json"), `${JSON.stringify(seo?.data || {}, null, 2)}\n`);
+  } catch (e) { if (!missing(e)) throw e; console.log("supabase/seo.sql isn't run yet: news pages and SEO settings skipped."); }
+}
+
 let posts;
 try { posts = await rest("blog_posts?select=slug,data,draft,updated_at,published_at"); }
 catch (e) {   // the table isn't there yet (supabase/admin-content.sql not run): nothing to do, the repo's files stay as they are

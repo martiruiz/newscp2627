@@ -3,7 +3,9 @@
 //   - blog/<slug>.html   one SEO-ready page per post
 //   - blog.html          post grid (between POSTS:START / POSTS:END markers)
 //   - news.html          3 latest posts (between BLOG:START / BLOG:END markers)
-//   - sitemap.xml, robots.txt
+//   - news/<slug>.html   one page per published Social News item (content/news.json, from the admin) + the latest ones
+//                        written into news.html (NEWS:START / NEWS:END) so Google and AI crawlers read them without JS
+//   - sitemap.xml, robots.txt (AI crawlers allowed / blocked in Admin → SEO), llms.txt, Organization schema on the home
 // Checks each post: word count for its type, all 15 keywords present, CTAs.
 //
 // Usage: node blog-tools/build.mjs [--check]   (--check validates without writing)
@@ -416,6 +418,154 @@ if (posts.length) {
   replaceBetween("index.html", "<!-- HOME-BLOG:START -->", "<!-- HOME-BLOG:END -->", posts.slice(0, 3).map(card).join("\n"));
 }
 
+// ---------- Social News pages ----------
+const readJson = (p, empty) => (fs.existsSync(path.join(ROOT, p)) ? JSON.parse(read(p)) : empty);
+const news = readJson("content/news.json", null);
+const seo = readJson("content/seo.json", {});
+const PF = { instagram: "Instagram", tiktok: "TikTok", x: "X", youtube: "YouTube", facebook: "Facebook", linkedin: "LinkedIn", snapchat: "Snapchat", whatsapp: "WhatsApp", pinterest: "Pinterest", threads: "Threads", ai: "AI", other: "Sports marketing" };
+const cut = (t, n) => (t.length > n ? `${t.slice(0, n - 1).replace(/\s+\S*$/, "")}…` : t);
+const newsDay = (n) => (n.published_at || n.created_at).slice(0, 10);
+const newsDesc = (n) => n.meta_description || cut((n.paragraphs || []).join(" "), 155);
+if (news) {
+  fs.mkdirSync(path.join(ROOT, "news"), { recursive: true });
+  const keep = new Set(news.map((n) => `${n.slug}.html`));
+  // a news item hidden or deleted in the admin leaves the website: its page is removed too
+  for (const f of fs.readdirSync(path.join(ROOT, "news")).filter((f) => f.endsWith(".html") && !keep.has(f))) { fs.unlinkSync(path.join(ROOT, "news", f)); console.log(`  − news/${f}`); }
+  for (const n of news) {
+    const url = `${SITE}/news/${n.slug}.html`, title = n.meta_title || n.title, desc = newsDesc(n), day = newsDay(n);
+    const tk = takeaways(n), fq = faq(n), pf = PF[n.platform] || n.platform, icon = n.platform === "other" ? "all" : n.platform;
+    const more = news.filter((o) => o.id !== n.id && o.platform === n.platform).concat(news.filter((o) => o.id !== n.id && o.platform !== n.platform)).slice(0, 3);
+    const ld = { "@context": "https://schema.org", "@type": "NewsArticle", headline: cut(n.title, 110), description: desc, datePublished: n.published_at || n.created_at, dateModified: n.edited_at || n.published_at || n.created_at,
+      author: { "@type": "Organization", name: "Sports Content Playbook", url: `${SITE}/` }, publisher: { "@type": "Organization", name: "Sports Content Playbook", logo: { "@type": "ImageObject", url: `${SITE}/assets/icon-logo-lg.png` } },
+      mainEntityOfPage: url, image: [`${SITE}/assets/hero-library.png`], articleSection: pf, isBasedOn: n.url, ...(tk.length ? { abstract: tk.join(" ") } : {}) };
+    const crumbs = { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: `${SITE}/` }, { "@type": "ListItem", position: 2, name: "Social News", item: `${SITE}/news.html` }, { "@type": "ListItem", position: 3, name: n.title, item: url }] };
+    const faqLd = fq.length ? { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: fq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) } : null;
+    const page = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <base href="../">
+  <title>${esc(title)}</title>
+  <meta name="description" content="${esc(desc)}">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical" href="${url}">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Sports Content Playbook">
+  <meta property="og:title" content="${esc(title)}">
+  <meta property="og:description" content="${esc(desc)}">
+  <meta property="og:url" content="${url}">
+  <meta property="og:image" content="${SITE}/assets/hero-library.png">
+  <meta property="article:published_time" content="${esc(n.published_at || n.created_at)}">
+  <meta property="article:section" content="${esc(pf)}">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">${JSON.stringify(ld)}</script>
+  <script type="application/ld+json">${JSON.stringify(crumbs)}</script>${faqLd ? `\n  <script type="application/ld+json">${JSON.stringify(faqLd)}</script>` : ""}
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-s-32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-s-192.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon-s.png">
+  <link rel="stylesheet" href="css/fonts.css?v=1">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="js/theme.js"></script>
+  <script src="js/i18n.js"></script>
+</head>
+<body>
+
+  ${header.replace('href="news.html"', 'href="news.html" aria-current="page"')}
+
+  <main>
+    <article class="post container news-page">
+      <nav class="post-crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a> / <a href="news.html">Social News</a> / <span>${esc(pf)}</span></nav>
+      <header class="article-head">
+        <span class="news-page-pf"><img src="assets/pf-${esc(icon)}.svg" alt="">${esc(pf)}</span>
+        <h1 class="section-title section-title-md">${esc(n.title)}</h1>
+        <p class="post-meta">Social News · <time datetime="${day}">${fmtDate(day)}</time> · Source: <a href="${esc(n.url)}" target="_blank" rel="noopener nofollow">${esc(n.source_name)}</a></p>
+      </header>
+      <div class="post-body">
+${tk.length ? `        <aside class="post-tldr" aria-label="Key takeaways">
+          <p class="post-tldr-k">Key takeaways</p>
+          <ul>${tk.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
+        </aside>
+` : ""}${(n.paragraphs || []).map((t) => `        <p>${esc(t)}</p>`).join("\n")}
+        <p class="news-page-src"><a class="link-gold" href="${esc(n.url)}" target="_blank" rel="noopener nofollow">Read the original article on ${esc(n.source_name)} ↗</a></p>
+${fq.length ? `        <section class="post-faq">
+          <h2>Frequently asked questions</h2>
+${fq.map((f) => `          <details><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join("\n")}
+        </section>
+` : ""}        <aside class="post-cta post-cta-end">
+          <p class="post-cta-kicker">Sports Content Playbook</p>
+          <p class="post-cta-title">See how sports teams are already using it</p>
+          <p>Thousands of real posts from clubs, leagues and brands, filtered by sport, platform and format — updated every day.</p>
+          <div class="post-cta-actions">
+            <a class="btn btn-gold" href="signup.html" data-cta="news-end">Try It For Free</a>
+            <a class="btn btn-outline" href="news.html">All Social News</a>
+          </div>
+        </aside>
+      </div>
+    </article>
+${more.length ? `
+    <section class="container news-more">
+      <div class="blog-news-head"><h2 class="section-title section-title-md">More Social News</h2><a class="news-link" href="news.html">ALL NEWS →</a></div>
+      <div class="news-list">
+${more.map(newsRow).join("\n")}
+      </div>
+    </section>` : ""}
+  </main>
+
+  ${footer}
+
+  <script src="js/config.js"></script>
+  <script src="js/nav-menu.js"></script>
+  <script src="js/lead-flow.js"></script>
+  <script src="js/promo-bar.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/site-stats.js" defer></script>
+</body>
+</html>
+`;
+    write(`news/${n.slug}.html`, withSiteVersions(page));
+  }
+  // news.html: the latest ones already in the page (js/news.js replaces them with the live, filterable list)
+  replaceBetween("news.html", "<!-- NEWS:START -->", "<!-- NEWS:END -->", news.slice(0, 12).map(newsRow).join("\n"));
+  console.log(`  → ${news.length} news page(s)`);
+}
+// one news item in a list (same markup as js/news.js)
+function newsRow(n) {
+  const icon = n.platform === "other" ? "all" : n.platform;
+  return `        <article class="news-row" id="news-${n.id}" data-platform="${esc(n.platform)}">
+          <div class="news-row-text">
+            <span class="news-meta"><b>${esc((PF[n.platform] || n.platform).toUpperCase())}</b> ${fmtDate(newsDay(n))}</span>
+            <h2><a href="news/${esc(n.slug)}.html">${esc(n.title)}</a></h2>
+            <p>${esc((n.paragraphs || [])[0] || "")}</p>
+            <a class="news-source" href="news/${esc(n.slug)}.html">Read more →</a>
+          </div>
+          <div class="news-row-icon" aria-hidden="true"><img src="assets/pf-${esc(icon)}.svg" alt=""></div>
+        </article>`;
+}
+
+// ---------- For Google and AI assistants: Organization + WebSite schema on the home, llms.txt (Admin → SEO) ----------
+const ORG = { name: seo.org_name || "Sports Content Playbook", description: seo.description || "The content platform for sports social media teams: thousands of real posts from clubs, leagues and brands, why they worked and a weekly content plan.",
+  logo: seo.logo || `${SITE}/assets/icon-logo-lg.png`, sameAs: (seo.same_as || []).filter(Boolean) };
+const orgLd = [{ "@context": "https://schema.org", "@type": "Organization", "@id": `${SITE}/#org`, name: ORG.name, url: `${SITE}/`, logo: ORG.logo, description: ORG.description, ...(ORG.sameAs.length ? { sameAs: ORG.sameAs } : {}), ...(seo.email ? { email: seo.email } : {}) },
+  { "@context": "https://schema.org", "@type": "WebSite", "@id": `${SITE}/#website`, name: ORG.name, url: `${SITE}/`, publisher: { "@id": `${SITE}/#org` }, inLanguage: ["es", "en"] }];
+replaceBetween("index.html", "<!-- SEO-LD:START -->", "<!-- SEO-LD:END -->", `  <script type="application/ld+json">${JSON.stringify(orgLd)}</script>`);
+const KEY_PAGES = [["Home", "", "What Sports Content Playbook is and how it works"], ["Content Library", "content-library.html", "Real posts from sports clubs, leagues and brands, filtered by sport, platform, format and performance"],
+  ["Pricing", "pricing.html", "Plans and prices"], ["Blog", "blog.html", "Sports social media trends, content ideas and news"], ["Social News", "news.html", "Daily updates from Instagram, TikTok, YouTube, X and AI explained for sports teams"],
+  ["Book a demo", "book-a-call.html", "A 30-minute call with the team"], ["Contact", "contact.html", "How to reach us"]];
+write("llms.txt", `# ${ORG.name}
+
+> ${ORG.description}
+
+${seo.llms_about ? `${seo.llms_about.trim()}\n\n` : ""}## Main pages
+
+${KEY_PAGES.map(([t, u, d]) => `- [${t}](${SITE}/${u}): ${d}`).join("\n")}
+
+## Blog
+
+${posts.map((p) => `- [${p.title}](${SITE}/blog/${p.slug}.html): ${p.excerpt}`).join("\n")}
+${news?.length ? `\n## Latest Social News\n\n${news.slice(0, 30).map((n) => `- [${n.title}](${SITE}/news/${n.slug}.html): ${cut(newsDesc(n), 160)}`).join("\n")}\n` : ""}`);
+
 // ---------- Sitemap & robots ----------
 const pages = ["", "pricing.html", "blog.html", "news.html", "contact.html", "signup.html"];
 const today = new Date().toISOString().slice(0, 10);
@@ -423,8 +573,11 @@ const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 ${pages.map((p) => `  <url><loc>${SITE}/${p}</loc><lastmod>${today}</lastmod></url>`).join("\n")}
 ${posts.map((p) => `  <url><loc>${SITE}/blog/${p.slug}.html</loc><lastmod>${p.updated || p.date}</lastmod><image:image><image:loc>${SITE}/assets/blog/${p.image.file}</image:loc><image:title>${esc(p.image.title || p.title)}</image:title><image:caption>${esc(p.image.alt)}</image:caption></image:image></url>`).join("\n")}
+${(news || []).map((n) => `  <url><loc>${SITE}/news/${n.slug}.html</loc><lastmod>${(n.edited_at || n.published_at || n.created_at).slice(0, 10)}</lastmod></url>`).join("\n")}
 </urlset>
 `;
 write("sitemap.xml", sitemap);
-write("robots.txt", `User-agent: *\nAllow: /\nDisallow: /admin.html\nDisallow: /content-library.html\n\nSitemap: ${SITE}/sitemap.xml\n`);
-console.log(`\nBuilt ${posts.length} post(s), blog listing, sitemap.xml and robots.txt.`);
+// AI crawlers: all welcome unless switched off in Admin → SEO (seo.bots = { GPTBot: false, … })
+const blocked = Object.entries(seo.bots || {}).filter(([, on]) => on === false).map(([b]) => b);
+write("robots.txt", `User-agent: *\nAllow: /\nDisallow: /admin.html\nDisallow: /admin/\nDisallow: /content-library.html\n${blocked.map((b) => `\nUser-agent: ${b}\nDisallow: /\n`).join("")}\nSitemap: ${SITE}/sitemap.xml\n`);
+console.log(`\nBuilt ${posts.length} post(s), ${news ? `${news.length} news page(s), ` : ""}blog listing, sitemap.xml, robots.txt and llms.txt.`);
