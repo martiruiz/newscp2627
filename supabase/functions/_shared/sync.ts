@@ -69,8 +69,10 @@ export async function syncSubscription(subOrId: string | Stripe.Subscription, op
     stripe_updated: isoOf(opts.eventCreated ?? Math.floor(Date.now() / 1000)), event_id: opts.eventId || null,
     ...(opts.extra || {}),
   } });
-  // team seats = Stripe quantity (1 for single-user memberships)
-  if (user) await rest(`subscriptions?user_id=eq.${user}&stripe_subscription_id=eq.${sub.id}`, { method: "PATCH", body: JSON.stringify({ seats: Math.max(1, item?.quantity || 1) }) }).catch((e) => console.error("seats", e));
+  // team seats = Stripe quantity (1 for single-user memberships), or the users an old MemberPress membership included
+  // ("2 Users Access": membership_prices.seats, supabase/founders-migration.sql)
+  const [lp] = price ? await rest(`membership_prices?select=seats&stripe_price_id=eq.${encodeURIComponent(price.id)}`).catch(() => []) : [];
+  if (user) await rest(`subscriptions?user_id=eq.${user}&stripe_subscription_id=eq.${sub.id}`, { method: "PATCH", body: JSON.stringify({ seats: Math.max(1, item?.quantity || 1, lp?.seats || 1) }) }).catch((e) => console.error("seats", e));
   return applied;
 }
 
