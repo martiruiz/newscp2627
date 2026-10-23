@@ -8041,7 +8041,7 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 :root[data-theme="light"] .news-filters .ptile[data-platform="all"][aria-pressed="true"] img { filter: brightness(0) invert(1) !important; background: rgba(255,255,255,.14) !important; border-color: rgba(255,255,255,.25) !important; box-shadow: none !important; }
 :root[data-theme="light"] .news-filters .ptile[data-platform="all"][aria-pressed="true"]::before { opacity: 0 !important; }
 /* day colours: what had a gold fill now has a black one — its text and icons go white; the dark "plan your week" card keeps gold */
-:root[data-theme="light"] :is(.sv3-pin, .sv3-folders-ic, .sv3-new-go, .sec-pill-ic, .pf-pc-ic, .mm-featured i, .sv3-plan .btn-gold) { color: #fff !important; }
+:root[data-theme="light"] :is(.sv3-pin, .sv3-folders-ic, .sv3-new-go, .sec-pill-ic, .pf-pc-ic, .sv3-plan .btn-gold) { color: #fff !important; }
 :root[data-theme="light"] :is(.sv3-folders-ic, .sec-pill-ic, .pf-pc-ic) svg { color: #fff !important; stroke: currentColor; }
 :root[data-theme="light"] .sv3-plan small { color: #f0b84a !important; }
 :root[data-theme="light"] .sv3-plan .btn-gold { background: #f0b84a !important; color: #0c0c0d !important; }
@@ -8130,3 +8130,8 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 :root[data-theme="light"] .lead-modal.is-quick .lead-tel input::placeholder { color: #8a8a90; }
 :root[data-theme="light"] .lead-modal.is-quick .lead-x { background: #fff; border-color: rgba(12,12,13,.1); color: #0c0c0d; }
 :root[data-theme="light"] .lead-check input { accent-color: #0c0c0d; }
+/* day colours — the menu's featured strip ("What is SCP?"): light box, dark eyebrow and title, black arrow */
+:root[data-theme="light"] .mm-featured { background: #f7f6f3 !important; border-color: rgba(12,12,13,.1) !important; color: #0c0c0d !important; }
+:root[data-theme="light"] .mm-featured i { color: #6b6b72 !important; }
+:root[data-theme="light"] .mm-featured b, :root[data-theme="light"] .mm-featured svg { color: #0c0c0d !important; }
+:root[data-theme="light"] .mm-featured:hover { background: #fff !important; border-color: #0c0c0d !important; }
