@@ -1588,11 +1588,9 @@ select.cs-native { display: none !important; }
 .login-card2 .login-card { width: auto; display: flex; flex-direction: column; justify-content: center; padding: 40px 36px; background: var(--panel); border-left: 1px solid rgba(240,184,74,.22); }
 .login-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; }
 .login-logo img { height: 40px; width: auto; }
-.login-logo span { padding: 5px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-light); box-shadow: inset 0 0 0 1px rgba(240,184,74,.45); font: 700 10.5px/1 var(--font); letter-spacing: .14em; text-transform: uppercase; }
 @media (max-width: 760px) { .login-card2 { grid-template-columns: 1fr; } .login-vis { min-height: 220px; } .login-card2 .login-card { border-left: 0; border-top: 1px solid rgba(240,184,74,.22); } }
 :root[data-theme="light"] .login-card2 .login-card { background: #fff; }
 :root[data-theme="light"] .login-logo img { filter: brightness(0); }
-:root[data-theme="light"] .login-logo span { background: #0c0c0d; color: #fff; box-shadow: none; }
 .login-lang { margin: 0 0 0 auto !important; }
 .login-logo { align-items: flex-start; }
 .login-brand { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
@@ -1628,15 +1626,6 @@ select.cs-native { display: none !important; }
 /* Log in: "email me a link" at the bottom, right above the way back to the website (apart from Sign in) */
 .login-card2 .login-alt { margin-top: auto; padding-top: 22px; }
 .login-card2 .login-site { margin-top: 14px; padding-top: 0; }
-/* Log in: the language switch and the Admin badge in the logo's metallic gold (gradient text and a gold gradient edge) */
-.login-logo span, .login-lang button { background: linear-gradient(180deg, #ffe7ad 0%, #f4c463 45%, #d79a2b 100%); -webkit-background-clip: text; background-clip: text; color: transparent !important; }
-.login-logo span { position: relative; box-shadow: none; background-color: transparent; }
-.login-logo span::before, .login-lang::before { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none;
-  background: linear-gradient(180deg, #ffe7ad, #d79a2b 60%, #8a5c12); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
-.login-lang { position: relative; box-shadow: none !important; }
-.login-lang button[aria-pressed="true"] { box-shadow: inset 0 0 0 1px rgba(240, 184, 74, .6), inset 0 0 0 40px rgba(240, 184, 74, .12), 0 0 14px -4px rgba(240, 184, 74, .7); }
-.login-lang button:hover { filter: brightness(1.15); }
-.login-lang button[aria-pressed="true"], .login-lang button:hover { background: linear-gradient(180deg, #ffe7ad 0%, #f4c463 45%, #d79a2b 100%); -webkit-background-clip: text; background-clip: text; color: transparent !important; }
 /* Log in: a library post appearing inside the hexagon under the pointer, then fading away */
 .hexcell { position: fixed; z-index: 0; pointer-events: none; background: #111 center / cover; clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
   transform: scale(.94); opacity: 0; animation: hexIn 2.6s ease forwards; }
@@ -1649,3 +1638,11 @@ select.cs-native { display: none !important; }
 .login-card2 .btn-primary:hover:not(:disabled)::after { transform: translateX(3px); }
 :root[data-theme="light"] .login-card2 .btn-primary { background: #0c0c0d; color: #fff; }
 :root[data-theme="light"] .login-card2 .btn-primary:hover:not(:disabled) { background: #000; color: #fff; }
+/* Log in header (option 1): "Admin" as grey caps with a glowing gold dot; the languages as plain text, a gold line under the active one */
+.login-logo span { display: inline-flex; align-items: center; gap: 7px; color: var(--muted); font: 700 10.5px/1 var(--font); letter-spacing: .2em; text-transform: uppercase; }
+.login-logo span::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+.login-lang { gap: 14px; padding: 0; border-radius: 0; background: none !important; box-shadow: none !important; }
+.login-lang button { min-width: 0; height: auto; padding: 4px 0; border-radius: 0; background: none !important; box-shadow: none !important; color: var(--dim); font: 600 12px var(--font); letter-spacing: .1em; border-bottom: 2px solid transparent; }
+.login-lang button:hover { color: var(--text); }
+.login-lang button[aria-pressed="true"] { color: var(--text); border-bottom-color: var(--accent); }
+:root[data-theme="light"] .login-logo span { color: #5b5b60; }
