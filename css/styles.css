@@ -8251,3 +8251,14 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 @media (max-width: 560px) { .pp-pick { grid-template-columns: 1fr; } .pp-pick .btn { grid-column: 1; grid-row: auto; justify-self: start; margin-top: 6px; } }
 .pp .pp-pick { grid-template-columns: 1fr; } .pp .pp-pick .btn { grid-column: 1; grid-row: auto; justify-self: start; margin-top: 6px; }
 :root[data-theme="light"] .pp-pick { background: #fff; border-color: rgba(12,12,13,.08); box-shadow: 0 1px 2px rgba(12,12,13,.04), 0 12px 30px -22px rgba(12,12,13,.3); }
+
+/* Menu "My Club" (the top plan): a premium touch — on hover a gold shine crosses the button and the edge glows gold; on click it presses in */
+.mm-club .mm-btn-tab { position: relative; overflow: hidden; isolation: isolate; transition: box-shadow .3s, color .2s, transform .15s, background .25s; }
+.mm-club .mm-btn-tab::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(110deg, transparent 30%, rgba(240,184,74,.38) 48%, rgba(255,225,160,.55) 52%, transparent 70%); transform: translateX(-120%); pointer-events: none; }
+.mm-club .mm-btn-tab:hover::after, .mm-club .mm-btn-tab:focus-visible::after { animation: mmClubShine .9s cubic-bezier(.4,0,.2,1); }
+@keyframes mmClubShine { to { transform: translateX(120%); } }
+.site-nav .mm-club .mm-btn-tab:hover, .site-nav .mm-club .mm-btn-tab:focus-visible { box-shadow: inset 0 0 0 1px rgba(240,184,74,.75), 0 0 0 4px rgba(240,184,74,.12), 0 8px 22px -10px rgba(240,184,74,.7) !important; color: #f6cf7d !important; }
+.site-nav .mm-club .mm-btn-tab:active { transform: scale(.96); box-shadow: inset 0 0 0 1px #f0b84a, 0 0 0 6px rgba(240,184,74,.22), 0 0 26px rgba(240,184,74,.55) !important; }
+.site-nav .mm-club .mm-btn-tab[aria-current="page"] { box-shadow: inset 0 0 0 1px rgba(240,184,74,.75) !important; color: #f6cf7d !important; }
+:root[data-theme="light"] .site-nav .mm-club .mm-btn-tab:hover, :root[data-theme="light"] .site-nav .mm-club .mm-btn-tab:focus-visible, :root[data-theme="light"] .site-nav .mm-club .mm-btn-tab[aria-current="page"] { color: #0c0c0d !important; background: linear-gradient(180deg, #fffaf0, #fff3dc) !important; }
+@media (prefers-reduced-motion: reduce) { .mm-club .mm-btn-tab:hover::after { animation: none; } }

@@ -145,7 +145,7 @@
 
   links.classList.add("mm");
   links.innerHTML = MENU.map((m, i) => {
-    if (!m.type) return `<div class="mm-tab"${attrs(m)}><a class="mm-btn-tab" href="${esc(m.href)}"><span>${esc(m.label)}</span>${m.badge ? `<span class="mm-badge">${esc(m.badge)}</span>` : ""}</a></div>`;
+    if (!m.type) return `<div class="mm-tab${m.club ? " mm-club" : ""}"${attrs(m)}><a class="mm-btn-tab" href="${esc(m.href)}"><span>${esc(m.label)}</span>${m.badge ? `<span class="mm-badge">${esc(m.badge)}</span>` : ""}</a></div>`;
     const id = `mm-p${i}`;
     return `<div class="mm-tab mm-has" data-mm${attrs(m)}><button class="mm-btn-tab" type="button" aria-expanded="false" aria-controls="${id}">${esc(m.label)}${CHEV}</button>${panel(m, id)}</div>`;
   }).join("");
