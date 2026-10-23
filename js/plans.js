@@ -93,12 +93,14 @@
       <p class="plan-price">${seats > 1 && price ? `<em class="plan-total">${tx("Total")}</em>` : ""}${was ? `<s class="plan-was">${fmt(was * seats, currency)}</s>` : ""}${price ? `<b data-price="${big}" data-cur="${currency}">${fmt(big, currency)}</b><span>${iv === "year" ? `/ ${per("year")}` : seats > 1 ? `/ ${per("month")}` : tx("/ {per} per user", { per: per("month") })}</span>` : `<b>—</b>`}</p>
       <p class="plan-sub">${sub || "&nbsp;"}</p>
       <div class="plan-extras"></div>
-      <ul class="plan-gets">${gets.map((g) => `<li>${g}</li>`).join("")}</ul>
+      <ul class="plan-gets">${gets.map(keyPoint).join("")}</ul>
       <p class="plan-note">${note}</p>
       ${cta}
     </article>`;
   }
 
+  // a key point: what comes before ":" in bold, the rest lighter ("Content Plan: weekly and monthly calendar")
+  const keyPoint = (g) => { const i = String(g).indexOf(": "); return `<li>${i > 0 ? `<b>${g.slice(0, i + 1)}</b><span>${g.slice(i + 1)}</span>` : `<b>${g}</b>`}</li>`; };
   // a small icon before each plan's name (outline, Lucide shapes)
   const PIC = {
     lib: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>',
@@ -117,7 +119,7 @@
       <p class="plan-price"><b class="plan-price-text">${tx("Price to be agreed")}</b></p>
       <p class="plan-sub">${tx("A private space for your whole club")}</p>
       <div class="plan-extras"></div>
-      <ul class="plan-gets">${gets.map((g) => `<li>${g}</li>`).join("")}</ul>
+      <ul class="plan-gets">${gets.map(keyPoint).join("")}</ul>
       <p class="plan-note"></p>
       <a class="btn btn-outline plan-cta" href="book-a-call.html?for=clubs" data-cta="pricing-my-club"><span>${tx("Book a demo")}</span><i class="plan-cta-arrow" aria-hidden="true">→</i></a>
     </article>`;

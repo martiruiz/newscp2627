@@ -7836,3 +7836,11 @@ section[id], :target { scroll-margin-top: 92px; }
 /* "For clubs" tag: a solid dark pill with a gold edge, so the card's border doesn't cross it */
 .plan-flag.is-club { background: linear-gradient(180deg, #1d2b52, #121b36); color: var(--gold-light); border: 1px solid rgba(240, 184, 74, 0.75); box-shadow: 0 6px 18px -8px rgba(240, 184, 74, 0.6); }
 :root[data-theme="light"] .plan-flag.is-club { background: #fff8e8; color: #8a5a00; }
+/* Pricing: key points that read very clearly — bigger, bright, the key words in bold, a solid gold tick */
+.plan-card.v2 .plan-gets { gap: 13px; padding-top: 18px; }
+.plan-card.v2 .plan-gets li { padding-left: 32px; font-size: 15px; line-height: 1.45; color: var(--muted); }
+.plan-gets li b { color: var(--text); font-weight: 600; }
+.plan-gets li span { color: var(--muted); }
+.plan-gets li::before { top: 1px; width: 21px; height: 21px; background: radial-gradient(64% 64% at 50% 100%, var(--gold-light) 0%, var(--gold-mid) 50%, var(--gold) 100%); box-shadow: 0 4px 12px -4px rgba(240, 184, 74, 0.7); }
+.plan-gets li::after { content: ""; position: absolute; left: 0; top: 1px; width: 21px; height: 21px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23101828' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / 12px no-repeat; }
+:root[data-theme="light"] .plan-gets li b { color: #101828; }
