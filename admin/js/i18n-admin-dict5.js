@@ -176,4 +176,9 @@ window.SCPA_DICT = Object.assign(window.SCPA_DICT || {}, {
   "Saved {a}": ["Guardado {a}", "Desat {a}"],
   "No posts here.": ["No hay artículos aquí.", "No hi ha articles aquí."],
   "Back to draft — it leaves the website within the hour": ["Pasado a borrador: sale de la web en menos de una hora", "Passat a esborrany: surt de la web en menys d'una hora"],
+  "They come in on their own": ["Llegan solas", "Arriben soles"],
+  "Newest": ["La más reciente", "La més recent"],
+  "Shown on the website": ["Se ve en la web", "Es veu a la web"],
+  "edited": ["editada", "editada"],
+  " every 30 hours (sports marketing, social media and AI news, rewritten for sports teams). You only decide which ones are shown and fix anything you want.": [" cada 30 horas (noticias de marketing deportivo, redes sociales e IA, reescritas para equipos deportivos). Tú solo decides cuáles se ven y corriges lo que quieras.", " cada 30 hores (notícies de màrqueting esportiu, xarxes socials i IA, reescrites per a equips esportius). Tu només decideixes quines es veuen i corregeixes el que vulguis."],
 });

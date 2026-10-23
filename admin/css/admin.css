@@ -1249,3 +1249,29 @@ select.cs-native { display: none !important; }
 .bl-new-ic { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 16px; background: var(--accent); color: var(--accent-ink); box-shadow: 0 12px 28px -12px rgba(240, 184, 74, 0.8); }
 .bl-new-ic svg { width: 22px; height: 22px; } .bl-new b { font: 600 16px var(--display); } .bl-new small { color: var(--muted); }
 @media (max-width: 900px) { .bl-steps { grid-template-columns: 1fr; } .bl-search { min-width: 0; flex: 1; } }
+
+/* ---------- Admin → Social News premium (js/news.js draw) ---------- */
+.nw-how { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding: 12px 16px; border-radius: 14px; background: linear-gradient(90deg, rgba(167, 139, 250, 0.12), transparent 70%), var(--panel); border: 1px solid var(--border); font-size: 13px; color: var(--muted); }
+.nw-how svg { width: 18px; height: 18px; color: #c4b5fd; flex: none; } .nw-how b { color: var(--text); }
+.nw-kpi-d { font-size: 22px !important; }
+.nw-filters { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; } .nw-filters .select { height: 38px; border-radius: 999px; }
+.nw-list { display: grid; gap: 10px; }
+.nw-card { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 16px; align-items: center; padding: 14px 16px; border-radius: 16px; background: var(--panel); border: 1px solid var(--border); cursor: pointer; transition: border-color 0.15s, transform 0.15s, box-shadow 0.2s; }
+.nw-card:hover { border-color: rgba(240, 184, 74, 0.45); transform: translateY(-1px); box-shadow: 0 14px 30px -20px rgba(0, 0, 0, 0.7); }
+.nw-card.is-hidden { opacity: 0.62; } .nw-card.is-hidden:hover { opacity: 1; }
+.nw-pf { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 13px; font: 700 13px var(--display); color: var(--c); background: color-mix(in srgb, var(--c) 14%, transparent); border: 1px solid color-mix(in srgb, var(--c) 40%, transparent); }
+.nw-body { min-width: 0; display: grid; gap: 4px; }
+.nw-meta { color: var(--muted); font-size: 12px; } .nw-meta b { color: var(--accent-light); font-weight: 600; } .nw-meta i { color: var(--dim); }
+.nw-card .nw-title { font: 600 15px/1.35 var(--display); }
+.nw-ex { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.nw-side { display: grid; justify-items: end; gap: 10px; }
+.nw-sw { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 600; color: var(--muted); cursor: pointer; }
+.nw-sw input { position: absolute; opacity: 0; pointer-events: none; }
+.nw-sw-t { position: relative; width: 38px; height: 22px; border-radius: 999px; background: var(--panel-3); transition: background 0.2s; }
+.nw-sw-t::after { content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform 0.2s; }
+.nw-sw input:checked + .nw-sw-t { background: var(--green); } .nw-sw input:checked + .nw-sw-t::after { transform: translateX(16px); }
+.nw-sw input:checked ~ span:last-child { color: var(--green); }
+.nw-sw input:focus-visible + .nw-sw-t { outline: 2px solid var(--accent); outline-offset: 2px; }
+.nw-acts { display: flex; gap: 6px; align-items: center; } .nw-acts .btn svg { width: 14px; height: 14px; }
+@media (max-width: 760px) { .nw-card { grid-template-columns: auto minmax(0, 1fr); } .nw-side { grid-column: 1 / -1; grid-auto-flow: column; justify-content: space-between; align-items: center; } }
+.nw-filters .select, .nw-filters .cs { width: 190px; flex: none; } .nw-filters .bl-search { min-width: 240px; }

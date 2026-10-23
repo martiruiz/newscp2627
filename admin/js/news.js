@@ -15,33 +15,46 @@
   main.innerHTML = `<div class="page-head"><div><h1>Social News</h1><p>The news on the website's Social News page: edit them, publish or hide them.</p></div>
     <div class="head-actions"><a class="btn" href="../news.html" target="_blank" rel="noopener">${icon("external")}See the page</a></div></div>
     <div class="aud-kpis" data-kpis></div>
-    <div class="aud-filters panel">
-      <input class="input" type="search" placeholder="Search title or source…" data-f="q">
-      <select class="select" data-f="status"><option value="">Published and hidden</option><option value="pub">Published</option><option value="hid">Hidden</option></select>
-      <select class="select" data-f="platform"><option value="">All networks</option>${PLATFORMS.map((p) => `<option value="${p}">${PF[p]}</option>`).join("")}</select>
+    <div class="nw-how">${icon("sparkles")}<span><b>They come in on their own</b> every 30 hours (sports marketing, social media and AI news, rewritten for sports teams). You only decide which ones are shown and fix anything you want.</span></div>
+    <div class="bl-bar">
+      <div class="bl-tabs" data-tabs></div>
+      <div class="nw-filters"><select class="select" data-f="platform"><option value="">All networks</option>${PLATFORMS.map((p) => `<option value="${p}">${PF[p]}</option>`).join("")}</select>
+        <label class="bl-search">${icon("filters")}<input type="search" placeholder="Search title or source…" data-f="q"></label></div>
     </div>
-    <section class="panel ld-list"><header class="aud-h aud-h-lg"><h2>News</h2>${info("Newest first. “Published” news show on the website; “Hidden” ones were brought in by the pipeline but aren't shown. Click one to edit it.")}<span class="spacer"></span><b class="aud-count" data-count></b></header><div data-list><p class="panel-pad muted">Loading…</p></div></section>`;
+    <div class="nw-list" data-list><p class="panel panel-pad muted">Loading…</p></div>`;
 
   const day = (v) => (v ? new Date(v).toLocaleDateString("es-ES", { day: "2-digit", month: "short", year: "numeric" }) : "—");
   async function load() {
     let q = A.db.from("news").select("*").order("published_at", { ascending: false, nullsFirst: false }).limit(500);
-    if (f.status) q = q.eq("relevant", f.status === "pub");
     if (f.platform) q = q.eq("platform", f.platform);
     if (f.q) q = q.or(`title.ilike.%${f.q.replace(/[,()%]/g, " ")}%,source_name.ilike.%${f.q.replace(/[,()%]/g, " ")}%`);
     const { data, error } = await q;
     if (error) { $("[data-list]").innerHTML = `<p class="panel-pad muted">${esc(error.message)}</p>`; return; }
     rows = data || [];
+    draw();
+  }
+  // brand colours of the networks (the dot on each card)
+  const PF_C = { instagram: "#e1306c", tiktok: "#25f4ee", x: "#9aa4b5", youtube: "#ff0033", facebook: "#1877f2", linkedin: "#0a66c2", snapchat: "#fffc00", whatsapp: "#25d366", pinterest: "#e60023", threads: "#9aa4b5", ai: "#a78bfa", other: "#f0b84a" };
+  function draw() {
     const pub = rows.filter((r) => r.relevant).length;
-    $("[data-kpis]").innerHTML = `<div class="aud-kpi"><span>Shown</span><b>${num(rows.length)}</b></div><div class="aud-kpi is-green"><span>Published</span><b>${num(pub)}</b></div><div class="aud-kpi"><span>Hidden</span><b>${num(rows.length - pub)}</b></div>`;
-    $("[data-count]").textContent = num(rows.length);
-    $("[data-list]").innerHTML = rows.length ? `<div class="table-wrap"><table class="data nw-table"><thead><tr><th>Date</th><th>News</th><th>Network</th><th>Status</th><th></th></tr></thead><tbody>
-      ${rows.map((r) => `<tr class="row-click" data-id="${r.id}">
-        <td class="td-date">${day(r.published_at || r.created_at)}</td>
-        <td><b class="nw-title">${esc(r.title)}</b><small class="muted">${esc(r.source_name)}${r.edited_at ? " · edited" : ""}</small></td>
-        <td><span class="ld-pill">${esc(PF[r.platform] || r.platform)}</span></td>
-        <td><button type="button" class="nw-st ${r.relevant ? "is-pub" : ""}" data-toggle="${r.id}" title="${r.relevant ? "Hide it from the website" : "Publish it on the website"}">${r.relevant ? "Published" : "Hidden"}</button></td>
-        <td class="td-actions"><button class="icon-btn" type="button" title="Edit" aria-label="Edit" data-edit="${r.id}">${icon("edit")}</button><button class="icon-btn" type="button" title="Delete" aria-label="Delete" data-del="${r.id}">${icon("trash")}</button></td></tr>`).join("")}
-      </tbody></table></div>` : `<p class="panel-pad muted">No news with these filters.</p>`;
+    $("[data-kpis]").innerHTML = `<div class="aud-kpi is-green"><span>Published</span><b>${num(pub)}</b></div><div class="aud-kpi"><span>Hidden</span><b>${num(rows.length - pub)}</b></div><div class="aud-kpi is-gold"><span>Newest</span><b class="nw-kpi-d">${rows[0] ? day(rows[0].published_at || rows[0].created_at) : "—"}</b></div>`;
+    const tab = (k, label, n) => `<button type="button" class="bl-tab" data-tab="${k}" aria-pressed="${f.status === k}">${label}<b>${n}</b></button>`;
+    $("[data-tabs]").innerHTML = tab("", "All", rows.length) + tab("pub", "Published", pub) + tab("hid", "Hidden", rows.length - pub);
+    const list = rows.filter((r) => !f.status || r.relevant === (f.status === "pub"));
+    $("[data-list]").innerHTML = list.length ? list.map((r) => `<article class="nw-card${r.relevant ? "" : " is-hidden"}" data-id="${r.id}">
+        <span class="nw-pf" style="--c:${PF_C[r.platform] || "#f0b84a"}">${esc((PF[r.platform] || r.platform).slice(0, 2))}</span>
+        <div class="nw-body">
+          <small class="nw-meta"><b>${esc(PF[r.platform] || r.platform)}</b> · ${esc(r.source_name)} · ${day(r.published_at || r.created_at)}${r.edited_at ? ` · <i>edited</i>` : ""}</small>
+          <b class="nw-title">${esc(r.title)}</b>
+          <p class="nw-ex">${esc((r.paragraphs || [])[0] || "")}</p>
+        </div>
+        <div class="nw-side">
+          <label class="nw-sw" title="${r.relevant ? "Shown on the website" : "Hidden from the website"}"><input type="checkbox" data-toggle="${r.id}"${r.relevant ? " checked" : ""}><span class="nw-sw-t"></span><span>${r.relevant ? "Published" : "Hidden"}</span></label>
+          <div class="nw-acts"><button class="btn btn-sm btn-primary" type="button" data-edit="${r.id}">${icon("edit")}Edit</button>
+            <a class="icon-btn" href="${esc(r.url)}" target="_blank" rel="noopener" title="Original article" aria-label="Original article">${icon("external")}</a>
+            <button class="icon-btn" type="button" title="Delete" aria-label="Delete" data-del="${r.id}">${icon("trash")}</button></div>
+        </div>
+      </article>`).join("") : `<p class="panel panel-pad muted">No news with these filters.</p>`;
   }
 
   function edit(id) {
@@ -70,14 +83,10 @@
   }
 
   main.addEventListener("click", async (e) => {
-    const t = e.target.closest("[data-toggle]"), d = e.target.closest("[data-del]"), ed = e.target.closest("[data-edit]");
+    const tb = e.target.closest("[data-tab]"); if (tb) { f.status = tb.dataset.tab; return draw(); }
+    if (e.target.closest("a, label, input")) return;
+    const d = e.target.closest("[data-del]"), ed = e.target.closest("[data-edit]");
     try {
-      if (t) {
-        const r = rows.find((x) => x.id === Number(t.dataset.toggle));
-        const { error } = await A.db.from("news").update({ relevant: !r.relevant, edited_at: new Date().toISOString() }).eq("id", r.id);
-        if (error) throw /policy|permission|row-level/i.test(error.message) ? new Error("Run supabase/admin-content.sql in Supabase first.") : error;
-        A.toast(r.relevant ? "Hidden from the website" : "Published on the website"); return load();
-      }
       if (d) {
         const r = rows.find((x) => x.id === Number(d.dataset.del));
         if (!(await A.confirmDialog({ title: "Delete this news?", text: r.title, confirm: "Delete", danger: true }))) return;
@@ -86,12 +95,21 @@
         A.toast("Deleted"); return load();
       }
       if (ed) return edit(Number(ed.dataset.edit));
-      const row = e.target.closest("tr[data-id]"); if (row) edit(Number(row.dataset.id));
+      const card = e.target.closest(".nw-card[data-id]"); if (card) edit(Number(card.dataset.id));
     } catch (x) { fail(x); }
   });
   let timer;
   main.addEventListener("input", (e) => { if (e.target.dataset.f === "q") { clearTimeout(timer); timer = setTimeout(() => { f.q = e.target.value.trim(); load(); }, 300); } });
-  main.addEventListener("change", (e) => { const k = e.target.dataset.f; if (k && k !== "q") { f[k] = e.target.value; load(); } });
+  main.addEventListener("change", async (e) => {
+    const tg = e.target.closest("[data-toggle]");
+    if (tg) {   // publish / hide straight from the card
+      const r = rows.find((x) => x.id === Number(tg.dataset.toggle));
+      const { error } = await A.db.from("news").update({ relevant: tg.checked, edited_at: new Date().toISOString() }).eq("id", r.id);
+      if (error) { tg.checked = !tg.checked; return fail(error); }
+      r.relevant = tg.checked; A.toast(tg.checked ? "Published on the website" : "Hidden from the website"); return draw();
+    }
+    const k = e.target.dataset.f; if (k && k !== "q") { f[k] = e.target.value; load(); }
+  });
 
   load();
 })();
