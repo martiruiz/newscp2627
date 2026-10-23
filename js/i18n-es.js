@@ -2461,4 +2461,10 @@ window.SCP_ES = {
   "First team, sections and academy": "Primer equipo, secciones y cantera",
   "Unlock My Club": "Desbloquea Mi club",
   "Book a 30-minute demo: we tailor the plan to your club": "Reserva una demo de 30 min: adaptamos el plan a tu club",
+  "Your saved ideas, by folder": "Tus ideas guardadas, por carpetas",
+  "Guides and trends for sports teams": "Guías y tendencias para equipos deportivos",
+  "What changes on social media, explained": "Lo que cambia en las redes, explicado",
+  "Answers in 10 seconds": "Respuestas en 10 segundos",
+  "Read the news": "Leer la noticia",
+  "Read the article": "Leer el artículo",
 };

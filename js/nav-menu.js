@@ -24,14 +24,14 @@
       ],
     },
     {
-      // cards like Platform, each with its own colour (not Platform's gold / purple / blue: orange, pink, red, silver) and a little visual: your saved boards (members), the newest article,
-      // the newest news item (content/latest.json, written by blog-tools/build.mjs) and a question & answer
+      // the newest news item / article big on the left (content/latest.json, written by blog-tools/build.mjs; tabs switch between
+      // them) and a list on the right, each section with its own colour (orange, pink, red, silver) and one line on what's there
       label: "Resources", type: "resources",
       cards: [
-        { vis: "saved", icon: "bookmark", title: "Saved boards", href: "saved.html", acc: "255, 145, 77", member: true },
-        { vis: "blog", icon: "file-text", title: "Blog", href: "blog.html", acc: "244, 114, 182" },
-        { vis: "news", icon: "newspaper", title: "Social News", href: "news.html", acc: "255, 92, 92" },
-        { vis: "faq", icon: "help-circle", title: "FAQ", href: "index.html#faq", acc: "186, 196, 214" },
+        { icon: "bookmark", title: "Saved boards", desc: "Your saved ideas, by folder", href: "saved.html", acc: "255, 145, 77", member: true },
+        { icon: "file-text", title: "Blog", desc: "Guides and trends for sports teams", href: "blog.html", acc: "244, 114, 182" },
+        { icon: "newspaper", title: "Social News", desc: "What changes on social media, explained", href: "news.html", acc: "255, 92, 92" },
+        { icon: "help-circle", title: "FAQ", desc: "Answers in 10 seconds", href: "index.html#faq", acc: "186, 196, 214" },
       ],
       featured: { eyebrow: "What is SCP?", title: "Sports Content Playbook in 2 minutes", href: "index.html#what-is-scp" },
     },
@@ -97,13 +97,6 @@
     cp: `<span class="tool-vis tv-cp" aria-hidden="true"><span class="tv-week">${["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d, i) => `<span><small>${d}</small>${Array.from({ length: [2, 3, 2, 1, 2, 3, 1][i] }, (_, k) => `<i style="--k:${i + k}"></i>`).join("")}</span>`).join("")}</span><span class="tv-bar"><i></i></span></span>`,
   };
   // Resources: what shows before the newest article / news / your boards arrive (filled in by fillResources)
-  const RES_VIS = {
-    saved: `<span class="mm-rv-folder"><i></i><i></i><i></i></span><span class="mm-rv-tag" data-rv-n></span>`,
-    blog: `<span class="mm-rv-cap"><em>New</em><b data-rv-t></b></span>`,
-    news: `<span class="mm-rv-cap"><em><i class="mm-live"></i><span data-rv-d>Updated every day</span></em><b data-rv-t></b></span>`,
-    // a little FAQ list: the first question open, one more closed
-    faq: `<span class="mm-rv-acc is-open"><b>Is it made for clubs like mine?<i>–</i></b><small>Yes: real posts from 770+ clubs and 110+ competitions.</small></span><span class="mm-rv-acc"><b>How often are there new ideas?<i>+</i></b></span>`,
-  };
   const show = (it) => !it.member || member;
   // hidden for members until their entitlements say they have no plan (staff counts as having one)
   const np = member ? " data-noplan hidden" : "";
@@ -115,11 +108,17 @@
         ${VIS[p.vis] || ""}<span class="mm-pillar-h"><span class="mm-ic">${icon(p.icon)}</span><b>${esc(p.title)}</b></span></a>`).join("")}</div>
       ${m.more?.filter(show).length ? `<div class="mm-ptab"${m.more.some((l) => l.noPlan) ? np : ""}>${m.more.filter(show).map((l) => `<a href="${esc(l.href)}">${icon(l.icon)}${esc(l.title)}</a>`).join("")}</div>` : ""}</div>`;
     if (m.type === "resources") {
-      const cards = m.cards.filter(show);
-      return `<div class="mm-panel mm-pillars mm-res" id="${id}" role="region" aria-label="${esc(m.label)}">
-      <div class="mm-pcols" style="--n:${cards.length}">${cards.map((c) => `<a class="mm-pillar" href="${esc(c.href)}" style="--acc:${c.acc}">
-        <span class="tool-vis mm-rv mm-rv-${c.vis}" data-rv="${c.vis}" aria-hidden="true">${RES_VIS[c.vis] || ""}</span>
-        <span class="mm-pillar-h"><span class="mm-ic">${icon(c.icon)}</span><b>${esc(c.title)}</b></span></a>`).join("")}</div>
+      return `<div class="mm-panel mm-res" id="${id}" role="region" aria-label="${esc(m.label)}">
+      <div class="mm-res-grid">
+        <div class="mm-rfeat" data-rfeat>
+          <div class="mm-rfeat-tabs" role="tablist"><button type="button" role="tab" aria-selected="true" data-rfeat-tab="news">Social News</button><button type="button" role="tab" aria-selected="false" data-rfeat-tab="blog">Blog</button></div>
+          <a class="mm-rfeat-link" href="news.html" data-rfeat-link><em data-rfeat-when></em><b data-rfeat-title>Social News</b><span data-rfeat-go>Read the news →</span></a>
+        </div>
+        <div class="mm-rlist">${m.cards.filter(show).map((c) => `<a class="mm-rrow" href="${esc(c.href)}" style="--acc:${c.acc}"><span class="mm-ic">${icon(c.icon)}</span>
+          <span class="mm-rrow-t"><b>${esc(c.title)}</b><small>${esc(c.desc)}</small></span>${c.member ? `<span class="mm-rcount" data-rv-n hidden></span>` : `<span class="mm-rarrow" aria-hidden="true">→</span>`}</a>`).join("")}
+          <a class="mm-rfaq" href="index.html#faq"><b>Is it made for clubs like mine?</b><small>Yes: real posts from 770+ clubs and 110+ competitions.</small></a>
+        </div>
+      </div>
       ${m.featured ? `<a class="mm-featured mm-featured-sm"${np} href="${esc(m.featured.href)}"><span><i>${esc(m.featured.eyebrow)}</i><b>${esc(m.featured.title)}</b></span>${icon("arrow-up-right")}</a>` : ""}</div>`;
     }
     if (m.type === "grid") return `<div class="mm-panel mm-grid" id="${id}" role="region" aria-label="${esc(m.label)}">
@@ -165,28 +164,30 @@
   let resDone = false;
   async function fillResources() {
     if (resDone) return; resDone = true;
-    const box = (k) => links.querySelector(`[data-rv="${k}"]`);
-    const bg = (el, url) => { if (el && url) el.style.backgroundImage = `linear-gradient(180deg, rgba(8,12,24,.05) 30%, rgba(8,12,24,.9)), url("${url.replace(/"/g, "%22")}")`; };
-    const when = (d) => { const days = Math.floor((Date.now() - new Date(`${d}T12:00:00`)) / 864e5); return days < 1 ? "Today" : days === 1 ? "Yesterday" : new Date(`${d}T12:00:00`).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" }); };
+    const feat = links.querySelector("[data-rfeat]");
+    const when = (d) => { const days = Math.floor((Date.now() - new Date(`${d}T12:00:00`)) / 864e5); return days < 1 ? "Today" : days === 1 ? "Yesterday" : days <= 7 && d ? "New" : new Date(`${d}T12:00:00`).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" }); };
     const T = (t, v = {}) => (window.tx ? window.tx(t, v) : t.replace(/\{(\w+)\}/g, (m, k) => v[k] ?? m));
     try {
       const j = await (await fetch("content/latest.json", { cache: "no-cache" })).json();
-      if (j.blog && box("blog")) { bg(box("blog"), j.blog.image); box("blog").querySelector("[data-rv-t]").textContent = j.blog.title; const age = (Date.now() - new Date(`${j.blog.date}T12:00:00`)) / 864e5; box("blog").querySelector("em").textContent = age <= 7 ? T("New") : T(when(j.blog.date)); }
-      if (j.news && box("news")) { bg(box("news"), j.news.image); box("news").querySelector("[data-rv-t]").textContent = j.news.title; box("news").querySelector("[data-rv-d]").textContent = T(when(j.news.date)); }
+      const show = (k) => {
+        const it = j[k]; if (!it || !feat) return;
+        feat.querySelectorAll("[data-rfeat-tab]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.rfeatTab === k)));
+        feat.style.backgroundImage = it.image ? `linear-gradient(180deg, rgba(0,0,0,0) 25%, rgba(0,0,0,.85)), url("${it.image.replace(/"/g, "%22")}")` : "";
+        feat.querySelector("[data-rfeat-link]").href = it.href;
+        feat.querySelector("[data-rfeat-title]").textContent = it.title;
+        feat.querySelector("[data-rfeat-when]").textContent = T(when(it.date));
+        feat.querySelector("[data-rfeat-go]").textContent = `${T(k === "news" ? "Read the news" : "Read the article")} →`;
+      };
+      feat?.querySelectorAll("[data-rfeat-tab]").forEach((b) => b.addEventListener("click", (e) => { e.stopPropagation(); show(b.dataset.rfeatTab); }));
+      show(j.news ? "news" : "blog");
     } catch {}
-    const db = window.SCP_AUTH?.client, sv = box("saved");
+    const db = window.SCP_AUTH?.client, sv = links.querySelector(".mm-res [data-rv-n]");
     if (!db || !sv) return;
-    const [{ data: items }, { count }] = await Promise.all([
-      db.from("folder_items").select("post_id").order("added_at", { ascending: false }).limit(200),
-      db.from("folders").select("id", { count: "exact", head: true }),
-    ]).catch(() => [{}, {}]);
+    const { data: items } = await db.from("folder_items").select("post_id").limit(1000).then((r) => r, () => ({}));
     const ids = [...new Set((items || []).map((it) => Number(String(it.post_id).replace(/^ci-/, ""))).filter(Boolean))];
     // the same count as the Saved page: each post once, only the ones still available
-    const { data } = ids.length ? await db.from("content_ideas").select("id,cover_url").in("id", ids).is("unavailable_at", null) : { data: [] };
-    const n = (data || []).length;
-    sv.querySelector("[data-rv-n]").textContent = n ? T("{n} posts · {b} boards", { n, b: count || 0 }) : T("Save ideas from the library");
-    const pics = (data || []).filter((p) => p.cover_url).sort((a, b) => ids.indexOf(Number(a.id)) - ids.indexOf(Number(b.id)));   // newest saved first
-    sv.querySelectorAll(".mm-rv-folder i").forEach((i, k) => { if (pics[k]) i.style.backgroundImage = `url("${pics[k].cover_url}")`; });
+    const { count } = ids.length ? await db.from("content_ideas").select("id", { count: "exact", head: true }).in("id", ids).is("unavailable_at", null) : { count: 0 };
+    if (count) { sv.textContent = T("{n} posts", { n: count }); sv.hidden = false; }
   }
   links.querySelector(".mm-res")?.closest("[data-mm]")?.addEventListener("mouseenter", fillResources);
   links.querySelector(".mm-res")?.closest("[data-mm]")?.addEventListener("click", fillResources);
