@@ -24,8 +24,11 @@
 
   // one news item: the source's picture, network, date, title, at most 2 paragraphs, link to its page and to the source
   // (same markup as blog-tools/build.mjs → newsRow, which writes the first ones into the page for Google)
-  const row = (n) => {
-    const icon = n.platform === "other" ? "all" : n.platform, page = n.slug ? `news/${esc(n.slug)}.html` : esc(n.url);
+  // in Spanish, the AI translation ("es", supabase/translations.sql) and its /es/ page when there is one
+  const row = (src) => {
+    const es = window.SCP_LANG === "es" && src.es;
+    const n = es ? { ...src, title: src.es.title || src.title, paragraphs: src.es.paragraphs?.length ? src.es.paragraphs : src.paragraphs } : src;
+    const icon = n.platform === "other" ? "all" : n.platform, page = n.slug ? `${es ? "es/" : ""}news/${esc(n.slug)}.html` : esc(n.url);
     return `
       <article class="news-row nwc" id="news-${esc(n.id)}" data-platform="${esc(n.platform)}">
         <a class="nwc-img${n.image_url ? "" : " is-empty"}" href="${page}" tabindex="-1" aria-hidden="true">${n.image_url ? `<img src="${esc(n.image_url)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentNode.classList.add('is-empty');this.remove()">` : ""}<span class="nwc-pf"><img src="assets/pf-${esc(icon)}.svg" alt=""></span></a>

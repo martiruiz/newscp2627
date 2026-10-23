@@ -17,6 +17,14 @@
     else lang = localStorage.getItem(KEY);
   } catch {}
   if (!LANGS.includes(lang)) lang = "es";   // Spanish by default; English when chosen (saved in this browser / ?lang=en)
+  // Blog / Social News exist in both languages (<html data-page-lang>, /es/… = Spanish, blog-tools/build.mjs): people go to
+  // the address of their language; search engines stay on the page they asked for (its other language is in hreflang)
+  const pageLang = root.dataset.pageLang;
+  const pageIn = (l) => { const m = location.pathname.match(/^(.*?\/)(?:es\/)?((?:blog|news)(?:\.html|\/[^/]+\.html))$/); return m ? `${m[1]}${l === "es" ? "es/" : ""}${m[2]}${location.search}${location.hash}` : null; };
+  if (LANGS.includes(pageLang) && pageLang !== lang) {
+    if (/bot|crawl|spider|slurp|bing|yandex|baidu|duckduck|facebookexternalhit|lighthouse|headless/i.test(navigator.userAgent) || !pageIn(lang)) lang = pageLang;
+    else { location.replace(pageIn(lang)); lang = pageLang; }
+  }
   window.SCP_LANG = lang;
   window.SCP_LOC = lang === "es" ? "es-ES" : "en-GB";
   root.lang = lang;
@@ -155,6 +163,7 @@
     const wait = (p) => Promise.race([Promise.resolve(p).catch(() => {}), new Promise((r) => setTimeout(r, 1500))]);   // never stuck on the network
     await wait(window.SCP_beforeLangSwitch?.());   // e.g. the profile saves its pending changes first
     if (opts.save !== false) await wait(window.SCP_saveLang?.(next));
+    if (pageLang && pageIn(next)) { const t = new URL(pageIn(next), location.href); t.searchParams.delete("lang"); location.assign(t.toString()); return; }
     const u = new URL(location.href);
     if (u.searchParams.has("lang")) { u.searchParams.set("lang", next); location.replace(u.toString()); }
     else location.reload();   // a link with #anchor would only scroll with location.replace: reload the page

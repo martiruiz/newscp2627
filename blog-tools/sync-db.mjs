@@ -25,6 +25,20 @@ const rest = async (q, init = {}) => {
 const pending = (p) => !p.published_at || new Date(p.updated_at) > new Date(p.published_at);
 
 const [mode, logFile] = process.argv.slice(2);
+// Spanish versions by AI (Edge Function translate-content, supabase/translations.sql): what's new or edited since its last
+// translation, at most TRANSLATE_PER_RUN items per run (default 10); a failure only skips that item until the next run
+let translateLeft = Number(process.env.TRANSLATE_PER_RUN ?? 10);
+async function translate(body) {
+  if (translateLeft <= 0) return null;
+  translateLeft--;
+  try {
+    const r = await fetch(`${URL}/functions/v1/translate-content`, { method: "POST", headers: H, body: JSON.stringify(body), signal: AbortSignal.timeout(170000) });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) { console.log(`  translation failed (${body.kind} ${body.slug || body.id}): ${d.error || r.status}`); return null; }
+    console.log(`  translated ${body.kind} ${body.slug || body.id}`);
+    return d;
+  } catch (e) { console.log(`  translation failed (${body.kind} ${body.slug || body.id}): ${e.message}`); return null; }
+}
 const missing = (e) => /PGRST205|PGRST204|42P01|42703|schema cache|: 404 /.test(e.message);
 const slugify = (t) => { const s = String(t).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); return s.length > 70 ? s.slice(0, 70).replace(/-[^-]*$/, "") : s; };
 
@@ -52,6 +66,7 @@ if (mode === "export") {
       n.slug = `${slugify(n.title) || "news"}-${n.id}`;
       await rest(`news?id=eq.${n.id}`, { method: "PATCH", body: JSON.stringify({ slug: n.slug }), headers: { Prefer: "return=minimal" } });
     }
+    for (const n of news.filter((x) => "es" in x && (!x.es || x.es.source_changed !== (x.edited_at || x.created_at)))) n.es = (await translate({ kind: "news", id: n.id })) || n.es;
     fs.writeFileSync(path.join(ROOT, "content/news.json"), `${JSON.stringify(news, null, 2)}\n`);
     console.log(`${news.length} published news exported`);
     // the 404 page's "these posts do exist": the 3 most viewed posts of the last 7 days with a cover (covers are public)
@@ -67,7 +82,7 @@ if (mode === "export") {
 }
 
 let posts;
-try { posts = await rest("blog_posts?select=slug,data,draft,updated_at,published_at"); }
+try { posts = await rest("blog_posts?select=slug,data,draft,updated_at,published_at,es").catch((e) => (/42703|es does not exist/.test(e.message) ? rest("blog_posts?select=slug,data,draft,updated_at,published_at") : Promise.reject(e))); }
 catch (e) {   // the table isn't there yet (supabase/admin-content.sql not run): nothing to do, the repo's files stay as they are
   if (/PGRST205|42P01|schema cache|: 404 /.test(e.message)) { console.log("blog_posts isn't set up yet: nothing to sync."); process.exit(0); }
   throw e;
@@ -78,6 +93,8 @@ if (mode === "export") {
   for (const p of posts) {
     const data = { ...p.data, slug: p.slug };
     delete data.draft;
+    if ("es" in p && !p.draft && (!p.es || p.es.source_changed !== p.updated_at)) p.es = (await translate({ kind: "blog", slug: p.slug })) || p.es;
+    if (p.es) data.es = p.es;
     // a cover uploaded from the admin (Storage "blog"): copy it next to the others
     const img = data.image || {};
     if (img.url && img.file && !fs.existsSync(path.join(ROOT, "assets/blog", img.file))) {
