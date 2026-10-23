@@ -7848,3 +7848,6 @@ section[id], :target { scroll-margin-top: 92px; }
 .plan-card.v2 .plan-sub:empty, .plan-card.v2 .plan-extras:empty { margin: 0; min-height: 0; }
 .plan-card.v2 .plan-price { margin-top: 18px; }
 .plan-card.v2 .plan-gets { margin-top: 18px; }
+/* Pricing (yearly): the old price crossed out with a red diagonal line over the number */
+.plan-was { position: relative; display: inline-block; text-decoration: none; padding: 0 2px; }
+.plan-was::after { content: ""; position: absolute; left: -3px; right: -3px; top: 50%; height: 2px; border-radius: 2px; background: rgba(255, 104, 92, 0.9); transform: rotate(-16deg); transform-origin: center; }
