@@ -151,8 +151,8 @@
     const el = document.querySelector("[data-mc-crumb]"); if (!el || !st.space) return;
     const club = st.space.club, sec = section(), team = sec?.teams.find((x) => x.id === st.team);
     const tab = t(st.tab === "club" ? "Club" : st.tab === "sponsors" ? "Sponsors" : "Players");
-    el.innerHTML = `<span class="mc-crumb-logo">${club.logo_url ? `<img src="${esc(club.logo_url)}" alt="">` : esc(initials(club.name))}</span>
-      <span class="mc-crumb-tx"><small>${esc(t("My Club"))}</small><b>${esc(club.name)}</b></span><i></i><span class="mc-crumb-sel">${esc(tab)}${sec ? ` · ${esc(sec.name)}` : ""}${team ? ` · ${esc(team.name)}` : ""}</span>`;
+    el.innerHTML = `<span class="mc-crumb-pill"><span class="mc-crumb-logo">${club.logo_url ? `<img src="${esc(club.logo_url)}" alt="">` : esc(initials(club.name))}</span>
+      <span class="mc-crumb-tx"><small>${esc(t("My Club"))}</small><b>${esc(club.name)}</b></span><i></i><span class="mc-crumb-sel">${esc(tab)}${sec ? ` · ${esc(sec.name)}` : ""}${team ? ` · ${esc(team.name)}` : ""}</span></span>`;
   }
 
   async function scope() {

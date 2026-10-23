@@ -7343,16 +7343,15 @@ section[id], :target { scroll-margin-top: 92px; }
 .my-club-page .mc-teams .mc-seg-b { height: 32px; }
 .my-club-page .mc-people { margin-top: 14px; }
 .my-club-page .mc-chips { padding-bottom: 6px; }
-/* the club mode: gold glow and grid behind the posts */
+/* the club mode: a soft gold light behind the posts (no grid) */
 .my-club-page .feed { position: relative; background:
-    radial-gradient(1100px 420px at 50% -8%, rgba(240, 184, 74, 0.12), transparent 70%),
-    linear-gradient(rgba(240, 184, 74, 0.045) 1px, transparent 1px) 0 0 / 34px 34px,
-    linear-gradient(90deg, rgba(240, 184, 74, 0.045) 1px, transparent 1px) 0 0 / 34px 34px; }
+    radial-gradient(1200px 460px at 50% -10%, rgba(240, 184, 74, 0.13), transparent 70%),
+    radial-gradient(700px 520px at 100% 30%, rgba(240, 184, 74, 0.05), transparent 70%),
+    radial-gradient(700px 520px at 0% 70%, rgba(255, 224, 160, 0.035), transparent 70%); }
 .my-club-page .posts { position: relative; z-index: 1; }
 :root[data-theme="light"] .my-club-page .feed { background:
-    radial-gradient(1100px 420px at 50% -8%, rgba(214, 150, 30, 0.12), transparent 70%),
-    linear-gradient(rgba(184, 122, 12, 0.06) 1px, transparent 1px) 0 0 / 34px 34px,
-    linear-gradient(90deg, rgba(184, 122, 12, 0.06) 1px, transparent 1px) 0 0 / 34px 34px; }
+    radial-gradient(1200px 460px at 50% -10%, rgba(214, 150, 30, 0.12), transparent 70%),
+    radial-gradient(700px 520px at 100% 30%, rgba(214, 150, 30, 0.05), transparent 70%); }
 /* the main library's shortcuts that don't apply to a club: quick bar, smart picks (Favs, Replicable ideas, Creators, Overperforming) */
 .my-club-page .lib-head .lfb, .my-club-page .lf-quick { display: none !important; }
 .my-club-page [data-facets] > .lf-sec:has(.lf-sp) { display: none; }
@@ -7798,3 +7797,10 @@ section[id], :target { scroll-margin-top: 92px; }
 .mm-res { width: 860px; } .mm-res .mm-featured { margin-top: 14px; }
 @media (max-width: 1180px) { .mm-res { width: auto; } .mm-res .mm-pcols { grid-template-columns: 1fr; } }
 .mm-live { background: #ff5c5c; box-shadow: 0 0 0 3px rgba(255, 92, 92, 0.3); }
+/* My Club: "where you are" sits in the library's top bar like its other controls — same background, a soft pill */
+.my-club-page .mc-crumb { background: var(--surface); padding: 8px 12px; }
+.mc-crumb-pill { display: inline-flex; align-items: center; gap: 10px; min-width: 0; max-width: 100%; height: 40px; padding: 0 6px 0 4px; border-radius: 999px; background: rgba(var(--fg), 0.04); border: 1px solid var(--line-soft); }
+.mc-crumb-pill .mc-crumb-logo { width: 32px; height: 32px; border-radius: 50%; }
+.mc-crumb-pill .mc-crumb-tx b { font-size: 14px; }
+.mc-crumb-pill > i { width: 1px; height: 20px; background: var(--line); flex: none; }
+.mc-crumb-pill .mc-crumb-sel { display: inline-flex; align-items: center; height: 28px; padding: 0 12px; border-radius: 999px; background: var(--gold-tint); color: var(--gold); font-size: 12.5px; font-weight: 600; }
