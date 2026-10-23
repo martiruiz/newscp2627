@@ -197,9 +197,10 @@
       <div class="sv3-grid">
         ${boards.map(boardCard).join("")}
         ${!q ? `<form class="sv3-new" data-create-form>
-          <span class="sv3-new-ic">${icon("folder-plus")}</span><b>New board</b>
-          <span class="sv3-new-in"><input type="text" maxlength="60" placeholder="Board name" aria-label="New board name" required data-create-name><button class="btn btn-gold" type="submit">Create</button></span>
-          <span class="sv3-sug">${SUGGEST.map((n) => `<button type="button" data-suggest="${esc(n)}">${esc(n)}</button>`).join("")}</span>
+          <span class="sv3-new-ic">${icon("folder-plus")}</span>
+          <span class="sv3-new-t"><b>New board</b><small>A folder for the ideas you want to make</small></span>
+          <span class="sv3-new-in"><input type="text" maxlength="60" placeholder="Board name" aria-label="New board name" required data-create-name><button class="sv3-new-go" type="submit" aria-label="Create">${icon("plus")}<span>Create</span></button></span>
+          <span class="sv3-sug"><small>Ideas</small>${SUGGEST.map((n) => `<button type="button" data-suggest="${esc(n)}">${esc(n)}</button>`).join("")}</span>
         </form>` : ""}
       </div>
       ${q && !boards.length ? `<p class="sv3-none">No boards match “${esc(view.q)}”.</p>` : ""}

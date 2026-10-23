@@ -2420,4 +2420,6 @@ window.SCP_ES = {
   "Sun": "Dom",
   "Your folders": "Tus carpetas",
   "Each board is a folder with the posts you saved": "Cada tablero es una carpeta con los posts que guardaste",
+  "A folder for the ideas you want to make": "Una carpeta para las ideas que quieres hacer",
+  "Ideas": "Ideas",
 };
