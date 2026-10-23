@@ -425,4 +425,7 @@ window.SCPA_DICT = Object.assign(window.SCPA_DICT || {}, {
   "Strong": ["Fuerte", "Forta"],
   "Passwords match": ["Las contraseñas coinciden", "Les contrasenyes coincideixen"],
   "Passwords don't match": ["Las contraseñas no coinciden", "Les contrasenyes no coincideixen"],
+  "Log out?": ["¿Cerrar sesión?", "Tancar la sessió?"],
+  "You'll need to log in again to use SCP.": ["Tendrás que volver a iniciar sesión para usar SCP.", "Hauràs de tornar a iniciar sessió per fer servir SCP."],
+  "Log out": ["Cerrar sesión", "Tanca la sessió"],
 });

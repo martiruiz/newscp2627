@@ -210,10 +210,12 @@
       </div>`;
     side.querySelectorAll("[data-theme-toggle]").forEach((b) => window.SCP_THEME.paint(b));
     side.addEventListener("click", (e) => { const b = e.target.closest("[data-admin-lang]"); if (b && b.dataset.adminLang !== window.SCPA_LANG) window.SCPA_setLang?.(b.dataset.adminLang); });
+    // asks first; once signed out, the SCP log-in page (the site's, not the admin's)
     $("[data-logout]", side).addEventListener("click", async () => {
+      if (!(await confirmDialog({ title: "Log out?", text: "You'll need to log in again to use SCP.", confirm: "Log out", danger: true }))) return;
       loggingOut = true;
       await db.auth.signOut();
-      location.href = "login.html";
+      location.href = "../login.html";
     });
   }
 
