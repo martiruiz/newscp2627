@@ -7534,3 +7534,5 @@ section[id], :target { scroll-margin-top: 92px; }
   .pf-id { flex-direction: column; align-items: flex-start; gap: 14px; }   /* phones: photo on top (the ring sits beside it), name and plan below, full width */
   .pf-plan-chip { height: auto; min-height: 30px; padding: 5px 12px 5px 5px; line-height: 1.35; }
 }
+/* saved boards: covers are the posts' pictures (js/saved.js mini), filling each tile */
+.mini-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
