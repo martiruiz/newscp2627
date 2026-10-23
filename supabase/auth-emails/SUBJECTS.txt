@@ -1,0 +1,14 @@
+Supabase → Authentication → Emails → Templates: Subject of each template (Spanish by default, English for English accounts)
+
+confirm-signup:
+{{ if eq .Data.lang "en" }}Confirm your email and start your free trial{{ else }}Confirma tu email y empieza tu prueba gratis{{ end }}
+
+magic-link:
+{{ if eq .Data.lang "en" }}Your link to log in to SCP{{ else }}Tu enlace para entrar en SCP{{ end }}
+
+reset-password:
+{{ if eq .Data.lang "en" }}Choose a new password for SCP{{ else }}Elige una contraseña nueva para SCP{{ end }}
+
+change-email:
+{{ if eq .Data.lang "en" }}Confirm your new email for SCP{{ else }}Confirma tu nuevo email en SCP{{ end }}
+
