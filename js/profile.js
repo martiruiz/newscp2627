@@ -241,8 +241,9 @@
     const ring = $("[data-pf-ring]");
     ring.style.strokeDasharray = c;
     ring.style.strokeDashoffset = c * (1 - pct / 100);
+    $("[data-pf-meter]").classList.toggle("is-full", pct === 100);   // complete: the ring glows and turns
     const missing = CHECKS.find(([, ok]) => !ok(state));
-    $("[data-pf-next]").innerHTML = missing ? `Next: add ${esc(missing[0])}.` : `${icon("check")}Your profile is complete.`;
+    $("[data-pf-next]").innerHTML = missing ? `Next: add ${esc(missing[0])}.` : `<span class="pf-done-pill">${icon("check")}Your profile is complete.</span>`;
     const full = [state.first_name, state.last_name].filter(Boolean).join(" ");
     $("[data-profile-title]").textContent = full || "My profile";
     $("[data-pf-role]").textContent = state.role || "Your profile";
