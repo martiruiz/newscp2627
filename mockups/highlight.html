@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Palabras destacadas — propuestas</title>
+<link rel="stylesheet" href="../css/fonts.css?v=1">
+<link rel="stylesheet" href="../css/styles.css">
+<style>
+  body { margin: 0; background: #f7f6f3; color: #0c0c0d; font-family: var(--font-body); }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 36px 24px 90px; }
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 26px; }
+  .top h1 { margin: 0; font: 600 28px var(--font-display); letter-spacing: -0.02em; }
+  .top button { height: 40px; padding: 0 18px; border-radius: 999px; border: 0; background: #0c0c0d; color: #fff; font: 600 14px var(--font-body); cursor: pointer; }
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .card { padding: 26px 26px 22px; border-radius: 22px; background: #fff; border: 1px solid rgba(12,12,13,.07); box-shadow: 0 1px 2px rgba(12,12,13,.04), 0 18px 40px -26px rgba(12,12,13,.25); }
+  .card.now { outline: 2px dashed rgba(12,12,13,.18); outline-offset: -8px; }
+  .tag { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 14px; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #6b6b72; }
+  .tag b { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: #0c0c0d; color: #fff; font-size: 11px; }
+  .t { margin: 0 0 14px; font: 600 clamp(28px, 3.4vw, 40px)/1.12 var(--font-display); letter-spacing: -0.035em; }
+  .card p { margin: 0; color: #5b5b60; font-size: 13.5px; line-height: 1.55; }
+  .rec { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 999px; background: #f0b84a; color: #0c0c0d; font-size: 11px; font-weight: 700; letter-spacing: 0; text-transform: none; }
+
+  /* 0 · now: a flat block */
+  .h0 { background: linear-gradient(transparent 64%, rgba(240,184,74,.55) 64%, rgba(240,184,74,.55) 92%, transparent 92%); }
+
+  /* 1 · marker that draws itself, slightly tilted, rounded ends */
+  .h1 { position: relative; z-index: 0; white-space: nowrap; }
+  .h1::before { content: ""; position: absolute; z-index: -1; left: -.12em; right: -.12em; bottom: .06em; height: .42em; border-radius: .2em .5em .3em .45em; background: linear-gradient(90deg, rgba(240,184,74,.75), rgba(255,217,140,.85));
+    transform: rotate(-1.2deg) scaleX(0); transform-origin: left; animation: draw .9s .2s cubic-bezier(.65,0,.2,1) forwards; }
+  @keyframes draw { to { transform: rotate(-1.2deg) scaleX(1); } }
+
+  /* 2 · hand-drawn brush underline (SVG) */
+  .h2 { position: relative; white-space: nowrap; }
+  .h2 svg { position: absolute; left: -2%; width: 104%; bottom: -.32em; height: .5em; overflow: visible; }
+  .h2 path { fill: none; stroke: #f0b84a; stroke-width: 7; stroke-linecap: round; stroke-dasharray: 600; stroke-dashoffset: 600; animation: stroke 1s .25s cubic-bezier(.65,0,.2,1) forwards; }
+  @keyframes stroke { to { stroke-dashoffset: 0; } }
+
+  /* 3 · black pill: the words inverted (white on black), gold dot */
+  .h3 { display: inline-block; padding: 0 .28em .06em; border-radius: .22em; background: #0c0c0d; color: #fff; transform: rotate(-1.5deg); box-shadow: .08em .1em 0 #f0b84a; }
+
+  /* 4 · hand-drawn circle around the words */
+  .h4 { position: relative; white-space: nowrap; }
+  .h4 svg { position: absolute; left: -8%; top: -22%; width: 116%; height: 150%; overflow: visible; pointer-events: none; }
+  .h4 path { fill: none; stroke: #f0b84a; stroke-width: 3.5; stroke-linecap: round; stroke-dasharray: 1200; stroke-dashoffset: 1200; animation: stroke 1.3s .25s cubic-bezier(.65,0,.2,1) forwards; }
+
+  /* 5 · gold gradient sweeping through black text */
+  .h5 { background: linear-gradient(90deg, #0c0c0d 0%, #0c0c0d 35%, #c8891c 50%, #0c0c0d 65%, #0c0c0d 100%); background-size: 300% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: sweep 3.2s ease-in-out infinite; }
+  @keyframes sweep { 0% { background-position: 100% 0; } 100% { background-position: 0 0; } }
+
+  /* 6 · thin gold underline with offset + small sparkle */
+  .h6 { text-decoration: underline; text-decoration-color: #f0b84a; text-decoration-thickness: .08em; text-underline-offset: .16em; }
+  .h6::after { content: "✦"; margin-left: .12em; font-size: .45em; vertical-align: super; color: #f0b84a; }
+
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><h1>Palabras destacadas — 6 propuestas (modo claro)</h1><button type="button" data-replay>▶ Volver a animar</button></div>
+  <div class="grid" data-grid>
+    <div class="card now"><span class="tag"><b>0</b>Ahora</span>
+      <h2 class="t">Elige el plan que <span class="h0">encaja con tu equipo</span></h2>
+      <p>Un bloque plano detrás de las palabras. Correcto, pero se ve “pegado” y algo rígido.</p></div>
+
+    <div class="card"><span class="tag"><b>1</b>Rotulador que se dibuja <span class="rec">Mi favorita</span></span>
+      <h2 class="t">Elige el plan que <span class="h1">encaja con tu equipo</span></h2>
+      <p>El subrayado se pinta de izquierda a derecha al aparecer, un poco inclinado y con puntas redondeadas, como un rotulador real. Mantiene la idea de ahora pero con vida. Se anima solo una vez.</p></div>
+
+    <div class="card"><span class="tag"><b>2</b>Trazo de pincel</span>
+      <h2 class="t">Elige el plan que <span class="h2">encaja con tu equipo<svg viewBox="0 0 300 20" preserveAspectRatio="none" aria-hidden="true"><path d="M3 14 C 60 6, 120 4, 180 9 S 270 15, 297 7"/></svg></span></h2>
+      <p>Una línea dorada hecha a mano bajo las palabras. Más fina y elegante; deja el texto totalmente limpio.</p></div>
+
+    <div class="card"><span class="tag"><b>3</b>Píldora negra</span>
+      <h2 class="t">Elige el plan que <span class="h3">encaja con tu equipo</span></h2>
+      <p>Las palabras en blanco sobre negro, ligeramente giradas, con una sombra dorada. Muy de marca deportiva y con mucho contraste.</p></div>
+
+    <div class="card"><span class="tag"><b>4</b>Círculo a mano</span>
+      <h2 class="t">Elige el plan que <span class="h4">encaja con tu equipo<svg viewBox="0 0 400 100" preserveAspectRatio="none" aria-hidden="true"><path d="M30 60 C 10 25, 120 8, 230 10 S 395 30, 385 58 S 260 96, 150 92 S 25 82, 40 50"/></svg></span></h2>
+      <p>Un trazo dorado que rodea las palabras, como cuando marcas algo en una pizarra. Muy visual; mejor para pocas palabras.</p></div>
+
+    <div class="card"><span class="tag"><b>5</b>Brillo dorado que recorre</span>
+      <h2 class="t">Elige el plan que <span class="h5">encaja con tu equipo</span></h2>
+      <p>El texto en negro con un destello dorado que lo cruza de vez en cuando. Sutil y premium; sin bloques de color.</p></div>
+
+    <div class="card"><span class="tag"><b>6</b>Subrayado fino + destello</span>
+      <h2 class="t">Elige el plan que <span class="h6">encaja con tu equipo</span></h2>
+      <p>Un subrayado dorado fino y separado del texto, y una pequeña estrella. Minimalista, estilo editorial.</p></div>
+  </div>
+</div>
+<script>
+  // replays the drawing animations
+  document.querySelector("[data-replay]").addEventListener("click", () => {
+    document.querySelectorAll(".h1, .h2 path, .h4 path").forEach((el) => { el.style.animation = "none"; void el.offsetWidth; el.style.animation = ""; });
+    document.querySelectorAll(".h1").forEach((el) => { el.classList.remove("h1"); void el.offsetWidth; el.classList.add("h1"); });
+  });
+</script>
+</body>
+</html>
