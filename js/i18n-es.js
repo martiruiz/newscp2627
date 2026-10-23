@@ -2451,4 +2451,5 @@ window.SCP_ES = {
   "Changes on": "Cambia el",
   "{n} day left": "queda {n} día",
   "See plan": "Ver plan",
+  "Choose a new one with at least 8 characters.": "Elige una nueva de al menos 8 caracteres.",
 };

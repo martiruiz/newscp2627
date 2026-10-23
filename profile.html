@@ -10,9 +10,9 @@
   <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-s-192.png">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon-s.png">
   <link rel="stylesheet" href="css/fonts.css?v=1">
-  <link rel="stylesheet" href="css/styles.css?v=20261101e">
+  <link rel="stylesheet" href="css/styles.css?v=20261101f">
   <script src="js/theme.js?v=20261028a"></script>
-  <script src="js/i18n.js?v=20261101d"></script>
+  <script src="js/i18n.js?v=20261101f"></script>
   <style>.auth-checking body { visibility: hidden; }</style>
   <script src="js/vendor/supabase-2.117.0.min.js"></script>
   <script src="js/config.js?v=20261020lf"></script>
@@ -168,12 +168,18 @@
             <span class="pf-head-ic"><span data-icon="lock"></span></span>
             <div><h2>Account</h2><p>Sign-in and security.</p></div>
           </header>
-          <div class="pf-q pf-lang"><span>Website language <small>The language of the website and of the e-mails we send you.</small></span><div data-lang-slot="full"></div></div>
-          <div class="pf-grid">
-            <div class="pf-field">New password<span class="pf-in"><span data-icon="lock"></span><input name="password" type="password" autocomplete="new-password" minlength="8" placeholder="At least 8 characters" aria-label="New password"><button class="pf-eye" type="button" aria-label="Show password" data-pw-eye><span data-icon="eye"></span></button></span>
-              <div class="pf-str" data-pw-str hidden><i></i><i></i><i></i><i></i></div><small class="pf-str-t" data-pw-str-t></small></div>
+          <div class="pf-acc">
+            <div class="pf-acc-box">
+              <div class="pf-acc-h"><span class="pf-acc-ic"><span data-icon="earth"></span></span><div><b>Website language</b><small>The language of the website and of the e-mails we send you.</small></div></div>
+              <div class="pf-lang" data-lang-slot="full"></div>
+            </div>
+            <div class="pf-acc-box">
+              <div class="pf-acc-h"><span class="pf-acc-ic"><span data-icon="lock"></span></span><div><b>Password</b><small>Choose a new one with at least 8 characters.</small></div></div>
+              <div class="pf-field"><span class="pf-in"><span data-icon="lock"></span><input name="password" type="password" autocomplete="new-password" minlength="8" placeholder="New password" aria-label="New password"><button class="pf-eye" type="button" aria-label="Show password" data-pw-eye><span data-icon="eye"></span></button></span>
+                <div class="pf-str" data-pw-str hidden><i></i><i></i><i></i><i></i></div><small class="pf-str-t" data-pw-str-t></small></div>
+              <div class="pf-row"><button class="btn btn-gold" type="button" data-password-save>Update password</button><p class="form-status" role="status" data-password-status></p></div>
+            </div>
           </div>
-          <div class="pf-row"><button class="btn btn-outline" type="button" data-password-save>Update password</button><p class="form-status" role="status" data-password-status></p></div>
         </section>
       </form>
     </div>

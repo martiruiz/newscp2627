@@ -7967,3 +7967,16 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 /* Profile side menu: Billing and Account don't count for the ring — a line separates them from the profile's sections */
 .pf-nav a[href="#billing"] { position: relative; margin-top: 15px; }
 .pf-nav a[href="#billing"]::before { content: ""; position: absolute; left: 12px; right: 12px; top: -8px; height: 1px; background: var(--line); }
+
+/* Profile → Account: two boxes side by side — language and password — each with its icon, title and a short line */
+.pf-acc { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 6px; }
+.pf-acc-box { display: grid; align-content: start; gap: 16px; padding: 18px; border-radius: 18px; background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent), var(--surface-2); border: 0.5px solid var(--line); }
+.pf-acc-h { display: flex; align-items: flex-start; gap: 12px; }
+.pf-acc-h b { display: block; font-family: var(--font-display); font-size: 16px; font-weight: 600; }
+.pf-acc-h small { display: block; margin-top: 3px; color: var(--muted); font-size: 13px; line-height: 1.45; }
+.pf-acc-ic { display: grid; place-items: center; flex: none; width: 38px; height: 38px; border-radius: 12px; background: var(--gold-tint); color: var(--gold); border: 0.5px solid rgba(240, 184, 74, 0.3); }
+.pf-acc-ic svg { width: 18px; height: 18px; }
+.pf-acc .lang-switch { display: flex; width: 100%; }
+.pf-acc .lang-switch button { flex: 1; justify-content: center; }
+.pf-acc .pf-row { margin-top: 0; } .pf-acc .pf-row .btn { height: 42px; padding: 0 20px; }
+@media (max-width: 860px) { .pf-acc { grid-template-columns: 1fr; } }
