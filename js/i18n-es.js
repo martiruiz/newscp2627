@@ -2429,4 +2429,10 @@ window.SCP_ES = {
   "Save ideas from the library": "Guarda ideas de la biblioteca",
   "How often are there new ideas?": "¿Cada cuánto hay ideas nuevas?",
   "Can I try it for free?": "¿Puedo probarlo gratis?",
+  "Your club's own library: first team, sections and academy": "La biblioteca propia de tu club: primer equipo, secciones y cantera",
+  "Your players' and sponsors' posts, in one place": "Los posts de tus jugadores y patrocinadores, en un solo lugar",
+  "We upload your club's posts every day": "Subimos los posts de tu club cada día",
+  "Private: only your club can see it": "Privado: solo lo ve tu club",
+  "For clubs": "Para clubes",
+  "A private space for your whole club": "Un espacio privado para todo tu club",
 };
