@@ -143,27 +143,44 @@
             <div class="bl-row"><label>Credit<input class="input" name="img_author" value="${esc(cred.author || "")}" placeholder="Photographer / AI-generated…"></label><label>Credit link<input class="input" name="img_source" value="${esc(cred.source_url || "")}"></label></div>
           </section>
           </div>
-          <section class="panel panel-pad bl-sec" data-epane="seo" hidden>
-            <h3>${icon("search")}Google</h3>
-            <label>Meta title <span class="bl-len" data-len="meta_title"></span><input class="input" name="meta_title" value="${esc(d.meta_title || "")}" maxlength="80" placeholder="What shows as the blue link on Google (30–60 characters)"></label>
-            <label>Meta description <span class="bl-len" data-len="meta_description"></span><textarea class="input" name="meta_description" rows="2" maxlength="200" placeholder="The grey text under the link (120–160 characters): what the reader gets">${esc(d.meta_description || "")}</textarea></label>
-            <label>Main keyword <small class="muted">The search you want to rank for.</small><input class="input" name="primary_keyword" value="${esc(d.primary_keyword || "")}"></label>
-            <label>Keywords <small class="muted">One per line — the blog checks all 15 appear in the text.</small><textarea class="input" name="keywords" rows="7">${esc((d.keywords || []).join("\n"))}</textarea></label>
-            <h3>${icon("sparkles")}AI assistants (ChatGPT, Perplexity, Gemini, Claude…)</h3>
-            <p class="bl-help">AI answers quote short, clear, well-sourced text. These show on the article and as structured data.</p>
-            <label>Key takeaways <small class="muted">3–5 short sentences, one per line. Shown at the top of the article.</small><textarea class="input" name="takeaways" rows="4" placeholder="Clubs that post episodic series get more returning viewers.">${esc(takeawaysOf(d.takeaways))}</textarea></label>
-            <div class="bl-faq"><span class="bl-faq-h">Frequently asked questions <small class="muted">3 or more. The questions people type into Google or ask an AI.</small></span>
+          <div class="bl-sec bl-panes" data-epane="seo" hidden>
+          <section class="panel panel-pad bl-ecard">
+            <h3 class="bl-card-h"><span class="bl-n">1</span>Google <small class="muted">The blue link and the grey text people see when they search</small></h3>
+            <label><span class="bl-lh"><span>Meta title</span><span class="bl-len" data-len="meta_title"></span></span><input class="input" name="meta_title" value="${esc(d.meta_title || "")}" maxlength="80" placeholder="What shows as the blue link on Google (30–60 characters)"></label>
+            <label><span class="bl-lh"><span>Meta description</span><span class="bl-len" data-len="meta_description"></span></span><textarea class="input" name="meta_description" rows="3" maxlength="200" placeholder="The grey text under the link (120–160 characters): what the reader gets">${esc(d.meta_description || "")}</textarea></label>
+          </section>
+          <section class="panel panel-pad bl-ecard">
+            <h3 class="bl-card-h"><span class="bl-n">2</span>Keywords <small class="muted">The searches this article should appear for</small></h3>
+            <label>Main keyword <small class="muted bl-sub">The search you want to rank for. It should be in the title, the first paragraph and a subtitle.</small><input class="input bl-kw-main" name="primary_keyword" value="${esc(d.primary_keyword || "")}"></label>
+            <div class="bl-kws-h"><span>Site keywords <small class="muted" data-kw-count></small></span><button type="button" class="btn btn-ghost btn-sm" data-kw-edit>${icon("edit")}Edit the list</button></div>
+            <div class="bl-kws" data-kw-chips></div>
+            <textarea class="input" name="keywords" rows="8" hidden placeholder="One per line">${esc((d.keywords || []).join("\n"))}</textarea>
+          </section>
+          <section class="panel panel-pad bl-ecard">
+            <h3 class="bl-card-h"><span class="bl-n">3</span>AI assistants <small class="muted">ChatGPT, Perplexity, Gemini, Claude… quote short, clear, well-sourced text</small></h3>
+            <label>Key takeaways <small class="muted bl-sub">3–5 short sentences, one per line. Shown at the top of the article.</small><textarea class="input" name="takeaways" rows="5" placeholder="Clubs that post episodic series get more returning viewers.">${esc(takeawaysOf(d.takeaways))}</textarea></label>
+            <div class="bl-faq"><span class="bl-faq-h">Frequently asked questions <small class="muted bl-sub">3 or more. The questions people type into Google or ask an AI.</small></span>
               <div data-faq>${(d.faq || []).map(faqRow).join("") || faqRow()}</div>
               <button type="button" class="btn btn-ghost btn-sm" data-faq-add>${icon("plus")}Add a question</button></div>
+          </section>
+          <section class="panel panel-pad bl-ecard">
+            <h3 class="bl-card-h"><span class="bl-n">4</span>Author <small class="muted">Who writes it and when it was updated — trust for Google and AI (E-E-A-T)</small></h3>
             <div class="bl-row"><label>Author<input class="input" name="author" value="${esc(d.author || "")}"></label><label>Last updated<input class="input" type="date" name="updated" value="${esc(d.updated || "")}"></label></div>
-            <label>About the author <small class="muted">One line of experience — trust for Google and AI (E-E-A-T).</small><input class="input" name="author_bio" value="${esc(d.author_bio || "")}" placeholder="Founder of Sports Content Playbook. 10 years running social media for sports clubs."></label>
+            <label>About the author <small class="muted bl-sub">One line of experience.</small><input class="input" name="author_bio" value="${esc(d.author_bio || "")}" placeholder="Founder of Sports Content Playbook. 10 years running social media for sports clubs."></label>
           </section>
-          <section class="panel panel-pad bl-sec" data-epane="sources" hidden>
-            <label>CTA title<input class="input" name="cta_title" value="${esc(d.cta_title || "")}"></label>
+          </div>
+          <div class="bl-sec bl-panes" data-epane="sources" hidden>
+          <section class="panel panel-pad bl-ecard">
+            <h3 class="bl-card-h"><span class="bl-n">1</span>Sources <small class="muted">Cited sources build trust with Google and AI</small></h3>
+            <label>Sources <small class="muted bl-sub">One per line: name | link</small><textarea class="input" name="sources" rows="5">${esc(lines(d.sources))}</textarea></label>
+            <label>Posts shown in the article <small class="muted bl-sub">One per line: name | link — every post the article talks about.</small><textarea class="input" name="references" rows="5">${esc(lines(d.references))}</textarea></label>
+          </section>
+          <section class="panel panel-pad bl-ecard">
+            <h3 class="bl-card-h"><span class="bl-n">2</span>Call to action <small class="muted">The box in the middle of the article</small></h3>
+            <label>CTA title<input class="input" name="cta_title" value="${esc(d.cta_title || "")}" placeholder="Find your next winning post in seconds"></label>
             <label>CTA text<textarea class="input" name="cta_text" rows="2">${esc(d.cta_text || "")}</textarea></label>
-            <label>Sources <small class="muted">One per line: name | link — cited sources build trust with Google and AI.</small><textarea class="input" name="sources" rows="5">${esc(lines(d.sources))}</textarea></label>
-            <label>Posts shown in the article <small class="muted">One per line: name | link</small><textarea class="input" name="references" rows="5">${esc(lines(d.references))}</textarea></label>
           </section>
+          </div>
         </form>
         <aside class="bl-side">
           <div class="panel bl-side-card"><span class="bl-st ${c}">${esc(s)}</span>${p?.published_at ? `<small class="muted">Published ${day(p.published_at)}</small>` : ""}<small class="muted">${isNew ? "Not saved yet" : `Saved ${day(p.updated_at)}`}</small></div>
@@ -201,6 +218,9 @@
         [`FAQ for AI (${faqN})`, faqN >= 3, "faq"],
       ];
       lastChecks = checks; missingKw = kws.filter((k) => !text.includes(k));
+      const kwRaw = fm.keywords.value.split("\n").map((k) => k.trim()).filter(Boolean);
+      $("[data-kw-chips]").innerHTML = kwRaw.map((k) => `<span class="bl-kwc${text.includes(k.toLowerCase()) ? " ok" : ""}${k.toLowerCase() === kw ? " main" : ""}">${icon(text.includes(k.toLowerCase()) ? "check" : "alert")}${esc(k)}</span>`).join("") || `<span class="muted">No keywords yet.</span>`;
+      $("[data-kw-count]").textContent = `${kwIn} / ${kwRaw.length} in the text`;
       $("[data-improve]").hidden = !checks.some(([, v, f]) => !v && f);
       const ok = checks.filter(([, v]) => v).length, score = Math.round((ok / checks.length) * 100);
       $("[data-score]").textContent = score;
@@ -302,6 +322,7 @@
       } catch (x) { fail(x); }
       btn.disabled = false; btn.innerHTML = label;
     });
+    $("[data-kw-edit]").addEventListener("click", (e) => { fm.keywords.hidden = !fm.keywords.hidden; e.currentTarget.lastChild.textContent = fm.keywords.hidden ? "Edit the list" : "Done"; if (!fm.keywords.hidden) fm.keywords.focus(); });
     // FAQ rows
     main.querySelector("[data-faq-add]").addEventListener("click", () => { $("[data-faq]").insertAdjacentHTML("beforeend", faqRow()); audit(); });
     $("[data-faq]").addEventListener("click", (e) => { if (e.target.closest("[data-faq-del]")) { e.target.closest(".bl-faq-row").remove(); audit(); } });

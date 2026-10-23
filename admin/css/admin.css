@@ -1439,3 +1439,16 @@ select.cs-native { display: none !important; }
 .bl-eh-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; font-size: 12.5px; color: var(--muted); }
 .bl-eh-meta > span { display: inline-flex; align-items: center; gap: 6px; } .bl-eh-meta svg { width: 13px; height: 13px; color: var(--dim); }
 .bl-eh-meta .mono { font-size: 12px; color: var(--dim); }
+/* Admin → Blog → a post → SEO & AI / Sources: numbered cards like Content, keyword chips */
+.bl-lh { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.bl-lh .bl-len { float: none; padding: 1px 8px; border-radius: 999px; background: var(--panel-3); }
+.bl-lh .bl-len:empty { display: none; }
+.bl-kw-main { font-weight: 600; border-color: rgba(240, 184, 74, 0.45); }
+.bl-kws-h { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 13px; }
+.bl-kws-h small { margin-left: 6px; }
+.bl-kws { display: flex; flex-wrap: wrap; gap: 6px; }
+.bl-kwc { display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: 999px; font-size: 12.5px; background: var(--panel-2); border: 1px solid var(--border); color: var(--muted); }
+.bl-kwc svg { width: 13px; height: 13px; color: var(--amber); }
+.bl-kwc.ok { color: var(--text); border-color: rgba(0, 184, 77, 0.35); } .bl-kwc.ok svg { color: var(--green); }
+.bl-kwc.main { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-light); }
+.bl-panes .bl-faq-row { background: var(--panel-2); }
