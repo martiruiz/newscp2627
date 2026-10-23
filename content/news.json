@@ -1,7 +1,6 @@
 [
   {
     "id": 12,
-    "slug": "how-barcelona-liverpool-and-psg-turn-google-gemini-deals-into-useful-12",
     "url": "https://www.sponconsports.com/p/what-fc-barcelona-gets-right-about-ai-content",
     "source_name": "SponCon Sports",
     "platform": "ai",
@@ -11,17 +10,42 @@
       "The analysis also notes limits. The slides are text-heavy, and PSG's similar feed carousels averaged 30.8K engagements across three posts reviewed, modest for a club with more than 60M followers. Other activations have done more. Liverpool used Gemini to introduce new signing Bradley Barcola and to quiz fans, and recalled a win over Brentford with linked YouTube clips. Barcelona's October fixture preview passed 482K likes, and its players now ask Gemini a question during YouTube membership Q&As.",
       "For teams selling or activating AI partnerships, the takeaway is to build content around something fans genuinely want, such as previews, new-signing explainers, quizzes or club history, and show the sponsor's tool delivering it. Visual hierarchy and data graphics beat walls of text. Recurring Stories with interactive stickers can be predictable sponsorship inventory because they mostly reach existing followers. Folding a partner into an established series, rather than launching a new one, keeps the activation natural."
     ],
-    "published_at": "2026-10-22T14:00:00+00:00",
+    "relevant": true,
+    "published_at": "2026-10-22T12:00:00+00:00",
     "created_at": "2026-10-22T16:44:11.903071+00:00",
-    "edited_at": null,
-    "meta_title": null,
+    "edited_at": "2026-10-23T15:34:14.534+00:00",
+    "slug": "how-barcelona-liverpool-and-psg-turn-google-gemini-deals-into-useful-12",
+    "meta_title": "Google Gemini Deals: How Clubs Make Useful Fan Content",
     "meta_description": null,
-    "takeaways": [],
-    "faq": []
+    "takeaways": [
+      "FC Barcelona runs a pre-match Instagram Story series sponsored by Google Gemini that shows a practical use of the product, not just AI output.",
+      "Text-heavy slides limit results: PSG's similar feed carousels averaged 30.8K engagements across three posts, modest for a club with more than 60M followers.",
+      "Stronger Gemini activations include Liverpool's new-signing introduction and fan quizzes, and Barcelona's October fixture preview, which passed 482K likes.",
+      "AI partnership content works best when it is built around what fans want, such as previews, new-signing explainers, quizzes or club history.",
+      "Folding a sponsor into an established recurring series keeps the activation natural and can create predictable sponsorship inventory."
+    ],
+    "faq": [
+      {
+        "a": "Google announced Gemini and Pixel partnerships in August with FC Barcelona, PSG, Arsenal, Liverpool and Bayern Munich. Several of these clubs now feature Gemini in their social media content.",
+        "q": "Which football clubs have Google Gemini partnerships?"
+      },
+      {
+        "a": "Barcelona runs a sponsored pre-match Instagram Story series in four frames. It opens with a mock Gemini prompt asking for facts about the next opponent, followed by three frames of answers paired with player imagery. Its players also ask Gemini a question during YouTube membership Q&As.",
+        "q": "How does FC Barcelona use Google Gemini on Instagram?"
+      },
+      {
+        "a": "PSG's feed carousels averaged 30.8K engagements across three posts reviewed, which is modest for a club with more than 60M followers. The analysis points to text-heavy slides as a weakness, noting that visual hierarchy and data graphics beat walls of text.",
+        "q": "Why did PSG's Gemini posts get modest engagement?"
+      },
+      {
+        "a": "Build content around something fans genuinely want, such as previews, new-signing explainers, quizzes or club history, and show the sponsor's tool delivering it. Fold the partner into an established series rather than launching a new one, so the activation feels natural.",
+        "q": "How should sports teams activate an AI sponsorship on social media?"
+      }
+    ],
+    "image_url": ""
   },
   {
     "id": 13,
-    "slug": "tiktok-lets-users-repost-individual-comments-turning-replies-into-13",
     "url": "https://socialgeekpro.beehiiv.com/p/meta-en-la-encrucijada",
     "source_name": "SocialGeek News",
     "platform": "tiktok",
@@ -31,17 +55,19 @@
       "For sports social teams, this makes community management a direct growth lever. A sharp reply from the club account, a witty reaction from a player, or a standout fan comment after a big result can now travel independently and reach audiences who never saw the original clip. That raises the value of having fast, on-brand responders ready during matches and key moments.",
       "Clubs and leagues could deliberately prompt conversation with questions, predictions or debates in captions, then amplify the best fan answers to reward supporters and fuel engagement. Sponsors could also be woven into recurring comment-driven formats. Equally, teams should keep moderation tight, since a careless or controversial reply could now spread well beyond its thread."
     ],
+    "relevant": true,
     "published_at": "2026-10-22T11:13:00+00:00",
     "created_at": "2026-10-22T16:44:20.44967+00:00",
     "edited_at": null,
+    "slug": "tiktok-lets-users-repost-individual-comments-turning-replies-into-13",
     "meta_title": null,
     "meta_description": null,
     "takeaways": [],
-    "faq": []
+    "faq": [],
+    "image_url": ""
   },
   {
     "id": 11,
-    "slug": "louis-vuitton-adds-victory-patches-to-f1-trophy-trunk-after-every-11",
     "url": "https://www.sponconsports.com/p/how-louis-vuitton-is-evolving-its-formula-1-sponsorship",
     "source_name": "SponCon Sports",
     "platform": "other",
@@ -51,17 +77,19 @@
       "For sports social teams, the lesson is to build sponsored content around a repeatable ritual tied to real results. Similar to Red Bull Racing's race-specific stickers with YETI, a recurring format gives fans a reason to follow along all season and gives partners guaranteed, emotionally charged exposure. Clubs could adapt this with trophies, kit details or locker-room items updated after every victory.",
       "The same newsletter offers a related tip from MotoGP's Repsol Lubricants series: give branded formats broad names rather than superlative ones like best move of the race. That flexibility lets content teams publish great moments immediately, while they are still fresh, instead of waiting to crown a single highlight. It also cites research showing sponsored posts outperformed non-sponsored ones at six of 11 F1 teams."
     ],
+    "relevant": true,
     "published_at": "2026-10-19T14:01:17.986+00:00",
     "created_at": "2026-10-20T03:42:30.845583+00:00",
     "edited_at": null,
+    "slug": "louis-vuitton-adds-victory-patches-to-f1-trophy-trunk-after-every-11",
     "meta_title": null,
     "meta_description": null,
     "takeaways": [],
-    "faq": []
+    "faq": [],
+    "image_url": ""
   },
   {
     "id": 1,
-    "slug": "bryson-dechambeau-s-backyard-games-with-golf-clash-draws-83-5m-views-1",
     "url": "https://www.sponconsports.com/p/bryson-s-latest-sponcon-must-be-studied",
     "source_name": "SponCon Sports",
     "platform": "other",
@@ -71,17 +99,19 @@
       "The integration stood out: branded sets and game-style graphics, six-second ad reads during natural pauses, Instagram Stories with download prompts, and an in-game recreation of the course fans could play. The format grew from an unsponsored 2024 challenge that proved audience appeal before sponsors joined. However, views across Instagram, TikTok and YouTube fell each season, though YouTube Shorts average views per post rose 41% since 2024.",
       "For clubs and athletes, the lesson is to build and test a repeatable format organically, then sell it with real performance data rather than pitching concepts that only exist if funded. Give partners a role that improves the fan experience, place sponsor messages inside the action, use Stories for direct calls to action, and keep the star at the centre with fan rewards to sustain reach."
     ],
+    "relevant": true,
     "published_at": "2026-10-15T14:00:00+00:00",
     "created_at": "2026-10-18T07:13:56.006375+00:00",
     "edited_at": null,
+    "slug": "bryson-dechambeau-s-backyard-games-with-golf-clash-draws-83-5m-views-1",
     "meta_title": null,
     "meta_description": null,
     "takeaways": [],
-    "faq": []
+    "faq": [],
+    "image_url": ""
   },
   {
     "id": 7,
-    "slug": "facebook-launches-your-algorithm-letting-users-tell-the-feed-what-7",
     "url": "https://socialgeekpro.beehiiv.com/p/facebook-nos-deja-elegir-que-vemos",
     "source_name": "SocialGeek News",
     "platform": "facebook",
@@ -91,17 +121,19 @@
       "For sports social teams, this shifts the balance away from pure engagement bait. If a fan tells Facebook they are not interested in a certain type of content, optimising it harder will not help. Topic relevance matters more, so clubs and leagues should make sure their posts are clearly tied to recognisable themes fans would actively choose, like their team, competition, players or specific sport.",
       "In practice, that means consistent naming, clear captions and content pillars that map to topics fans might select, such as matchday coverage, behind-the-scenes or youth academy stories. Teams could also encourage supporters to add the club as a followed interest, and should watch for changes in reach on content that relies on curiosity hooks rather than genuine fan interest."
     ],
+    "relevant": true,
     "published_at": "2026-10-15T11:14:00+00:00",
     "created_at": "2026-10-18T07:14:36.686404+00:00",
     "edited_at": null,
+    "slug": "facebook-launches-your-algorithm-letting-users-tell-the-feed-what-7",
     "meta_title": null,
     "meta_description": null,
     "takeaways": [],
-    "faq": []
+    "faq": [],
+    "image_url": ""
   },
   {
     "id": 2,
-    "slug": "carolina-panthers-turn-upset-win-over-lions-into-bojangles-sponsored-2",
     "url": "https://www.sponconsports.com/p/the-panthers-trolled-analysts-to-sell-tea",
     "source_name": "SponCon Sports",
     "platform": "other",
@@ -111,17 +143,19 @@
       "The idea shows that reactive, emotional moments can be packaged as sponsor inventory instead of staying purely organic posts. Clubs can prepare sponsored templates ahead of time for upsets, milestones or rivalry wins, pairing them with a partner whose product or slang fits the message. Adding a promo code turns spikes in fan attention into measurable sales, giving partners clear results to justify renewals.",
       "The same newsletter highlights similar plays: Anthony Edwards brought back his Believe That Awards with PrizePicks as presenting sponsor, a dedicated Instagram account and fan predictions, while the New York Jets extended a tifo activation with Atlantic Health into text-to-win merchandise that also grows their SMS audience. The common lesson is to build original formats that partners can own and that push fans to act."
     ],
+    "relevant": true,
     "published_at": "2026-10-12T14:00:00+00:00",
     "created_at": "2026-10-18T07:14:03.909134+00:00",
     "edited_at": null,
+    "slug": "carolina-panthers-turn-upset-win-over-lions-into-bojangles-sponsored-2",
     "meta_title": null,
     "meta_description": null,
     "takeaways": [],
-    "faq": []
+    "faq": [],
+    "image_url": ""
   },
   {
     "id": 3,
-    "slug": "nhl-opening-week-sponsored-content-618-branded-posts-and-the-3",
     "url": "https://www.sponconsports.com/p/2026-nhl-sponcon-scouting-report",
     "source_name": "SponCon Sports",
     "platform": "other",
@@ -131,17 +165,19 @@
       "Standout ideas included Pittsburgh's U.S. Steel welder's helmet used as a win prop, Ottawa's First Blood promotion donating to blood services when the team scores first, and series names that naturally fit the partner, like casino-backed Winning Numbers. The report also flagged weaknesses: sponsors tagged in captions but invisible in video, and sweepstakes pushed mainly through organic posts when email, apps, SMS or paid media would convert better.",
       "For club social teams, the takeaways are practical: build branding into recurring traditions, match sponsor categories to moments such as milestones, arrivals or travel, and treat stats, X replies and carousel slides as extra inventory. Embedding offers inside content fans already want, like game recaps or score graphics, tends to outperform standalone promotional posts, and in-arena segments should be re-edited for feeds rather than posted raw."
     ],
+    "relevant": true,
     "published_at": "2026-10-08T14:00:00+00:00",
     "created_at": "2026-10-18T07:14:10.27088+00:00",
     "edited_at": null,
+    "slug": "nhl-opening-week-sponsored-content-618-branded-posts-and-the-3",
     "meta_title": null,
     "meta_description": null,
     "takeaways": [],
-    "faq": []
+    "faq": [],
+    "image_url": ""
   },
   {
     "id": 8,
-    "slug": "instagram-tests-reels-first-home-screen-and-a-paid-read-only-browsing-8",
     "url": "https://socialgeekpro.beehiiv.com/p/un-nuevo-modo-solo-lectura-que-no-sab-amos-que-necesit-bamos",
     "source_name": "SocialGeek News",
     "platform": "instagram",
@@ -151,17 +187,19 @@
       "For sports social teams, the Reels-first home is another signal that Meta is prioritising short video and recommended content over posts from followed accounts. Clubs that still lean on static graphics such as lineups, final scores or sponsor cards should plan vertical video versions built for discovery, with strong opening seconds and audio designed to be heard, since sound now plays automatically.",
       "The read-only mode is still only in testing, with no rollout announced, but it could mean some fans browse club profiles without leaving visible engagement. Teams should avoid judging content purely on likes and comments and keep watching reach, plays and shares. Meanwhile, recommended Reels offer clubs and athletes a chance to reach non-followers, so highlights, behind-the-scenes clips and player personality content become key tools for growing new audiences."
     ],
+    "relevant": true,
     "published_at": "2026-10-08T11:31:00+00:00",
     "created_at": "2026-10-18T07:14:45.569072+00:00",
     "edited_at": null,
+    "slug": "instagram-tests-reels-first-home-screen-and-a-paid-read-only-browsing-8",
     "meta_title": null,
     "meta_description": null,
     "takeaways": [],
-    "faq": []
+    "faq": [],
+    "image_url": ""
   },
   {
     "id": 4,
-    "slug": "visa-launches-gridlocked-a-second-original-f1-social-series-with-red-4",
     "url": "https://www.sponconsports.com/p/visa-doubles-down-on-f1-social-shows",
     "source_name": "SponCon Sports",
     "platform": "other",
@@ -171,17 +209,19 @@
       "For clubs, teams and leagues, the takeaway is that sponsors increasingly want recurring, branded formats, not one-off posts. Packaging athlete access into a repeatable social show gives partners a clear story, predictable inventory and a reason to renew. Simple competitive mechanics, like timed challenges or puzzles, let personalities shine while keeping production light enough to run across a season.",
       "The same newsletter highlights similar ideas worth adapting: Inter Miami's in-app live Q&A with players presented by a partner, the USWNT revealing its roster through Google Docs, and the Giants turning a question of the day into a Dunkin integration. Social teams can audit their regular formats and identify which ones could carry a natural partner integration."
     ],
+    "relevant": true,
     "published_at": "2026-10-05T14:00:00+00:00",
     "created_at": "2026-10-18T07:14:16.414665+00:00",
     "edited_at": null,
+    "slug": "visa-launches-gridlocked-a-second-original-f1-social-series-with-red-4",
     "meta_title": null,
     "meta_description": null,
     "takeaways": [],
-    "faq": []
+    "faq": [],
+    "image_url": ""
   },
   {
     "id": 5,
-    "slug": "how-akron-football-turned-a-viral-ticket-promotion-into-arby-s-5",
     "url": "https://www.sponconsports.com/p/akron-turned-virality-into-revenue",
     "source_name": "SponCon Sports",
     "platform": "other",
@@ -191,17 +231,19 @@
       "According to Mondo Metrics, campaign posts averaged 2.9x Akron's usual engagement over more than a month, while earned media from outlets like House of Highlights and SportsCenter delivered about 13.5 million views. Game day became an Arby's takeover, with branding on the play-call binder, foam fingers, press conference food and even regular highlights. One critique: a behind-the-scenes Reel that opened at an Arby's underperformed, showing sponsor requests should not override what fans came to see.",
       "The lesson for sports social teams is to treat breakout content as proof for partnerships. When a series, promotion or unsponsored campaign takes off, share the data with sales quickly, since proven performance is easier to sell than a concept. Package tentpole moments as full takeovers across pregame, highlights and postgame, keep the story going in chapters, and consider livestreaming draws with creators to boost reach and credibility."
     ],
+    "relevant": true,
     "published_at": "2026-10-01T14:00:00+00:00",
     "created_at": "2026-10-18T07:14:23.267145+00:00",
     "edited_at": null,
+    "slug": "how-akron-football-turned-a-viral-ticket-promotion-into-arby-s-5",
     "meta_title": null,
     "meta_description": null,
     "takeaways": [],
-    "faq": []
+    "faq": [],
+    "image_url": ""
   },
   {
     "id": 9,
-    "slug": "mosseri-explains-instagram-ranking-signals-engagement-rate-timing-9",
     "url": "https://socialgeekpro.beehiiv.com/p/mosseri-vuelve-a-hablar-del-algortimo",
     "source_name": "SocialGeek News",
     "platform": "instagram",
@@ -211,17 +253,19 @@
       "For club and league social teams, the message is to judge posts by engagement rate rather than view counts, and to schedule content around when fans are actually online, such as kick-off, half-time and full-time windows. Reposting broadcaster clips or fan videos is likely to be outranked by the original creator, so in-house footage from training, the tunnel and the dressing room should carry more weight.",
       "Mosseri also stressed constant experimentation, since what works one week may not work the next. Trial Reels let teams test formats with non-followers without risking their main feed, which suits matchday experiments, player challenges or new series. Instagram has also published a 2026 Reels creation guide covering editing, music, captions, Templates, Remix and Collab, offering a useful reference for refreshing workflows."
     ],
+    "relevant": true,
     "published_at": "2026-10-01T11:12:00+00:00",
     "created_at": "2026-10-18T07:14:51.344555+00:00",
     "edited_at": null,
+    "slug": "mosseri-explains-instagram-ranking-signals-engagement-rate-timing-9",
     "meta_title": null,
     "meta_description": null,
     "takeaways": [],
-    "faq": []
+    "faq": [],
+    "image_url": ""
   },
   {
     "id": 6,
-    "slug": "red-bull-s-max-vs-100-karting-stunt-drew-over-241-million-social-views-6",
     "url": "https://www.sponconsports.com/p/was-max-vs-100-worth-the-hype",
     "source_name": "SponCon Sports",
     "platform": "other",
@@ -231,17 +275,19 @@
       "The campaign worked as a system: regional Red Bull accounts localized the same creative, a launch-style post for Max's kart kept interest alive before race day, and participating creators told their own stories. Creator posts had a higher median engagement than brand posts. Instagram delivered both reach and engagement, TikTok drove outsized interaction, and Facebook Reels produced two of the three most-viewed posts.",
       "For clubs and leagues, the lesson is to design events worth documenting, invite creators and give them access rather than scripts, and judge each platform by its specific role instead of a single metric. Partnering with broadcasters for the livestream, as Red Bull did with ESPN and Disney+, can extend reach beyond owned channels and bring new fans into a team's own ecosystem."
     ],
+    "relevant": true,
     "published_at": "2026-09-24T14:00:00+00:00",
     "created_at": "2026-10-18T07:14:28.724637+00:00",
     "edited_at": null,
+    "slug": "red-bull-s-max-vs-100-karting-stunt-drew-over-241-million-social-views-6",
     "meta_title": null,
     "meta_description": null,
     "takeaways": [],
-    "faq": []
+    "faq": [],
+    "image_url": ""
   },
   {
     "id": 10,
-    "slug": "meta-launches-new-subscription-tiers-bundling-app-perks-with-ai-tools-10",
     "url": "https://socialgeekpro.beehiiv.com/p/siguen-aumentando-las-suscripciones-ma-s-ia-y-mucho-ma-s",
     "source_name": "SocialGeek News",
     "platform": "facebook",
@@ -251,12 +297,15 @@
       "For sports social teams, this signals that Meta's most capable AI features may increasingly sit behind paid tiers. Clubs, leagues and athletes running large Instagram and Facebook operations should assess whether these plans offer tools that speed up content production, personalise posts for different fan segments or deliver audience insights worth the cost compared with existing workflows.",
       "A practical approach is to trial a lower tier with one account, such as a women's team or academy channel, and measure output time and engagement before scaling. Athletes building personal brands could test AI-assisted content creation, while commercial teams can explore whether the tools help produce more tailored sponsor content across Meta's apps."
     ],
+    "relevant": true,
     "published_at": "2026-09-18T11:13:00+00:00",
     "created_at": "2026-10-18T07:14:58.289274+00:00",
     "edited_at": null,
+    "slug": "meta-launches-new-subscription-tiers-bundling-app-perks-with-ai-tools-10",
     "meta_title": null,
     "meta_description": null,
     "takeaways": [],
-    "faq": []
+    "faq": [],
+    "image_url": ""
   }
 ]
