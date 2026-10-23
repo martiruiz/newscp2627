@@ -27,10 +27,26 @@ const [mode, logFile] = process.argv.slice(2);
 const missing = (e) => /PGRST205|PGRST204|42P01|42703|schema cache|: 404 /.test(e.message);
 const slugify = (t) => { const s = String(t).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); return s.length > 70 ? s.slice(0, 70).replace(/-[^-]*$/, "") : s; };
 
+async function sourceImage(url) {
+  try {
+    const r = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0 (compatible; SCPBot/1.0; +https://sportscontentplaybook.com)", Accept: "text/html" }, signal: AbortSignal.timeout(10000), redirect: "follow" });
+    if (!r.ok) return null;
+    const html = (await r.text()).slice(0, 400000);
+    const tag = [...html.matchAll(/<meta\b[^>]*>/gi)].map((m) => m[0]).find((t) => /(?:property|name)=["'](?:og:image(?::secure_url)?|twitter:image(?::src)?)["']/i.test(t));
+    const src = tag && (tag.match(/content=["']([^"']+)["']/i) || [])[1];
+    return src ? new URL(src.replace(/&amp;/g, "&"), r.url).href : null;
+  } catch { return null; }
+}
+
 // Social News (published) and the SEO settings → content/news.json and content/seo.json (skipped until seo.sql is run)
 if (mode === "export") {
   try {
-    const news = await rest("news?select=id,slug,url,source_name,platform,title,paragraphs,published_at,created_at,edited_at,meta_title,meta_description,takeaways,faq&relevant=eq.true&order=published_at.desc.nullslast&limit=1000");
+    const news = await rest("news?select=*&relevant=eq.true&order=published_at.desc.nullslast&limit=1000");
+    // the preview picture of the source article (og:image), once per news item (supabase/news-images.sql); '' = none found
+    for (const n of news.filter((x) => "image_url" in x && x.image_url == null).slice(0, 40)) {
+      n.image_url = (await sourceImage(n.url)) || "";
+      await rest(`news?id=eq.${n.id}`, { method: "PATCH", body: JSON.stringify({ image_url: n.image_url }), headers: { Prefer: "return=minimal" } });
+    }
     for (const n of news.filter((x) => !x.slug)) {   // the page's URL is fixed the first time: editing the title later doesn't break links
       n.slug = `${slugify(n.title) || "news"}-${n.id}`;
       await rest(`news?id=eq.${n.id}`, { method: "PATCH", body: JSON.stringify({ slug: n.slug }), headers: { Prefer: "return=minimal" } });

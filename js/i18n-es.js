@@ -2362,4 +2362,8 @@ window.SCP_ES = {
   "Opponent preview": "Previa del rival",
   "Recovery day": "Día de recuperación",
   "Goal of the week": "Gol de la semana",
+  "Read the news →": "Leer la noticia →",
+  "Picture:": "Imagen:",
+  "You are in": "Estás en",
+  "Updated every day": "Actualizado cada día",
 };

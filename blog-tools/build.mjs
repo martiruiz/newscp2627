@@ -439,7 +439,7 @@ if (news) {
     const more = news.filter((o) => o.id !== n.id && o.platform === n.platform).concat(news.filter((o) => o.id !== n.id && o.platform !== n.platform)).slice(0, 3);
     const ld = { "@context": "https://schema.org", "@type": "NewsArticle", headline: cut(n.title, 110), description: desc, datePublished: n.published_at || n.created_at, dateModified: n.edited_at || n.published_at || n.created_at,
       author: { "@type": "Organization", name: "Sports Content Playbook", url: `${SITE}/` }, publisher: { "@type": "Organization", name: "Sports Content Playbook", logo: { "@type": "ImageObject", url: `${SITE}/assets/icon-logo-lg.png` } },
-      mainEntityOfPage: url, image: [`${SITE}/assets/hero-library.png`], articleSection: pf, isBasedOn: n.url, ...(tk.length ? { abstract: tk.join(" ") } : {}) };
+      mainEntityOfPage: url, image: [n.image_url || `${SITE}/assets/hero-library.png`], articleSection: pf, isBasedOn: n.url, ...(tk.length ? { abstract: tk.join(" ") } : {}) };
     const crumbs = { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: `${SITE}/` }, { "@type": "ListItem", position: 2, name: "Social News", item: `${SITE}/news.html` }, { "@type": "ListItem", position: 3, name: n.title, item: url }] };
     const faqLd = fq.length ? { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: fq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) } : null;
@@ -458,7 +458,7 @@ if (news) {
   <meta property="og:title" content="${esc(title)}">
   <meta property="og:description" content="${esc(desc)}">
   <meta property="og:url" content="${url}">
-  <meta property="og:image" content="${SITE}/assets/hero-library.png">
+  <meta property="og:image" content="${esc(n.image_url || `${SITE}/assets/hero-library.png`)}">
   <meta property="article:published_time" content="${esc(n.published_at || n.created_at)}">
   <meta property="article:section" content="${esc(pf)}">
   <meta name="twitter:card" content="summary_large_image">
@@ -484,7 +484,8 @@ if (news) {
         <h1 class="section-title section-title-md">${esc(n.title)}</h1>
         <p class="post-meta">Social News · <time datetime="${day}">${fmtDate(day)}</time> · Source: <a href="${esc(n.url)}" target="_blank" rel="noopener nofollow">${esc(n.source_name)}</a></p>
       </header>
-      <div class="post-body">
+${n.image_url ? `      <figure class="post-cover news-page-cover"><img src="${esc(n.image_url)}" alt="${esc(n.title)}" referrerpolicy="no-referrer" onerror="this.parentNode.remove()"><figcaption>Picture: <a href="${esc(n.url)}" target="_blank" rel="noopener nofollow">${esc(n.source_name)}</a></figcaption></figure>
+` : ""}      <div class="post-body">
 ${tk.length ? `        <aside class="post-tldr" aria-label="Key takeaways">
           <p class="post-tldr-k">Key takeaways</p>
           <ul>${tk.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
@@ -535,14 +536,14 @@ ${more.map(newsRow).join("\n")}
 // one news item in a list (same markup as js/news.js)
 function newsRow(n) {
   const icon = n.platform === "other" ? "all" : n.platform;
-  return `        <article class="news-row" id="news-${n.id}" data-platform="${esc(n.platform)}">
-          <div class="news-row-text">
-            <span class="news-meta"><b>${esc((PF[n.platform] || n.platform).toUpperCase())}</b> ${fmtDate(newsDay(n))}</span>
+  return `        <article class="news-row nwc" id="news-${n.id}" data-platform="${esc(n.platform)}">
+          <a class="nwc-img${n.image_url ? "" : " is-empty"}" href="news/${esc(n.slug)}.html" tabindex="-1" aria-hidden="true">${n.image_url ? `<img src="${esc(n.image_url)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentNode.classList.add('is-empty');this.remove()">` : ""}<span class="nwc-pf"><img src="assets/pf-${esc(icon)}.svg" alt=""></span></a>
+          <div class="nwc-body">
+            <span class="news-meta"><b>${esc((PF[n.platform] || n.platform).toUpperCase())}</b> <time>${fmtDate(newsDay(n))}</time> <span>${esc(n.source_name)}</span></span>
             <h2><a href="news/${esc(n.slug)}.html">${esc(n.title)}</a></h2>
-            <p>${esc((n.paragraphs || [])[0] || "")}</p>
-            <a class="news-source" href="news/${esc(n.slug)}.html">Read more →</a>
+${(n.paragraphs || []).slice(0, 2).map((t) => `            <p>${esc(t)}</p>`).join("\n")}
+            <div class="nwc-foot"><a class="nwc-more" href="news/${esc(n.slug)}.html">Read the news →</a><a class="news-source" href="${esc(n.url)}" target="_blank" rel="noopener nofollow">Source: ${esc(n.source_name)} ↗</a></div>
           </div>
-          <div class="news-row-icon" aria-hidden="true"><img src="assets/pf-${esc(icon)}.svg" alt=""></div>
         </article>`;
 }
 

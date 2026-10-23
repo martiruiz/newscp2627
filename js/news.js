@@ -22,17 +22,19 @@
   const fmtDate = (iso) =>
     new Date(iso).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short", year: "numeric" });
 
+  // one news item: the source's picture, network, date, title, at most 2 paragraphs, link to its page and to the source
+  // (same markup as blog-tools/build.mjs → newsRow, which writes the first ones into the page for Google)
   const row = (n) => {
-    const icon = n.platform === "other" ? "all" : n.platform;
+    const icon = n.platform === "other" ? "all" : n.platform, page = n.slug ? `news/${esc(n.slug)}.html` : esc(n.url);
     return `
-      <article class="news-row" id="news-${esc(n.id)}" data-platform="${esc(n.platform)}">
-        <div class="news-row-text">
-          <span class="news-meta"><b>${esc((LABELS[n.platform] || n.platform).toUpperCase())}</b> ${esc(fmtDate(n.published_at))}</span>
-          <h2>${n.slug ? `<a href="news/${esc(n.slug)}.html">${esc(n.title)}</a>` : esc(n.title)}</h2>
-          ${(n.paragraphs || []).map((p) => `<p>${esc(p)}</p>`).join("")}
-          <a class="news-source" href="${esc(n.url)}" target="_blank" rel="noopener">Source: ${esc(n.source_name)} ↗</a>
+      <article class="news-row nwc" id="news-${esc(n.id)}" data-platform="${esc(n.platform)}">
+        <a class="nwc-img${n.image_url ? "" : " is-empty"}" href="${page}" tabindex="-1" aria-hidden="true">${n.image_url ? `<img src="${esc(n.image_url)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentNode.classList.add('is-empty');this.remove()">` : ""}<span class="nwc-pf"><img src="assets/pf-${esc(icon)}.svg" alt=""></span></a>
+        <div class="nwc-body">
+          <span class="news-meta"><b>${esc((LABELS[n.platform] || n.platform).toUpperCase())}</b> <time>${esc(fmtDate(n.published_at))}</time> <span>${esc(n.source_name)}</span></span>
+          <h2><a href="${page}">${esc(n.title)}</a></h2>
+          ${(n.paragraphs || []).slice(0, 2).map((p) => `<p>${esc(p)}</p>`).join("")}
+          <div class="nwc-foot">${n.slug ? `<a class="nwc-more" href="${page}">Read the news →</a>` : ""}<a class="news-source" href="${esc(n.url)}" target="_blank" rel="noopener">Source: ${esc(n.source_name)} ↗</a></div>
         </div>
-        <div class="news-row-icon" aria-hidden="true"><img src="assets/pf-${esc(icon)}.svg" alt=""></div>
       </article>`;
   };
 
