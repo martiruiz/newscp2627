@@ -5,9 +5,8 @@
 // member's entitlements through SCP_entitlements(), which then answers as that plan would. Only for staff; the data the
 // database lets them read doesn't change, only what the pages show and lock.
 const VIEW_AS_PLANS = {
+  // the plans on sale now (pricing): Library and Library + AI + Content Plan; the old Library + AI / Library + Content Plan are gone
   library: { name: "Library", ai: false, planner: false, units: 0 },
-  library_ai: { name: "Library + AI", ai: true, planner: false, units: 30 },
-  library_planner: { name: "Library + Content Plan", ai: false, planner: true, units: 0 },
   all_access: { name: "Library + AI + Content Plan", ai: true, planner: true, units: 30 },
 };
 window.SCP_VIEW_AS_PLANS = VIEW_AS_PLANS;
