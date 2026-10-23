@@ -263,7 +263,7 @@ const faq = (p) => (Array.isArray(p.faq) ? p.faq : []).filter((f) => f && String
 fs.mkdirSync(path.join(ROOT, "blog"), { recursive: true });
 fs.mkdirSync(path.join(ROOT, "es/blog"), { recursive: true });
 function postPage(src, lang) {
-  const p = lang === "es" ? inEs(src) : src, es = lang === "es", both = !!src.es;
+  const p = lang === "es" ? inEs(src) : src, es = lang === "es", both = !!src.es, t = (en, sp) => (es ? sp : en);
   const url = `${SITE}/${es ? "es/" : ""}blog/${p.slug}.html`;
   const img = `${SITE}/assets/blog/${p.image.file}`;
   const embeds = renderEmbeds(linkKeywords(normalizeKeywordCase(p.body_html)));
@@ -350,16 +350,16 @@ ${(p.keywords || []).map((k) => `  <meta property="article:tag" content="${esc(k
       <header class="article-head">
         <span class="eyebrow">${esc(typeLabel(p.type))}</span>
         <h1 class="section-title section-title-md">${esc(p.title)}</h1>
-        <p class="post-meta">By ${esc(p.author || "Martí Ruiz")} · <time datetime="${p.date}">${fmtDate(p.date, lang)}</time> · ${minutes} min read</p>${both ? "" : `
+        <p class="post-meta">${t("By", "Por")} ${esc(p.author || "Martí Ruiz")} · <time datetime="${p.date}">${fmtDate(p.date, lang)}</time> · ${minutes} ${t("min read", "min de lectura")}</p>${both ? "" : `
         <p class="post-lang-note" data-lang-block="es" hidden>This article is only available in English.</p>`}
       </header>
       <figure class="post-cover">
         <img src="assets/blog/${esc(p.image.file)}" alt="${esc(p.image.alt)}" title="${esc(p.image.title || p.title)}" width="1200" height="630" fetchpriority="high">
-${p.image.credit ? `        <figcaption>Photo: <a href="${esc(p.image.credit.source_url)}" target="_blank" rel="noopener nofollow">${esc(p.image.credit.author)}</a>${p.image.credit.license ? ` · ${p.image.credit.license_url ? `<a href="${esc(p.image.credit.license_url)}" target="_blank" rel="noopener nofollow">${esc(p.image.credit.license)}</a>` : esc(p.image.credit.license)}` : ""}</figcaption>` : ""}
+${p.image.credit ? `        <figcaption>${t("Photo", "Foto")}: <a href="${esc(p.image.credit.source_url)}" target="_blank" rel="noopener nofollow">${esc(p.image.credit.author)}</a>${p.image.credit.license ? ` · ${p.image.credit.license_url ? `<a href="${esc(p.image.credit.license_url)}" target="_blank" rel="noopener nofollow">${esc(p.image.credit.license)}</a>` : esc(p.image.credit.license)}` : ""}</figcaption>` : ""}
       </figure>
       <div class="post-body">
-${takeaways(p).length ? `        <aside class="post-tldr" aria-label="Key takeaways">
-          <p class="post-tldr-k">Key takeaways</p>
+${takeaways(p).length ? `        <aside class="post-tldr" aria-label="${t("Key takeaways", "Puntos clave")}">
+          <p class="post-tldr-k">${t("Key takeaways", "Puntos clave")}</p>
           <ul>${takeaways(p).map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
         </aside>
 ` : ""}${body}
@@ -374,12 +374,12 @@ ${takeaways(p).length ? `        <aside class="post-tldr" aria-label="Key takeaw
           <p class="post-cta-more"><a class="link-gold" href="pricing.html">See plans and pricing →</a></p>
         </aside>
 ${faq(p).length ? `        <section class="post-faq">
-          <h2>Frequently asked questions</h2>
+          <h2>${t("Frequently asked questions", "Preguntas frecuentes")}</h2>
 ${faq(p).map((f) => `          <details><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join("\n")}
         </section>
 ` : ""}${p.author_bio ? `        <aside class="post-author"><span class="post-author-av">${esc((p.author || "M").slice(0, 1))}</span><p><b>${esc(p.author || "Martí Ruiz")}</b><span>${esc(p.author_bio)}</span></p></aside>
 ` : ""}${(p.sources || []).length ? `        <section class="post-sources">
-          <h2>Sources</h2>
+          <h2>${t("Sources", "Fuentes")}</h2>
           <ul>${p.sources.map((s) => `<li><a href="${esc(s.url)}" target="_blank" rel="noopener nofollow">${esc(s.name)}</a></li>`).join("")}</ul>
         </section>` : ""}
       </div>
@@ -457,7 +457,7 @@ if (news) {
   fs.mkdirSync(path.join(ROOT, "es/news"), { recursive: true });
   for (const f of fs.readdirSync(path.join(ROOT, "es/news")).filter((f) => f.endsWith(".html") && !news.some((n) => n.es && `${n.slug}.html` === f))) { fs.unlinkSync(path.join(ROOT, "es/news", f)); console.log(`  − es/news/${f}`); }
   const newsPage = (src, lang) => {
-    const n = lang === "es" ? inEs(src) : src, es = lang === "es", both = !!src.es;
+    const n = lang === "es" ? inEs(src) : src, es = lang === "es", both = !!src.es, t = (en, sp) => (es ? sp : en);
     const url = `${SITE}/${es ? "es/" : ""}news/${n.slug}.html`, title = n.meta_title || n.title, desc = newsDesc(n), day = newsDay(n);
     const tk = takeaways(n), fq = faq(n), pf = PF[n.platform] || n.platform, icon = n.platform === "other" ? "all" : n.platform;
     const more = news.filter((o) => o.id !== n.id && o.platform === n.platform).concat(news.filter((o) => o.id !== n.id && o.platform !== n.platform)).slice(0, 3);
@@ -506,18 +506,18 @@ if (news) {
       <header class="article-head">
         <span class="news-page-pf"><img src="assets/pf-${esc(icon)}.svg" alt="">${esc(pf)}</span>
         <h1 class="section-title section-title-md">${esc(n.title)}</h1>
-        <p class="post-meta">Social News · <time datetime="${day}">${fmtDate(day, lang)}</time> · Source: <a href="${esc(n.url)}" target="_blank" rel="noopener nofollow">${esc(n.source_name)}</a></p>
+        <p class="post-meta">Social News · <time datetime="${day}">${fmtDate(day, lang)}</time> · ${t("Source", "Fuente")}: <a href="${esc(n.url)}" target="_blank" rel="noopener nofollow">${esc(n.source_name)}</a></p>
       </header>
-${n.image_url ? `      <figure class="post-cover news-page-cover"><img src="${esc(n.image_url)}" alt="${esc(n.title)}" referrerpolicy="no-referrer" onerror="this.parentNode.remove()"><figcaption>Picture: <a href="${esc(n.url)}" target="_blank" rel="noopener nofollow">${esc(n.source_name)}</a></figcaption></figure>
+${n.image_url ? `      <figure class="post-cover news-page-cover"><img src="${esc(n.image_url)}" alt="${esc(n.title)}" referrerpolicy="no-referrer" onerror="this.parentNode.remove()"><figcaption>${t("Picture", "Imagen")}: <a href="${esc(n.url)}" target="_blank" rel="noopener nofollow">${esc(n.source_name)}</a></figcaption></figure>
 ` : ""}      <div class="post-body">
-${tk.length ? `        <aside class="post-tldr" aria-label="Key takeaways">
-          <p class="post-tldr-k">Key takeaways</p>
+${tk.length ? `        <aside class="post-tldr" aria-label="${t("Key takeaways", "Puntos clave")}">
+          <p class="post-tldr-k">${t("Key takeaways", "Puntos clave")}</p>
           <ul>${tk.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
         </aside>
 ` : ""}${(n.paragraphs || []).map((t) => `        <p>${esc(t)}</p>`).join("\n")}
-        <p class="news-page-src"><a class="link-gold" href="${esc(n.url)}" target="_blank" rel="noopener nofollow">Read the original article on ${esc(n.source_name)} ↗</a></p>
+        <p class="news-page-src"><a class="link-gold" href="${esc(n.url)}" target="_blank" rel="noopener nofollow">${t("Read the original article on", "Lee el artículo original en")} ${esc(n.source_name)} ↗</a></p>
 ${fq.length ? `        <section class="post-faq">
-          <h2>Frequently asked questions</h2>
+          <h2>${t("Frequently asked questions", "Preguntas frecuentes")}</h2>
 ${fq.map((f) => `          <details><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join("\n")}
         </section>
 ` : ""}        <aside class="post-cta post-cta-end">
