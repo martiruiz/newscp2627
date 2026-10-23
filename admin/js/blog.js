@@ -171,14 +171,27 @@
           </div>
           <div class="bl-sec bl-panes" data-epane="sources" hidden>
           <section class="panel panel-pad bl-ecard">
-            <h3 class="bl-card-h"><span class="bl-n">1</span>Sources <small class="muted">Cited sources build trust with Google and AI</small></h3>
-            <label>Sources <small class="muted bl-sub">One per line: name | link</small><textarea class="input" name="sources" rows="5">${esc(lines(d.sources))}</textarea></label>
-            <label>Posts shown in the article <small class="muted bl-sub">One per line: name | link — every post the article talks about.</small><textarea class="input" name="references" rows="5">${esc(lines(d.references))}</textarea></label>
+            <h3 class="bl-card-h"><span class="bl-n">1</span>Sources <small class="muted">Where the facts come from — cited sources build trust with Google and AI</small><span class="bl-cnt" data-cnt="sources"></span></h3>
+            <div class="bl-links" data-links="sources"></div>
+            <button type="button" class="btn btn-ghost btn-sm bl-add" data-link-add="sources">${icon("plus")}Add a source</button>
+            <textarea name="sources" hidden>${esc(lines(d.sources))}</textarea>
           </section>
           <section class="panel panel-pad bl-ecard">
-            <h3 class="bl-card-h"><span class="bl-n">2</span>Call to action <small class="muted">The box in the middle of the article</small></h3>
-            <label>CTA title<input class="input" name="cta_title" value="${esc(d.cta_title || "")}" placeholder="Find your next winning post in seconds"></label>
-            <label>CTA text<textarea class="input" name="cta_text" rows="2">${esc(d.cta_text || "")}</textarea></label>
+            <h3 class="bl-card-h"><span class="bl-n">2</span>Posts shown in the article <small class="muted">Every post the article talks about must be shown in it (Content → Social post)</small><span class="bl-cnt" data-cnt="references"></span></h3>
+            <div class="bl-links" data-links="references"></div>
+            <button type="button" class="btn btn-ghost btn-sm bl-add" data-link-add="references">${icon("plus")}Add a post</button>
+            <textarea name="references" hidden>${esc(lines(d.references))}</textarea>
+          </section>
+          <section class="panel panel-pad bl-ecard">
+            <h3 class="bl-card-h"><span class="bl-n">3</span>Call to action <small class="muted">The box in the middle of the article</small></h3>
+            <div class="bl-cta-ed">
+              <div class="bl-cta-f">
+                <label>CTA title<input class="input" name="cta_title" value="${esc(d.cta_title || "")}" placeholder="Find your next winning post in seconds"></label>
+                <label>CTA text<textarea class="input" name="cta_text" rows="4" placeholder="Browse thousands of proven sports posts filtered by sport, format, platform and performance — updated every day.">${esc(d.cta_text || "")}</textarea></label>
+              </div>
+              <aside class="bl-cta-prev" aria-label="Preview"><small class="bl-cv-k">${icon("eye")}How it looks in the article</small>
+                <div class="bl-cta-box"><p class="k">Sports Content Playbook</p><b data-cta-t></b><p data-cta-x></p><span class="bl-cta-btns"><i>Try It For Free</i><i>Book a 30-min demo</i></span></div></aside>
+            </div>
           </section>
           </div>
         </form>
@@ -318,11 +331,44 @@
         if (fix.includes("faq") && r.faq?.length) { const have = [...fm.querySelectorAll(".bl-faq-row")].filter((x) => x.querySelector("[name=faq_q]").value.trim()); $("[data-faq]").innerHTML = have.map((x) => x.outerHTML).join("") + r.faq.map(faqRow).join(""); }
         audit();
         const left = lastChecks.filter(([, v]) => !v).map(([t]) => t);
-        A.toast(left.length ? `Improved. Still for you: ${left.join(" · ")}. Review and Save.` : "Improved to 100. Review the changes and Save.");
+        if (!(await save())) return;   // applied and saved straight away
+        A.toast(left.length ? `Improved and saved. Still for you: ${left.join(" · ")}` : "Improved to 100 and saved");
       } catch (x) { fail(x); }
       btn.disabled = false; btn.innerHTML = label;
     });
     $("[data-kw-edit]").addEventListener("click", (e) => { fm.keywords.hidden = !fm.keywords.hidden; e.currentTarget.lastChild.textContent = fm.keywords.hidden ? "Edit the list" : "Done"; if (!fm.keywords.hidden) fm.keywords.focus(); });
+    const parseLines = (v) => v.split("\n").map((l) => l.split("|").map((x) => x.trim())).filter(([nm, u]) => nm && u).map(([name, url]) => ({ name, url }));
+    // sources and posts: one row each (name + link), kept in the hidden "name | link" fields the blog is built from
+    const host = (u) => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return ""; } };
+    const PFN = (u) => (/instagram/.test(u) ? "instagram" : /tiktok/.test(u) ? "tiktok" : /youtu/.test(u) ? "youtube" : /twitter\.com|x\.com/.test(u) ? "x" : /facebook/.test(u) ? "facebook" : /linkedin/.test(u) ? "linkedin" : "");
+    const linkRow = (kind, it = {}) => { const pf = kind === "references" ? PFN(it.url || "") : "";
+      return `<div class="bl-link" data-row="${kind}"><span class="bl-link-av">${pf ? `<img src="../assets/pf-${pf}.svg" alt="">` : esc((host(it.url || "") || "?").slice(0, 1).toUpperCase())}</span>
+        <div class="bl-link-f"><input class="input" data-k="name" value="${esc(it.name || "")}" placeholder="${kind === "sources" ? "Front Office Sports – the article's title" : "Chicago Cubs – Nine Innings to Love, Episode 1 (TikTok)"}"><input class="input mono" data-k="url" value="${esc(it.url || "")}" placeholder="https://…"></div>
+        <span class="bl-link-st" data-st></span>
+        <a class="icon-btn" href="${esc(it.url || "#")}" target="_blank" rel="noopener" title="Open" aria-label="Open" data-open>${icon("external")}</a>
+        <button type="button" class="icon-btn" data-row-del title="Remove" aria-label="Remove">${icon("trash")}</button></div>`; };
+    const drawLinks = (kind) => { const list = parseLines(fm[kind].value); $(`[data-links="${kind}"]`).innerHTML = list.map((it) => linkRow(kind, it)).join("") || `<p class="bl-empty muted">${kind === "sources" ? "No sources yet." : "No posts yet."}</p>`; linkState(); };
+    const syncLinks = (kind) => { fm[kind].value = [...main.querySelectorAll(`[data-row="${kind}"]`)].map((r) => [r.querySelector('[data-k="name"]').value.trim(), r.querySelector('[data-k="url"]').value.trim()]).filter(([n, u]) => n || u).map(([n, u]) => `${n} | ${u}`).join("\n"); linkState(); audit(); };
+    function linkState() {
+      const body = fm.body_html.value.toLowerCase(), norm = (u) => u.toLowerCase().replace(/^https?:\/\/(www\.)?/, "").replace(/twitter\.com/, "x.com").replace(/[?#].*$/, "").replace(/\/$/, "");
+      for (const r of main.querySelectorAll("[data-row]")) {
+        const u = r.querySelector('[data-k="url"]').value.trim(), ok = /^https?:\/\/\S+\.\S+/.test(u), st = r.querySelector("[data-st]");
+        r.querySelector("[data-open]").href = ok ? u : "#";
+        if (r.dataset.row === "references") { const shown = ok && body.replace(/twitter\.com/g, "x.com").includes(norm(u)); st.className = `bl-link-st ${shown ? "ok" : "warn"}`; st.innerHTML = shown ? `${icon("check")}In the article` : `${icon("alert")}Not in the article`; }
+        else { st.className = `bl-link-st ${ok ? "ok" : u ? "warn" : ""}`; st.innerHTML = ok ? `${icon("check")}${esc(host(u))}` : u ? `${icon("alert")}Check the link` : ""; }
+        const av = r.querySelector(".bl-link-av"); if (r.dataset.row === "sources") av.textContent = (host(u) || "?").slice(0, 1).toUpperCase();
+      }
+      for (const k of ["sources", "references"]) { const n = parseLines(fm[k].value).length; $(`[data-cnt="${k}"]`).textContent = n; $(`[data-cnt="${k}"]`).className = `bl-cnt ${k === "sources" ? (n >= 2 ? "ok" : "warn") : ""}`; }
+      $("[data-cta-t]").textContent = fm.cta_title.value.trim() || fm.cta_title.placeholder;
+      $("[data-cta-x]").textContent = fm.cta_text.value.trim() || fm.cta_text.placeholder;
+    }
+    drawLinks("sources"); drawLinks("references");
+    main.querySelectorAll("[data-link-add]").forEach((b) => b.addEventListener("click", () => { const k = b.dataset.linkAdd, box = $(`[data-links="${k}"]`); box.querySelector(".bl-empty")?.remove(); box.insertAdjacentHTML("beforeend", linkRow(k)); box.lastElementChild.querySelector("input").focus(); }));
+    main.querySelectorAll("[data-links]").forEach((box) => {
+      box.addEventListener("input", () => syncLinks(box.dataset.links));
+      box.addEventListener("click", (e) => { if (e.target.closest("[data-row-del]")) { e.target.closest("[data-row]").remove(); syncLinks(box.dataset.links); } });
+    });
+    fm.cta_title.addEventListener("input", linkState); fm.cta_text.addEventListener("input", linkState);
     // FAQ rows
     main.querySelector("[data-faq-add]").addEventListener("click", () => { $("[data-faq]").insertAdjacentHTML("beforeend", faqRow()); audit(); });
     $("[data-faq]").addEventListener("click", (e) => { if (e.target.closest("[data-faq-del]")) { e.target.closest(".bl-faq-row").remove(); audit(); } });
@@ -376,8 +422,7 @@
         audit(); measure(); A.toast("Cover uploaded. Save to keep it.");
       } catch (x) { fail(x); }
     });
-    const parseLines = (v) => v.split("\n").map((l) => l.split("|").map((x) => x.trim())).filter(([nm, u]) => nm && u).map(([name, url]) => ({ name, url }));
-    $("[data-save]").addEventListener("click", async () => {
+    async function save() {
       const slug = isNew ? slugify(fm.slug.value || fm.title.value) : p.slug;
       if (!fm.title.value.trim() || !slug) return fail(new Error("The post needs a title."));
       if (isNew && posts.some((x) => x.slug === slug)) return fail(new Error("There's already a post with that URL."));
@@ -397,7 +442,9 @@
       A.toast(fm.draft.checked ? "Saved as a draft" : "Saved — on the website within the hour");
       const { data: fresh } = await A.db.from("blog_posts").select("slug,data,draft,updated_at,published_at,publish_error").order("updated_at", { ascending: false });
       posts = fresh || posts; editor(posts.find((x) => x.slug === slug));
-    });
+      return true;
+    }
+    $("[data-save]").addEventListener("click", () => save());
     main.querySelectorAll("[data-back]").forEach((b) => b.addEventListener("click", (e) => { e.preventDefault(); list(); }));
   }
 
