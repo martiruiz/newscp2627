@@ -170,8 +170,8 @@
     const T = (t, v = {}) => (window.tx ? window.tx(t, v) : t.replace(/\{(\w+)\}/g, (m, k) => v[k] ?? m));
     try {
       const j = await (await fetch("content/latest.json", { cache: "no-cache" })).json();
-      if (j.blog && box("blog")) { bg(box("blog"), j.blog.image); box("blog").querySelector("[data-rv-t]").textContent = j.blog.title; const age = (Date.now() - new Date(`${j.blog.date}T12:00:00`)) / 864e5; box("blog").querySelector("em").textContent = age <= 7 ? T("New") : T(when(j.blog.date)); box("blog").closest("a").href = j.blog.href; }
-      if (j.news && box("news")) { bg(box("news"), j.news.image); box("news").querySelector("[data-rv-t]").textContent = j.news.title; box("news").querySelector("[data-rv-d]").textContent = T(when(j.news.date)); box("news").closest("a").href = j.news.href; }
+      if (j.blog && box("blog")) { bg(box("blog"), j.blog.image); box("blog").querySelector("[data-rv-t]").textContent = j.blog.title; const age = (Date.now() - new Date(`${j.blog.date}T12:00:00`)) / 864e5; box("blog").querySelector("em").textContent = age <= 7 ? T("New") : T(when(j.blog.date)); }
+      if (j.news && box("news")) { bg(box("news"), j.news.image); box("news").querySelector("[data-rv-t]").textContent = j.news.title; box("news").querySelector("[data-rv-d]").textContent = T(when(j.news.date)); }
     } catch {}
     const db = window.SCP_AUTH?.client, sv = box("saved");
     if (!db || !sv) return;
