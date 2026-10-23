@@ -21,13 +21,14 @@
   const role = (me.profile.role || "user").toLowerCase();
   const name = [me.profile.first_name, me.profile.last_name].filter(Boolean).join(" ") || u.email.split("@")[0];
   const initials = String(name).trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
+  const photo = me.profile.avatar_url || u.user_metadata?.avatar_url || "";   // the profile photo (site → My profile), else initials
   const fact = (i, k, v) => `<div class="ac-fact"><span class="ac-fact-ic">${ic(I[i])}</span><span><small>${k}</small><b>${v}</b></span></div>`;
 
   main.innerHTML = `
     <div class="page-head"><div><h1>Account</h1><p>Manage your admin account settings</p></div></div>
     <div class="ac">
       <section class="ac-card ac-hero">
-        <span class="ac-avatar">${esc(initials)}</span>
+        <span class="ac-avatar">${photo ? `<img src="${esc(photo)}" alt="">` : esc(initials)}</span>
         <div class="ac-who"><b>${esc(name)}</b><span>${esc(u.email)}</span></div>
         <span class="ac-role${role === "superadmin" ? " is-super" : ""}">${ic(I.shield)}${esc(role === "superadmin" ? "Superadmin" : role === "admin" ? "Admin" : role)}</span>
         <div class="ac-facts">
