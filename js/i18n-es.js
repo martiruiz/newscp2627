@@ -2422,4 +2422,9 @@ window.SCP_ES = {
   "Each board is a folder with the posts you saved": "Cada tablero es una carpeta con los posts que guardaste",
   "A folder for the ideas you want to make": "Una carpeta para las ideas que quieres hacer",
   "Ideas": "Ideas",
+  "Yesterday": "Ayer",
+  "Is it made for clubs like mine?": "¿Sirve para un club como el mío?",
+  "Yes: real posts from 770+ clubs and 110+ competitions.": "Sí: posts reales de más de 770 clubes y 110 competiciones.",
+  "{n} posts · {b} boards": "{n} posts · {b} tableros",
+  "Save ideas from the library": "Guarda ideas de la biblioteca",
 };

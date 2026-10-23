@@ -382,7 +382,7 @@ ${related.map(card).join("\n")}
   ${footer}
 
   <script src="js/config.js?v=20261021a"></script>
-  <script src="js/nav-menu.js?v=20261025f"></script>
+  <script src="js/nav-menu.js"></script>
   <script src="js/lead-flow.js?v=20261020b"></script>
   <script src="js/promo-bar.js?v=20261020a"></script>
   <script src="js/main.js"></script>
@@ -594,6 +594,13 @@ for (const [file, name] of Object.entries(MAIN_PAGES)) {
   if (tags.length) html = html.replace("</head>", `  <!-- SEO-META:START -->\n  ${tags.join("\n  ")}\n  <!-- SEO-META:END -->\n</head>`);
   write(file, html);
 }
+
+// ---------- The menu's Resources panel (js/nav-menu.js): the newest article and news item ----------
+const lastPost = posts[0], lastNews = news?.[0];
+write("content/latest.json", `${JSON.stringify({
+  blog: lastPost ? { title: lastPost.title, href: `blog/${lastPost.slug}.html`, image: `assets/blog/${lastPost.image.file}`, date: lastPost.date } : null,
+  news: lastNews ? { title: lastNews.title, href: `news/${lastNews.slug}.html`, image: lastNews.image_url || "", platform: lastNews.platform, date: newsDay(lastNews) } : null,
+}, null, 2)}\n`);
 
 // ---------- Sitemap & robots ----------
 const pages = ["", "pricing.html", "blog.html", "news.html", "contact.html", "signup.html"];

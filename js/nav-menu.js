@@ -24,13 +24,14 @@
       ],
     },
     {
-      // no heading: the links go straight in one row (three columns; two when there are four)
-      label: "Resources", type: "about",
-      links: [
-        { title: "Saved boards", desc: "The posts you saved, by board.", href: "saved.html", member: true },
-        { title: "Blog", desc: "Ideas and trends in sports social.", href: "blog.html" },
-        { title: "Social News", desc: "What's happening on club accounts.", href: "news.html" },
-        { title: "FAQ", desc: "Everything you want to know before starting.", href: "index.html#faq" },
+      // cards like Platform, each with its own colour (not Platform's gold / purple / blue: orange, pink, red, silver) and a little visual: your saved boards (members), the newest article,
+      // the newest news item (content/latest.json, written by blog-tools/build.mjs) and a question & answer
+      label: "Resources", type: "resources",
+      cards: [
+        { vis: "saved", icon: "bookmark", title: "Saved boards", href: "saved.html", acc: "255, 145, 77", member: true },
+        { vis: "blog", icon: "file-text", title: "Blog", href: "blog.html", acc: "244, 114, 182" },
+        { vis: "news", icon: "newspaper", title: "Social News", href: "news.html", acc: "255, 92, 92" },
+        { vis: "faq", icon: "help-circle", title: "FAQ", href: "index.html#faq", acc: "186, 196, 214" },
       ],
       featured: { eyebrow: "What is SCP?", title: "Sports Content Playbook in 2 minutes", href: "index.html#what-is-scp" },
     },
@@ -80,6 +81,8 @@
     "life-buoy": '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="m4.93 4.93 4.24 4.24M14.83 9.17l4.24-4.24M14.83 14.83l4.24 4.24M9.17 14.83l-4.24 4.24"/>',
     mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/>',
     search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+    newspaper: '<path d="M15 18h-5M18 14h-8"/><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-4 0v-9a2 2 0 0 1 2-2h2"/><rect x="10" y="6" width="8" height="4" rx="1"/>',
+    "help-circle": '<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/>',
   };
   const icon = (n) => `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ""}</svg>`;
   const CHEV = `<svg class="mm-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>`;
@@ -93,6 +96,13 @@
     ai: `<span class="tool-vis tv-ai" aria-hidden="true"><span class="tv-ai-img" style="background-image:url(assets/ai-example-messi.jpg)"><i class="tv-scan"></i></span><span class="tv-ai-rows"><span><b>Hook</b><i></i></span><span><b>Why it works</b><i></i></span><span><b>Your version</b><i></i></span></span></span>`,
     cp: `<span class="tool-vis tv-cp" aria-hidden="true"><span class="tv-week">${["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d, i) => `<span><small>${d}</small>${Array.from({ length: [2, 3, 2, 1, 2, 3, 1][i] }, (_, k) => `<i style="--k:${i + k}"></i>`).join("")}</span>`).join("")}</span><span class="tv-bar"><i></i></span></span>`,
   };
+  // Resources: what shows before the newest article / news / your boards arrive (filled in by fillResources)
+  const RES_VIS = {
+    saved: `<span class="mm-rv-folder"><i></i><i></i><i></i></span><span class="mm-rv-tag" data-rv-n></span>`,
+    blog: `<span class="mm-rv-cap"><em>New</em><b data-rv-t></b></span>`,
+    news: `<span class="mm-rv-cap"><em><i class="mm-live"></i><span data-rv-d>Updated every day</span></em><b data-rv-t></b></span>`,
+    faq: `<span class="mm-rv-q">Is it made for clubs like mine?</span><span class="mm-rv-a">Yes: real posts from 770+ clubs and 110+ competitions.</span>`,
+  };
   const show = (it) => !it.member || member;
   // hidden for members until their entitlements say they have no plan (staff counts as having one)
   const np = member ? " data-noplan hidden" : "";
@@ -103,6 +113,14 @@
       <div class="mm-pcols">${m.pillars.map((p) => `<a class="mm-pillar" href="${esc(member && p.memberHref ? p.memberHref : p.href)}" style="--acc:${p.acc}">
         ${VIS[p.vis] || ""}<span class="mm-pillar-h"><span class="mm-ic">${icon(p.icon)}</span><b>${esc(p.title)}</b></span></a>`).join("")}</div>
       ${m.more?.filter(show).length ? `<div class="mm-ptab"${m.more.some((l) => l.noPlan) ? np : ""}>${m.more.filter(show).map((l) => `<a href="${esc(l.href)}">${icon(l.icon)}${esc(l.title)}</a>`).join("")}</div>` : ""}</div>`;
+    if (m.type === "resources") {
+      const cards = m.cards.filter(show);
+      return `<div class="mm-panel mm-pillars mm-res" id="${id}" role="region" aria-label="${esc(m.label)}">
+      <div class="mm-pcols" style="--n:${cards.length}">${cards.map((c) => `<a class="mm-pillar" href="${esc(c.href)}" style="--acc:${c.acc}">
+        <span class="tool-vis mm-rv mm-rv-${c.vis}" data-rv="${c.vis}" aria-hidden="true">${RES_VIS[c.vis] || ""}</span>
+        <span class="mm-pillar-h"><span class="mm-ic">${icon(c.icon)}</span><b>${esc(c.title)}</b></span></a>`).join("")}</div>
+      ${m.featured ? `<a class="mm-featured mm-featured-sm"${np} href="${esc(m.featured.href)}"><span><i>${esc(m.featured.eyebrow)}</i><b>${esc(m.featured.title)}</b></span>${icon("arrow-up-right")}</a>` : ""}</div>`;
+    }
     if (m.type === "grid") return `<div class="mm-panel mm-grid" id="${id}" role="region" aria-label="${esc(m.label)}">
       <p class="mm-eyebrow">${esc(m.eyebrow)}</p><p class="mm-title">${esc(m.title)} <em>${esc(m.highlight)}</em></p>
       <div class="mm-cols">${m.items.filter(show).map((i) => `<a class="mm-item" href="${esc(i.href)}"><span class="mm-ic">${icon(i.icon)}</span><span><b>${esc(i.title)}</b><small>${esc(i.desc)}</small></span></a>`).join("")}</div></div>`;
@@ -140,6 +158,37 @@
   if (member) window.SCP_AUTH?.client?.rpc("my_clubs").then(({ data }) => {
     if (Array.isArray(data) && data.length) links.querySelectorAll("[data-club]").forEach((el) => { el.hidden = false; });
   }, () => {});
+
+  // Resources: the newest article and news item (content/latest.json) and, for members, their saved boards — asked once,
+  // the first time the menu is opened
+  let resDone = false;
+  async function fillResources() {
+    if (resDone) return; resDone = true;
+    const box = (k) => links.querySelector(`[data-rv="${k}"]`);
+    const bg = (el, url) => { if (el && url) el.style.backgroundImage = `linear-gradient(180deg, rgba(8,12,24,.05) 30%, rgba(8,12,24,.9)), url("${url.replace(/"/g, "%22")}")`; };
+    const when = (d) => { const days = Math.floor((Date.now() - new Date(`${d}T12:00:00`)) / 864e5); return days < 1 ? "Today" : days === 1 ? "Yesterday" : new Date(`${d}T12:00:00`).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" }); };
+    const T = (t, v = {}) => (window.tx ? window.tx(t, v) : t.replace(/\{(\w+)\}/g, (m, k) => v[k] ?? m));
+    try {
+      const j = await (await fetch("content/latest.json", { cache: "no-cache" })).json();
+      if (j.blog && box("blog")) { bg(box("blog"), j.blog.image); box("blog").querySelector("[data-rv-t]").textContent = j.blog.title; const age = (Date.now() - new Date(`${j.blog.date}T12:00:00`)) / 864e5; box("blog").querySelector("em").textContent = age <= 7 ? T("New") : T(when(j.blog.date)); box("blog").closest("a").href = j.blog.href; }
+      if (j.news && box("news")) { bg(box("news"), j.news.image); box("news").querySelector("[data-rv-t]").textContent = j.news.title; box("news").querySelector("[data-rv-d]").textContent = T(when(j.news.date)); box("news").closest("a").href = j.news.href; }
+    } catch {}
+    const db = window.SCP_AUTH?.client, sv = box("saved");
+    if (!db || !sv) return;
+    const [{ data: items }, { count }] = await Promise.all([
+      db.from("folder_items").select("post_id").order("added_at", { ascending: false }).limit(200),
+      db.from("folders").select("id", { count: "exact", head: true }),
+    ]).catch(() => [{}, {}]);
+    const ids = [...new Set((items || []).map((it) => Number(String(it.post_id).replace(/^ci-/, ""))).filter(Boolean))];
+    // the same count as the Saved page: each post once, only the ones still available
+    const { data } = ids.length ? await db.from("content_ideas").select("id,cover_url").in("id", ids).is("unavailable_at", null) : { data: [] };
+    const n = (data || []).length;
+    sv.querySelector("[data-rv-n]").textContent = n ? T("{n} posts · {b} boards", { n, b: count || 0 }) : T("Save ideas from the library");
+    const pics = (data || []).filter((p) => p.cover_url).sort((a, b) => ids.indexOf(Number(a.id)) - ids.indexOf(Number(b.id)));   // newest saved first
+    sv.querySelectorAll(".mm-rv-folder i").forEach((i, k) => { if (pics[k]) i.style.backgroundImage = `url("${pics[k].cover_url}")`; });
+  }
+  links.querySelector(".mm-res")?.closest("[data-mm]")?.addEventListener("mouseenter", fillResources);
+  links.querySelector(".mm-res")?.closest("[data-mm]")?.addEventListener("click", fillResources);
 
   // open on hover (mouse) or click / tap / keyboard; one at a time; Esc or outside closes
   const tabs = [...links.querySelectorAll("[data-mm]")];
