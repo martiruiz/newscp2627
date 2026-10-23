@@ -184,11 +184,10 @@
     if (e.target.name === "newsletter") { state.newsletter = e.target.checked; changed(); }
   });
 
-  // ---------- Country: a searchable list with flags. Saved as the English name (as before: "Spain"), shown in the page's language ----------
+  // ---------- Country: a searchable list (no flags). Saved as the English name (as before: "Spain"), shown in the page's language ----------
   const CODES = "AF AL DZ AD AO AG AR AM AU AT AZ BS BH BD BB BY BE BZ BJ BT BO BA BW BR BN BG BF BI CV KH CM CA CF TD CL CN CO KM CG CD CR CI HR CU CY CZ DK DJ DM DO EC EG SV GQ ER EE SZ ET FJ FI FR GA GM GE DE GH GR GD GT GN GW GY HT HN HK HU IS IN ID IR IQ IE IL IT JM JP JO KZ KE KI XK KW KG LA LV LB LS LR LY LI LT LU MO MG MW MY MV ML MT MH MR MU MX FM MD MC MN ME MA MZ MM NA NR NP NL NZ NI NE NG KP MK NO OM PK PW PS PA PG PY PE PH PL PT PR QA RO RU RW KN LC VC WS SM ST SA SN RS SC SL SG SK SI SB SO ZA KR SS ES LK SD SR SE CH SY TW TJ TZ TH TL TG TO TT TN TR TM TV UG UA AE GB US UY UZ VU VA VE VN YE ZM ZW AD GI".split(" ").filter((c, i, a) => a.indexOf(c) === i);
   const dn = (lang) => { try { return new Intl.DisplayNames([lang], { type: "region" }); } catch { return null; } };
   const EN = dn("en"), LOCAL = dn(window.SCP_LANG === "es" ? "es" : "en"), ES = dn("es");
-  const flag = (c) => c.toUpperCase().replace(/./g, (ch) => String.fromCodePoint(127397 + ch.charCodeAt(0)));
   const norm = (v) => String(v || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
   const COUNTRIES = CODES.map((c) => ({ c, en: EN?.of(c) || c, local: LOCAL?.of(c) || c, es: ES?.of(c) || c })).sort((a, b) => a.local.localeCompare(b.local));
   // the saved value (free text before) → a country, by its English, Spanish or local name
@@ -199,9 +198,9 @@
     const cur = countryOf(state.country);
     const list = COUNTRIES.filter((x) => !cQ || [x.local, x.en, x.es].some((y) => norm(y).includes(norm(cQ))));
     box.innerHTML = `<button type="button" class="pf-in pf-country-btn" aria-haspopup="listbox" aria-expanded="${cOpen}" data-country-btn>
-        <span class="pf-flag">${cur ? flag(cur.c) : icon("earth")}</span><span class="pf-country-v${cur || state.country ? "" : " is-ph"}">${esc(cur ? cur.local : state.country || tx("Choose your country"))}</span>${icon("chevron-down")}</button>
+        <span class="pf-flag">${icon("earth")}</span><span class="pf-country-v${cur || state.country ? "" : " is-ph"}">${esc(cur ? cur.local : state.country || tx("Choose your country"))}</span>${icon("chevron-down")}</button>
       ${cOpen ? `<div class="pf-country-dd"><div class="pf-search">${icon("search")}<input type="search" value="${esc(cQ)}" placeholder="${esc(tx("Search a country"))}" data-country-q></div>
-        <ul role="listbox">${list.slice(0, 80).map((x) => `<li><button type="button" role="option" aria-selected="${cur?.c === x.c}" data-country="${x.c}"><span class="pf-flag">${flag(x.c)}</span>${esc(x.local)}${cur?.c === x.c ? icon("check") : ""}</button></li>`).join("") || `<li class="pf-muted">${esc(tx("No matches."))}</li>`}</ul></div>` : ""}`;
+        <ul role="listbox">${list.slice(0, 80).map((x) => `<li><button type="button" role="option" aria-selected="${cur?.c === x.c}" data-country="${x.c}">${esc(x.local)}${cur?.c === x.c ? icon("check") : ""}</button></li>`).join("") || `<li class="pf-muted">${esc(tx("No matches."))}</li>`}</ul></div>` : ""}`;
     if (cOpen) { const q = $("[data-country-q]", box); q.focus(); q.setSelectionRange(q.value.length, q.value.length); }
   }
   const tx = (t, v = {}) => (window.tx ? window.tx(t, v) : t.replace(/\{(\w+)\}/g, (m, k) => v[k] ?? m));
