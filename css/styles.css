@@ -7992,10 +7992,7 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
       --on-gold: #ffffff; --inset-glow: inset 0 1px 0 0 rgba(255,255,255,1); --shadow-soft: 0 14px 40px rgba(12,12,13,.10);
     }
     :root[data-theme="light"] body { background: var(--bg); }
-    /* the highlighted words: black, with a gold highlighter stroke underneath */
-    :root[data-theme="light"] .gold, :root[data-theme="light"] .section-title span.gold, :root[data-theme="light"] h1 .gold, :root[data-theme="light"] h2 .gold {
-      color: #0c0c0d !important; -webkit-text-fill-color: #0c0c0d; background: linear-gradient(transparent 64%, rgba(240,184,74,.55) 64%, rgba(240,184,74,.55) 92%, transparent 92%) !important; -webkit-background-clip: border-box !important; background-clip: border-box !important; }
-    /* main buttons: solid black, white text */
+        /* main buttons: solid black, white text */
     :root[data-theme="light"] .btn-gold, :root[data-theme="light"] .nav-cta, :root[data-theme="light"] .plan-help-btn, :root[data-theme="light"] .nwc-more {
       background: #0c0c0d !important; color: #fff !important; box-shadow: 0 10px 24px -12px rgba(12,12,13,.6) !important; }
     :root[data-theme="light"] .btn-outline { border-color: #0c0c0d !important; color: #0c0c0d !important; background: transparent !important; }
@@ -8135,10 +8132,6 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 :root[data-theme="light"] .mm-featured i { color: #6b6b72 !important; }
 :root[data-theme="light"] .mm-featured b, :root[data-theme="light"] .mm-featured svg { color: #0c0c0d !important; }
 :root[data-theme="light"] .mm-featured:hover { background: #fff !important; border-color: #0c0c0d !important; }
-/* language switch: the page blurs out, reloads in the other language and blurs back in (js/i18n.js) */
-html.lang-leaving body { filter: blur(12px); opacity: 0.35; transition: filter 0.28s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.28s; pointer-events: none; }
-html.lang-entering body { animation: langIn 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
-@keyframes langIn { from { filter: blur(12px); opacity: 0.35; } to { filter: blur(0); opacity: 1; } }
 /* day colours — the Newsletter button in the dock: gold stays, text and icons in black */
 :root[data-theme="light"] .dock-news, :root[data-theme="light"] .dock-news span { color: #0c0c0d !important; }
 :root[data-theme="light"] .dock-news svg { color: #0c0c0d !important; stroke: #0c0c0d !important; }
@@ -8150,3 +8143,12 @@ html.lang-entering body { animation: langIn 0.55s cubic-bezier(0.2, 0.8, 0.2, 1)
 .nav-cta-ic svg { width: 14px; height: 14px; }
 .nav-actions .nav-cta:hover .nav-cta-ic { transform: translateX(2px) rotate(45deg); }
 :root[data-theme="light"] .nav-actions .nav-cta:hover { box-shadow: 0 10px 24px -12px rgba(12, 12, 13, 0.6) !important; }
+
+/* day colours — highlighted words (mockups/highlight.html, option 5): black text with a gold shine crossing it now and then,
+   instead of the flat highlighter block */
+:root[data-theme="light"] .gold, :root[data-theme="light"] .section-title span.gold, :root[data-theme="light"] h1 .gold, :root[data-theme="light"] h2 .gold, :root[data-theme="light"] .sv3-head h1 span {
+  color: transparent !important; -webkit-text-fill-color: transparent;
+  background-color: transparent !important; background-image: linear-gradient(90deg, #0c0c0d 0%, #0c0c0d 35%, #c8891c 50%, #0c0c0d 65%, #0c0c0d 100%) !important; background-size: 300% 100% !important; background-position: 100% 0;
+  -webkit-background-clip: text !important; background-clip: text !important; animation: goldSweep 3.2s ease-in-out infinite; }
+@keyframes goldSweep { 0% { background-position: 100% 0; } 100% { background-position: 0 0; } }
+@media (prefers-reduced-motion: reduce) { :root[data-theme="light"] .gold, :root[data-theme="light"] .sv3-head h1 span { animation: none; background-position: 50% 0 !important; } }

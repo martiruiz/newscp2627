@@ -144,9 +144,6 @@
       if (tObs) new MutationObserver(head).observe(tObs, { childList: true, characterData: true, subtree: true });
     }
     root.classList.remove("i18n-pending");
-    // after a language switch the page comes back into focus (it blurred out before reloading)
-    let anim = null; try { anim = sessionStorage.getItem("scp-lang-anim"); sessionStorage.removeItem("scp-lang-anim"); } catch {}
-    if (anim && !matchMedia("(prefers-reduced-motion: reduce)").matches) { root.classList.add("lang-entering"); setTimeout(() => root.classList.remove("lang-entering"), 700); }
     mountSwitchers();
   });
 
@@ -156,13 +153,8 @@
     try { localStorage.setItem(KEY, next); } catch {}
     if (next === lang) return;
     const wait = (p) => Promise.race([Promise.resolve(p).catch(() => {}), new Promise((r) => setTimeout(r, 1500))]);   // never stuck on the network
-    // the page blurs out while it switches (and blurs back in after the reload)
-    const motion = !matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (motion) { root.classList.add("lang-leaving"); try { sessionStorage.setItem("scp-lang-anim", "1"); } catch {} }
-    await Promise.all([
-      (async () => { await wait(window.SCP_beforeLangSwitch?.()); if (opts.save !== false) await wait(window.SCP_saveLang?.(next)); })(),   // e.g. the profile saves first
-      new Promise((r) => setTimeout(r, motion ? 280 : 0)),
-    ]);
+    await wait(window.SCP_beforeLangSwitch?.());   // e.g. the profile saves its pending changes first
+    if (opts.save !== false) await wait(window.SCP_saveLang?.(next));
     const u = new URL(location.href);
     if (u.searchParams.has("lang")) { u.searchParams.set("lang", next); location.replace(u.toString()); }
     else location.reload();   // a link with #anchor would only scroll with location.replace: reload the page
