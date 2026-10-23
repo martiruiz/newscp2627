@@ -5,9 +5,12 @@
     const out = h.querySelector(".tw-text");
     const tpl = h.querySelector("template[data-phrases]");
     if (!out || !tpl || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    // Each phrase → list of { ch, gold }
+    // Each phrase → list of { ch, gold }, already in the page's language (the template isn't translated by js/i18n.js, and
+    // typing English letters that get translated afterwards makes the text jump), so the typed text is left alone by it
+    const tr = (t) => { const k = t.trim(); return k && window.tx ? t.replace(k, window.tx(k)) : t; };
     const phrases = [...tpl.content.querySelectorAll("p")].map((p) =>
-      [...p.childNodes].flatMap((n) => [...n.textContent].map((ch) => ({ ch, gold: n.nodeName === "B" }))));
+      [...p.childNodes].flatMap((n) => [...tr(n.textContent)].map((ch) => ({ ch, gold: n.nodeName === "B" }))));
+    out.setAttribute("data-i18n-skip", "");
     if (phrases.length < 2) return;
     const esc = (c) => (c === "<" ? "&lt;" : c === "&" ? "&amp;" : c);
     const render = (chars, n) => {
