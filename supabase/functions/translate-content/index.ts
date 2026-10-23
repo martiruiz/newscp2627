@@ -31,12 +31,10 @@ const list = (v: unknown) => (Array.isArray(v) ? v : String(v || "").split("\n")
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: CORS });
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
-  // the publish job (service role) or an admin
+  // the publish job (service role) or an admin: only they can read blog_posts (admin-only table) with these credentials
   const auth = req.headers.get("Authorization") ?? "";
-  if (auth !== `Bearer ${env("SUPABASE_SERVICE_ROLE_KEY")}`) {
-    const adm = await fetch(`${env("SUPABASE_URL")}/rest/v1/rpc/is_admin`, { method: "POST", headers: { apikey: env("SUPABASE_ANON_KEY"), Authorization: auth, "Content-Type": "application/json" }, body: "{}" });
-    if (!adm.ok || (await adm.json()) !== true) return json({ error: "Admins only" }, 403);
-  }
+  const probe = await fetch(`${env("SUPABASE_URL")}/rest/v1/blog_posts?select=slug&limit=1`, { headers: { apikey: req.headers.get("apikey") || env("SUPABASE_ANON_KEY"), Authorization: auth } }).catch(() => null);
+  if (!probe?.ok || !((await probe.json().catch(() => [])) as unknown[]).length) return json({ error: "Admins only" }, 403);
   const p = await req.json().catch(() => ({}));
   try {
     let src: Record<string, unknown>, changed: string, where: string;
