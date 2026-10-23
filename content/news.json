@@ -161,29 +161,29 @@
     "faq": [],
     "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/23c9bd54-24ea-4183-9a43-391a5209b61e/Untitled_design__4_.png?t=1792418169",
     "es": {
+      "faq": [],
+      "model": "claude-haiku-5-5",
       "title": "Louis Vuitton añade parches de victoria al baúl de trofeos de F1 tras cada Gran Premio",
+      "tokens": {
+        "in": 1422,
+        "out": 694
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "Louis Vuitton amplía su colaboración con el baúl de trofeos de la Fórmula 1 con un nuevo ritual: después de cada Gran Premio, se aplica al baúl un Victory Patch en honor al piloto ganador. El momento se comparte a través de vídeos en pantalla dividida que combinan la colocación del parche con los mejores momentos de la carrera y las celebraciones en el podio, convirtiendo el producto de la marca de lujo en parte de la historia de cada victoria.",
         "Para los equipos de redes sociales deportivos, la lección es crear contenido patrocinado en torno a un ritual repetible vinculado a resultados reales. De forma similar a los adhesivos específicos de cada carrera que Red Bull Racing realiza con YETI, un formato recurrente da a los aficionados un motivo para seguir la temporada entera y ofrece a los patrocinadores una exposición garantizada y con carga emocional. Los clubes podrían adaptarlo con trofeos, detalles de la equipación o elementos del vestuario que se actualicen después de cada victoria.",
         "La misma newsletter ofrece un consejo relacionado de la serie Repsol Lubricants de MotoGP: dar a los formatos de marca nombres amplios en lugar de nombres superlativos como mejor jugada de la carrera. Esa flexibilidad permite a los equipos de contenido publicar los grandes momentos de inmediato, mientras siguen frescos, en lugar de esperar para coronar un único momento destacado. También cita un estudio que muestra que las publicaciones patrocinadas superaron a las no patrocinadas en seis de los 11 equipos de F1."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-10-20T03:42:30.845583+00:00",
-      "model": "claude-haiku-5-5",
+      "image_title": "",
       "translated_at": "2026-10-23T22:31:57.560Z",
-      "tokens": {
-        "in": 1422,
-        "out": 694
-      }
+      "source_changed": "2026-10-20T03:42:30.845583+00:00",
+      "meta_description": ""
     }
   },
   {
@@ -208,29 +208,29 @@
     "faq": [],
     "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/f72b0fd5-1156-46c9-ae82-e1b35644b88d/Untitled_design__4_.png?t=1791741926",
     "es": {
+      "faq": [],
+      "model": "claude-haiku-5-5",
       "title": "Los Backyard Games de Bryson DeChambeau con Golf Clash suman 83,5 millones de visualizaciones en cinco plataformas",
+      "tokens": {
+        "in": 1460,
+        "out": 760
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "Bryson DeChambeau se asoció con Golf Clash de EA para Backyard Games, una serie diaria en la que 10 creadores de golf competían en un campo de tres hoyos que él construyó en su casa, y el ganador se enfrentaba a él por 100.000 dólares. Según los datos de Mondo Metrics citados por SponCon Sports, la campaña generó 83,5 millones de visualizaciones, 3,61 millones de interacciones y una tasa de interacción del 4,32 % en 64 publicaciones. Un carrusel de teaser que jugaba con los rumores de que estaba \"volviendo a casa\" fue el que más envíos recibió.",
         "La integración destacó: sets de marca y gráficos con estética de videojuego, anuncios de seis segundos leídos durante pausas naturales, Stories de Instagram con llamadas a descargar la app y una recreación del campo en el juego que los aficionados podían jugar. El formato nació de un reto de 2024 sin patrocinio que demostró el atractivo para la audiencia antes de que llegaran los patrocinadores. Sin embargo, las visualizaciones en Instagram, TikTok y YouTube bajaron cada temporada, aunque la media de visualizaciones por publicación de YouTube Shorts subió un 41 % desde 2024.",
         "Para clubes y deportistas, la lección es crear y probar un formato repetible de forma orgánica y, después, venderlo con datos reales de rendimiento, en lugar de presentar conceptos que solo existen si se financian. Da a los socios un papel que mejore la experiencia del aficionado, coloca los mensajes de los patrocinadores dentro de la acción, usa las Stories para llamadas a la acción directas y mantén a la estrella en el centro con recompensas para los aficionados que sostengan el alcance."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-10-18T07:13:56.006375+00:00",
-      "model": "claude-haiku-5-5",
+      "image_title": "",
       "translated_at": "2026-10-23T22:32:02.780Z",
-      "tokens": {
-        "in": 1460,
-        "out": 760
-      }
+      "source_changed": "2026-10-18T07:13:56.006375+00:00",
+      "meta_description": ""
     }
   },
   {
@@ -278,20 +278,35 @@
     ],
     "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/bc48c732-43ab-4da7-9fea-9ae7eebce67a/new-home-ig.jpeg?t=1791455392",
     "es": {
-      "title": "Facebook lanza 'Your Algorithm', que permite a los usuarios decirle al feed lo que quieren",
-      "excerpt": "",
-      "body_html": "",
-      "meta_title": "Facebook 'Your Algorithm': qué deben saber los equipos deportivos",
-      "meta_description": "",
-      "cta_title": "",
-      "cta_text": "",
-      "image_alt": "",
-      "image_title": "",
-      "paragraphs": [
-        "Facebook ha presentado una función llamada \"Your Algorithm\" que permite a las personas influir directamente en lo que aparece en su feed. Los usuarios pueden añadir y gestionar temas que les interesan, responder preguntas sobre por qué les gustó o no les gustó una publicación recomendada, y escribir con sus propias palabras lo que quieren ver más o menos. El sistema combina estas señales explícitas con indicadores habituales como los me gusta, los comentarios y el tiempo de visualización.",
-        "Para los equipos de redes sociales de clubes deportivos, esto desplaza el equilibrio lejos del puro cebo de interacción. Si un aficionado le dice a Facebook que no le interesa cierto tipo de contenido, optimizarlo con más empeño no servirá de nada. La relevancia del tema cobra más importancia, así que los clubes y las ligas deben asegurarse de que sus publicaciones estén claramente vinculadas a temas reconocibles que los aficionados elegirían activamente, como su equipo, la competición, los jugadores o un deporte concreto.",
-        "En la práctica, esto significa usar nombres coherentes, pies de foto claros y pilares de contenido que se correspondan con los temas que los aficionados podrían seleccionar, como la cobertura de la jornada, el contenido tras bambalinas o las historias de la cantera. Los equipos también podrían animar a los seguidores a añadir el club como un interés seguido, y deberían vigilar los cambios en el alcance de los contenidos que dependen de ganchos de curiosidad en lugar de un interés genuino de la afición."
+      "faq": [
+        {
+          "a": "'Your Algorithm' es una función de Facebook que permite a las personas influir directamente en lo que aparece en su feed. Los usuarios pueden añadir y gestionar temas, responder preguntas sobre por qué les gustó o no les gustó una publicación recomendada, y escribir lo que quieren ver más o menos.",
+          "q": "¿Qué es la función 'Your Algorithm' de Facebook?"
+        },
+        {
+          "a": "Sí. El sistema combina las indicaciones explícitas de los usuarios con señales habituales como los me gusta, los comentarios y el tiempo de visualización, así que la interacción sigue contando junto con las preferencias declaradas.",
+          "q": "¿Facebook sigue usando los me gusta y el tiempo de visualización con 'Your Algorithm'?"
+        },
+        {
+          "a": "Desplaza el equilibrio del puro cebo de interacción hacia la relevancia del tema. Si un aficionado dice que no le interesa cierto tipo de contenido, optimizarlo con más empeño no servirá de nada, así que las publicaciones deben estar claramente vinculadas a temas que los aficionados elegirían activamente.",
+          "q": "¿Cómo afecta 'Your Algorithm' a los clubes deportivos en Facebook?"
+        },
+        {
+          "a": "Usar nombres coherentes, pies de foto claros y pilares de contenido que se correspondan con los temas que los aficionados podrían seleccionar, como la cobertura de la jornada, el contenido tras bambalinas o las historias de la cantera. Animar a los seguidores a añadir el club como un interés seguido y vigilar los cambios de alcance en los contenidos que dependen de ganchos de curiosidad.",
+          "q": "¿Qué deben hacer los equipos de redes sociales deportivas para adaptarse a 'Your Algorithm'?"
+        }
       ],
+      "model": "claude-haiku-5-5",
+      "title": "Facebook lanza 'Your Algorithm', que permite a los usuarios decirle al feed lo que quieren",
+      "tokens": {
+        "in": 2070,
+        "out": 1694
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
       "takeaways": [
         "La nueva función 'Your Algorithm' de Facebook permite a los usuarios añadir y gestionar temas, explicar por qué les gustó o no les gustó una publicación, y describir con sus propias palabras lo que quieren ver más o menos.",
         "El feed combina estas indicaciones explícitas de los usuarios con señales habituales como los me gusta, los comentarios y el tiempo de visualización.",
@@ -299,31 +314,16 @@
         "Los clubes y las ligas deben vincular las publicaciones a temas reconocibles que los aficionados elegirían activamente, como su equipo, la competición, los jugadores o el deporte, usando nombres coherentes y pies de foto claros.",
         "Los equipos pueden crear pilares de contenido como la cobertura de la jornada, el contenido tras bambalinas y las historias de la cantera, y animar a los seguidores a añadir el club como un interés seguido."
       ],
-      "faq": [
-        {
-          "q": "¿Qué es la función 'Your Algorithm' de Facebook?",
-          "a": "'Your Algorithm' es una función de Facebook que permite a las personas influir directamente en lo que aparece en su feed. Los usuarios pueden añadir y gestionar temas, responder preguntas sobre por qué les gustó o no les gustó una publicación recomendada, y escribir lo que quieren ver más o menos."
-        },
-        {
-          "q": "¿Facebook sigue usando los me gusta y el tiempo de visualización con 'Your Algorithm'?",
-          "a": "Sí. El sistema combina las indicaciones explícitas de los usuarios con señales habituales como los me gusta, los comentarios y el tiempo de visualización, así que la interacción sigue contando junto con las preferencias declaradas."
-        },
-        {
-          "q": "¿Cómo afecta 'Your Algorithm' a los clubes deportivos en Facebook?",
-          "a": "Desplaza el equilibrio del puro cebo de interacción hacia la relevancia del tema. Si un aficionado dice que no le interesa cierto tipo de contenido, optimizarlo con más empeño no servirá de nada, así que las publicaciones deben estar claramente vinculadas a temas que los aficionados elegirían activamente."
-        },
-        {
-          "q": "¿Qué deben hacer los equipos de redes sociales deportivas para adaptarse a 'Your Algorithm'?",
-          "a": "Usar nombres coherentes, pies de foto claros y pilares de contenido que se correspondan con los temas que los aficionados podrían seleccionar, como la cobertura de la jornada, el contenido tras bambalinas o las historias de la cantera. Animar a los seguidores a añadir el club como un interés seguido y vigilar los cambios de alcance en los contenidos que dependen de ganchos de curiosidad."
-        }
+      "meta_title": "Facebook 'Your Algorithm': qué deben saber los equipos deportivos",
+      "paragraphs": [
+        "Facebook ha presentado una función llamada \"Your Algorithm\" que permite a las personas influir directamente en lo que aparece en su feed. Los usuarios pueden añadir y gestionar temas que les interesan, responder preguntas sobre por qué les gustó o no les gustó una publicación recomendada, y escribir con sus propias palabras lo que quieren ver más o menos. El sistema combina estas señales explícitas con indicadores habituales como los me gusta, los comentarios y el tiempo de visualización.",
+        "Para los equipos de redes sociales de clubes deportivos, esto desplaza el equilibrio lejos del puro cebo de interacción. Si un aficionado le dice a Facebook que no le interesa cierto tipo de contenido, optimizarlo con más empeño no servirá de nada. La relevancia del tema cobra más importancia, así que los clubes y las ligas deben asegurarse de que sus publicaciones estén claramente vinculadas a temas reconocibles que los aficionados elegirían activamente, como su equipo, la competición, los jugadores o un deporte concreto.",
+        "En la práctica, esto significa usar nombres coherentes, pies de foto claros y pilares de contenido que se correspondan con los temas que los aficionados podrían seleccionar, como la cobertura de la jornada, el contenido tras bambalinas o las historias de la cantera. Los equipos también podrían animar a los seguidores a añadir el club como un interés seguido, y deberían vigilar los cambios en el alcance de los contenidos que dependen de ganchos de curiosidad en lugar de un interés genuino de la afición."
       ],
-      "source_changed": "2026-10-23T18:24:50.54+00:00",
-      "model": "claude-haiku-5-5",
+      "image_title": "",
       "translated_at": "2026-10-23T22:32:10.607Z",
-      "tokens": {
-        "in": 2070,
-        "out": 1694
-      }
+      "source_changed": "2026-10-23T18:24:50.54+00:00",
+      "meta_description": ""
     }
   },
   {
@@ -348,29 +348,29 @@
     "faq": [],
     "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/71b0bc3e-d7b7-4a78-96b1-a138ac7cbf24/Untitled_design__10_.png?t=1791746183",
     "es": {
+      "faq": [],
+      "model": "claude-haiku-5-5",
       "title": "Los Carolina Panthers convierten su victoria sorpresa sobre los Lions en un vacilón patrocinado por Bojangles",
+      "tokens": {
+        "in": 1443,
+        "out": 697
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "Tras vencer por sorpresa a los Detroit Lions, los Carolina Panthers respondieron a los analistas que habían apostado en su contra y, además, le pusieron patrocinador al momento. Bajo un concepto llamado Keep The Receipts, Bojangles respaldó el contenido y ofreció a los aficionados una oferta de 2x1 en los Legendary Iced Teas grandes con el código \"GetTheTea\", conectando directamente la celebración del equipo con una compra.",
         "La idea demuestra que los momentos reactivos y emotivos pueden empaquetarse como inventario patrocinado en lugar de quedarse solo en publicaciones orgánicas. Los clubes pueden preparar con antelación plantillas patrocinadas para victorias sorpresa, hitos o triunfos ante rivales, combinándolas con una marca cuyo producto o jerga encaje con el mensaje. Añadir un código promocional convierte los picos de atención de la afición en ventas medibles, lo que da a los patrocinadores resultados claros para justificar sus renovaciones.",
         "La misma newsletter destaca jugadas similares: Anthony Edwards recuperó sus Believe That Awards con PrizePicks como patrocinador principal, una cuenta de Instagram dedicada y predicciones de los aficionados, mientras que los New York Jets ampliaron una activación con tifo junto a Atlantic Health en un sorteo de merchandising por mensaje de texto que, además, hace crecer su audiencia de SMS. La lección común es crear formatos originales que los patrocinadores puedan hacer suyos y que impulsen a los aficionados a actuar."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-10-18T07:14:03.909134+00:00",
-      "model": "claude-haiku-5-5",
+      "image_title": "",
       "translated_at": "2026-10-23T22:32:15.707Z",
-      "tokens": {
-        "in": 1443,
-        "out": 697
-      }
+      "source_changed": "2026-10-18T07:14:03.909134+00:00",
+      "meta_description": ""
     }
   },
   {
@@ -418,20 +418,35 @@
     ],
     "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/96f29555-12be-4071-a822-a557bdac2226/Untitled_design.gif?t=1791431378",
     "es": {
-      "title": "Contenido patrocinado en la semana inaugural de la NHL: 618 publicaciones de marca y las activaciones que funcionaron",
-      "excerpt": "",
-      "body_html": "",
-      "meta_title": "Contenido patrocinado de la NHL: qué funcionó en la semana inaugural",
-      "meta_description": "",
-      "cta_title": "",
-      "cta_text": "",
-      "image_alt": "",
-      "image_title": "",
-      "paragraphs": [
-        "Una nueva edición del informe de scouting de Sponcon Sports sobre la NHL, elaborado con datos de Mondo Metrics, revisó 8.609 publicaciones de los 32 equipos en cinco plataformas durante la primera semana de la temporada. De ellas, 618 incluían una integración de marca, alrededor del 7,2 % de la producción de los equipos, y generaron 1,2 M de interacciones y al menos 13,1 M de visualizaciones para 125 marcas. Los Pittsburgh Penguins lideraron con 155 K interacciones patrocinadas, mientras que United Airlines fue la marca con más visualizaciones gracias a la serie del regreso de Patrick Kane con Chicago.",
-        "Entre las ideas más destacadas estuvieron el casco de soldador de U.S. Steel de Pittsburgh, usado como premio por victoria, la promoción First Blood de Ottawa, que dona a servicios de sangre cuando el equipo marca primero, y nombres de series que encajan de forma natural con el patrocinador, como Winning Numbers, respaldada por un casino. El informe también señaló debilidades: patrocinadores etiquetados en los pies de foto pero invisibles en el vídeo, y sorteos impulsados sobre todo mediante publicaciones orgánicas cuando el correo electrónico, las apps, los SMS o la publicidad de pago convertirían mejor.",
-        "Para los equipos de redes sociales de los clubes, las conclusiones son prácticas: integra la marca en tradiciones recurrentes, asocia las categorías de patrocinadores a momentos como hitos, llegadas o viajes, y trata las estadísticas, las respuestas en X y las diapositivas de carrusel como inventario adicional. Incluir ofertas dentro de contenidos que los aficionados ya quieren, como los resúmenes de partidos o los gráficos de marcador, suele superar a las publicaciones promocionales independientes, y los segmentos grabados en el pabellón deben reeditarse para los feeds en lugar de publicarse sin editar."
+      "faq": [
+        {
+          "a": "El informe de scouting de Sponcon Sports sobre la NHL, elaborado con datos de Mondo Metrics, revisó 8.609 publicaciones de los 32 equipos en cinco plataformas. De ellas, 618 incluían una integración de marca, alrededor del 7,2 % de la producción de los equipos.",
+          "q": "¿Cuánto contenido patrocinado publicaron los equipos de la NHL en la semana inaugural?"
+        },
+        {
+          "a": "Los Pittsburgh Penguins lideraron la liga con 155 K interacciones patrocinadas. En visualizaciones, United Airlines quedó en primer lugar gracias a la serie del regreso de Patrick Kane con Chicago.",
+          "q": "¿Qué equipo de la NHL tuvo mejor rendimiento con publicaciones patrocinadas?"
+        },
+        {
+          "a": "Las ideas más destacadas integraron la marca en tradiciones recurrentes, como el casco de soldador de U.S. Steel usado como premio por victoria en Pittsburgh y la promoción First Blood de Ottawa, que dona a servicios de sangre cuando el equipo marca primero. Los nombres de series que encajan de forma natural con el patrocinador, como Winning Numbers, respaldada por un casino, también funcionaron bien.",
+          "q": "¿Qué activaciones de patrocinadores funcionaron mejor para los equipos de la NHL?"
+        },
+        {
+          "a": "Evita etiquetar a los patrocinadores en los pies de foto mientras permaneces invisible en el propio vídeo. No dependas sobre todo de publicaciones orgánicas para los sorteos, ya que el correo electrónico, las apps, los SMS o la publicidad de pago suelen convertir mejor, y reedita los segmentos grabados en el pabellón para los feeds en lugar de publicarlos sin editar.",
+          "q": "¿Qué errores deben evitar los equipos de redes sociales de los clubes con el contenido patrocinado?"
+        }
       ],
+      "model": "claude-haiku-5-5",
+      "title": "Contenido patrocinado en la semana inaugural de la NHL: 618 publicaciones de marca y las activaciones que funcionaron",
+      "tokens": {
+        "in": 2211,
+        "out": 1936
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
       "takeaways": [
         "En la semana inaugural de la NHL, 618 de 8.609 publicaciones de los equipos incluían una integración de marca, alrededor del 7,2 % de la producción de los equipos.",
         "Esas publicaciones patrocinadas generaron 1,2 M de interacciones y al menos 13,1 M de visualizaciones para 125 marcas.",
@@ -439,31 +454,16 @@
         "Las activaciones más sólidas integraron a los patrocinadores en tradiciones recurrentes, como el premio por victoria del casco de soldador de U.S. Steel en Pittsburgh y la promoción First Blood de Ottawa.",
         "Entre las debilidades más comunes estuvieron los patrocinadores etiquetados en los pies de foto pero invisibles en el vídeo, y los sorteos impulsados sobre todo mediante publicaciones orgánicas en lugar de correo electrónico, apps, SMS o publicidad de pago."
       ],
-      "faq": [
-        {
-          "q": "¿Cuánto contenido patrocinado publicaron los equipos de la NHL en la semana inaugural?",
-          "a": "El informe de scouting de Sponcon Sports sobre la NHL, elaborado con datos de Mondo Metrics, revisó 8.609 publicaciones de los 32 equipos en cinco plataformas. De ellas, 618 incluían una integración de marca, alrededor del 7,2 % de la producción de los equipos."
-        },
-        {
-          "q": "¿Qué equipo de la NHL tuvo mejor rendimiento con publicaciones patrocinadas?",
-          "a": "Los Pittsburgh Penguins lideraron la liga con 155 K interacciones patrocinadas. En visualizaciones, United Airlines quedó en primer lugar gracias a la serie del regreso de Patrick Kane con Chicago."
-        },
-        {
-          "q": "¿Qué activaciones de patrocinadores funcionaron mejor para los equipos de la NHL?",
-          "a": "Las ideas más destacadas integraron la marca en tradiciones recurrentes, como el casco de soldador de U.S. Steel usado como premio por victoria en Pittsburgh y la promoción First Blood de Ottawa, que dona a servicios de sangre cuando el equipo marca primero. Los nombres de series que encajan de forma natural con el patrocinador, como Winning Numbers, respaldada por un casino, también funcionaron bien."
-        },
-        {
-          "q": "¿Qué errores deben evitar los equipos de redes sociales de los clubes con el contenido patrocinado?",
-          "a": "Evita etiquetar a los patrocinadores en los pies de foto mientras permaneces invisible en el propio vídeo. No dependas sobre todo de publicaciones orgánicas para los sorteos, ya que el correo electrónico, las apps, los SMS o la publicidad de pago suelen convertir mejor, y reedita los segmentos grabados en el pabellón para los feeds en lugar de publicarlos sin editar."
-        }
+      "meta_title": "Contenido patrocinado de la NHL: qué funcionó en la semana inaugural",
+      "paragraphs": [
+        "Una nueva edición del informe de scouting de Sponcon Sports sobre la NHL, elaborado con datos de Mondo Metrics, revisó 8.609 publicaciones de los 32 equipos en cinco plataformas durante la primera semana de la temporada. De ellas, 618 incluían una integración de marca, alrededor del 7,2 % de la producción de los equipos, y generaron 1,2 M de interacciones y al menos 13,1 M de visualizaciones para 125 marcas. Los Pittsburgh Penguins lideraron con 155 K interacciones patrocinadas, mientras que United Airlines fue la marca con más visualizaciones gracias a la serie del regreso de Patrick Kane con Chicago.",
+        "Entre las ideas más destacadas estuvieron el casco de soldador de U.S. Steel de Pittsburgh, usado como premio por victoria, la promoción First Blood de Ottawa, que dona a servicios de sangre cuando el equipo marca primero, y nombres de series que encajan de forma natural con el patrocinador, como Winning Numbers, respaldada por un casino. El informe también señaló debilidades: patrocinadores etiquetados en los pies de foto pero invisibles en el vídeo, y sorteos impulsados sobre todo mediante publicaciones orgánicas cuando el correo electrónico, las apps, los SMS o la publicidad de pago convertirían mejor.",
+        "Para los equipos de redes sociales de los clubes, las conclusiones son prácticas: integra la marca en tradiciones recurrentes, asocia las categorías de patrocinadores a momentos como hitos, llegadas o viajes, y trata las estadísticas, las respuestas en X y las diapositivas de carrusel como inventario adicional. Incluir ofertas dentro de contenidos que los aficionados ya quieren, como los resúmenes de partidos o los gráficos de marcador, suele superar a las publicaciones promocionales independientes, y los segmentos grabados en el pabellón deben reeditarse para los feeds en lugar de publicarse sin editar."
       ],
-      "source_changed": "2026-10-23T18:25:48.542+00:00",
-      "model": "claude-haiku-5-5",
+      "image_title": "",
       "translated_at": "2026-10-23T22:32:25.118Z",
-      "tokens": {
-        "in": 2211,
-        "out": 1936
-      }
+      "source_changed": "2026-10-23T18:25:48.542+00:00",
+      "meta_description": ""
     }
   },
   {
@@ -488,29 +488,29 @@
     "faq": [],
     "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/bc48c732-43ab-4da7-9fea-9ae7eebce67a/new-home-ig.jpeg?t=1791455392",
     "es": {
+      "faq": [],
+      "model": "claude-haiku-5-5",
       "title": "Instagram prueba una pantalla de inicio centrada en Reels y un modo de navegación de solo lectura de pago",
+      "tokens": {
+        "in": 1439,
+        "out": 833
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "Instagram está probando una página de inicio rediseñada en la que los Reels ocupan la primera pestaña al abrir la aplicación, con las Stories justo por encima. El feed habitual de las cuentas que sigues, incluida una opción cronológica, queda a un deslizamiento de distancia, y el sonido se reproduce por defecto. Los usuarios pueden volver al diseño anterior desde Ajustes. Por otra parte, Instagram está probando un modo de solo lectura que bloquea los me gusta, los comentarios, los mensajes directos, los seguimientos y las visualizaciones de Stories, según se informa vinculado a su paquete de pago Instagram Plus.",
         "Para los equipos de redes sociales del deporte, la página de inicio centrada en Reels es otra señal de que Meta da prioridad al vídeo corto y al contenido recomendado frente a las publicaciones de las cuentas que sigues. Los clubes que todavía dependen de gráficos estáticos, como alineaciones, resultados finales o tarjetas de patrocinadores, deberían planificar versiones de vídeo vertical pensadas para el descubrimiento, con unos primeros segundos impactantes y un audio diseñado para escucharse, ya que ahora el sonido se reproduce automáticamente.",
         "El modo de solo lectura todavía está en fase de prueba, sin que se haya anunciado su lanzamiento, pero podría significar que algunos aficionados naveguen por los perfiles de los clubes sin dejar interacciones visibles. Los equipos deberían evitar juzgar el contenido únicamente por los me gusta y los comentarios, y seguir de cerca el alcance, las reproducciones y las veces compartido. Mientras tanto, los Reels recomendados ofrecen a clubes y deportistas la oportunidad de llegar a usuarios que no los siguen, por lo que los resúmenes de jugadas, los contenidos entre bastidores y los vídeos que muestran la personalidad de los deportistas se convierten en herramientas clave para captar nuevas audiencias."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-10-18T07:14:45.569072+00:00",
-      "model": "claude-haiku-5-5",
+      "image_title": "",
       "translated_at": "2026-10-23T22:32:30.453Z",
-      "tokens": {
-        "in": 1439,
-        "out": 833
-      }
+      "source_changed": "2026-10-18T07:14:45.569072+00:00",
+      "meta_description": ""
     }
   },
   {
@@ -535,29 +535,29 @@
     "faq": [],
     "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/64f8b56a-3a35-44d2-9fb1-5c06b6be2db5/Untitled_design__8_.png?t=1791168534",
     "es": {
+      "faq": [],
+      "model": "claude-haiku-5-5",
       "title": "Visa lanza Gridlocked, una segunda serie social original de F1 con pilotos de Red Bull",
+      "tokens": {
+        "in": 1391,
+        "out": 644
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "Visa está ampliando el uso de los derechos de su asociación con Red Bull Formula 1 para producir entretenimiento original pensado para los feeds sociales. Su nueva serie, Gridlocked, reúne a pilotos para competir contra el reloj resolviendo puzzles. Sigue a Take Your Driver to Work Day del año pasado y demuestra que la marca trata los derechos de patrocinio como un motor de contenido y no como una simple aparición de logotipo.",
         "Para clubes, equipos y ligas, la conclusión es que los patrocinadores quieren cada vez más formatos recurrentes y de marca, no publicaciones puntuales. Empaquetar el acceso a los atletas en un programa social repetible ofrece a los socios una historia clara, un inventario previsible y un motivo para renovar. Las mecánicas competitivas sencillas, como los retos cronometrados o los puzzles, permiten que las personalidades brillen y mantienen la producción lo bastante ligera como para ejecutarla durante toda una temporada.",
         "La misma newsletter destaca ideas similares que vale la pena adaptar: la sesión de preguntas y respuestas en directo dentro de la app con jugadores de Inter Miami, presentada por un socio; la USWNT revelando su plantilla a través de Google Docs; y los Giants convirtiendo una pregunta del día en una integración con Dunkin. Los equipos de social media pueden revisar sus formatos habituales e identificar cuáles podrían acoger una integración natural de un socio."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-10-18T07:14:16.414665+00:00",
-      "model": "claude-haiku-5-5",
+      "image_title": "",
       "translated_at": "2026-10-23T22:32:35.639Z",
-      "tokens": {
-        "in": 1391,
-        "out": 644
-      }
+      "source_changed": "2026-10-18T07:14:16.414665+00:00",
+      "meta_description": ""
     }
   },
   {
@@ -582,29 +582,29 @@
     "faq": [],
     "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/7b9af181-3425-49da-96c6-44b819651e0e/Untitled_design__2_.png?t=1790550790",
     "es": {
+      "faq": [],
+      "model": "claude-haiku-5-5",
       "title": "Cómo el fútbol de Akron convirtió una promoción viral de entradas en espacio de patrocinio para Arby's",
+      "tokens": {
+        "in": 1472,
+        "out": 780
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "Akron Football invitó a un abonado a ayudar a diseñar la primera serie ofensiva de su partido inaugural en casa. El anuncio de agosto logró 23 millones de visualizaciones en X, agotó los palcos por primera vez en la historia del programa y atrajo participaciones de personalidades como Big Cat y Jon Gruden. Tras revelarse al ganador, Arby's Steak Nuggets se incorporó como patrocinador principal, coincidiendo con el regreso nacional del producto como oferta por tiempo limitado.",
         "Según Mondo Metrics, las publicaciones de la campaña promediaron un 2,9 veces el engagement habitual de Akron durante más de un mes, mientras que la prensa ganada en medios como House of Highlights y SportsCenter aportó unos 13,5 millones de visualizaciones. El día de partido se convirtió en un takeover de Arby's, con la marca en la carpeta de jugadas, en las manos de fans con dedos de espuma, en la comida de la rueda de prensa e incluso en los highlights habituales. Una crítica: un Reel tras bambalinas que empezó en un Arby's tuvo un rendimiento inferior, lo que demuestra que las peticiones de los patrocinadores no deberían imponerse a lo que los aficionados vinieron a ver.",
         "La lección para los equipos de redes sociales deportivos es tratar el contenido que despega como prueba para las alianzas. Cuando una serie, una promoción o una campaña sin patrocinio triunfa, comparte los datos con ventas cuanto antes, porque un rendimiento demostrado se vende mejor que un concepto. Empaqueta los momentos estelares como takeovers completos en el prepartido, los highlights y el pospartido, mantén la historia viva por capítulos y considera emitir en directo los sorteos junto a creadores para impulsar el alcance y la credibilidad."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-10-18T07:14:23.267145+00:00",
-      "model": "claude-haiku-5-5",
+      "image_title": "",
       "translated_at": "2026-10-23T22:32:40.667Z",
-      "tokens": {
-        "in": 1472,
-        "out": 780
-      }
+      "source_changed": "2026-10-18T07:14:23.267145+00:00",
+      "meta_description": ""
     }
   },
   {
@@ -629,29 +629,29 @@
     "faq": [],
     "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/cd26a1cb-a4c5-4c76-a1a2-4f3b96e7c576/portada-news-0110.png?t=1790851428",
     "es": {
+      "faq": [],
+      "model": "claude-haiku-5-5",
       "title": "Mosseri explica las señales de ranking de Instagram: tasa de interacción, horario, originalidad y pruebas",
+      "tokens": {
+        "in": 1402,
+        "out": 724
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "El responsable de Instagram, Adam Mosseri, ha publicado nuevos vídeos en los que explica cómo decide la plataforma qué mostrar a los usuarios. Sus puntos clave: las tasas de interacción importan más que las visualizaciones o los me gusta en bruto, la hora de publicación sigue contando porque el feed se mantiene más o menos cronológico, el contenido original tiene prioridad sobre las republicaciones y las cuentas pequeñas pueden mostrarse a no seguidores para probar su alcance. También señaló que los modelos de IA impulsan cada vez más el ranking.",
         "Para los equipos de redes sociales de clubes y ligas, el mensaje es que deben valorar las publicaciones por su tasa de interacción y no por el número de visualizaciones, y programar el contenido en función de cuándo los aficionados están realmente conectados, como los momentos previos al saque inicial, el descanso y el final del partido. Es probable que el creador original supere en el ranking a las republicaciones de clips de cadenas de televisión o vídeos de aficionados, así que las imágenes propias de los entrenamientos, el túnel y el vestuario deberían tener más peso.",
         "Mosseri también insistió en la experimentación constante, ya que lo que funciona una semana puede no funcionar a la siguiente. Los Reels de prueba permiten a los equipos probar formatos con no seguidores sin arriesgar su feed principal, lo que encaja con los experimentos de día de partido, los retos de jugadores o las nuevas series. Instagram también ha publicado una guía de creación de Reels de 2026 que cubre edición, música, subtítulos, Templates, Remix y Collab, una referencia útil para renovar los flujos de trabajo."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-10-18T07:14:51.344555+00:00",
-      "model": "claude-haiku-5-5",
+      "image_title": "",
       "translated_at": "2026-10-23T22:32:47.872Z",
-      "tokens": {
-        "in": 1402,
-        "out": 724
-      }
+      "source_changed": "2026-10-18T07:14:51.344555+00:00",
+      "meta_description": ""
     }
   },
   {
@@ -676,29 +676,29 @@
     "faq": [],
     "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/60b0b598-ca8f-43c9-b441-874a410d8792/Untitled_design.png?t=1790109816",
     "es": {
+      "faq": [],
+      "model": "claude-haiku-5-5",
       "title": "El stunt de karting Max vs. 100 de Red Bull superó los 241 millones de visualizaciones en redes sociales",
+      "tokens": {
+        "in": 1423,
+        "out": 701
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "El evento Max vs. 100 de Red Bull, en el que Max Verstappen partió desde la última posición de una parrilla de 101 karts en Silverstone, generó al menos 241,3 millones de visualizaciones y 14,5 millones de interacciones en 633 publicaciones de 146 cuentas, según un análisis de Sponcon Sports con Mondo Metrics. El día de la carrera por sí solo aportó alrededor de la mitad de todas las visualizaciones, mientras que las cuentas de marca de Red Bull produjeron aproximadamente el 76% de las visualizaciones medidas.",
         "La campaña funcionó como un sistema: las cuentas regionales de Red Bull adaptaron el mismo contenido creativo, una publicación de lanzamiento sobre el kart de Max mantuvo el interés antes del día de la carrera y los creadores participantes contaron sus propias historias. Las publicaciones de creadores tuvieron una mediana de interacción más alta que las de marca. Instagram aportó tanto alcance como interacción, TikTok impulsó una interacción desproporcionada y los Reels de Facebook generaron dos de las tres publicaciones más vistas.",
         "Para clubes y ligas, la lección es diseñar eventos que merezca la pena documentar, invitar a los creadores y darles acceso en lugar de guiones, y juzgar cada plataforma por su función específica en lugar de por una única métrica. Asociarse con emisoras para la transmisión en directo, como hizo Red Bull con ESPN y Disney+, puede ampliar el alcance más allá de los canales propios y atraer a nuevos aficionados al ecosistema de un equipo."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-10-18T07:14:28.724637+00:00",
-      "model": "claude-haiku-5-5",
+      "image_title": "",
       "translated_at": "2026-10-23T22:32:52.607Z",
-      "tokens": {
-        "in": 1423,
-        "out": 701
-      }
+      "source_changed": "2026-10-18T07:14:28.724637+00:00",
+      "meta_description": ""
     }
   },
   {
@@ -723,29 +723,29 @@
     "faq": [],
     "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/f6fbc0a9-5a11-4531-8954-ce507d724f06/hero-5269d760ffad.png?t=1789630646",
     "es": {
+      "faq": [],
+      "model": "claude-haiku-5-5",
       "title": "Meta lanza nuevos planes de suscripción que combinan ventajas de sus apps con herramientas de IA para creadores",
+      "tokens": {
+        "in": 1374,
+        "out": 671
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "Meta ha anunciado un conjunto de nuevos planes de suscripción que combinan beneficios en sus principales apps con acceso a herramientas de inteligencia artificial. Los niveles están dirigidos a empresas, creadores y usuarios intensivos de IA, con precios mensuales que van desde 2,99 $ hasta 499 $. La medida llega mientras Meta también impulsa su nuevo agente de IA, Muse, como parte de una estrategia más amplia para diversificar sus ingresos y recuperar la confianza de los inversores tras un año turbulento.",
         "Para los equipos de redes sociales del deporte, esto indica que las funciones de IA más avanzadas de Meta podrían estar cada vez más detrás de planes de pago. Clubes, ligas y atletas que gestionan grandes operaciones en Instagram y Facebook deberían evaluar si estos planes ofrecen herramientas que aceleren la producción de contenido, personalicen las publicaciones para distintos segmentos de aficionados o aporten información sobre la audiencia que justifique su coste frente a los flujos de trabajo actuales.",
         "Un enfoque práctico es probar un plan de nivel inferior con una sola cuenta, como el canal de un equipo femenino o de la cantera, y medir el tiempo de producción y el engagement antes de escalar. Los atletas que construyen su marca personal podrían probar la creación de contenido asistida por IA, mientras que los equipos comerciales pueden explorar si estas herramientas ayudan a producir contenido patrocinado más personalizado en las apps de Meta."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-10-18T07:14:58.289274+00:00",
-      "model": "claude-haiku-5-5",
+      "image_title": "",
       "translated_at": "2026-10-23T22:32:57.494Z",
-      "tokens": {
-        "in": 1374,
-        "out": 671
-      }
+      "source_changed": "2026-10-18T07:14:58.289274+00:00",
+      "meta_description": ""
     }
   }
 ]
