@@ -1641,3 +1641,11 @@ select.cs-native { display: none !important; }
 .hexcell { position: fixed; z-index: 0; pointer-events: none; background: #111 center / cover; clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
   transform: scale(.94); opacity: 0; animation: hexIn 2.6s ease forwards; }
 @keyframes hexIn { 0% { opacity: 0; transform: scale(.8); } 18% { opacity: .55; transform: scale(.94); } 60% { opacity: .45; } 100% { opacity: 0; transform: scale(.94); } }
+/* Log in: "Sign in" in solid white with navy text and a gold arrow (option C) */
+.login-card2 .btn-primary { display: flex; align-items: center; justify-content: center; gap: 10px; height: 46px; border: 0; border-radius: 12px; background: #f1f4f9; color: #0b1020; box-shadow: none; filter: none;
+  font-weight: 700; font-size: 15px; transition: background .2s, transform .15s; }
+.login-card2 .btn-primary::after { content: "→"; color: #d79a2b; transition: transform .2s; }
+.login-card2 .btn-primary:hover:not(:disabled) { background: #fff; color: #0b1020; transform: translateY(-1px); }
+.login-card2 .btn-primary:hover:not(:disabled)::after { transform: translateX(3px); }
+:root[data-theme="light"] .login-card2 .btn-primary { background: #0c0c0d; color: #fff; }
+:root[data-theme="light"] .login-card2 .btn-primary:hover:not(:disabled) { background: #000; color: #fff; }
