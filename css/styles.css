@@ -7536,3 +7536,12 @@ section[id], :target { scroll-margin-top: 92px; }
 }
 /* saved boards: covers are the posts' pictures (js/saved.js mini), filling each tile */
 .mini-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+/* Home → Content Library demo: its crests are tiles (logo + name). The library cards' small round .lib-crest (footer)
+   shares the class name and was shrinking them to 28px circles and hiding the names */
+.lib-crests .lib-crest { width: auto; height: auto; overflow: visible; display: grid; justify-items: center; place-items: initial; gap: 7px; padding: 12px 4px 10px;
+  border-radius: 14px; background: var(--surface-2); border: 0.5px solid var(--line-soft); }
+.lib-crests .lib-crest img { width: 42px; height: 42px; padding: 6px; border-radius: 50%; object-fit: contain; background: #fff; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35); }
+.lib-crests .lib-crest span { display: block; font-size: 11px; line-height: 1.2; color: var(--muted); text-align: center; }
+.lib-crests .lib-crest.is-on { border-color: var(--gold); background: var(--gold-tint); box-shadow: 0 0 18px rgba(240, 184, 74, 0.25); }
+.lib-crests .lib-crest.is-on img { box-shadow: 0 0 0 2px var(--gold), 0 4px 14px rgba(240, 184, 74, 0.4); }
+.lib-crests .lib-crest.is-on span { color: var(--gold); }
