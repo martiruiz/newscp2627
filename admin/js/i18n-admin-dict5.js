@@ -437,4 +437,6 @@ window.SCPA_DICT = Object.assign(window.SCPA_DICT || {}, {
   "English welcome email saved.": ["Correo de bienvenida en inglés guardado.", "Correu de benvinguda en anglès desat."],
   "Run supabase/newsletter-welcome-template.sql in Supabase to edit it here.": ["Ejecuta supabase/newsletter-welcome-template.sql en Supabase para editarlo aquí.", "Executa supabase/newsletter-welcome-template.sql a Supabase per editar-lo aquí."],
   "Body": ["Texto", "Text"],
+  "Internal access for the SCP team.": ["Acceso interno del equipo SCP.", "Accés intern de l'equip SCP."],
+  "Internal panel · Sports Content Playbook": ["Panel interno · Sports Content Playbook", "Panell intern · Sports Content Playbook"],
 });

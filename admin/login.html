@@ -10,21 +10,29 @@
   <link rel="icon" type="image/png" sizes="192x192" href="../assets/favicon-s-192.png">
   <link rel="apple-touch-icon" href="../assets/apple-touch-icon-s.png">
   <link rel="stylesheet" href="../css/fonts.css?v=1">
-  <link rel="stylesheet" href="css/admin.css?v=20261103p">
+  <link rel="stylesheet" href="css/admin.css?v=20261024b">
   <script src="../js/theme.js?v=20261101a"></script>
 </head>
 <body>
   <main class="login">
-    <div class="panel login-card">
-      <h1>Sports Content Playbook</h1>
-      <p class="sub">Admin Panel</p>
-      <form novalidate data-login>
-        <label class="field"><span class="label">Email</span><input class="input" type="email" name="email" autocomplete="email" required></label>
-        <label class="field" data-pw><span class="label">Password</span><input class="input" type="password" name="password" autocomplete="current-password"></label>
-        <p class="error-text" data-msg hidden></p>
-        <button class="btn btn-primary" type="submit" data-submit>Sign In</button>
-      </form>
-      <p class="login-alt"><button class="link" type="button" data-toggle>Email me a login link instead</button></p>
+    <div class="login-card2">
+      <div class="login-vis" aria-hidden="true">
+        <p class="login-tag" data-login-tag>All your <em>content</em>,<br>one <em>access</em>.</p>
+        <p class="login-small">Internal panel · Sports Content Playbook</p>
+      </div>
+      <div class="login-card">
+        <div class="login-logo"><img src="../assets/logo-scp.png" alt="Sports Content Playbook"><span>Admin</span></div>
+        <h1>Admin Panel</h1>
+        <p class="sub">Internal access for the SCP team.</p>
+        <form novalidate data-login>
+          <label class="field"><span class="label">Email</span><input class="input" type="email" name="email" autocomplete="email" required></label>
+          <label class="field" data-pw><span class="label">Password</span><input class="input" type="password" name="password" autocomplete="current-password"></label>
+          <p class="error-text" data-msg hidden></p>
+          <button class="btn btn-primary" type="submit" data-submit>Sign In</button>
+        </form>
+        <p class="login-alt"><button class="link" type="button" data-toggle>Email me a login link instead</button></p>
+        <p class="login-site">sportscontentplaybook.com</p>
+      </div>
     </div>
   </main>
 
@@ -32,12 +40,14 @@
   <script src="js/i18n-admin-dict2.js?v=20261027c"></script>
   <script src="js/i18n-admin-dict3.js?v=20261027c"></script>
   <script src="js/i18n-admin-dict4.js?v=20261027c"></script>
-  <script src="js/i18n-admin-dict5.js?v=20261103p"></script>
+  <script src="js/i18n-admin-dict5.js?v=20261024b"></script>
   <script src="js/i18n-admin.js?v=20261027c"></script>
   <script src="../js/vendor/supabase-2.117.0.min.js"></script>
   <script src="../js/config.js"></script>
   <script src="../js/auth.js"></script>
   <script>
+    // the tagline in the admin's language (its words in gold italics)
+    document.querySelector("[data-login-tag]").innerHTML = { es: "Todo tu <em>contenido</em>,<br>un solo <em>acceso</em>.", ca: "Tot el teu <em>contingut</em>,<br>un sol <em>accés</em>." }[window.SCPA_LANG] || document.querySelector("[data-login-tag]").innerHTML;
     (async () => {
       const auth = window.SCP_AUTH;
       const form = document.querySelector("[data-login]");
