@@ -1646,3 +1646,13 @@ select.cs-native { display: none !important; }
 .login-lang button:hover { color: var(--text); }
 .login-lang button[aria-pressed="true"] { color: var(--text); border-bottom-color: var(--accent); }
 :root[data-theme="light"] .login-logo span { color: #5b5b60; }
+/* Log in buttons in the same line as the header: no fills — caps text with letter-spacing, a fine edge and the gold line / dot */
+.login-card2 .btn-primary { height: 46px; border-radius: 10px; background: rgba(255, 255, 255, .04); color: var(--text); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .14), inset 0 -2px 0 var(--accent);
+  font: 600 12.5px var(--font); letter-spacing: .14em; text-transform: uppercase; }
+.login-card2 .btn-primary::after { color: var(--accent); }
+.login-card2 .btn-primary:hover:not(:disabled) { background: rgba(240, 184, 74, .08); color: #fff; box-shadow: inset 0 0 0 1px rgba(240, 184, 74, .55), inset 0 -2px 0 var(--accent), 0 10px 26px -14px rgba(240, 184, 74, .8); transform: none; }
+.login-card2 .login-alt .link { height: auto; padding: 6px 0; border-radius: 0; background: none !important; box-shadow: none !important; color: var(--dim); font: 600 11.5px var(--font); letter-spacing: .12em; text-transform: uppercase; }
+.login-card2 .login-alt .link:hover { color: var(--text); }
+.login-card2 .login-alt .link::before { width: 14px; height: 14px; }
+:root[data-theme="light"] .login-card2 .btn-primary { background: #fff; color: #0c0c0d; box-shadow: inset 0 0 0 1px rgba(12, 12, 13, .16), inset 0 -2px 0 var(--accent); }
+:root[data-theme="light"] .login-card2 .btn-primary:hover:not(:disabled) { background: #fffaf0; color: #0c0c0d; }
