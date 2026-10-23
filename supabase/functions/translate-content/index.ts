@@ -59,7 +59,7 @@ Deno.serve(async (req) => {
     const model = env("TRANSLATE_MODEL") || "claude-haiku-5-5";
     const claude = new Anthropic({ apiKey: env("ANTHROPIC_API_KEY") });
     const response = await claude.beta.messages.create({
-      model, max_tokens: 32000,
+      model, max_tokens: 16000,
       betas: ["server-side-fallback-2026-07-01"], fallbacks: "default",
       output_config: { effort: "low", format: { type: "json_schema", schema: SCHEMA } },
       system: SYSTEM,
