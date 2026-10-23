@@ -8152,3 +8152,9 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
   -webkit-background-clip: text !important; background-clip: text !important; animation: goldSweep 3.2s ease-in-out infinite; }
 @keyframes goldSweep { 0% { background-position: 100% 0; } 100% { background-position: 0 0; } }
 @media (prefers-reduced-motion: reduce) { :root[data-theme="light"] .gold, :root[data-theme="light"] .sv3-head h1 span { animation: none; background-position: 50% 0 !important; } }
+/* "Visit the news / blog / All articles" links: a clear pill button (one border, no double underline), filled on hover */
+.news-link { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 18px; border: 1px solid rgba(240, 184, 74, 0.6); border-radius: 999px;
+  font-size: 12.5px; font-weight: 700; letter-spacing: 0.08em; white-space: nowrap; text-decoration: none !important; transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.2s; }
+.news-link:hover { background: var(--gold); color: #101828; border-color: var(--gold); transform: translateY(-1px); }
+:root[data-theme="light"] .news-link { border-color: rgba(12,12,13,.25); color: #0c0c0d !important; text-decoration: none !important; background: #fff; }
+:root[data-theme="light"] .news-link:hover { background: #0c0c0d; border-color: #0c0c0d; color: #fff !important; }
