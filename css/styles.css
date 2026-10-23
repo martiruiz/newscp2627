@@ -8222,3 +8222,16 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .pf-country-btn { justify-content: space-between; gap: 10px; }
 .pf-country-btn > svg { position: static !important; transform: none !important; margin-left: auto; flex: none; width: 16px; height: 16px; color: var(--muted); }
 .pf-country-btn[aria-expanded="true"] > svg { transform: rotate(180deg) !important; }
+
+/* ---------- Profile: every section built like "Billing & membership" — each block of questions is its own card
+   (white with a soft shadow by day, a raised panel by night), stacked with air between them ---------- */
+.pf-card:not(.pf-billing) > :is(.pf-grid, .pf-q, .pf-switch, .pf-field) { margin: 0 0 14px !important; padding: 18px 20px !important; border-radius: 18px; border: 1px solid var(--line-soft) !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent), var(--surface-2); }
+.pf-card:not(.pf-billing) > :is(.pf-grid, .pf-q, .pf-switch, .pf-field):last-child { margin-bottom: 0 !important; }
+.pf-card:not(.pf-billing) > .pf-grid { padding-top: 18px !important; }
+.pf-card .pf-q + .pf-q, .pf-card .pf-q + .pf-grid, .pf-card .pf-grid + .pf-q { border-top: 1px solid var(--line-soft); }
+.pf-card:not(.pf-billing) > .pf-q > span { margin-bottom: 14px; }
+:root[data-theme="light"] .pf-card:not(.pf-billing) > :is(.pf-grid, .pf-q, .pf-switch, .pf-field) { background: #fff !important; border-color: rgba(12,12,13,.08) !important;
+  box-shadow: 0 1px 2px rgba(12,12,13,.04), 0 18px 40px -26px rgba(12,12,13,.28) !important; }
+:root[data-theme="light"] .pf-card:not(.pf-billing) .pf-grid .pf-in, :root[data-theme="light"] .pf-card:not(.pf-billing) .pf-country-btn { background: #f7f6f3; }
+:root[data-theme="light"] .pf-acc-box { background: #fff !important; border-color: rgba(12,12,13,.08) !important; box-shadow: 0 1px 2px rgba(12,12,13,.04), 0 18px 40px -26px rgba(12,12,13,.28) !important; }
