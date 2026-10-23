@@ -48,7 +48,8 @@
     const btn = p.highlighted || solo ? "btn-gold" : "btn-outline";   // the main plan stands out; green is only the trial's state
     if (isCurrent) cta = `<a class="btn ${btn} plan-cta" href="profile.html#billing">${tx("Manage your plan")}</a>`;
     else if (!price) cta = `<span class="btn btn-outline plan-cta is-current">${tx("Not available in {cur}", { cur: currency.toUpperCase() })}</span>`;
-    else if (!price.ready) cta = `<a class="btn btn-outline plan-cta" href="contact.html">${tx("Coming soon — contact us")}</a>`;
+    // price not synced with Stripe yet: same trial button (as asked), to sign-up; the payment step needs the price in Stripe
+    else if (!price.ready) cta = `<a class="btn ${btn} plan-cta" href="signup.html?plan=${encodeURIComponent(p.key)}&interval=${iv}"><span>${trial ? tx("Start {n}-day free trial", { n: trial }) : tx("Get {plan}", { plan: esc(p.name) })}</span><i class="plan-cta-arrow" aria-hidden="true">→</i></a>`;
     else if (cur) cta = `<a class="btn ${btn} plan-cta" href="profile.html?change=${encodeURIComponent(p.key)}&interval=${iv}#billing">${tx("Choose {plan}", { plan: esc(p.name) })}</a>`;
     else cta = `<button class="btn ${btn} plan-cta" type="button" data-checkout-plan="${esc(p.key)}" data-interval="${iv}" data-currency="${currency}" data-seats="${seats}"${privateToken && p.key === privatePlan?.key ? ` data-link="${esc(privateToken)}"` : ""}><span>${trial ? tx("Start {n}-day free trial", { n: trial }) : tx("Get {plan}", { plan: esc(p.name) })}</span><i class="plan-cta-arrow" aria-hidden="true">→</i></button>`;
     const flag = isCurrent ? `<span class="plan-flag is-current">${tx(cur.status === "trialing" ? "Your trial" : "Your plan")}</span>`

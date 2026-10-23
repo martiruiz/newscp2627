@@ -457,7 +457,7 @@ window.SCP_ES = {
   "{n} users × {price}/user": "{n} usuarios × {price}/usuario",
   "From 1 to {n} users": "De 1 a {n} usuarios",
   "{n} AI analyses a month per user: hook, why it works, how to adapt it": "{n} análisis con IA al mes por usuario: hook, por qué funciona y cómo adaptarlo",
-  "Start {n}-day free trial": "Prueba {n} días gratis",
+  "Start {n}-day free trial": "Prueba gratis {n} días",
   "Get {plan}": "Contratar {plan}",
   "Your trial": "Tu prueba",
   "Your plan": "Tu plan",
