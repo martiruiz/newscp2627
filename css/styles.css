@@ -8275,39 +8275,31 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 :root[data-theme="light"] .mm-club .mm-btn-tab:hover > span:first-child, :root[data-theme="light"] .mm-club .mm-btn-tab[aria-current="page"] > span:first-child { background-image: linear-gradient(100deg, #6b4a0c, #b07a1c 45%, #e0a43a 52%, #7a5512 75%); }
 @media (prefers-reduced-motion: reduce) { .mm-club .mm-btn-tab::before, .mm-club .mm-btn-tab:active::after { animation: none !important; } }
 
-/* My Club without a club: the locked top plan (js/my-club.js lockedHtml) — padlock, what you get, "Unlock My Club" opens it and books a demo */
+/* My Club without a club: the locked top plan (js/my-club.js lockedHtml) — over the blurred library, a padlock, one line and
+   "Unlock My Club", which opens the padlock and books a demo */
 .mc-locked .feed > :not([data-mc]), .mc-locked [data-mc-crumb] { display: none !important; }
-.mc-lockd { position: relative; display: grid; place-items: center; padding: 40px 16px 56px; overflow: hidden; border-radius: 26px; }
+.mc-lockd { position: relative; display: grid; place-items: center; min-height: 420px; padding: 40px 16px; overflow: hidden; border-radius: 26px; }
 .mc-lockd-tiles { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; padding: 14px; filter: blur(14px); opacity: .55; pointer-events: none; }
 .mc-lockd-tiles i { border-radius: 16px; background: linear-gradient(160deg, rgba(240,184,74,.35), rgba(122,162,255,.18) 60%, rgba(255,255,255,.04)); }
 .mc-lockd-tiles i:nth-child(odd) { background: linear-gradient(200deg, rgba(167,139,250,.28), rgba(240,184,74,.16) 70%); }
-.mc-lockd-card { position: relative; max-width: 560px; width: 100%; padding: 34px 32px 28px; border-radius: 24px; text-align: center;
-  background: linear-gradient(180deg, rgba(255,255,255,.05), transparent 40%), var(--surface); border: 1px solid rgba(240,184,74,.45); box-shadow: 0 30px 80px -30px rgba(0,0,0,.6), 0 0 0 6px rgba(240,184,74,.06); }
-.mc-lock { display: inline-grid; place-items: center; width: 74px; height: 74px; margin-bottom: 14px; border-radius: 22px; background: radial-gradient(circle at 30% 25%, #fff1c9, #f0b84a 45%, #b07a1c); box-shadow: 0 14px 34px -12px rgba(240,184,74,.8), inset 0 1px 0 rgba(255,255,255,.6); }
-.mc-lock-svg { width: 40px; height: 40px; fill: none; stroke: #2a1d05; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; overflow: visible; }
-.mc-lock-svg rect { fill: rgba(42,29,5,.12); }
+.mc-lockd-min { position: relative; display: grid; justify-items: center; gap: 12px; max-width: 440px; text-align: center; }
+.mc-lock { display: grid; place-items: center; width: 64px; height: 64px; margin-bottom: 4px; border-radius: 50%; border: 1px solid rgba(240,184,74,.55); background: rgba(240,184,74,.1); color: var(--gold); box-shadow: 0 0 40px -8px rgba(240,184,74,.45); }
+.mc-lock-svg { width: 30px; height: 30px; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; overflow: visible; }
 .mc-lock-shackle { transform-origin: 33px 21px; transition: transform .55s cubic-bezier(.3,1.6,.5,1); }
 .mc-lockd:not(.is-open) .mc-lock { animation: mcLockIdle 3.2s ease-in-out infinite; }
 @keyframes mcLockIdle { 0%, 86%, 100% { transform: rotate(0); } 89% { transform: rotate(-7deg); } 92% { transform: rotate(6deg); } 95% { transform: rotate(-3deg); } }
 .mc-lockd:has(.mc-unlock:hover) .mc-lock-shackle { transform: translateY(-3px); }
 .mc-lockd.is-open .mc-lock-shackle { transform: translateY(-7px) rotate(-38deg); }
 .mc-lockd.is-open .mc-lock { animation: mcLockPop .6s ease-out; }
-@keyframes mcLockPop { 40% { transform: scale(1.12); box-shadow: 0 0 0 14px rgba(240,184,74,.18), 0 14px 34px -12px rgba(240,184,74,.8); } 100% { transform: scale(1); } }
+@keyframes mcLockPop { 40% { transform: scale(1.12); box-shadow: 0 0 0 14px rgba(240,184,74,.18); } 100% { transform: scale(1); } }
 .mc-lockd.is-open .mc-lockd-tiles { filter: blur(6px); opacity: .8; transition: filter .7s, opacity .7s; }
-.mc-lockd-eyebrow { margin: 0 0 6px; color: var(--gold); font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
-.mc-lockd-card h2 { margin: 0 0 10px; font: 600 clamp(24px, 3vw, 30px)/1.15 var(--font-display); letter-spacing: -.02em; }
-.mc-lockd-sub { margin: 0 auto 20px; max-width: 460px; color: var(--muted); line-height: 1.55; }
-.mc-lockd-card ul { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 0 24px; padding: 0; list-style: none; text-align: left; }
-.mc-lockd-card li { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border-radius: 14px; background: var(--surface-2); border: 1px solid var(--line-soft); font-size: 14px; font-weight: 500; line-height: 1.3; }
-.mc-lockd-card li svg { flex: none; width: 18px; height: 18px; color: var(--gold); }
+.mc-lockd-min h2 { margin: 0; font: 600 clamp(26px, 3.2vw, 34px)/1.15 var(--font-display); letter-spacing: -.02em; }
+.mc-lockd-min p { margin: 0 0 8px; color: var(--muted); font-size: 16px; line-height: 1.5; }
 .mc-unlock { display: inline-flex; align-items: center; gap: 10px; min-height: 50px; padding: 0 26px; font-size: 16px; }
 .mc-unlock span { transition: transform .2s; } .mc-unlock:hover span { transform: translateX(3px); }
-.mc-lockd-card small { display: block; margin-top: 12px; color: var(--muted); font-size: 13px; }
-@media (max-width: 560px) { .mc-lockd-card { padding: 28px 18px 22px; } .mc-lockd-card ul { grid-template-columns: 1fr; } .mc-lockd-tiles { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .mc-lockd-tiles { grid-template-columns: repeat(2, 1fr); } }
 @media (prefers-reduced-motion: reduce) { .mc-lock, .mc-lock-shackle { animation: none !important; transition: none !important; } }
-:root[data-theme="light"] .mc-lockd-card { background: #fff; border-color: rgba(240,184,74,.55); box-shadow: 0 1px 2px rgba(12,12,13,.04), 0 30px 70px -30px rgba(12,12,13,.35); }
-:root[data-theme="light"] .mc-lockd-card li { background: #f7f6f3; border-color: rgba(12,12,13,.06); }
-:root[data-theme="light"] .mc-lockd-eyebrow, :root[data-theme="light"] .mc-lockd-card li svg { color: #a8730f; }
+:root[data-theme="light"] .mc-lock { color: #a8730f; border-color: rgba(168,115,15,.45); background: rgba(240,184,74,.14); }
 :root[data-theme="light"] .mc-unlock { background: #0c0c0d !important; color: #fff !important; }
 
 /* Menu Resources: the newest news item / article big on the left (tabs switch), the sections as a list on the right */

@@ -39,21 +39,16 @@
     window.dispatchEvent(new Event("scp-lib-scope"));
   }
 
-  // No club yet: My Club as the locked top plan — the button opens the padlock and goes to book a demo
+  // No club yet: My Club as the locked top plan (padlock, one line, the button) over the blurred library — the button opens the padlock and goes to book a demo
   const LOCK = `<svg class="mc-lock-svg" viewBox="0 0 48 48" aria-hidden="true"><path class="mc-lock-shackle" d="M15 21v-6a9 9 0 0 1 18 0v6"/><rect x="9" y="21" width="30" height="22" rx="6"/><circle cx="24" cy="31" r="3"/><path d="M24 34v3"/></svg>`;
   function lockedHtml() {
-    const ic = (n) => (window.SCP_ICONS ? window.SCP_ICONS(n) : "");
-    const points = [["trophy", "First team, sections and academy"], ["users", "Your players' and sponsors' posts, in one place"], ["calendar-check", "We upload your club's posts every day"], ["lock", "Private: only your club can see it"]];
     return `<div class="mc-lockd">
       <div class="mc-lockd-tiles" aria-hidden="true">${"<i></i>".repeat(8)}</div>
-      <div class="mc-lockd-card">
+      <div class="mc-lockd-min">
         <span class="mc-lock">${LOCK}</span>
-        <p class="mc-lockd-eyebrow">${esc(t("My Club · the next level"))}</p>
-        <h2>${esc(t("Your club's own content library"))}</h2>
-        <p class="mc-lockd-sub">${esc(t("A private space built around your club, with the plan tailored to the max: every team, section, player and sponsor, uploaded by us every day."))}</p>
-        <ul>${points.map(([i, p]) => `<li>${ic(i)}<span>${esc(t(p))}</span></li>`).join("")}</ul>
+        <h2>${esc(t("Your club, with its own library"))}</h2>
+        <p>${esc(t("The most complete plan, tailored to your club."))}</p>
         <a class="btn btn-gold mc-unlock" href="book-a-call.html?for=clubs" data-mc-unlock data-cta="my-club-locked">${esc(t("Unlock My Club"))}<span aria-hidden="true">→</span></a>
-        <small>${esc(t("Book a 30-minute demo: we tailor the plan to your club"))}</small>
       </div></div>`;
   }
   document.addEventListener("click", (e) => {

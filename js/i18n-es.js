@@ -2467,4 +2467,6 @@ window.SCP_ES = {
   "Answers in 10 seconds": "Respuestas en 10 segundos",
   "Read the news": "Leer la noticia",
   "Read the article": "Leer el artículo",
+  "Your club, with its own library": "Tu club, con su propia biblioteca",
+  "The most complete plan, tailored to your club.": "El plan más completo, hecho a medida de tu club.",
 };
