@@ -152,20 +152,20 @@
   }
 
   // ---------- Auth guard + layout ----------
-  const NAV = [
-    { href: "import.html", label: "Import", icon: "import", key: "import" },
+  const NAV = [   // hi: highlighted in the menu (gold, with a soft shine)
+    { href: "import.html", label: "Import", icon: "import", key: "import", hi: true },
     { href: "content-ideas.html", label: "Content Ideas", icon: "ideas", key: "ideas" },
     { href: "library.html", label: "Content Library", icon: "library", key: "library" },
     { href: "filters.html", label: "Filters", icon: "filters", key: "filters" },
-    { href: "profiles.html", label: "Scraped profiles", icon: "audience", key: "profiles" },
+    { href: "seo.html", label: "SEO", icon: "globe", key: "seo", hi: "top" },
     { href: "blog.html", label: "Blog", icon: "edit", key: "blog" },
     { href: "news.html", label: "Social News", icon: "external", key: "news" },
-    { href: "seo.html", label: "SEO", icon: "globe", key: "seo" },
     { href: "smart-review.html", label: "Smart filters", icon: "smart", key: "smart" },
-    { href: "audience.html", label: "Audience", icon: "audience", key: "audience", group: "super" },
+    { href: "profiles.html", label: "Scraped profiles", icon: "audience", key: "profiles" },
+    { href: "my-club.html", label: "My Club", icon: "audience", key: "myclub", group: "super", hi: true },
+    { href: "memberships.html", label: "Memberships", icon: "billing", key: "memberships", group: "super", hi: true },
+    { href: "audience.html", label: "Newsletter", icon: "audience", key: "audience", group: "super", hi: true },
     { href: "leads.html", label: "Leads & Demos", icon: "users", key: "leads", group: "super" },
-    { href: "my-club.html", label: "My Club", icon: "audience", key: "myclub", group: "super" },
-    { href: "memberships.html", label: "Memberships", icon: "billing", key: "memberships", group: "super" },
     { href: "promo-codes.html", label: "Promo codes", icon: "tag", key: "promo", group: "super" },
     { href: "users.html", label: "Users", icon: "users", key: "users", group: "super" },
   ];
@@ -200,7 +200,7 @@
     if (!side) return;
     side.innerHTML = `
       <div class="side-brand"><img class="side-wordmark" src="../assets/logo-scp.png" alt="Sports Content Playbook"><div><b>Admin</b></div></div>
-      <nav aria-label="Admin">${[["Platform content", NAV.filter((n) => !n.group)], ["Superadmin", NAV.filter((n) => n.group === "super")]].map(([t, list]) => `<p class="side-group">${t}</p>${list.map((n) => `<a href="${n.href}"${n.key === pageKey ? ' aria-current="page"' : ""}>${icon(n.icon)}${n.label}</a>`).join("")}`).join("")}</nav>
+      <nav aria-label="Admin">${[["Platform content", NAV.filter((n) => !n.group)], ["Superadmin", NAV.filter((n) => n.group === "super")]].map(([t, list]) => `<p class="side-group">${t}</p>${list.map((n) => `<a href="${n.href}"${n.hi ? ` class="is-hi${n.hi === "top" ? " is-top" : ""}"` : ""}${n.key === pageKey ? ' aria-current="page"' : ""}>${icon(n.icon)}${n.label}</a>`).join("")}`).join("")}</nav>
       <a class="side-cta" href="../content-library.html">Open Content Library<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg></a>
       <div class="side-foot">
         <p class="side-user" title="${esc(session.user.email)}">${esc(session.user.email)}${profile?.role ? ` · ${esc(profile.role)}` : ""}</p>
