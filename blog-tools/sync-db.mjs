@@ -22,7 +22,12 @@ const rest = async (q, init = {}) => {
 const pending = (p) => !p.published_at || new Date(p.updated_at) > new Date(p.published_at);
 
 const [mode, logFile] = process.argv.slice(2);
-const posts = await rest("blog_posts?select=slug,data,draft,updated_at,published_at");
+let posts;
+try { posts = await rest("blog_posts?select=slug,data,draft,updated_at,published_at"); }
+catch (e) {   // the table isn't there yet (supabase/admin-content.sql not run): nothing to do, the repo's files stay as they are
+  if (/blog_posts|PGRST205|42P01|schema cache/.test(e.message)) { console.log("blog_posts isn't set up yet: nothing to sync."); process.exit(0); }
+  throw e;
+}
 
 if (mode === "export") {
   if (!posts.length) { console.log("No posts in blog_posts: nothing exported (run supabase/admin-content.sql)."); process.exit(0); }
