@@ -383,6 +383,7 @@ ${related.map(card).join("\n")}
 
   <script src="js/config.js?v=20261021a"></script>
   <script src="js/nav-menu.js"></script>
+  <script src="js/consent.js?v=20261103i"></script>
   <script src="js/lead-flow.js?v=20261020b"></script>
   <script src="js/promo-bar.js?v=20261020a"></script>
   <script src="js/main.js"></script>
@@ -520,6 +521,7 @@ ${more.map(newsRow).join("\n")}
 
   <script src="js/config.js"></script>
   <script src="js/nav-menu.js"></script>
+  <script src="js/consent.js?v=20261103i"></script>
   <script src="js/lead-flow.js"></script>
   <script src="js/promo-bar.js"></script>
   <script src="js/main.js"></script>

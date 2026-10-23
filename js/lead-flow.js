@@ -6,7 +6,8 @@
 // Data: supabase/leads.sql (upsert_lead, lead_booking_reported, track_lead_event, lead_rules_public).
 // Opens as a modal from every "Book a demo" / "Contact" button (they keep their links as a fallback), and inline on
 // book-a-call.html and contact.html. A/B: config.leadFlow.variant "new" | "classic" | "ab", or ?lf=classic|new.
-// Analytics: window.SCP_TRACK(event, props) → dataLayer / gtag if present + our own funnel table. No personal data.
+// Analytics: window.SCP_TRACK(event, props) → dataLayer / gtag if present + our own funnel table. No personal data; only with
+// analytics consent (js/consent.js).
 (() => {
   const cfg = window.SCP_CONFIG || {};
   // the SCP logo shown on top of the quick contact / demo (works from any folder: resolved from this script's address)
@@ -18,7 +19,8 @@
 
   // ---------- ids, UTM, variant ----------
   let cid = store.get("scp-lead-cid");
-  if (!cid) { cid = crypto.randomUUID ? crypto.randomUUID() : "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) => (c ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))).toString(16)); store.set("scp-lead-cid", cid); }
+  // a random id for this browser: kept in local storage only with analytics consent (js/consent.js), else just for this page
+  if (!cid) cid = crypto.randomUUID ? crypto.randomUUID() : "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) => (c ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))).toString(16));
   const q = new URLSearchParams(location.search);
   if ([...q.keys()].some((k) => k.startsWith("utm_"))) {
     const utm = { landing: page, referrer: document.referrer ? new URL(document.referrer).hostname : "" };
@@ -45,6 +47,8 @@
     headers: { apikey: cfg.supabaseAnonKey, Authorization: `Bearer ${cfg.supabaseAnonKey}`, "Content-Type": "application/json", Prefer: "return=minimal" },
     body: JSON.stringify({ email, first_name: first_name.slice(0, 80) || null, source, consent: true, consent_text: NL_TEXT }) }).catch(() => {});
   window.SCP_TRACK = (event, props = {}) => {
+    if (!window.SCP_CONSENT?.analytics()) return;   // usage measurement only with consent
+    if (!store.get("scp-lead-cid")) store.set("scp-lead-cid", cid);
     const safe = { event, step: props.step, variant, source_page: page, org_type: props.org_type, recommendation: props.recommendation };
     try { (window.dataLayer = window.dataLayer || []).push({ ...safe, event: `scp_${event}` }); } catch {}
     try { window.gtag?.("event", event, { step: safe.step, variant, recommendation: safe.recommendation }); } catch {}

@@ -8342,3 +8342,42 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 
 /* Day colours: the "You are in" pill icon (svg) stays white on its black disc — the invert filter is only for <img> icons */
 :root[data-theme="light"] .sec-pill-ic svg { filter: none !important; }
+
+/* Cookie notice (js/consent.js): a card bottom-right with a cookie icon; Reject and Accept the same size side by side;
+   "Settings" opens the two kinds with switches */
+.ck { position: fixed; right: 20px; bottom: 20px; z-index: 9990; width: min(380px, calc(100vw - 32px)); padding: 20px; border-radius: 22px; color: var(--text); font-size: 14px;
+  background: linear-gradient(180deg, rgba(255,255,255,.05), transparent 50%), var(--surface); border: 1px solid rgba(240,184,74,.28);
+  box-shadow: 0 30px 70px -24px rgba(0,0,0,.75), 0 0 0 6px rgba(240,184,74,.05); animation: ckIn .35s cubic-bezier(.2,.8,.2,1); }
+@keyframes ckIn { from { opacity: 0; transform: translateY(14px) scale(.98); } }
+.ck-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.ck-ic { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 12px; background: rgba(240,184,74,.14); color: var(--gold); }
+.ck-ic svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ck-t { margin: 0; font: 600 17px var(--font-display); letter-spacing: -.01em; }
+.ck-p { margin: 0 0 16px; color: var(--muted); font-size: 13.5px; line-height: 1.55; }
+.ck-p a { color: var(--text); text-decoration: underline; text-decoration-color: rgba(240,184,74,.6); text-underline-offset: 3px; }
+.ck-opts { display: none; gap: 8px; margin-bottom: 14px; }
+.ck.is-settings .ck-opts { display: grid; }
+.ck-opt { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 12px; border-radius: 14px; background: var(--surface-2); border: 1px solid var(--line-soft); cursor: pointer; }
+.ck-opt b { display: block; font-size: 14px; } .ck-opt small { color: var(--muted); font-size: 12.5px; line-height: 1.4; }
+.ck-opt input { flex: none; width: 38px; height: 22px; margin: 0; appearance: none; border-radius: 999px; background: var(--line); position: relative; cursor: pointer; transition: background .2s; }
+.ck-opt input::after { content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform .2s; }
+.ck-opt input:checked { background: #22c55e; } .ck-opt input:checked::after { transform: translateX(16px); }
+.ck-opt input:disabled { opacity: .55; cursor: default; }
+.ck-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ck-b { height: 42px; padding: 0 14px; border-radius: 999px; border: 0; font: 600 14px var(--font-body); cursor: pointer; transition: transform .15s, filter .15s; }
+.ck-b:hover { transform: translateY(-1px); filter: brightness(1.06); }
+[data-ck-no] { background: rgba(var(--fg), .1); color: var(--text); box-shadow: inset 0 0 0 1px var(--line); }
+[data-ck-yes] { background: linear-gradient(180deg, #f6cf7d, #f0b84a); color: #1a1205; }
+.ck-link { grid-column: 1 / -1; justify-self: center; margin-top: 4px; padding: 4px 8px; border: 0; background: none; color: var(--muted); font: 500 13px var(--font-body); cursor: pointer; }
+.ck-link:hover { color: var(--text); }
+.ck-save { display: none; }
+.ck.is-settings .ck-save { display: block; grid-column: 1 / -1; background: var(--text); color: var(--bg, #0b1020); }
+.ck.is-settings .ck-link { display: none; }
+@media (max-width: 560px) { .ck { right: 16px; left: 16px; bottom: 16px; width: auto; } }
+:root[data-theme="light"] .ck { background: #fff; border-color: rgba(12,12,13,.08); box-shadow: 0 30px 70px -28px rgba(12,12,13,.4); }
+:root[data-theme="light"] .ck-ic { background: #0c0c0d; color: #fff; }
+:root[data-theme="light"] [data-ck-no] { background: #f1f0ec; color: #0c0c0d; box-shadow: none; }
+:root[data-theme="light"] [data-ck-yes] { background: #0c0c0d; color: #fff; }
+:root[data-theme="light"] .ck-opt { background: #f7f6f3; border-color: rgba(12,12,13,.06); }
+:root[data-theme="light"] .ck.is-settings .ck-save { background: #0c0c0d; color: #fff; }
+.sf-bottom button[data-cookie-settings], .sf-bottom a[data-cookie-settings] { cursor: pointer; }
