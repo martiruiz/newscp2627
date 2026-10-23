@@ -32,6 +32,7 @@ window.SCP_AUTH = (() => {
     if (!client) return;
     const { data: { session } } = await client.auth.getSession();
     if (!session) return;
+    if (session.user.user_metadata?.lang !== lang) client.auth.updateUser({ data: { lang } }).catch(() => {});   // the sign-in emails follow it (supabase/auth-emails)
     const { data: p } = await client.from("profiles").select("preferences,newsletter,newsletter_frequency").eq("id", session.user.id).single();
     if (!p) return;
     await client.rpc("update_my_preferences", { p_preferences: { ...(p.preferences || {}), ui_language: lang }, p_newsletter: p.newsletter, p_frequency: p.newsletter_frequency || "weekly" });

@@ -143,7 +143,7 @@
         emailRedirectTo: redirectUrl,
         shouldCreateUser: mode === "signup",
         data: mode === "signup"
-          ? { first_name: fields.first_name?.trim(), last_name: fields.last_name?.trim(), plan, users: plan ? users : null }
+          ? { first_name: fields.first_name?.trim(), last_name: fields.last_name?.trim(), plan, users: plan ? users : null, lang: window.SCP_LANG === "en" ? "en" : "es" }   // lang: the sign-in emails' language (supabase/auth-emails)
           : undefined,
       },
     });
