@@ -234,7 +234,9 @@
       // not sure which plan? one line under the cards opens the demo form (FAQ) or the demo page
       if (!privatePlan && plans.length > 1 && !b.nextElementSibling?.matches?.(".plan-help")) {
         const inPage = document.querySelector('[data-faq-pane="demo"]');
-        b.insertAdjacentHTML("afterend", `<p class="plan-help">${tx("Not sure which plan fits your team?")} <a class="link-gold" href="book-a-call.html" data-cta="pricing-cards"${inPage ? ' data-faq-open="demo"' : ""}>${tx("Talk to us for 30 minutes →")}</a></p>`);
+        b.insertAdjacentHTML("afterend", `<div class="plan-help"><span class="plan-help-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 2v4M16 2v4"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/></svg></span>
+          <span class="plan-help-tx">${tx("Not sure which plan fits your team?")}</span>
+          <a class="plan-help-btn" href="book-a-call.html" data-cta="pricing-cards"${inPage ? ' data-faq-open="demo"' : ""}>${tx("Talk to us for 30 minutes →")}</a></div>`);
       }
       const prev = b.previousElementSibling?.matches?.(".plan-switches") ? b.previousElementSibling : null;
       if (prev) prev.outerHTML = switches(plans); else b.insertAdjacentHTML("beforebegin", switches(plans));

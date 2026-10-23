@@ -7883,3 +7883,13 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 @media (prefers-reduced-motion: reduce) { .plan-save-live { animation: none; } }
 /* Pricing: more air between the monthly / yearly / users bar and the plans (the flags above the cards need room) */
 .plan-switches { margin-bottom: 58px; }
+/* Pricing: "Not sure which plan…?" as a clear bar under the plans with a big gold button */
+.plan-help { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 14px; width: fit-content; max-width: 100%; margin: 48px auto 0; padding: 12px 12px 12px 14px; border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent), var(--surface); border: 1px solid var(--line); box-shadow: var(--inset-glow); font-size: 15px; color: var(--muted); }
+.plan-help-ic { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; background: var(--gold-tint); color: var(--gold); flex: none; }
+.plan-help-ic svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.plan-help-tx { color: var(--text); font-weight: 500; }
+.plan-help-btn { display: inline-flex; align-items: center; height: 44px; padding: 0 22px; border-radius: 999px; font-weight: 600; font-size: 14.5px; color: #101828 !important; text-decoration: none !important;
+  background: radial-gradient(64% 64% at 50% 100%, var(--gold-light) 0%, var(--gold-mid) 50%, var(--gold) 100%); box-shadow: 0 10px 26px -12px rgba(240, 184, 74, 0.9); transition: transform 0.2s, box-shadow 0.2s; }
+.plan-help-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 30px -10px rgba(240, 184, 74, 1); }
+@media (max-width: 640px) { .plan-help { border-radius: 22px; padding: 16px; text-align: center; } .plan-help-btn { width: 100%; justify-content: center; } }
