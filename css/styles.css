@@ -7412,7 +7412,6 @@ section[id], :target { scroll-margin-top: 92px; }
 .pf-country-btn { width: 100%; height: 48px; gap: 10px; padding: 0 14px; border-radius: 12px; background: var(--surface-2); border: 0.5px solid var(--line); color: var(--text); font: 500 15px var(--font-body); text-align: left; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s; }
 .pf-country-btn:hover, .pf-country-btn[aria-expanded="true"] { border-color: rgba(240, 184, 74, 0.6); box-shadow: 0 0 0 3px rgba(240, 184, 74, 0.15); }
 .pf-country-btn > svg { width: 16px; height: 16px; margin-left: auto; color: var(--muted); }
-.pf-flag { display: grid; place-items: center; width: 22px; font-size: 18px; line-height: 1; } .pf-flag svg { width: 17px; height: 17px; color: var(--muted-dim); }
 .pf-country-v { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .pf-country-v.is-ph { color: var(--muted-dim); }
 .pf-country-dd { position: absolute; z-index: 30; left: 0; right: 0; top: calc(100% + 6px); padding: 8px; border-radius: 14px; background: var(--surface); border: 0.5px solid var(--line); box-shadow: 0 24px 50px -18px rgba(0, 0, 0, 0.7); }
 .pf-country-dd .pf-search { margin-bottom: 6px; }

@@ -198,7 +198,7 @@
     const cur = countryOf(state.country);
     const list = COUNTRIES.filter((x) => !cQ || [x.local, x.en, x.es].some((y) => norm(y).includes(norm(cQ))));
     box.innerHTML = `<button type="button" class="pf-in pf-country-btn" aria-haspopup="listbox" aria-expanded="${cOpen}" data-country-btn>
-        <span class="pf-flag">${icon("earth")}</span><span class="pf-country-v${cur || state.country ? "" : " is-ph"}">${esc(cur ? cur.local : state.country || tx("Choose your country"))}</span>${icon("chevron-down")}</button>
+        <span class="pf-country-v${cur || state.country ? "" : " is-ph"}">${esc(cur ? cur.local : state.country || tx("Choose your country"))}</span>${icon("chevron-down")}</button>
       ${cOpen ? `<div class="pf-country-dd"><div class="pf-search">${icon("search")}<input type="search" value="${esc(cQ)}" placeholder="${esc(tx("Search a country"))}" data-country-q></div>
         <ul role="listbox">${list.slice(0, 80).map((x) => `<li><button type="button" role="option" aria-selected="${cur?.c === x.c}" data-country="${x.c}">${esc(x.local)}${cur?.c === x.c ? icon("check") : ""}</button></li>`).join("") || `<li class="pf-muted">${esc(tx("No matches."))}</li>`}</ul></div>` : ""}`;
     if (cOpen) { const q = $("[data-country-q]", box); q.focus(); q.setSelectionRange(q.value.length, q.value.length); }
