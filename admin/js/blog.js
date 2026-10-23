@@ -88,24 +88,32 @@
             <button type="button" role="tab" data-etab="seo" aria-selected="false">${icon("sparkles")}SEO &amp; AI</button>
             <button type="button" role="tab" data-etab="sources" aria-selected="false">${icon("external")}Sources</button>
           </div>
-          <section class="panel panel-pad bl-sec" data-epane="content">
+          <div class="bl-sec bl-panes" data-epane="content">
+          <section class="panel panel-pad bl-ecard">
+            <h3 class="bl-card-h"><span class="bl-n">1</span>The basics <small class="muted">What readers and Google see first</small></h3>
             <label class="bl-big">Title<input class="input" name="title" value="${esc(d.title || "")}" required placeholder="A clear title with your main keyword"></label>
             <div class="bl-row"><label>Type<select class="select" name="type">${Object.entries(TYPES).map(([k, v]) => `<option value="${k}"${d.type === k ? " selected" : ""}>${esc(v)}</option>`).join("")}</select></label>
               <label>Date<input class="input" type="date" name="date" value="${esc(d.date || "")}"></label>
               <label>URL<input class="input" name="slug" value="${esc(p?.slug || "")}" ${isNew ? "" : "readonly"} placeholder="made from the title"></label></div>
             <label>Excerpt <small class="muted">2 lines shown on the blog list.</small><textarea class="input" name="excerpt" rows="2">${esc(d.excerpt || "")}</textarea></label>
+          </section>
+          <section class="panel bl-ecard bl-card-art">
+            <h3 class="bl-card-h"><span class="bl-n">2</span>The article <small class="muted" data-wc></small></h3>
             <div class="bl-text">
               <div class="bl-tb" role="toolbar" aria-label="Text">
-                <button type="button" data-wrap="h2" title="Subtitle">H2</button><button type="button" data-wrap="h3" title="Small subtitle">H3</button>
-                <button type="button" data-wrap="p" title="Paragraph">¶</button><button type="button" data-wrap="strong" title="Bold"><b>B</b></button><button type="button" data-wrap="em" title="Italic"><i>I</i></button>
-                <button type="button" data-wrap="a" title="Link">${icon("external")}</button><button type="button" data-wrap="ul" title="List">• List</button><button type="button" data-wrap="blockquote" title="Quote">“ ”</button>
-                <span class="bl-tb-sp"></span><button type="button" data-view="edit" aria-pressed="true">Write</button><button type="button" data-view="prev" aria-pressed="false">Preview</button>
+                <span class="bl-tb-g"><button type="button" data-cmd="undo" title="Undo">${icon("undo")}</button><button type="button" data-cmd="redo" title="Redo" class="bl-redo">${icon("undo")}</button></span>
+                <span class="bl-tb-g"><button type="button" data-block="p" title="Normal text">Text</button><button type="button" data-block="h2" title="Subtitle">H2</button><button type="button" data-block="h3" title="Small subtitle">H3</button><button type="button" data-block="blockquote" title="Quote">“ ”</button></span>
+                <span class="bl-tb-g"><button type="button" data-cmd="bold" title="Bold"><b>B</b></button><button type="button" data-cmd="italic" title="Italic"><i>I</i></button><button type="button" data-cmd="removeFormat" title="Clear formatting">T<sub>×</sub></button></span>
+                <span class="bl-tb-g"><button type="button" data-cmd="insertUnorderedList" title="Bullet list">• List</button><button type="button" data-cmd="insertOrderedList" title="Numbered list">1. List</button></span>
+                <span class="bl-tb-g"><button type="button" data-link title="Add a link">${icon("external")}Link</button><button type="button" data-cmd="unlink" title="Remove the link">Unlink</button><button type="button" data-embed-add title="Show a social post (Instagram, TikTok, YouTube, X)">${icon("plus")}Social post</button></span>
+                <span class="bl-tb-sp"></span><span class="bl-tb-g"><button type="button" data-view="edit" aria-pressed="true">Visual</button><button type="button" data-view="html" aria-pressed="false">HTML</button></span>
               </div>
-              <textarea class="input mono" name="body_html" rows="24" data-body>${esc(d.body_html || "")}</textarea>
-              <article class="bl-prev-in" data-prev hidden></article>
+              <div class="bl-rte" contenteditable="true" data-rte spellcheck="true"></div>
+              <textarea class="input mono" name="body_html" rows="24" data-body hidden>${esc(d.body_html || "")}</textarea>
             </div>
-            <label class="check-inline bl-draft"><input type="checkbox" name="draft"${p?.draft || isNew ? " checked" : ""}> Draft — not on the website yet</label>
           </section>
+            <label class="check-inline bl-draft"><input type="checkbox" name="draft"${p?.draft || isNew ? " checked" : ""}> Draft — not on the website yet</label>
+          </div>
           <section class="panel panel-pad bl-sec" data-epane="cover" hidden>
             <div class="bl-cover"><div class="bl-cover-img" data-cover>${img.file ? `<img src="${esc(img.url || `../assets/blog/${img.file}`)}" alt="" onerror="this.remove()">` : `<span class="bl-cv-none">No cover yet</span>`}</div>
               <div class="bl-cover-f"><label class="btn btn-primary btn-sm">${icon("import")}Upload cover · 1200×630<input type="file" accept="image/png,image/jpeg,image/webp" hidden data-cover-file></label>
@@ -139,11 +147,13 @@
         <aside class="bl-side">
           <div class="panel bl-side-card"><span class="bl-st ${c}">${esc(s)}</span>${p?.published_at ? `<small class="muted">Published ${day(p.published_at)}</small>` : ""}<small class="muted">${isNew ? "Not saved yet" : `Saved ${day(p.updated_at)}`}</small></div>
           <div class="panel bl-side-card"><div class="bl-score"><div class="bl-ring" data-ring><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.9" class="bg"/><circle cx="18" cy="18" r="15.9" class="fg" data-ring-fg/></svg><b data-score>0</b></div><div><b>SEO score</b><small class="muted">Google + AI assistants</small></div></div>
+            <button type="button" class="btn btn-primary btn-sm bl-improve" data-improve hidden>${icon("sparkles")}Improve with AI</button>
             <ul class="bl-checks" data-checks></ul></div>
           <div class="panel bl-side-card"><b class="bl-side-h">${icon("search")}How it looks on Google</b><div class="bl-serp" data-serp></div></div>
         </aside>
       </div>`;
     const fm = $("[data-form]");
+    let lastChecks = [], missingKw = [];
     const plainBody = () => plain(fm.body_html.value);
     function audit() {
       const kw = fm.primary_keyword.value.trim().toLowerCase(), body = fm.body_html.value, text = plainBody().toLowerCase();
@@ -154,20 +164,23 @@
       const kws = fm.keywords.value.split("\n").map((k) => k.trim().toLowerCase()).filter(Boolean), kwIn = kws.filter((k) => text.includes(k)).length;
       const faqN = [...fm.querySelectorAll(".bl-faq-row")].filter((r) => r.querySelector("[name=faq_q]").value.trim() && r.querySelector("[name=faq_a]").value.trim()).length;
       const tk = fm.takeaways.value.split("\n").filter((t) => t.trim()).length;
+      // [text, passes, what the AI can fix ("" = needs you)]
       const checks = [
-        ["Main keyword chosen", !!kw],
-        ["Keyword in the title", kw && fm.title.value.toLowerCase().includes(kw)],
-        ["Keyword in the first paragraph", kw && first.includes(kw)],
-        ["Keyword in a subtitle (H2/H3)", kw && subs.some((t) => t.includes(kw))],
-        [`Meta title 30–60 characters (${mt.length})`, mt.length >= 30 && mt.length <= 60],
-        [`Meta description 120–160 characters (${md.length})`, md.length >= 120 && md.length <= 160],
-        [`Length ${n.toLocaleString("es-ES")} words · ${lo}–${hi}`, n >= lo && n <= hi],
-        [`Keywords in the text ${kwIn}/${kws.length || 15}`, kws.length >= 15 && kwIn === kws.length],
-        ["Cover with alt text", !!(fm.img_file.value && fm.img_alt.value.trim())],
-        ["2 or more sources", fm.sources.value.split("\n").filter((l) => l.includes("|")).length >= 2],
-        [`Key takeaways for AI (${tk})`, tk >= 3],
-        [`FAQ for AI (${faqN})`, faqN >= 3],
+        ["Main keyword chosen", !!kw, "primary_keyword"],
+        ["Keyword in the title", kw && fm.title.value.toLowerCase().includes(kw), "title"],
+        ["Keyword in the first paragraph", kw && first.includes(kw), "first_paragraph_html"],
+        ["Keyword in a subtitle (H2/H3)", kw && subs.some((t) => t.includes(kw)), "subtitle"],
+        [`Meta title 30–60 characters (${mt.length})`, mt.length >= 30 && mt.length <= 60, "meta_title"],
+        [`Meta description 120–160 characters (${md.length})`, md.length >= 120 && md.length <= 160, "meta_description"],
+        [`Length ${n.toLocaleString("es-ES")} words · ${lo}–${hi}`, n >= lo && n <= hi, ""],
+        [`Keywords in the text ${kwIn}/${kws.length || 15}`, kws.length >= 15 && kwIn === kws.length, kws.length ? "extra_paragraph_html" : ""],
+        ["Cover with alt text", !!(fm.img_file.value && fm.img_alt.value.trim()), fm.img_file.value ? "image_alt" : ""],
+        ["2 or more sources", fm.sources.value.split("\n").filter((l) => l.includes("|")).length >= 2, ""],
+        [`Key takeaways for AI (${tk})`, tk >= 3, "takeaways"],
+        [`FAQ for AI (${faqN})`, faqN >= 3, "faq"],
       ];
+      lastChecks = checks; missingKw = kws.filter((k) => !text.includes(k));
+      $("[data-improve]").hidden = !checks.some(([, v, f]) => !v && f);
       const ok = checks.filter(([, v]) => v).length, score = Math.round((ok / checks.length) * 100);
       $("[data-score]").textContent = score;
       const fg = $("[data-ring-fg]"); fg.style.strokeDasharray = `${score} 100`; fg.style.stroke = score >= 80 ? "var(--green)" : score >= 50 ? "var(--accent)" : "var(--red)";
@@ -183,18 +196,90 @@
       main.querySelectorAll("[data-etab]").forEach((x) => x.setAttribute("aria-selected", String(x === b)));
       main.querySelectorAll("[data-epane]").forEach((x) => { x.hidden = x.dataset.epane !== b.dataset.etab; });
     }));
-    // text toolbar: wrap the selection in the tag (no HTML needed)
-    const ta = fm.body_html;
-    main.querySelector(".bl-tb").addEventListener("click", (e) => {
+    // the article: a visual editor (what you see is the article) synced with the HTML the blog is built from.
+    // Social posts (<div class="embed">) and screenshots (<div class="shot">) show as blocks you can move or delete.
+    const ta = fm.body_html, rte = $("[data-rte]");
+    const NET = (u) => (/instagram/.test(u) ? "Instagram" : /tiktok/.test(u) ? "TikTok" : /youtu/.test(u) ? "YouTube" : /twitter|x\.com/.test(u) ? "X" : "Post");
+    const chip = (el) => { el.setAttribute("contenteditable", "false"); el.classList.add("bl-chip"); const u = el.dataset.embed || el.dataset.sourceUrl || "";
+      el.innerHTML = `<b>${el.classList.contains("shot") ? "Screenshot" : `${NET(u)} post`}</b><span>${esc(el.dataset.caption || u)}</span><button type="button" data-chip-del title="Remove">×</button>`; };
+    const toRte = () => { rte.innerHTML = ta.value; rte.querySelectorAll("div.embed, div.shot").forEach(chip); wc(); };
+    const attr = (v) => String(v ?? "").replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+    const fromRte = () => {
+      const c = rte.cloneNode(true);
+      c.querySelectorAll("div.embed").forEach((el) => { el.outerHTML = `<div class="embed" data-embed="${attr(el.dataset.embed)}"${el.dataset.caption ? ` data-caption="${attr(el.dataset.caption)}"` : ""}></div>`; });
+      c.querySelectorAll("div.shot").forEach((el) => { el.outerHTML = `<div class="shot" data-src="${attr(el.dataset.src)}" data-alt="${attr(el.dataset.alt)}" data-source-url="${attr(el.dataset.sourceUrl)}"${el.dataset.caption ? ` data-caption="${attr(el.dataset.caption)}"` : ""}></div>`; });
+      c.querySelectorAll("b").forEach((el) => { const x = document.createElement("strong"); x.innerHTML = el.innerHTML; el.replaceWith(x); });
+      c.querySelectorAll("i").forEach((el) => { const x = document.createElement("em"); x.innerHTML = el.innerHTML; el.replaceWith(x); });
+      c.querySelectorAll("[style]").forEach((el) => el.removeAttribute("style"));
+      c.querySelectorAll("div:not(.embed):not(.shot)").forEach((el) => { const x = document.createElement("p"); x.innerHTML = el.innerHTML; el.replaceWith(x); });
+      ta.value = c.innerHTML.replace(/<p><br><\/p>/g, "").replace(/(<\/(?:p|h2|h3|ul|ol|blockquote|div)>)(?!\n)/g, "$1\n").trim();
+    };
+    const wc = () => { const n = plain(ta.value).split(" ").filter(Boolean).length; $("[data-wc]").textContent = `${n.toLocaleString("es-ES")} words · ${Math.max(1, Math.round(n / 220))} min read`; };
+    toRte();
+    try { document.execCommand("defaultParagraphSeparator", false, "p"); } catch {}
+    rte.addEventListener("input", () => { fromRte(); wc(); audit(); });
+    rte.addEventListener("click", (e) => { if (e.target.closest("[data-chip-del]")) { e.target.closest(".bl-chip").remove(); fromRte(); audit(); } });
+    rte.addEventListener("paste", (e) => { e.preventDefault(); document.execCommand("insertText", false, e.clipboardData.getData("text/plain")); });   // no outside styles
+    ta.addEventListener("input", () => { wc(); });
+    const tb = main.querySelector(".bl-tb");
+    tb.addEventListener("mousedown", (e) => { if (e.target.closest("button")) e.preventDefault(); });   // keep the text selection
+    tb.addEventListener("click", async (e) => {
       const v = e.target.closest("[data-view]");
-      if (v) { const prev = v.dataset.view === "prev"; main.querySelectorAll("[data-view]").forEach((x) => x.setAttribute("aria-pressed", String(x === v))); ta.hidden = prev; const pv = $("[data-prev]"); pv.hidden = !prev; if (prev) pv.innerHTML = ta.value; return; }
-      const w = e.target.closest("[data-wrap]"); if (!w) return;
-      const tag = w.dataset.wrap, [a, b] = [ta.selectionStart, ta.selectionEnd], sel = ta.value.slice(a, b) || "text";
-      let out;
-      if (tag === "a") out = `<a href="https://">${sel}</a>`;   // then replace https:// with the link
-      else if (tag === "ul") out = `<ul>\n${sel.split("\n").map((l) => `  <li>${l}</li>`).join("\n")}\n</ul>`;
-      else out = `<${tag}>${sel}</${tag}>`;
-      ta.setRangeText(out, a, b, "end"); ta.focus(); audit();
+      if (v) { const html = v.dataset.view === "html"; if (!html) toRte(); tb.querySelectorAll("[data-view]").forEach((x) => x.setAttribute("aria-pressed", String(x === v))); ta.hidden = !html; rte.hidden = html; tb.classList.toggle("is-html", html); return; }
+      if (!ta.hidden) return;
+      const c = e.target.closest("[data-cmd]"), bl = e.target.closest("[data-block]");
+      if (c) document.execCommand(c.dataset.cmd);
+      else if (bl) document.execCommand("formatBlock", false, `<${bl.dataset.block}>`);
+      else if (e.target.closest("[data-link]")) {
+        const sel = window.getSelection(), range = sel.rangeCount ? sel.getRangeAt(0) : null;
+        if (!range || range.collapsed || !rte.contains(range.commonAncestorContainer)) return A.toast("Select the words for the link first.", "err");
+        const m = A.modal({ title: "Add a link", body: `<label>Link<input class="input" data-url type="url" placeholder="https://"></label>`, foot: `<button class="btn btn-primary" type="button" data-ok>Add</button>` });
+        const inp = m.el.querySelector("[data-url]"); inp.focus();
+        const ok = () => { const u = inp.value.trim(); if (!/^https?:\/\/|^[\w-]+\.html/.test(u)) return A.toast("Write a full link (https://…).", "err"); m.close(); sel.removeAllRanges(); sel.addRange(range); document.execCommand("createLink", false, u); fromRte(); audit(); };
+        m.el.querySelector("[data-ok]").addEventListener("click", ok); inp.addEventListener("keydown", (k) => { if (k.key === "Enter") ok(); });
+        return;
+      } else if (e.target.closest("[data-embed-add]")) {
+        const sel = window.getSelection(), range = sel.rangeCount && rte.contains(sel.getRangeAt(0).commonAncestorContainer) ? sel.getRangeAt(0) : null;
+        const m = A.modal({ title: "Show a social post", sub: "Instagram, TikTok, YouTube or X. It appears where the cursor is.", body: `<label>Post link<input class="input" data-url type="url" placeholder="https://www.instagram.com/p/…"></label><label>Caption <small class="muted">Optional: club · what it is · results</small><input class="input" data-cap></label>`, foot: `<button class="btn btn-primary" type="button" data-ok>Add</button>` });
+        m.el.querySelector("[data-ok]").addEventListener("click", () => {
+          const u = m.el.querySelector("[data-url]").value.trim(), cap = m.el.querySelector("[data-cap]").value.trim();
+          if (!/instagram\.com|tiktok\.com|youtube\.com|youtu\.be|twitter\.com|x\.com/.test(u)) return A.toast("Paste an Instagram, TikTok, YouTube or X link.", "err");
+          m.close();
+          const el = document.createElement("div"); el.className = "embed"; el.dataset.embed = u; if (cap) el.dataset.caption = cap; chip(el);
+          const block = range && [...rte.children].find((x) => x.contains(range.startContainer));
+          if (block) block.after(el); else rte.append(el);
+          fromRte(); audit();
+        });
+        return;
+      }
+      fromRte(); audit();
+    });
+    // "Improve with AI": the AI fixes what it can of the failing checks; the admin reviews and saves
+    $("[data-improve]").addEventListener("click", async (e) => {
+      const btn = e.currentTarget, fix = [...new Set(lastChecks.filter(([, v, f]) => !v && f).map(([, , f]) => f))];
+      if (!fix.length) return;
+      btn.disabled = true; const label = btn.innerHTML; btn.innerHTML = `${icon("sparkles")}Improving…`;
+      try {
+        const subtitles = [...fm.body_html.value.matchAll(/<h[23][^>]*>([\s\S]*?)<\/h[23]>/gi)].map((m) => plain(m[1]));
+        const { data: r, error } = await A.db.functions.invoke("seo-improve", { body: { fix, site_keywords: fm.keywords.value.split("\n").map((k) => k.trim()).filter(Boolean),
+          primary_keyword: fm.primary_keyword.value.trim(), missing_keywords: missingKw, title: fm.title.value, image_title: fm.img_title.value, meta_title: fm.meta_title.value, meta_description: fm.meta_description.value, body_html: fm.body_html.value, subtitles } });
+        if (error || r?.error) throw new Error(r?.error || error.message);
+        const done = [];
+        const set = (k, v) => { if (fix.includes(k) && v) { fm[k].value = v; done.push(k); } };
+        set("primary_keyword", r.primary_keyword); set("title", r.title); set("meta_title", r.meta_title); set("meta_description", r.meta_description);
+        if (fix.includes("image_alt") && r.image_alt) { fm.img_alt.value = r.image_alt; done.push("image_alt"); }
+        let body = fm.body_html.value;
+        if (fix.includes("first_paragraph_html") && /^<p[\s>]/i.test(r.first_paragraph_html.trim())) body = body.replace(/<p[^>]*>[\s\S]*?<\/p>/i, r.first_paragraph_html.trim());
+        if (fix.includes("subtitle") && r.subtitle_old && r.subtitle_new) body = body.replace(/(<h[23][^>]*>)([\s\S]*?)(<\/h[23]>)/gi, (all, a, inner, b) => (plain(inner) === r.subtitle_old.trim() ? `${a}${esc(r.subtitle_new)}${b}` : all));
+        if (fix.includes("extra_paragraph_html") && /^<p[\s>]/i.test(r.extra_paragraph_html.trim())) { const at = body.lastIndexOf("<h2"); body = at > 0 ? `${body.slice(0, at)}${r.extra_paragraph_html.trim()}\n${body.slice(at)}` : `${body}\n${r.extra_paragraph_html.trim()}`; }
+        fm.body_html.value = body; toRte();
+        if (fix.includes("takeaways") && r.takeaways?.length) fm.takeaways.value = r.takeaways.join("\n");
+        if (fix.includes("faq") && r.faq?.length) { const have = [...fm.querySelectorAll(".bl-faq-row")].filter((x) => x.querySelector("[name=faq_q]").value.trim()); $("[data-faq]").innerHTML = have.map((x) => x.outerHTML).join("") + r.faq.map(faqRow).join(""); }
+        audit();
+        const left = lastChecks.filter(([, v]) => !v).map(([t]) => t);
+        A.toast(left.length ? `Improved. Still for you: ${left.join(" · ")}. Review and Save.` : "Improved to 100. Review the changes and Save.");
+      } catch (x) { fail(x); }
+      btn.disabled = false; btn.innerHTML = label;
     });
     // FAQ rows
     main.querySelector("[data-faq-add]").addEventListener("click", () => { $("[data-faq]").insertAdjacentHTML("beforeend", faqRow()); audit(); });

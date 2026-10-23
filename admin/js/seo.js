@@ -18,7 +18,7 @@
   ];
 
   main.innerHTML = `<div class="page-head"><div><h1>SEO</h1><p>How Google and AI assistants (ChatGPT, Perplexity, Gemini, Claude) see the website, and what to improve.</p></div>
-      <div class="head-actions"><button class="btn btn-primary" type="button" data-save>${icon("check")}Save settings</button></div></div>
+      <div class="head-actions"><span class="seo-saved muted" data-saved></span></div></div>
     <div class="aud-kpis seo-kpis" data-kpis></div>
     <div class="nw-how">${icon("sparkles")}<span><b>Changes go live on their own</b> within the hour, with the blog: robots.txt, llms.txt and the home's structured data are rewritten from these settings.</span></div>
     <div class="seo-grid">
@@ -49,15 +49,21 @@
   const bots = settings.bots || {};
   $("[data-bots]").innerHTML = BOTS.map(([b, who, kind]) => `<label class="seo-bot"><span><b>${esc(who)}</b><small class="muted">${esc(b)} · <i class="seo-kind is-${kind}">${kind === "search" ? "search" : "training"}</i></small></span>
     <span class="nw-sw"><input type="checkbox" data-bot="${esc(b)}"${bots[b] === false ? "" : " checked"}><span class="nw-sw-t"></span></span></label>`).join("");
-  $("[data-save]").addEventListener("click", async () => {
-    if (!ready) return fail(new Error("Run supabase/seo.sql in Supabase first."));
+  // saved on its own: 900 ms after the last change
+  let timer;
+  const save = async () => {
+    if (!ready) return;
     const data = { ...settings, org_name: fm.org_name.value.trim(), description: fm.description.value.trim(), email: fm.email.value.trim(), logo: fm.logo.value.trim(), llms_about: fm.llms_about.value.trim(),
       same_as: fm.same_as.value.split("\n").map((l) => l.trim()).filter((l) => /^https?:\/\//.test(l)),
       bots: Object.fromEntries([...main.querySelectorAll("[data-bot]")].map((x) => [x.dataset.bot, x.checked])) };
+    $("[data-saved]").textContent = "Saving…";
     const { error } = await A.db.from("seo_settings").upsert({ id: 1, data, updated_at: new Date().toISOString() });
-    if (error) return fail(error);
-    settings = data; A.toast("Saved — live within the hour");
-  });
+    if (error) { $("[data-saved]").textContent = ""; return fail(error); }
+    settings = data; $("[data-saved]").innerHTML = `${icon("check")}Saved automatically`;
+  };
+  const later = () => { if (!ready) return fail(new Error("Run supabase/seo.sql in Supabase first.")); clearTimeout(timer); timer = setTimeout(save, 900); };
+  fm.addEventListener("input", later);
+  $("[data-bots]").addEventListener("change", later);
 
   // ---------- page check: reads the published pages like a crawler ----------
   const { data: posts } = await A.db.from("blog_posts").select("slug,data,draft").eq("draft", false);
