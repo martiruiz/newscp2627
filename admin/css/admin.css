@@ -1492,3 +1492,7 @@ select.cs-native { display: none !important; }
 .nw-url { display: grid; grid-template-columns: minmax(0, 1fr) 40px; gap: 8px; align-items: center; } .nw-url .input { font-size: 12.5px; }
 .nw-sw-lg { display: flex; align-items: center; gap: 12px; cursor: pointer; } .nw-sw-lg > span:last-child { display: grid; gap: 2px; } .nw-sw-lg b { font-size: 14px; } .nw-sw-lg small { font-size: 12px; }
 .nw-del { justify-self: start; color: var(--muted); } .nw-del:hover { color: var(--red); }
+/* the side panel never grows past its column (long Google previews / URLs used to push it off the screen) */
+.bl-side { grid-template-columns: minmax(0, 1fr); min-width: 0; }
+.bl-side > *, .bl-side-card > * { min-width: 0; }
+.bl-serp b, .bl-serp p { overflow-wrap: anywhere; }
