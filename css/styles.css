@@ -3233,7 +3233,7 @@ a.blog-img { display: block; }
 .pack-card .btn { width: 100%; }
 @media (max-width: 1100px) { .plans { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 /* three cards (Library · Library + AI + Content Plan · Custom): three columns, a bit narrower overall; one column on small screens */
-.plans.is-3 { max-width: 1060px; margin-left: auto; margin-right: auto; }
+.plans.is-3 { max-width: 960px; margin-left: auto; margin-right: auto; }
 @media (max-width: 1100px) { .plans.is-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 860px) { .plans.is-3 { grid-template-columns: minmax(0, 440px); justify-content: center; } .plans.is-3.is-v2 { row-gap: 26px; } }
 /* Custom: "Price to be agreed" in place of the number */
@@ -7386,3 +7386,13 @@ section[id], :target { scroll-margin-top: 92px; }
   .my-club-page .mc-tabs button { font-size: 12.5px; padding: 0 4px; }
   .my-club-page .mc-logo { width: 52px; height: 52px; }
 }
+
+/* smaller cards: no extras box, tighter padding and spacing */
+.plan-extras:empty { margin: 0; }
+.plan-card.v2 { padding: 22px 20px 20px; }
+.plan-card.v2 .plan-price { margin-top: 14px; }
+.plan-card.v2 .plan-price b { font-size: 34px; }
+.plan-card.v2 .plan-price b.plan-price-text { font-size: 26px; }
+.plan-card.v2 .plan-sub { margin: 4px 0 16px; }
+.plan-card.v2 .plan-gets { margin-top: 16px; padding-top: 14px; gap: 8px; }
+.plan-card.v2 .plan-gets li { font-size: 13.5px; }

@@ -67,11 +67,8 @@
     // (with more users, "VAT incl." moves next to the price so the saving for all of them fits)
     // yearly: the big number is the total paid once a year (all users); 12 monthly payments crossed out + a green "you save" pill;
     // monthly → a pill that switches to yearly and says what it would cost and save
-    const yearly = priceOf(p, currency, "year"), saving = yearSave(p) * seats, free = monthsFree(p);
-    const was = iv === "year" && saving > 0 ? priceOf(p, currency, "month").amount * 12 : 0;
-    const savePill = !price || saving <= 0 ? ""
-      : iv === "year" ? `<p class="plan-save"><b>${tx("You save {amount} a year", { amount: fmt(saving, currency) })}</b>${free > 0 ? `<span>${tx("{n} months free", { n: free })}</span>` : ""}</p>`
-      : yearly ? `<button type="button" class="plan-save is-nudge" data-interval-pick="year"><b>${tx("Yearly: {price}/year", { price: fmt(yearly.amount * seats, currency) })}</b><span>${tx("save {amount}", { amount: fmt(saving, currency) })} →</span></button>` : "";
+    // the yearly price / saving, "All included" and the bulk-AI note are no longer shown on the cards (kept short)
+    const was = iv === "year" && yearSave(p) > 0 ? priceOf(p, currency, "month").amount * 12 : 0;
     const big = !price ? 0 : Math.round(price.amount * seats);   // no decimals
     const sub = !price ? "" : [
       seats > 1 ? tx("{n} users × {price}/user", { n: seats, price: fmt(price.amount, currency) }) : tx("From 1 to {n} users", { n: MAX_SEATS }),
@@ -88,17 +85,13 @@
       cp && tx("Content Plan: weekly and monthly calendar"),
       hasAi && tx("{n} AI analyses a month per user: hook, why it works, how to adapt it", { n: units }),
     ].filter(Boolean);
-    // the plan with everything: how much more AI than the next one
-    const extraAi = hasAi && cp && !p.ai_unlimited && otherAi > 0 && p.ai_monthly_units > otherAi ? p.ai_monthly_units - otherAi : 0;
-    const value = (hasAi && cp ? `<p class="plan-value">${tx("All included")}${extraAi ? ` · <b>${tx("+{n} AI analyses a month", { n: extraAi })}</b>` : ""}</p>` : "")
-      + (bulk ? `<p class="plan-bulk${bulk.on ? " is-on" : ""}">${bulk.on ? `✓ ${tx("Your purchase is over {min}: {n} AI analyses a month per user", { min: fmt(bulk.min, currency), n: bulk.n })}` : tx("Over {min}: {n} AI analyses a month per user", { min: fmt(bulk.min, currency), n: bulk.n })}</p>` : "");
     const tool = (on, cls, label, extra = "") => `<li class="pt ${cls}${on ? "" : " is-off"}"><i></i><span>${label}</span>${extra ? `<em>${extra}</em>` : ""}</li>`;
     return `<article class="plan-card v2${p.highlighted ? " is-best" : ""}${isCurrent ? " is-current" : ""}${p.key === wanted ? " is-wanted" : ""}" data-plan-key="${esc(p.key)}">
       ${flag}
       <h3>${esc(p.name)}</h3>
       <p class="plan-price">${seats > 1 && price ? `<em class="plan-total">${tx("Total")}</em>` : ""}${was ? `<s class="plan-was">${fmt(was * seats, currency)}</s>` : ""}${price ? `<b data-price="${big}" data-cur="${currency}">${fmt(big, currency)}</b><span>${iv === "year" ? `/ ${per("year")}` : seats > 1 ? `/ ${per("month")}` : tx("/ {per} per user", { per: per("month") })}</span>` : `<b>—</b>`}</p>
       <p class="plan-sub">${sub || "&nbsp;"}</p>
-      <div class="plan-extras">${savePill}${value}</div>
+      <div class="plan-extras"></div>
       ${cta}
       <p class="plan-note">${note}</p>
       <ul class="plan-gets">${gets.map((g) => `<li>${g}</li>`).join("")}</ul>
