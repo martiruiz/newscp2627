@@ -2734,7 +2734,7 @@ a.blog-img { display: block; }
 .pf-nav a svg { width: 17px; height: 17px; }
 .pf-nav a:hover { background: var(--surface); color: var(--text); }
 .pf-nav a.is-active { background: var(--gold-tint); color: var(--gold); }
-.pf-form { display: grid; gap: 22px; }
+.pf-form { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }   /* cards never wider than the column (phones) */
 .pf-card { scroll-margin-top: 110px; padding: 28px 30px; border-radius: 22px; background: var(--surface); border: 0.5px solid var(--line); box-shadow: var(--inset-glow); }
 .pf-card-gold { border-color: rgba(240, 184, 74, 0.4); background: linear-gradient(160deg, rgba(240, 184, 74, 0.09), transparent 45%), var(--surface); }
 .pf-card header { margin-bottom: 22px; }
@@ -2808,7 +2808,7 @@ a.blog-img { display: block; }
   .pf-meter { position: absolute; top: 24px; right: 24px; width: 84px; height: 84px; }
   .pf-hero { position: relative; }
   .pf-meter-text b { font-size: 20px; }
-  .pf-layout { grid-template-columns: 1fr; }
+  .pf-layout { grid-template-columns: minmax(0, 1fr); }   /* the sections bar scrolls instead of widening the page */
   .pf-nav { position: static; display: flex; overflow-x: auto; gap: 6px; }
   .pf-nav a { flex-shrink: 0; }
 }
@@ -7399,3 +7399,61 @@ section[id], :target { scroll-margin-top: 92px; }
 /* the button at the bottom of each card (after the list), all at the same height */
 .plan-card.v2 .plan-gets { align-self: start; margin-bottom: 4px; }
 .plan-card.v2 .plan-cta { align-self: end; margin-top: 18px; }
+
+/* ---------- Profile → About you, premium (profile.html .pf-about, js/profile.js) ---------- */
+.pf-about { position: relative; overflow: visible; background: radial-gradient(70% 60% at 0% 0%, rgba(240, 184, 74, 0.08), transparent 60%), var(--surface); }
+.pf-head { display: flex; align-items: center; gap: 14px; padding-bottom: 18px; border-bottom: 0.5px solid var(--line-soft); }
+.pf-head-ic { flex: none; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 14px; color: var(--gold);
+  background: linear-gradient(160deg, rgba(240, 184, 74, 0.2), rgba(240, 184, 74, 0.05)); border: 1px solid rgba(240, 184, 74, 0.35); box-shadow: 0 10px 24px -14px rgba(240, 184, 74, 0.7); }
+.pf-head-ic svg { width: 22px; height: 22px; }
+.pf-head > div { flex: 1; min-width: 0; }
+.pf-sec-prog { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border-radius: 999px; border: 0.5px solid var(--line); background: var(--surface-2); color: var(--muted); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+.pf-sec-prog b { color: var(--text); }
+.pf-sec-prog.is-done { color: #3ee98a; border-color: rgba(0, 216, 91, 0.4); background: rgba(0, 216, 91, 0.1); }
+.pf-sec-prog svg { width: 14px; height: 14px; }
+.pf-about .pf-grid { margin-top: 22px; gap: 16px 18px; }
+/* fields with an icon */
+.pf-in { position: relative; display: flex; align-items: center; }
+.pf-in > svg { position: absolute; left: 14px; width: 17px; height: 17px; color: var(--muted-dim); pointer-events: none; transition: color 0.2s; }
+.pf-in input { padding-left: 42px; height: 48px; }
+.pf-in:focus-within > svg { color: var(--gold); }
+.pf-in.is-locked input:disabled { opacity: 1; color: var(--muted); background: rgba(var(--fg), 0.03); cursor: default; padding-right: 130px; }
+.pf-verified { position: absolute; right: 40px; display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 999px; background: rgba(0, 216, 91, 0.12); color: #3ee98a; font-size: 11.5px; font-weight: 700; }
+.pf-verified svg { width: 12px; height: 12px; }
+.pf-lock { position: absolute; right: 14px; display: grid; color: var(--muted-dim); } .pf-lock svg { width: 15px; height: 15px; }
+/* country: flag + searchable list */
+.pf-country { position: relative; }
+.pf-country-btn { width: 100%; height: 48px; gap: 10px; padding: 0 14px; border-radius: 12px; background: var(--surface-2); border: 0.5px solid var(--line); color: var(--text); font: 500 15px var(--font-body); text-align: left; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s; }
+.pf-country-btn:hover, .pf-country-btn[aria-expanded="true"] { border-color: rgba(240, 184, 74, 0.6); box-shadow: 0 0 0 3px rgba(240, 184, 74, 0.15); }
+.pf-country-btn > svg { width: 16px; height: 16px; margin-left: auto; color: var(--muted); }
+.pf-flag { display: grid; place-items: center; width: 22px; font-size: 18px; line-height: 1; } .pf-flag svg { width: 17px; height: 17px; color: var(--muted-dim); }
+.pf-country-v { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .pf-country-v.is-ph { color: var(--muted-dim); }
+.pf-country-dd { position: absolute; z-index: 30; left: 0; right: 0; top: calc(100% + 6px); padding: 8px; border-radius: 14px; background: var(--surface); border: 0.5px solid var(--line); box-shadow: 0 24px 50px -18px rgba(0, 0, 0, 0.7); }
+.pf-country-dd .pf-search { margin-bottom: 6px; }
+.pf-country-dd ul { list-style: none; margin: 0; padding: 0; max-height: 260px; overflow-y: auto; }
+.pf-country-dd li button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 10px; border: 0; border-radius: 9px; background: none; color: var(--text); font: 500 14px var(--font-body); text-align: left; cursor: pointer; }
+.pf-country-dd li button:hover, .pf-country-dd li button[aria-selected="true"] { background: var(--gold-tint); }
+.pf-country-dd li button svg { width: 15px; height: 15px; margin-left: auto; color: var(--gold); }
+/* role: small cards with an icon */
+.pf-roles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.pf-chip.pf-role { position: relative; height: auto; min-height: 58px; padding: 10px 14px; border-radius: 14px; gap: 12px; justify-content: flex-start; text-align: left; font-weight: 500; color: var(--text); }
+.pf-role-ic { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: rgba(var(--fg), 0.06); color: var(--muted); transition: all 0.18s; }
+.pf-role-ic svg { width: 17px; height: 17px; }
+.pf-role-ck { position: absolute; top: 8px; right: 8px; display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: var(--gold); color: #121b33; transform: scale(0); transition: transform 0.2s cubic-bezier(.2, .9, .3, 1.4); }
+.pf-role-ck svg { width: 11px; height: 11px; stroke-width: 3; }
+.pf-chip.pf-role:hover { transform: translateY(-1px); }
+.pf-chip.pf-role[aria-pressed="true"] { color: var(--text); box-shadow: 0 10px 24px -16px rgba(240, 184, 74, 0.9); }
+.pf-chip.pf-role[aria-pressed="true"] .pf-role-ic { background: rgba(240, 184, 74, 0.2); color: var(--gold); }
+.pf-chip.pf-role[aria-pressed="true"] .pf-role-ck { transform: scale(1); }
+.pf-about .pf-q { margin-top: 24px; }
+.pf-about .pf-q > span small { display: block; margin: 3px 0 0; }
+/* autosave: the bar only says Saving… / Saved ✓ (buttons only if something fails) */
+.pf-savebar.is-auto .btn, .pf-savebar.is-auto [data-pf-discard] { display: none; }
+.pf-savebar.is-auto { padding-right: 18px; }
+.pf-savebar.is-saved p::before { content: "✓ "; }
+@media (max-width: 700px) {
+  .pf-roles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pf-about { padding: 22px 18px; }
+  .pf-head { flex-wrap: wrap; row-gap: 8px; } .pf-head > div { flex: 1 1 calc(100% - 64px); } .pf-sec-prog { margin-left: 60px; }
+  .pf-in.is-locked input:disabled { padding-right: 42px; } .pf-verified { display: none; }
+}

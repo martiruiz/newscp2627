@@ -65,9 +65,13 @@
   const pretty = (n) => (n && n[0] === n[0].toLowerCase() ? n[0].toUpperCase() + n.slice(1) : n);
 
   // ---------- Chips ----------
+  // the roles as small cards with a line icon
+  const ROLE_ICON = { "Social media manager": "megaphone", "Content creator": "clapperboard", "Marketing / comms lead": "target", "Head of digital": "layers",
+    "Designer / video editor": "pen-line", Agency: "handshake", Athlete: "dumbbell", Student: "lightbulb", Other: "sparkles" };
   function renderChips() {
     $$("[data-single]").forEach((el) => {
       const k = el.dataset.single;
+      if (k === "role") { el.innerHTML = OPTIONS.role.map((o) => `<button type="button" class="pf-chip pf-role" aria-pressed="${state.role === o}" data-val="${esc(o)}"><span class="pf-role-ic">${icon(ROLE_ICON[o] || "sparkles")}</span><span>${esc(o)}</span><span class="pf-role-ck">${icon("check")}</span></button>`).join(""); return; }
       el.innerHTML = OPTIONS[k].map((o) => `<button type="button" class="pf-chip" aria-pressed="${state[k] === o}" data-val="${esc(o)}">${k === "favouritePlatform" && PF_ICON[o] ? `<img src="assets/pf-${PF_ICON[o]}.svg" alt="">` : ""}${esc(o)}</button>`).join("");
     });
     $$("[data-multi]").forEach((el) => {
@@ -147,12 +151,45 @@
   function fillText() {
     for (const k of TEXT) form[k].value = state[k] || "";
     form.email.value = session.user.email;
+    $("[data-pf-verified]").hidden = !session.user.email_confirmed_at;
+    renderCountry();
     form.newsletter.checked = state.newsletter;
   }
   form.addEventListener("input", (e) => {
     if (TEXT.includes(e.target.name)) { state[e.target.name] = e.target.value; changed(); }
     if (e.target.name === "newsletter") { state.newsletter = e.target.checked; changed(); }
   });
+
+  // ---------- Country: a searchable list with flags. Saved as the English name (as before: "Spain"), shown in the page's language ----------
+  const CODES = "AF AL DZ AD AO AG AR AM AU AT AZ BS BH BD BB BY BE BZ BJ BT BO BA BW BR BN BG BF BI CV KH CM CA CF TD CL CN CO KM CG CD CR CI HR CU CY CZ DK DJ DM DO EC EG SV GQ ER EE SZ ET FJ FI FR GA GM GE DE GH GR GD GT GN GW GY HT HN HK HU IS IN ID IR IQ IE IL IT JM JP JO KZ KE KI XK KW KG LA LV LB LS LR LY LI LT LU MO MG MW MY MV ML MT MH MR MU MX FM MD MC MN ME MA MZ MM NA NR NP NL NZ NI NE NG KP MK NO OM PK PW PS PA PG PY PE PH PL PT PR QA RO RU RW KN LC VC WS SM ST SA SN RS SC SL SG SK SI SB SO ZA KR SS ES LK SD SR SE CH SY TW TJ TZ TH TL TG TO TT TN TR TM TV UG UA AE GB US UY UZ VU VA VE VN YE ZM ZW AD GI".split(" ").filter((c, i, a) => a.indexOf(c) === i);
+  const dn = (lang) => { try { return new Intl.DisplayNames([lang], { type: "region" }); } catch { return null; } };
+  const EN = dn("en"), LOCAL = dn(window.SCP_LANG === "es" ? "es" : "en"), ES = dn("es");
+  const flag = (c) => c.toUpperCase().replace(/./g, (ch) => String.fromCodePoint(127397 + ch.charCodeAt(0)));
+  const norm = (v) => String(v || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+  const COUNTRIES = CODES.map((c) => ({ c, en: EN?.of(c) || c, local: LOCAL?.of(c) || c, es: ES?.of(c) || c })).sort((a, b) => a.local.localeCompare(b.local));
+  // the saved value (free text before) → a country, by its English, Spanish or local name
+  const countryOf = (v) => { const n = norm(v); return n ? COUNTRIES.find((x) => [x.en, x.es, x.local, x.c].some((y) => norm(y) === n)) : null; };
+  let cOpen = false, cQ = "";
+  function renderCountry() {
+    const box = $("[data-pf-country]"); if (!box) return;
+    const cur = countryOf(state.country);
+    const list = COUNTRIES.filter((x) => !cQ || [x.local, x.en, x.es].some((y) => norm(y).includes(norm(cQ))));
+    box.innerHTML = `<button type="button" class="pf-in pf-country-btn" aria-haspopup="listbox" aria-expanded="${cOpen}" data-country-btn>
+        <span class="pf-flag">${cur ? flag(cur.c) : icon("earth")}</span><span class="pf-country-v${cur || state.country ? "" : " is-ph"}">${esc(cur ? cur.local : state.country || tx("Choose your country"))}</span>${icon("chevron-down")}</button>
+      ${cOpen ? `<div class="pf-country-dd"><div class="pf-search">${icon("search")}<input type="search" value="${esc(cQ)}" placeholder="${esc(tx("Search a country"))}" data-country-q></div>
+        <ul role="listbox">${list.slice(0, 80).map((x) => `<li><button type="button" role="option" aria-selected="${cur?.c === x.c}" data-country="${x.c}"><span class="pf-flag">${flag(x.c)}</span>${esc(x.local)}${cur?.c === x.c ? icon("check") : ""}</button></li>`).join("") || `<li class="pf-muted">${esc(tx("No matches."))}</li>`}</ul></div>` : ""}`;
+    if (cOpen) { const q = $("[data-country-q]", box); q.focus(); q.setSelectionRange(q.value.length, q.value.length); }
+  }
+  const tx = (t) => (window.tx ? window.tx(t) : t);
+  root.addEventListener("click", (e) => {
+    if (e.target.closest("[data-country-btn]")) { cOpen = !cOpen; cQ = ""; return renderCountry(); }
+    const opt = e.target.closest("[data-country]");
+    if (opt) { const x = COUNTRIES.find((y) => y.c === opt.dataset.country); state.country = x.en; form.country.value = x.en; cOpen = false; renderCountry(); return changed(); }
+  });
+  root.addEventListener("input", (e) => { if (e.target.matches("[data-country-q]")) { cQ = e.target.value; renderCountry(); } });
+  // a click outside closes it (the path is taken when the click starts: the button it opened from has been redrawn since)
+  document.addEventListener("click", (e) => { if (cOpen && !e.composedPath().some((el) => el.hasAttribute?.("data-pf-country"))) { cOpen = false; renderCountry(); } });
+  document.addEventListener("keydown", (e) => { if (cOpen && e.key === "Escape") { cOpen = false; renderCountry(); } });
 
   // ---------- Completeness, hero, save bar ----------
   const CHECKS = [
@@ -176,37 +213,49 @@
     $("[data-pf-role]").textContent = state.role || "Your profile";
     $("[data-pf-org]").textContent = [state.organization, state.orgType].filter(Boolean).join(" · ");
     $$("[data-newsletter-only]").forEach((el) => (el.hidden = !state.newsletter));
+    const about = [state.first_name, state.last_name, state.country, state.role, state.language].filter((v) => String(v || "").trim()).length;
+    const prog = $("[data-pf-about-prog]");
+    if (prog) { prog.innerHTML = about === 5 ? `${icon("check")}${esc(tx("Complete"))}` : `<b>${about}</b>/5`; prog.classList.toggle("is-done", about === 5); }
   }
   const dirty = () => JSON.stringify(state) !== JSON.stringify(saved);
+  // saved on its own a moment after each change; the bar only says "Saving…" / "Saved ✓" (and shows the buttons again if it fails)
+  let saveTimer;
   function changed() {
     meter();
     const bar = $("[data-pf-savebar]");
-    bar.hidden = !dirty();
-    $("[data-pf-status]").textContent = "You have unsaved changes";
-    bar.classList.remove("is-error");
+    clearTimeout(saveTimer);
+    if (!dirty()) { bar.hidden = true; return; }
+    bar.classList.add("is-auto"); bar.classList.remove("is-error", "is-saved");
+    bar.hidden = false;
+    $("[data-pf-status]").textContent = tx("Saving…");
+    saveTimer = setTimeout(save, 900);
   }
   window.addEventListener("beforeunload", (e) => { if (dirty()) { e.preventDefault(); e.returnValue = ""; } });
 
   $("[data-pf-discard]").addEventListener("click", () => { state = structuredClone(saved); fillText(); renderChips(); $$("[data-picker]").forEach((el) => renderPicker(el)); changed(); });
-  $("[data-pf-save]").addEventListener("click", async () => {
+  $("[data-pf-save]").addEventListener("click", () => save());
+  async function save() {
+    clearTimeout(saveTimer);
     const bar = $("[data-pf-savebar]");
-    if (!state.first_name.trim()) { form.first_name.focus(); bar.classList.add("is-error"); $("[data-pf-status]").textContent = "Please add your first name."; return; }
+    if (!state.first_name.trim()) { bar.hidden = false; bar.classList.remove("is-auto"); bar.classList.add("is-error"); $("[data-pf-status]").textContent = tx("Please add your first name."); return; }
     const btn = $("[data-pf-save]");
     btn.disabled = true;
-    const { first_name, last_name, newsletter, frequency, ...prefs } = state;
+    const snap = structuredClone(state);   // what this save sends (changes made meanwhile are saved right after)
+    const { first_name, last_name, newsletter, frequency, ...prefs } = snap;
     const [a, b] = await Promise.all([
       db.rpc("update_my_profile", { p_first_name: first_name.trim(), p_last_name: last_name.trim() }),
       db.rpc("update_my_preferences", { p_preferences: prefs, p_newsletter: newsletter, p_frequency: FREQ[frequency] || "weekly" }),
     ]);
     btn.disabled = false;
     const err = a.error || b.error;
-    if (err) { bar.classList.add("is-error"); $("[data-pf-status]").textContent = /schema cache|does not exist/i.test(err.message) ? "Profile storage isn't set up yet (run supabase/member-profile.sql)." : `Couldn't save: ${err.message}`; return; }
-    saved = structuredClone(state);
+    if (err) { bar.classList.remove("is-auto"); bar.classList.add("is-error"); $("[data-pf-status]").textContent = /schema cache|does not exist/i.test(err.message) ? "Profile storage isn't set up yet (run supabase/member-profile.sql)." : `Couldn't save: ${err.message}`; return; }
+    saved = snap;
     window.SCP_SET_USER?.({ first_name, last_name }, session.user.email);
-    $("[data-pf-status]").textContent = "Saved";
+    if (dirty()) return changed();   // something changed while saving: save that too
+    $("[data-pf-status]").textContent = tx("Saved");
     bar.classList.add("is-saved");
-    setTimeout(() => { bar.hidden = true; bar.classList.remove("is-saved"); }, 1200);
-  });
+    setTimeout(() => { if (!dirty()) { bar.hidden = true; bar.classList.remove("is-saved"); } }, 1400);
+  }
 
   // ---------- Profile photo: square-cropped + resized to 400px in the browser, stored in Storage "avatars/<user id>/" ----------
   // The URL is saved on the profile (profiles.avatar_url) and on the account itself (user metadata), so it shows
