@@ -261,7 +261,8 @@ for (const p of posts) {
     "@type": "BlogPosting",
     headline: p.title,
     description: p.meta_description,
-    image: [img],
+    // the cover as an ImageObject: Google Images reads its caption, size and credit
+    image: [{ "@type": "ImageObject", url: img, width: 1200, height: 630, caption: p.image.alt, ...(p.image.credit?.author ? { creditText: p.image.credit.author } : {}) }],
     datePublished: p.date,
     dateModified: p.updated || p.date,
     author: { "@type": "Person", name: p.author || "Martí Ruiz" },

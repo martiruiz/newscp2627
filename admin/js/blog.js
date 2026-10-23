@@ -114,14 +114,31 @@
           </section>
             <label class="check-inline bl-draft"><input type="checkbox" name="draft"${p?.draft || isNew ? " checked" : ""}> Draft — not on the website yet</label>
           </div>
-          <section class="panel panel-pad bl-sec" data-epane="cover" hidden>
-            <div class="bl-cover"><div class="bl-cover-img" data-cover>${img.file ? `<img src="${esc(img.url || `../assets/blog/${img.file}`)}" alt="" onerror="this.remove()">` : `<span class="bl-cv-none">No cover yet</span>`}</div>
-              <div class="bl-cover-f"><label class="btn btn-primary btn-sm">${icon("import")}Upload cover · 1200×630<input type="file" accept="image/png,image/jpeg,image/webp" hidden data-cover-file></label>
-                <input type="hidden" name="img_file" value="${esc(img.file || "")}"><input type="hidden" name="img_url" value="${esc(img.url || "")}">
-                <label>Describe the image (alt text) <small class="muted">For Google Images and screen readers. Include your keyword naturally.</small><input class="input" name="img_alt" value="${esc(img.alt || "")}"></label>
-                <label>Image title<input class="input" name="img_title" value="${esc(img.title || "")}"></label>
-                <div class="bl-row"><label>Credit<input class="input" name="img_author" value="${esc(cred.author || "")}" placeholder="Photographer / AI-generated…"></label><label>Credit link<input class="input" name="img_source" value="${esc(cred.source_url || "")}"></label></div></div></div>
+          <div class="bl-sec bl-panes" data-epane="cover" hidden>
+          <section class="panel panel-pad bl-ecard">
+            <h3 class="bl-card-h"><span class="bl-n">1</span>The cover <small class="muted">Shown at the top of the article, on Google and when the link is shared</small></h3>
+            <div class="bl-cv">
+              <label class="bl-cv-img" data-cover title="Change the cover">${img.file ? `<img src="${esc(img.url || `../assets/blog/${img.file}`)}" alt="" data-cv-pic>` : ""}
+                <span class="bl-cv-drop">${icon("import")}<b>${img.file ? "Change the cover" : "Upload the cover"}</b><small>JPG, PNG or WebP · it's cropped to 1200×630 and made light for you</small></span>
+                <input type="file" accept="image/png,image/jpeg,image/webp" hidden data-cover-file></label>
+              <div class="bl-cv-side">
+                <div class="bl-cv-prev"><small class="bl-cv-k">${icon("search")}Google Images</small><div class="bl-gimg"><span class="bl-gimg-pic" data-cv-thumb></span><div><b data-cv-gt></b><small>sportscontentplaybook.com</small></div></div></div>
+                <div class="bl-cv-prev"><small class="bl-cv-k">${icon("external")}When shared (WhatsApp, LinkedIn, X…)</small><div class="bl-share"><span class="bl-share-pic" data-cv-thumb></span><div><small>sportscontentplaybook.com</small><b data-cv-st></b><p data-cv-sd></p></div></div></div>
+              </div>
+            </div>
+            <input type="hidden" name="img_file" value="${esc(img.file || "")}"><input type="hidden" name="img_url" value="${esc(img.url || "")}">
           </section>
+          <section class="panel panel-pad bl-ecard">
+            <h3 class="bl-card-h"><span class="bl-n">2</span>Image SEO <small class="muted">How Google Images and AI assistants understand the picture</small></h3>
+            <ul class="bl-checks bl-cv-checks" data-cv-checks></ul>
+            <label>Describe the image (alt text) <span class="bl-len" data-len="img_alt"></span><small class="muted bl-sub">What's in the picture, for Google Images and screen readers. 50–125 characters, with your main keyword if it fits.</small><textarea class="input" name="img_alt" rows="2" maxlength="200">${esc(img.alt || "")}</textarea></label>
+            <label>Image title <small class="muted bl-sub">A short name for the picture (shown when hovering it).</small><input class="input" name="img_title" value="${esc(img.title || "")}"></label>
+          </section>
+          <section class="panel panel-pad bl-ecard">
+            <h3 class="bl-card-h"><span class="bl-n">3</span>Credit <small class="muted">Always cite who made the photo</small></h3>
+            <div class="bl-row"><label>Credit<input class="input" name="img_author" value="${esc(cred.author || "")}" placeholder="Photographer / AI-generated…"></label><label>Credit link<input class="input" name="img_source" value="${esc(cred.source_url || "")}"></label></div>
+          </section>
+          </div>
           <section class="panel panel-pad bl-sec" data-epane="seo" hidden>
             <h3>${icon("search")}Google</h3>
             <label>Meta title <span class="bl-len" data-len="meta_title"></span><input class="input" name="meta_title" value="${esc(d.meta_title || "")}" maxlength="80" placeholder="What shows as the blue link on Google (30–60 characters)"></label>
@@ -284,15 +301,55 @@
     // FAQ rows
     main.querySelector("[data-faq-add]").addEventListener("click", () => { $("[data-faq]").insertAdjacentHTML("beforeend", faqRow()); audit(); });
     $("[data-faq]").addEventListener("click", (e) => { if (e.target.closest("[data-faq-del]")) { e.target.closest(".bl-faq-row").remove(); audit(); } });
+    // cover: cropped to 1200×630 and saved as a light JPEG with a descriptive file name (both count for image SEO)
+    const cv = { w: 0, h: 0, kb: 0 };
+    const crop = (file) => new Promise((ok, ko) => {
+      const im = new Image(); im.onerror = () => ko(new Error("That image can't be read."));
+      im.onload = () => { const c = document.createElement("canvas"); c.width = 1200; c.height = 630; const r = Math.max(1200 / im.width, 630 / im.height), w = im.width * r, h = im.height * r;
+        c.getContext("2d").drawImage(im, (1200 - w) / 2, (630 - h) / 2, w, h); c.toBlob((b) => (b ? ok(b) : ko(new Error("That image can't be read."))), "image/jpeg", 0.84); URL.revokeObjectURL(im.src); };
+      im.src = URL.createObjectURL(file);
+    });
+    const measure = async () => {
+      const pic = $("[data-cv-pic]"); if (!pic) return;
+      if (!pic.complete) await new Promise((r) => { pic.onload = r; pic.onerror = r; });
+      cv.w = pic.naturalWidth; cv.h = pic.naturalHeight;
+      try { const r = await fetch(pic.src, { method: "HEAD" }); cv.kb = Math.round(Number(r.headers.get("content-length") || 0) / 1024); } catch { cv.kb = 0; }
+      coverAudit();
+    };
+    function coverAudit() {
+      const kw = fm.primary_keyword.value.trim().toLowerCase(), alt = fm.img_alt.value.trim(), file = fm.img_file.value, src = fm.img_url.value || (file ? `../assets/blog/${file}` : "");
+      const fileWords = file.replace(/\.\w+$/, "").replace(/-[a-z0-9]{6,}$/, "").replace(/^\d+$/, "");
+      const checks = [
+        ["A cover", !!file],
+        [`Size 1200×630${cv.w ? ` (${cv.w}×${cv.h})` : ""}`, cv.w >= 1200 && Math.abs(cv.w / cv.h - 1200 / 630) < 0.03],
+        [`Light file, under 300 KB${cv.kb ? ` (${cv.kb} KB)` : ""}`, cv.kb > 0 && cv.kb <= 300],
+        ["File name in words (not IMG_1234)", /[a-z]{3,}-[a-z]{3,}/.test(fileWords)],
+        [`Alt text 50–125 characters (${alt.length})`, alt.length >= 50 && alt.length <= 125],
+        ["Main keyword in the alt text", !!kw && alt.toLowerCase().includes(kw)],
+        ["Image title", !!fm.img_title.value.trim()],
+        ["Credit with link", !!(fm.img_author.value.trim() && fm.img_source.value.trim())],
+      ];
+      $("[data-cv-checks]").innerHTML = checks.map(([t, v]) => `<li class="${v ? "ok" : ""}">${icon(v ? "check" : "alert")}<span>${esc(t)}</span></li>`).join("");
+      main.querySelectorAll("[data-cv-thumb]").forEach((el) => { el.style.backgroundImage = src ? `url("${src}")` : ""; });
+      $("[data-cv-gt]").textContent = fm.img_title.value.trim() || fm.title.value || "Image title";
+      $("[data-cv-st]").textContent = (fm.meta_title.value || fm.title.value).trim() || "Your title";
+      $("[data-cv-sd]").textContent = fm.meta_description.value.trim();
+      const el = $('[data-len="img_alt"]'); el.textContent = alt.length ? `${alt.length} / 125` : ""; el.className = `bl-len ${alt.length >= 50 && alt.length <= 125 ? "ok" : alt.length ? "warn" : ""}`;
+    }
+    fm.addEventListener("input", coverAudit); measure(); coverAudit();
     fm.querySelector("[data-cover-file]").addEventListener("change", async (e) => {
       const file = e.target.files[0]; e.target.value = ""; if (!file) return;
-      const slug = fm.slug.value || slugify(fm.title.value) || "post";
-      const name = `${slug}-${Date.now()}.${(file.name.split(".").pop() || "jpg").toLowerCase()}`;
-      const { error } = await A.db.storage.from("blog").upload(name, file, { contentType: file.type, upsert: true });
-      if (error) return fail(/policy|row-level|not found/i.test(error.message) ? new Error("Run supabase/admin-content.sql in Supabase first.") : error);
-      fm.img_file.value = name; fm.img_url.value = A.db.storage.from("blog").getPublicUrl(name).data.publicUrl;
-      $("[data-cover]").innerHTML = `<img src="${esc(fm.img_url.value)}" alt="">`;
-      audit(); A.toast("Cover uploaded. Save to keep it.");
+      try {
+        const blob = await crop(file);
+        const base = slugify(fm.primary_keyword.value ? `${fm.slug.value || fm.title.value} ${fm.primary_keyword.value}` : fm.slug.value || fm.title.value).slice(0, 70).replace(/-+$/, "") || "sports-content";
+        const name = `${base}-${Date.now().toString(36)}.jpg`;
+        const { error } = await A.db.storage.from("blog").upload(name, blob, { contentType: "image/jpeg", upsert: true });
+        if (error) throw /policy|row-level|not found/i.test(error.message) ? new Error("Run supabase/admin-content.sql in Supabase first.") : error;
+        fm.img_file.value = name; fm.img_url.value = A.db.storage.from("blog").getPublicUrl(name).data.publicUrl;
+        const box = $("[data-cover]"); box.querySelector("[data-cv-pic]")?.remove(); box.insertAdjacentHTML("afterbegin", `<img src="${esc(fm.img_url.value)}" alt="" data-cv-pic>`);
+        box.querySelector(".bl-cv-drop b").textContent = "Change the cover";
+        audit(); measure(); A.toast("Cover uploaded. Save to keep it.");
+      } catch (x) { fail(x); }
     });
     const parseLines = (v) => v.split("\n").map((l) => l.split("|").map((x) => x.trim())).filter(([nm, u]) => nm && u).map(([name, url]) => ({ name, url }));
     $("[data-save]").addEventListener("click", async () => {
