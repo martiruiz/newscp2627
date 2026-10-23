@@ -56,7 +56,7 @@
       let pics = ["../assets/lib-example-ucl.jpg", "../assets/lib-example-messi.jpg", "../assets/lib-example-nba.jpg"], k = 0, last = "";
       fetch("../content/top.json", { cache: "no-cache" }).then((r) => r.json()).then((top) => {
         const list = (top || []).map((p) => p.cover_url).filter(Boolean);
-        if (list.length) pics = list.concat(pics);
+        if (list.length) pics = list.sort(() => Math.random() - 0.5);   // a different order on every visit
         pics.forEach((src) => { new Image().src = src; });
       }).catch(() => {});
       // the centre of the hexagon under the pointer (two families of centres in the tiling; the nearest one wins)
