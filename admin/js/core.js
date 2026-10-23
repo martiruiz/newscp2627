@@ -210,12 +210,25 @@
       </div>`;
     side.querySelectorAll("[data-theme-toggle]").forEach((b) => window.SCP_THEME.paint(b));
     side.addEventListener("click", (e) => { const b = e.target.closest("[data-admin-lang]"); if (b && b.dataset.adminLang !== window.SCPA_LANG) window.SCPA_setLang?.(b.dataset.adminLang); });
-    // asks first; once signed out, the SCP log-in page (the site's, not the admin's)
-    $("[data-logout]", side).addEventListener("click", async () => {
-      if (!(await confirmDialog({ title: "Log out?", text: "You'll need to log in again to use SCP.", confirm: "Log out", danger: true }))) return;
-      loggingOut = true;
-      await db.auth.signOut();
-      location.href = "../login.html";
+    // asks first, in a little bubble right above the button; once signed out, the SCP log-in page (the site's, not the admin's)
+    const out = $("[data-logout]", side);
+    out.addEventListener("click", () => {
+      if ($(".side-ask", side)) return $(".side-ask", side).remove();
+      out.insertAdjacentHTML("beforebegin", `<div class="side-ask" role="dialog" aria-label="Log out?"><b>Log out?</b><p>You'll need to log in again to use SCP.</p>
+        <div><button class="btn btn-ghost btn-sm" type="button" data-ask-no>Cancel</button><button class="btn btn-danger btn-sm" type="button" data-ask-yes>Log out</button></div></div>`);
+      const ask = $(".side-ask", side);
+      ask.style.bottom = `${out.offsetParent.clientHeight - out.offsetTop + 8}px`;   // just above the button
+      $("[data-ask-yes]", ask).focus();
+      const close = () => { ask.remove(); document.removeEventListener("pointerdown", away); document.removeEventListener("keydown", esc); };
+      const away = (e) => { if (!e.target.closest(".side-ask, [data-logout]")) close(); };
+      const esc = (e) => { if (e.key === "Escape") close(); };
+      setTimeout(() => { document.addEventListener("pointerdown", away); document.addEventListener("keydown", esc); }, 0);
+      $("[data-ask-no]", ask).addEventListener("click", close);
+      $("[data-ask-yes]", ask).addEventListener("click", async () => {
+        loggingOut = true;
+        await db.auth.signOut();
+        location.href = "../login.html";
+      });
     });
   }
 
