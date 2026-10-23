@@ -29,21 +29,21 @@ const slugify = (t) => { const s = String(t).normalize("NFD").replace(/[\u0300-\
 
 async function sourceImage(url) {
   try {
-    const r = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0 (compatible; SCPBot/1.0; +https://sportscontentplaybook.com)", Accept: "text/html" }, signal: AbortSignal.timeout(10000), redirect: "follow" });
-    if (!r.ok) return null;
+    const r = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36", Accept: "text/html,application/xhtml+xml", "Accept-Language": "en-US,en;q=0.9" }, signal: AbortSignal.timeout(10000), redirect: "follow" });
+    if (!r.ok) { console.log(`  no picture (${r.status}) for ${url}`); return null; }
     const html = (await r.text()).slice(0, 400000);
     const tag = [...html.matchAll(/<meta\b[^>]*>/gi)].map((m) => m[0]).find((t) => /(?:property|name)=["'](?:og:image(?::secure_url)?|twitter:image(?::src)?)["']/i.test(t));
     const src = tag && (tag.match(/content=["']([^"']+)["']/i) || [])[1];
     return src ? new URL(src.replace(/&amp;/g, "&"), r.url).href : null;
-  } catch { return null; }
+  } catch (e) { console.log(`  no picture (${e.message}) for ${url}`); return null; }
 }
 
 // Social News (published) and the SEO settings → content/news.json and content/seo.json (skipped until seo.sql is run)
 if (mode === "export") {
   try {
     const news = await rest("news?select=*&relevant=eq.true&order=published_at.desc.nullslast&limit=1000");
-    // the preview picture of the source article (og:image), once per news item (supabase/news-images.sql); '' = none found
-    for (const n of news.filter((x) => "image_url" in x && x.image_url == null).slice(0, 40)) {
+    // the preview picture of the source article (og:image) for the news that don't have one yet (supabase/news-images.sql)
+    for (const n of news.filter((x) => "image_url" in x && !x.image_url).slice(0, 40)) {
       n.image_url = (await sourceImage(n.url)) || "";
       await rest(`news?id=eq.${n.id}`, { method: "PATCH", body: JSON.stringify({ image_url: n.image_url }), headers: { Prefer: "return=minimal" } });
     }

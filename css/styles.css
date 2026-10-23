@@ -7660,3 +7660,7 @@ section[id], :target { scroll-margin-top: 92px; }
 .news-row.nwc { align-items: center; } @media (max-width: 960px) { .news-row.nwc { align-items: start; } }
 /* the Instagram logo file is gold: in the filter it's grey like the others until hovered or chosen */
 .news-filters .ptile[data-platform="instagram"]:not([aria-pressed="true"]):not(:hover) img { filter: brightness(0) saturate(100%) invert(84%) sepia(9%) saturate(531%) hue-rotate(184deg) brightness(91%) contrast(88%); }
+/* "All": the SCP logo's gold gradient */
+.news-filters .ptile[data-platform="all"]:hover { background: linear-gradient(160deg, rgba(255, 224, 160, 0.22), rgba(240, 184, 74, 0.08)), var(--surface-2); }
+.news-filters .ptile[data-platform="all"][aria-pressed="true"] { background: radial-gradient(64% 64% at 50% 100%, var(--gold-light) 0%, var(--gold-mid) 50%, var(--gold) 100%);
+  border-color: var(--gold-light); box-shadow: 0 0 0 1px rgba(255, 224, 160, 0.5), 0 0 34px -4px rgba(240, 184, 74, 0.8), 0 18px 40px -16px rgba(240, 184, 74, 0.9); }
