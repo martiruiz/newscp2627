@@ -8414,3 +8414,15 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .auth-plan-tags i.is-trial { background: rgba(34, 197, 94, .14); border-color: rgba(34, 197, 94, .35); color: #4ade80; }
 .auth-plan-x { flex: none; align-self: flex-start; color: var(--muted); font-size: 12.5px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
 .auth-plan-x:hover { color: var(--gold); }
+
+/* Log in → "Forgot your password?" as its own step (js/signup.js): title, one line, the email, one button; then "check your inbox" */
+.auth-forgot { display: grid; gap: 14px; }
+.auth-forgot form { display: grid; gap: 14px; }
+.auth-forgot-t { margin: 0; font: 600 20px/1.2 var(--font-display); color: var(--text); text-align: center; }
+.auth-forgot-sub { margin: -6px 0 4px; color: var(--muted); font-size: 14px; line-height: 1.5; text-align: center; }
+.auth-forgot-sub b { color: var(--text); }
+.auth-sent { display: grid; justify-items: center; gap: 12px; text-align: center; }
+.auth-sent-ic { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; background: rgba(34, 197, 94, .14); color: #4ade80; box-shadow: 0 0 0 6px rgba(34, 197, 94, .06); }
+.auth-sent-ic svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.auth-back { justify-self: center; margin-top: 2px; padding: 6px 10px; border: 0; background: none; color: var(--muted); font: 600 13.5px var(--font-body); cursor: pointer; }
+.auth-back:hover { color: var(--text); }

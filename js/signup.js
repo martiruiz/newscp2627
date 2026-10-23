@@ -107,16 +107,33 @@
   const pwToggle = document.querySelector("[data-password-toggle]");
   // Log in = email + password only (no login links). Sign up still confirms the email with a link.
   const usePassword = mode === "login";
-  // "Forgot your password?": an email to set a new one (also for accounts that never had a password)
-  document.querySelector("[data-forgot]")?.addEventListener("click", async (e) => {
-    const email = form.email.value.trim();
-    if (!form.email.checkValidity() || !email) { form.email.classList.add("is-invalid"); form.email.focus(); return setStatus("Write your email above and we'll send you a link to set a new password.", "err"); }
-    e.currentTarget.disabled = true;
-    const { error } = await auth.client.auth.resetPasswordForEmail(email, { redirectTo: auth.pageUrl("login.html?reset=1") });
-    e.currentTarget.disabled = false;
-    if (error) return setStatus(/rate limit/i.test(error.message) ? "Too many emails sent in a short time. Please check your inbox or try again later." : error.message, "err");
-    setStatus("Check your inbox — we've sent you a link to set a new password.", "ok");
-  });
+  // "Forgot your password?": its own step in the card — the email (already filled in if typed), one button, then "check your
+  // inbox" with the address and a way to send it again (also for accounts that never had a password)
+  const fView = document.querySelector("[data-forgot-view]");
+  if (fView) {
+    const fForm = fView.querySelector("[data-forgot-form]"), sent = fView.querySelector("[data-forgot-sent]");
+    const others = [form, document.querySelector(".auth-or"), document.querySelector("[data-google-signup]"), document.querySelector(".auth-switch")].filter(Boolean);
+    const show = (on) => { fView.hidden = !on; others.forEach((el) => { el.hidden = on; }); setStatus(""); };
+    const send = async (btn) => {
+      const email = fForm.email.value.trim();
+      if (!fForm.email.checkValidity() || !email) { fForm.email.classList.add("is-invalid"); fForm.email.focus(); return; }
+      fForm.email.classList.remove("is-invalid");
+      btn.disabled = true;
+      const { error } = await auth.client.auth.resetPasswordForEmail(email, { redirectTo: auth.pageUrl("login.html?reset=1") });
+      btn.disabled = false;
+      if (error) return setStatus(/rate limit/i.test(error.message) ? "Too many emails sent in a short time. Please check your inbox or try again later." : error.message, "err");
+      fView.querySelector("[data-forgot-to]").textContent = email;
+      fForm.hidden = true; sent.hidden = false;
+    };
+    document.querySelector("[data-forgot]")?.addEventListener("click", () => {
+      fForm.email.value = form.email.value.trim();
+      fForm.hidden = false; sent.hidden = true; show(true);
+      (fForm.email.value ? fForm.querySelector("button") : fForm.email).focus();
+    });
+    fForm.addEventListener("submit", (e) => { e.preventDefault(); send(fForm.querySelector("button")); });
+    fView.querySelector("[data-forgot-again]").addEventListener("click", (e) => send(e.currentTarget));
+    fView.querySelector("[data-forgot-back]").addEventListener("click", () => { show(false); form.email.value = fForm.email.value; });
+  }
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     let ok = true;

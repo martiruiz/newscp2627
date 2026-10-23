@@ -2491,4 +2491,12 @@ window.SCP_ES = {
   "The 3 most viewed posts of the week": "Los 3 posts más vistos de la semana",
   "Selected plan": "Plan elegido",
   "7-day free trial": "7 días de prueba gratis",
+  "Get back into your account": "Recupera tu acceso",
+  "Write your email and we'll send you a link to choose a new password.": "Escribe tu email y te enviaremos un enlace para elegir una contraseña nueva.",
+  "Send me the link": "Enviarme el enlace",
+  "Check your inbox": "Revisa tu correo",
+  "We've sent a link to": "Te hemos enviado un enlace a",
+  ". Open it to choose a new password. It may take a minute; check your spam folder too.": ". Ábrelo para elegir una contraseña nueva. Puede tardar un minuto; mira también en spam.",
+  "Send it again": "Enviarlo de nuevo",
+  "← Back to log in": "← Volver a entrar",
 };
