@@ -139,7 +139,7 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString(window.SCP_LO
         const res = await fetch(`${cfg.supabaseUrl}/rest/v1/newsletter_signups`, {
           method: "POST",
           headers: { apikey: cfg.supabaseAnonKey, Authorization: `Bearer ${cfg.supabaseAnonKey}`, "Content-Type": "application/json", Prefer: "return=minimal" },
-          body: JSON.stringify({ email, source: "footer", consent: true, consent_text: "I want the SCP newsletter. I can unsubscribe at any time." }),
+          body: JSON.stringify({ email, source: "footer", lang: window.SCP_LANG === "en" ? "en" : "es", consent: true, consent_text: "I want the SCP newsletter. I can unsubscribe at any time." }),
         });
         if (!res.ok && res.status !== 409) throw new Error(String(res.status));   // 409 = already subscribed
         form.reset();

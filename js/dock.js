@@ -113,7 +113,7 @@
       const res = await fetch(`${cfg.supabaseUrl}/rest/v1/newsletter_signups`, {
         method: "POST",
         headers: { apikey: cfg.supabaseAnonKey, Authorization: `Bearer ${cfg.supabaseAnonKey}`, "Content-Type": "application/json", Prefer: "return=minimal" },
-        body: JSON.stringify({ email, source: "home-dock", consent: true, consent_text: CONSENT }),
+        body: JSON.stringify({ email, source: "home-dock", lang: window.SCP_LANG === "en" ? "en" : "es", consent: true, consent_text: CONSENT }),
       });
       // 409 = already subscribed: treat as success
       if (!res.ok && res.status !== 409) throw new Error(String(res.status));

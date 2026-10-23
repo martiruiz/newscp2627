@@ -45,7 +45,7 @@
   const NL_TEXT = "Send me the SCP newsletter: sports content ideas and news. I can unsubscribe at any time.";
   const subscribe = (email, first_name, source) => cfg.supabaseUrl && fetch(`${cfg.supabaseUrl}/rest/v1/newsletter_signups`, { method: "POST", keepalive: true,
     headers: { apikey: cfg.supabaseAnonKey, Authorization: `Bearer ${cfg.supabaseAnonKey}`, "Content-Type": "application/json", Prefer: "return=minimal" },
-    body: JSON.stringify({ email, first_name: first_name.slice(0, 80) || null, source, consent: true, consent_text: NL_TEXT }) }).catch(() => {});
+    body: JSON.stringify({ email, first_name: first_name.slice(0, 80) || null, source, lang: window.SCP_LANG === "en" ? "en" : "es", consent: true, consent_text: NL_TEXT }) }).catch(() => {});
   window.SCP_TRACK = (event, props = {}) => {
     if (!window.SCP_CONSENT?.analytics()) return;   // usage measurement only with consent
     if (!store.get("scp-lead-cid")) store.set("scp-lead-cid", cid);
