@@ -3095,7 +3095,7 @@ a.blog-img { display: block; }
 
 .org-days-mobile { display: none; }
 @media (max-width: 1100px) {
-  .org-bar { grid-template-columns: 1fr; }
+  .org-bar { grid-template-columns: minmax(0, 1fr); } .org-bar > * { min-width: 0; } .org-actions { flex-wrap: wrap; }
   .org-layout { grid-template-columns: minmax(0, 1fr); }
   .org-insp { position: static; max-height: 360px; }
 }
