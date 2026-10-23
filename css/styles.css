@@ -7951,10 +7951,8 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 @keyframes pfSpin { to { transform: rotate(360deg); } }
 @keyframes pfBreath { 0%, 100% { filter: drop-shadow(0 0 0 rgba(240, 184, 74, 0)); } 50% { filter: drop-shadow(0 0 12px rgba(240, 184, 74, 0.55)); } }
 @media (prefers-reduced-motion: reduce) { .pf-meter-glow, .pf-meter.is-full svg { animation: none; } }
-/* the text beside it: icon + title, readable paragraph, "complete" as a green pill */
+/* the text beside it: title, readable paragraph, "complete" as a green pill */
 .pf-why > b { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-size: 20px; }
-.pf-why-ic { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; background: var(--gold-tint); color: var(--gold); }
-.pf-why-ic svg { width: 16px; height: 16px; }
 .pf-why > p:not(.pf-next) { color: var(--muted); line-height: 1.6; max-width: 520px; }
 .pf-done-pill { display: inline-flex; align-items: center; gap: 7px; height: 32px; padding: 0 14px 0 10px; border-radius: 999px; background: rgba(0, 216, 91, 0.12); border: 1px solid rgba(0, 216, 91, 0.35); color: #7cf0b0; font-size: 13px; font-weight: 600; }
 .pf-done-pill svg { width: 15px; height: 15px; }
