@@ -8045,7 +8045,7 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 :root[data-theme="light"] .sec-pill-ic img { filter: brightness(0) invert(1) !important; }
 /* day colours — profile: white hero, chosen tiles / chips in black, section icons neutral */
 :root[data-theme="light"] .pf-hero { background: #fff !important; border-color: rgba(12,12,13,.08) !important; box-shadow: 0 1px 2px rgba(12,12,13,.04), 0 18px 40px -24px rgba(12,12,13,.22) !important; }
-:root[data-theme="light"] .pf-role[aria-pressed="true"] { border-color: #0c0c0d !important; background: #fff !important; box-shadow: 0 0 0 1px #0c0c0d !important; }
+
 :root[data-theme="light"] :is(.pf-chip, .pf-seg-b)[aria-pressed="true"] { background: #0c0c0d !important; border-color: #0c0c0d !important; color: #fff !important; }
 :root[data-theme="light"] .pf-head-ic { background: #f2f1ed !important; color: #0c0c0d !important; border-color: rgba(12,12,13,.08) !important; box-shadow: none !important; }
 :root[data-theme="light"] .pf-nav a[aria-current="page"], :root[data-theme="light"] .pf-nav a.is-active { background: #0c0c0d !important; color: #fff !important; }
@@ -8158,3 +8158,16 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .news-link:hover { background: var(--gold); color: #101828; border-color: var(--gold); transform: translateY(-1px); }
 :root[data-theme="light"] .news-link { border-color: rgba(12,12,13,.25); color: #0c0c0d !important; text-decoration: none !important; background: #fff; }
 :root[data-theme="light"] .news-link:hover { background: #0c0c0d; border-color: #0c0c0d; color: #fff !important; }
+/* Profile hero: the plan card stays inside its column (it was running into the ring) — its line wraps; a bit more air around the ring */
+.pf-hero { column-gap: 44px; }
+.pf-id, .pf-id > div:last-child { min-width: 0; }
+.pf-plan-chip { box-sizing: border-box; max-width: 100%; }
+.pf-pc-tx small { white-space: normal !important; line-height: 1.4; }
+:root[data-theme="light"] .pf-plan-chip { background: #f7f6f3; border-color: rgba(12,12,13,.08); }
+:root[data-theme="light"] .pf-pc-go { background: #fff; color: #0c0c0d; border: 1px solid rgba(12,12,13,.12); }
+:root[data-theme="light"] .pf-pc-go:hover { background: #0c0c0d; color: #fff; }
+/* day colours — profile tiles (role, organisation…) chosen: black with white text, the icon in a light tile, a gold tick */
+:root[data-theme="light"] .pf-role[aria-pressed="true"] { background: #0c0c0d !important; border-color: #0c0c0d !important; color: #fff !important; box-shadow: 0 12px 26px -14px rgba(12,12,13,.55) !important; }
+:root[data-theme="light"] .pf-role[aria-pressed="true"] .pf-role-ic { background: rgba(255,255,255,.14) !important; color: #fff !important; border-color: rgba(255,255,255,.2) !important; }
+:root[data-theme="light"] .pf-role[aria-pressed="true"] .pf-role-ck { background: #f0b84a !important; color: #0c0c0d !important; }
+:root[data-theme="light"] .pf-role .pf-role-ic { background: #f2f1ed; color: #0c0c0d; }
