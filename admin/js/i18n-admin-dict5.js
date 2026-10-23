@@ -428,4 +428,5 @@ window.SCPA_DICT = Object.assign(window.SCPA_DICT || {}, {
   "Log out?": ["¿Cerrar sesión?", "Tancar la sessió?"],
   "You'll need to log in again to use SCP.": ["Tendrás que volver a iniciar sesión para usar SCP.", "Hauràs de tornar a iniciar sessió per fer servir SCP."],
   "Log out": ["Cerrar sesión", "Tanca la sessió"],
+  "Home page": ["Página de inicio", "Pàgina d'inici"],
 });

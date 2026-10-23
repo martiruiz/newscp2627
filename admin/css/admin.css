@@ -1560,3 +1560,9 @@ select.cs-native { display: none !important; }
 .side-brand > div b::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px rgba(240, 184, 74, 0.9); }
 :root[data-theme="light"] .side-brand > div b { background: #0c0c0d; color: #fff; box-shadow: none; }
 .ac-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Sidebar: "Home page" under "Open Content Library" — a quiet outline pill to the site's home */
+.side a.side-home { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 8px 0 0; width: 100%; height: 38px; border-radius: 100px; color: var(--muted); font-weight: 600; font-size: 13.5px; text-decoration: none; box-shadow: inset 0 0 0 1px var(--border-2); transition: color .15s, box-shadow .15s, background .15s; }
+.side a.side-home:hover { color: var(--accent-light); background: var(--panel-2); box-shadow: inset 0 0 0 1px rgba(240, 184, 74, 0.45); }
+:root[data-theme="light"] .side a.side-home { color: #3b3f47; box-shadow: inset 0 0 0 1px rgba(18, 27, 51, 0.14); }
+:root[data-theme="light"] .side a.side-home:hover { color: #0c0c0d; background: #fff; }
