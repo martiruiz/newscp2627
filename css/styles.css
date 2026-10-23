@@ -7658,3 +7658,5 @@ section[id], :target { scroll-margin-top: 92px; }
 .news-filters .ptile:is([data-platform="snapchat"], [data-platform="x"], [data-platform="threads"], [data-platform="tiktok"], [data-platform="all"])[aria-pressed="true"] img { filter: brightness(0); background: rgba(255, 255, 255, 0.35); border-color: rgba(0, 0, 0, 0.15); }
 .news-filters .ptile[data-platform="all"] { --c: #f0b84a; }
 .news-row.nwc { align-items: center; } @media (max-width: 960px) { .news-row.nwc { align-items: start; } }
+/* the Instagram logo file is gold: in the filter it's grey like the others until hovered or chosen */
+.news-filters .ptile[data-platform="instagram"]:not([aria-pressed="true"]):not(:hover) img { filter: brightness(0) saturate(100%) invert(84%) sepia(9%) saturate(531%) hue-rotate(184deg) brightness(91%) contrast(88%); }
