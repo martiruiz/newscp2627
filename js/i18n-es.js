@@ -2427,4 +2427,6 @@ window.SCP_ES = {
   "Yes: real posts from 770+ clubs and 110+ competitions.": "Sí: posts reales de más de 770 clubes y 110 competiciones.",
   "{n} posts · {b} boards": "{n} posts · {b} tableros",
   "Save ideas from the library": "Guarda ideas de la biblioteca",
+  "How often are there new ideas?": "¿Cada cuánto hay ideas nuevas?",
+  "Can I try it for free?": "¿Puedo probarlo gratis?",
 };

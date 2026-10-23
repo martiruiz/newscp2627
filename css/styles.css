@@ -7804,3 +7804,15 @@ section[id], :target { scroll-margin-top: 92px; }
 .mc-crumb-pill .mc-crumb-tx b { font-size: 14px; }
 .mc-crumb-pill > i { width: 1px; height: 20px; background: var(--line); flex: none; }
 .mc-crumb-pill .mc-crumb-sel { display: inline-flex; align-items: center; height: 28px; padding: 0 12px; border-radius: 999px; background: var(--gold-tint); color: var(--gold); font-size: 12.5px; font-weight: 600; }
+/* Menu → Resources → FAQ: a little list of questions, the first one open */
+.mm-rv-faq { display: grid; align-content: center; gap: 5px; padding: 10px; }
+.mm-rv-acc { display: grid; gap: 4px; padding: 6px 9px; border-radius: 9px; background: rgba(var(--fg), 0.04); border: 1px solid transparent; white-space: normal; }
+.mm-rv-acc b { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 10.5px; font-weight: 600; line-height: 1.25; color: var(--text); }
+.mm-rv-acc b i { display: grid; place-items: center; flex: none; width: 15px; height: 15px; border-radius: 50%; background: rgba(var(--acc), 0.18); color: rgb(var(--acc)); font-style: normal; font-size: 11px; line-height: 1; }
+.mm-rv-acc small { font-size: 10px; line-height: 1.35; color: var(--muted); }
+.mm-rv-acc.is-open { background: rgba(var(--acc), 0.1); border-color: rgba(var(--acc), 0.3); }
+.mm-pillar:hover .mm-rv-acc.is-open { border-color: rgba(var(--acc), 0.55); }
+.mm-rv-faq { gap: 6px; padding: 9px; }
+.mm-rv-acc b { white-space: nowrap; } .mm-rv-acc b > i { margin-left: auto; }
+.mm-rv-acc small { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.mm-rv-faq { gap: 5px; padding: 6px 8px; } .mm-rv-acc { padding: 5px 8px; gap: 3px; }

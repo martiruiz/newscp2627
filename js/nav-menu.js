@@ -101,7 +101,8 @@
     saved: `<span class="mm-rv-folder"><i></i><i></i><i></i></span><span class="mm-rv-tag" data-rv-n></span>`,
     blog: `<span class="mm-rv-cap"><em>New</em><b data-rv-t></b></span>`,
     news: `<span class="mm-rv-cap"><em><i class="mm-live"></i><span data-rv-d>Updated every day</span></em><b data-rv-t></b></span>`,
-    faq: `<span class="mm-rv-q">Is it made for clubs like mine?</span><span class="mm-rv-a">Yes: real posts from 770+ clubs and 110+ competitions.</span>`,
+    // a little FAQ list: the first question open, one more closed
+    faq: `<span class="mm-rv-acc is-open"><b>Is it made for clubs like mine?<i>–</i></b><small>Yes: real posts from 770+ clubs and 110+ competitions.</small></span><span class="mm-rv-acc"><b>How often are there new ideas?<i>+</i></b></span>`,
   };
   const show = (it) => !it.member || member;
   // hidden for members until their entitlements say they have no plan (staff counts as having one)
