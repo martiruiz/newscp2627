@@ -44,7 +44,7 @@
   .list { display: grid; gap: 4px; align-content: start; }
   .row { display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 14px; color: inherit; text-decoration: none; transition: background .15s; }
   .row:hover, .row.hov { background: #f4f3f0; }
-  .row span { flex: 1; min-width: 0; }
+  .row > span:not(.mi):not(.count):not(.ar) { flex: 1; min-width: 0; }
   .row b { display: block; font-size: 15px; }
   .row small { display: block; color: #6b6b72; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .row .ar { color: #9a9aa0; font-size: 16px; }
@@ -62,7 +62,7 @@
   .big b { font: 600 16px/1.3 var(--font-display); }
   .strip { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .pill { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; background: #f4f3f0; color: inherit; text-decoration: none; }
-  .pill span { flex: 1; } .pill b { display: block; font-size: 14.5px; } .pill small { color: #6b6b72; font-size: 12.5px; }
+  .pill > span:not(.mi) { flex: 1; } .pill b { display: block; font-size: 14.5px; } .pill small { color: #6b6b72; font-size: 12.5px; }
 
   @media (max-width: 760px) { .now { grid-template-columns: 1fr 1fr; } .a, .b, .strip { grid-template-columns: 1fr; } }
 </style>
