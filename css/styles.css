@@ -8381,3 +8381,14 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 :root[data-theme="light"] .ck-opt { background: #f7f6f3; border-color: rgba(12,12,13,.06); }
 :root[data-theme="light"] .ck.is-settings .ck-save { background: #0c0c0d; color: #fff; }
 .sf-bottom button[data-cookie-settings], .sf-bottom a[data-cookie-settings] { cursor: pointer; }
+
+/* 404 page: a big gold 404, one line, the way home */
+.nf { display: grid; justify-items: center; gap: 14px; min-height: 62vh; padding: 140px 16px 80px; text-align: center; }
+.nf-code { margin: 0; font: 700 clamp(96px, 18vw, 180px)/0.9 var(--font-display); letter-spacing: -0.06em;
+  background: linear-gradient(180deg, #ffe0a0, #f0b84a 55%, #b07a1c); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.nf h1 { margin: 0; font: 600 clamp(28px, 4vw, 40px)/1.15 var(--font-display); letter-spacing: -0.02em; }
+.nf-sub { margin: 0 0 10px; max-width: 460px; color: var(--muted); font-size: 17px; line-height: 1.5; }
+.nf-btns { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.nf-more { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 22px; margin: 18px 0 0; font-size: 14px; }
+.nf-more a { color: var(--muted); } .nf-more a:hover { color: var(--text); }
+:root[data-theme="light"] .nf-code { background-image: linear-gradient(180deg, #0c0c0d, #3a3a3e); }

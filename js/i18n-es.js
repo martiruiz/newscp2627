@@ -2480,4 +2480,8 @@ window.SCP_ES = {
   "Settings": "Configurar",
   "Save my choice": "Guardar mi elección",
   "Cookie settings": "Configuración de cookies",
+  "This page doesn't exist": "Esta página no existe",
+  "The link may be old or mistyped. Let's get you back to the game.": "Puede que el enlace sea antiguo o esté mal escrito. Volvamos al juego.",
+  "Go to the home page": "Ir a la página de inicio",
+  "Page not found — Sports Content Playbook": "Página no encontrada — Sports Content Playbook",
 };
