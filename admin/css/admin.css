@@ -1616,13 +1616,13 @@ select.cs-native { display: none !important; }
 /* Log in background: a hexagon grid (faint navy lines) whose edges glow gold around the pointer (js in admin/login.html) */
 .login { position: relative; overflow: hidden; }
 .login-card2 { position: relative; z-index: 1; }
-.hexbg { --mx: 30%; --my: 25%; --hex: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='69.28' viewBox='0 0 120 69.28'%3E%3Cpath d='M0 34.64L20 0H60L80 34.64L60 69.28H20Z M80 34.64H120' fill='none' stroke='black' stroke-width='1.6'/%3E%3C/svg%3E");
+.hexbg { --mx: 30%; --my: 25%; --hex: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='103.92' viewBox='0 0 180 103.92'%3E%3Cpath d='M0 51.96L30 0H90L120 51.96L90 103.92H30Z M120 51.96H180' fill='none' stroke='black' stroke-width='1.6'/%3E%3C/svg%3E");
   position: fixed; inset: 0; pointer-events: none;
   background:
     radial-gradient(circle 170px at var(--mx) var(--my), rgba(255, 224, 160, .95), rgba(240, 184, 74, .55) 45%, transparent 75%),
     radial-gradient(circle 520px at var(--mx) var(--my), rgba(240, 184, 74, .22), transparent 70%),
-    rgba(122, 162, 255, .13);
-  -webkit-mask: var(--hex) 0 0 / 120px 69.28px; mask: var(--hex) 0 0 / 120px 69.28px; }
+    rgba(122, 162, 255, .08);
+  -webkit-mask: var(--hex) 0 0 / 180px 103.92px; mask: var(--hex) 0 0 / 180px 103.92px; }
 .hexbg::after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle 120px at var(--mx) var(--my), rgba(240, 184, 74, .25), transparent 70%); filter: blur(8px); }
 :root[data-theme="light"] .hexbg { background: radial-gradient(circle 170px at var(--mx) var(--my), rgba(176, 122, 28, .9), rgba(240, 184, 74, .5) 45%, transparent 75%), rgba(18, 27, 51, .1); }
 /* Log in: "email me a link" at the bottom, right above the way back to the website (apart from Sign in) */
@@ -1637,3 +1637,7 @@ select.cs-native { display: none !important; }
 .login-lang button[aria-pressed="true"] { box-shadow: inset 0 0 0 1px rgba(240, 184, 74, .6), inset 0 0 0 40px rgba(240, 184, 74, .12), 0 0 14px -4px rgba(240, 184, 74, .7); }
 .login-lang button:hover { filter: brightness(1.15); }
 .login-lang button[aria-pressed="true"], .login-lang button:hover { background: linear-gradient(180deg, #ffe7ad 0%, #f4c463 45%, #d79a2b 100%); -webkit-background-clip: text; background-clip: text; color: transparent !important; }
+/* Log in: a library post appearing inside the hexagon under the pointer, then fading away */
+.hexcell { position: fixed; z-index: 0; pointer-events: none; background: #111 center / cover; clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
+  transform: scale(.94); opacity: 0; animation: hexIn 2.6s ease forwards; }
+@keyframes hexIn { 0% { opacity: 0; transform: scale(.8); } 18% { opacity: .55; transform: scale(.94); } 60% { opacity: .45; } 100% { opacity: 0; transform: scale(.94); } }

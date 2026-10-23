@@ -62,7 +62,7 @@
       if (!Array.isArray(top) || top.length < 3) return;
       const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
       const n = (v) => new Intl.NumberFormat(window.SCP_LOC || "en", { notation: "compact", maximumFractionDigits: 1 }).format(v);
-      document.querySelector("[data-nf-posts]").innerHTML = top.map((p) => `<a class="nf-post" href="content-library.html" style="background-image:url('${esc(p.cover_url)}')"><em>${n(p.views)}</em><span>@${esc(p.account)}</span></a>`).join("");
+      document.querySelector("[data-nf-posts]").innerHTML = top.slice(0, 3).map((p) => `<a class="nf-post" href="content-library.html" style="background-image:url('${esc(p.cover_url)}')"><em>${n(p.views)}</em><span>@${esc(p.account)}</span></a>`).join("");
       const cap = document.querySelector("[data-nf-cap]");
       cap.textContent = window.tx ? window.tx("The 3 most viewed posts of the week") : "The 3 most viewed posts of the week";
     }).catch(() => {});
