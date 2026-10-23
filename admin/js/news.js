@@ -32,6 +32,9 @@
     const { data, error } = await q;
     if (error) { $("[data-list]").innerHTML = `<p class="panel-pad muted">${esc(error.message)}</p>`; return; }
     rows = data || [];
+    const open = Number((location.hash.match(/^#news=(\d+)$/) || [])[1]);   // the news open before a refresh
+    if (open && rows.some((x) => x.id === open)) return edit(open);
+    if (location.hash) history.replaceState(null, "", location.pathname + location.search);
     draw();
   }
   // brand colours of the networks (the dot on each card)
@@ -68,6 +71,7 @@
   // ---------- one news item: a full page like Admin → Blog → a post (cards on the left, state + Google on the right) ----------
   function edit(id) {
     const r = rows.find((x) => x.id === id); if (!r) return;
+    history.replaceState(null, "", `#news=${id}`);   // stays open after a refresh
     const hasSeo = "meta_title" in r;   // the SEO columns exist (supabase/seo.sql)
     const paraRow = (t = "") => `<div class="nw-para"><span class="nw-para-n"></span><textarea class="input" rows="3" data-para>${esc(t)}</textarea><button type="button" class="icon-btn" data-para-del title="Remove" aria-label="Remove">${icon("trash")}</button></div>`;
     const lh = (t, k) => `<span class="bl-lh"><span>${t}</span><span class="bl-len" data-len="${k}"></span></span>`;
@@ -77,7 +81,7 @@
         <h1>${esc(r.title)}</h1>
         <div class="bl-eh-meta"><span class="bl-st ${r.relevant ? "is-pub" : ""}" data-ed-st>${r.relevant ? "Published" : "Hidden"}</span><span>${icon("edit")}${esc(day(r.published_at || r.created_at))}</span><span>${icon("external")}${esc(r.source_name)}</span>${r.slug ? `<span class="mono">/news/${esc(r.slug)}</span>` : ""}</div>
       </div>
-      <div class="head-actions">${r.slug && r.relevant ? `<a class="btn" href="../news/${esc(r.slug)}.html" target="_blank" rel="noopener">${icon("eye")}See it on the website</a>` : ""}<button class="btn btn-primary" type="button" data-ed-save>${icon("check")}Save</button></div></div>
+      <div class="head-actions">${r.slug && r.relevant ? `<a class="btn" href="../news/${esc(r.slug)}.html" target="_blank" rel="noopener">${icon("eye")}See it on the website</a>` : ""}<span class="seo-saved muted" data-saved></span></div></div>
       <div class="bl-ed">
         <form class="bl-panes" data-form>
           <section class="panel panel-pad bl-ecard">
@@ -115,7 +119,11 @@
     const fm = $("[data-form]");
     const paras = () => [...fm.querySelectorAll("[data-para]")].map((t) => t.value.trim()).filter(Boolean);
     const grow = (t) => { t.style.height = "auto"; t.style.height = `${t.scrollHeight + 2}px`; };
+    // saved on its own 1.2 s after the last change
+    let autosave = false, timer = null;
+    const later = () => { clearTimeout(timer); timer = setTimeout(() => { timer = null; save(); }, 1200); };
     function audit() {
+      if (autosave) later();
       fm.querySelectorAll(".nw-para-n").forEach((n, i) => { n.textContent = i + 1; });
       const text = paras().join(" "), n = text ? text.split(/\s+/).length : 0;
       $("[data-wc]").textContent = `${paras().length} paragraphs · ${n} words`;
@@ -140,9 +148,10 @@
       if (e.target.closest("[data-faq-add]")) fm.querySelector("[data-faq]").insertAdjacentHTML("beforeend", faqRow());
       if (e.target.closest("[data-faq-del]")) { e.target.closest(".bl-faq-row").remove(); audit(); }
     });
-    $("[data-ed-pub]").addEventListener("change", (e) => { const st = $("[data-ed-st]"); st.textContent = e.target.checked ? "Published" : "Hidden"; st.className = `bl-st ${e.target.checked ? "is-pub" : ""}`; });
-    $("[data-ed-save]").addEventListener("click", async () => {
-      if (!fm.title.value.trim() || !fm.url.value.trim()) return fail(new Error("The news needs a title and the original article."));
+    $("[data-ed-pub]").addEventListener("change", (e) => { const st = $("[data-ed-st]"); st.textContent = e.target.checked ? "Published" : "Hidden"; st.className = `bl-st ${e.target.checked ? "is-pub" : ""}`; save(); });
+    async function save() {
+      clearTimeout(timer); timer = null;
+      if (!fm.title.value.trim() || !fm.url.value.trim()) { $("[data-saved]").innerHTML = `${icon("alert")}Not saved: it needs a title and the original article`; return; }
       const body = { title: fm.title.value.trim(), source_name: fm.source_name.value.trim(), platform: fm.platform.value, url: fm.url.value.trim(),
         paragraphs: paras(), relevant: $("[data-ed-pub]").checked, edited_at: new Date().toISOString(),
         ...(fm.published_at.value ? { published_at: new Date(`${fm.published_at.value}T12:00:00Z`).toISOString() } : {}),
@@ -151,16 +160,18 @@
           faq: [...fm.querySelectorAll(".bl-faq-row")].map((x) => ({ q: x.querySelector("[name=faq_q]").value.trim(), a: x.querySelector("[name=faq_a]").value.trim() })).filter((q) => q.q && q.a) } : {}) };
       const { error } = await A.db.from("news").update(body).eq("id", id);
       if (error) return fail(/policy|permission|row-level/i.test(error.message) ? new Error("Run supabase/admin-content.sql in Supabase first.") : error);
-      Object.assign(r, body); A.toast(body.relevant ? "Saved — the page updates within the hour" : "Saved"); edit(id);
-    });
+      Object.assign(r, body);
+      $("[data-saved]").innerHTML = `${icon("check")}Saved automatically · ${new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}`;
+    }
     $("[data-ed-del]").addEventListener("click", async () => {
       if (!(await A.confirmDialog({ title: "Delete this news?", text: r.title, confirm: "Delete", danger: true }))) return;
       const { error } = await A.db.from("news").delete().eq("id", id);
       if (error) return fail(error);
-      A.toast("Deleted"); back();
+      clearTimeout(timer); timer = null; A.toast("Deleted"); back();
     });
-    const back = () => { shell(); load(); };
+    const back = async () => { if (timer) await save(); history.replaceState(null, "", location.pathname + location.search); shell(); load(); };
     main.querySelectorAll("[data-back]").forEach((b) => b.addEventListener("click", (e) => { e.preventDefault(); back(); }));
+    autosave = true;
   }
 
   main.addEventListener("click", async (e) => {

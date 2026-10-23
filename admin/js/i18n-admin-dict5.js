@@ -410,4 +410,7 @@ window.SCPA_DICT = Object.assign(window.SCPA_DICT || {}, {
   "2 or more paragraphs ({a})": ["2 párrafos o más ({a})", "2 paràgrafs o més ({a})"],
   "Original article linked": ["Artículo original enlazado", "Article original enllaçat"],
   "Saved — the page updates within the hour": ["Guardado: la página se actualiza en menos de una hora", "Desat: la pàgina s'actualitza en menys d'una hora"],
+  "Saved automatically · {a}": ["Guardado automáticamente · {a}", "Desat automàticament · {a}"],
+  "Saved automatically once it has a title": ["Se guarda solo en cuanto tenga título", "Es desa sol quan tingui títol"],
+  "Not saved: it needs a title and the original article": ["No guardada: necesita un título y el artículo original", "No desada: necessita un títol i l'article original"],
 });

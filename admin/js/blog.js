@@ -22,6 +22,11 @@
     const { data, error } = await A.db.from("blog_posts").select("slug,data,draft,updated_at,published_at,publish_error").order("updated_at", { ascending: false });
     if (error) { main.innerHTML = `<div class="page-head"><div><h1>Blog</h1></div></div><p class="panel panel-pad muted">${esc(/blog_posts|does not exist|schema cache/i.test(error.message) ? "Run supabase/admin-content.sql in Supabase first." : error.message)}</p>`; return; }
     posts = data || [];
+    // the post open in the URL (#post=slug) stays open after a refresh
+    const open = decodeURIComponent((location.hash.match(/^#post=(.+)$/) || [])[1] || "");
+    if (open === "new") return editor(null);
+    if (open && posts.some((x) => x.slug === open)) return editor(posts.find((x) => x.slug === open));
+    history.replaceState(null, "", location.pathname + location.search);
     drawList();
   }
   function drawList() {
@@ -71,7 +76,8 @@
   const RANGE = { news: [500, 800], trends: [800, 1200], ideas: [1200, 1800] };
   const plain = (html) => String(html || "").replace(/<[^>]+>/g, " ").replace(/&[a-z#0-9]+;/gi, " ").replace(/\s+/g, " ").trim();
   function editor(p) {
-    const isNew = !p, d = p?.data || { type: "ideas", date: new Date().toISOString().slice(0, 10), author: "Martí Ruiz", keywords: [], sources: [], references: [], image: { credit: {} }, faq: [], takeaways: [] };
+    history.replaceState(null, "", `#post=${p ? encodeURIComponent(p.slug) : "new"}`);
+    let isNew = !p; const d = p?.data || { type: "ideas", date: new Date().toISOString().slice(0, 10), author: "Martí Ruiz", keywords: [], sources: [], references: [], image: { credit: {} }, faq: [], takeaways: [] };
     const img = d.image || {}, cred = img.credit || {};
     const lines = (arr) => (arr || []).map((x) => `${x.name} | ${x.url}`).join("\n");
     const takeawaysOf = (v) => (Array.isArray(v) ? v : String(v || "").split("\n")).filter(Boolean).join("\n");
@@ -80,9 +86,9 @@
     main.innerHTML = `<div class="page-head bl-ed-head"><div class="bl-eh">
         <nav class="bl-eh-crumb"><a href="#" data-back class="bl-eh-back" aria-label="Back to the blog">${icon("chevron")}</a><a href="#" data-back>Blog</a><span>/</span><span>${esc((TYPES[d.type] || "").split(" · ")[0] || "Post")}</span></nav>
         <h1>${esc(isNew ? "New post" : d.title)}</h1>
-        <div class="bl-eh-meta"><span class="bl-st ${c}">${esc(s)}</span>${d.date ? `<span>${icon("edit")}${esc(new Date(`${d.date}T12:00:00`).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }))}</span>` : ""}${d.author ? `<span>${icon("account")}${esc(d.author)}</span>` : ""}${!isNew ? `<span class="mono">/blog/${esc(p.slug)}</span>` : ""}</div>
+        <div class="bl-eh-meta"><span class="bl-st ${c}" data-st>${esc(s)}</span>${d.date ? `<span>${icon("edit")}${esc(new Date(`${d.date}T12:00:00`).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }))}</span>` : ""}${d.author ? `<span>${icon("account")}${esc(d.author)}</span>` : ""}${!isNew ? `<span class="mono">/blog/${esc(p.slug)}</span>` : ""}</div>
       </div>
-      <div class="head-actions">${!isNew && !p.draft && p.published_at ? `<a class="btn" href="../blog/${esc(p.slug)}.html" target="_blank" rel="noopener">${icon("eye")}See it on the website</a>` : ""}<button class="btn btn-primary" type="button" data-save>${icon("check")}Save</button></div></div>
+      <div class="head-actions">${!isNew && !p.draft && p.published_at ? `<a class="btn" href="../blog/${esc(p.slug)}.html" target="_blank" rel="noopener">${icon("eye")}See it on the website</a>` : ""}<span class="seo-saved muted" data-saved>${isNew ? "Saved automatically once it has a title" : ""}</span></div></div>
       ${p?.publish_error ? `<div class="bl-err">${icon("alert")}<div><b>The last publish failed — fix this and save again</b><pre>${esc(p.publish_error)}</pre></div></div>` : ""}
       <div class="bl-ed">
         <form class="bl-form" data-form>
@@ -196,7 +202,7 @@
           </div>
         </form>
         <aside class="bl-side">
-          <div class="panel bl-side-card"><span class="bl-st ${c}">${esc(s)}</span>${p?.published_at ? `<small class="muted">Published ${day(p.published_at)}</small>` : ""}<small class="muted">${isNew ? "Not saved yet" : `Saved ${day(p.updated_at)}`}</small></div>
+          <div class="panel bl-side-card"><span class="bl-st ${c}" data-st>${esc(s)}</span>${p?.published_at ? `<small class="muted">Published ${day(p.published_at)}</small>` : ""}<small class="muted">${isNew ? "Not saved yet" : `Saved ${day(p.updated_at)}`}</small></div>
           <div class="panel bl-side-card"><div class="bl-score"><div class="bl-ring" data-ring><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.9" class="bg"/><circle cx="18" cy="18" r="15.9" class="fg" data-ring-fg/></svg><b data-score>0</b></div><div><b>SEO score</b><small class="muted">Google + AI assistants</small></div></div>
             <button type="button" class="btn btn-primary btn-sm bl-improve" data-improve hidden>${icon("sparkles")}Improve with AI</button>
             <ul class="bl-checks" data-checks></ul></div>
@@ -242,7 +248,11 @@
       const slug = isNew ? slugify(fm.slug.value || fm.title.value) : p.slug;
       $("[data-serp]").innerHTML = `<small>sportscontentplaybook.com › blog › ${esc(slug || "…")}</small><b>${esc(mt || "Your title")}</b><p>${esc(md || "Write a meta description: it's the text under the link on Google.")}</p>`;
       for (const k of ["meta_title", "meta_description"]) { const v = fm[k].value.trim().length, [a, b] = k === "meta_title" ? [30, 60] : [120, 160]; const el = $(`[data-len="${k}"]`); el.textContent = `${v} / ${b}`; el.className = `bl-len ${v >= a && v <= b ? "ok" : v ? "warn" : ""}`; }
+      if (autosave) later();
     }
+    // saved on its own 1.5 s after the last change (a new post once it has a title)
+    let autosave = false, timer = null;
+    const later = () => { if (!fm.title.value.trim()) return; clearTimeout(timer); timer = setTimeout(() => { timer = null; save(true); }, 1500); };
     audit();
     fm.addEventListener("input", (e) => { if (isNew && e.target.name === "title") fm.slug.value = slugify(fm.title.value); audit(); });
     // tabs
@@ -422,7 +432,8 @@
         audit(); measure(); A.toast("Cover uploaded. Save to keep it.");
       } catch (x) { fail(x); }
     });
-    async function save() {
+    async function save(quiet = false) {
+      clearTimeout(timer); timer = null;
       const slug = isNew ? slugify(fm.slug.value || fm.title.value) : p.slug;
       if (!fm.title.value.trim() || !slug) return fail(new Error("The post needs a title."));
       if (isNew && posts.some((x) => x.slug === slug)) return fail(new Error("There's already a post with that URL."));
@@ -438,14 +449,22 @@
       if (!fm.updated.value) delete data.updated;
       const row = { slug, data, draft: fm.draft.checked, updated_at: new Date().toISOString(), publish_error: null };
       const { error } = await A.db.from("blog_posts").upsert(row, { onConflict: "slug" });
-      if (error) return fail(error);
+      if (error) { if (quiet) $("[data-saved]").textContent = ""; return fail(error); }
+      if (quiet) {   // stay in the editor: just remember it's saved
+        const old = posts.find((x) => x.slug === slug);
+        p = { ...(old || {}), ...row }; posts = [p, ...posts.filter((x) => x.slug !== slug)];
+        if (isNew) { isNew = false; fm.slug.value = slug; fm.slug.readOnly = true; history.replaceState(null, "", `#post=${encodeURIComponent(slug)}`); }
+        const [st, cl] = status(p); main.querySelectorAll("[data-st]").forEach((x) => { x.textContent = st; x.className = `bl-st ${cl}`; });
+        $("[data-saved]").innerHTML = `${icon("check")}Saved automatically · ${new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}`;
+        return true;
+      }
       A.toast(fm.draft.checked ? "Saved as a draft" : "Saved — on the website within the hour");
       const { data: fresh } = await A.db.from("blog_posts").select("slug,data,draft,updated_at,published_at,publish_error").order("updated_at", { ascending: false });
       posts = fresh || posts; editor(posts.find((x) => x.slug === slug));
       return true;
     }
-    $("[data-save]").addEventListener("click", () => save());
-    main.querySelectorAll("[data-back]").forEach((b) => b.addEventListener("click", (e) => { e.preventDefault(); list(); }));
+    main.querySelectorAll("[data-back]").forEach((b) => b.addEventListener("click", async (e) => { e.preventDefault(); if (timer) await save(true); history.replaceState(null, "", location.pathname + location.search); list(); }));
+    autosave = true;
   }
 
   main.addEventListener("click", async (e) => {
