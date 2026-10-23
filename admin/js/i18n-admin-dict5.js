@@ -154,4 +154,5 @@ window.SCPA_DICT = Object.assign(window.SCPA_DICT || {}, {
   "Saved as a draft": ["Guardado como borrador", "Desat com a esborrany"],
   "Saved — on the website within the hour": ["Guardado — en la web en menos de una hora", "Desat — a la web en menys d'una hora"],
   "No posts yet.": ["Aún no hay artículos.", "Encara no hi ha articles."],
+  "Live on the website": ["Publicado", "Publicat"],
 });

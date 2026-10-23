@@ -13,7 +13,7 @@
   const slugify = (s) => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 80);
   const words = (html) => String(html || "").replace(/<[^>]+>/g, " ").replace(/&[a-z#0-9]+;/gi, " ").split(/\s+/).filter(Boolean).length;
   const day = (v) => (v ? new Date(v).toLocaleString("es-ES", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "");
-  const status = (p) => p.draft ? ["Draft", ""] : p.publish_error ? ["Publish failed", "is-err"] : !p.published_at || new Date(p.updated_at) > new Date(p.published_at) ? ["Changes waiting to publish", "is-wait"] : ["Published", "is-pub"];
+  const status = (p) => p.draft ? ["Draft", ""] : p.publish_error ? ["Publish failed", "is-err"] : !p.published_at || new Date(p.updated_at) > new Date(p.published_at) ? ["Changes waiting to publish", "is-wait"] : ["Live on the website", "is-pub"];
 
   async function list() {
     const { data, error } = await A.db.from("blog_posts").select("slug,data,draft,updated_at,published_at,publish_error").order("updated_at", { ascending: false });
