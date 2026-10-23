@@ -2320,7 +2320,7 @@
     if (!ai.ent) await loadAi().catch(() => {});
     if (!area()) return;
     if (!ai.ent?.has_ai) {
-      area().innerHTML = `<div class="ai-gate">${icon("lock")}<div><b>AI analyses are part of Library + AI and All Access</b>
+      area().innerHTML = `<div class="ai-gate">${icon("lock")}<div><b>AI analyses are part of Library + AI + Content Plan</b>
         <p>Hook, why it works, format, angle, visual breakdown and how to adapt it to your club, for any post in the library.</p>
         <a class="btn btn-gold" href="${esc(window.SCP_upgradeHref("ai", ai.ent?.plan))}">${esc(tx("Get AI analyses"))}</a></div></div>`;
       return;

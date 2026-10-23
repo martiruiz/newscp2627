@@ -3206,7 +3206,7 @@ a.blog-img { display: block; }
 }
 
 /* ---------- Plans & packs ---------- */
-.plans { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; width: 100%; margin-top: 40px; text-align: left; }
+.plans { display: grid; grid-template-columns: repeat(var(--plan-cols, 4), minmax(0, 1fr)); gap: 16px; width: 100%; margin-top: 40px; text-align: left; }
 .plan-card { position: relative; display: flex; flex-direction: column; padding: 26px 22px 22px; border-radius: 22px; background: var(--surface); border: 0.5px solid var(--line); box-shadow: var(--inset-glow); }
 .plan-card.is-best { border-color: rgba(240, 184, 74, 0.7); background: linear-gradient(170deg, rgba(240, 184, 74, 0.14), transparent 45%), var(--surface); box-shadow: 0 0 60px rgba(240, 184, 74, 0.18); }
 .plan-flag { position: absolute; top: -12px; left: 22px; padding: 5px 12px; border-radius: 100px; background: var(--gold); color: var(--on-gold); font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
@@ -3232,6 +3232,12 @@ a.blog-img { display: block; }
 .pack-each { margin: 6px 0 18px; font-size: 13px; color: var(--muted); }
 .pack-card .btn { width: 100%; }
 @media (max-width: 1100px) { .plans { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+/* three cards (Library · Library + AI + Content Plan · Custom): three columns, a bit narrower overall; one column on small screens */
+.plans.is-3 { max-width: 1060px; margin-left: auto; margin-right: auto; }
+@media (max-width: 1100px) { .plans.is-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 860px) { .plans.is-3 { grid-template-columns: minmax(0, 440px); justify-content: center; } .plans.is-3.is-v2 { row-gap: 26px; } }
+/* Custom: "Price to be agreed" in place of the number */
+.plan-price b.plan-price-text { font-size: 28px; line-height: 1.25; }
 @media (max-width: 640px) { .plans, .packs { grid-template-columns: 1fr; } }
 
 /* ---------- Tracking radar (How it works, step 01) ---------- */
@@ -5192,6 +5198,8 @@ main { position: relative; z-index: 0; }
 .plan-card.v2 .plan-note { margin: 8px 0 0; text-align: center; }
 .plan-card.v2 .plan-tools { margin-top: 18px; }
 .plan-card.v2 .plan-price span, .plan-card.v2 .plan-sub { white-space: nowrap; }
+/* three cards: rows stay aligned across the cards down to 861px (four cards drop that at 1000px) */
+@media (min-width: 861px) and (max-width: 1000px) { .plans.is-3.is-v2 { grid-template-rows: repeat(7, auto); } .plans.is-3 .plan-card.v2 { grid-row: span 7; grid-template-rows: subgrid; } }
 /* FAQ forms: an obvious way back to the questions */
 .faq-back { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 100px; border: 0.5px solid var(--line); background: rgba(var(--fg), 0.05); color: var(--text); font-size: 13px; font-weight: 500; }
 .faq-back:hover { border-color: rgba(240, 184, 74, 0.55); color: var(--gold); }

@@ -1,6 +1,6 @@
 // Shared Supabase client. Requires supabase-js (UMD) and js/config.js loaded first.
 // A feature the member's plan doesn't include ("ai" or "planner"): the plan that adds it — from Library, the plan with that
-// feature; from Library + AI or Library + Content Plan, All Access — on the pricing page, marked and scrolled to.
+// feature: always Library + AI + Content Plan (all_access; the old Library + AI / Library + Content Plan are archived) — on the pricing page, marked and scrolled to.
 // Superadmin → "View as" a plan (js/guard.js): the pages that depend on the plan (library AI, Content Plan) read the
 // member's entitlements through SCP_entitlements(), which then answers as that plan would. Only for staff; the data the
 // database lets them read doesn't change, only what the pages show and lock.
@@ -8,7 +8,7 @@ const VIEW_AS_PLANS = {
   library: { name: "Library", ai: false, planner: false, units: 0 },
   library_ai: { name: "Library + AI", ai: true, planner: false, units: 30 },
   library_planner: { name: "Library + Content Plan", ai: false, planner: true, units: 0 },
-  all_access: { name: "All Access", ai: true, planner: true, units: 100 },
+  all_access: { name: "Library + AI + Content Plan", ai: true, planner: true, units: 30 },
 };
 window.SCP_VIEW_AS_PLANS = VIEW_AS_PLANS;
 window.SCP_viewAs = () => { try { const v = localStorage.getItem("scp-view-as"); return VIEW_AS_PLANS[v] ? v : null; } catch { return null; } };
@@ -19,7 +19,7 @@ window.SCP_entitlements = async () => {
   return { ...res, data: { ...res.data, is_staff: false, plan: v, plan_name: p.name, has_library: true, has_ai: p.ai, has_planner: p.planner,
     monthly_limit: p.units, monthly_used: 0, monthly_left: p.units, pack_left: 0, viewing_as: v } };
 };
-window.SCP_upgradeHref = (feature, plan) => `pricing.html?plan=${plan === "library" || !plan ? (feature === "ai" ? "library_ai" : "library_planner") : "all_access"}`;
+window.SCP_upgradeHref = () => "pricing.html?plan=all_access";
 window.SCP_AUTH = (() => {
   const config = window.SCP_CONFIG || {};
   const ready = Boolean(config.supabaseUrl && config.supabaseAnonKey && window.supabase);

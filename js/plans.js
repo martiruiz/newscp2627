@@ -105,6 +105,21 @@
     </article>`;
   }
 
+  // "Custom": a last card with no price (price to be agreed) for bigger teams; opens the custom-plan contact form.
+  // Same rows as the plan cards so it lines up with them.
+  function customCard() {
+    const gets = [tx("Everything in Library + AI + Content Plan"), tx("As many users as your team needs"), tx("More AI analyses, adjusted to your volume"), tx("Onboarding and support from our team")];
+    return `<article class="plan-card v2 is-custom" data-plan-key="custom">
+      <h3>${tx("Custom plan")}</h3>
+      <p class="plan-price"><b class="plan-price-text">${tx("Price to be agreed")}</b></p>
+      <p class="plan-sub">${tx("Clubs, leagues, federations and agencies")}</p>
+      <div class="plan-extras"></div>
+      <a class="btn btn-outline plan-cta" href="contact.html?topic=custom-plan" data-cta="pricing-custom"><span>${tx("Contact us")}</span><i class="plan-cta-arrow" aria-hidden="true">→</i></a>
+      <p class="plan-note"></p>
+      <ul class="plan-gets">${gets.map((g) => `<li>${g}</li>`).join("")}</ul>
+    </article>`;
+  }
+
   // Comparison table: a few rows that say what you get (from each plan's permissions and AI quota)
   function compareHtml(plans) {
     if (!plans.length) return "";
@@ -196,7 +211,11 @@
     const plans = privatePlan ? [privatePlan] : data.plans;
     boxes.forEach((b) => {
       b.classList.toggle("is-solo", plans.length === 1);
-      b.innerHTML = plans.length ? plans.map((p) => planCard(p, { solo: plans.length === 1 })).join("") : `<p class="plans-empty">Plans will be published here soon. <a class="link-gold" href="contact.html">Contact us</a> in the meantime.</p>`;
+      const custom = !privatePlan && plans.length > 1;
+      const cards = plans.length + (custom ? 1 : 0);
+      b.style.setProperty("--plan-cols", Math.min(4, cards));
+      b.classList.toggle("is-3", cards === 3);
+      b.innerHTML = plans.length ? plans.map((p) => planCard(p, { solo: plans.length === 1 })).join("") + (custom ? customCard() : "") : `<p class="plans-empty">Plans will be published here soon. <a class="link-gold" href="contact.html">Contact us</a> in the meantime.</p>`;
       decorate(b, swap);
       b.classList.toggle("is-v2", !privatePlan && plans.length > 1);
       // not sure which plan? one line under the cards opens the demo form (FAQ) or the demo page
