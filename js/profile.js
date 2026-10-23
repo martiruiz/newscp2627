@@ -409,8 +409,13 @@
     const until = (v) => new Date(v).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" });
     const live = ["active", "trialing", "past_due"].includes(sub.status);
     if (!live) return;
-    el.innerHTML = sub.status === "trialing" ? `<i>${esc(tx("Trial"))}</i>${esc(tx(sub.plan_name || ""))}${sub.trial_end ? ` · ${esc(tx("until {date}", { date: until(sub.trial_end) }))}` : ""}`
-      : `<i>${esc(tx(sub.status === "past_due" ? "Payment issue" : "Active"))}</i>${esc(tx(sub.plan_name || ""))}`;
+    // a small plan card: the plan's name, its state (trial until … · days left / active / payment issue) and a link to Billing
+    const left = sub.trial_end ? Math.max(0, Math.ceil((new Date(sub.trial_end) - Date.now()) / 864e5)) : 0;
+    const state = sub.status === "trialing" ? `${tx("Free trial")}${sub.trial_end ? ` · ${tx("until {date}", { date: until(sub.trial_end) })} · ${tx(left === 1 ? "{n} day left" : "{n} days left", { n: left })}` : ""}`
+      : tx(sub.status === "past_due" ? "Payment issue" : "Active");
+    el.innerHTML = `<span class="pf-pc-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9.94 15.5a2 2 0 0 0-1.44-1.44l-6.13-1.58a.5.5 0 0 1 0-.96L8.5 9.94A2 2 0 0 0 9.94 8.5l1.58-6.14a.5.5 0 0 1 .96 0l1.58 6.14a2 2 0 0 0 1.44 1.44l6.14 1.58a.5.5 0 0 1 0 .96l-6.14 1.58a2 2 0 0 0-1.44 1.44l-1.58 6.14a.5.5 0 0 1-.96 0z"/></svg></span>
+      <span class="pf-pc-tx"><b>${esc(tx(sub.plan_name || ""))}</b><small><i></i>${esc(state)}</small></span>
+      <a class="pf-pc-go" href="#billing">${esc(tx("See plan"))} →</a>`;
     el.classList.toggle("is-warn", sub.status === "past_due");
     el.hidden = false;
   }, () => {});

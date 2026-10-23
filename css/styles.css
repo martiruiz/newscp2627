@@ -7922,3 +7922,19 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .pf-change-terms > p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.55; } .pf-change-terms > p b { color: var(--text); }
 .pf-change-terms .pf-billing-actions { justify-content: flex-end; }
 :root[data-theme="light"] .pf-sum > span.is-big b { color: #04773a; }
+/* Profile hero: the plan as a small card — icon, plan name, state (trial · until · days left), "See plan" */
+.pf-plan-chip { height: auto; gap: 12px; margin-top: 14px; padding: 10px 10px 10px 10px; border-radius: 16px; max-width: 100%; color: var(--text);
+  background: linear-gradient(135deg, rgba(240, 184, 74, 0.12), rgba(240, 184, 74, 0.03)); border: 1px solid rgba(240, 184, 74, 0.35); }
+.pf-pc-ic { display: grid; place-items: center; flex: none; width: 38px; height: 38px; border-radius: 12px; background: radial-gradient(64% 64% at 50% 100%, var(--gold-light) 0%, var(--gold-mid) 50%, var(--gold) 100%); color: #101828; }
+.pf-pc-ic svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.pf-pc-tx { display: grid; gap: 3px; min-width: 0; }
+.pf-pc-tx b { font-family: var(--font-display); font-size: 15px; font-weight: 600; line-height: 1.2; }
+.pf-pc-tx small { display: inline-flex; align-items: center; gap: 6px; color: #7cf0b0; font-size: 12.5px; }
+.pf-plan-chip .pf-pc-tx small i { width: 7px; height: 7px; padding: 0; border-radius: 50%; background: #2bd576; box-shadow: 0 0 0 3px rgba(43, 213, 118, 0.2); }
+.pf-pc-go { flex: none; margin-left: 6px; padding: 7px 12px; border-radius: 999px; background: var(--gold-tint); color: var(--gold); font-size: 12.5px; font-weight: 600; white-space: nowrap; }
+.pf-pc-go:hover { background: rgba(240, 184, 74, 0.25); }
+.pf-plan-chip.is-warn { background: rgba(255, 104, 92, 0.08); border-color: rgba(255, 104, 92, 0.45); }
+.pf-plan-chip.is-warn .pf-pc-tx small { color: #ff9b92; } .pf-plan-chip.is-warn .pf-pc-tx small i { background: #ff685c; box-shadow: 0 0 0 3px rgba(255, 104, 92, 0.2); }
+:root[data-theme="light"] .pf-pc-tx small { color: #04773a; }
+@media (max-width: 520px) { .pf-plan-chip { flex-wrap: wrap; } .pf-pc-go { margin-left: 50px; } }
+@media (min-width: 700px) { .pf-pc-tx small { white-space: nowrap; } }

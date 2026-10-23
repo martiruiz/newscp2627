@@ -2449,4 +2449,6 @@ window.SCP_ES = {
   "Today you pay": "Hoy pagas",
   "First charge · {date}": "Primer cargo · {date}",
   "Changes on": "Cambia el",
+  "{n} day left": "queda {n} día",
+  "See plan": "Ver plan",
 };
