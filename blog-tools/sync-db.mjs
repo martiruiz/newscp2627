@@ -69,10 +69,10 @@ if (mode === "export") {
     for (const n of news.filter((x) => "es" in x && (!x.es || x.es.source_changed !== (x.edited_at || x.created_at)))) n.es = (await translate({ kind: "news", id: n.id })) || n.es;
     fs.writeFileSync(path.join(ROOT, "content/news.json"), `${JSON.stringify(news, null, 2)}\n`);
     console.log(`${news.length} published news exported`);
-    // the 404 page's "these posts do exist": the 12 most viewed posts of the last 7 days with a cover (covers are public): the 404 shows 3, the admin log-in all
+    // the 404 page's "these posts do exist": the 30 most viewed posts of the last 7 days with a cover (covers are public): the 404 shows 3, the admin log-in all
     try {
       const since = new Date(Date.now() - 7 * 864e5).toISOString();
-      const top = await rest(`content_ideas?select=account,account_platform,views,cover_url&unavailable_at=is.null&cover_url=not.is.null&views=not.is.null&published_at=gte.${since}&order=views.desc&limit=12`);
+      const top = await rest(`content_ideas?select=account,account_platform,views,cover_url&unavailable_at=is.null&cover_url=not.is.null&views=not.is.null&published_at=gte.${since}&order=views.desc&limit=30`);
       fs.writeFileSync(path.join(ROOT, "content/top.json"), `${JSON.stringify(top, null, 2)}\n`);
       console.log(`${top.length} top posts of the week exported`);
     } catch (e) { console.log(`Top posts skipped: ${e.message}`); }
