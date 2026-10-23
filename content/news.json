@@ -42,7 +42,55 @@
         "q": "How should sports teams activate an AI sponsorship on social media?"
       }
     ],
-    "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/8b2de9c1-bb02-489c-97b8-65acf69d54e0/Untitled_design.png?t=1792696078"
+    "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/8b2de9c1-bb02-489c-97b8-65acf69d54e0/Untitled_design.png?t=1792696078",
+    "es": {
+      "faq": [
+        {
+          "a": "Google anunció en agosto asociaciones de Gemini y Pixel con el FC Barcelona, PSG, Arsenal, Liverpool y Bayern Múnich. Varios de estos clubes ya incluyen Gemini en su contenido para redes sociales.",
+          "q": "¿Qué clubes de fútbol tienen asociaciones con Google Gemini?"
+        },
+        {
+          "a": "El Barcelona emite una serie patrocinada de Instagram Stories antes de cada partido, en cuatro fotogramas. Abre con un prompt simulado de Gemini que pide datos sobre el próximo rival, seguido de tres fotogramas con respuestas acompañadas de imágenes de jugadores. Sus jugadores también hacen una pregunta a Gemini durante los Q&A de los miembros de su canal de YouTube.",
+          "q": "¿Cómo usa el FC Barcelona Google Gemini en Instagram?"
+        },
+        {
+          "a": "Las carruseles del feed del PSG promediaron 30,8K interacciones en tres publicaciones revisadas, una cifra modesta para un club con más de 60M de seguidores. El análisis señala las diapositivas con mucho texto como una debilidad, y destaca que la jerarquía visual y los gráficos de datos ganan a los muros de texto.",
+          "q": "¿Por qué las publicaciones de Gemini del PSG tuvieron una interacción modesta?"
+        },
+        {
+          "a": "Crea contenido en torno a algo que los aficionados realmente quieren, como previas, explicaciones de nuevos fichajes, quizzes o historia del club, y muestra cómo la herramienta del patrocinador lo ofrece. Integra al partner en una serie ya establecida en lugar de lanzar una nueva, para que la activación resulte natural.",
+          "q": "¿Cómo pueden los equipos deportivos activar un patrocinio de IA en redes sociales?"
+        }
+      ],
+      "model": "claude-haiku-5-5",
+      "title": "Cómo Barcelona, Liverpool y PSG convierten los acuerdos con Google Gemini en contenido útil para los aficionados",
+      "tokens": {
+        "in": 2265,
+        "out": 1892
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [
+        "El FC Barcelona emite una serie de Instagram Stories antes de cada partido patrocinada por Google Gemini, que muestra un uso práctico del producto y no solo resultados de IA.",
+        "Las diapositivas con mucho texto limitan los resultados: las carruseles del feed del PSG promediaron 30,8K interacciones en tres publicaciones, una cifra modesta para un club con más de 60M de seguidores.",
+        "Entre las activaciones de Gemini más sólidas están la presentación de nuevos fichajes y los quizzes de aficionados del Liverpool, y la previa de partido de octubre del Barcelona, que superó los 482K me gusta.",
+        "El contenido de asociaciones de IA funciona mejor cuando se construye en torno a lo que quieren los aficionados, como previas, explicaciones de nuevos fichajes, quizzes o historia del club.",
+        "Integrar a un patrocinador en una serie recurrente ya establecida mantiene la activación natural y puede crear un inventario de patrocinio predecible."
+      ],
+      "meta_title": "Acuerdos con Google Gemini: cómo los clubes crean contenido útil para aficionados",
+      "paragraphs": [
+        "El FC Barcelona está lanzando una serie de Instagram Stories antes de cada partido, patrocinada por Google Gemini. Una secuencia de cuatro fotogramas abre con un prompt simulado de Gemini que pide datos sobre el próximo rival, seguido de tres fotogramas con respuestas acompañadas de imágenes de jugadores. La serie forma parte de las asociaciones de Gemini y Pixel que Google anunció en agosto con Barcelona, PSG, Arsenal, Liverpool y Bayern Múnich. Un análisis de SponCon Sports la elogia por mostrar una forma práctica de usar el producto en lugar de limitarse a mostrar resultados de IA.",
+        "El análisis también señala límites. Las diapositivas tienen mucho texto, y las carruseles del feed similares del PSG promediaron 30,8K interacciones en tres publicaciones revisadas, una cifra modesta para un club con más de 60M de seguidores. Otras activaciones han dado mejores resultados. Liverpool usó Gemini para presentar al nuevo fichaje Bradley Barcola y para lanzar preguntas a los aficionados, y recordó una victoria ante el Brentford con clips de YouTube enlazados. La previa de partido de octubre del Barcelona superó los 482K me gusta, y sus jugadores ahora hacen una pregunta a Gemini durante los Q&A de los miembros de su canal de YouTube.",
+        "Para los equipos que venden o activan asociaciones de IA, la conclusión es crear contenido en torno a algo que los aficionados realmente quieren, como previas, explicaciones de nuevos fichajes, preguntas o historia del club, y mostrar cómo la herramienta del patrocinador lo ofrece. La jerarquía visual y los gráficos de datos ganan a los muros de texto. Las Stories recurrentes con stickers interactivos pueden convertirse en un inventario de patrocinio predecible, porque llegan sobre todo a seguidores existentes. Integrar a un partner en una serie ya establecida, en lugar de lanzar una nueva, mantiene la activación natural."
+      ],
+      "image_title": "",
+      "translated_at": "2026-10-23T22:27:20.829Z",
+      "source_changed": "2026-10-23T15:34:14.534+00:00",
+      "meta_description": ""
+    }
   },
   {
     "id": 13,
@@ -64,7 +112,32 @@
     "meta_description": null,
     "takeaways": [],
     "faq": [],
-    "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/2bd4a890-9564-4a55-a886-ac9304017ef3/TIKTOK-REPOST-COMENTARIOS.jpg?t=1792655278"
+    "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/2bd4a890-9564-4a55-a886-ac9304017ef3/TIKTOK-REPOST-COMENTARIOS.jpg?t=1792655278",
+    "es": {
+      "faq": [],
+      "model": "claude-haiku-5-5",
+      "title": "TikTok permite repostear comentarios individuales y convertir las respuestas en contenido independiente",
+      "tokens": {
+        "in": 1348,
+        "out": 650
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [],
+      "meta_title": "",
+      "paragraphs": [
+        "TikTok está lanzando una función que permite a los usuarios repostear un único comentario sin compartir el vídeo original. Los comentarios divertidos, útiles o interesantes ahora pueden生成 alcance por sí solos, y las respuestas también pueden descubrirse fuera del hilo en el que aparecieron por primera vez. La sección de comentarios se convierte, en la práctica, en un formato de contenido propio en lugar de un espacio secundario debajo del vídeo.",
+        "Para los equipos de redes sociales deportivos, esto convierte la gestión de la comunidad en una palanca directa de crecimiento. Una respuesta ingeniosa de la cuenta del club, una reacción divertida de un jugador o un comentario destacado de un aficionado tras un gran resultado ahora pueden viajar por su cuenta y llegar a audiencias que nunca vieron el clip original. Esto aumenta el valor de contar con responsables rápidos y alineados con la marca durante los partidos y los momentos clave.",
+        "Los clubes y las ligas podrían fomentar deliberadamente la conversación con preguntas, predicciones o debates en los textos de sus publicaciones, y después amplificar las mejores respuestas de los aficionados para premiar a los seguidores e impulsar el engagement. Los patrocinadores también podrían integrarse en formatos recurrentes basados en comentarios. Del mismo modo, los equipos deben mantener una moderación estricta, ya que una respuesta descuidada o polémica ahora podría extenderse mucho más allá de su hilo."
+      ],
+      "image_title": "",
+      "translated_at": "2026-10-23T22:27:24.989Z",
+      "source_changed": "2026-10-22T16:44:20.44967+00:00",
+      "meta_description": ""
+    }
   },
   {
     "id": 11,
@@ -86,7 +159,8 @@
     "meta_description": null,
     "takeaways": [],
     "faq": [],
-    "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/23c9bd54-24ea-4183-9a43-391a5209b61e/Untitled_design__4_.png?t=1792418169"
+    "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/23c9bd54-24ea-4183-9a43-391a5209b61e/Untitled_design__4_.png?t=1792418169",
+    "es": null
   },
   {
     "id": 1,
@@ -108,7 +182,8 @@
     "meta_description": null,
     "takeaways": [],
     "faq": [],
-    "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/f72b0fd5-1156-46c9-ae82-e1b35644b88d/Untitled_design__4_.png?t=1791741926"
+    "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/f72b0fd5-1156-46c9-ae82-e1b35644b88d/Untitled_design__4_.png?t=1791741926",
+    "es": null
   },
   {
     "id": 7,
@@ -153,7 +228,8 @@
         "q": "What should sports social media teams do to adapt to 'Your Algorithm'?"
       }
     ],
-    "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/bc48c732-43ab-4da7-9fea-9ae7eebce67a/new-home-ig.jpeg?t=1791455392"
+    "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/bc48c732-43ab-4da7-9fea-9ae7eebce67a/new-home-ig.jpeg?t=1791455392",
+    "es": null
   },
   {
     "id": 2,
@@ -175,7 +251,8 @@
     "meta_description": null,
     "takeaways": [],
     "faq": [],
-    "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/71b0bc3e-d7b7-4a78-96b1-a138ac7cbf24/Untitled_design__10_.png?t=1791746183"
+    "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/71b0bc3e-d7b7-4a78-96b1-a138ac7cbf24/Untitled_design__10_.png?t=1791746183",
+    "es": null
   },
   {
     "id": 3,
@@ -220,7 +297,8 @@
         "q": "What mistakes should club social teams avoid with sponsored content?"
       }
     ],
-    "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/96f29555-12be-4071-a822-a557bdac2226/Untitled_design.gif?t=1791431378"
+    "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/96f29555-12be-4071-a822-a557bdac2226/Untitled_design.gif?t=1791431378",
+    "es": null
   },
   {
     "id": 8,
@@ -242,7 +320,8 @@
     "meta_description": null,
     "takeaways": [],
     "faq": [],
-    "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/bc48c732-43ab-4da7-9fea-9ae7eebce67a/new-home-ig.jpeg?t=1791455392"
+    "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/bc48c732-43ab-4da7-9fea-9ae7eebce67a/new-home-ig.jpeg?t=1791455392",
+    "es": null
   },
   {
     "id": 4,
@@ -264,7 +343,8 @@
     "meta_description": null,
     "takeaways": [],
     "faq": [],
-    "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/64f8b56a-3a35-44d2-9fb1-5c06b6be2db5/Untitled_design__8_.png?t=1791168534"
+    "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/64f8b56a-3a35-44d2-9fb1-5c06b6be2db5/Untitled_design__8_.png?t=1791168534",
+    "es": null
   },
   {
     "id": 5,
@@ -286,7 +366,8 @@
     "meta_description": null,
     "takeaways": [],
     "faq": [],
-    "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/7b9af181-3425-49da-96c6-44b819651e0e/Untitled_design__2_.png?t=1790550790"
+    "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/7b9af181-3425-49da-96c6-44b819651e0e/Untitled_design__2_.png?t=1790550790",
+    "es": null
   },
   {
     "id": 9,
@@ -308,7 +389,8 @@
     "meta_description": null,
     "takeaways": [],
     "faq": [],
-    "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/cd26a1cb-a4c5-4c76-a1a2-4f3b96e7c576/portada-news-0110.png?t=1790851428"
+    "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/cd26a1cb-a4c5-4c76-a1a2-4f3b96e7c576/portada-news-0110.png?t=1790851428",
+    "es": null
   },
   {
     "id": 6,
@@ -330,7 +412,8 @@
     "meta_description": null,
     "takeaways": [],
     "faq": [],
-    "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/60b0b598-ca8f-43c9-b441-874a410d8792/Untitled_design.png?t=1790109816"
+    "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/60b0b598-ca8f-43c9-b441-874a410d8792/Untitled_design.png?t=1790109816",
+    "es": null
   },
   {
     "id": 10,
@@ -352,6 +435,7 @@
     "meta_description": null,
     "takeaways": [],
     "faq": [],
-    "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/f6fbc0a9-5a11-4531-8954-ce507d724f06/hero-5269d760ffad.png?t=1789630646"
+    "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/f6fbc0a9-5a11-4531-8954-ce507d724f06/hero-5269d760ffad.png?t=1789630646",
+    "es": null
   }
 ]
