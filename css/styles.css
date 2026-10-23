@@ -8092,3 +8092,41 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 /* My Club: the club picker's list opens over everything (the club card no longer clips it) */
 .mc-card:has(.mc-cp-list:not([hidden])) { overflow: visible; z-index: 20; }
 .mc-cp-list { z-index: 60; }
+/* day colours — the contact / demo flow: a bright frosted backdrop, black logo and progress, white bubbles, chosen one in black */
+:root[data-theme="light"] .lead-modal { background: rgba(247, 246, 243, 0.78); }
+:root[data-theme="light"] .lead-modal.is-quick { background: rgba(247, 246, 243, 0.86); }
+:root[data-theme="light"] .lead-box { background: #fff; border-color: rgba(12,12,13,.08); box-shadow: 0 40px 90px -40px rgba(12,12,13,.35); }
+:root[data-theme="light"] .lead-modal.is-quick .lead-box { background: transparent; box-shadow: none; }
+:root[data-theme="light"] .lead-logo { filter: brightness(0); }
+:root[data-theme="light"] .lead-progress { background: rgba(12,12,13,.08); }
+:root[data-theme="light"] .lead-progress i { background: #0c0c0d; }
+:root[data-theme="light"] .lead-x { background: #fff; color: #0c0c0d; box-shadow: 0 6px 18px -8px rgba(12,12,13,.35); }
+:root[data-theme="light"] .lead-bubble { background: #fff; border-color: rgba(12,12,13,.1); color: #0c0c0d; box-shadow: 0 1px 2px rgba(12,12,13,.05), 0 14px 30px -18px rgba(12,12,13,.35); }
+:root[data-theme="light"] .lead-bubble-ic { background: #f2f1ed; color: #0c0c0d; }
+:root[data-theme="light"] .lead-bubble:hover, :root[data-theme="light"] .lead-bubble:focus-visible { border-color: #0c0c0d; background: #fff; box-shadow: 0 18px 36px -18px rgba(12,12,13,.45); }
+:root[data-theme="light"] .lead-bubble[aria-checked="true"] { background: #0c0c0d; border-color: #0c0c0d; color: #fff; }
+:root[data-theme="light"] .lead-bubble[aria-checked="true"] .lead-bubble-ic { background: rgba(255,255,255,.16); color: #fff; }
+:root[data-theme="light"] .lead-opt:hover, :root[data-theme="light"] .lead-opt[aria-checked="true"], :root[data-theme="light"] .lead-opt[aria-pressed="true"] { border-color: #0c0c0d; }
+:root[data-theme="light"] .lead-btn.is-primary { background: #0c0c0d; border-color: #0c0c0d; color: #fff; }
+:root[data-theme="light"] .lead-tel input:focus, :root[data-theme="light"] .lead-tel select:focus { border-color: #0c0c0d; box-shadow: 0 0 0 3px rgba(12,12,13,.08); }
+:root[data-theme="light"] .lead-kicker, :root[data-theme="light"] .lead-when { color: #0c0c0d; }
+/* day colours — booking a demo: white day / time / part-of-day cards with soft shadows, the chosen one in black, light fields */
+:root[data-theme="light"] :is(.lead-modal .dp-day, .dp-time, .dp-part, .dp-in) { background: #fff !important; border-color: rgba(12,12,13,.1) !important; color: #0c0c0d; box-shadow: 0 1px 2px rgba(12,12,13,.05), 0 14px 30px -20px rgba(12,12,13,.35) !important; -webkit-backdrop-filter: none; backdrop-filter: none; }
+:root[data-theme="light"] :is(.lead-modal .dp-day, .dp-time, .dp-part):hover, :root[data-theme="light"] :is(.lead-modal .dp-day, .dp-time, .dp-part):focus-visible { border-color: #0c0c0d !important; }
+:root[data-theme="light"] .lead-modal .dp-day[aria-checked="true"], :root[data-theme="light"] .dp-part[aria-checked="true"] { background: #0c0c0d !important; border-color: #0c0c0d !important; color: #fff; }
+:root[data-theme="light"] .lead-modal .dp-day[aria-checked="true"] small, :root[data-theme="light"] .dp-part[aria-checked="true"] small { color: rgba(255,255,255,.7); }
+:root[data-theme="light"] .dp-part[aria-checked="true"] b { color: #fff; }
+:root[data-theme="light"] .dp-time:hover { background: #0c0c0d !important; color: #fff; }
+:root[data-theme="light"] .dp-in:focus { border-color: #0c0c0d !important; box-shadow: 0 0 0 4px rgba(12,12,13,.08) !important; }
+:root[data-theme="light"] .dp-when span { background: #0c0c0d; border-color: #0c0c0d; color: #fff; }
+/* day colours — contact flow: no dark shadow behind the titles, the phone capsule white and readable */
+:root[data-theme="light"] .lead-modal.is-quick .lead-q-big { text-shadow: none; }
+:root[data-theme="light"] .lead-modal.is-quick .lead-tel { background: #fff; border-color: rgba(12,12,13,.14); box-shadow: 0 1px 2px rgba(12,12,13,.05), 0 16px 34px -22px rgba(12,12,13,.4); -webkit-backdrop-filter: none; backdrop-filter: none; }
+:root[data-theme="light"] .lead-modal.is-quick .lead-tel:focus-within { border-color: #0c0c0d; box-shadow: 0 0 0 4px rgba(12,12,13,.08); }
+:root[data-theme="light"] .lead-modal.is-quick .lead-tel select, :root[data-theme="light"] .lead-modal.is-quick .lead-tel input { background-color: transparent; color: #0c0c0d; }
+:root[data-theme="light"] .lead-modal.is-quick .lead-tel select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230c0c0d' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); }
+:root[data-theme="light"] .lead-modal.is-quick .lead-tel select option { background: #fff; color: #0c0c0d; }
+:root[data-theme="light"] .lead-modal.is-quick .lead-tel input { border-left-color: rgba(12,12,13,.12); }
+:root[data-theme="light"] .lead-modal.is-quick .lead-tel input::placeholder { color: #8a8a90; }
+:root[data-theme="light"] .lead-modal.is-quick .lead-x { background: #fff; border-color: rgba(12,12,13,.1); color: #0c0c0d; }
+:root[data-theme="light"] .lead-check input { accent-color: #0c0c0d; }
