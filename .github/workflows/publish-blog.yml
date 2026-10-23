@@ -39,12 +39,12 @@ jobs:
           cat build.log
       - name: Publish if something changed
         run: |
-          if [ -z "$(git status --porcelain -- content/blog content/news.json content/seo.json content/latest.json blog news blog.html news.html index.html pricing.html book-a-call.html contact.html signup.html sitemap.xml robots.txt llms.txt assets/blog)" ]; then
+          if [ -z "$(git status --porcelain -- content/blog content/news.json content/seo.json content/latest.json content/top.json blog news blog.html news.html index.html pricing.html book-a-call.html contact.html signup.html sitemap.xml robots.txt llms.txt assets/blog)" ]; then
             echo "Nothing changed."
           else
             git config user.name "SCP blog"
             git config user.email "actions@users.noreply.github.com"
-            for p in content/blog content/news.json content/seo.json content/latest.json blog news blog.html news.html index.html pricing.html book-a-call.html contact.html signup.html sitemap.xml robots.txt llms.txt assets/blog; do
+            for p in content/blog content/news.json content/seo.json content/latest.json content/top.json blog news blog.html news.html index.html pricing.html book-a-call.html contact.html signup.html sitemap.xml robots.txt llms.txt assets/blog; do
               git add -A -- "$p" 2>/dev/null || true   # a path that doesn't exist yet (no news before supabase/seo.sql) is skipped
             done
             git commit -m "Blog + Social News: publish what was edited in the admin"

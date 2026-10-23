@@ -4,7 +4,8 @@
 //   node blog-tools/sync-db.mjs export         → content/blog/<slug>.json for every post (drafts keep "draft": true) and the
 //                                               covers uploaded from the admin copied into assets/blog; prints how many.
 //                                               Also content/news.json (published Social News, each with its fixed slug)
-//                                               and content/seo.json (Admin → SEO settings) when supabase/seo.sql is run
+//                                               and content/seo.json (Admin → SEO settings) when supabase/seo.sql is run, and
+//                                               content/top.json (the week's 3 most viewed posts, for the 404 page)
 //   node blog-tools/sync-db.mjs ok             → the posts changed since their last publish are marked published
 //   node blog-tools/sync-db.mjs fail <logfile> → those posts get the build's error (shown in the admin)
 // Needs SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (GitHub secrets). No files are ever deleted: hiding a post = draft.
@@ -53,6 +54,13 @@ if (mode === "export") {
     }
     fs.writeFileSync(path.join(ROOT, "content/news.json"), `${JSON.stringify(news, null, 2)}\n`);
     console.log(`${news.length} published news exported`);
+    // the 404 page's "these posts do exist": the 3 most viewed posts of the last 7 days with a cover (covers are public)
+    try {
+      const since = new Date(Date.now() - 7 * 864e5).toISOString();
+      const top = await rest(`content_ideas?select=account,account_platform,views,cover_url&unavailable_at=is.null&cover_url=not.is.null&views=not.is.null&published_at=gte.${since}&order=views.desc&limit=3`);
+      fs.writeFileSync(path.join(ROOT, "content/top.json"), `${JSON.stringify(top, null, 2)}\n`);
+      console.log(`${top.length} top posts of the week exported`);
+    } catch (e) { console.log(`Top posts skipped: ${e.message}`); }
     const [seo] = await rest("seo_settings?select=data&id=eq.1");
     fs.writeFileSync(path.join(ROOT, "content/seo.json"), `${JSON.stringify(seo?.data || {}, null, 2)}\n`);
   } catch (e) { if (!missing(e)) throw e; console.log("supabase/seo.sql isn't run yet: news pages and SEO settings skipped."); }

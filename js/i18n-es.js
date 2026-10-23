@@ -2484,4 +2484,9 @@ window.SCP_ES = {
   "The link may be old or mistyped. Let's get you back to the game.": "Puede que el enlace sea antiguo o esté mal escrito. Volvamos al juego.",
   "Go to the home page": "Ir a la página de inicio",
   "Page not found — Sports Content Playbook": "Página no encontrada — Sports Content Playbook",
+  "This page doesn't exist. These posts do.": "Esta página no existe. Estos posts sí.",
+  "Meanwhile, see what clubs are publishing this week.": "Mientras tanto, mira lo que están publicando los clubes esta semana.",
+  "See the Content Library →": "Ver la Biblioteca de contenido →",
+  "Real posts from the library": "Posts reales de la biblioteca",
+  "The 3 most viewed posts of the week": "Los 3 posts más vistos de la semana",
 };

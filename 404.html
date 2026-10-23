@@ -13,9 +13,9 @@
   <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-s-192.png">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon-s.png">
   <link rel="stylesheet" href="css/fonts.css?v=1">
-  <link rel="stylesheet" href="css/styles.css?v=20261103j">
+  <link rel="stylesheet" href="css/styles.css?v=20261103k">
   <script src="js/theme.js?v=20261101a"></script>
-  <script src="js/i18n.js?v=20261103j"></script>
+  <script src="js/i18n.js?v=20261103k"></script>
 </head>
 <body>
 
@@ -37,15 +37,36 @@
 
 
   <main class="nf container">
-    <p class="nf-code" aria-hidden="true">404</p>
-    <h1>This page doesn't exist</h1>
-    <p class="nf-sub">The link may be old or mistyped. Let's get you back to the game.</p>
-    <div class="nf-btns">
-      <a class="btn btn-gold" href="index.html">Go to the home page</a>
-      <a class="btn btn-outline" href="content-library.html">Open the Content Library</a>
+    <div class="nf-text">
+      <p class="nf-code">404</p>
+      <h1>This page doesn't exist. These posts do.</h1>
+      <p class="nf-sub">Meanwhile, see what clubs are publishing this week.</p>
+      <div class="nf-btns">
+        <a class="btn btn-gold" href="content-library.html">See the Content Library →</a>
+        <a class="btn btn-outline" href="index.html">Home</a>
+      </div>
+      <p class="nf-more"><a href="blog.html">Blog</a><a href="news.html">Social News</a><a href="pricing.html">Pricing</a><a href="contact.html">Contact</a></p>
     </div>
-    <p class="nf-more"><a href="blog.html">Blog</a><a href="news.html">Social News</a><a href="pricing.html">Pricing</a><a href="contact.html">Contact</a></p>
+    <div class="nf-side">
+      <div class="nf-posts" data-nf-posts>
+        <a class="nf-post" href="content-library.html" style="background-image:url(assets/lib-example-ucl.jpg)"><span>Champions League</span></a>
+        <a class="nf-post" href="content-library.html" style="background-image:url(assets/lib-example-messi.jpg)"><span>Inter Miami</span></a>
+        <a class="nf-post" href="content-library.html" style="background-image:url(assets/lib-example-nba.jpg)"><span>NBA</span></a>
+      </div>
+      <p class="nf-cap" data-nf-cap>Real posts from the library</p>
+    </div>
   </main>
+  <script>
+    // the week's 3 most viewed posts (content/top.json, refreshed every hour by the publish job); the examples stay if there are none
+    fetch("content/top.json", { cache: "no-cache" }).then((r) => r.json()).then((top) => {
+      if (!Array.isArray(top) || top.length < 3) return;
+      const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+      const n = (v) => new Intl.NumberFormat(window.SCP_LOC || "en", { notation: "compact", maximumFractionDigits: 1 }).format(v);
+      document.querySelector("[data-nf-posts]").innerHTML = top.map((p) => `<a class="nf-post" href="content-library.html" style="background-image:url('${esc(p.cover_url)}')"><em>${n(p.views)}</em><span>@${esc(p.account)}</span></a>`).join("");
+      const cap = document.querySelector("[data-nf-cap]");
+      cap.textContent = window.tx ? window.tx("The 3 most viewed posts of the week") : "The 3 most viewed posts of the week";
+    }).catch(() => {});
+  </script>
 
 
   <footer class="site-footer sf">

@@ -8382,13 +8382,21 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 :root[data-theme="light"] .ck.is-settings .ck-save { background: #0c0c0d; color: #fff; }
 .sf-bottom button[data-cookie-settings], .sf-bottom a[data-cookie-settings] { cursor: pointer; }
 
-/* 404 page: a big gold 404, one line, the way home */
-.nf { display: grid; justify-items: center; gap: 14px; min-height: 62vh; padding: 140px 16px 80px; text-align: center; }
-.nf-code { margin: 0; font: 700 clamp(96px, 18vw, 180px)/0.9 var(--font-display); letter-spacing: -0.06em;
-  background: linear-gradient(180deg, #ffe0a0, #f0b84a 55%, #b07a1c); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.nf h1 { margin: 0; font: 600 clamp(28px, 4vw, 40px)/1.15 var(--font-display); letter-spacing: -0.02em; }
-.nf-sub { margin: 0 0 10px; max-width: 460px; color: var(--muted); font-size: 17px; line-height: 1.5; }
-.nf-btns { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-.nf-more { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 22px; margin: 18px 0 0; font-size: 14px; }
+/* 404 page: text on the left, the week's most viewed posts on the right ("This page doesn't exist. These posts do.") */
+.nf { display: grid; grid-template-columns: .9fr 1.1fr; align-items: center; gap: 48px; min-height: 70vh; padding: 140px 24px 80px; }
+.nf-code { margin: 0; font: 700 26px var(--font-display); letter-spacing: .02em; color: var(--gold); }
+.nf h1 { margin: 8px 0 14px; font: 700 clamp(34px, 4.4vw, 52px)/1.05 var(--font-display); letter-spacing: -0.03em; }
+.nf-sub { margin: 0 0 24px; max-width: 440px; color: var(--muted); font-size: 17px; line-height: 1.5; }
+.nf-btns { display: flex; flex-wrap: wrap; gap: 10px; }
+.nf-more { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 26px 0 0; font-size: 14px; }
 .nf-more a { color: var(--muted); } .nf-more a:hover { color: var(--text); }
-:root[data-theme="light"] .nf-code { background-image: linear-gradient(180deg, #0c0c0d, #3a3a3e); }
+.nf-posts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.nf-post { position: relative; aspect-ratio: 9 / 14; border-radius: 18px; overflow: hidden; background: #111 center / cover; color: #fff !important; text-decoration: none; box-shadow: 0 24px 50px -24px rgba(0,0,0,.7); transition: transform .25s; }
+.nf-post:nth-child(2) { transform: translateY(-18px); }
+.nf-post:hover { transform: translateY(-6px); } .nf-post:nth-child(2):hover { transform: translateY(-24px); }
+.nf-post::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,.82)); }
+.nf-post span { position: absolute; z-index: 1; left: 12px; right: 12px; bottom: 12px; font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nf-post em { position: absolute; z-index: 1; top: 10px; left: 10px; padding: 4px 9px; border-radius: 999px; background: rgba(0,0,0,.55); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); font-style: normal; font-size: 12px; font-weight: 700; }
+.nf-cap { margin: 16px 0 0; color: var(--muted); font-size: 13px; text-align: center; }
+@media (max-width: 860px) { .nf { grid-template-columns: 1fr; gap: 32px; padding-top: 120px; } .nf-post:nth-child(2) { transform: none; } }
+
