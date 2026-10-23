@@ -7881,3 +7881,5 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 @keyframes saveIn { 0% { transform: scale(0.85); opacity: 0.4; } 100% { transform: scale(1); opacity: 1; } }
 :root[data-theme="light"] .plan-save-live { color: #04773a; } :root[data-theme="light"] .plan-save-live b { color: #04773a; } :root[data-theme="light"] .plan-save-live.is-on b, :root[data-theme="light"] .plan-save-live.is-on { color: #fff; }
 @media (prefers-reduced-motion: reduce) { .plan-save-live { animation: none; } }
+/* Pricing: more air between the monthly / yearly / users bar and the plans (the flags above the cards need room) */
+.plan-switches { margin-bottom: 58px; }
