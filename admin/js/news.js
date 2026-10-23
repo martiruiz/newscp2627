@@ -18,15 +18,14 @@
     <div class="nw-how">${icon("sparkles")}<span><b>They come in on their own</b> every 30 hours (sports marketing, social media and AI news, rewritten for sports teams). You only decide which ones are shown and fix anything you want.</span></div>
     <div class="bl-bar">
       <div class="bl-tabs" data-tabs></div>
-      <div class="nw-filters"><select class="select" data-f="platform"><option value="">All networks</option>${PLATFORMS.map((p) => `<option value="${p}">${PF[p]}</option>`).join("")}</select>
-        <label class="bl-search">${icon("filters")}<input type="search" placeholder="Search title or source…" data-f="q"></label></div>
+      <div class="nw-filters"><label class="bl-search">${icon("filters")}<input type="search" placeholder="Search title or source…" data-f="q"></label></div>
     </div>
+    <div class="nw-pfs" role="group" aria-label="Network" data-pfs></div>
     <div class="nw-list" data-list><p class="panel panel-pad muted">Loading…</p></div>`;
 
   const day = (v) => (v ? new Date(v).toLocaleDateString("es-ES", { day: "2-digit", month: "short", year: "numeric" }) : "—");
   async function load() {
     let q = A.db.from("news").select("*").order("published_at", { ascending: false, nullsFirst: false }).limit(500);
-    if (f.platform) q = q.eq("platform", f.platform);
     if (f.q) q = q.or(`title.ilike.%${f.q.replace(/[,()%]/g, " ")}%,source_name.ilike.%${f.q.replace(/[,()%]/g, " ")}%`);
     const { data, error } = await q;
     if (error) { $("[data-list]").innerHTML = `<p class="panel-pad muted">${esc(error.message)}</p>`; return; }
@@ -40,7 +39,13 @@
     $("[data-kpis]").innerHTML = `<div class="aud-kpi is-green"><span>Published</span><b>${num(pub)}</b></div><div class="aud-kpi"><span>Hidden</span><b>${num(rows.length - pub)}</b></div><div class="aud-kpi is-gold"><span>Newest</span><b class="nw-kpi-d">${rows[0] ? day(rows[0].published_at || rows[0].created_at) : "—"}</b></div>`;
     const tab = (k, label, n) => `<button type="button" class="bl-tab" data-tab="${k}" aria-pressed="${f.status === k}">${label}<b>${n}</b></button>`;
     $("[data-tabs]").innerHTML = tab("", "All", rows.length) + tab("pub", "Published", pub) + tab("hid", "Hidden", rows.length - pub);
-    const list = rows.filter((r) => !f.status || r.relevant === (f.status === "pub"));
+    // the networks as buttons with their logo and how many news each has (only the ones there are)
+    const ICON = { instagram: "instagram", tiktok: "tiktok", x: "x", youtube: "youtube", facebook: "facebook", linkedin: "linkedin", snapchat: "snapchat", whatsapp: "whatsapp", pinterest: "pinterest", threads: "threads", ai: "ai" };
+    const have = PLATFORMS.filter((p) => rows.some((r) => r.platform === p));
+    const pfBtn = (k, label, n, img) => `<button type="button" class="nw-pfb" data-pf="${k}" aria-pressed="${f.platform === k}">${img}<span>${esc(label)}</span><b>${n}</b></button>`;
+    $("[data-pfs]").innerHTML = pfBtn("", "All networks", rows.length, `<span class="nw-pfb-all">${icon("filters")}</span>`)
+      + have.map((p) => pfBtn(p, PF[p], rows.filter((r) => r.platform === p).length, ICON[p] ? `<img src="../assets/pf-${ICON[p]}.svg" alt="">` : `<span class="nw-pfb-all">${icon("sparkles")}</span>`)).join("");
+    const list = rows.filter((r) => (!f.status || r.relevant === (f.status === "pub")) && (!f.platform || r.platform === f.platform));
     $("[data-list]").innerHTML = list.length ? list.map((r) => `<article class="nw-card${r.relevant ? "" : " is-hidden"}" data-id="${r.id}">
         <span class="nw-pf" style="--c:${PF_C[r.platform] || "#f0b84a"}">${esc((PF[r.platform] || r.platform).slice(0, 2))}</span>
         <div class="nw-body">
@@ -84,6 +89,7 @@
 
   main.addEventListener("click", async (e) => {
     const tb = e.target.closest("[data-tab]"); if (tb) { f.status = tb.dataset.tab; return draw(); }
+    const pf = e.target.closest("[data-pf]"); if (pf) { f.platform = pf.dataset.pf; return draw(); }
     if (e.target.closest("a, label, input")) return;
     const d = e.target.closest("[data-del]"), ed = e.target.closest("[data-edit]");
     try {

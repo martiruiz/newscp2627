@@ -1275,3 +1275,12 @@ select.cs-native { display: none !important; }
 .nw-acts { display: flex; gap: 6px; align-items: center; } .nw-acts .btn svg { width: 14px; height: 14px; }
 @media (max-width: 760px) { .nw-card { grid-template-columns: auto minmax(0, 1fr); } .nw-side { grid-column: 1 / -1; grid-auto-flow: column; justify-content: space-between; align-items: center; } }
 .nw-filters .select, .nw-filters .cs { width: 190px; flex: none; } .nw-filters .bl-search { min-width: 240px; }
+/* Social News: the networks as buttons with their logo and count */
+.nw-pfs { display: flex; gap: 8px; flex-wrap: wrap; margin: -4px 0 16px; }
+.nw-pfb { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 12px 0 8px; border-radius: 12px; background: var(--panel); border: 1px solid var(--border); color: var(--muted); font-size: 13px; font-weight: 600; transition: border-color 0.15s, background 0.15s, transform 0.15s; }
+.nw-pfb img, .nw-pfb-all { width: 24px; height: 24px; border-radius: 7px; flex: none; }
+.nw-pfb-all { display: grid; place-items: center; background: var(--panel-3); color: var(--muted); } .nw-pfb-all svg { width: 14px; height: 14px; }
+.nw-pfb b { min-width: 20px; padding: 1px 6px; border-radius: 999px; background: var(--panel-3); font-size: 11px; text-align: center; }
+.nw-pfb:hover { color: var(--text); border-color: rgba(240, 184, 74, 0.45); transform: translateY(-1px); }
+.nw-pfb[aria-pressed="true"] { color: var(--text); border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 8px 20px -12px rgba(240, 184, 74, 0.8); }
+.nw-pfb[aria-pressed="true"] b { background: var(--accent); color: var(--accent-ink); }
