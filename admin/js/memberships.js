@@ -511,7 +511,17 @@
       const file = e.target.files[0]; if (!file) return;
       const rows = parseCSV(await file.text());
       const head = rows[0] || [], body = rows.slice(1);
-      const guess = (f) => head.findIndex((h) => FIELDS.find(([k]) => k === f)[1].test(h));
+      // Stripe's own export (Billing → Subscriptions): ids by their prefix in the first row, the MemberPress product name
+      // from the metadata column (its "Plan" column is only an id)
+      const first = body[0] || [];
+      const byValue = (re) => head.findIndex((h, i) => re.test(String(first[i] || "")));
+      const guess = (f) => {
+        if (f === "stripe_subscription_id" && byValue(/^sub_/) >= 0) return byValue(/^sub_/);
+        if (f === "stripe_customer_id" && byValue(/^cus_/) >= 0) return byValue(/^cus_/);
+        if (f === "membership") { const mp = head.findIndex((h) => /memberpress_product(?!_id)/i.test(h)); if (mp >= 0) return mp; }
+        const i = head.findIndex((h) => FIELDS.find(([k]) => k === f)[1].test(h));
+        return f === "wp_user_id" && /^(sub|cus)_/.test(String(first[i] || "")) ? -1 : i;
+      };
       $("[data-mapper]").innerHTML = `<h3>${esc(file.name)} — ${num(body.length)} rows</h3><div class="ms-map">${FIELDS.map(([f]) => `<label>${f.replace(/_/g, " ")}<select class="select" name="${f}"><option value="-1">—</option>${head.map((h, i) => `<option value="${i}"${guess(f) === i ? " selected" : ""}>${esc(h)}</option>`).join("")}</select></label>`).join("")}</div>
         <div class="table-wrap"><table class="data ms-small"><thead><tr>${head.map((h) => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${body.slice(0, 5).map((r) => `<tr>${r.map((c) => `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
         <button class="btn btn-primary" type="button" data-stage>Upload ${num(body.length)} rows (staging, no changes)</button>`;
