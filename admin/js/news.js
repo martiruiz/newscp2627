@@ -111,7 +111,8 @@
         <aside class="bl-side">
           <div class="panel bl-side-card"><label class="nw-sw nw-sw-lg"><input type="checkbox" data-ed-pub${r.relevant ? " checked" : ""}><span class="nw-sw-t"></span><span><b>Published on the website</b><small class="muted">Off = hidden from Social News</small></span></label>
             ${r.edited_at ? `<small class="muted">Edited ${esc(day(r.edited_at))}</small>` : ""}</div>
-          ${hasSeo ? `<div class="panel bl-side-card"><div class="bl-score"><div class="bl-ring"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.9" class="bg"/><circle cx="18" cy="18" r="15.9" class="fg" data-ring-fg/></svg><b data-score>0</b></div><div><b>SEO score</b><small class="muted">Google + AI assistants</small></div></div><ul class="bl-checks" data-checks></ul></div>` : ""}
+          ${hasSeo ? `<div class="panel bl-side-card"><div class="bl-score"><div class="bl-ring"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.9" class="bg"/><circle cx="18" cy="18" r="15.9" class="fg" data-ring-fg/></svg><b data-score>0</b></div><div><b>SEO score</b><small class="muted">Google + AI assistants</small></div></div>
+            <button type="button" class="btn btn-primary btn-sm bl-improve" data-improve hidden>${icon("sparkles")}Improve with AI</button><ul class="bl-checks" data-checks></ul></div>` : ""}
           <div class="panel bl-side-card"><b class="bl-side-h">${icon("search")}How it looks on Google</b><div class="bl-serp" data-serp></div></div>
           <button type="button" class="btn btn-ghost btn-sm nw-del" data-ed-del>${icon("trash")}Delete this news</button>
         </aside>
@@ -120,7 +121,7 @@
     const paras = () => [...fm.querySelectorAll("[data-para]")].map((t) => t.value.trim()).filter(Boolean);
     const grow = (t) => { t.style.height = "auto"; t.style.height = `${t.scrollHeight + 2}px`; };
     // saved on its own 1.2 s after the last change
-    let autosave = false, timer = null;
+    let autosave = false, timer = null, lastChecks = [];
     const later = () => { clearTimeout(timer); timer = setTimeout(() => { timer = null; save(); }, 1200); };
     function audit() {
       if (autosave) later();
@@ -133,8 +134,10 @@
       for (const [k, a, b] of [["meta_title", 30, 60], ["meta_description", 120, 160]]) { const v = fm[k].value.trim().length, el = $(`[data-len="${k}"]`); el.textContent = v ? `${v} / ${b}` : ""; el.className = `bl-len ${v >= a && v <= b ? "ok" : v ? "warn" : ""}`; }
       const tk = fm.takeaways.value.split("\n").filter((t) => t.trim()).length;
       const faqN = [...fm.querySelectorAll(".bl-faq-row")].filter((x) => x.querySelector("[name=faq_q]").value.trim() && x.querySelector("[name=faq_a]").value.trim()).length;
-      const checks = [[`Title on Google 30–60 characters (${mt.length})`, mt.length >= 30 && mt.length <= 60], [`Description on Google 120–160 characters (${md.length})`, md.length >= 120 && md.length <= 160],
-        [`2 or more paragraphs (${paras().length})`, paras().length >= 2], [`Key takeaways for AI (${tk})`, tk >= 2], [`FAQ for AI (${faqN})`, faqN >= 1], ["Original article linked", /^https?:\/\//.test(fm.url.value.trim())]];
+      // [text, passes, what the AI can fix ("" = needs you)]
+      const checks = [[`Title on Google 30–60 characters (${mt.length})`, mt.length >= 30 && mt.length <= 60, "meta_title"], [`Description on Google 120–160 characters (${md.length})`, md.length >= 120 && md.length <= 160, "meta_description"],
+        [`2 or more paragraphs (${paras().length})`, paras().length >= 2, ""], [`Key takeaways for AI (${tk})`, tk >= 2, "takeaways"], [`FAQ for AI (${faqN})`, faqN >= 1, "faq"], ["Original article linked", /^https?:\/\//.test(fm.url.value.trim()), ""]];
+      lastChecks = checks; $("[data-improve]").hidden = !checks.some(([, v, f]) => !v && f);
       const score = Math.round((checks.filter((c) => c[1]).length / checks.length) * 100);
       $("[data-score]").textContent = score;
       const fg = $("[data-ring-fg]"); fg.style.strokeDasharray = `${score} 100`; fg.style.stroke = score >= 80 ? "var(--green)" : score >= 50 ? "var(--accent)" : "var(--red)";
@@ -168,6 +171,26 @@
       const { error } = await A.db.from("news").delete().eq("id", id);
       if (error) return fail(error);
       clearTimeout(timer); timer = null; A.toast("Deleted"); back();
+    });
+    // "Improve with AI" (Edge Function seo-improve, the same as the blog): fills what's missing for 100 and saves
+    $("[data-improve]")?.addEventListener("click", async (e) => {
+      const btn = e.currentTarget, fix = lastChecks.filter(([, v, f]) => !v && f).map(([, , f]) => f);
+      if (!fix.length) return;
+      btn.disabled = true; const label = btn.innerHTML; btn.innerHTML = `${icon("sparkles")}Improving…`;
+      try {
+        const { data: x, error } = await A.db.functions.invoke("seo-improve", { body: { fix, title: fm.title.value, meta_title: fm.meta_title.value, meta_description: fm.meta_description.value,
+          body_html: `<p>Social News item from ${fm.source_name.value} (${PF[fm.platform.value] || fm.platform.value}), rewritten for sports teams.</p>${paras().map((t) => `<p>${esc(t)}</p>`).join("")}` } });
+        if (error || x?.error) throw new Error(x?.error || error.message);
+        if (fix.includes("meta_title") && x.meta_title) fm.meta_title.value = x.meta_title;
+        if (fix.includes("meta_description") && x.meta_description) fm.meta_description.value = x.meta_description;
+        if (fix.includes("takeaways") && x.takeaways?.length) fm.takeaways.value = x.takeaways.join("\n");
+        if (fix.includes("faq") && x.faq?.length) { const box = fm.querySelector("[data-faq]"); box.querySelectorAll(".bl-faq-row").forEach((row) => { if (!row.querySelector("[name=faq_q]").value.trim()) row.remove(); }); box.insertAdjacentHTML("beforeend", x.faq.map(faqRow).join("")); }
+        autosave = false; audit(); autosave = true;
+        await save();
+        const left = lastChecks.filter(([, v]) => !v).map(([t]) => t);
+        A.toast(left.length ? `Improved and saved. Still for you: ${left.join(" · ")}` : "Improved to 100 and saved");
+      } catch (err) { fail(err); }
+      btn.disabled = false; btn.innerHTML = label;
     });
     const back = async () => { if (timer) await save(); history.replaceState(null, "", location.pathname + location.search); shell(); load(); };
     main.querySelectorAll("[data-back]").forEach((b) => b.addEventListener("click", (e) => { e.preventDefault(); back(); }));

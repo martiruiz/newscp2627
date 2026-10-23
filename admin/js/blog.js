@@ -338,7 +338,7 @@
         if (fix.includes("extra_paragraph_html") && /^<p[\s>]/i.test(r.extra_paragraph_html.trim())) { const at = body.lastIndexOf("<h2"); body = at > 0 ? `${body.slice(0, at)}${r.extra_paragraph_html.trim()}\n${body.slice(at)}` : `${body}\n${r.extra_paragraph_html.trim()}`; }
         fm.body_html.value = body; toRte();
         if (fix.includes("takeaways") && r.takeaways?.length) fm.takeaways.value = r.takeaways.join("\n");
-        if (fix.includes("faq") && r.faq?.length) { const have = [...fm.querySelectorAll(".bl-faq-row")].filter((x) => x.querySelector("[name=faq_q]").value.trim()); $("[data-faq]").innerHTML = have.map((x) => x.outerHTML).join("") + r.faq.map(faqRow).join(""); }
+        if (fix.includes("faq") && r.faq?.length) { fm.querySelectorAll(".bl-faq-row").forEach((x) => { if (!x.querySelector("[name=faq_q]").value.trim()) x.remove(); }); $("[data-faq]").insertAdjacentHTML("beforeend", r.faq.map(faqRow).join("")); }
         audit();
         const left = lastChecks.filter(([, v]) => !v).map(([t]) => t);
         if (!(await save())) return;   // applied and saved straight away
