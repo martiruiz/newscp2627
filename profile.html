@@ -10,7 +10,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-s-192.png">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon-s.png">
   <link rel="stylesheet" href="css/fonts.css?v=1">
-  <link rel="stylesheet" href="css/styles.css?v=20261101b">
+  <link rel="stylesheet" href="css/styles.css?v=20261101c">
   <script src="js/theme.js?v=20261028a"></script>
   <script src="js/i18n.js?v=20261031x"></script>
   <style>.auth-checking body { visibility: hidden; }</style>
@@ -72,7 +72,7 @@
         <a href="#channels"><span data-icon="megaphone"></span>Channels</a>
         <a href="#favourites"><span data-icon="star"></span>Favourites</a>
         <a href="#goals"><span data-icon="target"></span>Goals &amp; content</a>
-        <a href="#newsletter"><span data-icon="mail"></span>Newsletter</a>
+        <a href="#newsletter" hidden><span data-icon="mail"></span>Newsletter</a><!-- Newsletter: hidden for now (the section stays in the page, hidden) -->
         <a href="#billing"><span data-icon="star"></span>Billing &amp; membership</a>
         <a href="#security"><span data-icon="lock"></span>Account</a>
       </nav>
@@ -142,7 +142,7 @@
           <label class="pf-field pf-wide">Your biggest content challenge right now<textarea name="challenge" rows="3" maxlength="500" placeholder="e.g. We struggle to come up with matchday ideas that aren't just scores and line-ups."></textarea></label>
         </section>
 
-        <section class="pf-card pf-about" id="newsletter">
+        <section class="pf-card pf-about" id="newsletter" hidden>
           <header class="pf-head">
             <span class="pf-head-ic"><span data-icon="mail"></span></span>
             <div><h2>Newsletter</h2><p>Ideas and platform news, picked for your profile.</p></div>
