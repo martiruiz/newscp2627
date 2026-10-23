@@ -24,7 +24,11 @@
   // Show the plan picked on the pricing cards
   const summary = document.querySelector("[data-plan-summary]");
   if (plan && summary) {
-    summary.innerHTML = `Selected plan: <b>${PLAN_NAMES[plan]}</b> · ${interval === "year" ? "yearly" : "monthly"} · 7-day free trial`;
+    // a small card: the plan, how it's billed and the free trial, with a way back to change it
+    summary.innerHTML = `<span class="auth-plan-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15.5l-1.9-4.6L5.5 9l4.6-1.4z"/><path d="M19 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg></span>
+      <span class="auth-plan-t"><small>Selected plan</small><b>${PLAN_NAMES[plan]}</b>
+        <span class="auth-plan-tags"><i>${interval === "year" ? "Yearly" : "Monthly"}</i><i class="is-trial">7-day free trial</i></span></span>
+      <a class="auth-plan-x" href="pricing.html">Change</a>`;
     summary.hidden = false;
   }
 

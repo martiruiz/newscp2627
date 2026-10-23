@@ -2489,4 +2489,6 @@ window.SCP_ES = {
   "See the Content Library →": "Ver la Biblioteca de contenido →",
   "Real posts from the library": "Posts reales de la biblioteca",
   "The 3 most viewed posts of the week": "Los 3 posts más vistos de la semana",
+  "Selected plan": "Plan elegido",
+  "7-day free trial": "7 días de prueba gratis",
 };
