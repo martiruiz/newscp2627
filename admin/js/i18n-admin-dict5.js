@@ -418,4 +418,11 @@ window.SCPA_DICT = Object.assign(window.SCPA_DICT || {}, {
   "Fix it in the editor": ["Arreglarlo en el editor", "Arreglar-ho a l'editor"],
   "Improved to 100 — live within the hour": ["Mejorado a 100: en la web en menos de una hora", "Millorat a 100: a la web en menys d'una hora"],
   "Improved — live within the hour. The rest needs a change in the page": ["Mejorado: en la web en menos de una hora. El resto necesita un cambio en la página", "Millorat: a la web en menys d'una hora. La resta necessita un canvi a la pàgina"],
+  "Too short": ["Demasiado corta", "Massa curta"],
+  "Weak": ["Débil", "Feble"],
+  "Fair": ["Aceptable", "Acceptable"],
+  "Good": ["Buena", "Bona"],
+  "Strong": ["Fuerte", "Forta"],
+  "Passwords match": ["Las contraseñas coinciden", "Les contrasenyes coincideixen"],
+  "Passwords don't match": ["Las contraseñas no coinciden", "Les contrasenyes no coincideixen"],
 });
