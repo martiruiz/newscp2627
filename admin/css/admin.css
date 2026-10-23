@@ -1537,3 +1537,9 @@ select.cs-native { display: none !important; }
 :root[data-theme="light"] .ac-fact { background: #f7f6f3; border-color: rgba(12,12,13,.06); }
 :root[data-theme="light"] .ac-fact-ic, :root[data-theme="light"] .ac-head-ic { background: #0c0c0d; color: #fff; }
 :root[data-theme="light"] .ac-role.is-super { background: #0c0c0d; border-color: #0c0c0d; color: #fff; }
+
+/* Sidebar: theme switch + language centred in the column; the switch in the sidebar's navy (a round button like the language pill) */
+.side-prefs { justify-content: center; }
+.side .theme-toggle { width: 34px; height: 34px; border-radius: 50%; border: 0; background: var(--panel-2); color: var(--muted); box-shadow: inset 0 0 0 1px var(--border-2); }
+.side .theme-toggle:hover { color: var(--accent-light); background: var(--panel-3); box-shadow: inset 0 0 0 1px rgba(240, 184, 74, 0.4); }
+:root[data-theme="light"] .side .theme-toggle { background: #fff; color: #3b3f47; box-shadow: inset 0 0 0 1px rgba(18, 27, 51, 0.14); }
