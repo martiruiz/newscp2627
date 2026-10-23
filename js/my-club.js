@@ -10,6 +10,7 @@
   const store = { get() { try { return JSON.parse(localStorage.getItem(KEY) || "{}"); } catch { return {}; } }, set(v) { try { localStorage.setItem(KEY, JSON.stringify(v)); } catch {} } };
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
   const initials = (n) => String(n || "?").trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
+  const crest = (c) => `<span class="mc-cp-crest">${c.logo_url ? `<img src="${esc(c.logo_url)}" alt="">` : esc(initials(c.name))}</span>`;   // a club's crest in the club picker
 
   const st = { clubs: [], club: null, space: null, section: null, team: null, tab: "players", people: new Set(), q: "", linked: false };
   let box, db, token = 0;
@@ -113,7 +114,10 @@
             ${club.accounts?.length ? `<div class="mc-profiles">${club.accounts.map((a) => `<a class="mc-prof" href="${esc((URL_OF[a.platform] || URL_OF.instagram)(a.handle))}" target="_blank" rel="noopener" title="${esc(a.platform)}">${svg(NET[a.platform] || NET.instagram)}<span>@${esc(a.handle)}</span></a>`).join("")}</div>` : ""}
           </div>
           <div class="mc-side">
-            ${st.clubs.length > 1 ? `<label class="mc-clubpick"><span>${esc(t("Club"))}</span><select data-mc-club>${st.clubs.map((c) => `<option value="${c.id}"${c.id === club.id ? " selected" : ""}>${esc(c.name)}</option>`).join("")}</select></label>` : ""}
+            ${st.clubs.length > 1 ? `<div class="mc-clubpick" data-mc-pick>
+              <button type="button" class="mc-cp-btn" aria-haspopup="listbox" aria-expanded="false" data-mc-pick-btn><small>${esc(t("Club"))}</small>${crest(club)}<b>${esc(club.name)}</b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+              <ul class="mc-cp-list" role="listbox" hidden>${st.clubs.map((c) => `<li><button type="button" role="option" aria-selected="${c.id === club.id}" data-mc-club-pick="${c.id}">${crest(c)}<span>${esc(c.name)}</span>${c.id === club.id ? `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>` : ""}</button></li>`).join("")}</ul>
+            </div>` : ""}
             <div class="mc-tabs" role="tablist">
               <button type="button" role="tab" aria-selected="${st.tab === "club"}" data-mc-tab="club">${svg(ICON.shield)}<span>${esc(t("Club"))}</span><i>${(st.profiles || []).length}</i></button>
               <button type="button" role="tab" aria-selected="${st.tab === "players"}" data-mc-tab="players">${svg(ICON.grid)}<span class="mc-t-full">${esc(t("Content Library"))}</span><span class="mc-t-short">${esc(t("Players"))}</span><i>${nPlayers}</i></button>
@@ -209,10 +213,21 @@
     draw();
     const q = box.querySelector("[data-mc-q]"); q?.focus(); q?.setSelectionRange(pos, pos);
   });
-  document.addEventListener("change", (e) => {
-    if (!e.target.matches?.("[data-mc-club]")) return;
-    st.club = st.clubs.find((c) => String(c.id) === e.target.value) || st.club;
-    store.set({ club: st.club.id, tab: st.tab });
-    openClub({});
+  // the club picker (only for accounts with several clubs): a list with each club's crest
+  document.addEventListener("click", (e) => {
+    const pick = document.querySelector("[data-mc-pick]"); if (!pick) return;
+    const list = pick.querySelector(".mc-cp-list"), btn = pick.querySelector("[data-mc-pick-btn]");
+    const open = (on) => { list.hidden = !on; btn.setAttribute("aria-expanded", String(on)); };
+    if (e.target.closest("[data-mc-pick-btn]")) return open(list.hidden);
+    const opt = e.target.closest("[data-mc-club-pick]");
+    if (opt) {
+      open(false);
+      const next = st.clubs.find((c) => String(c.id) === opt.dataset.mcClubPick);
+      if (!next || next.id === st.club.id) return;
+      st.club = next; store.set({ club: st.club.id, tab: st.tab }); openClub({});
+      return;
+    }
+    if (!e.target.closest("[data-mc-pick]")) open(false);
   });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") { const l = document.querySelector(".mc-cp-list"); if (l && !l.hidden) { l.hidden = true; document.querySelector("[data-mc-pick-btn]")?.setAttribute("aria-expanded", "false"); } } });
 })();

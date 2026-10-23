@@ -8058,3 +8058,33 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
   box-shadow: 0 1px 2px rgba(12,12,13,.04), 0 30px 70px -36px rgba(12,12,13,.28) !important; }
 :root[data-theme="light"] .cta-box::after { opacity: .45; }
 :root[data-theme="light"] .cta-box::before { opacity: .7; }
+/* day colours — My Club: a white club card with a soft shadow (no gold wash), chosen tabs / sections / profiles / people in black */
+:root[data-theme="light"] .mc-card { background: #fff !important; border-color: rgba(12,12,13,.08) !important; box-shadow: 0 1px 2px rgba(12,12,13,.04), 0 22px 50px -28px rgba(12,12,13,.25) !important; }
+:root[data-theme="light"] .mc-card::before { opacity: .35; }
+:root[data-theme="light"] .mc-logo { background: #f7f6f3 !important; border-color: rgba(12,12,13,.1) !important; box-shadow: 0 10px 24px -14px rgba(12,12,13,.35) !important; }
+:root[data-theme="light"] .mc-tabs button[aria-selected="true"], :root[data-theme="light"] .mc-seg-b[aria-pressed="true"], :root[data-theme="light"] .mc-mode-sw button[aria-pressed="true"] {
+  background: #0c0c0d !important; color: #fff !important; box-shadow: 0 8px 20px -10px rgba(12,12,13,.5) !important; border-color: #0c0c0d !important; }
+:root[data-theme="light"] .mc-tabs button[aria-selected="true"] i, :root[data-theme="light"] .mc-seg-b[aria-pressed="true"] i { background: rgba(255,255,255,.18) !important; color: #fff !important; }
+:root[data-theme="light"] .mc-person[aria-pressed="true"], :root[data-theme="light"] .mc-prof[aria-pressed="true"], :root[data-theme="light"] .mc-prof.is-on { border-color: #0c0c0d !important; box-shadow: 0 0 0 1px #0c0c0d !important; background: #fff !important; }
+:root[data-theme="light"] .mc-crumb-pill .mc-crumb-sel { background: #0c0c0d !important; color: #fff !important; }
+/* My Club: the club picker — a button with the crest and name, a list of clubs with their crests (no system menu) */
+.mc-clubpick { position: relative; }
+.mc-cp-btn { display: inline-flex; align-items: center; gap: 9px; height: 42px; padding: 0 12px 0 12px; border-radius: 12px; border: 1px solid var(--line); background: rgba(var(--fg), 0.05); color: var(--text); font: 600 14px var(--font-body); cursor: pointer; transition: border-color 0.2s, background 0.2s; }
+.mc-cp-btn:hover, .mc-cp-btn[aria-expanded="true"] { border-color: rgba(240, 184, 74, 0.6); }
+.mc-cp-btn small { color: var(--muted); font-size: 12px; font-weight: 500; }
+.mc-cp-btn > svg, .mc-cp-list svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.mc-cp-btn[aria-expanded="true"] > svg { transform: rotate(180deg); }
+.mc-cp-crest { display: grid; place-items: center; width: 24px; height: 24px; flex: none; border-radius: 7px; overflow: hidden; background: #fff; color: #121b33; font: 700 10px var(--font-display); }
+.mc-cp-crest img { width: 100%; height: 100%; object-fit: contain; padding: 2px; box-sizing: border-box; }
+.mc-cp-list { position: absolute; right: 0; top: calc(100% + 8px); z-index: 30; min-width: 240px; margin: 0; padding: 6px; list-style: none; border-radius: 16px; background: var(--surface-2); border: 1px solid var(--line); box-shadow: 0 24px 50px -18px rgba(0, 0, 0, 0.6); }
+.mc-cp-list[hidden] { display: none; }
+.mc-cp-list button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 10px; border: 0; border-radius: 10px; background: none; color: var(--text); font: 500 14px var(--font-body); text-align: left; cursor: pointer; }
+.mc-cp-list button:hover { background: rgba(var(--fg), 0.06); }
+.mc-cp-list button span:not(.mc-cp-crest) { flex: 1; }
+.mc-cp-list button[aria-selected="true"] { background: var(--gold-tint); color: var(--gold); font-weight: 600; }
+:root[data-theme="light"] .mc-cp-list { background: #fff; box-shadow: 0 24px 50px -22px rgba(12,12,13,.35); }
+:root[data-theme="light"] .mc-cp-btn { background: #fff; } :root[data-theme="light"] .mc-cp-btn:hover, :root[data-theme="light"] .mc-cp-btn[aria-expanded="true"] { border-color: #0c0c0d; }
+:root[data-theme="light"] .mc-cp-list button[aria-selected="true"] { background: #0c0c0d; color: #fff; }
+/* day colours — "My space" buttons keep their own gradients (AI purple, Plan blue, Saved boards gold), also when open */
+:root[data-theme="light"] .my-space-btns .pill[aria-pressed="true"] { background: var(--g) border-box !important; color: #fff !important; }
+:root[data-theme="light"] .my-space-btns .saved-link[aria-pressed="true"] { color: #1a1206 !important; }
