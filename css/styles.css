@@ -7641,3 +7641,20 @@ section[id], :target { scroll-margin-top: 92px; }
 .news-row.nwc { grid-template-columns: minmax(0, 1fr) 320px; }
 .nwc-img { order: 2; } .nwc-body { padding: 4px 0 4px 8px; }
 @media (max-width: 960px) { .news-row.nwc { grid-template-columns: 1fr; } .nwc-img { order: -1; } .nwc-body { padding: 0; } }
+/* network filter: the whole button lights up in the network's colour (hover = softer, chosen = full, it stays) */
+.news-filters .ptile::before { inset: -40%; width: auto; height: auto; transform: none; border-radius: 0;
+  background: radial-gradient(60% 60% at 50% 30%, color-mix(in srgb, var(--c) 55%, transparent), transparent 75%); }
+.news-filters .ptile:hover { background: linear-gradient(160deg, color-mix(in srgb, var(--c) 30%, var(--surface-2)), color-mix(in srgb, var(--c) 10%, var(--surface-2)));
+  border-color: var(--c); color: #fff; box-shadow: 0 16px 36px -16px var(--c); }
+.news-filters .ptile:hover img { filter: brightness(0) invert(1); background: color-mix(in srgb, var(--c) 45%, transparent); border-color: rgba(255, 255, 255, 0.35); }
+.news-filters .ptile[aria-pressed="true"] { color: #fff; border-color: color-mix(in srgb, var(--c) 80%, #fff);
+  background: linear-gradient(160deg, color-mix(in srgb, var(--c) 78%, #fff 6%), color-mix(in srgb, var(--c) 42%, var(--surface-2)));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--c) 60%, transparent), 0 0 34px -4px var(--c), 0 18px 40px -16px var(--c); transform: translateY(-3px); }
+.news-filters .ptile[aria-pressed="true"] span { font-weight: 600; text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35); }
+.news-filters .ptile[aria-pressed="true"] img, .news-filters .ptile[data-platform="all"][aria-pressed="true"] img { filter: brightness(0) invert(1); background: rgba(255, 255, 255, 0.2); border-color: rgba(255, 255, 255, 0.45); }
+/* light brand colours (Snapchat, X, Threads, TikTok): dark text and logo so they read well */
+.news-filters .ptile:is([data-platform="snapchat"], [data-platform="x"], [data-platform="threads"], [data-platform="tiktok"], [data-platform="all"])[aria-pressed="true"] { color: #0d1424; }
+.news-filters .ptile:is([data-platform="snapchat"], [data-platform="x"], [data-platform="threads"], [data-platform="tiktok"], [data-platform="all"])[aria-pressed="true"] span { text-shadow: none; }
+.news-filters .ptile:is([data-platform="snapchat"], [data-platform="x"], [data-platform="threads"], [data-platform="tiktok"], [data-platform="all"])[aria-pressed="true"] img { filter: brightness(0); background: rgba(255, 255, 255, 0.35); border-color: rgba(0, 0, 0, 0.15); }
+.news-filters .ptile[data-platform="all"] { --c: #f0b84a; }
+.news-row.nwc { align-items: center; } @media (max-width: 960px) { .news-row.nwc { align-items: start; } }
