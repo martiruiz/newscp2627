@@ -104,11 +104,10 @@
     lib: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>',
     all: '<path d="M9.94 15.5a2 2 0 0 0-1.44-1.44l-6.13-1.58a.5.5 0 0 1 0-.96L8.5 9.94A2 2 0 0 0 9.94 8.5l1.58-6.14a.5.5 0 0 1 .96 0l1.58 6.14a2 2 0 0 0 1.44 1.44l6.14 1.58a.5.5 0 0 1 0 .96l-6.14 1.58a2 2 0 0 0-1.44 1.44l-1.58 6.14a.5.5 0 0 1-.96 0z"/>',
     club: '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
-    custom: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
   };
   const pic = (k) => `<span class="plan-ic" aria-hidden="true"><svg viewBox="0 0 24 24">${PIC[k]}</svg></span>`;
 
-  // "My Club": the private plan for a club (Admin → My Club) — its own library with every team, section, player and
+  // "My Club" (last card): the private plan for a club (Admin → My Club) — its own library with every team, section, player and
   // sponsor, uploaded by us every day. Price to be agreed: it opens the demo form for clubs. Same rows as the plan cards.
   function clubCard() {
     const gets = [tx("Your club's own library: first team, sections and academy"), tx("Your players' and sponsors' posts, in one place"), tx("We upload your club's posts every day"), tx("Private: only your club can see it"), tx("Everything in Library + AI + Content Plan")];
@@ -121,21 +120,6 @@
       <ul class="plan-gets">${gets.map((g) => `<li>${g}</li>`).join("")}</ul>
       <p class="plan-note"></p>
       <a class="btn btn-outline plan-cta" href="book-a-call.html?for=clubs" data-cta="pricing-my-club"><span>${tx("Book a demo")}</span><i class="plan-cta-arrow" aria-hidden="true">→</i></a>
-    </article>`;
-  }
-
-  // "Custom": a last card with no price (price to be agreed) for bigger teams; opens the custom-plan contact form.
-  // Same rows as the plan cards so it lines up with them.
-  function customCard() {
-    const gets = [tx("Everything in Library + AI + Content Plan"), tx("As many users as your team needs"), tx("More AI analyses, adjusted to your volume"), tx("Onboarding and support from our team")];
-    return `<article class="plan-card v2 is-custom" data-plan-key="custom">
-      <h3>${pic("custom")}${tx("Custom plan")}</h3>
-      <p class="plan-price"><b class="plan-price-text">${tx("Price to be agreed")}</b></p>
-      <p class="plan-sub">${tx("Clubs, leagues, federations and agencies")}</p>
-      <div class="plan-extras"></div>
-      <ul class="plan-gets">${gets.map((g) => `<li>${g}</li>`).join("")}</ul>
-      <p class="plan-note"></p>
-      <a class="btn btn-outline plan-cta" href="contact.html?topic=custom-plan" data-cta="pricing-custom"><span>${tx("Contact us")}</span><i class="plan-cta-arrow" aria-hidden="true">→</i></a>
     </article>`;
   }
 
@@ -231,10 +215,10 @@
     boxes.forEach((b) => {
       b.classList.toggle("is-solo", plans.length === 1);
       const custom = !privatePlan && plans.length > 1;
-      const cards = plans.length + (custom ? 2 : 0);   // + My Club (first) and Custom (last)
+      const cards = plans.length + (custom ? 1 : 0);   // + My Club (last)
       b.style.setProperty("--plan-cols", Math.min(4, cards));
       b.classList.toggle("is-3", cards === 3);
-      b.innerHTML = plans.length ? (custom ? clubCard() : "") + plans.map((p) => planCard(p, { solo: plans.length === 1 })).join("") + (custom ? customCard() : "") : `<p class="plans-empty">Plans will be published here soon. <a class="link-gold" href="contact.html">Contact us</a> in the meantime.</p>`;
+      b.innerHTML = plans.length ? plans.map((p) => planCard(p, { solo: plans.length === 1 })).join("") + (custom ? clubCard() : "") : `<p class="plans-empty">Plans will be published here soon. <a class="link-gold" href="contact.html">Contact us</a> in the meantime.</p>`;
       decorate(b, swap);
       b.classList.toggle("is-v2", !privatePlan && plans.length > 1);
       // not sure which plan? one line under the cards opens the demo form (FAQ) or the demo page
