@@ -13,11 +13,11 @@
     {
       // the three pillars of the product; each card opens its tool (members) or its explanation (visitors)
       label: "Platform", type: "pillars",
-      // same order, colours and little visuals as the home (index.html .tools): Library gold, AI purple, Content Plan blue
+      // same colours and little visuals as the home (index.html .tools): Library gold, Content Plan blue (centre), AI purple
       pillars: [
         { icon: "layout-grid", title: "Content Library", href: "content-library.html", acc: "240, 184, 74", vis: "lib" },
-        { icon: "sparkles", title: "AI analysis", href: "index.html#ai-analysis", memberHref: "content-library.html?ai=mine", acc: "167, 139, 250", vis: "ai" },
         { icon: "calendar-days", title: "Content Plan", href: "content-plan.html", acc: "122, 162, 255", vis: "cp" },
+        { icon: "sparkles", title: "AI analysis", href: "index.html#ai-analysis", memberHref: "content-library.html?ai=mine", acc: "167, 139, 250", vis: "ai" },
       ],
       more: [
         { icon: "arrow-up-right", title: "Try it free for 7 days", href: "signup.html", noPlan: true },
