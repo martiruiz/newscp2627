@@ -8135,3 +8135,18 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 :root[data-theme="light"] .mm-featured i { color: #6b6b72 !important; }
 :root[data-theme="light"] .mm-featured b, :root[data-theme="light"] .mm-featured svg { color: #0c0c0d !important; }
 :root[data-theme="light"] .mm-featured:hover { background: #fff !important; border-color: #0c0c0d !important; }
+/* language switch: the page blurs out, reloads in the other language and blurs back in (js/i18n.js) */
+html.lang-leaving body { filter: blur(12px); opacity: 0.35; transition: filter 0.28s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.28s; pointer-events: none; }
+html.lang-entering body { animation: langIn 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+@keyframes langIn { from { filter: blur(12px); opacity: 0.35; } to { filter: blur(0); opacity: 1; } }
+/* day colours — the Newsletter button in the dock: gold stays, text and icons in black */
+:root[data-theme="light"] .dock-news, :root[data-theme="light"] .dock-news span { color: #0c0c0d !important; }
+:root[data-theme="light"] .dock-news svg { color: #0c0c0d !important; stroke: #0c0c0d !important; }
+/* menu's main button: the same height as the other buttons in the bar, a small gold arrow disc that slides on hover */
+.nav-actions .nav-cta { height: 36px; gap: 9px; padding: 0 4px 0 16px; font-size: 14px; letter-spacing: -0.005em; transition: transform 0.2s, box-shadow 0.2s; }
+.nav-actions .nav-cta:hover { box-shadow: 0 10px 24px -12px rgba(240, 184, 74, 0.7); }
+.nav-actions .btn-outline { height: 36px; }
+.nav-cta-ic { width: 28px; height: 28px; background: #f0b84a !important; color: #1a1206 !important; transition: transform 0.2s; }
+.nav-cta-ic svg { width: 14px; height: 14px; }
+.nav-actions .nav-cta:hover .nav-cta-ic { transform: translateX(2px) rotate(45deg); }
+:root[data-theme="light"] .nav-actions .nav-cta:hover { box-shadow: 0 10px 24px -12px rgba(12, 12, 13, 0.6) !important; }
