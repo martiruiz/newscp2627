@@ -34,7 +34,7 @@ async function sourceImage(url) {
     const html = (await r.text()).slice(0, 400000);
     const tag = [...html.matchAll(/<meta\b[^>]*>/gi)].map((m) => m[0]).find((t) => /(?:property|name)=["'](?:og:image(?::secure_url)?|twitter:image(?::src)?)["']/i.test(t));
     const src = tag && (tag.match(/content=["']([^"']+)["']/i) || [])[1];
-    return src ? new URL(src.replace(/&amp;/g, "&"), r.url).href : null;
+    return src ? new globalThis.URL(src.replace(/&amp;/g, "&"), r.url).href : null;
   } catch (e) { console.log(`  no picture (${e.message}) for ${url}`); return null; }
 }
 
