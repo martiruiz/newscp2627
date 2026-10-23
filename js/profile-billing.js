@@ -213,10 +213,13 @@
     let iv = intervalPick || sub.interval;
     const draw = () => {
       panel.innerHTML = `<div class="pf-change">
-        <div class="pf-change-head"><b>Change your plan</b><div class="plan-interval pf-iv"><button type="button" aria-selected="${iv === "month"}" data-iv="month">Monthly</button><button type="button" aria-selected="${iv === "year"}" data-iv="year">Yearly</button></div></div>
+        <div class="pf-change-head"><div><b>Change your plan</b><small>${tx("Choose the plan and how you pay. You'll see the exact amount before confirming.")}</small></div><div class="plan-interval pf-iv"><button type="button" aria-selected="${iv === "month"}" data-iv="month">Monthly</button><button type="button" aria-selected="${iv === "year"}" data-iv="year">Yearly</button></div></div>
         <div class="pf-change-list">${list.map((p) => { const pr = p.prices.find((x) => x.currency === sub.currency && x.interval === iv);
           const cur = p.key === sub.plan && iv === sub.interval;
-          return `<button type="button" class="pf-change-opt${cur ? " is-current" : ""}" ${cur || !pr?.ready ? "disabled" : ""} data-pick="${esc(p.key)}"><b>${esc(p.name)}</b><span>${pr ? `${money(pr.amount, sub.currency)} / ${perOf(iv)}` : "Not available"}</span>${cur ? "<em>Current</em>" : ""}</button>`; }).join("")}</div>
+          return `<button type="button" class="pf-change-opt${cur ? " is-current" : ""}${p.highlighted ? " is-best" : ""}" ${cur || !pr?.ready ? "disabled" : ""} data-pick="${esc(p.key)}">
+            <i class="pf-opt-radio" aria-hidden="true"></i>
+            <span class="pf-opt-tx"><b>${esc(p.name)}</b><span class="pf-opt-price">${pr ? `<strong>${money(pr.amount, sub.currency)}</strong> / ${perOf(iv)}` : "Not available"}</span></span>
+            ${cur ? `<em>${tx("Current")}</em>` : ""}</button>`; }).join("")}</div>
         <div data-change-terms></div></div>`;
     };
     draw();
@@ -230,7 +233,13 @@
         t.innerHTML = `<p class="pf-billing-note">Checking the exact amount…</p>`;
         try {
           const pv = await manage({ action: "preview_change", plan: pick.dataset.pick, interval: iv });
-          t.innerHTML = `<div class="pf-change-terms">${pv.trial
+          const today = pv.trial ? 0 : pv.upgrade ? pv.charge_now : 0;
+          const facts = [
+            [tx("Today you pay"), money(today, pv.currency), "is-big"],
+            pv.trial ? [tx("First charge · {date}", { date: day(pv.first_charge_at) }), money(pv.first_charge, pv.currency)] : !pv.upgrade ? [tx("Changes on"), day(pv.applies_at)] : null,
+            [tx("Then"), `${money(pv.new_price, pv.currency)} / ${perOf(pv.interval)}`],
+          ].filter(Boolean);
+          t.innerHTML = `<div class="pf-change-terms"><div class="pf-sum">${facts.map(([k, v, c]) => `<span class="${c || ""}"><small>${k}</small><b>${v}</b></span>`).join("")}</div>${pv.trial
             ? `<p>${tx("Applies <b>now</b> and you're still in your free trial: <b>nothing is charged today</b>. Your first charge, on {date}, will be <b>{first}</b> (the days until the 1st), then {price} / {per}.", { date: day(pv.first_charge_at), first: money(pv.first_charge, pv.currency), price: money(pv.new_price, pv.currency), per: perOf(pv.interval) })}</p>`
             : pv.upgrade
             ? `<p>${tx("Applies <b>now</b>. You pay <b>{amount}</b> today for the rest of this period, then {price} / {per}.", { amount: money(pv.charge_now, pv.currency), price: money(pv.new_price, pv.currency), per: perOf(pv.interval) })} ${esc(pv.note ? tx(pv.note) : "")}</p>`

@@ -7900,3 +7900,25 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .cmp-cta td, .cmp-cta th { padding-top: 14px; padding-bottom: 16px; }
 .cmp-club-btn { display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border-radius: 999px; border: 1px solid rgba(240, 184, 74, 0.7); color: var(--gold); font-size: 13px; font-weight: 600; white-space: nowrap; }
 .cmp-club-btn:hover { background: var(--gold-tint); }
+
+/* Profile → Billing → Change your plan: clear choice cards with a radio, a summary of what you pay, the text as a note */
+.pf-change { padding: 20px; border-radius: 20px; background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent), var(--surface); }
+.pf-change-head > div:first-child { display: grid; gap: 3px; } .pf-change-head b { font-family: var(--font-display); font-size: 18px; font-weight: 600; }
+.pf-change-head small { color: var(--muted); font-size: 13px; }
+.pf-change-list { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; margin-top: 16px; }
+.pf-change-opt { flex-direction: row; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface-2); transition: border-color 0.2s, background 0.2s, box-shadow 0.2s, transform 0.2s; }
+.pf-change-opt:not(:disabled):hover { border-color: rgba(240, 184, 74, 0.55); transform: translateY(-1px); }
+.pf-opt-radio { flex: none; width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--line); transition: border-color 0.2s, background 0.2s; }
+.pf-opt-tx { display: grid; gap: 3px; min-width: 0; } .pf-opt-tx b { font-size: 15px; line-height: 1.25; }
+.pf-opt-price { color: var(--muted); font-size: 13px; } .pf-opt-price strong { color: var(--text); font-size: 15px; }
+.pf-change-opt em { position: static; margin-left: auto; padding: 3px 9px; border-radius: 999px; background: var(--gold-tint); font-size: 11px; font-weight: 700; }
+.pf-change-opt.is-on { border-color: var(--gold); background: linear-gradient(135deg, rgba(240, 184, 74, 0.16), rgba(240, 184, 74, 0.05)); box-shadow: 0 12px 30px -16px rgba(240, 184, 74, 0.8); }
+.pf-change-opt.is-on .pf-opt-radio { border-color: var(--gold); background: radial-gradient(circle, var(--gold) 0 4px, transparent 5px); }
+.pf-change-terms { margin-top: 16px; padding: 16px; border-radius: 16px; background: var(--surface-2); border: 0.5px solid var(--line); display: grid; gap: 12px; }
+.pf-sum { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+.pf-sum > span { display: grid; gap: 4px; padding: 12px 14px; border-radius: 12px; background: var(--surface); border: 0.5px solid var(--line-soft); }
+.pf-sum small { color: var(--muted); font-size: 12px; } .pf-sum b { font-family: var(--font-display); font-size: 17px; font-weight: 600; }
+.pf-sum > span.is-big { border-color: rgba(0, 216, 91, 0.35); background: rgba(0, 216, 91, 0.07); } .pf-sum > span.is-big b { font-size: 22px; color: #7cf0b0; }
+.pf-change-terms > p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.55; } .pf-change-terms > p b { color: var(--text); }
+.pf-change-terms .pf-billing-actions { justify-content: flex-end; }
+:root[data-theme="light"] .pf-sum > span.is-big b { color: #04773a; }

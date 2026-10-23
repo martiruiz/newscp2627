@@ -2445,4 +2445,8 @@ window.SCP_ES = {
   "In one place, with their own filters": "En un solo lugar, con sus propios filtros",
   "per user": "por usuario",
   "{n}-day free trial on Library and Library + AI + Content Plan · card required · cancel anytime": "{n} días de prueba gratis en Biblioteca y Biblioteca con IA & Plan de contenido · con tarjeta · cancela cuando quieras",
+  "Choose the plan and how you pay. You'll see the exact amount before confirming.": "Elige el plan y cómo pagarlo. Verás el importe exacto antes de confirmar.",
+  "Today you pay": "Hoy pagas",
+  "First charge · {date}": "Primer cargo · {date}",
+  "Changes on": "Cambia el",
 };
