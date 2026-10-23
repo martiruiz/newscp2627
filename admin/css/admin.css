@@ -1333,3 +1333,35 @@ select.cs-native { display: none !important; }
 .nw-seo-h { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 14px; } .nw-seo-h svg { width: 15px; height: 15px; color: var(--accent); }
 .nw-seo-h small { font-weight: 400; }
 .nw-seo .bl-faq-row { background: var(--panel); }
+
+/* ---------- Admin → SEO (js/seo.js) ---------- */
+.seo-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 16px; align-items: start; }
+.seo-wide { grid-column: 1 / -1; }
+.seo-card { display: grid; gap: 12px; }
+.seo-card h2 { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 0; font-size: 16px; } .seo-card h2 svg { width: 17px; height: 17px; color: var(--accent); }
+.seo-card h2 small { font-size: 12.5px; font-weight: 400; }
+.seo-pages { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+.seo-page { border-radius: 14px; background: var(--panel-2); border: 1px solid var(--border); padding: 10px 12px; }
+.seo-page summary { display: flex; align-items: center; gap: 10px; cursor: pointer; list-style: none; } .seo-page summary::-webkit-details-marker { display: none; }
+.seo-page summary > svg { width: 15px; height: 15px; color: var(--muted); transition: transform 0.2s; flex: none; } .seo-page[open] summary > svg { transform: rotate(180deg); }
+.seo-page[open] { display: grid; gap: 10px; }
+.seo-sc { display: grid; place-items: center; width: 40px; height: 40px; flex: none; border-radius: 50%; font: 700 14px var(--display); border: 2.5px solid currentColor; }
+.seo-sc.is-ok { color: var(--green); } .seo-sc.is-mid { color: var(--accent); } .seo-sc.is-bad { color: var(--red); }
+.seo-pn { display: grid; min-width: 0; flex: 1; } .seo-pn b, .seo-pn small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .seo-pn b { font-size: 13.5px; }
+.seo-miss { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.seo-bots { display: grid; gap: 6px; }
+.seo-bot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; border-radius: 12px; background: var(--panel-2); border: 1px solid var(--border); cursor: pointer; }
+.seo-bot > span:first-child { display: grid; gap: 2px; } .seo-bot b { font-size: 13.5px; } .seo-bot small { font-size: 12px; }
+.seo-kind { font-style: normal; font-weight: 600; } .seo-kind.is-search { color: var(--green); } .seo-kind.is-train { color: var(--muted); }
+.seo-form { display: grid; gap: 12px; }
+.seo-kws { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+.seo-kw { display: grid; gap: 4px; padding: 12px; border-radius: 14px; background: var(--panel-2); border: 1px solid var(--border); border-left: 3px solid var(--amber); }
+.seo-kw.has { border-left-color: var(--green); } .seo-kw b { font-size: 13.5px; } .seo-kw small { font-size: 12px; }
+.seo-kw-ok, .seo-kw-no { display: flex; align-items: flex-start; gap: 6px; font-size: 12.5px; line-height: 1.35; } .seo-kw-ok svg, .seo-kw-no svg { width: 14px; height: 14px; flex: none; margin-top: 1px; }
+.seo-kw-ok svg { color: var(--green); } .seo-kw-no { color: var(--muted); } .seo-kw-no svg { color: var(--amber); } .seo-kw-ok a { color: var(--text); }
+.seo-files { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+.seo-file { display: grid; gap: 3px; padding: 12px 14px; border-radius: 14px; background: var(--panel-2); border: 1px solid var(--border); color: var(--text); text-decoration: none; }
+.seo-file:hover { border-color: var(--accent); } .seo-file small { font-size: 12px; }
+@media (max-width: 900px) { .seo-grid { grid-template-columns: 1fr; } }
+.seo-kpis { grid-template-columns: repeat(5, minmax(0, 1fr)); } @media (max-width: 1100px) { .seo-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.seo-err > div { display: grid; gap: 2px; }

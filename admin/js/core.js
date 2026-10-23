@@ -43,6 +43,9 @@
     undo: '<path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-1"/>',
     alert: '<path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>',
     external: '<path d="M15 3h6v6M10 14L21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
+    sparkles: '<path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/>',
+    search: '<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',
+    globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
   };
   const icon = (name) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ""}</svg>`;
 
@@ -157,6 +160,7 @@
     { href: "profiles.html", label: "Scraped profiles", icon: "audience", key: "profiles" },
     { href: "blog.html", label: "Blog", icon: "edit", key: "blog" },
     { href: "news.html", label: "Social News", icon: "external", key: "news" },
+    { href: "seo.html", label: "SEO", icon: "globe", key: "seo" },
     { href: "smart-review.html", label: "Smart filters", icon: "smart", key: "smart" },
     { href: "audience.html", label: "Audience", icon: "audience", key: "audience", group: "super" },
     { href: "leads.html", label: "Leads & Demos", icon: "users", key: "leads", group: "super" },
