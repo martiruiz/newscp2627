@@ -8087,4 +8087,5 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 :root[data-theme="light"] .mc-cp-list button[aria-selected="true"] { background: #0c0c0d; color: #fff; }
 /* day colours — "My space" buttons keep their own gradients (AI purple, Plan blue, Saved boards gold), also when open */
 :root[data-theme="light"] .my-space-btns .pill[aria-pressed="true"] { background: var(--g) border-box !important; color: #fff !important; }
-:root[data-theme="light"] .my-space-btns .saved-link[aria-pressed="true"] { color: #1a1206 !important; }
+:root[data-theme="light"] .my-space-btns .saved-link[aria-pressed="true"] { background: #0c0c0d !important; color: #fff !important; }
+:root[data-theme="light"] .my-space-btns .saved-link[aria-pressed="true"] * { color: #fff !important; }
