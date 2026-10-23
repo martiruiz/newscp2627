@@ -2438,4 +2438,11 @@ window.SCP_ES = {
   "As many users as you need": "Tantos usuarios como necesites",
   "You save {x} a year": "Ahorras {x} al año",
   "Yearly, you'd save {x}": "Pago anual ahorrarías {x}",
+  "Tailored": "A medida",
+  "Your club's own library": "La biblioteca propia de tu club",
+  "First team, sections and academy, private to your club": "Primer equipo, secciones y cantera, privada para tu club",
+  "Your players' and sponsors' posts": "Los posts de tus jugadores y patrocinadores",
+  "In one place, with their own filters": "En un solo lugar, con sus propios filtros",
+  "per user": "por usuario",
+  "{n}-day free trial on Library and Library + AI + Content Plan · card required · cancel anytime": "{n} días de prueba gratis en Biblioteca y Biblioteca con IA & Plan de contenido · con tarjeta · cancela cuando quieras",
 };

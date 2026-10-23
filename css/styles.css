@@ -7893,3 +7893,10 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
   background: radial-gradient(64% 64% at 50% 100%, var(--gold-light) 0%, var(--gold-mid) 50%, var(--gold) 100%); box-shadow: 0 10px 26px -12px rgba(240, 184, 74, 0.9); transition: transform 0.2s, box-shadow 0.2s; }
 .plan-help-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 30px -10px rgba(240, 184, 74, 1); }
 @media (max-width: 640px) { .plan-help { border-radius: 22px; padding: 16px; text-align: center; } .plan-help-btn { width: 100%; justify-content: center; } }
+/* Comparison: the My Club column (gold-lit, "Custom plan", Book a demo) */
+.cmp .is-club { background: linear-gradient(180deg, rgba(240, 184, 74, 0.07), rgba(240, 184, 74, 0.03)); }
+.cmp thead th.is-club { color: var(--gold); }
+.cmp-custom { font-family: var(--font-display); font-weight: 600; font-size: 15px; background: linear-gradient(180deg, var(--gold-light), var(--gold)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.cmp-cta td, .cmp-cta th { padding-top: 14px; padding-bottom: 16px; }
+.cmp-club-btn { display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border-radius: 999px; border: 1px solid rgba(240, 184, 74, 0.7); color: var(--gold); font-size: 13px; font-weight: 600; white-space: nowrap; }
+.cmp-club-btn:hover { background: var(--gold-tint); }

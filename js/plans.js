@@ -128,23 +128,29 @@
     </article>`;
   }
 
-  // Comparison table: a few rows that say what you get (from each plan's permissions and AI quota)
+  // Comparison table: the plans + My Club (last column), a few rows that say what you get
   function compareHtml(plans) {
     if (!plans.length) return "";
     const yes = `<span class="cmp-yes" aria-label="${esc(tx("Included"))}">✓</span>`, no = `<span class="cmp-no" aria-label="${esc(tx("Not included"))}">–</span>`;
     const has = (p, k) => p.entitlements.includes(k);
-    const row = (label, sub, cell) => `<tr><th scope="row">${tx(label)}${sub ? `<small>${tx(sub)}</small>` : ""}</th>${plans.map((p) => `<td>${cell(p)}</td>`).join("")}</tr>`;
+    const club = !privatePlan;   // My Club column (everything in the full plan + the club's own space)
+    const row = (label, sub, cell, clubCell = yes) => `<tr><th scope="row">${tx(label)}${sub ? `<small>${tx(sub)}</small>` : ""}</th>${plans.map((p) => `<td>${cell(p)}</td>`).join("")}${club ? `<td class="is-club">${clubCell}</td>` : ""}</tr>`;
     const rows = [
       row("Content Library", "Every post, filter and category, updated daily", (p) => (has(p, "library.access") ? yes : no)),
       row("Save posts to boards", "", (p) => (has(p, "library.save_posts") ? yes : no)),
       row("Content Plan", "Weekly and monthly calendars, drag and drop, PDF / Excel / calendar export", (p) => (has(p, "planner.access") ? yes : no)),
-      row("AI analyses per month", "Hook, why it works, format and how to adapt it", (p) => (!has(p, "ai.analyze_posts") ? no : p.ai_unlimited ? tx("Unlimited") : `<b>${p.ai_monthly_units || "–"}</b>`)),
+      row("AI analyses per month", "Hook, why it works, format and how to adapt it", (p) => (!has(p, "ai.analyze_posts") ? no : p.ai_unlimited ? tx("Unlimited") : `<b>${p.ai_monthly_units || "–"}</b>`), `<b>${tx("Tailored")}</b>`),
+      row("Your club's own library", "First team, sections and academy, private to your club", () => no),
+      row("Your players' and sponsors' posts", "In one place, with their own filters", () => no),
+      row("We upload your club's posts every day", "", () => no),
     ].join("");
-    const price = `<tr class="cmp-price"><th scope="row">${tx("Price")}</th>${plans.map((p) => { const x = priceOf(p); return `<td>${x ? `${fmt(x.amount * seats, currency)}<small>/ ${per(x.interval)}</small>` : "–"}</td>`; }).join("")}</tr>`;
+    const price = `<tr class="cmp-price"><th scope="row">${tx("Price")}</th>${plans.map((p) => { const x = priceOf(p); return `<td>${x ? `${fmt(x.amount * seats, currency)}<small>/ ${per(x.interval)}${seats > 1 ? "" : ` ${tx("per user")}`}</small>` : "–"}</td>`; }).join("")}${club ? `<td class="is-club"><span class="cmp-custom">${tx("Custom plan")}</span></td>` : ""}</tr>`;
+    const cta = club ? `<tr class="cmp-cta"><th scope="row"></th>${plans.map(() => "<td></td>").join("")}<td class="is-club"><a class="cmp-club-btn" href="book-a-call.html?for=clubs" data-cta="pricing-compare-club">${tx("Book a demo")}</a></td></tr>` : "";
     const trialDays = Math.min(...plans.map((p) => p.trial_days || 0));
-    const note = trialDays > 0 ? `<p class="cmp-note">${tx("{n}-day free trial on every plan · card required · cancel anytime", { n: trialDays })}</p>` : "";
-    return `<div class="cmp-wrap"><table class="cmp"><thead><tr><th></th>${plans.map((p) => `<th scope="col"${p.highlighted ? ' class="is-best"' : ""}>${esc(p.name)}</th>`).join("")}</tr></thead><tbody>${price}${rows}</tbody></table></div>${note}`;
+    const note = trialDays > 0 ? `<p class="cmp-note">${tx("{n}-day free trial on Library and Library + AI + Content Plan · card required · cancel anytime", { n: trialDays })}</p>` : "";
+    return `<div class="cmp-wrap"><table class="cmp"><thead><tr><th></th>${plans.map((p) => `<th scope="col"${p.highlighted ? ' class="is-best"' : ""}>${esc(p.name)}</th>`).join("")}${club ? `<th scope="col" class="is-club">${tx("My Club")}</th>` : ""}</tr></thead><tbody>${price}${rows}${cta}</tbody></table></div>${note}`;
   }
+
 
   function switches(plans) {
     const curs = (data.currencies || ["eur"]).filter((c) => plans.some((p) => p.prices.some((x) => x.currency === c)));
