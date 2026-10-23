@@ -150,6 +150,9 @@
     const curs = (data.currencies || ["eur"]).filter((c) => plans.some((p) => p.prices.some((x) => x.currency === c)));
     const best = Math.max(0, ...plans.map(saving));
     const anyYear = plans.some((p) => p.prices.some((x) => x.interval === "year" && x.currency === currency));
+    // what the yearly payment saves for all the users (the recommended plan), shown next to the users and updated with them
+    const ref = plans.find((p) => p.highlighted) || plans[plans.length - 1];
+    const save = ref ? Math.round(yearSave(ref) * seats) : 0;
     return `<div class="plan-switches">
       ${anyYear ? `<div class="plan-interval" role="tablist" aria-label="Billing period">
         <button type="button" role="tab" aria-selected="${interval === "month"}" data-interval-pick="month">Monthly</button>
@@ -161,6 +164,9 @@
         <input type="number" inputmode="numeric" min="1" max="${MAX_SEATS}" value="${seats}" aria-label="${esc(tx("Users"))}" data-seats-in>
         <button type="button" data-seats-step="1" aria-label="${esc(tx("More users"))}">+</button>
       </div>`}
+      ${privatePlan || !save ? "" : interval === "year"
+        ? `<span class="plan-save-live is-on" data-k="${save}">${tx("You save {x} a year", { x: `<b>${fmt(save, currency)}</b>` })}</span>`
+        : `<button type="button" class="plan-save-live" data-interval-pick="year" data-k="${save}">${tx("Yearly, you'd save {x}", { x: `<b>${fmt(save, currency)}</b>` })}</button>`}
       ${curs.length > 1 ? `<div class="plan-interval plan-currency" role="tablist" aria-label="Currency">${curs.map((c) => `<button type="button" role="tab" aria-selected="${currency === c}" data-currency-pick="${c}">${c.toUpperCase()}</button>`).join("")}</div>` : ""}
     </div>`;
   }

@@ -7873,3 +7873,11 @@ section[id], :target { scroll-margin-top: 92px; }
 @keyframes ivGlow { 0%, 100% { box-shadow: 0 0 0 1px rgba(255, 224, 160, 0.6), 0 10px 28px -8px rgba(240, 184, 74, 0.85); } 50% { box-shadow: 0 0 0 1px rgba(255, 224, 160, 0.9), 0 12px 34px -6px rgba(240, 184, 74, 1); } }
 @keyframes ivPop { 0% { transform: scale(0.6); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .plan-interval button[data-interval-pick="year"][aria-selected="true"], .plan-interval button[data-interval-pick="year"][aria-selected="true"]::before, .plan-interval button[data-interval-pick="year"][aria-selected="true"] em { animation: none; } }
+/* Pricing: next to the users, what paying yearly saves (for all of them) — it pops each time the number changes */
+.plan-save-live { display: inline-flex; align-items: center; gap: 6px; height: 44px; padding: 0 16px; border-radius: 100px; border: 1px solid rgba(0, 216, 91, 0.35); background: rgba(0, 216, 91, 0.1); color: #7cf0b0; font: 600 13.5px var(--font-body); white-space: nowrap; animation: saveIn 0.45s cubic-bezier(.2, 1.5, .4, 1) both; }
+.plan-save-live b { color: #fff; font-weight: 800; font-size: 15px; }
+.plan-save-live.is-on { background: linear-gradient(135deg, #12c766, #00a84f); border-color: transparent; color: #eafff3; box-shadow: 0 10px 26px -10px rgba(0, 168, 79, 0.9); }
+button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { background: rgba(0, 216, 91, 0.18); }
+@keyframes saveIn { 0% { transform: scale(0.85); opacity: 0.4; } 100% { transform: scale(1); opacity: 1; } }
+:root[data-theme="light"] .plan-save-live { color: #04773a; } :root[data-theme="light"] .plan-save-live b { color: #04773a; } :root[data-theme="light"] .plan-save-live.is-on b, :root[data-theme="light"] .plan-save-live.is-on { color: #fff; }
+@media (prefers-reduced-motion: reduce) { .plan-save-live { animation: none; } }

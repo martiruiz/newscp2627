@@ -2436,4 +2436,6 @@ window.SCP_ES = {
   "For clubs": "Para clubes",
   "A private space for your whole club": "Un espacio privado para todo tu club",
   "As many users as you need": "Tantos usuarios como necesites",
+  "You save {x} a year": "Ahorras {x} al año",
+  "Yearly, you'd save {x}": "Con el pago anual ahorrarías {x}",
 };
