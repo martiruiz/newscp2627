@@ -24,7 +24,7 @@ Deno.serve(async (req) => {
       const interval = body.interval === "year" ? "year" : "month";
       const currency = "eur";   // euros only (banks convert for cards in other currencies)
       // number of users (team seats = Stripe quantity); more than the maximum → custom plan
-      const maxSeats = Number(((await setting("team")) || {}).max_seats) || 5;
+      const maxSeats = Number(((await setting("team")) || {}).max_seats) || 999;   // as many users as the team wants (billing_settings "team".max_seats can set a limit)
       const seats = Math.max(1, Math.round(Number(body.seats) || 1));
       if (seats > maxSeats) return json({ error: `For more than ${maxSeats} users, ask us for a custom plan.`, custom: true }, 400);
       const [plan] = await rest(`plans?select=key,name,active,archived_at,visibility,trial_enabled,trial_days,stripe_product_id&key=eq.${encodeURIComponent(body.plan || "")}`);

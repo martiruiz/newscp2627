@@ -2435,4 +2435,5 @@ window.SCP_ES = {
   "Private: only your club can see it": "Privado: solo lo ve tu club",
   "For clubs": "Para clubes",
   "A private space for your whole club": "Un espacio privado para todo tu club",
+  "As many users as you need": "Tantos usuarios como necesites",
 };

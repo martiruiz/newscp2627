@@ -156,7 +156,7 @@ Deno.serve(async (req) => {
     // difference is charged today, nothing during the free trial); fewer apply now with a credit on the next invoice.
     if (body.action === "preview_seats" || body.action === "seats") {
       const seats = Math.round(Number(body.seats));
-      const max = Number(((await setting("team")) || {}).max_seats) || 5;
+      const max = Number(((await setting("team")) || {}).max_seats) || 999;   // as many users as the team wants (billing_settings "team".max_seats can set a limit)
       if (!(seats >= 1)) return json({ error: "Choose how many users you need." }, 400);
       if (seats > max) return json({ error: `For more than ${max} users, ask us for a custom plan.`, custom: true }, 400);
       if (!["active", "trialing", "past_due"].includes(sub.status)) return json({ error: "Your membership can't be changed right now." }, 409);

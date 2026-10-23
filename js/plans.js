@@ -19,7 +19,7 @@
 
   let data = null;          // { plans, entitlements, currencies, legal }
   let interval = "month", currency = "eur";
-  const MAX_SEATS = 5;      // more users → custom plan (contact form)
+  const MAX_SEATS = 999;    // as many users as the team wants (typed or with − / +)
   let seats = Math.min(MAX_SEATS, Math.max(1, Number(store.get("scp-seats")) || 1));
   let mine = null;          // my_membership() for signed-in members
   let privateToken = null, privatePlan = null;
@@ -72,7 +72,7 @@
     const was = iv === "year" && yearSave(p) > 0 ? priceOf(p, currency, "month").amount * 12 : 0;
     const big = !price ? 0 : Math.round(price.amount * seats);   // no decimals
     const sub = !price ? "" : [
-      seats > 1 ? tx("{n} users × {price}/user", { n: seats, price: fmt(price.amount, currency) }) : tx("From 1 to {n} users", { n: MAX_SEATS }),
+      seats > 1 ? tx("{n} users × {price}/user", { n: seats, price: fmt(price.amount, currency) }) : tx("As many users as you need"),
       iv === "year" ? tx("same as {price}/month", { price: fmt(Math.round(price.amount * seats / 12), currency) }) : "", tx("VAT incl."),
     ].filter(Boolean).join(" · ");
     // what you get, in words (not just ✓ / –)
@@ -153,11 +153,10 @@
       ${privatePlan ? "" : `<div class="plan-seats" role="group" aria-label="${esc(tx("Users"))}">
         <span>${tx("Users")}</span>
         <button type="button" data-seats-step="-1" aria-label="${esc(tx("Fewer users"))}" ${seats <= 1 ? "disabled" : ""}>−</button>
-        <b aria-live="polite">${seats}</b>
+        <input type="number" inputmode="numeric" min="1" max="${MAX_SEATS}" value="${seats}" aria-label="${esc(tx("Users"))}" data-seats-in>
         <button type="button" data-seats-step="1" aria-label="${esc(tx("More users"))}">+</button>
       </div>`}
       ${curs.length > 1 ? `<div class="plan-interval plan-currency" role="tablist" aria-label="Currency">${curs.map((c) => `<button type="button" role="tab" aria-selected="${currency === c}" data-currency-pick="${c}">${c.toUpperCase()}</button>`).join("")}</div>` : ""}
-      <p class="plan-seats-more" ${privatePlan ? "hidden" : ""} data-seats-more>${tx("More than {n} users?", { n: MAX_SEATS })} <a class="link-gold" href="contact.html?topic=custom-plan&users=${MAX_SEATS + 1}">${tx("Request a custom plan")}</a></p>
     </div>`;
   }
 
@@ -332,12 +331,18 @@
       const st = e.target.closest("[data-seats-step]");
       if (st) {
         const next = seats + Number(st.dataset.seatsStep);
-        if (next > MAX_SEATS) { document.querySelector("[data-seats-more]")?.removeAttribute("hidden"); document.querySelector("[data-seats-more] a")?.focus(); return; }
-        if (next >= 1 && next !== seats) { seats = next; store.set("scp-seats", String(seats)); draw(true); }
+        if (next >= 1 && next <= MAX_SEATS && next !== seats) { seats = next; store.set("scp-seats", String(seats)); draw(true); }
       }
       const c = e.target.closest("[data-currency-pick]");
       if (c && c.dataset.currencyPick !== currency) { currency = c.dataset.currencyPick; store.set("scp-currency", currency); draw(true); }
     });
+    // the number of users can also be typed
+    document.addEventListener("change", (e) => {
+      if (!e.target.matches("[data-seats-in]")) return;
+      const n = Math.min(MAX_SEATS, Math.max(1, Math.round(Number(e.target.value) || 1)));
+      if (n !== seats) { seats = n; store.set("scp-seats", String(seats)); draw(true); } else e.target.value = seats;
+    });
+    document.addEventListener("keydown", (e) => { if (e.key === "Enter" && e.target.matches("[data-seats-in]")) e.target.blur(); });
     const client = window.SCP_AUTH?.client;
     if (client && (await client.auth.getSession()).data.session) {
       try {
