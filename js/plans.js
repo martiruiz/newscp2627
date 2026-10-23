@@ -110,13 +110,13 @@
   const pic = (k) => `<span class="plan-ic" aria-hidden="true"><svg viewBox="0 0 24 24">${PIC[k]}</svg></span>`;
 
   // "My Club" (last card): the private plan for a club (Admin → My Club) — its own library with every team, section, player and
-  // sponsor, uploaded by us every day. Price to be agreed: it opens the demo form for clubs. Same rows as the plan cards.
+  // sponsor, uploaded by us every day. A custom plan (no price shown): it opens the demo form for clubs. Same rows as the plan cards.
   function clubCard() {
     const gets = [tx("Your club's own library: first team, sections and academy"), tx("Your players' and sponsors' posts, in one place"), tx("We upload your club's posts every day"), tx("Private: only your club can see it"), tx("Everything in Library + AI + Content Plan")];
     return `<article class="plan-card v2 is-custom is-club" data-plan-key="my-club">
       <span class="plan-flag is-club">${tx("For clubs")}</span>
       <h3>${pic("club")}${tx("My Club")}</h3>
-      <p class="plan-price"><b class="plan-price-text">${tx("Price to be agreed")}</b></p>
+      <p class="plan-price"><b class="plan-price-text">${tx("Custom plan")}</b></p>
       <p class="plan-sub">${tx("A private space for your whole club")}</p>
       <div class="plan-extras"></div>
       <ul class="plan-gets">${gets.map(keyPoint).join("")}</ul>

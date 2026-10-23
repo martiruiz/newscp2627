@@ -1186,7 +1186,7 @@ window.SCP_ES = {
   "All Access": "Acceso total",
   "Library + AI + Content Plan": "Biblioteca + IA + Plan de contenido",
   "Start with the Content Library or get everything: AI analyses and the Content Plan. Cancel anytime.": "Empieza con la Biblioteca de contenido o tenlo todo: análisis con IA y Plan de contenido. Cancela cuando quieras.",
-  "Custom plan": "Personalizado",
+  "Custom plan": "Plan personalizado",
   "Price to be agreed": "Precio a convenir",
   "Clubs, leagues, federations and agencies": "Clubes, ligas, federaciones y agencias",
   "Everything in Library + AI + Content Plan": "Todo lo de Biblioteca + IA + Plan de contenido",
