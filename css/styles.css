@@ -7541,7 +7541,7 @@ section[id], :target { scroll-margin-top: 92px; }
 .lib-crests .lib-crest { width: auto; height: auto; overflow: visible; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 7px; padding: 12px 4px 10px; text-align: center;
   border-radius: 14px; background: var(--surface-2); border: 0.5px solid var(--line-soft); }
 /* the whole crest inside the white circle: a square logo's corners must stay inside the circle (content ≤ 70% of it) */
-.lib-crests .lib-crest img { box-sizing: border-box; width: 44px; height: 44px; padding: 8px; border-radius: 50%; object-fit: contain; object-position: center; background: #fff; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35); flex: none; }
+.lib-crests .lib-crest img { box-sizing: border-box; width: 46px; height: 46px; padding: 10px; border-radius: 50%; object-fit: contain; object-position: center; background: #fff; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35); flex: none; }
 .lib-crests .lib-crest span { display: block; width: 100%; font-size: 11px; line-height: 1.2; color: var(--muted); text-align: center; }
 .lib-crests .lib-crest.is-on { border-color: var(--gold); background: var(--gold-tint); box-shadow: 0 0 18px rgba(240, 184, 74, 0.25); }
 .lib-crests .lib-crest.is-on img { box-shadow: 0 0 0 2px var(--gold), 0 4px 14px rgba(240, 184, 74, 0.4); }
