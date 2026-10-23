@@ -121,9 +121,20 @@
       btn.disabled = true;
       const { error } = await auth.client.auth.resetPasswordForEmail(email, { redirectTo: auth.pageUrl("login.html?reset=1") });
       btn.disabled = false;
-      if (error) return setStatus(/rate limit/i.test(error.message) ? "Too many emails sent in a short time. Please check your inbox or try again later." : error.message, "err");
+      // the email limit (few per hour until the website has its own mail server): a calm note, not a red error
+      if (error && /rate limit/i.test(error.message)) return setStatus("We've just sent you an email. Check your inbox (and spam); if it hasn't arrived, try again in a few minutes.", "");
+      if (error) return setStatus(error.message, "err");
       fView.querySelector("[data-forgot-to]").textContent = email;
       fForm.hidden = true; sent.hidden = false;
+      cooldown(sent.querySelector("[data-forgot-again]"));
+    };
+    // "Send it again" waits 60 s, with the seconds left on the button (fewer emails, fewer hits on the limit)
+    const cooldown = (b) => {
+      const label = b.dataset.label || (b.dataset.label = b.textContent);
+      let left = 60;
+      b.disabled = true;
+      const t = setInterval(() => { left--; b.textContent = `${label} (${left}s)`; if (left <= 0) { clearInterval(t); b.disabled = false; b.textContent = label; } }, 1000);
+      b.textContent = `${label} (${left}s)`;
     };
     document.querySelector("[data-forgot]")?.addEventListener("click", () => {
       fForm.email.value = form.email.value.trim();
@@ -171,8 +182,8 @@
     button.disabled = false;
     if (error) {
       let msg = error.message;
-      if (/rate limit/i.test(msg)) msg = "Too many emails sent in a short time. Please check your inbox or try again later.";
-      else if (mode === "login" && /signups not allowed|not found/i.test(msg)) msg = "We couldn't find an account with that email. Sign up first.";
+      if (/rate limit/i.test(msg)) return setStatus("We've just sent you an email. Check your inbox (and spam); if it hasn't arrived, try again in a few minutes.", "");
+      if (mode === "login" && /signups not allowed|not found/i.test(msg)) msg = "We couldn't find an account with that email. Sign up first.";
       setStatus(msg, "err");
       return;
     }

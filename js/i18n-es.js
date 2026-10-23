@@ -2499,4 +2499,6 @@ window.SCP_ES = {
   ". Open it to choose a new password. It may take a minute; check your spam folder too.": ". Ábrelo para elegir una contraseña nueva. Puede tardar un minuto; mira también en spam.",
   "Send it again": "Enviarlo de nuevo",
   "← Back to log in": "← Volver a entrar",
+  "We've just sent you an email. Check your inbox (and spam); if it hasn't arrived, try again in a few minutes.": "Te acabamos de enviar un email. Revisa tu bandeja de entrada (y spam); si no ha llegado, vuelve a intentarlo en unos minutos.",
+  "Send it again ({n}s)": "Enviarlo de nuevo ({n}s)",
 };
