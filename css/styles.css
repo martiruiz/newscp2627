@@ -7546,3 +7546,21 @@ section[id], :target { scroll-margin-top: 92px; }
 .lib-crests .lib-crest.is-on { border-color: var(--gold); background: var(--gold-tint); box-shadow: 0 0 18px rgba(240, 184, 74, 0.25); }
 .lib-crests .lib-crest.is-on img { box-shadow: 0 0 0 2px var(--gold), 0 4px 14px rgba(240, 184, 74, 0.4); }
 .lib-crests .lib-crest.is-on span { color: var(--gold); }
+
+/* Blog post (blog-tools/build.mjs): key takeaways on top, FAQ and author at the end — clear answers that Google and AI
+   assistants can quote */
+.post-tldr { margin: 0 0 30px; padding: 20px 22px; border-radius: 18px; border: 1px solid rgba(240, 184, 74, 0.35); background: linear-gradient(135deg, rgba(240, 184, 74, 0.1), transparent 70%), var(--surface); }
+.post-tldr-k { margin: 0 0 10px; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); }
+.post-tldr ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.post-tldr li { position: relative; padding-left: 24px; line-height: 1.55; }
+.post-tldr li::before { content: "✓"; position: absolute; left: 0; top: 0; color: var(--gold); font-weight: 700; }
+.post-faq { margin-top: 40px; }
+.post-faq details { border-bottom: 0.5px solid var(--line); padding: 16px 0; }
+.post-faq summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 16px; font-family: var(--font-display); font-weight: 600; font-size: 17px; }
+.post-faq summary::-webkit-details-marker { display: none; }
+.post-faq summary::after { content: "+"; color: var(--gold); font-size: 22px; line-height: 1; transition: transform 0.2s; }
+.post-faq details[open] summary::after { transform: rotate(45deg); }
+.post-faq details p { margin: 10px 0 0; color: var(--muted); line-height: 1.65; }
+.post-author { display: flex; align-items: center; gap: 14px; margin-top: 34px; padding: 16px 18px; border-radius: 16px; background: var(--surface); border: 0.5px solid var(--line); }
+.post-author-av { flex: none; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 50%; background: radial-gradient(64% 64% at 50% 100%, #ffe0a0, #f0b84a); color: var(--on-gold); font: 700 18px var(--font-display); }
+.post-author p { margin: 0; display: grid; gap: 2px; } .post-author span { color: var(--muted); font-size: 14px; }

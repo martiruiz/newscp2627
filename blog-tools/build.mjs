@@ -241,6 +241,9 @@ const header = blogHtml.slice(blogHtml.indexOf('<header class="site-nav"'), blog
   .replace(' aria-current="page"', "");
 const footer = blogHtml.slice(blogHtml.indexOf('<footer class="site-footer'), blogHtml.indexOf("</footer>", blogHtml.indexOf('<footer class="site-footer')) + "</footer>".length);
 const typeLabel = (t) => cfg.types[t]?.label ?? t;
+// SEO for AI answers (Admin → Blog → SEO & AI): key takeaways at the top and questions & answers at the end
+const takeaways = (p) => (Array.isArray(p.takeaways) ? p.takeaways : String(p.takeaways || "").split("\n")).map((t) => String(t).trim()).filter(Boolean);
+const faq = (p) => (Array.isArray(p.faq) ? p.faq : []).filter((f) => f && String(f.q || "").trim() && String(f.a || "").trim()).map((f) => ({ q: String(f.q).trim(), a: String(f.a).trim() }));
 
 // ---------- Post pages ----------
 fs.mkdirSync(path.join(ROOT, "blog"), { recursive: true });
@@ -265,7 +268,11 @@ for (const p of posts) {
     keywords: (p.keywords || []).join(", "),
     articleSection: typeLabel(p.type),
     wordCount: words(p.body_html),
+    ...(takeaways(p).length ? { abstract: takeaways(p).join(" ") } : {}),
+    ...(p.author_bio ? { author: { "@type": "Person", name: p.author || "Martí Ruiz", description: p.author_bio } } : {}),
   };
+  // for Google and AI answers: the FAQ as structured data (only when there are questions)
+  const faqLd = faq(p).length ? { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq(p).map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) } : null;
   const breadcrumbs = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -305,7 +312,7 @@ ${(p.keywords || []).map((k) => `  <meta property="article:tag" content="${esc(k
   <meta name="twitter:description" content="${esc(p.meta_description)}">
   <meta name="twitter:image" content="${img}">
   <script type="application/ld+json">${JSON.stringify(ld)}</script>
-  <script type="application/ld+json">${JSON.stringify(breadcrumbs)}</script>
+  <script type="application/ld+json">${JSON.stringify(breadcrumbs)}</script>${faqLd ? `\n  <script type="application/ld+json">${JSON.stringify(faqLd)}</script>` : ""}
   <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-s-32.png">
   <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon-s-64.png">
   <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-s-192.png">
@@ -333,7 +340,11 @@ ${(p.keywords || []).map((k) => `  <meta property="article:tag" content="${esc(k
 ${p.image.credit ? `        <figcaption>Photo: <a href="${esc(p.image.credit.source_url)}" target="_blank" rel="noopener nofollow">${esc(p.image.credit.author)}</a>${p.image.credit.license ? ` · ${p.image.credit.license_url ? `<a href="${esc(p.image.credit.license_url)}" target="_blank" rel="noopener nofollow">${esc(p.image.credit.license)}</a>` : esc(p.image.credit.license)}` : ""}</figcaption>` : ""}
       </figure>
       <div class="post-body">
-${body}
+${takeaways(p).length ? `        <aside class="post-tldr" aria-label="Key takeaways">
+          <p class="post-tldr-k">Key takeaways</p>
+          <ul>${takeaways(p).map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
+        </aside>
+` : ""}${body}
         <aside class="post-cta post-cta-end">
           <p class="post-cta-kicker">Ready to plan your next week of content?</p>
           <p class="post-cta-title">Every idea in this article is already in the Content Library</p>
@@ -344,7 +355,12 @@ ${body}
           </div>
           <p class="post-cta-more"><a class="link-gold" href="pricing.html">See plans and pricing →</a></p>
         </aside>
-${(p.sources || []).length ? `        <section class="post-sources">
+${faq(p).length ? `        <section class="post-faq">
+          <h2>Frequently asked questions</h2>
+${faq(p).map((f) => `          <details><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join("\n")}
+        </section>
+` : ""}${p.author_bio ? `        <aside class="post-author"><span class="post-author-av">${esc((p.author || "M").slice(0, 1))}</span><p><b>${esc(p.author || "Martí Ruiz")}</b><span>${esc(p.author_bio)}</span></p></aside>
+` : ""}${(p.sources || []).length ? `        <section class="post-sources">
           <h2>Sources</h2>
           <ul>${p.sources.map((s) => `<li><a href="${esc(s.url)}" target="_blank" rel="noopener nofollow">${esc(s.name)}</a></li>`).join("")}</ul>
         </section>` : ""}
