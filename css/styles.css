@@ -8339,3 +8339,6 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 :root[data-theme="light"] .site-footer.sf .sf-news-row input { background: none !important; border: 0 !important; color: #0c0c0d !important; }
 :root[data-theme="light"] .sf-news-row input::placeholder { color: #8a8a90; }
 :root[data-theme="light"] .sf-news-row:focus-within { box-shadow: 0 0 0 4px rgba(240,184,74,.35) !important; }
+
+/* Day colours: the "You are in" pill icon (svg) stays white on its black disc — the invert filter is only for <img> icons */
+:root[data-theme="light"] .sec-pill-ic svg { filter: none !important; }
