@@ -10,9 +10,9 @@
   <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-s-192.png">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon-s.png">
   <link rel="stylesheet" href="css/fonts.css?v=1">
-  <link rel="stylesheet" href="css/styles.css?v=20261030e">
+  <link rel="stylesheet" href="css/styles.css?v=20261030g">
   <script src="js/theme.js?v=20261028a"></script>
-  <script src="js/i18n.js?v=20261030e"></script>
+  <script src="js/i18n.js?v=20261030f"></script>
   <style>.auth-checking body { visibility: hidden; }</style>
   <script src="js/vendor/supabase-2.117.0.min.js"></script>
   <script src="js/config.js?v=20261020lf"></script>
@@ -51,6 +51,7 @@
           <p class="pf-eyebrow" data-pf-role>Your profile</p>
           <h1 data-profile-title>My profile</h1>
           <p class="pf-org" data-pf-org></p>
+          <span class="pf-plan-chip" data-pf-plan hidden></span>
         </div>
       </div>
       <div class="pf-meter" data-pf-meter>
@@ -81,7 +82,7 @@
           <header class="pf-head">
             <span class="pf-head-ic"><span data-icon="user"></span></span>
             <div><h2>About you</h2><p>Who's using the platform.</p></div>
-            <span class="pf-sec-prog" data-pf-about-prog></span>
+            <span class="pf-sec-prog" data-sec-prog="about"></span>
           </header>
           <div class="pf-grid">
             <label class="pf-field">First name<span class="pf-in"><span data-icon="user"></span><input name="first_name" type="text" autocomplete="given-name" required placeholder="Your name"></span></label>
@@ -93,55 +94,83 @@
           <div class="pf-q"><span>Content language <small>The language you post in: ideas in it come first.</small></span><div class="pf-chips" data-single="language"></div></div>
         </section>
 
-        <section class="pf-card" id="club">
-          <header><h2>Your sport</h2><p>The organisation you create content for.</p></header>
+        <section class="pf-card pf-about" id="club">
+          <header class="pf-head">
+            <span class="pf-head-ic"><span data-icon="trophy"></span></span>
+            <div><h2>Your sport</h2><p>The organisation you create content for.</p></div>
+            <span class="pf-sec-prog" data-sec-prog="club"></span>
+          </header>
           <div class="pf-grid">
             <label class="pf-field pf-wide">Organisation<input name="organization" type="text" placeholder="e.g. FC Barcelona Femení, Liga F, Nike…"></label>
           </div>
-          <div class="pf-q"><span>Type of organisation</span><div class="pf-chips" data-single="orgType"></div></div>
-          <div class="pf-q"><span>Sports</span><div class="pf-chips" data-catalog-chips="sport"></div></div>
+          <div class="pf-q"><span>Type of organisation</span><div class="pf-roles" data-single="orgType"></div></div>
+          <div class="pf-q"><span>Sports <small>Yours first in the library.</small></span><div class="pf-chips" data-catalog-chips="sport"></div></div>
           <div class="pf-q"><span>Competitions you follow</span><div class="pf-picker" data-picker="competitions" data-source="competition" data-max="10" data-placeholder="Search competitions…"></div></div>
-          <div class="pf-q"><span>Content team size</span><div class="pf-chips" data-single="teamSize"></div></div>
+          <div class="pf-q"><span>Content team size</span><div class="pf-seg" data-single="teamSize"></div></div>
         </section>
 
-        <section class="pf-card" id="channels">
-          <header><h2>Channels</h2><p>Where you publish.</p></header>
-          <div class="pf-q"><span>Platforms you manage</span><div class="pf-chips pf-chips-pf" data-multi="platforms"></div></div>
-          <div class="pf-q"><span>Followers on your main account</span><div class="pf-chips" data-single="audience"></div></div>
+        <section class="pf-card pf-about" id="channels">
+          <header class="pf-head">
+            <span class="pf-head-ic"><span data-icon="megaphone"></span></span>
+            <div><h2>Channels</h2><p>Where you publish.</p></div>
+            <span class="pf-sec-prog" data-sec-prog="channels"></span>
+          </header>
+          <div class="pf-q"><span>Platforms you manage</span><div class="pf-roles" data-multi="platforms"></div></div>
+          <div class="pf-q"><span>Followers on your main account</span><div class="pf-seg" data-single="audience"></div></div>
         </section>
 
-        <section class="pf-card pf-card-gold" id="favourites">
-          <header><h2><span data-icon="sparkles"></span>Your favourites</h2><p>Up to 5 of each. Their new posts appear first in your Content Library (“For you”).</p></header>
+        <section class="pf-card pf-about" id="favourites">
+          <header class="pf-head">
+            <span class="pf-head-ic"><span data-icon="star"></span></span>
+            <div><h2>Your favourites</h2><p>Up to 5 of each. Their new posts appear first in your Content Library (“For you”).</p></div>
+            <span class="pf-sec-prog" data-sec-prog="favourites"></span>
+          </header>
           <div class="pf-q"><span>Favourite social network <small>its posts come first in your Content Library</small></span><div class="pf-chips" data-single="favouritePlatform"></div></div>
           <div class="pf-q"><span>5 favourite profiles <small>clubs, leagues, brands</small></span><div class="pf-picker" data-picker="favouriteProfiles" data-source="club" data-max="5" data-free data-placeholder="Search a profile, or type any name…"></div></div>
           <div class="pf-q"><span>5 favourite creator accounts <small>marked with a star in the Content Library (Content Creators → Accounts)</small></span><div class="pf-picker" data-picker="favouriteCreatorAccounts" data-source="accounts" data-max="5" data-placeholder="Search an account…"></div></div>
         </section>
 
-        <section class="pf-card" id="goals">
-          <header><h2>Goals &amp; content</h2><p>What you want your content to achieve.</p></header>
-          <div class="pf-q"><span>Main goals</span><div class="pf-chips" data-multi="goals"></div></div>
-          <div class="pf-q"><span>Formats you make most</span><div class="pf-chips" data-multi="formats"></div></div>
-          <div class="pf-q"><span>Topics you care about</span><div class="pf-chips" data-multi="topics"></div></div>
+        <section class="pf-card pf-about" id="goals">
+          <header class="pf-head">
+            <span class="pf-head-ic"><span data-icon="target"></span></span>
+            <div><h2>Goals &amp; content</h2><p>What you want your content to achieve.</p></div>
+            <span class="pf-sec-prog" data-sec-prog="goals"></span>
+          </header>
+          <div class="pf-q"><span>Main goals</span><div class="pf-roles" data-multi="goals"></div></div>
+          <div class="pf-q"><span>Formats you make most</span><div class="pf-roles" data-multi="formats"></div></div>
+          <div class="pf-q"><span>Topics you care about</span><div class="pf-roles" data-multi="topics"></div></div>
           <label class="pf-field pf-wide">Your biggest content challenge right now<textarea name="challenge" rows="3" maxlength="500" placeholder="e.g. We struggle to come up with matchday ideas that aren't just scores and line-ups."></textarea></label>
         </section>
 
-        <section class="pf-card" id="newsletter">
-          <header><h2>Newsletter</h2><p>Ideas and platform news, picked for your profile.</p></header>
+        <section class="pf-card pf-about" id="newsletter">
+          <header class="pf-head">
+            <span class="pf-head-ic"><span data-icon="mail"></span></span>
+            <div><h2>Newsletter</h2><p>Ideas and platform news, picked for your profile.</p></div>
+            <span class="pf-sec-prog" data-sec-prog="newsletter"></span>
+          </header>
           <label class="pf-switch"><input type="checkbox" name="newsletter"><span class="switch" aria-hidden="true"></span><span><b>Send me the Sports Content Playbook newsletter</b><small>You can unsubscribe any time.</small></span></label>
-          <div class="pf-q" data-newsletter-only><span>How often</span><div class="pf-chips" data-single="frequency"></div></div>
+          <div class="pf-q" data-newsletter-only><span>How often</span><div class="pf-seg" data-single="frequency"></div></div>
+          <div class="pf-nl-prev" data-newsletter-only aria-hidden="true"><div class="pf-nl-mail"><i class="pf-nl-logo"></i><i class="pf-nl-l w60"></i><i class="pf-nl-l"></i><div class="pf-nl-th"><i></i><i></i><i></i></div><i class="pf-nl-l w70"></i><i class="pf-nl-btn"></i></div><p>This is what lands in your inbox: the week's best posts for your profile, with ideas to adapt them.</p></div>
           <div class="pf-q" data-newsletter-only><span>What you want in it</span><div class="pf-chips" data-multi="newsletterTopics"></div></div>
         </section>
 
-        <section class="pf-card pf-billing" id="billing">
-          <header><h2>Billing &amp; membership</h2><p>Your plan, what you pay and when, invoices and payment method.</p></header>
+        <section class="pf-card pf-about pf-billing" id="billing">
+          <header class="pf-head">
+            <span class="pf-head-ic"><span data-icon="file-text"></span></span>
+            <div><h2>Billing &amp; membership</h2><p>Your plan, what you pay and when, invoices and payment method.</p></div>
+          </header>
           <div data-billing><p class="pf-billing-loading">Loading…</p></div>
         </section>
 
-        <section class="pf-card" id="security">
-          <header><h2>Account</h2><p>Sign-in and security.</p></header>
+        <section class="pf-card pf-about" id="security">
+          <header class="pf-head">
+            <span class="pf-head-ic"><span data-icon="lock"></span></span>
+            <div><h2>Account</h2><p>Sign-in and security.</p></div>
+          </header>
           <div class="pf-q pf-lang"><span>Website language <small>The language of the website and of the e-mails we send you.</small></span><div data-lang-slot="full"></div></div>
           <div class="pf-grid">
-            <label class="pf-field">New password<input name="password" type="password" autocomplete="new-password" minlength="8" placeholder="At least 8 characters"></label>
+            <div class="pf-field">New password<span class="pf-in"><span data-icon="lock"></span><input name="password" type="password" autocomplete="new-password" minlength="8" placeholder="At least 8 characters" aria-label="New password"><button class="pf-eye" type="button" aria-label="Show password" data-pw-eye><span data-icon="eye"></span></button></span>
+              <div class="pf-str" data-pw-str hidden><i></i><i></i><i></i><i></i></div><small class="pf-str-t" data-pw-str-t></small></div>
           </div>
           <div class="pf-row"><button class="btn btn-outline" type="button" data-password-save>Update password</button><p class="form-status" role="status" data-password-status></p></div>
         </section>
@@ -157,8 +186,8 @@
 
   <script src="js/icons.js?v=20261018pp"></script>
   <script src="js/checkout.js?v=20261020lh"></script>
-  <script src="js/profile.js?v=20261030b" defer></script>
-  <script src="js/profile-billing.js?v=20261019b" defer></script>
+  <script src="js/profile.js?v=20261030e" defer></script>
+  <script src="js/profile-billing.js?v=20261030c" defer></script>
   <script src="js/nav-menu.js?v=20261029d"></script>
   <script src="js/lead-flow.js?v=20261028a"></script>
   <script src="js/promo-bar.js?v=20261020a"></script>

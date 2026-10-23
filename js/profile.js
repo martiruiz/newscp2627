@@ -51,12 +51,17 @@
 
   // ---------- Catalog (sports, competitions, accounts from the library) ----------
   let catalog = {};
+  const logos = new Map();   // catalog id → logo url
+  const logoOf = (v) => v.id != null && logos.get(Number(v.id));
   async function loadCatalog() {
     try {
       const data = [];   // more than 1,000 values: read page by page
       for (let from = 0; ; from += 1000) { const r = await db.rpc("catalog_with_counts").range(from, from + 999); data.push(...(r.data || [])); if (r.error || !r.data || r.data.length < 1000) break; }
       for (const v of data || []) if (Number(v.ideas)) (catalog[v.category] ||= []).push({ id: Number(v.id), name: v.name, n: Number(v.ideas) });
       for (const k in catalog) catalog[k].sort((a, b) => b.n - a.n);
+      // logos of clubs, competitions and brands (the library's), for the favourites and competitions
+      const lg = await db.from("idea_catalog").select("id,logo_url").not("logo_url", "is", null).limit(5000);
+      for (const v of lg.data || []) logos.set(Number(v.id), v.logo_url);
       // the creators' accounts (Content Library → Content Creators → Accounts): id "platform|handle"
       const acc = await db.rpc("creator_accounts");
       catalog.accounts = (acc.data || []).map((a) => ({ id: `${a.platform}|${a.handle}`, name: `@${a.handle}`, n: Number(a.posts) }));
@@ -68,20 +73,36 @@
   // the roles as small cards with a line icon
   const ROLE_ICON = { "Social media manager": "megaphone", "Content creator": "clapperboard", "Marketing / comms lead": "target", "Head of digital": "layers",
     "Designer / video editor": "pen-line", Agency: "handshake", Athlete: "dumbbell", Student: "lightbulb", Other: "sparkles" };
+  // cards with an icon (organisation type, platforms, goals, formats, topics); platforms use their logo
+  const TILE_ICON = {
+    role: ROLE_ICON,
+    orgType: { Club: "shirt", "League / federation": "trophy", "Brand / sponsor": "handshake", Agency: "layers", Media: "square-play", "Athlete / creator": "dumbbell", Other: "sparkles" },
+    goals: { "Grow followers": "users", "More engagement": "heart", "Sponsorship revenue": "handshake", "Ticket sales": "ticket", "Merchandise sales": "shopping-bag", "Fan community": "message-circle", "Brand awareness": "megaphone", "Save production time": "clock" },
+    formats: { "Reels / short video": "square-play", Carousels: "layers", Images: "image", Stories: "film", "Long video": "clapperboard", Live: "zap" },
+    topics: { Matchday: "calendar-days", Signings: "pen-line", "Kit launches": "shirt", "Sponsor activations": "handshake", "Behind the scenes": "camera", Fans: "users", Milestones: "trophy", Community: "heart-handshake", Ticketing: "ticket", Training: "dumbbell", Humour: "laugh", "Women's sport": "star" },
+  };
+  const tile = (k, o, on) => `<button type="button" class="pf-chip pf-role" aria-pressed="${on}" data-val="${esc(o)}"><span class="pf-role-ic">${PF_ICON[o] && k === "platforms" ? `<img src="assets/pf-${PF_ICON[o]}.svg" alt="">` : icon(TILE_ICON[k]?.[o] || "sparkles")}</span><span>${esc(o)}</span><span class="pf-role-ck">${icon("check")}</span></button>`;
+  // the sport of each value, by its name (same drawings as My Club)
+  const SPORT_SVG = [[/football|soccer|f[uú]tbol/i, '<circle cx="12" cy="12" r="9"/><path d="m12 7.5 3.8 2.8-1.5 4.4H9.7l-1.5-4.4z"/>'], [/basket/i, '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3v18M5.6 5.6a9 9 0 0 1 0 12.8M18.4 5.6a9 9 0 0 0 0 12.8"/>'],
+    [/handball|balonmano/i, '<circle cx="12" cy="12" r="9"/><path d="M4.5 8.5c5 1.6 10 1.6 15 0M4.5 15.5c5-1.6 10-1.6 15 0M12 3c-2.4 5-2.4 13 0 18"/>'], [/hockey/i, '<path d="M5 3l6 13a3 3 0 0 1-2.7 4.3H4"/><path d="M19 3l-6 13a3 3 0 0 0 2.7 4.3H20"/>'],
+    [/volley/i, '<circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 9 9 9 0 0 1 7.8 4.5M12 12a9 9 0 0 1-7.8 4.5M12 12h9"/>'], [/tennis|padel|pádel/i, '<circle cx="12" cy="12" r="9"/><path d="M5.6 5.6a9 9 0 0 1 0 12.8M18.4 5.6a9 9 0 0 0 0 12.8"/>']];
+  const sportIc = (n) => { const m = SPORT_SVG.find(([re]) => re.test(n)); return m ? `<svg class="pf-sport-ic" viewBox="0 0 24 24" aria-hidden="true">${m[1]}</svg>` : ""; };
   function renderChips() {
     $$("[data-single]").forEach((el) => {
       const k = el.dataset.single;
-      if (k === "role") { el.innerHTML = OPTIONS.role.map((o) => `<button type="button" class="pf-chip pf-role" aria-pressed="${state.role === o}" data-val="${esc(o)}"><span class="pf-role-ic">${icon(ROLE_ICON[o] || "sparkles")}</span><span>${esc(o)}</span><span class="pf-role-ck">${icon("check")}</span></button>`).join(""); return; }
+      if (el.classList.contains("pf-roles")) { el.innerHTML = OPTIONS[k].map((o) => tile(k, o, state[k] === o)).join(""); return; }
+      if (el.classList.contains("pf-seg")) { el.innerHTML = OPTIONS[k].map((o) => `<button type="button" class="pf-chip pf-seg-b" aria-pressed="${state[k] === o}" data-val="${esc(o)}">${esc(o)}</button>`).join(""); return; }
       el.innerHTML = OPTIONS[k].map((o) => `<button type="button" class="pf-chip" aria-pressed="${state[k] === o}" data-val="${esc(o)}">${k === "favouritePlatform" && PF_ICON[o] ? `<img src="assets/pf-${PF_ICON[o]}.svg" alt="">` : ""}${esc(o)}</button>`).join("");
     });
     $$("[data-multi]").forEach((el) => {
       const k = el.dataset.multi;
+      if (el.classList.contains("pf-roles")) { el.innerHTML = OPTIONS[k].map((o) => tile(k, o, state[k].includes(o))).join(""); return; }
       el.innerHTML = OPTIONS[k].map((o) => `<button type="button" class="pf-chip" aria-pressed="${state[k].includes(o)}" data-val="${esc(o)}">${PF_ICON[o] ? `<img src="assets/pf-${PF_ICON[o]}.svg" alt="">` : ""}${esc(o)}</button>`).join("");
     });
     $$("[data-catalog-chips]").forEach((el) => {
       const list = catalog[el.dataset.catalogChips] || [];
       el.innerHTML = list.length
-        ? list.map((v) => `<button type="button" class="pf-chip" aria-pressed="${state.sports.includes(v.id)}" data-id="${v.id}">${esc(pretty(v.name))}</button>`).join("")
+        ? [...list].sort((a, b) => state.sports.includes(b.id) - state.sports.includes(a.id)).map((v) => `<button type="button" class="pf-chip" aria-pressed="${state.sports.includes(v.id)}" data-id="${v.id}">${sportIc(v.name)}${esc(pretty(v.name))}</button>`).join("")
         : `<p class="pf-muted">Sports appear here once the library is connected.</p>`;
     });
   }
@@ -111,14 +132,17 @@
     const taken = new Set(vals.map((v) => v.id ?? v.name.toLowerCase()));
     const matches = query ? (catalog[el.dataset.source] || []).filter((v) => v.name.toLowerCase().includes(query) && !taken.has(v.id)).slice(0, 8) : [];
     const exact = (catalog[el.dataset.source] || []).some((v) => v.name.toLowerCase() === query);
+    // how many are picked out of the maximum, and each one's posts in SCP
+    const postsOf = (v) => (v.id != null ? (catalog[el.dataset.source] || []).find((x) => x.id === v.id)?.n : null);
     el.innerHTML = `
+      ${max <= 10 ? `<div class="pf-pick-count"><span class="pf-meter5">${Array.from({ length: max }, (_, i) => `<i${i < vals.length ? ' class="on"' : ""}></i>`).join("")}</span><b>${vals.length}/${max}</b></div>` : ""}
       <div class="pf-picked">
-        ${vals.map((v, i) => `<span class="pf-pick"><span class="pf-pick-av" style="--h:${hue(v.name)}">${esc(initials(v.name))}</span>${esc(pretty(v.name))}${v.id == null ? `<small>new</small>` : ""}<button type="button" aria-label="Remove ${esc(v.name)}" data-unpick="${i}">${icon("x")}</button></span>`).join("")}
+        ${vals.map((v, i) => `<span class="pf-pick">${logoOf(v) ? `<img class="pf-pick-av is-logo" src="${esc(logoOf(v))}" alt="">` : `<span class="pf-pick-av" style="--h:${hue(v.name)}">${esc(initials(v.name))}</span>`}${esc(pretty(v.name))}${v.id == null ? `<small>new</small>` : postsOf(v) ? `<small>${Number(postsOf(v)).toLocaleString(window.SCP_LOC || "en-GB", { notation: "compact" })} posts</small>` : ""}<button type="button" aria-label="Remove ${esc(v.name)}" data-unpick="${i}">${icon("x")}</button></span>`).join("")}
       </div>
       ${full ? `<p class="pf-muted">That's ${max} — remove one to add another.</p>` : `
       <div class="pf-search">${icon("search")}<input type="search" placeholder="${esc(el.dataset.placeholder)}" value="${esc(q)}" data-pick-q aria-label="${esc(el.dataset.placeholder)}"></div>
       ${query ? `<ul class="pf-results">
-        ${matches.map((v) => `<li><button type="button" data-pick='${esc(JSON.stringify({ id: v.id, name: v.name }))}'><span class="pf-pick-av" style="--h:${hue(v.name)}">${esc(initials(v.name))}</span>${esc(pretty(v.name))}<small>${v.n} posts</small></button></li>`).join("")}
+        ${matches.map((v) => `<li><button type="button" data-pick='${esc(JSON.stringify({ id: v.id, name: v.name }))}'>${logoOf(v) ? `<img class="pf-pick-av is-logo" src="${esc(logoOf(v))}" alt="">` : `<span class="pf-pick-av" style="--h:${hue(v.name)}">${esc(initials(v.name))}</span>`}${esc(pretty(v.name))}<small>${v.n} posts</small></button></li>`).join("")}
         ${free && !exact ? `<li><button type="button" data-pick='${esc(JSON.stringify({ id: null, name: q.trim() }))}'>${icon("plus")}Add “${esc(q.trim())}”<small>not in the library yet</small></button></li>` : ""}
         ${!matches.length && !free ? `<li class="pf-muted">No matches.</li>` : ""}
       </ul>` : ""}`}`;
@@ -180,7 +204,7 @@
         <ul role="listbox">${list.slice(0, 80).map((x) => `<li><button type="button" role="option" aria-selected="${cur?.c === x.c}" data-country="${x.c}"><span class="pf-flag">${flag(x.c)}</span>${esc(x.local)}${cur?.c === x.c ? icon("check") : ""}</button></li>`).join("") || `<li class="pf-muted">${esc(tx("No matches."))}</li>`}</ul></div>` : ""}`;
     if (cOpen) { const q = $("[data-country-q]", box); q.focus(); q.setSelectionRange(q.value.length, q.value.length); }
   }
-  const tx = (t) => (window.tx ? window.tx(t) : t);
+  const tx = (t, v = {}) => (window.tx ? window.tx(t, v) : t.replace(/\{(\w+)\}/g, (m, k) => v[k] ?? m));
   root.addEventListener("click", (e) => {
     if (e.target.closest("[data-country-btn]")) { cOpen = !cOpen; cQ = ""; return renderCountry(); }
     const opt = e.target.closest("[data-country]");
@@ -191,6 +215,16 @@
   document.addEventListener("click", (e) => { if (cOpen && !e.composedPath().some((el) => el.hasAttribute?.("data-pf-country"))) { cOpen = false; renderCountry(); } });
   document.addEventListener("keydown", (e) => { if (cOpen && e.key === "Escape") { cOpen = false; renderCountry(); } });
 
+  // what each section needs (in order); newsletter is on / off
+  const SECTIONS = {
+    about: (s) => [s.first_name, s.last_name, s.country, s.role, s.language].map((v) => String(v || "").trim()),
+    club: (s) => [String(s.organization || "").trim(), s.orgType, s.sports.length, s.competitions.length, s.teamSize],
+    channels: (s) => [s.platforms.length, s.audience],
+    favourites: (s) => [s.favouritePlatform, s.favouriteProfiles.length >= 5, s.favouriteCreatorAccounts.length >= 5],
+    goals: (s) => [s.goals.length, s.formats.length, s.topics.length],
+    newsletter: (s) => [s.newsletter],
+  };
+
   // ---------- Completeness, hero, save bar ----------
   const CHECKS = [
     ["your name", (s) => s.first_name], ["your role", (s) => s.role], ["your organisation", (s) => s.organization], ["the type of organisation", (s) => s.orgType],
@@ -199,8 +233,9 @@
     ["your goals", (s) => s.goals.length], ["the topics you care about", (s) => s.topics.length],
   ];
   function meter() {
-    const score = CHECKS.reduce((t, [, ok, part]) => t + (ok(state) ? 1 : part ? part(state) : 0), 0);
-    const pct = Math.round((score / CHECKS.length) * 100);
+    // the same parts as each section's progress (newsletter apart), so the ring and "Next" always agree
+    const parts = Object.entries(SECTIONS).filter(([id]) => id !== "newsletter").flatMap(([, f]) => f(state));
+    const pct = Math.round((parts.filter(Boolean).length / parts.length) * 100);
     $("[data-pf-pct]").textContent = `${pct}%`;
     const c = 2 * Math.PI * 52;
     const ring = $("[data-pf-ring]");
@@ -211,11 +246,23 @@
     const full = [state.first_name, state.last_name].filter(Boolean).join(" ");
     $("[data-profile-title]").textContent = full || "My profile";
     $("[data-pf-role]").textContent = state.role || "Your profile";
-    $("[data-pf-org]").textContent = [state.organization, state.orgType].filter(Boolean).join(" · ");
+    $("[data-pf-org]").textContent = [state.organization, state.orgType && tx(state.orgType)].filter(Boolean).join(" · ");
     $$("[data-newsletter-only]").forEach((el) => (el.hidden = !state.newsletter));
-    const about = [state.first_name, state.last_name, state.country, state.role, state.language].filter((v) => String(v || "").trim()).length;
-    const prog = $("[data-pf-about-prog]");
-    if (prog) { prog.innerHTML = about === 5 ? `${icon("check")}${esc(tx("Complete"))}` : `<b>${about}</b>/5`; prog.classList.toggle("is-done", about === 5); }
+    // each section's progress (its head), its dot in the side menu, and the hero's "Next" button to the first one missing
+    let firstMissing = null;
+    for (const [id, parts] of Object.entries(SECTIONS)) {
+      const vals = parts(state), done = vals.filter(Boolean).length, all = done === vals.length;
+      const prog = $(`[data-sec-prog="${id}"]`);
+      if (prog) {
+        prog.innerHTML = id === "newsletter" ? (state.newsletter ? `${icon("check")}${esc(tx("On"))}` : esc(tx("Off"))) : all ? `${icon("check")}${esc(tx("Complete"))}` : `<b>${done}</b>/${vals.length}`;
+        prog.classList.toggle("is-done", id === "newsletter" ? state.newsletter : all);
+      }
+      const link = $(`[data-pf-nav] a[href="#${id}"]`);
+      if (link) { let dot = link.querySelector(".pf-dot"); if (!dot) { dot = document.createElement("i"); dot.className = "pf-dot"; link.append(dot); } dot.classList.toggle("is-todo", !all && id !== "newsletter"); dot.classList.toggle("is-off", id === "newsletter" && !state.newsletter); }
+      if (!all && id !== "newsletter" && !firstMissing) firstMissing = id;
+    }
+    const next = $("[data-pf-next]");
+    if (firstMissing) next.innerHTML = `<a class="pf-next-btn" href="#${firstMissing}">${esc(tx("Next: {s}", { s: $(`#${firstMissing} h2`)?.textContent || "" }))} →</a>`;
   }
   const dirty = () => JSON.stringify(state) !== JSON.stringify(saved);
   // saved on its own a moment after each change; the bar only says "Saving…" / "Saved ✓" (and shows the buttons again if it fails)
@@ -256,6 +303,17 @@
     bar.classList.add("is-saved");
     setTimeout(() => { if (!dirty()) { bar.hidden = true; bar.classList.remove("is-saved"); } }, 1400);
   }
+
+  // ---------- New password: show / hide and how strong it is ----------
+  const pw = form.password;
+  $("[data-pw-eye]")?.addEventListener("click", () => { pw.type = pw.type === "password" ? "text" : "password"; $("[data-pw-eye]").setAttribute("aria-label", tx(pw.type === "password" ? "Show password" : "Hide password")); pw.focus(); });
+  pw?.addEventListener("input", () => {
+    const v = pw.value, n = !v ? 0 : [v.length >= 8, /[a-z]/.test(v) && /[A-Z]/.test(v), /\d/.test(v), /[^A-Za-z0-9]/.test(v) || v.length >= 14].filter(Boolean).length;
+    const bar = $("[data-pw-str]"), t = $("[data-pw-str-t]");
+    bar.hidden = !v; bar.dataset.n = n;
+    t.textContent = !v ? "" : v.length < 8 ? tx("At least 8 characters") : tx(["Weak", "Weak", "Fair", "Strong", "Very strong"][n]);
+    t.dataset.n = v.length < 8 ? 0 : n;
+  });
 
   // ---------- Profile photo: square-cropped + resized to 400px in the browser, stored in Storage "avatars/<user id>/" ----------
   // The URL is saved on the profile (profiles.avatar_url) and on the account itself (user metadata), so it shows
@@ -345,6 +403,17 @@
 
   // Show what we have straight away; sports / competitions / accounts arrive with the catalog
   fillText(); renderChips(); meter();
+  // the plan in the hero: "Trial · plan · until …" / "plan · Active"
+  db.rpc("my_membership").then(({ data }) => {
+    const sub = data?.subscription, el = $("[data-pf-plan]"); if (!sub || !el) return;
+    const until = (v) => new Date(v).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" });
+    const live = ["active", "trialing", "past_due"].includes(sub.status);
+    if (!live) return;
+    el.innerHTML = sub.status === "trialing" ? `<i>${esc(tx("Trial"))}</i>${esc(tx(sub.plan_name || ""))}${sub.trial_end ? ` · ${esc(tx("until {date}", { date: until(sub.trial_end) }))}` : ""}`
+      : `<i>${esc(tx(sub.status === "past_due" ? "Payment issue" : "Active"))}</i>${esc(tx(sub.plan_name || ""))}`;
+    el.classList.toggle("is-warn", sub.status === "past_due");
+    el.hidden = false;
+  }, () => {});
   await loadCatalog();
   renderChips(); $$("[data-picker]").forEach((el) => renderPicker(el));
 })();

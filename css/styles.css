@@ -7457,3 +7457,80 @@ section[id], :target { scroll-margin-top: 92px; }
   .pf-head { flex-wrap: wrap; row-gap: 8px; } .pf-head > div { flex: 1 1 calc(100% - 64px); } .pf-sec-prog { margin-left: 60px; }
   .pf-in.is-locked input:disabled { padding-right: 42px; } .pf-verified { display: none; }
 }
+
+/* ---------- Profile page, premium (profile.html, js/profile.js): glass hero with the plan, side menu with each section's
+   state, every section with an icon head and its progress, cards with icons, segmented controls, logos ---------- */
+.pf-hero { position: relative; overflow: hidden; border-radius: 28px; border: 1px solid rgba(240, 184, 74, 0.32);
+  background: radial-gradient(80% 140% at 0% 0%, rgba(240, 184, 74, 0.15), transparent 55%), radial-gradient(60% 120% at 100% 100%, rgba(122, 162, 255, 0.08), transparent 60%), var(--surface);
+  box-shadow: 0 30px 70px -36px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
+.pf-avatar { box-shadow: 0 0 0 4px var(--surface), 0 0 0 6px rgba(240, 184, 74, 0.75), 0 14px 40px -10px rgba(240, 184, 74, 0.55); }
+.pf-plan-chip { display: inline-flex; align-items: center; gap: 8px; margin-top: 12px; height: 30px; padding: 0 12px 0 5px; border-radius: 999px; background: rgba(0, 216, 91, 0.1); border: 1px solid rgba(0, 216, 91, 0.35); color: #c6ffde; font-size: 12.5px; }
+.pf-plan-chip[hidden] { display: none; }
+.pf-plan-chip i { font-style: normal; padding: 2px 9px; border-radius: 999px; background: #00d85b; color: #062312; font-size: 10.5px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; }
+.pf-plan-chip.is-warn { background: rgba(255, 104, 92, 0.1); border-color: rgba(255, 104, 92, 0.4); color: #ffd0cb; } .pf-plan-chip.is-warn i { background: #ff685c; color: #2b0805; }
+:root[data-theme="light"] .pf-plan-chip { color: #0a6d33; }
+.pf-next-btn { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 14px; border-radius: 999px; border: 1px solid rgba(240, 184, 74, 0.55); background: rgba(240, 184, 74, 0.1); color: var(--gold); font-size: 13px; font-weight: 600; text-decoration: none; transition: background 0.2s; }
+.pf-next-btn:hover { background: rgba(240, 184, 74, 0.2); }
+/* side menu in a card, a dot per section (green = complete, gold = something missing) */
+.pf-nav { padding: 8px; border-radius: 20px; background: var(--surface); border: 0.5px solid var(--line); box-shadow: var(--inset-glow); }
+.pf-nav a { height: 40px; font-size: 13.5px; }
+.pf-nav a.is-active { color: var(--text); background: linear-gradient(90deg, rgba(240, 184, 74, 0.2), rgba(240, 184, 74, 0.04)); box-shadow: inset 3px 0 0 var(--gold); }
+.pf-nav a.is-active svg { color: var(--gold); }
+.pf-dot { margin-left: auto; width: 8px; height: 8px; border-radius: 50%; background: #00d85b; box-shadow: 0 0 8px rgba(0, 216, 91, 0.7); flex: none; }
+.pf-dot.is-todo { background: var(--gold); box-shadow: 0 0 8px rgba(240, 184, 74, 0.7); }
+.pf-dot.is-off { background: var(--surface-3); box-shadow: none; }
+/* every card in the new style */
+.pf-card.pf-about { scroll-margin-top: 100px; }
+.pf-card.pf-about > .pf-q:first-of-type, .pf-card.pf-about > .pf-grid:first-of-type { margin-top: 20px; }
+.pf-card .pf-head h2 { font-size: 21px; }
+.pf-roles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.pf-role-ic img { width: 19px; height: 19px; }
+/* segmented controls (team size, audience, frequency) */
+.pf-seg { display: inline-flex; flex-wrap: wrap; gap: 3px; padding: 4px; border-radius: 14px; background: rgba(0, 0, 0, 0.2); border: 0.5px solid var(--line); }
+.pf-chip.pf-seg-b { height: 36px; padding: 0 14px; border: 0; border-radius: 10px; background: none; font-weight: 600; font-size: 13.5px; }
+.pf-chip.pf-seg-b:hover { background: rgba(var(--fg), 0.05); }
+.pf-chip.pf-seg-b[aria-pressed="true"] { color: #121b33; background: linear-gradient(180deg, #ffd27a, #f0b84a); box-shadow: 0 8px 20px -10px rgba(240, 184, 74, 0.8); }
+:root[data-theme="light"] .pf-seg { background: rgba(18, 27, 51, 0.04); }
+/* sports with their icon; logos on favourites and competitions; x/5 counter */
+.pf-sport-ic { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.pf-pick-av.is-logo { object-fit: contain; background: #fff; padding: 3px; }
+.pf-pick-count { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 12.5px; color: var(--muted); }
+.pf-meter5 { display: inline-flex; gap: 3px; } .pf-meter5 i { width: 16px; height: 5px; border-radius: 3px; background: rgba(var(--fg), 0.12); } .pf-meter5 i.on { background: var(--gold); box-shadow: 0 0 6px rgba(240, 184, 74, 0.5); }
+/* newsletter: the switch as a panel + a preview of the e-mail */
+.pf-card.pf-about .pf-switch { margin-top: 20px; padding: 14px 16px; border-radius: 16px; border: 1px solid var(--line); background: var(--surface-2); transition: border-color 0.2s, background 0.2s; }
+.pf-card.pf-about .pf-switch:has(input:checked) { border-color: rgba(240, 184, 74, 0.45); background: linear-gradient(90deg, rgba(240, 184, 74, 0.13), rgba(240, 184, 74, 0.03)); }
+.pf-switch .switch::after { background: #fff; } .pf-switch input:checked + .switch::after { background: #121b33; }
+.pf-nl-prev { display: flex; align-items: center; gap: 18px; margin-top: 18px; padding: 14px; border-radius: 16px; border: 0.5px dashed var(--line); }
+.pf-nl-prev[hidden] { display: none; }
+.pf-nl-prev p { margin: 0; font-size: 13px; color: var(--muted); line-height: 1.5; }
+.pf-nl-mail { flex: none; display: grid; gap: 6px; width: 150px; padding: 12px; border-radius: 12px; background: #f4f6fa; box-shadow: 0 14px 30px -18px rgba(0, 0, 0, 0.8); transform: rotate(-2deg); }
+.pf-nl-mail i { display: block; height: 5px; border-radius: 3px; background: #d6dbe6; } .pf-nl-mail .w60 { width: 60%; } .pf-nl-mail .w70 { width: 70%; }
+.pf-nl-mail .pf-nl-logo { width: 40%; height: 7px; background: #121b33; }
+.pf-nl-th { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; } .pf-nl-th i { height: auto; aspect-ratio: 4 / 5; border-radius: 5px; background: linear-gradient(160deg, #1d2845, #f0b84a); }
+.pf-nl-mail .pf-nl-btn { width: 50%; height: 10px; border-radius: 5px; background: #f0b84a; }
+/* billing: the plan as a pricing-like card, facts as tiles */
+.pf-billing .pf-plan { padding: 20px; border-radius: 20px; border: 1px solid rgba(240, 184, 74, 0.38); background: radial-gradient(80% 120% at 100% 0%, rgba(240, 184, 74, 0.13), transparent 60%), var(--surface-2); }
+.pf-billing .pf-plan.is-empty { border-color: var(--line); background: var(--surface-2); }
+.pf-billing .pf-plan-top b { font-size: 21px; }
+.pf-billing .pf-plan-int b { color: var(--text); font-size: 15px; }
+.pf-billing .pf-facts { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; border: 0; overflow: visible; }
+.pf-billing .pf-facts div { border-radius: 12px; background: rgba(var(--fg), 0.04); border: 0.5px solid var(--line-soft); }
+.pf-billing .pf-billing-actions .btn { height: 40px; }
+/* account: language as a segmented control, password with show / hide and strength */
+.pf-lang .lang-switch { height: 46px; padding: 4px; border-radius: 14px; background: rgba(0, 0, 0, 0.2); }
+.pf-lang .lang-switch button { height: 36px; padding: 0 16px; border-radius: 10px; font-size: 13.5px; }
+.pf-lang .lang-switch button[aria-pressed="true"] { color: #121b33; background: linear-gradient(180deg, #ffd27a, #f0b84a); }
+.pf-in input[name="password"] { padding-right: 46px; }
+.pf-eye { position: absolute; right: 8px; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 9px; color: var(--muted); }
+.pf-eye:hover { color: var(--gold); background: rgba(var(--fg), 0.05); } .pf-eye svg { width: 17px; height: 17px; }
+.pf-str { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-top: 8px; } .pf-str[hidden] { display: none; }
+.pf-str i { height: 5px; border-radius: 3px; background: rgba(var(--fg), 0.12); transition: background 0.2s; }
+.pf-str[data-n="1"] i:nth-child(-n+1) { background: #ff685c; } .pf-str[data-n="2"] i:nth-child(-n+2) { background: #f0b84a; }
+.pf-str[data-n="3"] i:nth-child(-n+3) { background: #3ee98a; } .pf-str[data-n="4"] i { background: #00d85b; }
+.pf-str-t { display: block; margin-top: 6px; font-size: 12px; font-weight: 500; color: var(--muted); } .pf-str-t[data-n="3"], .pf-str-t[data-n="4"] { color: #3ee98a; } .pf-str-t[data-n="1"], .pf-str-t[data-n="0"] { color: #ff8a80; }
+@media (max-width: 1000px) { .pf-nav { padding: 6px; border-radius: 16px; } .pf-dot { margin-left: 6px; } .pf-billing .pf-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 700px) { .pf-roles { grid-template-columns: repeat(2, minmax(0, 1fr)); } .pf-nl-prev { flex-direction: column; align-items: flex-start; } .pf-billing .pf-facts { grid-template-columns: 1fr; } }
+@media (max-width: 700px) {
+  .pf-id { flex-direction: column; align-items: flex-start; gap: 14px; }   /* phones: photo on top (the ring sits beside it), name and plan below, full width */
+  .pf-plan-chip { height: auto; min-height: 30px; padding: 5px 12px 5px 5px; line-height: 1.35; }
+}
