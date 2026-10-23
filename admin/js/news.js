@@ -13,7 +13,7 @@
   const f = { q: "", status: "", platform: "" };
   let rows = [];
 
-  main.innerHTML = `<div class="page-head"><div><h1>Social News</h1><p>The news on the website's Social News page: edit them, publish or hide them.</p></div>
+  const shell = () => { main.innerHTML = `<div class="page-head"><div><h1>Social News</h1><p>The news on the website's Social News page: edit them, publish or hide them.</p></div>
     <div class="head-actions"><a class="btn" href="../news.html" target="_blank" rel="noopener">${icon("external")}See the page</a></div></div>
     <div class="aud-kpis" data-kpis></div>
     <div class="nw-how">${icon("sparkles")}<span><b>They come in on their own</b> every 30 hours (sports marketing, social media and AI news, rewritten for sports teams). You only decide which ones are shown and fix anything you want.</span></div>
@@ -22,7 +22,8 @@
       <div class="nw-filters"><label class="bl-search">${icon("filters")}<input type="search" placeholder="Search title or source…" data-f="q"></label></div>
     </div>
     <div class="nw-pfs" role="group" aria-label="Network" data-pfs></div>
-    <div class="nw-list" data-list><p class="panel panel-pad muted">Loading…</p></div>`;
+    <div class="nw-list" data-list><p class="panel panel-pad muted">Loading…</p></div>`; };
+  shell();
 
   const day = (v) => (v ? new Date(v).toLocaleDateString("es-ES", { day: "2-digit", month: "short", year: "numeric" }) : "—");
   async function load() {
@@ -64,50 +65,102 @@
   }
 
   const faqRow = (f = {}) => `<div class="bl-faq-row"><input class="input" name="faq_q" value="${esc(f.q || "")}" placeholder="Question"><textarea class="input" name="faq_a" rows="2" placeholder="Short, direct answer (2–3 sentences)">${esc(f.a || "")}</textarea><button type="button" class="icon-btn" data-faq-del title="Remove" aria-label="Remove">${icon("trash")}</button></div>`;
+  // ---------- one news item: a full page like Admin → Blog → a post (cards on the left, state + Google on the right) ----------
   function edit(id) {
     const r = rows.find((x) => x.id === id); if (!r) return;
     const hasSeo = "meta_title" in r;   // the SEO columns exist (supabase/seo.sql)
-    const m = A.modal({ title: "Edit news", sub: `<a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.url)}</a>`, size: "lg",
-      body: `<form class="nw-form" data-form>
-        <label>Title<input class="input" name="title" value="${esc(r.title)}" required maxlength="300"></label>
-        <div class="nw-row"><label>Source<input class="input" name="source_name" value="${esc(r.source_name)}" required></label>
-          <label>Network<select class="select" name="platform">${PLATFORMS.map((p) => `<option value="${p}"${r.platform === p ? " selected" : ""}>${PF[p]}</option>`).join("")}</select></label>
-          <label>Date<input class="input" type="date" name="published_at" value="${esc((r.published_at || "").slice(0, 10))}"></label></div>
-        <label>Original article<input class="input" name="url" type="url" value="${esc(r.url)}" required></label>
-        <label>Text <small class="muted">One paragraph per block; leave an empty line between paragraphs.</small><textarea class="input" name="paragraphs" rows="12">${esc((r.paragraphs || []).join("\n\n"))}</textarea></label>
-        <label class="check-inline"><input type="checkbox" name="relevant"${r.relevant ? " checked" : ""}> Published on the website</label>
-        <div class="nw-seo">
-          <b class="nw-seo-h">${icon("sparkles")}SEO &amp; AI <small class="muted">Each published news item has its own page for Google and AI assistants${r.slug ? ` · <a href="../news/${esc(r.slug)}.html" target="_blank" rel="noopener">see it</a>` : ""}.</small></b>
-          ${hasSeo ? `<label>Meta title <span class="bl-len" data-len="meta_title"></span><input class="input" name="meta_title" value="${esc(r.meta_title || "")}" maxlength="80" placeholder="Empty = the title. 30–60 characters"></label>
-          <label>Meta description <span class="bl-len" data-len="meta_description"></span><textarea class="input" name="meta_description" rows="2" maxlength="200" placeholder="Empty = the first lines. 120–160 characters">${esc(r.meta_description || "")}</textarea></label>
-          <label>Key takeaways <small class="muted">2–4 short sentences, one per line. AI assistants quote them.</small><textarea class="input" name="takeaways" rows="3">${esc((r.takeaways || []).join("\n"))}</textarea></label>
-          <div class="bl-faq"><span class="bl-faq-h">Frequently asked questions <small class="muted">Optional. What a sports team would ask about this news.</small></span>
-            <div data-faq>${(r.faq || []).map(faqRow).join("")}</div>
-            <button type="button" class="btn btn-ghost btn-sm" data-faq-add>${icon("plus")}Add a question</button></div>`
-          : `<p class="muted">Run supabase/seo.sql in Supabase to add the SEO fields.</p>`}
-        </div>
-      </form>`,
-      foot: `<button class="btn btn-primary" type="button" data-save>Save</button>` });
-    const fm0 = m.el.querySelector("[data-form]");
-    const lens = () => { if (!hasSeo) return; for (const [k, a, b] of [["meta_title", 30, 60], ["meta_description", 120, 160]]) { const v = fm0[k].value.trim().length, el = fm0.querySelector(`[data-len="${k}"]`); el.textContent = v ? `${v} / ${b}` : ""; el.className = `bl-len ${v >= a && v <= b ? "ok" : v ? "warn" : ""}`; } };
-    lens(); fm0.addEventListener("input", lens);
-    fm0.addEventListener("click", (e) => {
-      if (e.target.closest("[data-faq-add]")) fm0.querySelector("[data-faq]").insertAdjacentHTML("beforeend", faqRow());
-      if (e.target.closest("[data-faq-del]")) e.target.closest(".bl-faq-row").remove();
+    const paraRow = (t = "") => `<div class="nw-para"><span class="nw-para-n"></span><textarea class="input" rows="3" data-para>${esc(t)}</textarea><button type="button" class="icon-btn" data-para-del title="Remove" aria-label="Remove">${icon("trash")}</button></div>`;
+    const lh = (t, k) => `<span class="bl-lh"><span>${t}</span><span class="bl-len" data-len="${k}"></span></span>`;
+    window.scrollTo(0, 0);
+    main.innerHTML = `<div class="page-head bl-ed-head"><div class="bl-eh">
+        <nav class="bl-eh-crumb"><a href="#" data-back class="bl-eh-back" aria-label="Back to Social News">${icon("chevron")}</a><a href="#" data-back>Social News</a><span>/</span><span>${esc(PF[r.platform] || r.platform)}</span></nav>
+        <h1>${esc(r.title)}</h1>
+        <div class="bl-eh-meta"><span class="bl-st ${r.relevant ? "is-pub" : ""}" data-ed-st>${r.relevant ? "Published" : "Hidden"}</span><span>${icon("edit")}${esc(day(r.published_at || r.created_at))}</span><span>${icon("external")}${esc(r.source_name)}</span>${r.slug ? `<span class="mono">/news/${esc(r.slug)}</span>` : ""}</div>
+      </div>
+      <div class="head-actions">${r.slug && r.relevant ? `<a class="btn" href="../news/${esc(r.slug)}.html" target="_blank" rel="noopener">${icon("eye")}See it on the website</a>` : ""}<button class="btn btn-primary" type="button" data-ed-save>${icon("check")}Save</button></div></div>
+      <div class="bl-ed">
+        <form class="bl-panes" data-form>
+          <section class="panel panel-pad bl-ecard">
+            <h3 class="bl-card-h"><span class="bl-n">1</span>The news <small class="muted">Title, where it comes from and when</small></h3>
+            <label class="bl-big">Title<input class="input" name="title" value="${esc(r.title)}" required maxlength="300"></label>
+            <div class="bl-row"><label>Source<input class="input" name="source_name" value="${esc(r.source_name)}" required></label>
+              <label>Network<select class="select" name="platform">${PLATFORMS.map((p) => `<option value="${p}"${r.platform === p ? " selected" : ""}>${PF[p]}</option>`).join("")}</select></label>
+              <label>Date<input class="input" type="date" name="published_at" value="${esc((r.published_at || "").slice(0, 10))}"></label></div>
+            <label>Original article<span class="nw-url"><input class="input mono" name="url" type="url" value="${esc(r.url)}" required><a class="icon-btn" href="${esc(r.url)}" target="_blank" rel="noopener" title="Open" aria-label="Open">${icon("external")}</a></span></label>
+          </section>
+          <section class="panel panel-pad bl-ecard">
+            <h3 class="bl-card-h"><span class="bl-n">2</span>The text <small class="muted" data-wc></small></h3>
+            <div class="nw-paras" data-paras>${((r.paragraphs || []).length ? r.paragraphs : [""]).map(paraRow).join("")}</div>
+            <button type="button" class="btn btn-ghost btn-sm bl-add" data-para-add>${icon("plus")}Add a paragraph</button>
+          </section>
+          <section class="panel panel-pad bl-ecard">
+            <h3 class="bl-card-h"><span class="bl-n">3</span>SEO &amp; AI <small class="muted">Its own page for Google and AI assistants</small></h3>
+            ${hasSeo ? `<label>${lh("Meta title", "meta_title")}<input class="input" name="meta_title" value="${esc(r.meta_title || "")}" maxlength="80" placeholder="Empty = the title. 30–60 characters"></label>
+            <label>${lh("Meta description", "meta_description")}<textarea class="input" name="meta_description" rows="3" maxlength="200" placeholder="Empty = the first lines. 120–160 characters">${esc(r.meta_description || "")}</textarea></label>
+            <label>Key takeaways <small class="muted bl-sub">2–4 short sentences, one per line. AI assistants quote them.</small><textarea class="input" name="takeaways" rows="4">${esc((r.takeaways || []).join("\n"))}</textarea></label>
+            <div class="bl-faq"><span class="bl-faq-h">Frequently asked questions <small class="muted bl-sub">Optional. What a sports team would ask about this news.</small></span>
+              <div data-faq>${(r.faq || []).map(faqRow).join("")}</div>
+              <button type="button" class="btn btn-ghost btn-sm" data-faq-add>${icon("plus")}Add a question</button></div>`
+            : `<p class="muted">Run supabase/seo.sql in Supabase to add the SEO fields.</p>`}
+          </section>
+        </form>
+        <aside class="bl-side">
+          <div class="panel bl-side-card"><label class="nw-sw nw-sw-lg"><input type="checkbox" data-ed-pub${r.relevant ? " checked" : ""}><span class="nw-sw-t"></span><span><b>Published on the website</b><small class="muted">Off = hidden from Social News</small></span></label>
+            ${r.edited_at ? `<small class="muted">Edited ${esc(day(r.edited_at))}</small>` : ""}</div>
+          ${hasSeo ? `<div class="panel bl-side-card"><div class="bl-score"><div class="bl-ring"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.9" class="bg"/><circle cx="18" cy="18" r="15.9" class="fg" data-ring-fg/></svg><b data-score>0</b></div><div><b>SEO score</b><small class="muted">Google + AI assistants</small></div></div><ul class="bl-checks" data-checks></ul></div>` : ""}
+          <div class="panel bl-side-card"><b class="bl-side-h">${icon("search")}How it looks on Google</b><div class="bl-serp" data-serp></div></div>
+          <button type="button" class="btn btn-ghost btn-sm nw-del" data-ed-del>${icon("trash")}Delete this news</button>
+        </aside>
+      </div>`;
+    const fm = $("[data-form]");
+    const paras = () => [...fm.querySelectorAll("[data-para]")].map((t) => t.value.trim()).filter(Boolean);
+    const grow = (t) => { t.style.height = "auto"; t.style.height = `${t.scrollHeight + 2}px`; };
+    function audit() {
+      fm.querySelectorAll(".nw-para-n").forEach((n, i) => { n.textContent = i + 1; });
+      const text = paras().join(" "), n = text ? text.split(/\s+/).length : 0;
+      $("[data-wc]").textContent = `${paras().length} paragraphs · ${n} words`;
+      const mt = (hasSeo && fm.meta_title.value.trim()) || fm.title.value.trim(), md = (hasSeo && fm.meta_description.value.trim()) || (text.length > 155 ? `${text.slice(0, 154).replace(/\s+\S*$/, "")}…` : text);
+      $("[data-serp]").innerHTML = `<small>sportscontentplaybook.com › news › ${esc(r.slug || "…")}</small><b>${esc(mt || "Your title")}</b><p>${esc(md)}</p>`;
+      if (!hasSeo) return;
+      for (const [k, a, b] of [["meta_title", 30, 60], ["meta_description", 120, 160]]) { const v = fm[k].value.trim().length, el = $(`[data-len="${k}"]`); el.textContent = v ? `${v} / ${b}` : ""; el.className = `bl-len ${v >= a && v <= b ? "ok" : v ? "warn" : ""}`; }
+      const tk = fm.takeaways.value.split("\n").filter((t) => t.trim()).length;
+      const faqN = [...fm.querySelectorAll(".bl-faq-row")].filter((x) => x.querySelector("[name=faq_q]").value.trim() && x.querySelector("[name=faq_a]").value.trim()).length;
+      const checks = [[`Title on Google 30–60 characters (${mt.length})`, mt.length >= 30 && mt.length <= 60], [`Description on Google 120–160 characters (${md.length})`, md.length >= 120 && md.length <= 160],
+        [`2 or more paragraphs (${paras().length})`, paras().length >= 2], [`Key takeaways for AI (${tk})`, tk >= 2], [`FAQ for AI (${faqN})`, faqN >= 1], ["Original article linked", /^https?:\/\//.test(fm.url.value.trim())]];
+      const score = Math.round((checks.filter((c) => c[1]).length / checks.length) * 100);
+      $("[data-score]").textContent = score;
+      const fg = $("[data-ring-fg]"); fg.style.strokeDasharray = `${score} 100`; fg.style.stroke = score >= 80 ? "var(--green)" : score >= 50 ? "var(--accent)" : "var(--red)";
+      $("[data-checks]").innerHTML = checks.map(([t, v]) => `<li class="${v ? "ok" : ""}">${icon(v ? "check" : "alert")}<span>${esc(t)}</span></li>`).join("");
+    }
+    fm.querySelectorAll("[data-para]").forEach(grow); audit();
+    fm.addEventListener("input", (e) => { if (e.target.matches("[data-para]")) grow(e.target); audit(); });
+    fm.addEventListener("click", (e) => {
+      if (e.target.closest("[data-para-add]")) { $("[data-paras]").insertAdjacentHTML("beforeend", paraRow()); $("[data-paras]").lastElementChild.querySelector("textarea").focus(); audit(); }
+      if (e.target.closest("[data-para-del]")) { e.target.closest(".nw-para").remove(); audit(); }
+      if (e.target.closest("[data-faq-add]")) fm.querySelector("[data-faq]").insertAdjacentHTML("beforeend", faqRow());
+      if (e.target.closest("[data-faq-del]")) { e.target.closest(".bl-faq-row").remove(); audit(); }
     });
-    m.el.querySelector("[data-save]").addEventListener("click", async () => {
-      const fm = fm0;
+    $("[data-ed-pub]").addEventListener("change", (e) => { const st = $("[data-ed-st]"); st.textContent = e.target.checked ? "Published" : "Hidden"; st.className = `bl-st ${e.target.checked ? "is-pub" : ""}`; });
+    $("[data-ed-save]").addEventListener("click", async () => {
       if (!fm.title.value.trim() || !fm.url.value.trim()) return fail(new Error("The news needs a title and the original article."));
       const body = { title: fm.title.value.trim(), source_name: fm.source_name.value.trim(), platform: fm.platform.value, url: fm.url.value.trim(),
-        paragraphs: fm.paragraphs.value.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean), relevant: fm.relevant.checked, edited_at: new Date().toISOString(),
+        paragraphs: paras(), relevant: $("[data-ed-pub]").checked, edited_at: new Date().toISOString(),
         ...(fm.published_at.value ? { published_at: new Date(`${fm.published_at.value}T12:00:00Z`).toISOString() } : {}),
         ...(hasSeo ? { meta_title: fm.meta_title.value.trim() || null, meta_description: fm.meta_description.value.trim() || null,
           takeaways: fm.takeaways.value.split("\n").map((t) => t.trim()).filter(Boolean),
-          faq: [...fm.querySelectorAll(".bl-faq-row")].map((x) => ({ q: x.querySelector("[name=faq_q]").value.trim(), a: x.querySelector("[name=faq_a]").value.trim() })).filter((f) => f.q && f.a) } : {}) };
+          faq: [...fm.querySelectorAll(".bl-faq-row")].map((x) => ({ q: x.querySelector("[name=faq_q]").value.trim(), a: x.querySelector("[name=faq_a]").value.trim() })).filter((q) => q.q && q.a) } : {}) };
       const { error } = await A.db.from("news").update(body).eq("id", id);
       if (error) return fail(/policy|permission|row-level/i.test(error.message) ? new Error("Run supabase/admin-content.sql in Supabase first.") : error);
-      m.close(); A.toast("Saved"); load();
+      Object.assign(r, body); A.toast(body.relevant ? "Saved — the page updates within the hour" : "Saved"); edit(id);
     });
+    $("[data-ed-del]").addEventListener("click", async () => {
+      if (!(await A.confirmDialog({ title: "Delete this news?", text: r.title, confirm: "Delete", danger: true }))) return;
+      const { error } = await A.db.from("news").delete().eq("id", id);
+      if (error) return fail(error);
+      A.toast("Deleted"); back();
+    });
+    const back = () => { shell(); load(); };
+    main.querySelectorAll("[data-back]").forEach((b) => b.addEventListener("click", (e) => { e.preventDefault(); back(); }));
   }
 
   main.addEventListener("click", async (e) => {

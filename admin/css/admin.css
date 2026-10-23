@@ -1483,3 +1483,12 @@ select.cs-native { display: none !important; }
 .bl-cta-btns i:first-child { background: linear-gradient(135deg, #ffd27a, #f0b84a); color: #101828; border: 0; }
 @media (max-width: 900px) { .bl-cta-ed { grid-template-columns: 1fr; } .bl-link { grid-template-columns: 38px minmax(0, 1fr) 34px 34px; } .bl-link-st { grid-column: 2; grid-row: 2; } }
 .bl-link-f .input { width: 100%; box-sizing: border-box; }
+/* Admin → Social News → a news item: full page like a blog post */
+.nw-paras { display: grid; gap: 10px; }
+.nw-para { display: grid; grid-template-columns: 28px minmax(0, 1fr) 34px; gap: 10px; align-items: start; }
+.nw-para-n { display: grid; place-items: center; width: 28px; height: 28px; margin-top: 8px; border-radius: 50%; background: var(--panel-3); color: var(--muted); font: 700 12px var(--display); }
+.nw-para textarea { resize: none; overflow: hidden; min-height: 70px; font-size: 14.5px; line-height: 1.7; padding: 12px 14px; background: var(--panel-2); }
+.nw-para .icon-btn { margin-top: 6px; opacity: 0.5; } .nw-para:hover .icon-btn, .nw-para:focus-within .icon-btn { opacity: 1; }
+.nw-url { display: grid; grid-template-columns: minmax(0, 1fr) 40px; gap: 8px; align-items: center; } .nw-url .input { font-size: 12.5px; }
+.nw-sw-lg { display: flex; align-items: center; gap: 12px; cursor: pointer; } .nw-sw-lg > span:last-child { display: grid; gap: 2px; } .nw-sw-lg b { font-size: 14px; } .nw-sw-lg small { font-size: 12px; }
+.nw-del { justify-self: start; color: var(--muted); } .nw-del:hover { color: var(--red); }
