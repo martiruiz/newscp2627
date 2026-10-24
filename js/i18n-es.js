@@ -2567,4 +2567,7 @@ window.SCP_ES = {
   "Clear search": "Borrar búsqueda",
   "Search a job, a club or a city…": "Busca un puesto, un club o una ciudad…",
   "Search: signings, a club, reels…": "Busca: fichajes, un club, reels…",
+  "Filter on": "Filtro activado",
+  "Turn the filter on": "Activar el filtro",
+  "Latest posts": "Últimos posts",
 };

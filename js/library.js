@@ -799,6 +799,22 @@
       ${has("opponent") ? `<p class="lfp-sub">${esc(tx("Opponent"))}</p><div class="lf-stack lfp-opp">${rowHtml(CAT.opponent)}</div>` : ""}
       ${other.length ? `<p class="lfp-sub">${esc(tx("More matchday graphics"))}</p>${lfpCards(other, g)}` : ""}`;
   }
+  // a group with a single option (Memes, Media): choosing the group applies it; the panel shows it switched on and the
+  // five latest posts of that kind (asked once per option, whatever the other filters)
+  const latestOf = new Map();
+  function lfpSingle(v) {
+    const on = isOn(v), list = latestOf.get(v.id);
+    if (!latestOf.has(v.id)) {
+      latestOf.set(v.id, null);
+      fetchIdeas({ ...queryArgs({ facets: { [v.category]: [v.id] }, period: "all" }), p_order: "latest", p_seed: "", p_ids: null, p_limit: 12, p_offset: 0 })
+        .then(({ data }) => { latestOf.set(v.id, (data?.data || []).filter((p) => p.cover_url).slice(0, 5)); if (ui.bar) renderFacets(); }).catch(() => {});
+    }
+    const tiles = list ? list.map((p) => `<span class="lfp-late-t" style="background-image:url('${esc(p.cover_url)}')">${p.views ? `<em>${kfmt(p.views)}</em>` : ""}</span>`).join("")
+      : '<span class="lfp-late-t is-loading"></span>'.repeat(5);
+    return `<button type="button" class="lfp-single${on ? " is-on" : ""}" aria-pressed="${on}" data-facet="${v.category}" data-id="${v.id}"><span class="lfp-ck">${svg("check")}</span>
+        <span><b>${esc(tx(on ? "Filter on" : "Turn the filter on"))}</b><small>${esc(tx("{n} posts", { n: kfmt(countOf(v)) }))}</small></span></button>
+      <p class="lfp-sub">${esc(tx("Latest posts"))}</p><div class="lfp-late">${tiles}</div>`;
+  }
   function lfpMain(sec) {
     const groups = groupsOf(sec);
     const q = fold(ui.barQ || "");
@@ -813,6 +829,7 @@
     const total = groupVals(g).reduce((s, v) => s + (g.key === "matchday" && v.category === "outcome" ? 0 : countOf(v)), 0);
     const head = `<div class="lfp-head"><div><h3>${esc(tx(g.label))}</h3></div>${total ? `<span>${esc(tx("{n} posts", { n: total.toLocaleString(window.SCP_LOC || "en-GB") }))}</span>` : ""}</div>`;
     if (g.key === "matchday") return head + lfpMatchday(g);
+    if (g.vals?.length === 1 && groupVals(g).length === 1) return head + lfpSingle(groupVals(g)[0]);
     // Club: the squad as quick chips above the clubs
     const teamG = g.key === "club" && groups.find((x) => x.key === "team");
     // chips above the options: the club's squad (Club), Players (Sport, Competition, Club), the brands' own accounts
@@ -1138,7 +1155,13 @@
     const lfb = e.target.closest("[data-lfb]");
     if (lfb) { ui.bar = ui.bar === lfb.dataset.lfb ? null : lfb.dataset.lfb; ui.barQ = ""; return renderFacets(); }
     const grp = e.target.closest("[data-lfb-g]");
-    if (grp) { ui.barG = { ...ui.barG, [ui.bar]: grp.dataset.lfbG }; ui.barQ = ""; renderFacets(); $(".lfp-main")?.scrollTo(0, 0); return; }
+    if (grp) {
+      ui.barG = { ...ui.barG, [ui.bar]: grp.dataset.lfbG }; ui.barQ = "";
+      // a group with one option (Memes, Media): choosing it applies that filter straight away
+      const g1 = groupsOf(ui.bar).find((x) => x.key === grp.dataset.lfbG), only = g1?.vals?.length === 1 && groupVals(g1).length === 1 ? groupVals(g1)[0] : null;
+      if (only && !isOn(only)) { $(".lfp-main")?.scrollTo(0, 0); return toggleValue(only.category, only.id, true); }
+      renderFacets(); $(".lfp-main")?.scrollTo(0, 0); return;
+    }
     const clr = e.target.closest("[data-lfb-clear]");
     if (clr) { valsOn(clr.dataset.lfbClear).forEach((v) => selected[v.category].delete(v.id)); CATEGORIES.filter((c) => secOf(c) === clr.dataset.lfbClear).forEach((c) => selected[c.key].clear()); renderFacets(); return load(true); }
     if (e.target.closest("[data-lfb-close]")) { ui.bar = null; return renderFacets(); }

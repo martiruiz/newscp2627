@@ -8706,3 +8706,15 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .lfp-sport.is-on .lfp-ck .lf-i { opacity: 1; }
 .lfp-sport.is-low { opacity: .6; } .lfp-sport.is-zero { opacity: .35; pointer-events: none; }
 
+/* Filters panel, a group with one option (Memes, Media): the filter switched on and its five latest posts */
+.lfp-single { position: relative; display: flex; align-items: center; gap: 12px; width: 100%; max-width: 420px; padding: 12px 14px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface-2); color: var(--text); text-align: left; cursor: pointer; transition: border-color .2s, background .2s; }
+.lfp-single .lfp-ck { position: static; flex: none; width: 24px; height: 24px; border-color: var(--line); background: transparent; }
+.lfp-single b { display: block; font-size: 14px; } .lfp-single small { color: var(--muted); font-size: 12px; }
+.lfp-single:hover { border-color: rgba(240, 184, 74, .45); }
+.lfp-single.is-on { border-color: var(--gold); background: linear-gradient(180deg, rgba(240, 184, 74, .1), transparent), var(--surface-2); }
+.lfp-single.is-on .lfp-ck { background: var(--gold); border-color: var(--gold); } .lfp-single.is-on .lfp-ck .lf-i { opacity: 1; }
+.lfp-late { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.lfp-late-t { position: relative; aspect-ratio: 4 / 5; border-radius: 12px; background: var(--surface-2) center / cover no-repeat; border: 1px solid var(--line-soft); overflow: hidden; }
+.lfp-late-t em { position: absolute; left: 6px; bottom: 6px; padding: 2px 7px; border-radius: 999px; background: rgba(8, 12, 24, .75); color: #fff; font: 700 10.5px var(--font-body); font-style: normal; }
+.lfp-late-t.is-loading { background-image: linear-gradient(110deg, var(--surface-2) 30%, var(--surface-3) 50%, var(--surface-2) 70%); background-size: 200% 100%; animation: lfp-shimmer 1.2s linear infinite; }
+@media (max-width: 720px) { .lfp-late { grid-template-columns: repeat(3, minmax(0, 1fr)); } .lfp-late-t:nth-child(n+4) { display: none; } }
