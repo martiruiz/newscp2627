@@ -2533,4 +2533,6 @@ window.SCP_ES = {
   "only your club can see it": "solo lo ve tu club",
   "Everything included": "Todo incluido",
   "library, AI analyses and content plan": "biblioteca, análisis con IA y plan de contenido",
+  "Private: only your marketing and communications team can see it": "Privado: solo lo ve tu equipo de marketing y comunicación",
+  "only your marketing and communications team can see it": "solo lo ve tu equipo de marketing y comunicación",
 };

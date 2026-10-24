@@ -43,6 +43,7 @@
   function offer() {
     if (box) box.innerHTML = "";
     document.body.classList.add("lib-locked");
+    document.body.classList.remove("my-club-page");   // the same filters as the Content Library (no club bar)
     // each point with its own icon, the key words in bold: easy to read at a glance
     const I = { trophy: '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22M18 2H6v7a6 6 0 0 0 12 0V2Z"/>',
       users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
@@ -55,7 +56,7 @@
         <p>${esc(t("The most complete plan, tailored to your club."))}</p></div>
       <div class="lib-lock-plans">
         <p class="mc-offer-tag">${esc(t("Premium plan"))}</p>
-        <ul class="mc-offer-list">${[["trophy", "Every team", "first team, sections and academy"], ["users", "Players and sponsors", "all their posts, in one place"], ["cal", "Updated every day", "we upload your club's posts"], ["lock", "Private", "only your club can see it"], ["spark", "Everything included", "library, AI analyses and content plan"]].map(tick).join("")}</ul>
+        <ul class="mc-offer-list">${[["trophy", "Every team", "first team, sections and academy"], ["users", "Players and sponsors", "all their posts, in one place"], ["cal", "Updated every day", "we upload your club's posts"], ["lock", "Private", "only your marketing and communications team can see it"], ["spark", "Everything included", "library, AI analyses and content plan"]].map(tick).join("")}</ul>
         <a class="lock-go is-best mc-offer-go" href="book-a-call.html?for=clubs" data-cta="my-club-offer"><span>${esc(t("Book a demo"))}</span><i aria-hidden="true">→</i></a>
         <ul class="lib-lock-perks"><li>${esc(t("Custom plan"))}</li><li>${esc(t("30-minute demo"))}</li></ul>
         <a class="lib-lock-club" href="pricing.html"><span><b>${esc(t("Not a club?"))}</b><small>${esc(t("Try the library free for 7 days"))}</small></span><i aria-hidden="true">→</i></a>

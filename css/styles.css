@@ -8534,3 +8534,5 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .mm-clubp-go { justify-self: start; }
 .mm-clubp-more { color: var(--muted) !important; font-size: 13px; } .mm-clubp-more:hover { color: var(--text) !important; }
 @media (max-width: 1180px) { .mm-clubp { width: auto; grid-template-columns: 1fr; } .mm-clubp-vis { min-height: 150px; } }
+/* My Club tab: a small gold crown before the label (premium) */
+.mm-crown { width: 14px; height: 14px; fill: #f0b84a; filter: drop-shadow(0 0 4px rgba(240,184,74,.45)); flex: none; }

@@ -115,7 +115,7 @@
   // "My Club" (last card): the private plan for a club (Admin → My Club) — its own library with every team, section, player and
   // sponsor, uploaded by us every day. A custom plan (no price shown): it opens the demo form for clubs. Same rows as the plan cards.
   function clubCard() {
-    const gets = [tx("Your club's own library: first team, sections and academy"), tx("Your players' and sponsors' posts, in one place"), tx("We upload your club's posts every day"), tx("Private: only your club can see it"), tx("Everything in Library + AI + Content Plan")];
+    const gets = [tx("Your club's own library: first team, sections and academy"), tx("Your players' and sponsors' posts, in one place"), tx("We upload your club's posts every day"), tx("Private: only your marketing and communications team can see it"), tx("Everything in Library + AI + Content Plan")];
     return `<article class="plan-card v2 is-custom is-club" data-plan-key="my-club">
       <span class="plan-flag is-club">${tx("For clubs")}</span>
       <h3>${pic("club")}${tx("My Club")}</h3>

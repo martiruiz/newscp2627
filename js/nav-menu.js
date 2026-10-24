@@ -114,7 +114,7 @@
     if (m.type === "club") return `<div class="mm-panel mm-clubp" id="${id}" role="region" aria-label="${esc(m.label)}">
       <div class="mm-clubp-vis"><span class="mm-clubp-crown" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 7l5 4 5-7 5 7 5-4-2 12H4z"/></svg></span>
         <p class="mm-clubp-t">Your club, with its own library</p><p class="mm-clubp-s">The most complete plan, tailored to your club.</p></div>
-      <div class="mm-clubp-body"><ul>${["First team, sections and academy", "Your players' and sponsors' posts, in one place", "We upload your club's posts every day", "Private: only your club can see it"].map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
+      <div class="mm-clubp-body"><ul>${["First team, sections and academy", "Your players' and sponsors' posts, in one place", "We upload your club's posts every day", "Private: only your marketing and communications team can see it"].map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
         <a class="lock-go is-best mm-clubp-go" href="book-a-call.html?for=clubs" data-cta="menu-my-club"><span>Try it 7 days</span><i aria-hidden="true">→</i></a>
         <a class="mm-clubp-more" href="my-club.html">See My Club →</a></div></div>`;
     if (m.type === "grid") return `<div class="mm-panel mm-grid" id="${id}" role="region" aria-label="${esc(m.label)}">
@@ -142,7 +142,7 @@
   links.innerHTML = MENU.map((m, i) => {
     if (!m.type) return `<div class="mm-tab${m.premium ? " mm-club" : ""}"${attrs(m)}><a class="mm-btn-tab${m.badge ? " mm-flip" : ""}" href="${esc(m.href)}"><span>${esc(m.label)}</span>${m.badge ? `<span class="mm-badge">${esc(m.badge)}</span>` : ""}</a></div>`;
     const id = `mm-p${i}`;
-    return `<div class="mm-tab mm-has${m.premium ? " mm-club" : ""}" data-mm${attrs(m)}><button class="mm-btn-tab" type="button" aria-expanded="false" aria-controls="${id}">${esc(m.label)}${CHEV}</button>${panel(m, id)}</div>`;
+    return `<div class="mm-tab mm-has${m.premium ? " mm-club" : ""}" data-mm${attrs(m)}><button class="mm-btn-tab" type="button" aria-expanded="false" aria-controls="${id}">${m.premium ? `<svg class="mm-crown" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 7l5 4 5-7 5 7 5-4-2 12H4z"/></svg>` : ""}${esc(m.label)}${CHEV}</button>${panel(m, id)}</div>`;
   }).join("");
 
   if (member) window.SCP_entitlements?.().then(({ data }) => {
