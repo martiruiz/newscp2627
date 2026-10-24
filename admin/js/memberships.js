@@ -498,17 +498,26 @@
     return rows.filter((r) => r.some((x) => x.trim()));
   }
   async function migration() {
+    const STEPS = ["Upload the export", "Map columns", "Plans & validate", "Verify in Stripe", "Simulate", "Link"];
     view.innerHTML = `<section class="panel panel-pad"><h2>Import from MemberPress</h2>
-      <p class="panel-sub">1 Upload the export → 2 map columns → 3 map memberships to plans and validate → 4 verify in Stripe → 5 simulate → 6 link. Nothing changes in Stripe; renewal dates and prices of migrated members stay as they are. Passwords aren't imported: members set theirs with “Forgot password”.</p>
-      <div class="ms-row"><input type="file" accept=".csv,text/csv" data-file></div><div data-mapper></div></section>
+      <p class="panel-sub">Nothing changes in Stripe; renewal dates and prices of migrated members stay as they are. Passwords aren't imported: members set theirs with “Forgot password”.</p>
+      <ol class="mig-steps">${STEPS.map((s, i) => `<li><b>${i + 1}</b><span>${s}</span></li>`).join("")}</ol>
+      <label class="drop" data-drop><input type="file" accept=".csv,text/csv" hidden data-file>${icon("import")}
+        <b data-drop-name>Drop the MemberPress or Stripe CSV here</b><span class="muted">or click to browse</span></label>
+      <div data-mapper></div></section>
       <section class="panel table-wrap" style="margin-top:16px"><div class="values-head"><h2 style="font-size:16px">Batches</h2></div><table class="data"><thead><tr><th>Uploaded</th><th>File</th><th>Status</th><th>Totals</th><th></th></tr></thead><tbody data-batches></tbody></table></section>
       <div data-batch></div>`;
+    const drop = $("[data-drop]");
+    drop.ondragover = (e) => { e.preventDefault(); drop.classList.add("is-over"); };
+    drop.ondragleave = () => drop.classList.remove("is-over");
+    drop.ondrop = (e) => { e.preventDefault(); drop.classList.remove("is-over"); const f = e.dataTransfer.files[0]; if (f) $("[data-file]").onchange({ target: { files: [f] } }); };
     const drawBatches = async () => {
       const list = await rpc("admin_mp_batches");
-      $("[data-batches]").innerHTML = list.map((b) => `<tr><td>${dt(b.created_at)}</td><td>${esc(b.filename)}</td><td>${esc(b.status)}</td><td class="muted ms-small">${esc(Object.entries(b.totals || {}).filter(([k]) => k !== "simulation").map(([k, v]) => `${k} ${v}`).join(" · "))}</td><td><button class="btn btn-sm" type="button" data-open="${b.id}">Open</button></td></tr>`).join("") || `<tr><td colspan="5" class="muted">No imports yet.</td></tr>`;
+      $("[data-batches]").innerHTML = list.map((b) => `<tr><td>${dt(b.created_at)}</td><td>${esc(b.filename)}</td><td>${esc(b.status)}</td><td class="muted ms-small">${esc(Object.entries(b.totals || {}).filter(([k]) => k !== "simulation").map(([k, v]) => `${k} ${v}`).join(" · "))}</td><td><button class="btn btn-sm" type="button" data-open="${b.id}">Open</button></td></tr>`).join("") || `<tr><td colspan="5" class="mig-empty muted">No imports yet.</td></tr>`;
     };
     $("[data-file]").onchange = async (e) => {
       const file = e.target.files[0]; if (!file) return;
+      drop.classList.add("has-file"); $("[data-drop-name]").textContent = file.name;
       const rows = parseCSV(await file.text());
       const head = rows[0] || [], body = rows.slice(1);
       // Stripe's own export (Billing → Subscriptions): ids by their prefix in the first row, the MemberPress product name
