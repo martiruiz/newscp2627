@@ -32,41 +32,33 @@
   });
 
   function fail(text, contact) {
-    if (box) box.innerHTML = contact ? lockedHtml() : `<div class="mc-empty"><p>${esc(t(text))}</p></div>`;
-    document.body.classList.toggle("mc-locked", !!contact);
+    if (contact) return offer();
+    if (box) box.innerHTML = `<div class="mc-empty"><p>${esc(t(text))}</p></div>`;
     SCOPE.ids = []; SCOPE.empty = t("No posts to show.");
     resolveReady();
     window.dispatchEvent(new Event("scp-lib-scope"));
   }
-
-  // No club yet: My Club as the locked top plan (padlock, one line, the button) over the blurred library — the button opens the padlock and goes to book a demo
-  const LOCK = `<svg class="mc-lock-svg" viewBox="0 0 48 48" aria-hidden="true"><path class="mc-lock-shackle" d="M15 21v-6a9 9 0 0 1 18 0v6"/><rect x="9" y="21" width="30" height="22" rx="6"/><circle cx="24" cy="31" r="3"/><path d="M24 34v3"/></svg>`;
-  // behind the padlock: a blurred example of a club's space (crest and name, sections, players, posts) to sense what it is
-  function demoHtml() {
-    const pics = ["assets/lib-example-ucl.jpg", "assets/lib-example-messi.jpg", "assets/lib-example-nba.jpg"];
-    const people = ["#d4a24a", "#6f8fd8", "#c76a8a", "#5fb38a", "#b98a5a", "#8a7fd0", "#d27a4a"];
-    return `<div class="mcd-head"><span class="mcd-crest">FC</span><span><b>Tu club</b><small>Primer equipo · 24 jugadores · 6 patrocinadores</small></span></div>
-      <div class="mcd-tabs"><i class="on">Primer equipo</i><i>Femenino</i><i>Cantera</i><i>Patrocinadores</i></div>
-      <div class="mcd-people">${people.map((c) => `<i style="background:${c}"></i>`).join("")}</div>
-      <div class="mcd-grid">${Array.from({ length: 8 }, (_, i) => `<i style="background-image:url(${pics[i % 3]})"></i>`).join("")}</div>`;
-  }
-  function lockedHtml() {
-    return `<div class="mc-lockd">
-      <div class="mc-lockd-demo" aria-hidden="true">${demoHtml()}</div>
-      <div class="mc-lockd-min">
-        <span class="mc-lock">${LOCK}</span>
+  // No club yet: the Content Library as usual behind, blurred (filters work), and a card centred on the screen offering
+  // My Club — the premium plan, tailored to the club, booked through a demo
+  function offer() {
+    if (box) box.innerHTML = "";
+    document.body.classList.add("lib-locked");
+    const tick = (x) => `<li>${esc(t(x))}</li>`;
+    document.querySelector("[data-library] .feed")?.insertAdjacentHTML("afterbegin", `<div class="lib-lock mc-offer" role="dialog" aria-label="${esc(t("My Club"))}">
+      <div class="lib-lock-vis"><span class="lib-lock-ic mc-offer-crown" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 7l5 4 5-7 5 7 5-4-2 12H4z"/></svg></span>
         <h2>${esc(t("Your club, with its own library"))}</h2>
-        <p>${esc(t("The most complete plan, tailored to your club."))}</p>
-        <a class="btn btn-gold mc-unlock" href="book-a-call.html?for=clubs" data-mc-unlock data-cta="my-club-locked">${esc(t("Unlock My Club"))}<span aria-hidden="true">→</span></a>
-      </div></div>`;
+        <p>${esc(t("The most complete plan, tailored to your club."))}</p></div>
+      <div class="lib-lock-plans">
+        <p class="mc-offer-tag">${esc(t("Premium plan"))}</p>
+        <ul class="mc-offer-list">${["First team, sections and academy", "Your players' and sponsors' posts, in one place", "We upload your club's posts every day", "Private: only your club can see it", "Everything in Library + AI + Content Plan"].map(tick).join("")}</ul>
+        <a class="lock-go is-best mc-offer-go" href="book-a-call.html?for=clubs" data-cta="my-club-offer"><span>${esc(t("Book a demo"))}</span><i aria-hidden="true">→</i></a>
+        <ul class="lib-lock-perks"><li>${esc(t("Custom plan"))}</li><li>${esc(t("30-minute demo"))}</li></ul>
+        <a class="lib-lock-club" href="pricing.html"><span><b>${esc(t("Not a club?"))}</b><small>${esc(t("Try the library free for 7 days"))}</small></span><i aria-hidden="true">→</i></a>
+      </div></div>`);
+    SCOPE.ids = null;   // the whole library behind the card
+    resolveReady();
+    window.dispatchEvent(new Event("scp-lib-scope"));
   }
-  document.addEventListener("click", (e) => {
-    const a = e.target.closest("[data-mc-unlock]");
-    if (!a || e.metaKey || e.ctrlKey) return;
-    e.preventDefault();
-    a.closest(".mc-lockd").classList.add("is-open");
-    setTimeout(() => { location.href = a.href; }, matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 750);
-  });
 
   async function openClub(saved = {}) {
     box.innerHTML = `<div class="mc-loading"><span class="lead-spin"></span>${esc(t("Loading your club…"))}</div>`;

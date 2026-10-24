@@ -8275,32 +8275,6 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 :root[data-theme="light"] .mm-club .mm-btn-tab:hover > span:first-child, :root[data-theme="light"] .mm-club .mm-btn-tab[aria-current="page"] > span:first-child { background-image: linear-gradient(100deg, #6b4a0c, #b07a1c 45%, #e0a43a 52%, #7a5512 75%); }
 @media (prefers-reduced-motion: reduce) { .mm-club .mm-btn-tab::before, .mm-club .mm-btn-tab:active::after { animation: none !important; } }
 
-/* My Club without a club: the locked top plan (js/my-club.js lockedHtml) — over the blurred library, a padlock, one line and
-   "Unlock My Club", which opens the padlock and books a demo */
-.mc-locked .feed > :not([data-mc]), .mc-locked [data-mc-crumb] { display: none !important; }
-.mc-lockd { position: relative; display: grid; place-items: center; min-height: 420px; padding: 40px 16px; overflow: hidden; border-radius: 26px; }
-.mc-lockd-tiles { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; padding: 14px; filter: blur(14px); opacity: .55; pointer-events: none; }
-.mc-lockd-tiles i { border-radius: 16px; background: linear-gradient(160deg, rgba(240,184,74,.35), rgba(122,162,255,.18) 60%, rgba(255,255,255,.04)); }
-.mc-lockd-tiles i:nth-child(odd) { background: linear-gradient(200deg, rgba(167,139,250,.28), rgba(240,184,74,.16) 70%); }
-.mc-lockd-min { position: relative; display: grid; justify-items: center; gap: 12px; max-width: 440px; text-align: center; }
-.mc-lock { display: grid; place-items: center; width: 64px; height: 64px; margin-bottom: 4px; border-radius: 50%; border: 1px solid rgba(240,184,74,.55); background: rgba(240,184,74,.1); color: var(--gold); box-shadow: 0 0 40px -8px rgba(240,184,74,.45); }
-.mc-lock-svg { width: 30px; height: 30px; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; overflow: visible; }
-.mc-lock-shackle { transform-origin: 33px 21px; transition: transform .55s cubic-bezier(.3,1.6,.5,1); }
-.mc-lockd:not(.is-open) .mc-lock { animation: mcLockIdle 3.2s ease-in-out infinite; }
-@keyframes mcLockIdle { 0%, 86%, 100% { transform: rotate(0); } 89% { transform: rotate(-7deg); } 92% { transform: rotate(6deg); } 95% { transform: rotate(-3deg); } }
-.mc-lockd:has(.mc-unlock:hover) .mc-lock-shackle { transform: translateY(-3px); }
-.mc-lockd.is-open .mc-lock-shackle { transform: translateY(-7px) rotate(-38deg); }
-.mc-lockd.is-open .mc-lock { animation: mcLockPop .6s ease-out; }
-@keyframes mcLockPop { 40% { transform: scale(1.12); box-shadow: 0 0 0 14px rgba(240,184,74,.18); } 100% { transform: scale(1); } }
-.mc-lockd.is-open .mc-lockd-tiles { filter: blur(6px); opacity: .8; transition: filter .7s, opacity .7s; }
-.mc-lockd-min h2 { margin: 0; font: 600 clamp(26px, 3.2vw, 34px)/1.15 var(--font-display); letter-spacing: -.02em; }
-.mc-lockd-min p { margin: 0 0 8px; color: var(--muted); font-size: 16px; line-height: 1.5; }
-.mc-unlock { display: inline-flex; align-items: center; gap: 10px; min-height: 50px; padding: 0 26px; font-size: 16px; }
-.mc-unlock span { transition: transform .2s; } .mc-unlock:hover span { transform: translateX(3px); }
-@media (max-width: 560px) { .mc-lockd-tiles { grid-template-columns: repeat(2, 1fr); } }
-@media (prefers-reduced-motion: reduce) { .mc-lock, .mc-lock-shackle { animation: none !important; transition: none !important; } }
-:root[data-theme="light"] .mc-lock { color: #a8730f; border-color: rgba(168,115,15,.45); background: rgba(240,184,74,.14); }
-:root[data-theme="light"] .mc-unlock { background: #0c0c0d !important; color: #fff !important; }
 
 /* Menu Resources: the newest news item / article big on the left (tabs switch), the sections as a list on the right */
 .mm-res { width: 860px; }
@@ -8521,18 +8495,6 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .mm-crown { flex: none; width: 17px; height: 17px; fill: #f0b84a; filter: drop-shadow(0 0 6px rgba(240, 184, 74, .55)); }
 :root[data-theme="light"] .mm-link.is-premium b { background-image: linear-gradient(180deg, #b07a1c, #8a5c12); }
 
-/* Locked My Club: behind the padlock, a blurred example of a club's space (crest, sections, players, posts) */
-.mc-lockd-demo { position: absolute; inset: 0; display: grid; align-content: start; gap: 16px; padding: 22px; filter: blur(6px); opacity: .45; pointer-events: none; overflow: hidden; }
-.mc-locked .mc-lockd { min-height: 560px; }
-.mcd-head { display: flex; align-items: center; gap: 14px; }
-.mcd-crest { display: grid; place-items: center; width: 54px; height: 54px; border-radius: 50%; background: linear-gradient(135deg, #f4c463, #b07a1c); color: #1a1205; font: 800 18px var(--font-display); }
-.mcd-head b { display: block; font: 600 22px var(--font-display); } .mcd-head small { color: var(--muted); font-size: 13px; }
-.mcd-tabs { display: flex; gap: 8px; } .mcd-tabs i { padding: 8px 14px; border-radius: 999px; background: var(--surface-2); font-style: normal; font-size: 13px; font-weight: 600; } .mcd-tabs i.on { background: #f1f4f9; color: #0b1020; }
-.mcd-people { display: flex; gap: 10px; } .mcd-people i { width: 44px; height: 44px; border-radius: 50%; border: 2px solid rgba(255,255,255,.25); }
-.mcd-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; } .mcd-grid i { aspect-ratio: 4 / 5; border-radius: 14px; background: #222 center / cover; }
-.mc-lockd.is-open .mc-lockd-demo { filter: blur(2px); opacity: .75; transition: filter .7s, opacity .7s; }
-.mc-lockd .mc-lockd-min { z-index: 1; }
-@media (max-width: 560px) { .mcd-grid { grid-template-columns: repeat(3, 1fr); } .mcd-tabs i:nth-child(n+3) { display: none; } }
 
 /* Menu "Pricing" ↔ "7 days free": the two take turns in the same place (a soft flip every few seconds) */
 .mm-btn-tab.mm-flip { display: grid !important; grid-template-areas: "x"; place-items: center; }
@@ -8548,3 +8510,11 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .mm-btn-tab.mm-flip > .mm-badge { height: 26px; padding: 0 12px 0 10px; gap: 7px; background: #22c55e; color: #052e16; font: 800 11.5px var(--font-body); letter-spacing: .01em; box-shadow: 0 6px 18px -6px rgba(34, 197, 94, .9); }
 .mm-btn-tab.mm-flip > .mm-badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #052e16; animation: mmPulse 1.6s infinite; }
 @keyframes mmPulse { 0% { box-shadow: 0 0 0 0 rgba(5, 46, 22, .6); } 70% { box-shadow: 0 0 0 7px rgba(5, 46, 22, 0); } 100% { box-shadow: 0 0 0 0 rgba(5, 46, 22, 0); } }
+
+/* My Club for non-clients (js/my-club.js offer): the locked-library card, as the premium plan — gold crown, what's included, book a demo */
+.mc-offer-crown svg { fill: currentColor; stroke: none; }
+.mc-offer-tag { margin: 0; color: var(--gold); font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.mc-offer-list { display: grid; gap: 8px; margin: 2px 0 6px; padding: 0; list-style: none; }
+.mc-offer-list li { display: flex; gap: 9px; color: var(--text); font-size: 14px; line-height: 1.4; } .mc-offer-list li::before { content: "✓"; color: var(--gold); font-weight: 800; }
+.mc-offer-go { justify-self: start; height: 44px; padding-left: 18px; font-size: 14px; }
+.mc-offer .lib-lock-perks { justify-content: flex-start; }

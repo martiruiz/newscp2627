@@ -2518,4 +2518,8 @@ window.SCP_ES = {
   "Your club's private library: every team, player and sponsor.": "La biblioteca privada de tu club: cada equipo, jugador y patrocinador.",
   "Are you a club?": "¿Eres un club?",
   "My Club: your own library, tailored to your club": "Mi club: tu propia biblioteca, a medida de tu club",
+  "Premium plan": "Plan premium",
+  "30-minute demo": "Demo de 30 minutos",
+  "Not a club?": "¿No eres un club?",
+  "Try the library free for 7 days": "Prueba la biblioteca gratis 7 días",
 };
