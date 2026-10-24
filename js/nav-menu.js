@@ -194,7 +194,12 @@
   const hoverable = matchMedia("(hover: hover) and (pointer: fine)");
   tabs.forEach((t) => {
     const b = t.querySelector(".mm-btn-tab");
-    b.addEventListener("click", () => set(t, !t.classList.contains("is-open")));
+    b.addEventListener("click", () => {
+      // My Club with a mouse: the panel already opened on hover, so a click goes to the page (a tap still opens the panel)
+      const go = t.querySelector(".mm-clubp-more");
+      if (go && hoverable.matches && !nav.classList.contains("is-tight")) return void (location.href = go.href);
+      set(t, !t.classList.contains("is-open"));
+    });
     t.addEventListener("mouseenter", () => { if (!hoverable.matches || nav.classList.contains("is-tight")) return; clearTimeout(timer); set(t, true); });
     t.addEventListener("mouseleave", () => { if (!hoverable.matches || nav.classList.contains("is-tight")) return; timer = setTimeout(() => set(t, false), 180); });
   });

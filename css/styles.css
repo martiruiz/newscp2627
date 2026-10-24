@@ -8574,3 +8574,9 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 @keyframes mcGloss { 0%, 15% { background-position: 100% 0; } 60%, 100% { background-position: 0 0; } }
 @media (max-width: 720px) { .mc-box { --w: 120px; --h: 196px; --d: 38px; padding: 12px 0 26px; } .mc-box .b { padding-top: 16px; } .mc-box-st { margin-top: 12px; gap: 5px; } .mc-box-st span:nth-child(3) { display: none; } .mc-box-st b { font-size: 14px; } .mc-box-st span, .mc-box-band { font-size: 6.5px; } .mc-box-band { bottom: 16px; } }
 @media (prefers-reduced-motion: reduce) { .mc-box-fl, .mc-box-sh, .mc-box .f::after { animation: none; } .mc-box-in { animation: none; transform: rotateX(-9deg) rotateY(-28deg); } }
+/* Locked library card: the posts behind the message scroll slowly up and down, as if someone were browsing the feed */
+.lib-lock:not(.mc-offer) .lib-lock-vis { position: relative; overflow: hidden; isolation: isolate; background: #080c18; }
+.lib-lock:not(.mc-offer) .lib-lock-vis::after { content: ""; position: absolute; z-index: -1; inset: 0; background: linear-gradient(180deg, rgba(8,12,24,.15) 15%, rgba(8,12,24,.95) 78%); }
+.lib-lock:not(.mc-offer) .lib-lock-vis::before { content: ""; position: absolute; z-index: -1; left: 0; right: 0; top: 0; height: 160%; background: url("../assets/admin-login.webp") center / cover; animation: lockScroll 16s ease-in-out infinite alternate; }
+@keyframes lockScroll { to { transform: translateY(-37.5%); } }
+@media (prefers-reduced-motion: reduce) { .lib-lock:not(.mc-offer) .lib-lock-vis::before { animation: none; } }
