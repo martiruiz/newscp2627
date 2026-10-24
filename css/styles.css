@@ -8722,3 +8722,5 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 :root[data-theme="light"] .lfp-phases button.is-on { color: #fff; }
 :root[data-theme="light"] .lfp-phases button.is-on:not(.is-live) i { background: #fff; border-color: #fff; }
 :root[data-theme="light"] .lfp-phases button.is-on em { background: rgba(255, 255, 255, .2); }
+/* The post cards' button tooltips sit on dark navy in both themes: white text (in the light theme it went dark on dark) */
+.lib-rail [data-tip]::after, .lib-rail .save-btn::after { color: #f1f4f9; }
