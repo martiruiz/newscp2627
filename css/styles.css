@@ -8389,8 +8389,8 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .my-space.is-closed .my-space-t svg { transform: rotate(180deg); }
 .my-space-t.is-kick svg { animation: myKick .45s ease; }
 @keyframes myKick { 40% { translate: 5px 0; } }
-.my-space-btns { max-width: 900px; overflow: hidden; transition: max-width .4s cubic-bezier(.2,.8,.2,1), opacity .25s, transform .4s cubic-bezier(.2,.8,.2,1); }
-.my-space.is-closed .my-space-btns { max-width: 0; max-height: 0; opacity: 0; transform: translateX(40px); pointer-events: none; }
+.my-space-btns { max-width: 900px; transition: max-width .4s cubic-bezier(.2,.8,.2,1), opacity .25s, transform .4s cubic-bezier(.2,.8,.2,1); }
+.my-space.is-closed .my-space-btns { max-width: 0; max-height: 0; overflow: hidden; opacity: 0; transform: translateX(40px); pointer-events: none; }
 
 /* Nav logo never squashed: it keeps its proportions and size, the menu gives way instead */
 .site-nav .brand { flex: none; }
