@@ -8442,7 +8442,6 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .lib-lock-plan { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px; border-radius: 14px; background: var(--surface-2); border: 1px solid var(--line-soft); }
 .lib-lock-plan.is-best { border-color: rgba(240,184,74,.55); background: linear-gradient(180deg, rgba(240,184,74,.08), transparent 60%), var(--surface-2); }
 .lib-lock-plan span { min-width: 0; } .lib-lock-plan b { display: block; font-size: 14.5px; line-height: 1.3; } .lib-lock-plan small { color: var(--muted); font-size: 12.5px; }
-.lib-lock-plan .btn { flex: none; height: 38px; padding: 0 14px; font-size: 13px; white-space: nowrap; }
 .lib-lock-note { margin: 4px 0 0; color: var(--muted); font-size: 12.5px; text-align: center; }
 .lib-lock-club { justify-self: center; color: var(--muted); font-size: 12.5px; text-decoration: underline; text-underline-offset: 3px; } .lib-lock-club:hover { color: var(--text); }
 @media (max-width: 720px) { .lib-lock { grid-template-columns: 1fr; } .lib-lock-vis { min-height: 220px; } }
@@ -8496,3 +8495,14 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 /* Content Library → "My space" centred: the title over the middle of its buttons */
 .my-space { align-items: center; }
 .my-space-t { align-self: center; }
+
+/* Locked library plans: "arrow in a circle" buttons (like the menu's "Try it free") — white + gold circle on the recommended */
+.lock-go { flex: none; display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 4px 0 15px; border: 0; border-radius: 999px; background: rgba(255,255,255,.07); color: var(--text);
+  font: 700 13px var(--font-body); white-space: nowrap; text-decoration: none; cursor: pointer; transition: background .2s; }
+.lock-go i { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,.12); font-style: normal; transition: transform .2s; }
+.lock-go:hover { background: rgba(255,255,255,.12); } .lock-go:hover i { transform: translateX(2px) rotate(-45deg); }
+.lock-go.is-best { background: #f1f4f9; color: #0b1020; } .lock-go.is-best i { background: #f0b84a; color: #1a1205; } .lock-go.is-best:hover { background: #fff; }
+:root[data-theme="light"] .lock-go { background: #f1f0ec; color: #0c0c0d; } :root[data-theme="light"] .lock-go.is-best { background: #0c0c0d; color: #fff; }
+
+/* "My space" folded: the filter bar (Get inspired by, Match Day, Brands & sponsors) takes the whole width */
+.lib-head:has(.my-space.is-closed) .lfb-row.lfb-glass { max-width: none; }

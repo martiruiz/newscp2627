@@ -27,8 +27,10 @@
     const m = p.prices?.find((x) => x.currency === "eur" && x.interval === "month");
     const best = p.highlighted || (p.entitlements || []).includes("ai.analyze_posts");
     const label = tx(p.trial_days > 0 ? "Try it free" : "Get {plan}", { plan: p.name });
-    const btn = m?.ready ? `<button class="btn ${best ? "btn-gold" : "btn-outline"}" type="button" data-checkout-plan="${esc(p.key)}" data-interval="month" data-currency="eur">${label}</button>`
-      : `<a class="btn ${best ? "btn-gold" : "btn-outline"}" href="signup.html?plan=${encodeURIComponent(p.key)}&interval=month">${label}</a>`;
+    // "arrow in a circle" buttons, like "Try it free" in the menu: white + gold circle for the recommended plan
+    const inner = `<span>${label}</span><i aria-hidden="true">→</i>`, cls = `lock-go${best ? " is-best" : ""}`;
+    const btn = m?.ready ? `<button class="${cls}" type="button" data-checkout-plan="${esc(p.key)}" data-interval="month" data-currency="eur">${inner}</button>`
+      : `<a class="${cls}" href="signup.html?plan=${encodeURIComponent(p.key)}&interval=month">${inner}</a>`;
     return `<div class="lib-lock-plan${best ? " is-best" : ""}"><span><b>${esc(p.name)}</b><small>${m ? `${money(m.amount)}/${tx("month")}` : ""}${best ? ` · ${tx("Recommended")}` : ""}</small></span>${btn}</div>`;
   }).join("") + `<p class="lib-lock-note">${tx("7 days free · Cancel anytime · VAT included")}</p>
     <a class="lib-lock-club" href="book-a-call.html?for=clubs">${tx("Are you a club? My Club, the tailored plan →")}</a>`;
