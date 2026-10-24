@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:media="http://search.yahoo.com/mrss/">
+  <channel>
+    <title>Sports Content Playbook · Blog (ES)</title>
+    <link>https://sportscontentplaybook.com/es/blog.html</link>
+    <atom:link href="https://sportscontentplaybook.com/es/feed.xml" rel="self" type="application/rss+xml"/>
+    <description>Ideas, tendencias y análisis de contenido deportivo en redes sociales.</description>
+    <language>es</language>
+    <lastBuildDate>Mon, 19 Oct 2026 08:00:00 GMT</lastBuildDate>
+    <item>
+      <title>De clips sueltos a series: el giro episódico en las tendencias de redes sociales deportivas</title>
+      <link>https://sportscontentplaybook.com/es/blog/episodic-series-sports-social-media-trends.html</link>
+      <guid isPermaLink="true">https://sportscontentplaybook.com/es/blog/episodic-series-sports-social-media-trends.html</guid>
+      <pubDate>Mon, 19 Oct 2026 08:00:00 GMT</pubDate>
+      <dc:creator>Martí Ruiz</dc:creator>
+      <description>Los clubes empiezan a publicar vídeo corto como las cadenas de televisión publican sus programas: por episodios, con personajes y un motivo para volver. Aquí tienes por qué los Cubs y los Chiefs apuestan por las series y cómo puede probar el formato cualquier equipo.</description>
+      <enclosure url="https://sportscontentplaybook.com/assets/blog/episodic-web-series-ballpark-filming-sports-social-media-trends.jpg" length="127635" type="image/jpeg"/>
+      <media:content url="https://sportscontentplaybook.com/assets/blog/episodic-web-series-ballpark-filming-sports-social-media-trends.jpg" medium="image" type="image/jpeg"/>
+    </item>
+    <item>
+      <title>Del anuncio del calendario al salto inicial: ideas de redes sociales para equipos deportivos a partir de la previa de la NBA</title>
+      <link>https://sportscontentplaybook.com/es/blog/nba-tip-off-social-media-ideas-for-sports-teams.html</link>
+      <guid isPermaLink="true">https://sportscontentplaybook.com/es/blog/nba-tip-off-social-media-ideas-for-sports-teams.html</guid>
+      <pubDate>Sun, 18 Oct 2026 08:00:00 GMT</pubDate>
+      <dc:creator>Martí Ruiz</dc:creator>
+      <description>Antes de que arranque la temporada 2026-27 de la NBA, los equipos prepararon una previa de contenidos de dos meses. Aquí tienes el patrón detrás de los anuncios de calendario, las publicaciones del media day y los takeovers que destacaron, y cómo replicarlo.</description>
+      <enclosure url="https://sportscontentplaybook.com/assets/blog/nba-tip-off-media-day-social-media-ideas-for-sports-teams.jpg" length="118680" type="image/jpeg"/>
+      <media:content url="https://sportscontentplaybook.com/assets/blog/nba-tip-off-media-day-social-media-ideas-for-sports-teams.jpg" medium="image" type="image/jpeg"/>
+    </item>
+    <item>
+      <title>Tendencias de redes sociales deportivas: YouTube Shorts ahora premia el contenido original, qué significa para los equipos deportivos</title>
+      <link>https://sportscontentplaybook.com/es/blog/youtube-shorts-original-content-sports-teams.html</link>
+      <guid isPermaLink="true">https://sportscontentplaybook.com/es/blog/youtube-shorts-original-content-sports-teams.html</guid>
+      <pubDate>Thu, 15 Oct 2026 08:00:00 GMT</pubDate>
+      <dc:creator>Martí Ruiz</dc:creator>
+      <description>YouTube potenciará los Shorts originales y reducirá el alcance de los canales que resubén clips de otros. Estos son los cambios para los clubes y cómo adaptarse.</description>
+      <enclosure url="https://sportscontentplaybook.com/assets/blog/youtube-shorts-original-content-football-club-sports-social-media-trends.jpg" length="116974" type="image/jpeg"/>
+      <media:content url="https://sportscontentplaybook.com/assets/blog/youtube-shorts-original-content-football-club-sports-social-media-trends.jpg" medium="image" type="image/jpeg"/>
+    </item>
+  </channel>
+</rss>

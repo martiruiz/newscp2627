@@ -6,7 +6,7 @@
 //   - news/<slug>.html   one page per published Social News item (content/news.json, from the admin) + the latest ones
 //                        written into news.html (NEWS:START / NEWS:END) so Google and AI crawlers read them without JS
 //   - the main pages' title / description (Admin → SEO) and missing canonical, social preview and schema
-//   - sitemap.xml, robots.txt (AI crawlers allowed / blocked in Admin → SEO), llms.txt, Organization schema on the home
+//   - sitemap.xml, feed.xml / es/feed.xml (RSS), robots.txt (AI crawlers allowed / blocked in Admin → SEO), llms.txt, Organization schema on the home
 // Checks each post: word count for its type, all 15 keywords present, CTAs.
 //
 // Usage: node blog-tools/build.mjs [--check]   (--check validates without writing)
@@ -316,6 +316,7 @@ function postPage(src, lang) {
   <meta name="author" content="${esc(p.author || "Martí Ruiz")}">
   <meta name="robots" content="index, follow, max-image-preview:large">
   <link rel="canonical" href="${url}">${both ? alternates(`blog/${p.slug}.html`) : ""}
+  <link rel="alternate" type="application/rss+xml" title="Sports Content Playbook · Blog" href="${SITE}/${es ? "es/" : ""}feed.xml">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Sports Content Playbook">
   <meta property="og:title" content="${esc(p.meta_title)}">
@@ -654,6 +655,7 @@ for (const file of ["blog.html", "news.html"]) {
   html = html.replace(/<html lang="[^"]*"[^>]*>/, '<html lang="es" data-page-lang="es">').replace("<head>", '<head>\n  <base href="../">')
     .replaceAll(`href="${SITE}/${file}"`, `href="${SITE}/es/${file}"`).replaceAll(`content="${SITE}/${file}"`, `content="${SITE}/es/${file}"`)
     .replace(`hreflang="en" href="${SITE}/es/${file}"`, `hreflang="en" href="${SITE}/${file}"`).replace(`hreflang="x-default" href="${SITE}/es/${file}"`, `hreflang="x-default" href="${SITE}/${file}"`);
+  html = html.replace(`href="${SITE}/feed.xml"`, `href="${SITE}/es/feed.xml"`);
   write(`es/${file}`, html);
 }
 
@@ -684,6 +686,41 @@ ${(news || []).filter((n) => n.es).map((n) => `  <url><loc>${SITE}/es/news/${n.s
 </urlset>
 `;
 write("sitemap.xml", sitemap);
+// ---------- RSS feeds (feed.xml, es/feed.xml): the latest articles with their cover, e.g. for Metricool's autopost ----------
+const rss = (lang) => {
+  const es = lang === "es", list = posts.filter((p) => !es || p.es).slice(0, 30).map((p) => (es ? inEs(p) : p));
+  const self = `${SITE}/${es ? "es/" : ""}feed.xml`;
+  const item = (p) => {
+    const url = `${SITE}/${es ? "es/" : ""}blog/${p.slug}.html`, img = p.image?.file ? `${SITE}/assets/blog/${p.image.file}` : "";
+    let size = 0; try { size = fs.statSync(path.join(ROOT, "assets/blog", p.image.file)).size; } catch {}
+    const type = /\.png$/i.test(img) ? "image/png" : /\.webp$/i.test(img) ? "image/webp" : "image/jpeg";
+    return `    <item>
+      <title>${esc(p.title)}</title>
+      <link>${url}</link>
+      <guid isPermaLink="true">${url}</guid>
+      <pubDate>${new Date(p.date + "T08:00:00Z").toUTCString()}</pubDate>
+      <dc:creator>${esc(p.author || "Martí Ruiz")}</dc:creator>
+      <description>${esc(p.excerpt || p.meta_description || "")}</description>${img ? `
+      <enclosure url="${img}" length="${size}" type="${type}"/>
+      <media:content url="${img}" medium="image" type="${type}"/>` : ""}
+    </item>`;
+  };
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:media="http://search.yahoo.com/mrss/">
+  <channel>
+    <title>${es ? "Sports Content Playbook · Blog (ES)" : "Sports Content Playbook · Blog"}</title>
+    <link>${SITE}/${es ? "es/" : ""}blog.html</link>
+    <atom:link href="${self}" rel="self" type="application/rss+xml"/>
+    <description>${es ? "Ideas, tendencias y análisis de contenido deportivo en redes sociales." : "Sports social media content ideas, trends and analysis."}</description>
+    <language>${lang}</language>
+    <lastBuildDate>${new Date((list[0]?.updated || list[0]?.date || today) + "T08:00:00Z").toUTCString()}</lastBuildDate>
+${list.map(item).join("\n")}
+  </channel>
+</rss>
+`;
+};
+write("feed.xml", rss("en"));
+write("es/feed.xml", rss("es"));
 // AI crawlers: all welcome unless switched off in Admin → SEO (seo.bots = { GPTBot: false, … })
 const blocked = Object.entries(seo.bots || {}).filter(([, on]) => on === false).map(([b]) => b);
 write("robots.txt", `User-agent: *\nAllow: /\nDisallow: /admin.html\nDisallow: /admin/\nDisallow: /content-library.html\n${blocked.map((b) => `\nUser-agent: ${b}\nDisallow: /\n`).join("")}\nSitemap: ${SITE}/sitemap.xml\n`);
