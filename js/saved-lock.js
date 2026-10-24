@@ -16,8 +16,9 @@
     <div class="sv-lock-card">
       <span class="sv-lock-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg></span>
       <h1>${tx("Save your best ideas in boards")}</h1>
-      <p>${tx("Keep the posts that inspire you organised by matchday, signings, sponsors… and turn them into your content plan. Try it free for 7 days.")}</p>
+      <p>${tx("Keep the posts that inspire you organised by matchday, signings, sponsors… and turn them into your content plan.")}</p>
       <button class="btn btn-gold" type="button" data-plans-picker="library.access" aria-expanded="false">${tx("Start my free trial")}</button>
+      <p class="sv-lock-free">${tx("Try it free for 7 days")}</p>
       <div class="pp-plans" data-plans-picker-list hidden></div>
     </div>
     <p class="sv-lock-eg">${tx("This is how your boards will look")}</p>

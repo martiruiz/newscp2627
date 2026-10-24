@@ -2539,4 +2539,5 @@ window.SCP_ES = {
   "analyses": "análisis",
   "All Social News": "Todas las noticias de Social Media",
   "More Social News": "Más noticias de Social Media",
+  "Keep the posts that inspire you organised by matchday, signings, sponsors… and turn them into your content plan.": "Guarda los posts que te inspiran ordenados por día de partido, fichajes, patrocinadores… y conviértelos en tu plan de contenido.",
 };

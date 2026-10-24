@@ -8585,3 +8585,5 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 :root[data-theme="light"] .mm-clubp-vis .mm-clubp-s, :root[data-theme="light"] .lib-lock-vis p { color: #c9d1e0; }
 /* Light theme: the icon in the circle (crown, padlock) sits on a dark photo, so it keeps the real gold */
 :root[data-theme="light"] .lib-lock-ic { color: #f0b84a; border-color: rgba(240,184,74,.7); box-shadow: 0 0 40px -8px rgba(240,184,74,.6); }
+/* Saved boards without a plan: "Try it free for 7 days" on its own line, under the button */
+.sv-lock-card .sv-lock-free { margin: 10px 0 0; font-size: 13px; }
