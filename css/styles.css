@@ -8520,3 +8520,16 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .mm-link.is-premium b { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(180deg, #ffe7ad, #f4c463 45%, #d79a2b); -webkit-background-clip: text; background-clip: text; color: transparent !important; }
 .mm-crown { flex: none; width: 17px; height: 17px; fill: #f0b84a; filter: drop-shadow(0 0 6px rgba(240, 184, 74, .55)); }
 :root[data-theme="light"] .mm-link.is-premium b { background-image: linear-gradient(180deg, #b07a1c, #8a5c12); }
+
+/* Locked My Club: behind the padlock, a blurred example of a club's space (crest, sections, players, posts) */
+.mc-lockd-demo { position: absolute; inset: 0; display: grid; align-content: start; gap: 16px; padding: 22px; filter: blur(6px); opacity: .45; pointer-events: none; overflow: hidden; }
+.mc-locked .mc-lockd { min-height: 560px; }
+.mcd-head { display: flex; align-items: center; gap: 14px; }
+.mcd-crest { display: grid; place-items: center; width: 54px; height: 54px; border-radius: 50%; background: linear-gradient(135deg, #f4c463, #b07a1c); color: #1a1205; font: 800 18px var(--font-display); }
+.mcd-head b { display: block; font: 600 22px var(--font-display); } .mcd-head small { color: var(--muted); font-size: 13px; }
+.mcd-tabs { display: flex; gap: 8px; } .mcd-tabs i { padding: 8px 14px; border-radius: 999px; background: var(--surface-2); font-style: normal; font-size: 13px; font-weight: 600; } .mcd-tabs i.on { background: #f1f4f9; color: #0b1020; }
+.mcd-people { display: flex; gap: 10px; } .mcd-people i { width: 44px; height: 44px; border-radius: 50%; border: 2px solid rgba(255,255,255,.25); }
+.mcd-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; } .mcd-grid i { aspect-ratio: 4 / 5; border-radius: 14px; background: #222 center / cover; }
+.mc-lockd.is-open .mc-lockd-demo { filter: blur(2px); opacity: .75; transition: filter .7s, opacity .7s; }
+.mc-lockd .mc-lockd-min { z-index: 1; }
+@media (max-width: 560px) { .mcd-grid { grid-template-columns: repeat(3, 1fr); } .mcd-tabs i:nth-child(n+3) { display: none; } }

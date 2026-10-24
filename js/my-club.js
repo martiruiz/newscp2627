@@ -41,9 +41,18 @@
 
   // No club yet: My Club as the locked top plan (padlock, one line, the button) over the blurred library — the button opens the padlock and goes to book a demo
   const LOCK = `<svg class="mc-lock-svg" viewBox="0 0 48 48" aria-hidden="true"><path class="mc-lock-shackle" d="M15 21v-6a9 9 0 0 1 18 0v6"/><rect x="9" y="21" width="30" height="22" rx="6"/><circle cx="24" cy="31" r="3"/><path d="M24 34v3"/></svg>`;
+  // behind the padlock: a blurred example of a club's space (crest and name, sections, players, posts) to sense what it is
+  function demoHtml() {
+    const pics = ["assets/lib-example-ucl.jpg", "assets/lib-example-messi.jpg", "assets/lib-example-nba.jpg"];
+    const people = ["#d4a24a", "#6f8fd8", "#c76a8a", "#5fb38a", "#b98a5a", "#8a7fd0", "#d27a4a"];
+    return `<div class="mcd-head"><span class="mcd-crest">FC</span><span><b>Tu club</b><small>Primer equipo · 24 jugadores · 6 patrocinadores</small></span></div>
+      <div class="mcd-tabs"><i class="on">Primer equipo</i><i>Femenino</i><i>Cantera</i><i>Patrocinadores</i></div>
+      <div class="mcd-people">${people.map((c) => `<i style="background:${c}"></i>`).join("")}</div>
+      <div class="mcd-grid">${Array.from({ length: 8 }, (_, i) => `<i style="background-image:url(${pics[i % 3]})"></i>`).join("")}</div>`;
+  }
   function lockedHtml() {
     return `<div class="mc-lockd">
-      <div class="mc-lockd-tiles" aria-hidden="true">${"<i></i>".repeat(8)}</div>
+      <div class="mc-lockd-demo" aria-hidden="true">${demoHtml()}</div>
       <div class="mc-lockd-min">
         <span class="mc-lock">${LOCK}</span>
         <h2>${esc(t("Your club, with its own library"))}</h2>
