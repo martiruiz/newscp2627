@@ -8544,3 +8544,8 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 @keyframes mmFlip { 0%, 42% { --flip: 0; } 50%, 92% { --flip: 1; } 100% { --flip: 0; } }
 .mm-btn-tab.mm-flip:hover { animation-play-state: paused; }
 @media (prefers-reduced-motion: reduce) { .mm-btn-tab.mm-flip { animation: none; } .mm-btn-tab.mm-flip > .mm-badge { display: none; } }
+/* "7 days free" in the menu: a solid gold call to action (metallic gold, dark text, a soft glow and an arrow) */
+.mm-btn-tab.mm-flip > .mm-badge { height: 26px; padding: 0 11px 0 12px; gap: 5px; background: linear-gradient(180deg, #ffe7ad, #f4c463 45%, #d79a2b); color: #1a1205;
+  font: 800 11.5px var(--font-body); letter-spacing: .01em; box-shadow: 0 6px 16px -6px rgba(240, 184, 74, .9), inset 0 1px 0 rgba(255, 255, 255, .55); }
+.mm-btn-tab.mm-flip > .mm-badge::after { content: "→"; font-weight: 800; }
+:root[data-theme="light"] .mm-btn-tab.mm-flip > .mm-badge { background: #0c0c0d; color: #fff; box-shadow: 0 6px 16px -8px rgba(12, 12, 13, .7); }
