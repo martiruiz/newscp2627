@@ -10,7 +10,7 @@
 // SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are provided by Supabase automatically.
 
 const RESEND = "https://api.resend.com";
-const SITE = "https://martiruiz.github.io/newscp2627";   // GitHub Pages: keeps working (redirects) once the domain points here
+const SITE = "https://sportscontentplaybook.com";
 const env = (k: string) => Deno.env.get(k) ?? "";
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 
