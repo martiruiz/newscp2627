@@ -2571,4 +2571,5 @@ window.SCP_ES = {
   "Turn the filter on": "Activar el filtro",
   "Latest posts": "Últimos posts",
   "Content criteria": "Criterios de selección",
+  "Sports content ideas in short videos": "Ideas de contenido deportivo en vídeos cortos",
 };

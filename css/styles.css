@@ -7159,13 +7159,17 @@ section[id], :target { scroll-margin-top: 92px; }
 .mm-fl::before { content: ""; position: absolute; inset: 0; opacity: 0; transition: opacity 0.25s; pointer-events: none; }
 .mm-fl-instagram::before { background: linear-gradient(120deg, rgba(254, 218, 117, 0.12), rgba(250, 126, 30, 0.12), rgba(214, 41, 118, 0.14), rgba(150, 47, 191, 0.14)); }
 .mm-fl-linkedin::before { background: linear-gradient(120deg, rgba(10, 102, 194, 0.2), rgba(10, 102, 194, 0.05)); }
+.mm-fl-tiktok::before { background: linear-gradient(120deg, rgba(37, 244, 238, 0.12), rgba(254, 44, 85, 0.12)); }
 .mm-fl:hover { transform: translateY(-1px); color: var(--text) !important; }
 .mm-fl:hover::before { opacity: 1; }
 .mm-fl-instagram:hover { border-color: rgba(214, 41, 118, 0.5); }
 .mm-fl-linkedin:hover { border-color: rgba(10, 102, 194, 0.6); }
+.mm-fl-tiktok:hover { border-color: rgba(254, 44, 85, 0.5); }
 .mm-fl-ic { position: relative; flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; color: #fff; }
 .mm-fl-instagram .mm-fl-ic { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285aeb 90%); box-shadow: 0 8px 20px -10px rgba(214, 36, 159, 0.8); }
 .mm-fl-linkedin .mm-fl-ic { background: #0a66c2; box-shadow: 0 8px 20px -10px rgba(10, 102, 194, 0.9); }
+.mm-fl-tiktok .mm-fl-ic { background: #000; box-shadow: 0 8px 20px -10px rgba(254, 44, 85, 0.8); }
+.mm-fl-tiktok .mm-fl-ic svg { filter: drop-shadow(-1.2px -1px 0 #25f4ee) drop-shadow(1.2px 1px 0 #fe2c55); }
 .mm-fl-ic svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .mm-fl-tx { position: relative; display: grid; gap: 2px; flex: 1; min-width: 0; }
 .mm-fl-tx b { font-size: 14.5px; font-weight: 600; }
