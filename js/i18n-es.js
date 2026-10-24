@@ -2501,4 +2501,5 @@ window.SCP_ES = {
   "← Back to log in": "← Volver a entrar",
   "Send it again ({n}s)": "Enviarlo de nuevo ({n}s)",
   "We've sent several emails in a short time, so this one couldn't go out yet. Wait a few minutes and try again; meanwhile, check whether an earlier one arrived (spam too), or continue with Google.": "Se han enviado varios emails en poco tiempo y este aún no ha podido salir. Espera unos minutos y vuelve a intentarlo; mientras, mira si te llegó uno anterior (también en spam) o continúa con Google.",
+  "No plan (not a client)": "Sin plan (no cliente)",
 };
