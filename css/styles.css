@@ -8441,3 +8441,15 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .lib-lock-note { margin: 4px 0 0; color: var(--muted); font-size: 12.5px; }
 :root[data-theme="light"] .lib-lock { background: #fff; border-color: rgba(240,184,74,.5); box-shadow: 0 30px 70px -30px rgba(12,12,13,.35); }
 :root[data-theme="light"] .lib-lock-ic { color: #a8730f; }
+
+/* Content Library → "My space" folds its three buttons away to the right (js/my-space.js); the arrow shows the way */
+.my-space-t { display: inline-flex; align-items: center; gap: 4px; align-self: flex-start; padding: 0; border: 0; background: none; cursor: pointer; }
+.my-space-t:hover { color: var(--text); }
+.my-space-t svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; transform: rotate(90deg); transition: transform .3s cubic-bezier(.2,.8,.2,1); }
+.my-space.is-closed .my-space-t svg { transform: rotate(0deg); }
+.my-space-t.is-kick svg { animation: myKick .45s ease; }
+@keyframes myKick { 40% { translate: 5px 0; } }
+.my-space-btns { max-width: 900px; overflow: hidden; transition: max-width .4s cubic-bezier(.2,.8,.2,1), opacity .25s, transform .4s cubic-bezier(.2,.8,.2,1); }
+.my-space.is-closed .my-space-btns { max-width: 0; max-height: 0; opacity: 0; transform: translateX(40px); pointer-events: none; }
+/* the locked library card stays centred on the screen while the blurred posts scroll behind it */
+.lib-lock { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); margin: 0; max-height: calc(100vh - 40px); overflow-y: auto; z-index: 60; }
