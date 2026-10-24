@@ -28,7 +28,7 @@
       // them) and a list on the right, each section with its own colour (orange, pink, red, silver) and one line on what's there
       label: "Resources", type: "resources",
       cards: [
-        { icon: "bookmark", title: "Saved boards", href: "saved.html", acc: "255, 145, 77", member: true },
+        { icon: "bookmark", title: "Saved boards", href: "saved.html", acc: "240, 184, 74", member: true },
         { icon: "file-text", title: "Blog", href: "blog.html", acc: "244, 114, 182" },
         { icon: "newspaper", title: "Social News", href: "news.html", acc: "255, 92, 92" },
         { icon: "help-circle", title: "FAQ", href: "index.html#faq", acc: "186, 196, 214" },
@@ -105,7 +105,7 @@
           <div class="mm-rfeat-tabs" role="tablist"><button type="button" role="tab" aria-selected="true" data-rfeat-tab="news">Social News</button><button type="button" role="tab" aria-selected="false" data-rfeat-tab="blog">Blog</button></div>
           <a class="mm-rfeat-link" href="news.html" data-rfeat-link><em data-rfeat-when></em><b data-rfeat-title>Social News</b><span data-rfeat-go>Read the news →</span></a>
         </div>
-        <div class="mm-rlist">${m.cards.filter(show).map((c) => `<a class="mm-rrow" href="${esc(c.href)}" style="--acc:${c.acc}"><span class="mm-ic">${icon(c.icon)}</span>
+        <div class="mm-rlist">${m.cards.filter(show).map((c) => `<a class="mm-rrow${c.member ? " mm-rrow-gold" : ""}" href="${esc(c.href)}" style="--acc:${c.acc}"><span class="mm-ic">${icon(c.icon)}</span>
           <span class="mm-rrow-t"><b>${esc(c.title)}</b></span>${c.member ? `<span class="mm-rcount" data-rv-n hidden></span>` : `<span class="mm-rarrow" aria-hidden="true">→</span>`}</a>`).join("")}
           <a class="mm-rfaq" href="index.html#faq"><b>Is it made for clubs like mine?</b><small>Yes: real posts from 770+ clubs and 110+ competitions.</small></a>
         </div>

@@ -108,7 +108,7 @@
   const tint = (name) => { let h = 0; for (const c of name) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
   const netOf = (p) => { const u = p.url || ""; return /instagram/.test(u) ? "instagram" : /tiktok/.test(u) ? "tiktok" : /youtu/.test(u) ? "youtube" : /twitter\.com|x\.com/.test(u) ? "x" : /facebook/.test(u) ? "facebook" : /linkedin/.test(u) ? "linkedin" : ""; };
   const nets = (list) => { const m = new Map(); for (const p of list) { const n = netOf(p); if (n) m.set(n, (m.get(n) || 0) + 1); } return [...m].sort((a, b) => b[1] - a[1]); };
-  const netChips = (list) => nets(list).map(([n, c]) => `<span class="sv3-chip"><img src="assets/pf-${n}.svg" alt="">${c}</span>`).join("");
+  const netChips = (list) => nets(list).map(([n, c]) => `<span class="sv3-chip"><i class="sv3-net" style="-webkit-mask-image:url('assets/pf-${n}.svg');mask-image:url('assets/pf-${n}.svg')"></i>${c}</span>`).join("");
   const topOf = (list, cat) => { const m = new Map(); for (const p of list) { const v = first(p, cat); if (v) m.set(v, (m.get(v) || 0) + 1); } return [...m].sort((a, b) => b[1] - a[1])[0]?.[0] || ""; };
   const isVideo = (p) => isReel(p) || /tiktok\.com|youtu/.test(p.url || "");
   // smart boards: they fill themselves

@@ -8587,3 +8587,13 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 :root[data-theme="light"] .lib-lock-ic { color: #f0b84a; border-color: rgba(240,184,74,.7); box-shadow: 0 0 40px -8px rgba(240,184,74,.6); }
 /* Saved boards without a plan: "Try it free for 7 days" on its own line, under the button */
 .sv-lock-card .sv-lock-free { margin: 10px 0 0; font-size: 13px; }
+/* Menu Resources: "Saved boards" stands out a little, in the Content Library's gold (gold icon, soft gold row, gold count) */
+.mm-rrow.mm-rrow-gold { background: linear-gradient(90deg, rgba(240,184,74,.1), rgba(240,184,74,.02)); box-shadow: inset 0 0 0 1px rgba(240,184,74,.28); }
+.mm-rrow.mm-rrow-gold:hover { background: linear-gradient(90deg, rgba(240,184,74,.16), rgba(240,184,74,.05)); }
+.mm-rrow-gold .mm-ic { background: linear-gradient(180deg, #ffe7ad, #f4c463 45%, #d79a2b); color: #1a1205; }
+.mm-rrow-gold .mm-rcount { background: linear-gradient(90deg, #d99a2b, #f0b84a); color: #1a1205; }
+:root[data-theme="light"] .mm-rrow.mm-rrow-gold { background: linear-gradient(90deg, #fff6e2, #fffbf2); box-shadow: inset 0 0 0 1px rgba(215,154,43,.35); }
+/* Saved boards: the boards' names in capitals (as in the library's side panel) */
+.sv3-b-meta > b { text-transform: uppercase; letter-spacing: .04em; }
+/* Saved boards: the networks' icons a little bigger and all in one colour (the logo used as a mask) */
+.sv3-net { flex: none; width: 15px; height: 15px; background: var(--text); -webkit-mask: center / contain no-repeat; mask: center / contain no-repeat; }
