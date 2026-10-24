@@ -8663,3 +8663,21 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .jobs-n { flex: none; color: var(--muted); font-size: 14px; font-weight: 600; white-space: nowrap; }
 @media (max-width: 720px) { .jobs-bar { flex-direction: column; align-items: stretch; gap: 8px; } .jobs-q { height: 50px; } .jobs-n { padding-left: 4px; } }
 
+/* Jobs: room to breathe — the search centred and narrower, a clear gap under the intro, the areas centred under it */
+.jobs-filters { max-width: 860px; margin: 44px auto 36px; gap: 18px; }
+.jobs-filters .f-row[data-jobs-area] { justify-content: center; }
+.jobs-list { max-width: 1040px; margin-inline: auto; }
+@media (max-width: 720px) { .jobs-filters { margin: 28px auto 24px; gap: 14px; } .jobs-filters .f-row[data-jobs-area] { justify-content: flex-start; } }
+/* Blog: the latest news as three cards with their photo on top */
+.news-strip { gap: 18px; background: none; border: 0; box-shadow: none; }
+.news-item { display: flex; flex-direction: column; padding: 0 0 24px; border-radius: 16px; overflow: hidden; background: var(--surface); border: 1px solid var(--line); transition: border-color .2s, transform .2s; }
+.news-item + .news-item { border-left: 1px solid var(--line); }
+.news-item:hover { background: var(--surface); border-color: rgba(240, 184, 74, .45); transform: translateY(-2px); }
+.news-pic { display: block; aspect-ratio: 16 / 9; margin-bottom: 18px; background: var(--surface-2) url("../assets/pf-all.svg") center / 34px no-repeat; }
+.news-pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.news-item .news-meta, .news-item h3, .news-item p { padding-inline: 22px; }
+.news-item h3 { margin-top: 12px; font-size: 21px; line-height: 1.2; }
+.news-item p { margin-top: 10px; }
+@media (max-width: 960px) { .news-strip { grid-template-columns: 1fr; } }
+/* Light theme: the video's "Play" button keeps dark text on its white pill */
+:root[data-theme="light"] .play-btn { color: #0b1020; }

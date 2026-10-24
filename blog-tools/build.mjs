@@ -560,7 +560,19 @@ ${more.map((o) => newsRow(o, lang)).join("\n")}
   }
   // news.html: the latest ones already in the page (js/news.js replaces them with the live, filterable list)
   replaceBetween("news.html", "<!-- NEWS:START -->", "<!-- NEWS:END -->", news.slice(0, 12).map(newsRow).join("\n"));
+  // blog.html: the three latest news items, with their photo, at the bottom
+  replaceBetween("blog.html", "<!-- NEWSSTRIP:START -->", "<!-- NEWSSTRIP:END -->", news.slice(0, 3).map((n) => newsItem(n)).join("\n"));
   console.log(`  → ${news.length} news page(s)`);
+}
+// one news item as a card with its photo (blog.html, under "Visit the news")
+function newsItem(src, lang = "en") {
+  const n = lang === "es" ? inEs(src) : src, dir = lang === "es" && src.es ? "es/" : "";
+  return `        <a class="news-item" href="${dir}news/${esc(n.slug)}.html">
+          <span class="news-pic${n.image_url ? "" : " is-empty"}">${n.image_url ? `<img src="${esc(n.image_url)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentNode.classList.add('is-empty');this.remove()">` : ""}</span>
+          <span class="news-meta"><b>${esc((PF[n.platform] || n.platform).toUpperCase())}</b> ${fmtDate(newsDay(n), lang)}</span>
+          <h3>${esc(n.title)}</h3>
+          <p>${esc(cut(newsDesc(n), 140))}</p>
+        </a>`;
 }
 // one news item in a list (same markup as js/news.js)
 function newsRow(src, lang = "en") {
@@ -632,7 +644,7 @@ fs.mkdirSync(path.join(ROOT, "es"), { recursive: true });
 for (const file of ["blog.html", "news.html"]) {
   let html = read(file);
   const swap = (block, content) => { const a = html.indexOf(`<!-- ${block}:START -->`), b = html.indexOf(`<!-- ${block}:END -->`); if (a >= 0 && b >= 0) html = `${html.slice(0, a + block.length + 15)}\n${content}\n        ${html.slice(b)}`; };
-  if (file === "blog.html") swap("POSTS", posts.map((p) => card(p, "es")).join("\n"));
+  if (file === "blog.html") { swap("POSTS", posts.map((p) => card(p, "es")).join("\n")); if (news) swap("NEWSSTRIP", news.slice(0, 3).map((n) => newsItem(n, "es")).join("\n")); }
   else { swap("BLOG", posts.slice(0, 3).map((p) => card(p, "es")).join("\n")); if (news) swap("NEWS", news.slice(0, 12).map((n) => newsRow(n, "es")).join("\n")); }
   // the Resources tabs: Blog and Social News to their Spanish pages (Jobs has just one page)
   html = html.replace(/<a data-res="(blog|news)" href="(blog|news)\.html"/g, '<a data-res="$1" href="es/$2.html"');
