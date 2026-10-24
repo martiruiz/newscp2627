@@ -8724,3 +8724,11 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 :root[data-theme="light"] .lfp-phases button.is-on em { background: rgba(255, 255, 255, .2); }
 /* The post cards' button tooltips sit on dark navy in both themes: white text (in the light theme it went dark on dark) */
 .lib-rail [data-tip]::after, .lib-rail .save-btn::after { color: #f1f4f9; }
+/* Light theme: the account initials keep the real gold on their dark navy circle */
+:root[data-theme="light"] .lib-foot .lib-crest.is-initials b { color: #f0b84a; }
+/* Filters panel, Memes / Media: the "filter on" option clearer — a round check that shows its tick, gold edge when on */
+.lfp-single .lfp-ck { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--line); }
+.lfp-single .lfp-ck .lf-i { width: 14px; height: 14px; stroke: #1a1205; stroke-width: 3; opacity: 0; }
+.lfp-single.is-on .lfp-ck { background: linear-gradient(180deg, #ffe7ad, #f4c463 45%, #d79a2b); border-color: transparent; }
+.lfp-single.is-on .lfp-ck .lf-i { opacity: 1; }
+:root[data-theme="light"] .lfp-single.is-on { border-color: #d79a2b; background: #fff8ea; }
