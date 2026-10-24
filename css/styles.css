@@ -8591,21 +8591,22 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .mm-rrow-gold .mm-ic { box-shadow: inset 0 1px 0 rgba(255,255,255,.45), 0 6px 14px -8px rgba(240,184,74,.8); }
 .mm-rrow-gold .mm-ic svg { width: 16px; height: 16px; fill: currentColor; stroke: none; }
 /* Resources: Blog · Social News · Jobs as tabs above each page — they also say where you are (no "You are in" pill):
-   an icon per section, the current one lit in gold, and a live dot on Social News (updated every day) */
+   plain text on a thin line, the current one in the text colour with a gold underline and a gold icon; a live dot on
+   Social News (updated every day) */
 .res-tabs { display: flex; justify-content: center; padding-top: 30px; }
-.res-tabs-row { display: inline-flex; gap: 4px; max-width: 100%; padding: 5px; border-radius: 999px; overflow-x: auto; scrollbar-width: none;
-  background: rgba(var(--fg), .03); box-shadow: inset 0 0 0 1px var(--line); }
-.res-tabs-row a { position: relative; flex: none; display: inline-flex; align-items: center; gap: 9px; height: 44px; padding: 0 20px 0 16px; border-radius: 999px;
-  color: var(--muted); font: 600 15px var(--font-display); text-decoration: none; white-space: nowrap; transition: color .2s, background .2s, box-shadow .2s; }
+.res-tabs-row { display: inline-flex; gap: 34px; max-width: 100%; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--line); }
+.res-tabs-row a { position: relative; flex: none; display: inline-flex; align-items: center; gap: 8px; padding: 0 2px 14px; color: var(--muted); font: 600 16px var(--font-display); text-decoration: none; white-space: nowrap; transition: color .2s; }
 .res-tabs-row a svg { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
-.res-tabs-row a:hover { color: var(--text); background: rgba(var(--fg), .05); }
-.res-tabs-row a[aria-current="page"] { color: #1a1205; background: linear-gradient(180deg, #ffe7ad, #f4c463 45%, #d79a2b); box-shadow: 0 8px 22px -10px rgba(240,184,74,.9), inset 0 1px 0 rgba(255,255,255,.5); }
+.res-tabs-row a:hover { color: var(--text); }
+.res-tabs-row a[aria-current="page"] { color: var(--text); }
+.res-tabs-row a[aria-current="page"] svg { color: var(--gold); }
+.res-tabs-row a[aria-current="page"]::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; border-radius: 2px; background: linear-gradient(90deg, #ffe7ad, #d79a2b); }
 .res-live { width: 7px; height: 7px; margin-left: 2px; border-radius: 50%; background: #22c55e; animation: mmPulse 1.6s infinite; }
-.res-tabs-row a[aria-current="page"] .res-live { background: #0f7a3a; }
 .res-tabs + .blog-hero { padding-top: 34px; }
 @media (max-width: 720px) {
   .res-tabs { padding-top: 18px; }
-  .res-tabs-row a { height: 38px; padding: 0 12px; gap: 6px; font-size: 13.5px; } .res-tabs-row a svg { display: none; }
+  .res-tabs-row { gap: 20px; }
+  .res-tabs-row a { padding-bottom: 12px; font-size: 14.5px; } .res-tabs-row a svg { display: none; }
   .res-tabs + .blog-hero { padding-top: 22px; }
 }
 
