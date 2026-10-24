@@ -87,9 +87,11 @@
   };
   // Resources: what shows before the newest article / news / your boards arrive (filled in by fillResources)
   const show = (it) => !it.member || member;
-  // hidden for members until their entitlements say they have no plan (staff counts as having one)
-  const np = member ? " data-noplan hidden" : "";
-  const attrs = (it) => it.plan ? " data-plan hidden" : it.noPlan ? np : "";
+  // hidden for members until their entitlements say they have no plan (staff counts as having one) — shown straight away
+  // when the last visit already knew, so the menu doesn't jump when the answer arrives
+  const known = (() => { try { return localStorage.getItem("scp-navplan"); } catch { return null; } })();
+  const np = member ? ` data-noplan${known === "0" ? "" : " hidden"}` : "";
+  const attrs = (it) => it.plan ? ` data-plan${member && known === "1" ? "" : " hidden"}` : it.noPlan ? np : "";
 
   function panel(m, id) {
     if (m.type === "pillars") return `<div class="mm-panel mm-pillars" id="${id}" role="region" aria-label="${esc(m.label)}">
@@ -115,8 +117,7 @@
       <div class="mm-clubp-vis"><span class="mm-clubp-crown" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 7l5 4 5-7 5 7 5-4-2 12H4z"/></svg></span>
         <p class="mm-clubp-t">Your club, with its own library</p><p class="mm-clubp-s">The most complete plan, tailored to your club.</p></div>
       <div class="mm-clubp-body"><ul>${["First team, sections and academy", "Your players' and sponsors' posts, in one place", "We upload your club's posts every day", "Private: only your marketing and communications team can see it"].map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
-        <a class="lock-go is-best mm-clubp-go" href="book-a-call.html?for=clubs" data-cta="menu-my-club"><span>Try it 7 days</span><i aria-hidden="true">→</i></a>
-        <a class="mm-clubp-more" href="my-club.html">See My Club →</a></div></div>`;
+        <a class="lock-go is-best mm-clubp-go" href="book-a-call.html?for=clubs" data-cta="menu-my-club"><span>Try it 7 days</span><i aria-hidden="true">→</i></a></div></div>`;
     if (m.type === "grid") return `<div class="mm-panel mm-grid" id="${id}" role="region" aria-label="${esc(m.label)}">
       <p class="mm-eyebrow">${esc(m.eyebrow)}</p><p class="mm-title">${esc(m.title)} <em>${esc(m.highlight)}</em></p>
       <div class="mm-cols">${m.items.filter(show).map((i) => `<a class="mm-item" href="${esc(i.href)}"><span class="mm-ic">${icon(i.icon)}</span><span><b>${esc(i.title)}</b><small>${esc(i.desc)}</small></span></a>`).join("")}</div></div>`;
@@ -148,7 +149,9 @@
   if (member) window.SCP_entitlements?.().then(({ data }) => {
     if (!data) return;
     const hasPlan = !!(data.plan || data.is_staff);
-    links.querySelectorAll(hasPlan ? "[data-plan]" : "[data-noplan]").forEach((el) => { el.hidden = false; });
+    links.querySelectorAll("[data-plan]").forEach((el) => { el.hidden = !hasPlan; });
+    links.querySelectorAll("[data-noplan]").forEach((el) => { el.hidden = hasPlan; });
+    try { localStorage.setItem("scp-navplan", hasPlan ? "1" : "0"); } catch {}
   }).catch(() => {});
 
   // Resources: the newest article and news item (content/latest.json) and, for members, their saved boards — asked once,
@@ -162,7 +165,7 @@
     try {
       const j = await (await fetch("content/latest.json", { cache: "no-cache" })).json();
       const show = (k) => {
-        const it = j[k]; if (!it || !feat) return;
+        const it = j[k] && { ...j[k], ...(window.SCP_LANG === "es" && j.es?.[k]) }; if (!it || !feat) return;   // in Spanish: the translated title and page
         feat.querySelectorAll("[data-rfeat-tab]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.rfeatTab === k)));
         feat.style.backgroundImage = it.image ? `linear-gradient(180deg, rgba(0,0,0,0) 25%, rgba(0,0,0,.85)), url("${it.image.replace(/"/g, "%22")}")` : "";
         feat.querySelector("[data-rfeat-link]").href = it.href;
@@ -196,8 +199,7 @@
     const b = t.querySelector(".mm-btn-tab");
     b.addEventListener("click", () => {
       // My Club with a mouse: the panel already opened on hover, so a click goes to the page (a tap still opens the panel)
-      const go = t.querySelector(".mm-clubp-more");
-      if (go && hoverable.matches && !nav.classList.contains("is-tight")) return void (location.href = go.href);
+      if (t.querySelector(".mm-clubp") && hoverable.matches && !nav.classList.contains("is-tight")) return void (location.href = "my-club.html");
       set(t, !t.classList.contains("is-open"));
     });
     t.addEventListener("mouseenter", () => { if (!hoverable.matches || nav.classList.contains("is-tight")) return; clearTimeout(timer); set(t, true); });

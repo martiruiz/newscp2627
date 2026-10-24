@@ -465,7 +465,7 @@ if (news) {
       author: { "@type": "Organization", name: "Sports Content Playbook", url: `${SITE}/` }, publisher: { "@type": "Organization", name: "Sports Content Playbook", logo: { "@type": "ImageObject", url: `${SITE}/assets/icon-logo-lg.png` } },
       mainEntityOfPage: url, image: [n.image_url || `${SITE}/assets/hero-library.png`], articleSection: pf, isBasedOn: n.url, inLanguage: lang, ...(tk.length ? { abstract: tk.join(" ") } : {}) };
     const crumbs = { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: `${SITE}/` }, { "@type": "ListItem", position: 2, name: "Social News", item: `${SITE}/${es ? "es/" : ""}news.html` }, { "@type": "ListItem", position: 3, name: n.title, item: url }] };
+      { "@type": "ListItem", position: 1, name: "Home", item: `${SITE}/` }, { "@type": "ListItem", position: 2, name: t("Social News", "Noticias de Social Media"), item: `${SITE}/${es ? "es/" : ""}news.html` }, { "@type": "ListItem", position: 3, name: n.title, item: url }] };
     const faqLd = fq.length ? { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: fq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) } : null;
     const page = `<!doctype html>
 <html lang="${lang}"${both ? ` data-page-lang="${lang}"` : ""}>
@@ -502,11 +502,11 @@ if (news) {
 
   <main>
     <article class="post container news-page">
-      <nav class="post-crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a> / <a href="${es ? "es/" : ""}news.html">Social News</a> / <span>${esc(pf)}</span></nav>
+      <nav class="post-crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a> / <a href="${es ? "es/" : ""}news.html">${t("Social News", "Noticias de Social Media")}</a> / <span>${esc(pf)}</span></nav>
       <header class="article-head">
         <span class="news-page-pf"><img src="assets/pf-${esc(icon)}.svg" alt="">${esc(pf)}</span>
         <h1 class="section-title section-title-md">${esc(n.title)}</h1>
-        <p class="post-meta">Social News · <time datetime="${day}">${fmtDate(day, lang)}</time> · ${t("Source", "Fuente")}: <a href="${esc(n.url)}" target="_blank" rel="noopener nofollow">${esc(n.source_name)}</a></p>
+        <p class="post-meta">${t("Social News", "Noticias de Social Media")} · <time datetime="${day}">${fmtDate(day, lang)}</time> · ${t("Source", "Fuente")}: <a href="${esc(n.url)}" target="_blank" rel="noopener nofollow">${esc(n.source_name)}</a></p>
       </header>
 ${n.image_url ? `      <figure class="post-cover news-page-cover"><img src="${esc(n.image_url)}" alt="${esc(n.title)}" referrerpolicy="no-referrer" onerror="this.parentNode.remove()"><figcaption>${t("Picture", "Imagen")}: <a href="${esc(n.url)}" target="_blank" rel="noopener nofollow">${esc(n.source_name)}</a></figcaption></figure>
 ` : ""}      <div class="post-body">
@@ -526,14 +526,14 @@ ${fq.map((f) => `          <details><summary>${esc(f.q)}</summary><p>${esc(f.a)}
           <p>Thousands of real posts from clubs, leagues and brands, filtered by sport, platform and format — updated every day.</p>
           <div class="post-cta-actions">
             <a class="btn btn-gold" href="signup.html" data-cta="news-end">Try It For Free</a>
-            <a class="btn btn-outline" href="${es ? "es/" : ""}news.html">All Social News</a>
+            <a class="btn btn-outline" href="${es ? "es/" : ""}news.html">${t("All Social News", "Todas las noticias de Social Media")}</a>
           </div>
         </aside>
       </div>
     </article>
 ${more.length ? `
     <section class="container news-more">
-      <div class="blog-news-head"><h2 class="section-title section-title-md">More Social News</h2><a class="news-link" href="${es ? "es/" : ""}news.html">ALL NEWS →</a></div>
+      <div class="blog-news-head"><h2 class="section-title section-title-md">${t("More Social News", "Más noticias de Social Media")}</h2><a class="news-link" href="${es ? "es/" : ""}news.html">ALL NEWS →</a></div>
       <div class="news-list">
 ${more.map((o) => newsRow(o, lang)).join("\n")}
       </div>
@@ -645,6 +645,11 @@ const lastPost = posts[0], lastNews = news?.[0];
 write("content/latest.json", `${JSON.stringify({
   blog: lastPost ? { title: lastPost.title, href: `blog/${lastPost.slug}.html`, image: `assets/blog/${lastPost.image.file}`, date: lastPost.date } : null,
   news: lastNews ? { title: lastNews.title, href: `news/${lastNews.slug}.html`, image: lastNews.image_url || "", platform: lastNews.platform, date: newsDay(lastNews) } : null,
+  // the same in Spanish (its translated page), for the menu in Spanish
+  es: {
+    blog: lastPost?.es ? { title: inEs(lastPost).title, href: `es/blog/${lastPost.slug}.html` } : null,
+    news: lastNews?.es ? { title: inEs(lastNews).title, href: `es/news/${lastNews.slug}.html` } : null,
+  },
 }, null, 2)}\n`);
 
 // ---------- Sitemap & robots ----------

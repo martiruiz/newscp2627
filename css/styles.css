@@ -8532,14 +8532,14 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .mm-clubp-body ul { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
 .mm-clubp-body li { display: flex; gap: 9px; font-size: 13.5px; line-height: 1.4; color: var(--text); } .mm-clubp-body li::before { content: "✓"; color: var(--gold); font-weight: 800; }
 .mm-clubp-go { justify-self: start; }
-.mm-clubp-more { color: var(--muted) !important; font-size: 13px; } .mm-clubp-more:hover { color: var(--text) !important; }
 @media (max-width: 1180px) { .mm-clubp { width: auto; grid-template-columns: 1fr; } .mm-clubp-vis { min-height: 150px; } }
 /* My Club tab: a small gold crown before the label (premium) */
 .mm-crown { width: 14px; height: 14px; fill: #f0b84a; filter: drop-shadow(0 0 4px rgba(240,184,74,.45)); flex: none; }
 /* My Club offer: the SCP box in 3D (front and spine from the product photo, a designed back): it floats, sways and every few
    seconds makes a full turn on itself, light sweeping across the front, over a night sky of drifting stars (js/my-club.js stars) */
 .mc-offer .lib-lock-vis { position: relative; overflow: hidden; isolation: isolate; background: radial-gradient(55% 40% at 50% 40%, rgba(240,184,74,.22), transparent 70%), radial-gradient(100% 80% at 50% 35%, #2a3b6b, #16213f 60%, #0f1730); }
-.mc-stars { position: absolute; z-index: -1; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.mc-stars { position: absolute; z-index: -1; inset: 0; width: 100%; height: 100%; pointer-events: none; opacity: .75; }
+.mc-offer .lib-lock-vis::after { content: ""; position: absolute; z-index: -1; inset: 0; pointer-events: none; background: linear-gradient(180deg, transparent 45%, rgba(8,12,24,.92) 85%); }
 .mc-offer .lib-lock-ic { margin-bottom: 0; }
 .mc-box { --w: 168px; --h: 274px; --d: 54px; position: relative; margin: auto; padding: 22px 0 34px; perspective: 1100px; }
 .mc-box-fl { animation: mcFloat 4s ease-in-out infinite; transform-style: preserve-3d; }

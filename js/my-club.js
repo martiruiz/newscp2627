@@ -63,43 +63,33 @@
         <ul class="lib-lock-perks"><li>${esc(t("Custom plan"))}</li><li>${esc(t("30-minute demo"))}</li></ul>
         <a class="lib-lock-club" href="pricing.html"><span><b>${esc(t("Not a club?"))}</b><small>${esc(t("Try the library free for 7 days"))}</small></span><i aria-hidden="true">→</i></a>
       </div></div>`);
-    stars(document.querySelector(".mc-offer .lib-lock-vis"));
+    silk(document.querySelector(".mc-offer .lib-lock-vis"));
     SCOPE.ids = null;   // the whole library behind the card
     resolveReady();
     window.dispatchEvent(new Event("scp-lib-scope"));
   }
 
-  // the box's backdrop: a navy sky with a faint gold mesh waving across it (still with reduced motion)
-  function stars(vis) {
+  // the box's backdrop: waves of navy silk with gold sheens rolling slowly across it (drawn small and scaled up, so it's
+  // soft and cheap; still with reduced motion)
+  function silk(vis) {
     if (!vis) return;
     const cv = document.createElement("canvas"); cv.className = "mc-stars"; cv.setAttribute("aria-hidden", "true"); vis.prepend(cv);
-    const ctx = cv.getContext("2d"), still = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let w = 0, h = 0, dpr = 1;
-    const size = () => {
-      dpr = Math.min(devicePixelRatio || 1, 2); w = cv.clientWidth; h = cv.clientHeight; cv.width = w * dpr; cv.height = h * dpr;
-    };
+    const W = 90, H = 110, ctx = cv.getContext("2d"), img = ctx.createImageData(W, H), still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    cv.width = W; cv.height = H;
     const draw = (tm) => {
       if (!cv.isConnected) return;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, w, h);
-      mesh(still ? 0 : tm / 1000);
+      const t = still ? 0 : tm / 1000, d = img.data;
+      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+        const u = x / W, v = y / H;
+        const ph = (v * 1.1 - u * 0.55) * 7 + Math.sin(u * 2.4 + t * 0.7) * 1.3 + Math.sin(v * 1.8 - t * 0.5 + u * 1.2) * 0.7;
+        const i = 0.5 + 0.5 * Math.sin(ph), soft = i * i, hi = soft * soft * soft;   // the fold's body and its sheen
+        const k = (y * W + x) * 4;
+        d[k] = 11 + 27 * soft + 170 * hi; d[k + 1] = 16 + 38 * soft + 125 * hi; d[k + 2] = 32 + 60 * soft + 30 * hi; d[k + 3] = 255;
+      }
+      ctx.putImageData(img, 0, 0);
       if (!still) requestAnimationFrame(draw);
     };
-    // a ribbon of gold mesh rising across the sky and folding over itself as it waves, faint
-    const U = 22, V = 46;
-    const pt = (u, v, t) => {
-      const wave = Math.sin(v * 3.2 - t * 0.9 + u * 0.8), twist = Math.cos(v * 2.4 - t * 0.6);
-      return [w * (-0.15 + 1.3 * v) + u * w * 0.08 * twist, h * (0.95 - 0.75 * v) + wave * h * 0.1 + (u - 0.5) * h * 0.34 * twist];
-    };
-    function mesh(t) {
-      ctx.lineWidth = 0.7; ctx.strokeStyle = "#f4c463";
-      for (let i = 0; i <= U; i++) {   // lines along the ribbon, brighter at its edges
-        const u = i / U; ctx.globalAlpha = 0.14 + 0.2 * Math.abs(u - 0.5) * 2;
-        ctx.beginPath(); for (let j = 0; j <= V; j++) { const [x, y] = pt(u, j / V, t); j ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } ctx.stroke();
-      }
-      ctx.globalAlpha = 0.11;
-      for (let j = 0; j <= V; j++) { ctx.beginPath(); for (let i = 0; i <= U; i++) { const [x, y] = pt(i / U, j / V, t); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } ctx.stroke(); }   // the lines across
-    }
-    size(); addEventListener("resize", size); requestAnimationFrame(draw);
+    requestAnimationFrame(draw);
   }
 
   async function openClub(saved = {}) {

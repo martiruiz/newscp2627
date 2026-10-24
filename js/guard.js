@@ -39,6 +39,9 @@
         location.href = "index.html";
       })
     );
+    // a superadmin last time: Admin and "View as" straight away, so the menu doesn't jump when the profile arrives
+    const wasSuper = (() => { try { return localStorage.getItem("scp-superadmin") === "1"; } catch { return false; } })();
+    if (wasSuper) { document.querySelectorAll("[data-admin-link]").forEach((a) => (a.hidden = false)); viewAsSwitch(); }
     auth.getProfile().then((r) => {
       setUser(r?.profile, session.user.email);
       setAvatar(r?.profile?.avatar_url || session.user.user_metadata?.avatar_url);
@@ -47,7 +50,11 @@
       if (role === "superadmin") {
         document.querySelectorAll("[data-admin-link]").forEach((a) => (a.hidden = false));
         viewAsSwitch();
-      } else { try { localStorage.removeItem("scp-view-as"); } catch {} }
+        try { localStorage.setItem("scp-superadmin", "1"); } catch {}
+      } else {
+        try { localStorage.removeItem("scp-view-as"); localStorage.removeItem("scp-superadmin"); } catch {}
+        if (wasSuper) { document.querySelectorAll("[data-admin-link]").forEach((a) => (a.hidden = true)); document.querySelector(".view-as")?.remove(); document.querySelector("[data-view-as-bar]")?.remove(); }
+      }
     });
   };
   // Superadmin: "View as" a plan — the platform as a member of that plan sees it (locks and notices included).
