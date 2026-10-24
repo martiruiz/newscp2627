@@ -2524,4 +2524,13 @@ window.SCP_ES = {
   "Try the library free for 7 days": "Prueba la biblioteca gratis 7 días",
   "Try it 7 days": "Pruébalo 7 días",
   "See My Club →": "Ver Mi club →",
+  "Every team": "Todos tus equipos",
+  "first team, sections and academy": "primer equipo, secciones y cantera",
+  "Players and sponsors": "Jugadores y patrocinadores",
+  "all their posts, in one place": "todos sus posts, en un solo lugar",
+  "we upload your club's posts": "subimos los posts de tu club",
+  "Private": "Privado",
+  "only your club can see it": "solo lo ve tu club",
+  "Everything included": "Todo incluido",
+  "library, AI analyses and content plan": "biblioteca, análisis con IA y plan de contenido",
 };

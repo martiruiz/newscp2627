@@ -43,14 +43,19 @@
   function offer() {
     if (box) box.innerHTML = "";
     document.body.classList.add("lib-locked");
-    const tick = (x) => `<li>${esc(t(x))}</li>`;
+    // each point with its own icon, the key words in bold: easy to read at a glance
+    const I = { trophy: '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22M18 2H6v7a6 6 0 0 0 12 0V2Z"/>',
+      users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
+      cal: '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M9 16l2 2 4-4"/>', lock: '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+      spark: '<path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15.5l-1.9-4.6L5.5 9l4.6-1.4z"/>' };
+    const tick = ([ic, b, rest]) => `<li><span class="mc-offer-ic"><svg viewBox="0 0 24 24">${I[ic]}</svg></span><span><b>${esc(t(b))}</b> ${esc(t(rest))}</span></li>`;
     document.querySelector("[data-library] .feed")?.insertAdjacentHTML("afterbegin", `<div class="lib-lock mc-offer" role="dialog" aria-label="${esc(t("My Club"))}">
       <div class="lib-lock-vis"><span class="lib-lock-ic mc-offer-crown" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 7l5 4 5-7 5 7 5-4-2 12H4z"/></svg></span>
         <h2>${esc(t("Your club, with its own library"))}</h2>
         <p>${esc(t("The most complete plan, tailored to your club."))}</p></div>
       <div class="lib-lock-plans">
         <p class="mc-offer-tag">${esc(t("Premium plan"))}</p>
-        <ul class="mc-offer-list">${["First team, sections and academy", "Your players' and sponsors' posts, in one place", "We upload your club's posts every day", "Private: only your club can see it", "Everything in Library + AI + Content Plan"].map(tick).join("")}</ul>
+        <ul class="mc-offer-list">${[["trophy", "Every team", "first team, sections and academy"], ["users", "Players and sponsors", "all their posts, in one place"], ["cal", "Updated every day", "we upload your club's posts"], ["lock", "Private", "only your club can see it"], ["spark", "Everything included", "library, AI analyses and content plan"]].map(tick).join("")}</ul>
         <a class="lock-go is-best mc-offer-go" href="book-a-call.html?for=clubs" data-cta="my-club-offer"><span>${esc(t("Book a demo"))}</span><i aria-hidden="true">→</i></a>
         <ul class="lib-lock-perks"><li>${esc(t("Custom plan"))}</li><li>${esc(t("30-minute demo"))}</li></ul>
         <a class="lib-lock-club" href="pricing.html"><span><b>${esc(t("Not a club?"))}</b><small>${esc(t("Try the library free for 7 days"))}</small></span><i aria-hidden="true">→</i></a>

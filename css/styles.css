@@ -8510,8 +8510,13 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 /* My Club for non-clients (js/my-club.js offer): the locked-library card, as the premium plan — gold crown, what's included, book a demo */
 .mc-offer-crown svg { fill: currentColor; stroke: none; }
 .mc-offer-tag { margin: 0; color: var(--gold); font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
-.mc-offer-list { display: grid; gap: 8px; margin: 2px 0 6px; padding: 0; list-style: none; }
-.mc-offer-list li { display: flex; gap: 9px; color: var(--text); font-size: 14px; line-height: 1.4; } .mc-offer-list li::before { content: "✓"; color: var(--gold); font-weight: 800; }
+.mc-offer-list { display: grid; gap: 0; margin: 2px 0 8px; padding: 0; list-style: none; border-radius: 14px; background: var(--surface-2); border: 1px solid var(--line-soft); overflow: hidden; }
+.mc-offer-list li { display: flex; align-items: center; gap: 12px; padding: 10px 14px; color: var(--muted); font-size: 13.5px; line-height: 1.35; }
+.mc-offer-list li + li { border-top: 1px solid var(--line-soft); }
+.mc-offer-list b { color: var(--text); font-weight: 700; }
+.mc-offer-ic { flex: none; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; background: rgba(240,184,74,.14); color: var(--gold); }
+.mc-offer-ic svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+:root[data-theme="light"] .mc-offer-list { background: #f7f6f3; border-color: rgba(12,12,13,.06); }
 .mc-offer-go { justify-self: start; height: 44px; padding-left: 18px; font-size: 14px; }
 .mc-offer .lib-lock-perks { justify-content: flex-start; }
 
