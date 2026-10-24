@@ -1676,3 +1676,4 @@ select.cs-native { display: none !important; }
 .mig-empty { padding: 28px 14px !important; text-align: center; }
 @media (max-width: 900px) { .mig-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 520px) { .mig-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.ms-steps .btn-ghost { border: 1px dashed var(--border-2); color: var(--text); }
