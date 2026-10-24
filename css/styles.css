@@ -8533,3 +8533,14 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .mc-lockd.is-open .mc-lockd-demo { filter: blur(2px); opacity: .75; transition: filter .7s, opacity .7s; }
 .mc-lockd .mc-lockd-min { z-index: 1; }
 @media (max-width: 560px) { .mcd-grid { grid-template-columns: repeat(3, 1fr); } .mcd-tabs i:nth-child(n+3) { display: none; } }
+
+/* Menu "Pricing" ↔ "7 days free": the two take turns in the same place (a soft flip every few seconds) */
+.mm-btn-tab.mm-flip { display: grid !important; grid-template-areas: "x"; place-items: center; }
+.mm-btn-tab.mm-flip > * { grid-area: x; margin: 0 !important; }
+@property --flip { syntax: "<number>"; inherits: true; initial-value: 0; }
+.mm-btn-tab.mm-flip { animation: mmFlip 6s ease-in-out infinite; }   /* one clock for both words: always in step */
+.mm-btn-tab.mm-flip > span:first-child { opacity: calc(1 - var(--flip)); transform: translateY(calc(var(--flip) * -60%)); }
+.mm-btn-tab.mm-flip > .mm-badge { opacity: var(--flip); transform: translateY(calc((1 - var(--flip)) * 60%)); }
+@keyframes mmFlip { 0%, 42% { --flip: 0; } 50%, 92% { --flip: 1; } 100% { --flip: 0; } }
+.mm-btn-tab.mm-flip:hover { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .mm-btn-tab.mm-flip { animation: none; } .mm-btn-tab.mm-flip > .mm-badge { display: none; } }
