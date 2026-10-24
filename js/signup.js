@@ -122,7 +122,7 @@
       const { error } = await auth.client.auth.resetPasswordForEmail(email, { redirectTo: auth.pageUrl("login.html?reset=1") });
       btn.disabled = false;
       // the email limit (few per hour until the website has its own mail server): a calm note, not a red error
-      if (error && /rate limit/i.test(error.message)) return setStatus("We've just sent you an email. Check your inbox (and spam); if it hasn't arrived, try again in a few minutes.", "");
+      if (error && /rate limit/i.test(error.message)) return setStatus("We've sent several emails in a short time, so this one couldn't go out yet. Wait a few minutes and try again; meanwhile, check whether an earlier one arrived (spam too), or continue with Google.", "");
       if (error) return setStatus(error.message, "err");
       fView.querySelector("[data-forgot-to]").textContent = email;
       fForm.hidden = true; sent.hidden = false;
@@ -182,7 +182,7 @@
     button.disabled = false;
     if (error) {
       let msg = error.message;
-      if (/rate limit/i.test(msg)) return setStatus("We've just sent you an email. Check your inbox (and spam); if it hasn't arrived, try again in a few minutes.", "");
+      if (/rate limit/i.test(msg)) return setStatus("We've sent several emails in a short time, so this one couldn't go out yet. Wait a few minutes and try again; meanwhile, check whether an earlier one arrived (spam too), or continue with Google.", "");
       if (mode === "login" && /signups not allowed|not found/i.test(msg)) msg = "We couldn't find an account with that email. Sign up first.";
       setStatus(msg, "err");
       return;
