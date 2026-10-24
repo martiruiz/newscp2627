@@ -1777,7 +1777,19 @@
   window.addEventListener("scroll", () => { clearTimeout(keepTimer); keepTimer = setTimeout(saveKeep, 250); }, { passive: true });
   window.addEventListener("pagehide", saveKeep);
 
-  function showEmpty(text) { empty.textContent = text; empty.hidden = false; }
+  function showEmpty(text) {
+    if (document.body.classList.contains("lib-locked")) return lockBackdrop();   // no plan: the server gives no posts
+    empty.textContent = text; empty.hidden = false;
+  }
+  // behind the "unlock" card of an account without a plan (supabase/library-gate.sql gives it no posts): a wall of the
+  // week's most viewed covers from the public content/top.json, blurred like the real posts would be
+  let backdropDone = false;
+  async function lockBackdrop() {
+    if (backdropDone) return; backdropDone = true;
+    const top = await fetch("content/top.json", { cache: "no-cache" }).then((r) => r.json()).catch(() => []);
+    const pics = (top || []).map((p) => p.cover_url).filter(Boolean).slice(0, 24);
+    if (pics.length) grid.insertAdjacentHTML("beforebegin", `<div class="lib-ghosts" aria-hidden="true">${pics.map((u) => `<span style="background-image:url('${esc(u)}')"></span>`).join("")}</div>`);
+  }
   function showNote(text) { note.textContent = text; note.hidden = false; }
 
   // library_ideas (members). Until supabase/library-ideas.sql has been run, superadmins fall back to the admin search

@@ -2,7 +2,7 @@
 -- API, not just from the website) by members whose plan includes the library, admins, or everyone while the switch
 -- Admin → Memberships → Settings → "Require a membership to use the Content Library" is off (public.library_allowed()).
 -- Running this changes nothing while that switch is off; turning it on is what closes the library to accounts without a plan.
--- Safe to re-run.
+-- Safe to re-run. Part 2, the library functions that skip these rules: supabase/library-gate-functions.sql.
 
 drop policy if exists "Members read ideas" on public.content_ideas;
 create policy "Members read ideas" on public.content_ideas for select to authenticated
