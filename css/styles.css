@@ -8640,3 +8640,6 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .news-filters .ptile[data-platform="all"][aria-pressed="true"] { background: linear-gradient(180deg, #ffe7ad, #f6cd74 55%, #efb64a); border-color: rgba(255, 231, 173, .9);
   box-shadow: 0 0 0 1px rgba(255, 231, 173, .35), 0 12px 26px -14px rgba(240, 184, 74, .85); color: #1a1205; }
 .news-filters .ptile[data-platform="all"][aria-pressed="true"] img { background: transparent; border-color: transparent; box-shadow: none; animation: none; opacity: .85; }
+/* Social News: the home's SCP video in the Content Library promo (poster + "Play Now", js/hero-video.js) */
+.promo-video { position: relative; aspect-ratio: 16 / 9; }
+.promo-video > img { object-position: center; }
