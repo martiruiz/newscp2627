@@ -8738,3 +8738,5 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .lib-ghosts { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; padding: 18px 38px; filter: blur(10px) saturate(.8); opacity: .55; pointer-events: none; user-select: none; }
 .lib-ghosts span { aspect-ratio: 4 / 5; border-radius: 16px; background: var(--surface-2) center / cover no-repeat; }
 @media (max-width: 720px) { .lib-ghosts { grid-template-columns: repeat(2, 1fr); padding: 14px 16px; } }
+/* An open board's name in capitals too, like on its card (not "All saves" or the smart boards) */
+[data-board-title].is-board { text-transform: uppercase; letter-spacing: .01em; }

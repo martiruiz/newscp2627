@@ -4,7 +4,7 @@
 // copied to Storage (bucket "logos", public) → idea_catalog.logo_url, with the Commons file page in logo_source.
 // The library credits "Logos: Wikimedia Commons" under the filters.
 //
-//   cd pipeline && node library/logos.mjs [--category club|competition|sponsor] [--limit 50] [--dry]
+//   cd pipeline && node library/logos.mjs [--category club|competition|sponsor] [--limit 50] [--from-id 1234] [--dry]
 //   --dry only prints what it would pick (no Storage, no database writes).
 // Needs SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in pipeline/.env and supabase/library-filters.sql.
 import path from "node:path";
@@ -84,10 +84,17 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
   const DRY = argv.includes("--dry");
   const LIMIT = Number(arg("--limit") || 1e9);
   const cats = arg("--category") ? [arg("--category")] : ["competition", "club", "sponsor"];
-  let q = db.from("idea_catalog").select("id,category,name").in("category", cats).order("category").order("id");
-  if (!DRY) q = q.is("logo_url", null);
-  const { data: values, error } = await q;
-  if (error) { console.error(/logo_url/.test(error.message) ? "Run supabase/library-filters.sql first." : error.message); process.exit(1); }
+  const FROM = Number(arg("--from-id") || 0);   // carry on after a run that stopped (ids above this one only)
+  // a thousand rows per request (Supabase's cap): all of them, not just the first thousand
+  const values = [];
+  for (let from = 0; ; from += 1000) {
+    let q = db.from("idea_catalog").select("id,category,name").in("category", cats).gt("id", FROM).order("category").order("id").range(from, from + 999);
+    if (!DRY) q = q.is("logo_url", null);
+    const { data, error } = await q;
+    if (error) { console.error(/logo_url/.test(error.message) ? "Run supabase/library-filters.sql first." : error.message); process.exit(1); }
+    values.push(...data);
+    if (data.length < 1000) break;
+  }
   let found = 0, missing = 0;
   for (const v of values.slice(0, LIMIT)) {
     const logo = await findLogo(v.name, v.category).catch(() => null);

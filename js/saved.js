@@ -294,7 +294,7 @@
       <header class="sv-head sv-head-board">
         <div>
           <a class="sv-back" href="#">${icon("arrow-left")}All boards</a>
-          <h1 data-board-title>${board?.icon ? `<em class="sv3-bic is-lg">${icon(board.icon)}</em>` : ""}${esc(isAll ? "All saves" : sm ? sm.name : nice(board.name))}</h1>
+          <h1 data-board-title${!isAll && !sm ? ' class="is-board"' : ""}>${board?.icon ? `<em class="sv3-bic is-lg">${icon(board.icon)}</em>` : ""}${esc(isAll ? "All saves" : sm ? sm.name : nice(board.name))}</h1>
           <p class="sv-sub">${list.length} post${list.length === 1 ? "" : "s"}${sm ? ` · ${esc(T("Fills itself with what you save"))}` : ""}</p>
         </div>
         ${sm ? "" : `<div class="sv-actions">
