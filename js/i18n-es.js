@@ -2515,4 +2515,5 @@ window.SCP_ES = {
   "Save your best ideas in boards": "Guarda tus mejores ideas en tableros",
   "Keep the posts that inspire you organised by matchday, signings, sponsors… and turn them into your content plan. Try it free for 7 days.": "Guarda los posts que te inspiran ordenados por día de partido, fichajes, patrocinadores… y conviértelos en tu plan de contenido. Pruébalo gratis 7 días.",
   "This is how your boards will look": "Así se verán tus tableros",
+  "Your club's private library: every team, player and sponsor.": "La biblioteca privada de tu club: cada equipo, jugador y patrocinador.",
 };

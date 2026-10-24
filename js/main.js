@@ -165,14 +165,22 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString(window.SCP_LO
     );
     // Use the menu button whenever the links and buttons don't fit on one line (longer Spanish labels, the signed-in
     // nav with avatar + admin, narrower windows), not only below a fixed width.
+    // On computers it first gets snug (smaller gaps, no name next to the avatar, no "View as" label) and only falls back to
+    // the menu button when even that doesn't fit, or on tablets / phones.
     const fit = () => {
       if (nav.classList.contains("is-open")) return;
-      nav.classList.remove("is-tight");
-      const box = (sel) => nav.querySelector(sel)?.getBoundingClientRect();
-      const n = nav.getBoundingClientRect(), brand = box(".brand"), links = box(".nav-links"), acts = box(".nav-actions");
-      if (!links || !acts || !links.width) return;
-      const brandEnd = brand ? brand.left + nav.querySelector(".brand").scrollWidth : 0;
-      if (nav.scrollWidth > nav.clientWidth + 1 || acts.right > n.right - 4 || links.right > acts.left || brandEnd > links.left - 8) nav.classList.add("is-tight");
+      nav.classList.remove("is-tight", "is-snug");
+      const over = () => {
+        const box = (sel) => nav.querySelector(sel)?.getBoundingClientRect();
+        const n = nav.getBoundingClientRect(), brand = box(".brand"), links = box(".nav-links"), acts = box(".nav-actions");
+        if (!links || !acts || !links.width) return false;
+        const brandEnd = brand ? brand.left + nav.querySelector(".brand img")?.getBoundingClientRect().width : 0;
+        return nav.scrollWidth > nav.clientWidth + 1 || acts.right > n.right - 4 || links.right > acts.left || brandEnd > links.left - 8;
+      };
+      if (!over()) return;
+      if (innerWidth >= 1024) { nav.classList.add("is-snug"); if (!over()) return; }
+      nav.classList.remove("is-snug");
+      nav.classList.add("is-tight");
     };
     fit();
     addEventListener("resize", fit);

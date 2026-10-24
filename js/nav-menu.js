@@ -43,6 +43,8 @@
       links: [
         { title: "Content creators", desc: "Formats and hooks that work in sports.", href: "book-a-call.html?for=creators" },
         { title: "Clubs", desc: "Matchday, signings, kits and sponsors, all season.", href: "book-a-call.html?for=clubs" },
+        // not a client yet: My Club lives here (members of a club get it as its own tab instead)
+        { title: "My Club", desc: "Your club's private library: every team, player and sponsor.", href: "my-club.html" },
         { title: "Leagues & federations", desc: "Content for every club and competition you run.", href: "book-a-call.html?for=leagues" },
         { title: "Brands & sponsors", desc: "See how others activate their sports partnerships.", href: "book-a-call.html?for=brands" },
       ],
@@ -156,7 +158,7 @@
   }).catch(() => {});
   // My Club: only when this account can open a club (supabase/my-club.sql)
   if (member) window.SCP_AUTH?.client?.rpc("my_clubs").then(({ data }) => {
-    if (Array.isArray(data) && data.length) links.querySelectorAll("[data-club]").forEach((el) => { el.hidden = false; });
+    if (Array.isArray(data) && data.length && !window.SCP_viewAs?.()) links.querySelectorAll("[data-club]").forEach((el) => { el.hidden = false; });   // "View as" a plan: as a member without a club
   }, () => {});
 
   // Resources: the newest article and news item (content/latest.json) and, for members, their saved boards — asked once,

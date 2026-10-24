@@ -8463,15 +8463,6 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .site-nav .brand { flex: none; }
 .site-nav .brand img.brand-logo { flex-shrink: 0; width: auto !important; max-width: none; object-fit: contain; }
 
-/* Locked library: filters, period / sort and the filter bar greyed out with a padlock, not usable */
-.lib-locked .filters, .lib-locked .lf-sortbar, .lib-locked .lfb, .lib-locked .feed-bar { position: relative; pointer-events: none; user-select: none; }
-.lib-locked .filters > *, .lib-locked .lf-sortbar > *, .lib-locked .lfb > *, .lib-locked .feed-bar > * { opacity: .4; filter: grayscale(.4); }
-.lib-locked .filters::after, .lib-locked .lf-sortbar::after, .lib-locked .lfb::after {
-  content: ""; position: absolute; z-index: 2; top: -7px; right: -7px; width: 22px; height: 22px; border-radius: 50%;
-  background: rgba(240, 184, 74, .16) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f0b84a' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='11' width='16' height='10' rx='2'/%3E%3Cpath d='M8 11V7a4 4 0 0 1 8 0v4'/%3E%3C/svg%3E") center / 12px no-repeat;
-  box-shadow: inset 0 0 0 1px rgba(240, 184, 74, .5); background-color: #2a2410; }
-.lib-locked .filters::after { top: 18px; right: 18px; }
-.lib-locked .filters { opacity: 1; }
 
 /* Saved boards without a plan (js/saved-lock.js): an invitation card with the plans, then three example boards */
 .sv-locked [data-saved] { display: none !important; }
@@ -8492,3 +8483,16 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .sv-lock-board b { display: block; font-size: 15px; } .sv-lock-board small { color: var(--muted); font-size: 13px; }
 @media (max-width: 760px) { .sv-lock-grid { grid-template-columns: 1fr; } .sv-lock { padding-top: 100px; } }
 :root[data-theme="light"] .sv-lock-card, :root[data-theme="light"] .sv-lock-board { background: #fff; border-color: rgba(12,12,13,.08); }
+
+/* Nav on a crowded computer screen (js/main.js "is-snug"): tighter tabs, no name next to the avatar, no "View as" label —
+   so the full menu stays instead of the menu button */
+.site-nav.is-snug .mm-btn-tab { padding-left: 10px !important; padding-right: 10px !important; }
+.site-nav.is-snug .nav-links, .site-nav.is-snug .mm { gap: 0 !important; }
+.site-nav.is-snug [data-user-name] { display: none !important; }
+.site-nav.is-snug .view-as > span { display: none; }
+.site-nav.is-snug .view-as select { max-width: 150px; }
+.site-nav.is-snug .nav-actions { gap: 6px !important; }
+
+/* Content Library → "My space" centred: the title over the middle of its buttons */
+.my-space { align-items: center; }
+.my-space-t { align-self: center; }
