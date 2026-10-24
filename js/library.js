@@ -777,13 +777,15 @@
     const meta = `<span class="lfp-meta"><b>${esc(pretty(v.name))}</b><small>${esc(tx("{n} posts", { n: kfmt(n) }))}</small></span><span class="lfp-ck">${svg("check")}</span>`;
     // competitions, clubs, brands: their logo, in a small tile
     if (g.logos) return `<button type="button" class="lfp-logo${st}" aria-pressed="${on}" data-facet="${v.category}" data-id="${v.id}">${v.logo ? `<span class="lfp-lg${v.ig ? " is-photo" : ""}"><img src="${esc(v.logo)}" alt="" loading="lazy"></span>` : `<span class="lfp-lg"><b>${esc(initials(v.name))}</b></span>`}${meta}</button>`;
+    // sports: a small button with the sport's icon (no cover photo)
+    if (g.tiles) return `<button type="button" class="lfp-sport${st}" aria-pressed="${on}" data-facet="${v.category}" data-id="${v.id}"><span class="lfp-sp-ic">${svg(sportIco(v.name))}</span>${meta}</button>`;
     const c = covers.get(v.id);
     const ph = g.logos && v.logo ? `<img class="lfp-img-logo" src="${esc(v.logo)}" alt="" loading="lazy">` : svg(g.tiles ? sportIco(v.name) : g.ico);
     return `<button type="button" class="lfp-card${st}" aria-pressed="${on}" data-facet="${v.category}" data-id="${v.id}">
       <span class="lfp-img${c === undefined ? " is-loading" : ""}" data-cover="${v.id}"${c ? ` style="background-image:url('${esc(c)}')"` : ""}>${c ? "" : ph}</span>${hot ? `<span class="lfp-hot">${esc(tx("Popular"))}</span>` : ""}${meta}</button>`;
   }
   const lfpCards = (list, g, max = 0) => { const l = byCount(list), shown = max ? [...l.slice(0, max), ...l.slice(max).filter(isOn)] : l, hot = l.length > 2 ? l[0] : null;
-    return `<div class="lfp-cards${g.logos ? " lfp-cards-logo" : g.tiles ? " lfp-cards-sm" : ""}">${shown.map((v) => lfpCard(v, g, v === hot && !g.logos && !g.tiles)).join("")}</div>`; };
+    return `<div class="lfp-cards${g.logos ? " lfp-cards-logo" : g.tiles ? " lfp-cards-sport" : ""}">${shown.map((v) => lfpCard(v, g, v === hot && !g.logos && !g.tiles)).join("")}</div>`; };
   function lfpMatchday(g) {
     const phases = MATCHDAY.map((ph) => ({ ...ph, list: ph.vals.map(([cat, name]) => valByName(cat, name)).filter((v) => v && live(v)) })).filter((ph) => ph.list.length);
     const nOn = (ph) => ph.list.filter(isOn).length;
@@ -1345,6 +1347,21 @@
       ...(ex ? { views: [ex[0] ? bucket(ex[0]) : 0, ex[1] ? bucket(ex[1]) : VB], viewsExact: ex } : {}) });
     load(true);
   }
+
+  // ---------- Under the filters' search: four real filters to try in one click, a different set on every visit and
+  // every few seconds (not while the pointer is on them or the search is in use) ----------
+  const suggBox = $("[data-lf-sugg]");
+  const SUGG = ["sport", "competition", "club", "moment", "transfer", "goal", "matchday_graphic"];
+  function drawSugg() {
+    if (!suggBox || !catalog.byId.size) return;
+    const pool = SUGG.flatMap((k) => (catalog.byCat[k] || []).slice(0, 30)).filter((v) => countOf(v) >= 20 && !isOn(v));
+    const pick = [];
+    while (pick.length < 4 && pool.length) pick.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
+    suggBox.classList.remove("is-in"); void suggBox.offsetWidth;   // replay the fade-in
+    suggBox.innerHTML = pick.map((v) => `<button type="button" class="lf-sugg-b" data-facet="${v.category}" data-id="${v.id}">${esc(tx(pretty(v.name)))}</button>`).join("");
+    suggBox.classList.add("is-in");
+  }
+  setInterval(() => { if (suggBox && !suggBox.matches(":hover") && document.activeElement !== $("[data-lf-search]") && !document.hidden) drawSugg(); }, 9000);
 
   // ---------- Search inside the filters: any value of any filter ----------
   const fsearch = $("[data-lf-search]"), fresults = $("[data-lf-results]");
@@ -2578,7 +2595,7 @@
   $("[data-clear]").addEventListener("click", clearAll);
 
   if (!db) return load(true);
-  Promise.all([Promise.all([loadCatalog(), loadViews().catch(() => {})]).then(renderFacets).catch(() => {}), boards.load(), loadSavedSearches(), loadMe().catch(() => {}), loadAi().catch(() => {})]).then(() => {
+  Promise.all([Promise.all([loadCatalog(), loadViews().catch(() => {})]).then(() => { renderFacets(); drawSugg(); }).catch(() => {}), boards.load(), loadSavedSearches(), loadMe().catch(() => {}), loadAi().catch(() => {})]).then(() => {
     // favourite network (catalog value "platform") goes first in "For you", and its tile first in the filters
     const pv = me.favPlatform && (catalog?.byCat?.platform || []).find((v) => v.name.toLowerCase() === me.favPlatform);
     if (pv && !me.boost.includes(pv.id)) { me.boost = [pv.id, ...me.boost]; renderFacets(); }

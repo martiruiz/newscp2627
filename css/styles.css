@@ -6793,15 +6793,7 @@ a.lf-sp-favs { text-decoration: none; }
 .lfp-res .lfp-go { margin-top: auto; width: 100%; justify-content: center; }
 .lfp-go-foot { display: none; }
 @media (max-width: 1280px) { .lfp-body { grid-template-columns: 200px minmax(0, 1fr); } .lfp-res { display: none; } .lfp-go-foot { display: inline-flex; } }
-/* panels: sports in small cards (two rows), competitions / clubs / brands as small logo tiles */
-.lfp-cards.lfp-cards-sm { grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
-.lfp-cards-sm .lfp-card .lfp-meta b { line-height: 1.15; }
-.lfp-cards-sm .lfp-card { border-radius: 11px; }
-.lfp-cards-sm .lfp-card .lfp-meta { padding: 6px 6px 7px; }
-.lfp-cards-sm .lfp-card .lfp-meta b { font-size: 11px; }
-.lfp-cards-sm .lfp-card .lfp-meta small { font-size: 9.5px; }
-.lfp-cards-sm .lfp-ck { top: 6px; right: 6px; width: 18px; height: 18px; }
-.lfp-cards-sm .lfp-img .lf-i { width: 22px; height: 22px; }
+/* panels: competitions / clubs / brands as small logo tiles (sports: .lfp-cards-sport, further down) */
 .lfp-cards.lfp-cards-logo { grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 8px; }
 /* panel chips the chosen filters leave without posts: switched off */
 .lfp-chip.is-off { opacity: 0.35; cursor: default; pointer-events: none; }
@@ -8682,11 +8674,35 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 @media (max-width: 960px) { .news-strip { grid-template-columns: 1fr; } }
 /* Light theme: the video's "Play" button keeps dark text on its white pill */
 :root[data-theme="light"] .play-btn { color: #0b1020; }
-/* Content Library: the filters' search more visual — taller, the magnifier in a gold tile, a gold edge and glow when typing */
-.lf-search { height: 48px; padding: 0 14px 0 6px; gap: 10px; border-radius: 14px; border: 1px solid var(--line); background: linear-gradient(180deg, rgba(var(--fg), .05), rgba(var(--fg), .02)), var(--surface-2); transition: border-color .2s, box-shadow .2s, background .2s; }
-.lf-search:hover { border-color: rgba(240, 184, 74, .35); }
-.lf-search:focus-within { border-color: rgba(240, 184, 74, .7); box-shadow: 0 0 0 4px rgba(240, 184, 74, .12), 0 10px 24px -14px rgba(240, 184, 74, .6); }
-.lf-search-ic { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(180deg, #ffe7ad, #f4c463 45%, #d79a2b); color: #1a1205; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .45); }
-.lf-search-ic svg { width: 17px; height: 17px; stroke-width: 2.4; }
+/* Content Library: the filters' search as a pill (like the other buttons) with four real filters to try under it */
+.lf-search { height: 44px; padding: 0 16px; gap: 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface-2); color: var(--muted); transition: border-color .2s, box-shadow .2s, color .2s; }
+.lf-search:hover { border-color: rgba(var(--fg), .22); }
+.lf-search:focus-within { border-color: rgba(240, 184, 74, .65); color: var(--gold); box-shadow: 0 0 0 4px rgba(240, 184, 74, .12); }
+.lf-search-ic { display: grid; place-items: center; flex: none; }
+.lf-search-ic svg { width: 17px; height: 17px; stroke-width: 2.2; }
 .lf-search input { font-size: 13.5px; font-weight: 500; }
 .lf-search input::placeholder { color: var(--muted); }
+.lf-sugg { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 4px 10px 0; min-height: 26px; }
+.lf-sugg.is-in .lf-sugg-b { animation: lfSugg .45s ease both; }
+.lf-sugg.is-in .lf-sugg-b:nth-child(2) { animation-delay: .06s; } .lf-sugg.is-in .lf-sugg-b:nth-child(3) { animation-delay: .12s; } .lf-sugg.is-in .lf-sugg-b:nth-child(4) { animation-delay: .18s; }
+@keyframes lfSugg { from { opacity: 0; transform: translateY(4px); } }
+.lf-sugg-b { height: 26px; padding: 0 11px; border-radius: 999px; border: 1px solid var(--line-soft); background: rgba(var(--fg), .04); color: var(--muted); font: 600 11.5px var(--font-body); white-space: nowrap; cursor: pointer; transition: color .2s, border-color .2s, background .2s; }
+.lf-sugg-b:hover { color: var(--gold); border-color: rgba(240, 184, 74, .5); background: var(--gold-tint); }
+.lf-search:has(input:not(:placeholder-shown)) ~ .lf-sugg { display: none; }   /* typing: the results instead */
+@media (prefers-reduced-motion: reduce) { .lf-sugg.is-in .lf-sugg-b { animation: none; } }
+/* Filters panel, Sport: small buttons with the sport's icon (no cover photo), name and posts, a check when chosen */
+.lfp-cards.lfp-cards-sport { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.lfp-sport { position: relative; display: flex; align-items: center; gap: 10px; min-width: 0; height: 52px; padding: 0 34px 0 8px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface-2); color: var(--text); text-align: left; cursor: pointer; transition: border-color .2s, background .2s, transform .15s; }
+.lfp-sport:hover { border-color: rgba(var(--fg), .22); transform: translateY(-1px); }
+.lfp-sp-ic { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; background: rgba(240, 184, 74, .12); color: var(--gold); }
+.lfp-sp-ic .lf-i { width: 20px; height: 20px; }
+.lfp-sport .lfp-meta { padding: 0; }
+.lfp-sport .lfp-meta b { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lfp-sport .lfp-meta small { font-size: 11px; }
+.lfp-sport .lfp-ck { top: 50%; right: 10px; transform: translateY(-50%); width: 18px; height: 18px; border-color: var(--line); background: transparent; }
+.lfp-sport.is-on { border-color: var(--gold); background: linear-gradient(180deg, rgba(240, 184, 74, .1), transparent), var(--surface-2); }
+.lfp-sport.is-on .lfp-sp-ic { background: linear-gradient(180deg, #ffe7ad, #f4c463 45%, #d79a2b); color: #1a1205; }
+.lfp-sport.is-on .lfp-ck { background: var(--gold); border-color: var(--gold); }
+.lfp-sport.is-on .lfp-ck .lf-i { opacity: 1; }
+.lfp-sport.is-low { opacity: .6; } .lfp-sport.is-zero { opacity: .35; pointer-events: none; }
+
