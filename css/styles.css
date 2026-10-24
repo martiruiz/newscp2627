@@ -8643,3 +8643,12 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 /* Social News: the home's SCP video in the Content Library promo (poster + "Play Now", js/hero-video.js) */
 .promo-video { position: relative; aspect-ratio: 16 / 9; }
 .promo-video > img { object-position: center; }
+.promo-video .play-btn { white-space: nowrap; }
+.promo-video .play-btn img { width: 13px; height: 14px; object-fit: contain; }
+/* Blog categories: outlined chips (secondary to the Resources tabs above); the chosen one in gold with a dot */
+.blog-tabs { gap: 10px; margin-top: 36px; }
+.blog-tabs button { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 18px; border-radius: 999px; border: 1px solid var(--line); background: rgba(var(--fg), .02); color: var(--muted); font: 600 14px var(--font-body); transition: color .2s, border-color .2s, background .2s; }
+.blog-tabs button:hover { color: var(--text); border-color: rgba(var(--fg), .22); background: rgba(var(--fg), .05); }
+.blog-tabs button[aria-selected="true"] { color: var(--gold); border-color: rgba(240, 184, 74, .6); background: var(--gold-tint); box-shadow: 0 6px 18px -12px rgba(240, 184, 74, .8); }
+.blog-tabs button[aria-selected="true"]::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+@media (max-width: 720px) { .blog-tabs { gap: 8px; margin-top: 26px; } .blog-tabs button { height: 36px; padding: 0 14px; font-size: 13px; } }
