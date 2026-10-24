@@ -8537,14 +8537,9 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 /* My Club tab: a small gold crown before the label (premium) */
 .mm-crown { width: 14px; height: 14px; fill: #f0b84a; filter: drop-shadow(0 0 4px rgba(240,184,74,.45)); flex: none; }
 /* My Club offer: the SCP box in 3D (front and spine from the product photo, a designed back): it floats, sways and every few
-   seconds makes a full turn on itself; light sweeps across the front and a gold halo breathes behind it */
-.mc-offer .lib-lock-vis { position: relative; overflow: hidden; isolation: isolate; background: linear-gradient(180deg, #121a30 10%, #080c18 85%); }
-.mc-offer .lib-lock-vis::before { content: ""; position: absolute; z-index: -1; left: 50%; top: 40%; width: 360px; height: 360px; margin: -180px 0 0 -180px; border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(240,184,74,.32), rgba(240,184,74,.08) 55%, transparent); animation: mcHalo 5s ease-in-out infinite; }
-.mc-offer .lib-lock-vis::after { content: ""; position: absolute; z-index: -1; inset: 0; background: conic-gradient(from 0deg at 50% 40%, transparent 0 20deg, rgba(240,184,74,.07) 30deg, transparent 45deg 140deg, rgba(240,184,74,.06) 155deg, transparent 170deg 260deg, rgba(240,184,74,.07) 275deg, transparent 290deg);
-  animation: mcRays 30s linear infinite; }
-@keyframes mcHalo { 50% { transform: scale(1.15); opacity: .75; } }
-@keyframes mcRays { to { transform: rotate(360deg); } }
+   seconds makes a full turn on itself, light sweeping across the front, over a night sky of drifting stars (js/my-club.js stars) */
+.mc-offer .lib-lock-vis { position: relative; overflow: hidden; isolation: isolate; background: radial-gradient(70% 50% at 50% 40%, #171624, #0d0c14 75%); }
+.mc-stars { position: absolute; z-index: -1; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .mc-offer .lib-lock-ic { margin-bottom: 0; }
 .mc-box { --w: 168px; --h: 274px; --d: 54px; position: relative; margin: auto; padding: 22px 0 34px; perspective: 1100px; }
 .mc-box-fl { animation: mcFloat 4s ease-in-out infinite; transform-style: preserve-3d; }
@@ -8578,4 +8573,4 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 @keyframes mcShadow { 50% { transform: scale(.78); opacity: .55; } }
 @keyframes mcGloss { 0%, 15% { background-position: 100% 0; } 60%, 100% { background-position: 0 0; } }
 @media (max-width: 720px) { .mc-box { --w: 120px; --h: 196px; --d: 38px; padding: 12px 0 26px; } .mc-box .b { padding-top: 16px; } .mc-box-st { margin-top: 12px; gap: 5px; } .mc-box-st span:nth-child(3) { display: none; } .mc-box-st b { font-size: 14px; } .mc-box-st span, .mc-box-band { font-size: 6.5px; } .mc-box-band { bottom: 16px; } }
-@media (prefers-reduced-motion: reduce) { .mc-box-fl, .mc-box-sh, .mc-box .f::after, .mc-offer .lib-lock-vis::before, .mc-offer .lib-lock-vis::after { animation: none; } .mc-box-in { animation: none; transform: rotateX(-9deg) rotateY(-28deg); } }
+@media (prefers-reduced-motion: reduce) { .mc-box-fl, .mc-box-sh, .mc-box .f::after { animation: none; } .mc-box-in { animation: none; transform: rotateX(-9deg) rotateY(-28deg); } }

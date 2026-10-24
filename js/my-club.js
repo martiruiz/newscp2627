@@ -63,9 +63,34 @@
         <ul class="lib-lock-perks"><li>${esc(t("Custom plan"))}</li><li>${esc(t("30-minute demo"))}</li></ul>
         <a class="lib-lock-club" href="pricing.html"><span><b>${esc(t("Not a club?"))}</b><small>${esc(t("Try the library free for 7 days"))}</small></span><i aria-hidden="true">→</i></a>
       </div></div>`);
+    stars(document.querySelector(".mc-offer .lib-lock-vis"));
     SCOPE.ids = null;   // the whole library behind the card
     resolveReady();
     window.dispatchEvent(new Event("scp-lib-scope"));
+  }
+
+  // the box's backdrop: a dark night sky, the stars drifting slowly and twinkling (a still sky with reduced motion)
+  function stars(vis) {
+    if (!vis) return;
+    const cv = document.createElement("canvas"); cv.className = "mc-stars"; cv.setAttribute("aria-hidden", "true"); vis.prepend(cv);
+    const ctx = cv.getContext("2d"), still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let w = 0, h = 0, dpr = 1, list = [];
+    const size = () => {
+      dpr = Math.min(devicePixelRatio || 1, 2); w = cv.clientWidth; h = cv.clientHeight; cv.width = w * dpr; cv.height = h * dpr;
+      list = Array.from({ length: Math.round(w * h / 1800) }, () => { const z = Math.random(); return { x: Math.random() * w, y: Math.random() * h, z, r: 0.35 + z * z * 1.5, a: 0.35 + z * 0.65, p: Math.random() * 6.3, s: 0.6 + Math.random() * 1.6 }; });
+    };
+    const draw = (tm) => {
+      if (!cv.isConnected) return;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, w, h);
+      for (const st of list) {
+        if (!still) { st.x -= 0.03 + st.z * 0.12; st.y += 0.01 + st.z * 0.03; if (st.x < -2) st.x = w + 2; if (st.y > h + 2) st.y = -2; }
+        const tw = still ? 1 : 0.6 + 0.4 * Math.sin(tm / 1000 * st.s + st.p);
+        ctx.globalAlpha = st.a * tw; ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(st.x, st.y, st.r, 0, 6.283); ctx.fill();
+        if (st.r > 1.4) { ctx.globalAlpha = st.a * tw * 0.18; ctx.beginPath(); ctx.arc(st.x, st.y, st.r * 3, 0, 6.283); ctx.fill(); }
+      }
+      if (!still) requestAnimationFrame(draw);
+    };
+    size(); addEventListener("resize", size); requestAnimationFrame(draw);
   }
 
   async function openClub(saved = {}) {
