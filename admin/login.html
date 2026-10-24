@@ -10,12 +10,12 @@
   <link rel="icon" type="image/png" sizes="192x192" href="../assets/favicon-s-192.png">
   <link rel="apple-touch-icon" href="../assets/apple-touch-icon-s.png">
   <link rel="stylesheet" href="../css/fonts.css?v=1">
-  <link rel="stylesheet" href="css/admin.css?v=20261025s">
+  <link rel="stylesheet" href="css/admin.css?v=20261025t">
   <script src="../js/theme.js?v=20261101a"></script>
 </head>
 <body>
   <main class="login">
-    <div class="ringbg" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <canvas class="gridbg" aria-hidden="true" data-gridbg></canvas>
     <div class="login-card2">
       <div class="login-vis" aria-hidden="true">
         <p class="login-tag" data-login-tag>All your <em>content</em>,<br>one <em>access</em>.</p>
@@ -46,6 +46,52 @@
   <script src="../js/config.js"></script>
   <script src="../js/auth.js"></script>
   <script>
+    // background: a tunnel of grid lines in perspective (navy walls, floor and ceiling) and a gold frame of light travelling
+    // from the far end towards you, shedding sparks (a still tunnel with reduced motion)
+    (() => {
+      const cv = document.querySelector("[data-gridbg]");
+      if (!cv) return;
+      const ctx = cv.getContext("2d"), still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const D = 3.2, N = 14, M = 10, LAP = 3600;   // depth of the far wall, depth slices, lines across, ms per frame trip
+      let W = 0, H = 0, dpr = 1, sparks = [];
+      const size = () => { dpr = Math.min(devicePixelRatio || 1, 2); W = innerWidth; H = innerHeight; cv.width = W * dpr; cv.height = H * dpr; };
+      const light = () => document.documentElement.dataset.theme === "light";
+      const rect = (d) => [W / 2 - W / 2 / d, H / 2 - H / 2 / d, W / d, H / d];   // the tunnel's cross-section at depth d
+      const line = (x1, y1, x2, y2) => { ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); };
+      function tunnel() {
+        const lt = light(), [bx, by, bw, bh] = rect(D);
+        const g = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, Math.hypot(W, H) / 2);
+        g.addColorStop(0, lt ? "#ece6d8" : "#070b16"); g.addColorStop(1, lt ? "#faf7f0" : "#16213f");
+        ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+        ctx.fillStyle = lt ? "rgba(18,27,51,.05)" : "rgba(5,8,16,.55)"; ctx.fillRect(bx, by, bw, bh);   // the far wall, darkest
+        ctx.beginPath();
+        for (let i = 0; i <= M; i++) {   // lines running from the far wall to the edges of the screen
+          const u = i / M;
+          line(bx + bw * u, by, W * u, 0); line(bx + bw * u, by + bh, W * u, H);
+          line(bx, by + bh * u, 0, H * u); line(bx + bw, by + bh * u, W, H * u);
+          line(bx + bw * u, by, bx + bw * u, by + bh); line(bx, by + bh * u, bx + bw, by + bh * u);   // the far wall's own grid
+        }
+        for (let i = 0; i < N; i++) { const d = 1 + (D - 1) * i / N, [x, y, w, h] = rect(d); ctx.rect(x, y, w, h); }   // the slices
+        ctx.strokeStyle = lt ? "rgba(38,54,92,.22)" : "rgba(140,172,255,.24)"; ctx.lineWidth = 1; ctx.stroke();
+      }
+      function frame(t, dt) {
+        const k = (t % LAP) / LAP, d = D - (D - 0.8) * k * k * k;   // speeds up as it comes closer
+        const a = Math.min(1, k * 6) * Math.min(1, (d - 0.8) / 0.4), [x, y, w, h] = rect(d);
+        ctx.save(); ctx.globalAlpha = a; ctx.strokeStyle = light() ? "#d79a2b" : "#ffd98c"; ctx.shadowColor = "rgba(240,184,74,.9)";
+        ctx.lineWidth = Math.max(1.5, 3 / d); ctx.shadowBlur = 26 / d; ctx.strokeRect(x, y, w, h); ctx.shadowBlur = 8; ctx.strokeRect(x, y, w, h); ctx.restore();
+        for (let i = 0; i < 3; i++) {   // sparks shed along the frame
+          const s = Math.random() * 2 * (w + h), on = s < w ? [x + s, y] : s < w + h ? [x + w, y + s - w] : s < 2 * w + h ? [x + s - w - h, y + h] : [x, y + s - 2 * w - h];
+          sparks.push({ x: on[0], y: on[1], vx: (on[0] - W / 2) * 0.0009 + (Math.random() - 0.5) * 0.06, vy: (on[1] - H / 2) * 0.0009 + (Math.random() - 0.5) * 0.06, life: 1, a });
+        }
+        ctx.fillStyle = light() ? "#d79a2b" : "#ffe7ad";
+        sparks = sparks.filter((p) => (p.life -= dt / 900) > 0);
+        for (const p of sparks) { p.x += p.vx * dt; p.y += p.vy * dt; ctx.globalAlpha = p.life * p.a * 0.8; ctx.fillRect(p.x, p.y, 1.6, 1.6); }
+        ctx.globalAlpha = 1;
+      }
+      let last = 0;
+      const draw = (t) => { ctx.setTransform(dpr, 0, 0, dpr, 0, 0); tunnel(); if (!still) { frame(t, Math.min(50, t - (last || t))); last = t; requestAnimationFrame(draw); } };
+      size(); addEventListener("resize", () => { size(); if (still) draw(0); }); requestAnimationFrame(draw);
+    })();
     // language: the same switch as the sidebar (js/i18n-admin.js)
     document.querySelectorAll("[data-admin-lang]").forEach((b) => {
       b.setAttribute("aria-pressed", String(b.dataset.adminLang === (window.SCPA_LANG || "en")));

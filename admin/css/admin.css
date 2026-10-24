@@ -1611,21 +1611,11 @@ select.cs-native { display: none !important; }
 .login-card2 .login-card form { margin-top: auto; }
 .login-card2 .login-site { margin-top: auto; padding-top: 22px; }
 
-/* Log in background: rings of light in SCP's gold and blue, expanding from the centre of a navy night and fading away */
+/* Log in background: a tunnel of grid lines in perspective with a gold frame of light travelling towards you (canvas, js in admin/login.html) */
 .login { position: relative; overflow: hidden; }
 .login-card2 { position: relative; z-index: 1; }
-.ringbg { position: fixed; inset: 0; pointer-events: none; overflow: hidden; background: radial-gradient(60% 55% at 50% 50%, #1d2a4d, #0b1020 75%); }
-.ringbg i { position: absolute; left: 50%; top: 50%; width: 120vmax; height: 120vmax; margin: -60vmax 0 0 -60vmax; border-radius: 50%; opacity: 0;
-  border: 2.5px solid #ffd98c; box-shadow: 0 0 22px 4px rgba(240, 184, 74, .75), inset 0 0 22px 4px rgba(240, 184, 74, .6), 0 0 90px 18px rgba(240, 184, 74, .25);
-  animation: ringOut 9s cubic-bezier(.3, .1, .4, 1) infinite; }
-.ringbg i:nth-child(even) { border-color: #a9c0ff; box-shadow: 0 0 22px 4px rgba(110, 145, 255, .7), inset 0 0 22px 4px rgba(110, 145, 255, .55), 0 0 90px 18px rgba(110, 145, 255, .22); }
-.ringbg i:nth-child(2) { animation-delay: -1.5s; } .ringbg i:nth-child(3) { animation-delay: -3s; } .ringbg i:nth-child(4) { animation-delay: -4.5s; }
-.ringbg i:nth-child(5) { animation-delay: -6s; } .ringbg i:nth-child(6) { animation-delay: -7.5s; }
-@keyframes ringOut { 0% { transform: scale(.05); opacity: 0; } 12% { opacity: 1; } 65% { opacity: .6; } 100% { transform: scale(1); opacity: 0; } }
-:root[data-theme="light"] .ringbg { background: radial-gradient(60% 55% at 50% 50%, #fffaf0, #f3efe6 75%); }
-:root[data-theme="light"] .ringbg i { border-color: rgba(215, 154, 43, .8); box-shadow: 0 0 16px 1px rgba(215, 154, 43, .35); }
-:root[data-theme="light"] .ringbg i:nth-child(even) { border-color: rgba(38, 54, 92, .5); box-shadow: 0 0 16px 1px rgba(38, 54, 92, .2); }
-@media (prefers-reduced-motion: reduce) { .ringbg i { animation: none; opacity: .25; } .ringbg i:nth-child(1) { transform: scale(.35); } .ringbg i:nth-child(2) { transform: scale(.55); } .ringbg i:nth-child(3) { transform: scale(.75); } .ringbg i:nth-child(n+4) { display: none; } }
+.gridbg { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; background: #0b1020; }
+:root[data-theme="light"] .gridbg { background: #f3efe6; }
 /* Log in: "email me a link" at the bottom, right above the way back to the website (apart from Sign in) */
 .login-card2 .login-alt { margin-top: auto; padding-top: 22px; }
 .login-card2 .login-site { margin-top: 14px; padding-top: 0; }
