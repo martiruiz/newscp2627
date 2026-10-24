@@ -202,18 +202,21 @@ for (const p of posts) {
   const type = cfg.types[p.type];
   const issues = [];
   if (!type) issues.push(`unknown type "${p.type}"`);
-  for (const f of ["slug", "title", "meta_title", "meta_description", "date", "primary_keyword", "excerpt", "body_html"]) {
+  // posts brought over from the old WordPress (blog-tools/import-wp.mjs, "legacy": true) keep their text as it was: the
+  // basic checks only, not the SEO rules of new articles (length, keywords, every reference shown)
+  const legacy = !!p.legacy;
+  for (const f of ["slug", "title", "meta_title", "meta_description", "date", ...(legacy ? [] : ["primary_keyword"]), "excerpt", "body_html"]) {
     if (!p[f]) issues.push(`missing ${f}`);
   }
   if (!p.image?.file || !p.image?.alt) issues.push("missing image.file / image.alt");
   if (!p.image?.credit?.author || !p.image?.credit?.source_url) issues.push("missing image.credit (author + source_url) — the photo source must always be cited");
   if (p.image?.file && !fs.existsSync(path.join(ROOT, "assets/blog", p.image.file))) issues.push(`cover not found: assets/blog/${p.image.file}`);
   const n = words(p.body_html || "");
-  if (type && (n < type.min_words || n > type.max_words)) issues.push(`${n} words (needs ${type.min_words}–${type.max_words} for ${type.label})`);
+  if (type && !legacy && (n < type.min_words || n > type.max_words)) issues.push(`${n} words (needs ${type.min_words}–${type.max_words} for ${type.label})`);
   const text = plain(p.body_html || "").toLowerCase();
-  const missing = cfg.keywords.filter((k) => !text.includes(k.keyword.toLowerCase())).map((k) => k.keyword);
+  const missing = legacy ? [] : cfg.keywords.filter((k) => !text.includes(k.keyword.toLowerCase())).map((k) => k.keyword);
   if (missing.length) issues.push(`missing keywords: ${missing.join(", ")}`);
-  if (p.body_html) {
+  if (p.body_html && !legacy) {
     const linked = linkKeywords(p.body_html);
     const unlinked = cfg.keywords.filter((k) => !missing.includes(k.keyword) && !new RegExp(`class="kw-link"[^>]*>${k.keyword}<`, "i").test(linked)).map((k) => k.keyword);
     if (unlinked.length) issues.push(`keywords only in headings or links (need one mention in body text): ${unlinked.join(", ")}`);
@@ -226,7 +229,7 @@ for (const p of posts) {
   }
   // Every post, profile or campaign the article talks about must be shown (embed or screenshot)
   if (!Array.isArray(p.references)) issues.push('missing "references" (list every post/profile/campaign mentioned; [] if none)');
-  else {
+  else if (!legacy) {
     const shown = new Set([
       ...[...(p.body_html || "").matchAll(EMBED_RE)].map((m) => norm(m[1])),
       ...[...(p.body_html || "").matchAll(SHOT_RE)].map((m) => norm(m[3])),
