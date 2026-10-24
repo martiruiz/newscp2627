@@ -42,9 +42,8 @@
       label: "Solutions", type: "about", noPlan: true,
       links: [
         { title: "Content creators", desc: "Formats and hooks that work in sports.", href: "book-a-call.html?for=creators" },
-        { title: "Clubs", desc: "Matchday, signings, kits and sponsors, all season.", href: "book-a-call.html?for=clubs" },
-        // not a client yet: My Club lives here (members of a club get it as its own tab instead)
-        { title: "My Club", desc: "Your club's private library: every team, player and sponsor.", href: "my-club.html" },
+        // for clubs: My Club, the premium plan (a crown); members of a club get it as its own tab instead
+        { title: "My Club", desc: "Your club's private library: every team, player and sponsor.", href: "my-club.html", premium: true },
         { title: "Leagues & federations", desc: "Content for every club and competition you run.", href: "book-a-call.html?for=leagues" },
         { title: "Brands & sponsors", desc: "See how others activate their sports partnerships.", href: "book-a-call.html?for=brands" },
       ],
@@ -99,6 +98,7 @@
     cp: `<span class="tool-vis tv-cp" aria-hidden="true"><span class="tv-week">${["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d, i) => `<span><small>${d}</small>${Array.from({ length: [2, 3, 2, 1, 2, 3, 1][i] }, (_, k) => `<i style="--k:${i + k}"></i>`).join("")}</span>`).join("")}</span><span class="tv-bar"><i></i></span></span>`,
   };
   // Resources: what shows before the newest article / news / your boards arrive (filled in by fillResources)
+  const CROWN = `<svg class="mm-crown" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 7l5 4 5-7 5 7 5-4-2 12H4z"/></svg>`;
   const show = (it) => !it.member || member;
   // hidden for members until their entitlements say they have no plan (staff counts as having one)
   const np = member ? " data-noplan hidden" : "";
@@ -128,7 +128,7 @@
       <div class="mm-cols">${m.items.filter(show).map((i) => `<a class="mm-item" href="${esc(i.href)}"><span class="mm-ic">${icon(i.icon)}</span><span><b>${esc(i.title)}</b><small>${esc(i.desc)}</small></span></a>`).join("")}</div></div>`;
     if (m.type === "about") return `<div class="mm-panel mm-about" id="${id}" role="region" aria-label="${esc(m.label)}">
       ${m.title ? `<p class="mm-hello">${esc(m.hello)}</p><p class="mm-title">${esc(m.title)} <em>${esc(m.highlight)}</em></p><p class="mm-sub">${esc(m.sub)}</p>` : ""}
-      <div class="mm-cols${!m.title && m.links.filter(show).length === 3 ? " mm-cols-3" : ""}">${m.links.filter(show).map((l) => `<a class="mm-link" href="${esc(l.href)}"><b>${esc(l.title)}</b><small>${esc(l.desc)}</small></a>`).join("")}</div>
+      <div class="mm-cols${!m.title && m.links.filter(show).length === 3 ? " mm-cols-3" : ""}">${m.links.filter(show).map((l) => `<a class="mm-link${l.premium ? " is-premium" : ""}" href="${esc(l.href)}"><b>${l.premium ? CROWN : ""}${esc(l.title)}</b><small>${esc(l.desc)}</small></a>`).join("")}</div>
       ${m.featured ? `<a class="mm-featured${m.featured.desc ? "" : " mm-featured-sm"}"${np} href="${esc(m.featured.href)}"><span><i>${esc(m.featured.eyebrow)}</i><b>${esc(m.featured.title)}</b>${m.featured.desc ? `<small>${esc(m.featured.desc)}</small>` : ""}</span>${icon("arrow-up-right")}</a>` : ""}</div>`;
     if (m.type === "contact") return `<div class="mm-panel mm-contact" id="${id}" role="region" aria-label="${esc(m.label)}">
       ${m.links.map((l) => `<a class="mm-item" href="${esc(l.href)}"${attrs(l)}><span class="mm-ic">${icon(l.icon)}</span><span><b>${esc(l.title)}</b><small>${esc(l.desc)}</small></span></a>`).join("")}
