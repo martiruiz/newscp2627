@@ -8612,8 +8612,6 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 /* Jobs (jobs.html): the filters and one row per offer — logo, company and when, the title, a short summary, tags, Apply */
 .jobs-filters { display: grid; gap: 12px; margin-bottom: 22px; }
 .jobs-filters .f-row { display: flex; flex-wrap: wrap; gap: 8px; }
-.jobs-filter-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
-.jobs-search { flex: 0 1 340px; min-width: 220px; }
 .jobs-list { display: grid; gap: 12px; }
 .jobs-loading { color: var(--muted); text-align: center; padding: 40px 0; }
 .job { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 18px; padding: 18px 20px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line-soft); transition: border-color .2s, transform .2s; }
@@ -8652,3 +8650,16 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .blog-tabs button[aria-selected="true"] { color: var(--gold); border-color: rgba(240, 184, 74, .6); background: var(--gold-tint); box-shadow: 0 6px 18px -12px rgba(240, 184, 74, .8); }
 .blog-tabs button[aria-selected="true"]::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 @media (max-width: 720px) { .blog-tabs { gap: 8px; margin-top: 26px; } .blog-tabs button { height: 36px; padding: 0 14px; font-size: 13px; } }
+/* Jobs: a big search (job, company, city) with a clear button and how many jobs it finds, the areas below */
+.jobs-bar { display: flex; align-items: center; gap: 16px; }
+.jobs-q { flex: 1; display: flex; align-items: center; gap: 12px; height: 54px; padding: 0 8px 0 18px; border-radius: 16px; background: var(--surface-2); border: 1px solid var(--line); transition: border-color .2s, box-shadow .2s; }
+.jobs-q:focus-within { border-color: rgba(240,184,74,.6); box-shadow: 0 0 0 4px rgba(240,184,74,.12); }
+.jobs-q svg { width: 20px; height: 20px; flex: none; fill: none; stroke: var(--gold); stroke-width: 2; stroke-linecap: round; }
+.jobs-q input { flex: 1; min-width: 0; height: 100%; background: none; border: 0; outline: 0; color: var(--text); font: 500 16px var(--font-body); }
+.jobs-q input::placeholder { color: var(--muted-dim); }
+.jobs-q input::-webkit-search-cancel-button { display: none; }
+.jobs-q-x { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: rgba(var(--fg), .06); color: var(--muted); font-size: 20px; line-height: 1; cursor: pointer; }
+.jobs-q-x:hover { color: var(--text); background: rgba(var(--fg), .12); }
+.jobs-n { flex: none; color: var(--muted); font-size: 14px; font-weight: 600; white-space: nowrap; }
+@media (max-width: 720px) { .jobs-bar { flex-direction: column; align-items: stretch; gap: 8px; } .jobs-q { height: 50px; } .jobs-n { padding-left: 4px; } }
+

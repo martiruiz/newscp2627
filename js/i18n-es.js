@@ -2562,4 +2562,8 @@ window.SCP_ES = {
   "Study the": "Estudia la",
   "Thousands of real posts from clubs, leagues and brands, with why they worked. Arrive knowing what the best teams publish.": "Miles de posts reales de clubes, ligas y marcas, con por qué funcionaron. Llega sabiendo lo que publican los mejores equipos.",
   "Sports Digital Marketing Jobs | SCP": "Empleo en marketing digital deportivo | SCP",
+  "{n} jobs": "{n} ofertas",
+  "1 job": "1 oferta",
+  "Clear search": "Borrar búsqueda",
+  "Search a job, a club or a city…": "Busca un puesto, un club o una ciudad…",
 };
