@@ -74,17 +74,21 @@
   function silk(vis) {
     if (!vis) return;
     const cv = document.createElement("canvas"); cv.className = "mc-stars"; cv.setAttribute("aria-hidden", "true"); vis.prepend(cv);
-    const W = 90, H = 110, ctx = cv.getContext("2d"), img = ctx.createImageData(W, H), still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const W = 150, H = 180, ctx = cv.getContext("2d"), img = ctx.createImageData(W, H), still = matchMedia("(prefers-reduced-motion: reduce)").matches;
     cv.width = W; cv.height = H;
+    const P = Math.PI * 2;
     const draw = (tm) => {
       if (!cv.isConnected) return;
       const t = still ? 0 : tm / 1000, d = img.data;
       for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
         const u = x / W, v = y / H;
-        const ph = (v * 1.1 - u * 0.55) * 7 + Math.sin(u * 2.4 + t * 0.7) * 1.3 + Math.sin(v * 1.8 - t * 0.5 + u * 1.2) * 0.7;
-        const i = 0.5 + 0.5 * Math.sin(ph), soft = i * i, hi = soft * soft * soft;   // the fold's body and its sheen
-        const k = (y * W + x) * 4;
-        d[k] = 11 + 27 * soft + 170 * hi; d[k + 1] = 16 + 38 * soft + 125 * hi; d[k + 2] = 32 + 60 * soft + 30 * hi; d[k + 3] = 255;
+        // folds running down to the right, bent into an S that rolls along
+        const ph = (v - 0.42 * u) * P * 1.9 + 1.25 * Math.sin(P * 0.75 * u + t * 0.55) + 0.45 * Math.sin(P * (1.4 * u - 0.6 * v) - t * 0.8);
+        const sn = Math.sin(ph), body = Math.pow(0.5 + 0.5 * sn, 2.2);   // the fold's lit side
+        const crest = Math.pow(Math.max(0, Math.sin(ph + 0.55)), 40);   // the thin bright line along its edge
+        const lamp = 0.55 + 0.45 * Math.sin(P * (0.6 * u + 0.35 * v) - t * 0.35);   // light drifting across the cloth
+        const g = body * lamp, c = crest * (0.6 + 0.4 * lamp), k = (y * W + x) * 4;
+        d[k] = 6 + 75 * g + 235 * c + 150 * g * g; d[k + 1] = 9 + 70 * g + 200 * c + 105 * g * g; d[k + 2] = 20 + 100 * g + 120 * c + 15 * g * g; d[k + 3] = 255;
       }
       ctx.putImageData(img, 0, 0);
       if (!still) requestAnimationFrame(draw);

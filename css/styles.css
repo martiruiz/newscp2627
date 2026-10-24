@@ -8538,7 +8538,7 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 /* My Club offer: the SCP box in 3D (front and spine from the product photo, a designed back): it floats, sways and every few
    seconds makes a full turn on itself, light sweeping across the front, over a night sky of drifting stars (js/my-club.js stars) */
 .mc-offer .lib-lock-vis { position: relative; overflow: hidden; isolation: isolate; background: radial-gradient(55% 40% at 50% 40%, rgba(240,184,74,.22), transparent 70%), radial-gradient(100% 80% at 50% 35%, #2a3b6b, #16213f 60%, #0f1730); }
-.mc-stars { position: absolute; z-index: -1; inset: 0; width: 100%; height: 100%; pointer-events: none; opacity: .75; }
+.mc-stars { position: absolute; z-index: -1; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .mc-offer .lib-lock-vis::after { content: ""; position: absolute; z-index: -1; inset: 0; pointer-events: none; background: linear-gradient(180deg, transparent 45%, rgba(8,12,24,.92) 85%); }
 .mc-offer .lib-lock-ic { margin-bottom: 0; }
 .mc-box { --w: 168px; --h: 274px; --d: 54px; position: relative; margin: auto; padding: 22px 0 34px; perspective: 1100px; }
@@ -8580,3 +8580,6 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .lib-lock:not(.mc-offer) .lib-lock-vis::before { content: ""; position: absolute; z-index: -1; left: 0; right: 0; top: 0; height: 160%; background: url("../assets/admin-login.webp") center / cover; animation: lockScroll 16s ease-in-out infinite alternate; }
 @keyframes lockScroll { to { transform: translateY(-37.5%); } }
 @media (prefers-reduced-motion: reduce) { .lib-lock:not(.mc-offer) .lib-lock-vis::before { animation: none; } }
+/* Light theme: the text over the dark photos (My Club menu panel, locked library card) stays light, not the light theme's grey */
+:root[data-theme="light"] .mm-clubp-vis .mm-clubp-t, :root[data-theme="light"] .lib-lock-vis h2 { color: #fff; }
+:root[data-theme="light"] .mm-clubp-vis .mm-clubp-s, :root[data-theme="light"] .lib-lock-vis p { color: #c9d1e0; }
