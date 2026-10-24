@@ -25,5 +25,5 @@ create policy "Members read accounts" on public.accounts for select to authentic
 select proname, prosecdef from pg_proc
 where pronamespace = 'public'::regnamespace
   and proname in ('library_ideas', 'search_content_ideas', 'catalog_with_counts', 'available_filter_counts', 'creator_rows',
-                  'creator_accounts', 'account_post_ids', 'followers_post_ids', 'value_covers', 'views_histogram', 'club_post_ids')
+                  'creator_accounts', 'account_post_ids', 'followers_post_ids', 'value_covers', 'value_covers_top', 'views_histogram', 'club_post_ids')
 order by prosecdef desc, proname;

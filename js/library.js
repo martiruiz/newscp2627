@@ -876,16 +876,25 @@
   const goLabel = () => (ui.total == null ? tx("Show posts") : ui.total ? tx("Show {n} posts", { n: Number(ui.total).toLocaleString(window.SCP_LOC || "en-GB") }) : tx("No posts — change the filters"));
   const lfpHtml = (sec) => `<div class="lfp-top">${lfpTop(sec)}</div><div class="lfp-body"><nav class="lfp-rail" aria-label="${esc(tx("Groups"))}">${lfpRail(sec)}</nav><div class="lfp-main" data-lfp-main>${lfpMain(sec)}</div><aside class="lfp-res" data-lfp-res>${resHtml()}</aside></div><div class="lfp-foot">${lfpFoot(sec)}</div>`;
   const coverAsked = new Set();
+  const coverUsed = new Set();   // the photos already given to a card
+  let noTopCovers = false;       // value_covers_top not in Supabase yet: the old function only
   async function loadCovers() {
     const ids = [...new Set($$("[data-lfb-host] [data-cover]").map((el) => Number(el.dataset.cover)))].filter((id) => !coverAsked.has(id));
     if (!ids.length || !db) return;
     ids.forEach((id) => coverAsked.add(id));
     // three at a time, three requests in parallel: a big value (Football: 367k posts) is slow, a long list times out
     const parts = []; for (let i = 0; i < ids.length; i += 3) parts.push(ids.slice(i, i + 3));
+    // several candidates per option (supabase/value-covers-top.sql): each card gets a photo no other card is using
+    // (one post tagged Emotional, Argentina and Messi was the cover of all three); with only the old function, a cover
+    // already used leaves that card with its icon
     const run = async () => { for (let part; (part = parts.shift()); ) {
-      const { data } = await db.rpc("value_covers", { p_ids: part }).then((r) => r, () => ({}));
+      let { data, error } = noTopCovers ? { error: true } : await db.rpc("value_covers_top", { p_ids: part }).then((r) => r, () => ({ error: true }));
+      if (error) { noTopCovers = true; ({ data } = await db.rpc("value_covers", { p_ids: part }).then((r) => r, () => ({}))); }
       part.forEach((id) => covers.set(id, ""));
-      for (const r of data || []) if (r.cover) covers.set(Number(r.id), r.cover);
+      for (const r of data || []) {
+        const pick = (r.covers || (r.cover ? [r.cover] : [])).find((c) => c && !coverUsed.has(c));
+        if (pick) { coverUsed.add(pick); covers.set(Number(r.id), pick); }
+      }
       for (const id of part) $$(`[data-cover="${id}"]`).forEach((el) => { el.classList.remove("is-loading"); const c = covers.get(id); if (c) { el.style.backgroundImage = `url('${c}')`; el.innerHTML = ""; } });
     } };
     await Promise.all([run(), run(), run()]);
