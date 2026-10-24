@@ -2516,4 +2516,6 @@ window.SCP_ES = {
   "Keep the posts that inspire you organised by matchday, signings, sponsors… and turn them into your content plan. Try it free for 7 days.": "Guarda los posts que te inspiran ordenados por día de partido, fichajes, patrocinadores… y conviértelos en tu plan de contenido. Pruébalo gratis 7 días.",
   "This is how your boards will look": "Así se verán tus tableros",
   "Your club's private library: every team, player and sponsor.": "La biblioteca privada de tu club: cada equipo, jugador y patrocinador.",
+  "Are you a club?": "¿Eres un club?",
+  "My Club: your own library, tailored to your club": "Mi club: tu propia biblioteca, a medida de tu club",
 };
