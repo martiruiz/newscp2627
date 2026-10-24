@@ -1611,11 +1611,18 @@ select.cs-native { display: none !important; }
 .login-card2 .login-card form { margin-top: auto; }
 .login-card2 .login-site { margin-top: auto; padding-top: 22px; }
 
-/* Log in background: a tunnel of grid lines in perspective with a gold frame of light travelling towards you (canvas, js in admin/login.html) */
+/* Log in background: a hexagon grid (faint navy lines) whose edges glow gold around the pointer (js in admin/login.html) */
 .login { position: relative; overflow: hidden; }
 .login-card2 { position: relative; z-index: 1; }
-.gridbg { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; background: #0b1020; }
-:root[data-theme="light"] .gridbg { background: #f3efe6; }
+.hexbg { --mx: 30%; --my: 25%; --hex: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='103.92' viewBox='0 0 180 103.92'%3E%3Cpath d='M0 51.96L30 0H90L120 51.96L90 103.92H30Z M120 51.96H180' fill='none' stroke='black' stroke-width='1.6'/%3E%3C/svg%3E");
+  position: fixed; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(circle 170px at var(--mx) var(--my), rgba(255, 224, 160, .95), rgba(240, 184, 74, .55) 45%, transparent 75%),
+    radial-gradient(circle 520px at var(--mx) var(--my), rgba(240, 184, 74, .22), transparent 70%),
+    rgba(122, 162, 255, .08);
+  -webkit-mask: var(--hex) 0 0 / 180px 103.92px; mask: var(--hex) 0 0 / 180px 103.92px; }
+.hexbg::after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle 120px at var(--mx) var(--my), rgba(240, 184, 74, .25), transparent 70%); filter: blur(8px); }
+:root[data-theme="light"] .hexbg { background: radial-gradient(circle 170px at var(--mx) var(--my), rgba(176, 122, 28, .9), rgba(240, 184, 74, .5) 45%, transparent 75%), rgba(18, 27, 51, .1); }
 /* Log in: "email me a link" at the bottom, right above the way back to the website (apart from Sign in) */
 .login-card2 .login-alt { margin-top: auto; padding-top: 22px; }
 .login-card2 .login-site { margin-top: 14px; padding-top: 0; }
