@@ -2611,7 +2611,8 @@
     b.insertAdjacentHTML("afterend", `<div class="ai-out is-locked" data-ai-out role="dialog" aria-label="${esc(title)}">
       <b>${icon("lock")}${esc(title)}</b><p>${esc(text)}</p>
       <button class="btn btn-gold btn-sm" type="button" data-plans-picker="${feature === "ai" ? "ai.analyze_posts" : "planner.access"}" aria-expanded="false">${icon("sparkles")}${esc(tx(feature === "ai" ? "Get AI analyses" : "Get the Content Plan"))}</button>
-      <div class="pp-plans" data-plans-picker-list hidden></div></div>`);
+      <div class="pp-plans" data-plans-picker-list hidden></div>
+      <a class="ai-out-plans" href="pricing.html">${esc(tx("Compare all plans"))} →</a></div>`);
     setTimeout(() => document.addEventListener("pointerdown", function off(e) { if (!e.target.closest("[data-ai-out], [data-ai-mine]")) { $("[data-ai-out]")?.remove(); document.removeEventListener("pointerdown", off); } }), 0);
   }
   $("[data-ai-mine]").addEventListener("click", (e) => {

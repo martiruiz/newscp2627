@@ -6423,6 +6423,8 @@ a.lf-sp-favs { text-decoration: none; }
 .ai-out p { margin: 0; font-size: 12.5px; line-height: 1.45; color: var(--muted); }
 .ai-out .btn { justify-content: center; gap: 6px; }
 .ai-out .btn svg { width: 15px; height: 15px; }
+.ai-out-plans { justify-self: center; font-size: 12.5px; font-weight: 600; color: var(--muted); text-decoration: none; }
+.ai-out-plans:hover { color: var(--text); }
 
 /* Filters column: period ("All time") and sort, above Favs */
 .lf-sortbar { display: flex; gap: 8px; margin: 0 10px 14px 0; }
