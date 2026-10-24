@@ -8452,7 +8452,7 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .sv-lock-board em { position: absolute; z-index: 1; top: 20px; left: 20px; padding: 3px 9px; border-radius: 999px; background: rgba(8,12,24,.7); color: #fff; font-style: normal; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
 .sv-lock-pics { display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: 1fr 1fr; gap: 4px; height: 170px; margin-bottom: 10px; border-radius: 12px; overflow: hidden; }
 .sv-lock-pics i { background: #222 center / cover; } .sv-lock-pics i:first-child { grid-row: span 2; }
-.sv-lock-board b { display: block; font-size: 15px; } .sv-lock-board small { color: var(--muted); font-size: 13px; }
+.sv-lock-board b { display: block; font-size: 14px; letter-spacing: .06em; text-transform: uppercase; } .sv-lock-board small { color: var(--muted); font-size: 13px; }
 @media (max-width: 760px) { .sv-lock-grid { grid-template-columns: 1fr; } .sv-lock { padding-top: 100px; } }
 :root[data-theme="light"] .sv-lock-card, :root[data-theme="light"] .sv-lock-board { background: #fff; border-color: rgba(12,12,13,.08); }
 
