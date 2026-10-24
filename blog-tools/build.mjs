@@ -635,7 +635,7 @@ for (const file of ["blog.html", "news.html"]) {
   if (file === "blog.html") swap("POSTS", posts.map((p) => card(p, "es")).join("\n"));
   else { swap("BLOG", posts.slice(0, 3).map((p) => card(p, "es")).join("\n")); if (news) swap("NEWS", news.slice(0, 12).map((n) => newsRow(n, "es")).join("\n")); }
   // the Resources tabs: Blog and Social News to their Spanish pages (Jobs has just one page)
-  html = html.replace(/<a href="(blog|news)\.html"( aria-current="page")?>(Blog|Social News)<\/a>(?=<a href="(news|jobs)\.html)/g, '<a href="es/$1.html"$2>$3</a>');
+  html = html.replace(/<a data-res="(blog|news)" href="(blog|news)\.html"/g, '<a data-res="$1" href="es/$2.html"');
   html = html.replace(/<html lang="[^"]*"[^>]*>/, '<html lang="es" data-page-lang="es">').replace("<head>", '<head>\n  <base href="../">')
     .replaceAll(`href="${SITE}/${file}"`, `href="${SITE}/es/${file}"`).replaceAll(`content="${SITE}/${file}"`, `content="${SITE}/es/${file}"`)
     .replace(`hreflang="en" href="${SITE}/es/${file}"`, `hreflang="en" href="${SITE}/${file}"`).replace(`hreflang="x-default" href="${SITE}/es/${file}"`, `hreflang="x-default" href="${SITE}/${file}"`);
