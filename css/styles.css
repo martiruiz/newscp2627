@@ -8430,7 +8430,6 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 /* Content Library without a plan (js/library-lock.js): posts blurred; a card centred on the screen — real posts and the
    message on the left, the plans (one click to start the trial) on the right */
 .lib-locked .feed > :not(.lib-lock) { filter: blur(10px) saturate(.8); opacity: .55; pointer-events: none; user-select: none; }
-.lib-locked .filters { pointer-events: none; opacity: .5; }
 .lib-lock { position: fixed; z-index: 60; top: 50%; left: 50%; transform: translate(-50%, -50%); display: grid; grid-template-columns: 1fr 1fr; width: min(840px, calc(100vw - 32px)); max-height: calc(100vh - 40px); overflow: auto;
   border-radius: 24px; background: var(--surface); border: 1px solid rgba(240,184,74,.35); box-shadow: 0 40px 90px -30px rgba(0,0,0,.85), 0 0 0 8px rgba(240,184,74,.05); }
 .lib-lock-vis { display: flex; flex-direction: column; justify-content: flex-end; gap: 10px; min-height: 380px; padding: 30px; color: #fff;
@@ -8459,3 +8458,17 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 @keyframes myKick { 40% { translate: 5px 0; } }
 .my-space-btns { max-width: 900px; overflow: hidden; transition: max-width .4s cubic-bezier(.2,.8,.2,1), opacity .25s, transform .4s cubic-bezier(.2,.8,.2,1); }
 .my-space.is-closed .my-space-btns { max-width: 0; max-height: 0; opacity: 0; transform: translateX(40px); pointer-events: none; }
+
+/* Nav logo never squashed: it keeps its proportions and size, the menu gives way instead */
+.site-nav .brand { flex: none; min-width: max-content; }
+.site-nav .brand img.brand-logo { flex-shrink: 0; width: auto !important; max-width: none; object-fit: contain; }
+
+/* Locked library: filters, period / sort and the filter bar greyed out with a padlock, not usable */
+.lib-locked .filters, .lib-locked .lf-sortbar, .lib-locked .lfb, .lib-locked .feed-bar { position: relative; pointer-events: none; user-select: none; }
+.lib-locked .filters > *, .lib-locked .lf-sortbar > *, .lib-locked .lfb > *, .lib-locked .feed-bar > * { opacity: .4; filter: grayscale(.4); }
+.lib-locked .filters::after, .lib-locked .lf-sortbar::after, .lib-locked .lfb::after {
+  content: ""; position: absolute; z-index: 2; top: -7px; right: -7px; width: 22px; height: 22px; border-radius: 50%;
+  background: rgba(240, 184, 74, .16) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f0b84a' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='11' width='16' height='10' rx='2'/%3E%3Cpath d='M8 11V7a4 4 0 0 1 8 0v4'/%3E%3C/svg%3E") center / 12px no-repeat;
+  box-shadow: inset 0 0 0 1px rgba(240, 184, 74, .5); background-color: #2a2410; }
+.lib-locked .filters::after { top: 18px; right: 18px; }
+.lib-locked .filters { opacity: 1; }

@@ -18,7 +18,8 @@
       <p>${tx("What the best clubs post, why it works and how to make your version.")}</p></div>
     <div class="lib-lock-plans" data-lock-plans><p class="lib-lock-note">${tx("Loading plans…")}</p></div>
   </div>`);
-  const { data } = await db.rpc("public_membership_plans").catch(() => ({}));
+  let data = null;
+  try { ({ data } = await db.rpc("public_membership_plans")); } catch {}   // (the query builder has no .catch)
   const plans = (data?.plans || []).filter((p) => (p.entitlements || []).includes("library.access"))
     .sort((a, b) => (a.prices?.find((x) => x.interval === "month")?.amount || 0) - (b.prices?.find((x) => x.interval === "month")?.amount || 0));
   const box = feed.querySelector("[data-lock-plans]");
