@@ -8740,3 +8740,29 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 @media (max-width: 720px) { .lib-ghosts { grid-template-columns: repeat(2, 1fr); padding: 14px 16px; } }
 /* An open board's name in capitals too, like on its card (not "All saves" or the smart boards) */
 [data-board-title].is-board { text-transform: uppercase; letter-spacing: .01em; }
+/* Social News platform filter, as in the reference: a clean dark tile with the plain white logo at rest; on hover (and
+   when chosen) it fills with the platform's own gradient and grows a little */
+.news-filters .ptile-grid .ptile { --g: linear-gradient(135deg, #2a3550, #1a2236); background: var(--surface-2); border: 1px solid transparent; box-shadow: none;
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), background .25s, box-shadow .25s, color .2s; }
+.news-filters .ptile-grid .ptile::before { display: none; }
+.news-filters .ptile-grid .ptile[data-platform] img { background: none; border: 0; box-shadow: none; filter: brightness(0) invert(1); opacity: .9; transform: none; animation: none; }
+.news-filters .ptile-grid .ptile[data-platform]:is(:hover, [aria-pressed="true"]) { background: var(--g); border-color: transparent; color: #fff; transform: scale(1.06); box-shadow: 0 16px 34px -18px rgba(0, 0, 0, .8); }
+.news-filters .ptile-grid .ptile[data-platform]:is(:hover, [aria-pressed="true"]) img { filter: brightness(0) invert(1); opacity: 1; }
+.news-filters .ptile-grid .ptile[data-platform]:is(:hover, [aria-pressed="true"]) span { color: #fff; text-shadow: none; }
+.news-filters .ptile-grid .ptile[data-platform="all"] { --g: linear-gradient(135deg, #ffe7ad, #f4c463 50%, #d79a2b); }
+.news-filters .ptile-grid .ptile[data-platform="instagram"] { --g: linear-gradient(135deg, #feda75, #fa7e1e 25%, #d62976 55%, #962fbf 80%, #4f5bd5); }
+.news-filters .ptile-grid .ptile[data-platform="tiktok"] { --g: linear-gradient(135deg, #25f4ee 0%, #000 48%, #000 55%, #fe2c55 100%); }
+.news-filters .ptile-grid .ptile[data-platform="x"] { --g: linear-gradient(135deg, #5a5a5a 0%, #000 65%); }
+.news-filters .ptile-grid .ptile[data-platform="youtube"] { --g: linear-gradient(135deg, #ff4b4b, #c4000b); }
+.news-filters .ptile-grid .ptile[data-platform="facebook"] { --g: linear-gradient(135deg, #4f8ff7, #1259c3); }
+.news-filters .ptile-grid .ptile[data-platform="linkedin"] { --g: linear-gradient(135deg, #3aa0f0, #0a4f9c); }
+.news-filters .ptile-grid .ptile[data-platform="snapchat"] { --g: linear-gradient(135deg, #fffc00, #f2c400); }
+.news-filters .ptile-grid .ptile[data-platform="whatsapp"] { --g: linear-gradient(135deg, #5ff07f, #128c7e); }
+.news-filters .ptile-grid .ptile[data-platform="pinterest"] { --g: linear-gradient(135deg, #ff4d5a, #bd081c); }
+.news-filters .ptile-grid .ptile[data-platform="threads"] { --g: linear-gradient(135deg, #4a4a4a, #000 70%); }
+.news-filters .ptile-grid .ptile[data-platform="ai"] { --g: linear-gradient(135deg, #c4b5fd, #7c3aed 55%, #4c1d95); }
+/* light backgrounds (All, Snapchat): dark logo and label */
+.news-filters .ptile-grid .ptile:is([data-platform="all"], [data-platform="snapchat"]):is(:hover, [aria-pressed="true"]) img { filter: brightness(0); }
+.news-filters .ptile-grid .ptile:is([data-platform="all"], [data-platform="snapchat"]):is(:hover, [aria-pressed="true"]) span { color: #1a1205; }
+:root[data-theme="light"] .news-filters .ptile-grid .ptile:not(:hover):not([aria-pressed="true"]) img { filter: brightness(0); opacity: .75; }
+@media (prefers-reduced-motion: reduce) { .news-filters .ptile-grid .ptile { transition: background .2s; } .news-filters .ptile-grid .ptile:is(:hover, [aria-pressed="true"]) { transform: none; } }
