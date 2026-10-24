@@ -17,7 +17,11 @@
   const LABEL = Object.fromEntries(GROUPS.flatMap(([, cats]) => cats));
   const labelOf = (k) => LABEL[k] || A.CAT_LABEL[k] || k.replace(/_/g, " ").replace(/^./, (c) => c.toUpperCase());
   let current = A.store.get("scpa-filters-cat", "sport");
-  let catalog, totals = {}, sort = A.store.get("scpa-filters-sort", "az"), unusedOnly = false;
+  let catalog, totals = {}, sort = A.store.get("scpa-filters-sort", "az"), unusedOnly = false, noLogoOnly = false;
+  // brands, clubs and competitions show a logo in the Content Library: set it here (a link or an uploaded image, bucket
+  // "logos" → idea_catalog.logo_url; supabase/catalog-logos.sql lets admins upload)
+  const LOGO_CATS = new Set(["sponsor", "club", "competition"]);
+  let logos = new Map();
 
   main.innerHTML = `
     <div class="page-head"><div><h1>Filters</h1><p>Manage catalog values for all filter categories</p></div></div>
@@ -32,6 +36,12 @@
         A.loadCatalog(true),
         rpc("catalog_category_totals").then((r) => Object.fromEntries((r || []).map((x) => [x.category, Number(x.ideas)]))),
       ]);
+      logos = new Map();
+      for (let from = 0; ; from += 1000) {   // a thousand rows per request
+        const { data: lg } = await A.db.from("idea_catalog").select("id,logo_url").in("category", [...LOGO_CATS]).not("logo_url", "is", null).order("id").range(from, from + 999);
+        (lg || []).forEach((r) => logos.set(r.id, r.logo_url));
+        if (!lg || lg.length < 1000) break;
+      }
       renderCats(); renderValues();
     } catch (e) { $("[data-values]").innerHTML = `<p class="error-text panel-pad">${esc(A.errMsg(e))}</p>`; }
   }
@@ -53,6 +63,8 @@
     const values = catalog.byCat[current] || [];
     const box = $("[data-values]");
     const unused = values.filter((v) => !v.ideas).length;
+    const withLogo = LOGO_CATS.has(current);
+    const noLogo = withLogo ? values.filter((v) => !logos.get(v.id)).length : 0;
     const max = Math.max(1, ...values.map((v) => v.ideas || 0));
     box.innerHTML = `
       <div class="values-head">
@@ -68,15 +80,17 @@
         <input class="input values-q" type="search" placeholder="Search ${num(values.length)} values…" data-search>
         <div class="seg" role="group" aria-label="Sort"><button type="button" data-sort="az" aria-pressed="${sort === "az"}">A–Z</button><button type="button" data-sort="used" aria-pressed="${sort === "used"}">Most used</button></div>
         ${unused ? `<button class="vchip${unusedOnly ? " is-on" : ""}" type="button" data-unused>Unused <em>${num(unused)}</em></button>` : ""}
+        ${noLogo ? `<button class="vchip${noLogoOnly ? " is-on" : ""}" type="button" data-nologo>No logo <em>${num(noLogo)}</em></button>` : ""}
       </div>
       <div class="values-list" data-list></div>`;
     const list = $("[data-list]", box);
     let q = "";
     const draw = () => {
-      const shown = values.filter((v) => v.name.toLowerCase().includes(q.toLowerCase()) && (!unusedOnly || !v.ideas))
+      const shown = values.filter((v) => v.name.toLowerCase().includes(q.toLowerCase()) && (!unusedOnly || !v.ideas) && (!noLogoOnly || !logos.get(v.id)))
         .sort((a, b) => sort === "used" ? (b.ideas || 0) - (a.ideas || 0) : a.name.localeCompare(b.name, undefined, { sensitivity: "base" }));
       list.innerHTML = shown.length ? shown.map((v) => `
         <div class="value-row${v.ideas ? "" : " is-unused"}" data-row="${v.id}">
+          ${withLogo ? `<button class="value-logo${logos.get(v.id) ? " has-logo" : ""}" type="button" data-logo="${v.id}" title="${logos.get(v.id) ? "Change the logo" : "Add a logo"}" aria-label="Logo">${logos.get(v.id) ? `<img src="${esc(logos.get(v.id))}" alt="" loading="lazy">` : icon("plus")}</button>` : ""}
           <span class="name">${esc(v.name)}</span>
           <span class="usage" aria-hidden="true"><i style="width:${v.ideas ? Math.max(2, Math.round((v.ideas / max) * 100)) : 0}%"></i></span>
           <span class="ideas">${v.ideas ? `<b>${num(v.ideas)}</b> idea${v.ideas === 1 ? "" : "s"}` : "Unused"}</span>
@@ -93,6 +107,7 @@
       box.querySelectorAll("[data-sort]").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); draw();
     }));
     $("[data-unused]", box)?.addEventListener("click", (e) => { unusedOnly = !unusedOnly; e.currentTarget.classList.toggle("is-on", unusedOnly); draw(); });
+    $("[data-nologo]", box)?.addEventListener("click", (e) => { noLogoOnly = !noLogoOnly; e.currentTarget.classList.toggle("is-on", noLogoOnly); draw(); });
 
     $("[data-add]", box).addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -107,6 +122,8 @@
     });
 
     list.addEventListener("click", async (e) => {
+      const lg = e.target.closest("[data-logo]");
+      if (lg) return logoDialog(catalog.byId.get(Number(lg.dataset.logo)));
       const ren = e.target.closest("[data-rename]");
       const del = e.target.closest("[data-del]");
       if (ren) {
@@ -142,6 +159,46 @@
         load();
       }
     });
+  }
+
+  // a value's logo: paste a link to an image or upload one (PNG, JPG, WebP or SVG, up to 1 MB), or take it away
+  function logoDialog(v) {
+    const cur = logos.get(v.id) || "";
+    const m = A.modal({ title: `Logo · ${v.name}`, body: `<form class="ms-form" data-f>
+      <div class="logo-prev" data-prev>${cur ? `<img src="${esc(cur)}" alt="">` : `<span class="muted">No logo yet</span>`}</div>
+      <label>Link to the image<input class="input" type="url" name="url" placeholder="https://…/logo.png" value="${esc(cur)}"></label>
+      <label>Or upload an image (PNG, JPG, WebP or SVG, up to 1 MB)<input class="input" type="file" name="file" accept="image/png,image/jpeg,image/webp,image/svg+xml"></label>
+      <p class="muted ms-small">A square logo on a transparent or white background looks best. It shows in the Content Library filters.</p>
+    </form>`, foot: `${cur ? `<button class="btn btn-ghost" type="button" data-rm>Remove logo</button>` : ""}<button class="btn btn-ghost" type="button" data-x>Cancel</button><button class="btn btn-primary" type="button" data-save>Save</button>` });
+    const f = $("[data-f]", m.el), prev = $("[data-prev]", m.el);
+    const show = (src) => { prev.innerHTML = src ? `<img src="${esc(src)}" alt="">` : `<span class="muted">No logo yet</span>`; };
+    f.url.addEventListener("input", () => show(f.url.value.trim()));
+    f.file.addEventListener("change", () => { const file = f.file.files[0]; if (file) show(URL.createObjectURL(file)); });
+    const set = async (url, source) => {
+      const { error } = await A.db.from("idea_catalog").update({ logo_url: url, logo_source: source }).eq("id", v.id);
+      if (error) return A.toast(A.errMsg(error), "err");
+      url ? logos.set(v.id, url) : logos.delete(v.id);
+      A.toast(url ? "Logo saved." : "Logo removed."); m.close(); renderValues();
+    };
+    $("[data-x]", m.el).onclick = () => m.close();
+    $("[data-rm]", m.el)?.addEventListener("click", () => set(null, null));
+    $("[data-save]", m.el).onclick = async (e) => {
+      const file = f.file.files[0], url = f.url.value.trim();
+      if (file) {
+        if (file.size > 1048576) return A.toast("The image is over 1 MB.", "err");
+        const ext = ({ "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp", "image/svg+xml": "svg" })[file.type];
+        if (!ext) return A.toast("Use a PNG, JPG, WebP or SVG image.", "err");
+        e.target.disabled = true;
+        const path = `catalog/${v.id}-${Date.now()}.${ext}`;
+        const { error } = await A.db.storage.from("logos").upload(path, file, { contentType: file.type, upsert: true });
+        e.target.disabled = false;
+        if (error) return A.toast(/row-level|policy|unauthorized|403/i.test(error.message) ? "Run supabase/catalog-logos.sql in Supabase first (it lets admins upload logos)." : error.message, "err");
+        return set(A.db.storage.from("logos").getPublicUrl(path).data.publicUrl, "admin upload");
+      }
+      if (!url) return A.toast("Paste a link or choose an image.", "err");
+      if (!/^https:\/\//i.test(url)) return A.toast("The link has to start with https://", "err");
+      set(url, "admin link");
+    };
   }
 
   load();

@@ -1655,3 +1655,13 @@ select.cs-native { display: none !important; }
 :root[data-theme="light"] .login-card2 .btn-primary, :root[data-theme="light"] .login-card2 .btn-primary:hover:not(:disabled) { color: #0c0c0d; box-shadow: none;
   background: linear-gradient(var(--accent), var(--accent)) left bottom / 30% 2px no-repeat, linear-gradient(rgba(12, 12, 13, .16), rgba(12, 12, 13, .16)) left bottom / 100% 1px no-repeat; }
 :root[data-theme="light"] .login-card2 .btn-primary:hover:not(:disabled) { background-size: 100% 2px, 100% 1px; }
+/* Filters: the logo of a brand / club / competition, first in its row (click to change it) */
+.value-row:has(.value-logo) { grid-template-columns: 40px minmax(140px, 1.2fr) minmax(80px, 1fr) 120px auto; }
+.value-logo { display: grid; place-items: center; width: 40px; height: 40px; padding: 0; border-radius: 10px; border: 1px dashed var(--border); background: var(--panel-3); color: var(--muted); cursor: pointer; overflow: hidden; }
+.value-logo.has-logo { border-style: solid; background: #fff; }
+.value-logo img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
+.value-logo:hover { border-color: var(--accent, #f0b84a); color: var(--accent, #f0b84a); }
+.value-logo svg { width: 16px; height: 16px; }
+.logo-prev { display: grid; place-items: center; height: 120px; margin-bottom: 14px; border-radius: 12px; background: #fff; border: 1px solid var(--border); }
+.logo-prev img { max-width: 70%; max-height: 90px; object-fit: contain; }
+.logo-prev .muted { color: #8a93a6; }

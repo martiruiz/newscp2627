@@ -8732,3 +8732,5 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .lfp-single.is-on .lfp-ck { background: linear-gradient(180deg, #ffe7ad, #f4c463 45%, #d79a2b); border-color: transparent; }
 .lfp-single.is-on .lfp-ck .lf-i { opacity: 1; }
 :root[data-theme="light"] .lfp-single.is-on { border-color: #d79a2b; background: #fff8ea; }
+/* "Popular" on the filter cards: gold on a dark pill in both themes (in the light theme its gold turned black on dark) */
+.lfp-hot { color: #ffd98c; background: rgba(12, 16, 30, .78); box-shadow: inset 0 0 0 1px rgba(240, 184, 74, .45); }
