@@ -8452,15 +8452,15 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 /* Content Library → "My space" folds its three buttons away to the right (js/my-space.js); the arrow shows the way */
 .my-space-t { display: inline-flex; align-items: center; gap: 4px; align-self: flex-start; padding: 0; border: 0; background: none; cursor: pointer; }
 .my-space-t:hover { color: var(--text); }
-.my-space-t svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; transform: rotate(90deg); transition: transform .3s cubic-bezier(.2,.8,.2,1); }
-.my-space.is-closed .my-space-t svg { transform: rotate(0deg); }
+.my-space-t svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; transform: rotate(0deg); transition: transform .3s cubic-bezier(.2,.8,.2,1); }
+.my-space.is-closed .my-space-t svg { transform: rotate(180deg); }
 .my-space-t.is-kick svg { animation: myKick .45s ease; }
 @keyframes myKick { 40% { translate: 5px 0; } }
 .my-space-btns { max-width: 900px; overflow: hidden; transition: max-width .4s cubic-bezier(.2,.8,.2,1), opacity .25s, transform .4s cubic-bezier(.2,.8,.2,1); }
 .my-space.is-closed .my-space-btns { max-width: 0; max-height: 0; opacity: 0; transform: translateX(40px); pointer-events: none; }
 
 /* Nav logo never squashed: it keeps its proportions and size, the menu gives way instead */
-.site-nav .brand { flex: none; min-width: max-content; }
+.site-nav .brand { flex: none; }
 .site-nav .brand img.brand-logo { flex-shrink: 0; width: auto !important; max-width: none; object-fit: contain; }
 
 /* Locked library: filters, period / sort and the filter bar greyed out with a padlock, not usable */
@@ -8472,3 +8472,23 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
   box-shadow: inset 0 0 0 1px rgba(240, 184, 74, .5); background-color: #2a2410; }
 .lib-locked .filters::after { top: 18px; right: 18px; }
 .lib-locked .filters { opacity: 1; }
+
+/* Saved boards without a plan (js/saved-lock.js): an invitation card with the plans, then three example boards */
+.sv-locked [data-saved] { display: none !important; }
+.sv-lock { padding: 120px 0 80px; display: grid; justify-items: center; gap: 18px; }
+.sv-lock-card { display: grid; justify-items: center; gap: 12px; width: min(560px, 100%); padding: 32px 28px; border-radius: 24px; text-align: center;
+  background: linear-gradient(180deg, rgba(240,184,74,.08), transparent 50%), var(--surface); border: 1px solid rgba(240,184,74,.35); box-shadow: 0 30px 70px -30px rgba(0,0,0,.7); }
+.sv-lock-ic { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(180deg, #ffe7ad, #f4c463 45%, #d79a2b); color: #1a1205; }
+.sv-lock-ic svg { width: 24px; height: 24px; fill: currentColor; }
+.sv-lock-card h1 { margin: 4px 0 0; font: 600 clamp(26px, 3.2vw, 34px)/1.15 var(--font-display); letter-spacing: -.02em; }
+.sv-lock-card p { margin: 0 0 6px; color: var(--muted); font-size: 15px; line-height: 1.55; }
+.sv-lock-card .pp-plans { text-align: left; }
+.sv-lock-eg { margin: 22px 0 0; color: var(--muted); font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.sv-lock-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; width: min(900px, 100%); opacity: .75; pointer-events: none; }
+.sv-lock-board { position: relative; padding: 12px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line-soft); }
+.sv-lock-board em { position: absolute; z-index: 1; top: 20px; left: 20px; padding: 3px 9px; border-radius: 999px; background: rgba(8,12,24,.7); color: #fff; font-style: normal; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.sv-lock-pics { display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: 1fr 1fr; gap: 4px; height: 170px; margin-bottom: 10px; border-radius: 12px; overflow: hidden; }
+.sv-lock-pics i { background: #222 center / cover; } .sv-lock-pics i:first-child { grid-row: span 2; }
+.sv-lock-board b { display: block; font-size: 15px; } .sv-lock-board small { color: var(--muted); font-size: 13px; }
+@media (max-width: 760px) { .sv-lock-grid { grid-template-columns: 1fr; } .sv-lock { padding-top: 100px; } }
+:root[data-theme="light"] .sv-lock-card, :root[data-theme="light"] .sv-lock-board { background: #fff; border-color: rgba(12,12,13,.08); }

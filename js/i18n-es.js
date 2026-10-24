@@ -2512,4 +2512,7 @@ window.SCP_ES = {
   "Try it free": "Probar gratis",
   "7 days free · Cancel anytime · VAT included": "7 días gratis · Cancela cuando quieras · IVA incluido",
   "Are you a club? My Club, the tailored plan →": "¿Eres un club? Mi club, el plan a medida →",
+  "Save your best ideas in boards": "Guarda tus mejores ideas en tableros",
+  "Keep the posts that inspire you organised by matchday, signings, sponsors… and turn them into your content plan. Try it free for 7 days.": "Guarda los posts que te inspiran ordenados por día de partido, fichajes, patrocinadores… y conviértelos en tu plan de contenido. Pruébalo gratis 7 días.",
+  "This is how your boards will look": "Así se verán tus tableros",
 };
