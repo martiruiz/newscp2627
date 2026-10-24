@@ -2570,4 +2570,5 @@ window.SCP_ES = {
   "Filter on": "Filtro activado",
   "Turn the filter on": "Activar el filtro",
   "Latest posts": "Últimos posts",
+  "Content criteria": "Criterios de selección",
 };
