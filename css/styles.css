@@ -8587,3 +8587,6 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
   .mcb-pan { left: 12px; right: 12px; }
   .mc-strip .mc-profiles { display: none; }
 }
+/* Menu "Saved boards": the bookmark filled, as on the saved boards page (the thin outline looked broken at this size) */
+.mm-rrow-gold .mm-ic { box-shadow: inset 0 1px 0 rgba(255,255,255,.45), 0 6px 14px -8px rgba(240,184,74,.8); }
+.mm-rrow-gold .mm-ic svg { width: 16px; height: 16px; fill: currentColor; stroke: none; }
