@@ -1,6 +1,6 @@
 // Cookie notice (GDPR / ePrivacy). Necessary storage (session, preferences, payments) is always on; anonymous usage
-// measurement (js/lead-flow.js SCP_TRACK: a random id in local storage + funnel events, and Google Analytics if it's ever
-// added) only with consent. The choice is kept in local storage ("scp-consent") and can be changed from the footer link
+// measurement (js/lead-flow.js SCP_TRACK: a random id in local storage + funnel events, and Metricool's visit counter) only
+// with consent. The choice is kept in local storage ("scp-consent") and can be changed from the footer link
 // "Cookie settings" or anything with [data-cookie-settings]. Accept and Reject weigh the same.
 (() => {
   const KEY = "scp-consent";
@@ -10,10 +10,21 @@
 
   window.SCP_CONSENT = { analytics: () => !!choice?.analytics, open: () => show(true) };
 
+  // Metricool (website visits), only with consent to analytics
+  const metricool = () => {
+    if (document.querySelector("script[data-metricool]")) return;
+    const s = document.createElement("script");
+    s.src = "https://tracker.metricool.com/resources/be.js"; s.dataset.metricool = "";
+    s.onload = () => window.beTracker?.t({ hash: "c2050676d2a43cc6cf8cc574d17f5769" });
+    document.head.append(s);
+  };
+  if (choice?.analytics) metricool();
+
   function save(analytics) {
     choice = { analytics, at: new Date().toISOString(), v: 1 };
     try { localStorage.setItem(KEY, JSON.stringify(choice)); } catch {}
     if (!analytics) { try { localStorage.removeItem("scp-lead-cid"); } catch {} }   // the measurement id goes when they say no
+    else metricool();
     document.querySelector(".ck")?.remove();
   }
 
