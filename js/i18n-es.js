@@ -2508,4 +2508,8 @@ window.SCP_ES = {
   "Start my free trial": "Empezar mi prueba gratis",
   "Cancel anytime · VAT included": "Cancela cuando quieras · IVA incluido",
   "The whole content library": "Toda la biblioteca de contenido",
+  "What the best clubs post, why it works and how to make your version.": "Lo que publican los mejores clubes, por qué funciona y cómo hacer tu versión.",
+  "Try it free": "Probar gratis",
+  "7 days free · Cancel anytime · VAT included": "7 días gratis · Cancela cuando quieras · IVA incluido",
+  "Are you a club? My Club, the tailored plan →": "¿Eres un club? Mi club, el plan a medida →",
 };
