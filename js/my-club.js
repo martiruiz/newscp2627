@@ -69,7 +69,7 @@
     window.dispatchEvent(new Event("scp-lib-scope"));
   }
 
-  // the box's backdrop: a navy night sky, gold and white stars drifting slowly and twinkling (a still sky with reduced motion)
+  // the box's backdrop: a navy night sky with a faint gold mesh waving across it, gold and white stars drifting slowly and twinkling (a still sky with reduced motion)
   function stars(vis) {
     if (!vis) return;
     const cv = document.createElement("canvas"); cv.className = "mc-stars"; cv.setAttribute("aria-hidden", "true"); vis.prepend(cv);
@@ -82,6 +82,7 @@
     const draw = (tm) => {
       if (!cv.isConnected) return;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, w, h);
+      mesh(still ? 0 : tm / 1000);
       for (const st of list) {
         if (!still) { st.x -= 0.03 + st.z * 0.12; st.y += 0.01 + st.z * 0.03; if (st.x < -2) st.x = w + 2; if (st.y > h + 2) st.y = -2; }
         const tw = still ? 1 : 0.6 + 0.4 * Math.sin(tm / 1000 * st.s + st.p);
@@ -90,6 +91,21 @@
       }
       if (!still) requestAnimationFrame(draw);
     };
+    // a ribbon of gold mesh rising across the sky and folding over itself as it waves, faint
+    const U = 22, V = 46;
+    const pt = (u, v, t) => {
+      const wave = Math.sin(v * 3.2 - t * 0.9 + u * 0.8), twist = Math.cos(v * 2.4 - t * 0.6);
+      return [w * (-0.15 + 1.3 * v) + u * w * 0.08 * twist, h * (0.95 - 0.75 * v) + wave * h * 0.1 + (u - 0.5) * h * 0.34 * twist];
+    };
+    function mesh(t) {
+      ctx.lineWidth = 0.7; ctx.strokeStyle = "#f4c463";
+      for (let i = 0; i <= U; i++) {   // lines along the ribbon, brighter at its edges
+        const u = i / U; ctx.globalAlpha = 0.14 + 0.2 * Math.abs(u - 0.5) * 2;
+        ctx.beginPath(); for (let j = 0; j <= V; j++) { const [x, y] = pt(u, j / V, t); j ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } ctx.stroke();
+      }
+      ctx.globalAlpha = 0.11;
+      for (let j = 0; j <= V; j++) { ctx.beginPath(); for (let i = 0; i <= U; i++) { const [x, y] = pt(i / U, j / V, t); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } ctx.stroke(); }   // the lines across
+    }
     size(); addEventListener("resize", size); requestAnimationFrame(draw);
   }
 
