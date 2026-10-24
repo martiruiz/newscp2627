@@ -4,7 +4,7 @@
 //   "about"    greeting + title + subtitle + links in two columns + a featured box at the bottom
 //   "contact"  a short list of links (icon, title, description) + "Follow us" cards (Instagram, LinkedIn)
 //   no panel   a plain link tab
-// Items with member: true only show when signed in (pages with the profile link in the nav).
+// Items with member: true only show when signed in (any page, a session saved in this browser).
 // Items with noPlan: true (and every "featured" box) only show without a plan: visitors, or members with no plan contracted;
 // items with plan: true only show to members with a plan.
 // The texts below are placeholders until the final content is decided.
@@ -86,7 +86,9 @@
     cp: `<span class="tool-vis tv-cp" aria-hidden="true"><span class="tv-week">${["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d, i) => `<span><small>${d}</small>${Array.from({ length: [2, 3, 2, 1, 2, 3, 1][i] }, (_, k) => `<i style="--k:${i + k}"></i>`).join("")}</span>`).join("")}</span><span class="tv-bar"><i></i></span></span>`,
   };
   // Resources: what shows before the newest article / news / your boards arrive (filled in by fillResources)
-  const show = (it) => !it.member || member;
+  // signed in (also on the public pages, whose nav doesn't show the account: a Supabase session saved in this browser)
+  const signedIn = member || (() => { try { return Object.keys(localStorage).some((k) => /^sb-.+-auth-token$/.test(k)); } catch { return false; } })();
+  const show = (it) => !it.member || signedIn;
   // hidden for members until their entitlements say they have no plan (staff counts as having one) — shown straight away
   // when the last visit already knew, so the menu doesn't jump when the answer arrives
   const known = (() => { try { return localStorage.getItem("scp-navplan"); } catch { return null; } })();

@@ -7243,20 +7243,10 @@ section[id], :target { scroll-margin-top: 92px; }
 .mc-profiles { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .mc-prof { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 11px 0 8px; border-radius: 999px; border: 1px solid var(--line); background: rgba(var(--fg), 0.04); color: var(--muted); font-size: 12.5px; text-decoration: none; transition: color 0.15s, border-color 0.15s, background 0.15s; }
 .mc-prof:hover { color: var(--text); border-color: rgba(240, 184, 74, 0.5); background: rgba(240, 184, 74, 0.08); }
-.mc-prof svg, .mc-seg-b svg, .mc-tabs svg { width: 15px; height: 15px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.mc-prof svg, .mc-seg-b svg { width: 15px; height: 15px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .mc-side { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; margin-left: auto; }
 .mc-clubpick { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--muted); }
 .mc-clubpick select { height: 36px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--line); background: rgba(var(--fg), 0.05); color: var(--text); font: inherit; }
-.mc-tabs { display: inline-flex; gap: 4px; padding: 5px; border-radius: 16px; background: rgba(0, 0, 0, 0.22); border: 1px solid var(--line); }
-.mc-tabs button { display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 16px; border: 0; border-radius: 12px; background: none; color: var(--muted); font: 600 14px var(--font-body); cursor: pointer; transition: color 0.15s, background 0.2s, box-shadow 0.2s; }
-.mc-tabs button:hover { color: var(--text); }
-.mc-tabs button i { font-style: normal; min-width: 22px; padding: 1px 7px; border-radius: 999px; background: rgba(var(--fg), 0.08); font-size: 11.5px; text-align: center; }
-.mc-tabs button[aria-selected="true"] { color: #121b33; background: linear-gradient(180deg, #ffd27a, #f0b84a); box-shadow: 0 8px 22px -8px rgba(240, 184, 74, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.5); }
-.mc-tabs button[aria-selected="true"] i { background: rgba(18, 27, 51, 0.14); }
-.mc-t-short { display: none; }
-.mc-filters { display: grid; gap: 12px; margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line-soft); }
-.mc-line { display: flex; align-items: center; gap: 14px; min-width: 0; }
-.mc-k { flex: none; width: 74px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
 .mc-seg, .mc-teams { display: flex; gap: 6px; flex-wrap: wrap; min-width: 0; }
 .mc-seg { padding: 4px; border-radius: 14px; background: rgba(0, 0, 0, 0.18); border: 1px solid var(--line-soft); }
 .mc-seg-b { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px; border-radius: 10px; border: 1px solid transparent; background: none; color: var(--muted); font: 600 13.5px var(--font-body); white-space: nowrap; cursor: pointer; transition: color 0.15s, background 0.2s, border-color 0.2s; }
@@ -7301,7 +7291,7 @@ section[id], :target { scroll-margin-top: 92px; }
 .mc-mode-sw button[aria-pressed="true"] { background: rgba(240, 184, 74, 0.16); color: var(--text); box-shadow: inset 0 0 0 1px rgba(240, 184, 74, 0.5); }
 .mc-mode small { color: var(--muted); font-size: 12.5px; }
 :root[data-theme="light"] .mc-card { background: radial-gradient(80% 140% at 0% 0%, rgba(240, 184, 74, 0.16), transparent 55%), #fff; box-shadow: 0 20px 50px -30px rgba(18, 27, 51, 0.35); }
-:root[data-theme="light"] .mc-tabs, :root[data-theme="light"] .mc-seg, :root[data-theme="light"] .mc-mode-sw { background: rgba(18, 27, 51, 0.04); }
+:root[data-theme="light"] .mc-seg, :root[data-theme="light"] .mc-mode-sw { background: rgba(18, 27, 51, 0.04); }
 :root[data-theme="light"] .mc-ph img, :root[data-theme="light"] .mc-av { background: #eef1f6; }
 @media (max-width: 760px) {
   .mc { padding: 16px 12px 14px; }
@@ -7310,13 +7300,7 @@ section[id], :target { scroll-margin-top: 92px; }
   .mc-side { width: 100%; align-items: stretch; margin-left: 0; }
   .mc-top { gap: 14px; }
   .mc-side { min-width: 0; }
-  .mc-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; box-sizing: border-box; }
-  .mc-tabs button svg { display: none; }
-  .mc-tabs button { justify-content: center; min-width: 0; padding: 0 8px; gap: 6px; font-size: 13px; white-space: nowrap; }
-  .mc-tabs button span { overflow: hidden; text-overflow: ellipsis; } .mc-tabs button i { display: none; }
-  .mc-t-full { display: none; } .mc-t-short { display: inline; }
   .mc-mode-sw { width: 100%; } .mc-mode-sw button { flex: 1; height: auto; min-height: 32px; padding: 6px 8px; font-size: 12.5px; }
-  .mc-line { flex-direction: column; align-items: stretch; gap: 6px; }
   .mc-seg, .mc-teams { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; } .mc-seg::-webkit-scrollbar, .mc-teams::-webkit-scrollbar { display: none; }
   .mc-search { margin-left: 0; width: 100%; } .mc-search input { width: 100%; }
   .mc-tip { display: none; }
@@ -7333,11 +7317,6 @@ section[id], :target { scroll-margin-top: 92px; }
 .my-club-page .mc-profiles { margin-top: 6px; gap: 4px; }
 .my-club-page .mc-prof { height: 24px; padding: 0 9px 0 7px; font-size: 11.5px; }
 .my-club-page .mc-side { flex-direction: row; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: flex-end; }
-.my-club-page .mc-tabs { padding: 4px; border-radius: 14px; }
-.my-club-page .mc-tabs button { height: 36px; padding: 0 13px; font-size: 13.5px; }
-.my-club-page .mc-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 26px; margin-top: 14px; padding-top: 12px; }
-.my-club-page .mc-line { gap: 10px; }
-.my-club-page .mc-k { width: auto; }
 .my-club-page .mc-seg-b { height: 34px; padding: 0 12px; }
 .my-club-page .mc-teams .mc-seg-b { height: 32px; }
 .my-club-page .mc-people { margin-top: 14px; }
@@ -7357,18 +7336,10 @@ section[id], :target { scroll-margin-top: 92px; }
 /* top bar: club · tab · section / team */
 .mc-crumb { display: none; }
 .my-club-page .mc-crumb { display: flex; align-items: center; gap: 12px; min-width: 0; padding: 8px 18px; border-bottom: 1px solid var(--line-soft); background: linear-gradient(90deg, rgba(240, 184, 74, 0.1), transparent 70%); }
-.mc-crumb-logo { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; overflow: hidden; border: 1px solid rgba(240, 184, 74, 0.4); background: rgba(var(--fg), 0.05); font: 700 12px var(--font-display); color: var(--gold); }
-.mc-crumb-logo img { width: 100%; height: 100%; object-fit: cover; }
-.mc-crumb-tx { display: grid; line-height: 1.15; min-width: 0; }
-.mc-crumb-tx small { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); }
-.mc-crumb-tx b { font: 600 15px var(--font-display); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.mc-crumb > i { width: 1px; height: 26px; background: var(--line); flex: none; }
-.mc-crumb-sel { color: var(--muted); font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 @media (min-width: 961px) { .my-club-page .lib-head .mc-crumb { grid-column: 2; grid-row: 1; } }
 @media (max-width: 960px) { .my-club-page .mc-crumb { display: none; } .my-club-page .mc { padding: 14px 16px 4px; } .my-club-page .mc-side { justify-content: stretch; } }
 @media (max-width: 760px) {
   .my-club-page .mc-prof { width: 30px; height: 30px; padding: 0; justify-content: center; } .my-club-page .mc-prof span { display: none; }   /* phones: the club's profiles as icons */
-  .my-club-page .mc-tabs button { font-size: 12.5px; padding: 0 4px; }
   .my-club-page .mc-logo { width: 52px; height: 52px; }
 }
 
@@ -7797,11 +7768,6 @@ section[id], :target { scroll-margin-top: 92px; }
 .mm-live { background: #ff5c5c; box-shadow: 0 0 0 3px rgba(255, 92, 92, 0.3); }
 /* My Club: "where you are" sits in the library's top bar like its other controls — same background, a soft pill */
 .my-club-page .mc-crumb { background: var(--surface); padding: 8px 12px; }
-.mc-crumb-pill { display: inline-flex; align-items: center; gap: 10px; min-width: 0; max-width: 100%; height: 40px; padding: 0 6px 0 4px; border-radius: 999px; background: rgba(var(--fg), 0.04); border: 1px solid var(--line-soft); }
-.mc-crumb-pill .mc-crumb-logo { width: 32px; height: 32px; border-radius: 50%; }
-.mc-crumb-pill .mc-crumb-tx b { font-size: 14px; }
-.mc-crumb-pill > i { width: 1px; height: 20px; background: var(--line); flex: none; }
-.mc-crumb-pill .mc-crumb-sel { display: inline-flex; align-items: center; height: 28px; padding: 0 12px; border-radius: 999px; background: var(--gold-tint); color: var(--gold); font-size: 12.5px; font-weight: 600; }
 /* Menu → Resources → FAQ: a little list of questions, the first one open */
 .mm-rv-faq { display: grid; align-content: center; gap: 5px; padding: 10px; }
 .mm-rv-acc { display: grid; gap: 4px; padding: 6px 9px; border-radius: 9px; background: rgba(var(--fg), 0.04); border: 1px solid transparent; white-space: normal; }
@@ -8058,11 +8024,10 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 :root[data-theme="light"] .mc-card { background: #fff !important; border-color: rgba(12,12,13,.08) !important; box-shadow: 0 1px 2px rgba(12,12,13,.04), 0 22px 50px -28px rgba(12,12,13,.25) !important; }
 :root[data-theme="light"] .mc-card::before { opacity: .35; }
 :root[data-theme="light"] .mc-logo { background: #f7f6f3 !important; border-color: rgba(12,12,13,.1) !important; box-shadow: 0 10px 24px -14px rgba(12,12,13,.35) !important; }
-:root[data-theme="light"] .mc-tabs button[aria-selected="true"], :root[data-theme="light"] .mc-seg-b[aria-pressed="true"], :root[data-theme="light"] .mc-mode-sw button[aria-pressed="true"] {
+:root[data-theme="light"] .mc-seg-b[aria-pressed="true"], :root[data-theme="light"] .mc-mode-sw button[aria-pressed="true"] {
   background: #0c0c0d !important; color: #fff !important; box-shadow: 0 8px 20px -10px rgba(12,12,13,.5) !important; border-color: #0c0c0d !important; }
-:root[data-theme="light"] .mc-tabs button[aria-selected="true"] i, :root[data-theme="light"] .mc-seg-b[aria-pressed="true"] i { background: rgba(255,255,255,.18) !important; color: #fff !important; }
+:root[data-theme="light"] .mc-seg-b[aria-pressed="true"] i { background: rgba(255,255,255,.18) !important; color: #fff !important; }
 :root[data-theme="light"] .mc-person[aria-pressed="true"], :root[data-theme="light"] .mc-prof[aria-pressed="true"], :root[data-theme="light"] .mc-prof.is-on { border-color: #0c0c0d !important; box-shadow: 0 0 0 1px #0c0c0d !important; background: #fff !important; }
-:root[data-theme="light"] .mc-crumb-pill .mc-crumb-sel { background: #0c0c0d !important; color: #fff !important; }
 /* My Club: the club picker — a button with the crest and name, a list of clubs with their crests (no system menu) */
 .mc-clubpick { position: relative; }
 .mc-cp-btn { display: inline-flex; align-items: center; gap: 9px; height: 42px; padding: 0 12px 0 12px; border-radius: 12px; border: 1px solid var(--line); background: rgba(var(--fg), 0.05); color: var(--text); font: 600 14px var(--font-body); cursor: pointer; transition: border-color 0.2s, background 0.2s; }
@@ -8597,3 +8562,28 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .sv3-b-meta > b { text-transform: uppercase; letter-spacing: .04em; }
 /* Saved boards: the networks' icons a little bigger and all in one colour (the logo used as a mask) */
 .sv3-net { flex: none; width: 15px; height: 15px; background: var(--text); -webkit-mask: center / contain no-repeat; mask: center / contain no-repeat; }
+/* My Club (members): the filters in the Content Library's glass bar — Club · Players · Sponsors (whose posts) and
+   Section · Team — each opening its panel under the bar; the club itself as a thin strip above the posts */
+.my-club-page .lib-head .mc-crumb { display: block; min-width: 0; padding: 12px 14px; background: var(--surface); border-bottom: 1px solid var(--line-soft); }
+.mcb-row .lfb-btn.is-cur .lfb-tx b { color: var(--gold); }
+.mcb-row .lfb-btn.is-cur::after { content: ""; position: absolute; left: 50%; bottom: 3px; width: 4px; height: 4px; margin-left: -2px; border-radius: 50%; background: var(--gold); }
+.mcb-pan { position: absolute; z-index: 30; left: 14px; right: 14px; top: calc(100% + 6px); max-height: min(62vh, 560px); overflow-y: auto; padding: 16px 18px; border-radius: 16px; border: 1px solid var(--line); background: var(--surface); box-shadow: 0 30px 60px -28px rgba(0,0,0,.7); animation: mcbIn .18s ease; }
+@keyframes mcbIn { from { opacity: 0; transform: translateY(-4px); } }
+.mcb-pan .mc-people { margin: 0; }
+.mcb-k { margin: 0 0 10px; color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.mcb-pan .mc-seg, .mcb-pan .mc-teams { display: flex; flex-wrap: wrap; gap: 8px; }
+.mcb-pan .mc-hint { margin: 0 0 10px; color: var(--muted); font-size: 13px; }
+.my-club-page .mc-strip { padding: 10px 14px; }
+.mc-strip .mc-top { align-items: center; flex-wrap: wrap; }
+.mc-strip .mc-logo { width: 46px !important; height: 46px !important; border-radius: 13px !important; }
+.mc-strip .mc-title h1 { font-size: clamp(19px, 1.8vw, 23px) !important; }
+.mc-strip .mc-profiles { margin: 0 0 0 8px; }
+.mc-strip .mc-side { margin-left: auto; }
+@media (max-width: 960px) {
+  .my-club-page .lib-head .mc-crumb { display: block; padding: 10px 12px; contain: inline-size; }   /* its width never comes from the bar (which scrolls) */
+  .mcb-row { max-width: calc(100vw - 24px); overflow-x: auto; scrollbar-width: none; grid-template-columns: repeat(var(--n), minmax(max-content, 1fr)) !important; }
+  .mcb-row .lfb-lens { display: none; }
+  .mcb-row .lfb-btn.is-open { background: rgba(var(--fg), .08); }
+  .mcb-pan { left: 12px; right: 12px; }
+  .mc-strip .mc-profiles { display: none; }
+}

@@ -12,7 +12,7 @@
   const initials = (n) => String(n || "?").trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
   const crest = (c) => `<span class="mc-cp-crest">${c.logo_url ? `<img src="${esc(c.logo_url)}" alt="">` : esc(initials(c.name))}</span>`;   // a club's crest in the club picker
 
-  const st = { clubs: [], club: null, space: null, section: null, team: null, tab: "players", people: new Set(), q: "", linked: false };
+  const st = { clubs: [], club: null, space: null, section: null, team: null, tab: "players", people: new Set(), q: "", linked: false, open: null };
   let box, db, token = 0;
 
   document.addEventListener("DOMContentLoaded", async () => {
@@ -159,40 +159,65 @@
     : secId ? p.sections.includes(secId) || p.teams.some((id) => st.space.sections.find((s) => s.id === secId)?.teams.some((t) => t.id === id)) : true)).length;
 
   function draw() {
-    const club = st.space.club, sec = section(), list = inSelection();
-    const shown = list.filter((p) => !st.q || p.name.toLowerCase().includes(st.q.toLowerCase()));
-    const nPlayers = st.space.people.filter((p) => p.kind === "player").length, nSponsors = st.space.people.filter((p) => p.kind === "sponsor").length;
-    const seg = (attr, id, label, on, n, ic = "") => `<button type="button" class="mc-seg-b" ${attr}="${id ?? ""}" aria-pressed="${on}">${ic}<span>${esc(label)}</span>${n != null ? `<i>${n}</i>` : ""}</button>`;
+    const club = st.space.club;
+    // the club, as a thin strip: crest, name, its profiles and (with several clubs) the club picker
     box.innerHTML = `
-      <div class="mc-card">
+      <div class="mc-card mc-strip">
         <div class="mc-top">
           <div class="mc-logo">${club.logo_url ? `<img src="${esc(club.logo_url)}" alt="">` : `<span>${esc(initials(club.name))}</span>`}</div>
           <div class="mc-title">
             <span class="mc-eyebrow">${esc(t("My Club"))}</span>
             <h1>${esc(club.name)}</h1>
-            ${club.accounts?.length ? `<div class="mc-profiles">${club.accounts.map((a) => `<a class="mc-prof" href="${esc((URL_OF[a.platform] || URL_OF.instagram)(a.handle))}" target="_blank" rel="noopener" title="${esc(a.platform)}">${svg(NET[a.platform] || NET.instagram)}<span>@${esc(a.handle)}</span></a>`).join("")}</div>` : ""}
           </div>
-          <div class="mc-side">
-            ${st.clubs.length > 1 ? `<div class="mc-clubpick" data-mc-pick>
+          ${club.accounts?.length ? `<div class="mc-profiles">${club.accounts.map((a) => `<a class="mc-prof" href="${esc((URL_OF[a.platform] || URL_OF.instagram)(a.handle))}" target="_blank" rel="noopener" title="${esc(a.platform)}">${svg(NET[a.platform] || NET.instagram)}<span>@${esc(a.handle)}</span></a>`).join("")}</div>` : ""}
+          ${st.clubs.length > 1 ? `<div class="mc-side"><div class="mc-clubpick" data-mc-pick>
               <button type="button" class="mc-cp-btn" aria-haspopup="listbox" aria-expanded="false" data-mc-pick-btn><small>${esc(t("Club"))}</small>${crest(club)}<b>${esc(club.name)}</b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
               <ul class="mc-cp-list" role="listbox" hidden>${st.clubs.map((c) => `<li><button type="button" role="option" aria-selected="${c.id === club.id}" data-mc-club-pick="${c.id}">${crest(c)}<span>${esc(c.name)}</span>${c.id === club.id ? `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>` : ""}</button></li>`).join("")}</ul>
-            </div>` : ""}
-            <div class="mc-tabs" role="tablist">
-              <button type="button" role="tab" aria-selected="${st.tab === "club"}" data-mc-tab="club">${svg(ICON.shield)}<span>${esc(t("Club"))}</span><i>${(st.profiles || []).length}</i></button>
-              <button type="button" role="tab" aria-selected="${st.tab === "players"}" data-mc-tab="players">${svg(ICON.grid)}<span class="mc-t-full">${esc(t("Content Library"))}</span><span class="mc-t-short">${esc(t("Players"))}</span><i>${nPlayers}</i></button>
-              <button type="button" role="tab" aria-selected="${st.tab === "sponsors"}" data-mc-tab="sponsors">${svg(ICON.deal)}<span class="mc-t-full">${esc(t("Sponsors"))}</span><span class="mc-t-short">${esc(t("Brands"))}</span><i>${nSponsors}</i></button>
-            </div>
-          </div>
+            </div></div>` : ""}
         </div>
-        <div class="mc-filters">
-          <div class="mc-line"><span class="mc-k">${esc(t("Section"))}</span>
-            <div class="mc-seg" role="group" aria-label="${esc(t("Section"))}">${seg("data-mc-section", "", t("All sections"), !st.section, null)}${st.space.sections.map((s) => seg("data-mc-section", s.id, s.name, st.section === s.id, countIn(s.id), sportIcon(s.name))).join("")}</div></div>
-          <div class="mc-line"><span class="mc-k">${esc(t("Team"))}</span>
-            ${sec ? `<div class="mc-teams" role="group" aria-label="${esc(t("Team"))}">${seg("data-mc-team", "", t("All teams"), !st.team, null)}${sec.teams.map((x) => seg("data-mc-team", x.id, x.name, st.team === x.id, countIn(null, x.id))).join("")}</div>`
-              : `<span class="mc-hint">${esc(t("Choose a section to see its teams"))}</span>`}</div>
-        </div>
-      </div>
-      <div class="mc-people">
+      </div>`;
+    bar();
+  }
+
+  // the filters, in the Content Library's glass bar: Club · Players · Sponsors (whose posts) and Section · Team, each
+  // opening its panel under the bar (my-club.html .mc-crumb, where the library has its own bar)
+  const BAR = [["club", "Club"], ["players", "Players"], ["sponsors", "Sponsors"], ["section", "Section"], ["team", "Team"]];
+  function bar() {
+    const el = document.querySelector("[data-mc-crumb]"); if (!el || !st.space) return;
+    const sec = section(), team = sec?.teams.find((x) => x.id === st.team);
+    const val = { section: sec?.name, team: team?.name };
+    const oi = BAR.findIndex(([k]) => k === st.open);
+    let row = el.querySelector(".mcb-row");
+    if (!row) {
+      el.innerHTML = `<div class="mcb"><div class="lfb-row lfb-glass mcb-row" role="toolbar" aria-label="${esc(t("Filters"))}" style="--n:${BAR.length}"><span class="lfb-lens"></span>${BAR.map(([k, l]) => `<button type="button" class="lfb-btn" data-mcb="${k}" aria-expanded="false"><span class="lfb-tx"><b>${esc(t(l))}</b></span><em hidden></em></button>`).join("")}</div></div><div data-mcb-host></div>`;
+      row = el.querySelector(".mcb-row");
+    }
+    BAR.forEach(([k, l], i) => {
+      const b = row.querySelectorAll("[data-mcb]")[i], em = b.querySelector("em");
+      const n = st.tab === k && st.people.size ? st.people.size : "";   // how many people picked in the current tab
+      b.querySelector("b").textContent = val[k] ? t(val[k]) : t(l);   // Section / Team: the one picked, in its place
+      b.classList.toggle("is-cur", st.tab === k || !!val[k]); b.classList.toggle("is-open", st.open === k); b.setAttribute("aria-expanded", String(st.open === k));
+      em.hidden = !n; em.textContent = n;
+    });
+    const lens = row.querySelector(".lfb-lens");
+    if (oi >= 0) {
+      if (!lens.classList.contains("is-on")) { lens.style.transition = "none"; lens.style.setProperty("--x", oi); void lens.offsetWidth; lens.style.transition = ""; }   // appears where it is, then glides
+      lens.style.setProperty("--x", oi);
+    }
+    lens.classList.toggle("is-on", oi >= 0);
+    const host = el.querySelector("[data-mcb-host]");
+    host.innerHTML = st.open ? `<div class="mcb-pan" role="dialog" aria-label="${esc(t(BAR[oi][1]))}">${panel()}</div>` : "";
+  }
+
+  // what each panel holds: the people of the tab (players, sponsors, the club's profiles) or the sections / teams
+  function panel() {
+    const sec = section();
+    const seg = (attr, id, label, on, n, ic = "") => `<button type="button" class="mc-seg-b" ${attr}="${id ?? ""}" aria-pressed="${on}">${ic}<span>${esc(label)}</span>${n != null ? `<i>${n}</i>` : ""}</button>`;
+    if (st.open === "section") return `<p class="mcb-k">${esc(t("Section"))}</p><div class="mc-seg" role="group">${seg("data-mc-section", "", t("All sections"), !st.section, null)}${st.space.sections.map((s) => seg("data-mc-section", s.id, s.name, st.section === s.id, countIn(s.id), sportIcon(s.name))).join("")}</div>`;
+    if (st.open === "team") return `<p class="mcb-k">${esc(t("Team"))}${sec ? ` · ${esc(t(sec.name))}` : ""}</p>${sec ? `<div class="mc-teams" role="group">${seg("data-mc-team", "", t("All teams"), !st.team, null)}${sec.teams.map((x) => seg("data-mc-team", x.id, x.name, st.team === x.id, countIn(null, x.id))).join("")}</div>`
+      : `<p class="mc-hint">${esc(t("Choose a section to see its teams"))}</p><div class="mc-seg" role="group">${st.space.sections.map((s) => seg("data-mc-section", s.id, s.name, false, countIn(s.id), sportIcon(s.name))).join("")}</div>`}`;
+    const list = inSelection(), shown = list.filter((p) => !st.q || p.name.toLowerCase().includes(st.q.toLowerCase()));
+    return `<div class="mc-people">
         <div class="mc-people-h">
           <b>${esc(t(st.tab === "club" ? "Club profiles" : st.tab === "sponsors" ? "Sponsors" : "Players"))}</b><span class="mc-n">${list.length}</span>
           ${st.people.size ? `<button type="button" class="mc-clear" data-mc-clear>${esc(t("Clear"))} · ${st.people.size}</button>` : `<small class="mc-tip">${esc(t(st.tab === "club" ? "Tap one or more profiles to see only theirs" : st.tab === "sponsors" ? "Tap one or more sponsors to see only theirs" : "Tap one or more players to see only theirs"))}</small>`}
@@ -209,17 +234,7 @@
       </div>`;
   }
 
-  // the library's top bar says where you are: club · tab · section / team (my-club.html .mc-crumb)
-  function crumb() {
-    const el = document.querySelector("[data-mc-crumb]"); if (!el || !st.space) return;
-    const club = st.space.club, sec = section(), team = sec?.teams.find((x) => x.id === st.team);
-    const tab = t(st.tab === "club" ? "Club" : st.tab === "sponsors" ? "Sponsors" : "Players");
-    el.innerHTML = `<span class="mc-crumb-pill"><span class="mc-crumb-logo">${club.logo_url ? `<img src="${esc(club.logo_url)}" alt="">` : esc(initials(club.name))}</span>
-      <span class="mc-crumb-tx"><small>${esc(t("My Club"))}</small><b>${esc(club.name)}</b></span><i></i><span class="mc-crumb-sel">${esc(tab)}${sec ? ` · ${esc(sec.name)}` : ""}${team ? ` · ${esc(team.name)}` : ""}</span></span>`;
-  }
-
   async function scope() {
-    crumb();
     const my = ++token, list = inSelection();
     const people = st.people.size ? [...st.people].filter((id) => list.some((p) => p.id === id)) : null;
     if (st.tab === "club") {   // the club's own profiles
@@ -254,23 +269,31 @@
   }
 
   document.addEventListener("click", (e) => {
-    if (!box?.contains(e.target) || !st.space) return;
-    const b = e.target.closest("[data-mc-section], [data-mc-team], [data-mc-tab], [data-mc-person], [data-mc-clear], [data-mc-linked]");
+    if (!st.space) return;
+    const ui = document.querySelector("[data-mc-crumb]");
+    if (!ui?.contains(e.target)) { if (st.open) { st.open = null; bar(); } return; }   // a click outside closes the panel
+    const tab = e.target.closest("[data-mcb]");
+    if (tab) {
+      const k = tab.dataset.mcb;
+      // Club / Players / Sponsors: whose posts (section and team stay); the panel to pick some of them
+      if (["club", "players", "sponsors"].includes(k) && st.tab !== k) { st.tab = k; st.people.clear(); st.q = ""; st.linked = false; st.open = k; save(); bar(); return scope(); }
+      st.open = st.open === k ? null : k; return bar();
+    }
+    const b = e.target.closest("[data-mc-section], [data-mc-team], [data-mc-person], [data-mc-clear], [data-mc-linked]");
     if (!b) return;
-    if (b.matches("[data-mc-section]")) { st.section = Number(b.dataset.mcSection) || null; st.team = null; st.people.clear(); }   // another section: its own teams
-    else if (b.matches("[data-mc-team]")) { st.team = Number(b.dataset.mcTeam) || null; st.people.clear(); }
-    else if (b.matches("[data-mc-tab]")) { if (st.tab === b.dataset.mcTab) return; st.tab = b.dataset.mcTab; st.people.clear(); st.q = ""; st.linked = false; }   // section and team stay
+    if (b.matches("[data-mc-section]")) { st.section = Number(b.dataset.mcSection) || null; st.team = null; st.people.clear(); st.open = st.open === "team" && st.section ? "team" : null; }   // another section: its own teams
+    else if (b.matches("[data-mc-team]")) { st.team = Number(b.dataset.mcTeam) || null; st.people.clear(); st.open = null; }
     else if (b.matches("[data-mc-person]")) { const id = st.tab === "club" ? b.dataset.mcPerson : Number(b.dataset.mcPerson); st.people.has(id) ? st.people.delete(id) : st.people.add(id); }
     else if (b.matches("[data-mc-clear]")) st.people.clear();
     else if (b.matches("[data-mc-linked]")) st.linked = b.dataset.mcLinked === "1";
-    save(); draw(); scope();
+    save(); bar(); scope();
   });
   document.addEventListener("input", (e) => {
     if (!e.target.matches?.("[data-mc-q]")) return;
     st.q = e.target.value;
     const pos = e.target.selectionStart;
-    draw();
-    const q = box.querySelector("[data-mc-q]"); q?.focus(); q?.setSelectionRange(pos, pos);
+    bar();
+    const q = document.querySelector("[data-mc-q]"); q?.focus(); q?.setSelectionRange(pos, pos);
   });
   // the club picker (only for accounts with several clubs): a list with each club's crest
   document.addEventListener("click", (e) => {
@@ -288,5 +311,6 @@
     }
     if (!e.target.closest("[data-mc-pick]")) open(false);
   });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && st.open) { const k = st.open; st.open = null; bar(); document.querySelector(`[data-mcb="${k}"]`)?.focus(); } });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") { const l = document.querySelector(".mc-cp-list"); if (l && !l.hidden) { l.hidden = true; document.querySelector("[data-mc-pick-btn]")?.setAttribute("aria-expanded", "false"); } } });
 })();
