@@ -52,6 +52,7 @@
     const tick = ([ic, b, rest]) => `<li><span class="mc-offer-ic"><svg viewBox="0 0 24 24">${I[ic]}</svg></span><span><b>${esc(t(b))}</b> ${esc(t(rest))}</span></li>`;
     document.querySelector("[data-library] .feed")?.insertAdjacentHTML("afterbegin", `<div class="lib-lock mc-offer" role="dialog" aria-label="${esc(t("My Club"))}">
       <div class="lib-lock-vis"><span class="lib-lock-ic mc-offer-crown" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 7l5 4 5-7 5 7 5-4-2 12H4z"/></svg></span>
+        <div class="mc-box" aria-hidden="true"><div class="mc-box-in"><i class="f"></i><i class="b"></i><i class="l"></i><i class="r"></i><i class="t"></i><i class="u"></i></div></div>
         <h2>${esc(t("Your club, with its own library"))}</h2>
         <p>${esc(t("The most complete plan, tailored to your club."))}</p></div>
       <div class="lib-lock-plans">

@@ -8536,3 +8536,23 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 @media (max-width: 1180px) { .mm-clubp { width: auto; grid-template-columns: 1fr; } .mm-clubp-vis { min-height: 150px; } }
 /* My Club tab: a small gold crown before the label (premium) */
 .mm-crown { width: 14px; height: 14px; fill: #f0b84a; filter: drop-shadow(0 0 4px rgba(240,184,74,.45)); flex: none; }
+/* My Club offer: the SCP box turning gently on itself, ±35° (front and spine from the product photo), with a sweep of light */
+.mc-offer .lib-lock-vis { background: radial-gradient(60% 45% at 50% 42%, rgba(240,184,74,.22), transparent 70%), linear-gradient(180deg, #121a30 10%, #080c18 85%); }
+.mc-offer .lib-lock-ic { margin-bottom: 0; }
+.mc-box { --w: 150px; --h: 245px; --d: 48px; margin: auto; padding: 18px 0 26px; perspective: 900px; }
+.mc-box-in { position: relative; width: var(--w); height: var(--h); transform-style: preserve-3d; animation: mcBoxSpin 6s ease-in-out infinite alternate; }
+.mc-box-in::after { content: ""; position: absolute; left: -10%; right: -10%; bottom: -34px; height: 22px; border-radius: 50%; background: radial-gradient(closest-side, rgba(0,0,0,.6), transparent); transform: rotateX(90deg); }
+.mc-box i { position: absolute; top: 0; left: 0; width: var(--w); height: var(--h); backface-visibility: hidden; background: #141a33; box-shadow: inset 0 0 0 1px rgba(255,255,255,.05); }
+.mc-box .f { background: url("../assets/box-front.webp") center / 100% 100%; transform: translateZ(calc(var(--d) / 2)); }
+.mc-box .b { background: radial-gradient(70% 50% at 50% 40%, rgba(240,184,74,.18), transparent), #141a33 url("../assets/logo-scp.png") center 40% / 62% auto no-repeat; transform: rotateY(180deg) translateZ(calc(var(--d) / 2)); }
+.mc-box .l, .mc-box .r { left: calc((var(--w) - var(--d)) / 2); width: var(--d); background: url("../assets/box-spine.webp") center / 100% 100%; }
+.mc-box .l { transform: rotateY(-90deg) translateZ(calc(var(--w) / 2)); }
+.mc-box .r { transform: rotateY(90deg) translateZ(calc(var(--w) / 2)); }
+.mc-box .t, .mc-box .u { top: calc((var(--h) - var(--d)) / 2); height: var(--d); background: #10162c; }
+.mc-box .t { transform: rotateX(90deg) translateZ(calc(var(--h) / 2)); }
+.mc-box .u { transform: rotateX(-90deg) translateZ(calc(var(--h) / 2)); }
+@keyframes mcBoxSpin { from { transform: rotateX(-8deg) rotateY(-35deg); } to { transform: rotateX(-8deg) rotateY(35deg); } }
+.mc-box .f::after { content: ""; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,.22) 48%, transparent 62%) 0 0 / 300% 100%; animation: mcBoxGloss 6s ease-in-out infinite alternate; }
+@keyframes mcBoxGloss { from { background-position: 100% 0; } to { background-position: 0 0; } }
+@media (max-width: 720px) { .mc-box { --w: 104px; --h: 170px; --d: 34px; padding: 10px 0 20px; } }
+@media (prefers-reduced-motion: reduce) { .mc-box .f::after { animation: none; } .mc-box-in { animation: none; transform: rotateX(-10deg) rotateY(-28deg); } }
