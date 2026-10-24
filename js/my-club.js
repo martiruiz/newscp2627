@@ -69,7 +69,7 @@
     window.dispatchEvent(new Event("scp-lib-scope"));
   }
 
-  // the box's backdrop: a dark night sky, the stars drifting slowly and twinkling (a still sky with reduced motion)
+  // the box's backdrop: a navy night sky, gold and white stars drifting slowly and twinkling (a still sky with reduced motion)
   function stars(vis) {
     if (!vis) return;
     const cv = document.createElement("canvas"); cv.className = "mc-stars"; cv.setAttribute("aria-hidden", "true"); vis.prepend(cv);
@@ -77,7 +77,7 @@
     let w = 0, h = 0, dpr = 1, list = [];
     const size = () => {
       dpr = Math.min(devicePixelRatio || 1, 2); w = cv.clientWidth; h = cv.clientHeight; cv.width = w * dpr; cv.height = h * dpr;
-      list = Array.from({ length: Math.round(w * h / 1800) }, () => { const z = Math.random(); return { x: Math.random() * w, y: Math.random() * h, z, r: 0.35 + z * z * 1.5, a: 0.35 + z * 0.65, p: Math.random() * 6.3, s: 0.6 + Math.random() * 1.6 }; });
+      list = Array.from({ length: Math.round(w * h / 1800) }, () => { const z = Math.random(); return { x: Math.random() * w, y: Math.random() * h, z, r: 0.35 + z * z * 1.5, a: 0.35 + z * 0.65, p: Math.random() * 6.3, s: 0.6 + Math.random() * 1.6, c: Math.random() < 0.45 ? "#f4c463" : "#fff" }; });
     };
     const draw = (tm) => {
       if (!cv.isConnected) return;
@@ -85,7 +85,7 @@
       for (const st of list) {
         if (!still) { st.x -= 0.03 + st.z * 0.12; st.y += 0.01 + st.z * 0.03; if (st.x < -2) st.x = w + 2; if (st.y > h + 2) st.y = -2; }
         const tw = still ? 1 : 0.6 + 0.4 * Math.sin(tm / 1000 * st.s + st.p);
-        ctx.globalAlpha = st.a * tw; ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(st.x, st.y, st.r, 0, 6.283); ctx.fill();
+        ctx.globalAlpha = st.a * tw; ctx.fillStyle = st.c; ctx.beginPath(); ctx.arc(st.x, st.y, st.r, 0, 6.283); ctx.fill();
         if (st.r > 1.4) { ctx.globalAlpha = st.a * tw * 0.18; ctx.beginPath(); ctx.arc(st.x, st.y, st.r * 3, 0, 6.283); ctx.fill(); }
       }
       if (!still) requestAnimationFrame(draw);

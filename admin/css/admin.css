@@ -1611,25 +1611,24 @@ select.cs-native { display: none !important; }
 .login-card2 .login-card form { margin-top: auto; }
 .login-card2 .login-site { margin-top: auto; padding-top: 22px; }
 
-/* Log in background: a hexagon grid (faint navy lines) whose edges glow gold around the pointer (js in admin/login.html) */
+/* Log in background: rings of light in SCP's gold and blue, expanding from the centre of a navy night and fading away */
 .login { position: relative; overflow: hidden; }
 .login-card2 { position: relative; z-index: 1; }
-.hexbg { --mx: 30%; --my: 25%; --hex: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='103.92' viewBox='0 0 180 103.92'%3E%3Cpath d='M0 51.96L30 0H90L120 51.96L90 103.92H30Z M120 51.96H180' fill='none' stroke='black' stroke-width='1.6'/%3E%3C/svg%3E");
-  position: fixed; inset: 0; pointer-events: none;
-  background:
-    radial-gradient(circle 170px at var(--mx) var(--my), rgba(255, 224, 160, .95), rgba(240, 184, 74, .55) 45%, transparent 75%),
-    radial-gradient(circle 520px at var(--mx) var(--my), rgba(240, 184, 74, .22), transparent 70%),
-    rgba(122, 162, 255, .08);
-  -webkit-mask: var(--hex) 0 0 / 180px 103.92px; mask: var(--hex) 0 0 / 180px 103.92px; }
-.hexbg::after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle 120px at var(--mx) var(--my), rgba(240, 184, 74, .25), transparent 70%); filter: blur(8px); }
-:root[data-theme="light"] .hexbg { background: radial-gradient(circle 170px at var(--mx) var(--my), rgba(176, 122, 28, .9), rgba(240, 184, 74, .5) 45%, transparent 75%), rgba(18, 27, 51, .1); }
+.ringbg { position: fixed; inset: 0; pointer-events: none; overflow: hidden; background: radial-gradient(60% 55% at 50% 50%, #1d2a4d, #0b1020 75%); }
+.ringbg i { position: absolute; left: 50%; top: 50%; width: 120vmax; height: 120vmax; margin: -60vmax 0 0 -60vmax; border-radius: 50%; opacity: 0;
+  border: 2.5px solid #ffd98c; box-shadow: 0 0 22px 4px rgba(240, 184, 74, .75), inset 0 0 22px 4px rgba(240, 184, 74, .6), 0 0 90px 18px rgba(240, 184, 74, .25);
+  animation: ringOut 9s cubic-bezier(.3, .1, .4, 1) infinite; }
+.ringbg i:nth-child(even) { border-color: #a9c0ff; box-shadow: 0 0 22px 4px rgba(110, 145, 255, .7), inset 0 0 22px 4px rgba(110, 145, 255, .55), 0 0 90px 18px rgba(110, 145, 255, .22); }
+.ringbg i:nth-child(2) { animation-delay: -1.5s; } .ringbg i:nth-child(3) { animation-delay: -3s; } .ringbg i:nth-child(4) { animation-delay: -4.5s; }
+.ringbg i:nth-child(5) { animation-delay: -6s; } .ringbg i:nth-child(6) { animation-delay: -7.5s; }
+@keyframes ringOut { 0% { transform: scale(.05); opacity: 0; } 12% { opacity: 1; } 65% { opacity: .6; } 100% { transform: scale(1); opacity: 0; } }
+:root[data-theme="light"] .ringbg { background: radial-gradient(60% 55% at 50% 50%, #fffaf0, #f3efe6 75%); }
+:root[data-theme="light"] .ringbg i { border-color: rgba(215, 154, 43, .8); box-shadow: 0 0 16px 1px rgba(215, 154, 43, .35); }
+:root[data-theme="light"] .ringbg i:nth-child(even) { border-color: rgba(38, 54, 92, .5); box-shadow: 0 0 16px 1px rgba(38, 54, 92, .2); }
+@media (prefers-reduced-motion: reduce) { .ringbg i { animation: none; opacity: .25; } .ringbg i:nth-child(1) { transform: scale(.35); } .ringbg i:nth-child(2) { transform: scale(.55); } .ringbg i:nth-child(3) { transform: scale(.75); } .ringbg i:nth-child(n+4) { display: none; } }
 /* Log in: "email me a link" at the bottom, right above the way back to the website (apart from Sign in) */
 .login-card2 .login-alt { margin-top: auto; padding-top: 22px; }
 .login-card2 .login-site { margin-top: 14px; padding-top: 0; }
-/* Log in: a library post appearing inside the hexagon under the pointer, then fading away */
-.hexcell { position: fixed; z-index: 0; pointer-events: none; background: #111 center / cover; clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
-  transform: scale(.94); opacity: 0; animation: hexIn 2.6s ease forwards; }
-@keyframes hexIn { 0% { opacity: 0; transform: scale(.8); } 18% { opacity: .55; transform: scale(.94); } 60% { opacity: .45; } 100% { opacity: 0; transform: scale(.94); } }
 /* Log in: "Sign in" in solid white with navy text and a gold arrow (option C) */
 .login-card2 .btn-primary { display: flex; align-items: center; justify-content: center; gap: 10px; height: 46px; border: 0; border-radius: 12px; background: #f1f4f9; color: #0b1020; box-shadow: none; filter: none;
   font-weight: 700; font-size: 15px; transition: background .2s, transform .15s; }

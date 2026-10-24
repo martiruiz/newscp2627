@@ -10,12 +10,12 @@
   <link rel="icon" type="image/png" sizes="192x192" href="../assets/favicon-s-192.png">
   <link rel="apple-touch-icon" href="../assets/apple-touch-icon-s.png">
   <link rel="stylesheet" href="../css/fonts.css?v=1">
-  <link rel="stylesheet" href="css/admin.css?v=20261024p">
+  <link rel="stylesheet" href="css/admin.css?v=20261025s">
   <script src="../js/theme.js?v=20261101a"></script>
 </head>
 <body>
   <main class="login">
-    <div class="hexbg" aria-hidden="true" data-hexbg></div>
+    <div class="ringbg" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <div class="login-card2">
       <div class="login-vis" aria-hidden="true">
         <p class="login-tag" data-login-tag>All your <em>content</em>,<br>one <em>access</em>.</p>
@@ -46,42 +46,6 @@
   <script src="../js/config.js"></script>
   <script src="../js/auth.js"></script>
   <script>
-    // background: a hexagon grid whose edges light up in gold around the pointer (eased), and posts of the library popping
-    // up inside the hexagons it crosses (the week's most viewed, content/top.json; the examples if there are none)
-    (() => {
-      const bg = document.querySelector("[data-hexbg]");
-      if (!bg || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-      let x = innerWidth * 0.3, y = innerHeight * 0.25, tx = x, ty = y;
-      const R = 60, H = Math.sqrt(3) * R;   // hexagon size (same as the mask in admin.css: 180 × 103.92 tile)
-      let pics = ["../assets/lib-example-ucl.jpg", "../assets/lib-example-messi.jpg", "../assets/lib-example-nba.jpg"], k = 0, last = "";
-      fetch("../content/top.json", { cache: "no-cache" }).then((r) => r.json()).then((top) => {
-        const list = (top || []).map((p) => p.cover_url).filter(Boolean);
-        if (list.length) pics = list.sort(() => Math.random() - 0.5);   // a different order on every visit
-        pics.forEach((src) => { new Image().src = src; });
-      }).catch(() => {});
-      // the centre of the hexagon under the pointer (two families of centres in the tiling; the nearest one wins)
-      const cell = (px, py) => {
-        const c = [];
-        for (const [ox, oy] of [[R, H / 2], [2.5 * R, 0]]) {
-          const i = Math.round((px - ox) / (3 * R)), j = Math.round((py - oy) / H);
-          for (const di of [-1, 0, 1]) for (const dj of [-1, 0, 1]) c.push([ox + 3 * R * (i + di), oy + H * (j + dj)]);
-        }
-        return c.reduce((a, b) => (Math.hypot(b[0] - px, b[1] - py) < Math.hypot(a[0] - px, a[1] - py) ? b : a));
-      };
-      addEventListener("pointermove", (e) => {
-        tx = e.clientX; ty = e.clientY;
-        const [cx, cy] = cell(tx, ty), id = `${cx}|${cy}`;
-        if (id === last || e.target.closest?.(".login-card2")) return;
-        last = id;
-        const d = document.createElement("i");
-        d.className = "hexcell";
-        d.style.cssText = `left:${cx - R}px;top:${cy - H / 2}px;width:${2 * R}px;height:${H}px;background-image:url("${pics[k++ % pics.length]}")`;
-        bg.parentNode.insertBefore(d, bg);
-        setTimeout(() => d.remove(), 2600);
-      }, { passive: true });
-      const tick = () => { x += (tx - x) * 0.12; y += (ty - y) * 0.12; bg.style.setProperty("--mx", `${x}px`); bg.style.setProperty("--my", `${y}px`); requestAnimationFrame(tick); };
-      tick();
-    })();
     // language: the same switch as the sidebar (js/i18n-admin.js)
     document.querySelectorAll("[data-admin-lang]").forEach((b) => {
       b.setAttribute("aria-pressed", String(b.dataset.adminLang === (window.SCPA_LANG || "en")));
