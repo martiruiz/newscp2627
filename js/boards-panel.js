@@ -94,6 +94,7 @@
   }
   btn.addEventListener("click", (e) => {
     if (!wide()) return;   // small screens: the full page
+    if (document.body.classList.contains("lib-locked")) return;   // no plan: the full page, with the plans and the example boards
     e.preventDefault();
     S.open ? close() : open();
   });
