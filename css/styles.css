@@ -8718,3 +8718,7 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .lfp-late-t em { position: absolute; left: 6px; bottom: 6px; padding: 2px 7px; border-radius: 999px; background: rgba(8, 12, 24, .75); color: #fff; font: 700 10.5px var(--font-body); font-style: normal; }
 .lfp-late-t.is-loading { background-image: linear-gradient(110deg, var(--surface-2) 30%, var(--surface-3) 50%, var(--surface-2) 70%); background-size: 200% 100%; animation: lfp-shimmer 1.2s linear infinite; }
 @media (max-width: 720px) { .lfp-late { grid-template-columns: repeat(3, minmax(0, 1fr)); } .lfp-late-t:nth-child(n+4) { display: none; } }
+/* Light theme: the chosen Match Day phase (Before / Live / After) on its dark fill keeps light text */
+:root[data-theme="light"] .lfp-phases button.is-on { color: #fff; }
+:root[data-theme="light"] .lfp-phases button.is-on:not(.is-live) i { background: #fff; border-color: #fff; }
+:root[data-theme="light"] .lfp-phases button.is-on em { background: rgba(255, 255, 255, .2); }
