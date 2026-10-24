@@ -8515,10 +8515,17 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .mc-offer-go { justify-self: start; height: 44px; padding-left: 18px; font-size: 14px; }
 .mc-offer .lib-lock-perks { justify-content: flex-start; }
 
-/* Menu "My Club": on hover the name gives way to the green "Try it 7 days" (same look as the free-trial badge) */
-.mm-btn-tab.mm-hoverflip { display: grid !important; grid-template-areas: "x"; place-items: center; }
-.mm-btn-tab.mm-hoverflip > * { grid-area: x; margin: 0 !important; transition: opacity .25s, transform .3s cubic-bezier(.2,.8,.2,1); }
-.mm-btn-tab.mm-hoverflip > .mm-badge-try { opacity: 0; transform: translateY(60%); height: 26px; padding: 0 12px 0 10px; gap: 7px; background: #22c55e; color: #052e16; font: 800 11.5px var(--font-body); box-shadow: 0 6px 18px -6px rgba(34, 197, 94, .9); pointer-events: none; }
-.mm-btn-tab.mm-hoverflip > .mm-badge-try::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #052e16; animation: mmPulse 1.6s infinite; }
-.mm-btn-tab.mm-hoverflip:hover > span:first-child, .mm-btn-tab.mm-hoverflip:focus-visible > span:first-child { opacity: 0; transform: translateY(-60%); }
-.mm-btn-tab.mm-hoverflip:hover > .mm-badge-try, .mm-btn-tab.mm-hoverflip:focus-visible > .mm-badge-try { opacity: 1; transform: none; }
+
+/* Menu → My Club panel: the premium plan for clubs and an invitation to try it 7 days */
+.mm-clubp { display: grid; grid-template-columns: 260px 1fr; gap: 0; width: 640px; padding: 0 !important; overflow: hidden; }
+.mm-clubp-vis { display: flex; flex-direction: column; justify-content: flex-end; gap: 6px; min-height: 230px; padding: 22px; color: #fff;
+  background: linear-gradient(180deg, rgba(8,12,24,.1) 15%, rgba(8,12,24,.95) 80%), url("../assets/admin-login.webp") center / cover; }
+.mm-clubp-crown { display: grid; place-items: center; width: 40px; height: 40px; margin-bottom: auto; border-radius: 50%; background: rgba(8,12,24,.55); box-shadow: inset 0 0 0 1px rgba(240,184,74,.6); }
+.mm-clubp-crown svg { width: 19px; height: 19px; fill: #f0b84a; filter: drop-shadow(0 0 6px rgba(240,184,74,.6)); }
+.mm-clubp-t { margin: 0; font: 600 19px/1.2 var(--font-display); } .mm-clubp-s { margin: 0; color: #c9d1e0; font-size: 13px; line-height: 1.45; }
+.mm-clubp-body { display: grid; align-content: center; gap: 14px; padding: 22px 24px; }
+.mm-clubp-body ul { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.mm-clubp-body li { display: flex; gap: 9px; font-size: 13.5px; line-height: 1.4; color: var(--text); } .mm-clubp-body li::before { content: "✓"; color: var(--gold); font-weight: 800; }
+.mm-clubp-go { justify-self: start; }
+.mm-clubp-more { color: var(--muted) !important; font-size: 13px; } .mm-clubp-more:hover { color: var(--text) !important; }
+@media (max-width: 1180px) { .mm-clubp { width: auto; grid-template-columns: 1fr; } .mm-clubp-vis { min-height: 150px; } }

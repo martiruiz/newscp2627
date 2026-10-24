@@ -36,7 +36,7 @@
       featured: { eyebrow: "What is SCP?", title: "Sports Content Playbook in 2 minutes", href: "index.html#what-is-scp" },
     },
     // My Club for everyone (where Solutions was): a club's own space for its members, the premium offer for everyone else
-    { label: "My Club", href: "my-club.html", premium: true, hover: "Try it 7 days" },
+    { label: "My Club", type: "club", premium: true },
     // only without a plan, with the free-trial badge
     { label: "Pricing", href: "pricing.html", badge: "7 days free", noPlan: true },
     {
@@ -110,6 +110,13 @@
       </div>
       ${m.featured ? `<a class="mm-featured mm-featured-sm"${np} href="${esc(m.featured.href)}"><span><i>${esc(m.featured.eyebrow)}</i><b>${esc(m.featured.title)}</b></span>${icon("arrow-up-right")}</a>` : ""}</div>`;
     }
+    // My Club: the premium plan for clubs — what it is and an invitation to try it 7 days
+    if (m.type === "club") return `<div class="mm-panel mm-clubp" id="${id}" role="region" aria-label="${esc(m.label)}">
+      <div class="mm-clubp-vis"><span class="mm-clubp-crown" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 7l5 4 5-7 5 7 5-4-2 12H4z"/></svg></span>
+        <p class="mm-clubp-t">Your club, with its own library</p><p class="mm-clubp-s">The most complete plan, tailored to your club.</p></div>
+      <div class="mm-clubp-body"><ul>${["First team, sections and academy", "Your players' and sponsors' posts, in one place", "We upload your club's posts every day", "Private: only your club can see it"].map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
+        <a class="lock-go is-best mm-clubp-go" href="book-a-call.html?for=clubs" data-cta="menu-my-club"><span>Try it 7 days</span><i aria-hidden="true">→</i></a>
+        <a class="mm-clubp-more" href="my-club.html">See My Club →</a></div></div>`;
     if (m.type === "grid") return `<div class="mm-panel mm-grid" id="${id}" role="region" aria-label="${esc(m.label)}">
       <p class="mm-eyebrow">${esc(m.eyebrow)}</p><p class="mm-title">${esc(m.title)} <em>${esc(m.highlight)}</em></p>
       <div class="mm-cols">${m.items.filter(show).map((i) => `<a class="mm-item" href="${esc(i.href)}"><span class="mm-ic">${icon(i.icon)}</span><span><b>${esc(i.title)}</b><small>${esc(i.desc)}</small></span></a>`).join("")}</div></div>`;
@@ -133,9 +140,9 @@
 
   links.classList.add("mm");
   links.innerHTML = MENU.map((m, i) => {
-    if (!m.type) return `<div class="mm-tab${m.premium ? " mm-club" : ""}"${attrs(m)}><a class="mm-btn-tab${m.badge ? " mm-flip" : ""}${m.hover ? " mm-hoverflip" : ""}" href="${esc(m.href)}"><span>${esc(m.label)}</span>${m.badge ? `<span class="mm-badge">${esc(m.badge)}</span>` : ""}${m.hover ? `<span class="mm-badge mm-badge-try">${esc(m.hover)}</span>` : ""}</a></div>`;
+    if (!m.type) return `<div class="mm-tab${m.premium ? " mm-club" : ""}"${attrs(m)}><a class="mm-btn-tab${m.badge ? " mm-flip" : ""}" href="${esc(m.href)}"><span>${esc(m.label)}</span>${m.badge ? `<span class="mm-badge">${esc(m.badge)}</span>` : ""}</a></div>`;
     const id = `mm-p${i}`;
-    return `<div class="mm-tab mm-has" data-mm${attrs(m)}><button class="mm-btn-tab" type="button" aria-expanded="false" aria-controls="${id}">${esc(m.label)}${CHEV}</button>${panel(m, id)}</div>`;
+    return `<div class="mm-tab mm-has${m.premium ? " mm-club" : ""}" data-mm${attrs(m)}><button class="mm-btn-tab" type="button" aria-expanded="false" aria-controls="${id}">${esc(m.label)}${CHEV}</button>${panel(m, id)}</div>`;
   }).join("");
 
   if (member) window.SCP_entitlements?.().then(({ data }) => {

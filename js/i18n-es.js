@@ -2523,4 +2523,5 @@ window.SCP_ES = {
   "Not a club?": "¿No eres un club?",
   "Try the library free for 7 days": "Prueba la biblioteca gratis 7 días",
   "Try it 7 days": "Pruébalo 7 días",
+  "See My Club →": "Ver Mi club →",
 };
