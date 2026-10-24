@@ -8682,3 +8682,11 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 @media (max-width: 960px) { .news-strip { grid-template-columns: 1fr; } }
 /* Light theme: the video's "Play" button keeps dark text on its white pill */
 :root[data-theme="light"] .play-btn { color: #0b1020; }
+/* Content Library: the filters' search more visual — taller, the magnifier in a gold tile, a gold edge and glow when typing */
+.lf-search { height: 48px; padding: 0 14px 0 6px; gap: 10px; border-radius: 14px; border: 1px solid var(--line); background: linear-gradient(180deg, rgba(var(--fg), .05), rgba(var(--fg), .02)), var(--surface-2); transition: border-color .2s, box-shadow .2s, background .2s; }
+.lf-search:hover { border-color: rgba(240, 184, 74, .35); }
+.lf-search:focus-within { border-color: rgba(240, 184, 74, .7); box-shadow: 0 0 0 4px rgba(240, 184, 74, .12), 0 10px 24px -14px rgba(240, 184, 74, .6); }
+.lf-search-ic { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(180deg, #ffe7ad, #f4c463 45%, #d79a2b); color: #1a1205; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .45); }
+.lf-search-ic svg { width: 17px; height: 17px; stroke-width: 2.4; }
+.lf-search input { font-size: 13.5px; font-weight: 500; }
+.lf-search input::placeholder { color: var(--muted); }

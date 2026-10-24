@@ -2566,4 +2566,5 @@ window.SCP_ES = {
   "1 job": "1 oferta",
   "Clear search": "Borrar búsqueda",
   "Search a job, a club or a city…": "Busca un puesto, un club o una ciudad…",
+  "Search: signings, a club, reels…": "Busca: fichajes, un club, reels…",
 };
