@@ -584,7 +584,7 @@ const orgLd = [{ "@context": "https://schema.org", "@type": "Organization", "@id
   { "@context": "https://schema.org", "@type": "WebSite", "@id": `${SITE}/#website`, name: ORG.name, url: `${SITE}/`, publisher: { "@id": `${SITE}/#org` }, inLanguage: ["es", "en"] }];
 replaceBetween("index.html", "<!-- SEO-LD:START -->", "<!-- SEO-LD:END -->", `  <script type="application/ld+json">${JSON.stringify(orgLd)}</script>`);
 const KEY_PAGES = [["Home", "", "What Sports Content Playbook is and how it works"], ["Content Library", "content-library.html", "Real posts from sports clubs, leagues and brands, filtered by sport, platform, format and performance"],
-  ["Pricing", "pricing.html", "Plans and prices"], ["Blog", "blog.html", "Sports social media trends, content ideas and news"], ["Social News", "news.html", "Daily updates from Instagram, TikTok, YouTube, X and AI explained for sports teams"],
+  ["Pricing", "pricing.html", "Plans and prices"], ["Blog", "blog.html", "Sports social media trends, content ideas and news"], ["Social News", "news.html", "Daily updates from Instagram, TikTok, YouTube, X and AI explained for sports teams"], ["Jobs", "jobs.html", "Job offers in sports digital marketing: social media, content, design, video and partnerships"],
   ["Book a demo", "book-a-call.html", "A 30-minute call with the team"], ["Contact", "contact.html", "How to reach us"]];
 write("llms.txt", `# ${ORG.name}
 
@@ -601,7 +601,7 @@ ${news?.length ? `\n## Latest Social News\n\n${news.slice(0, 30).map((n) => `- [
 
 // ---------- The website's main pages (Admin → SEO → Page check): title and description chosen there (seo.pages), and
 // whatever Google needs that a page lacks — canonical, social preview, WebPage schema — written between SEO-META markers ----------
-const MAIN_PAGES = { "index.html": "Home", "pricing.html": "Pricing", "blog.html": "Blog", "news.html": "Social News", "book-a-call.html": "Book a demo", "contact.html": "Contact", "signup.html": "Sign up" };
+const MAIN_PAGES = { "index.html": "Home", "pricing.html": "Pricing", "blog.html": "Blog", "news.html": "Social News", "jobs.html": "Jobs", "book-a-call.html": "Book a demo", "contact.html": "Contact", "signup.html": "Sign up" };
 for (const [file, name] of Object.entries(MAIN_PAGES)) {
   let html = read(file);
   if (["blog.html", "news.html"].includes(file)) html = html.replace(/<html lang="en"[^>]*>/, '<html lang="en" data-page-lang="en">');   // also at /es/ (js/i18n.js)
@@ -634,6 +634,8 @@ for (const file of ["blog.html", "news.html"]) {
   const swap = (block, content) => { const a = html.indexOf(`<!-- ${block}:START -->`), b = html.indexOf(`<!-- ${block}:END -->`); if (a >= 0 && b >= 0) html = `${html.slice(0, a + block.length + 15)}\n${content}\n        ${html.slice(b)}`; };
   if (file === "blog.html") swap("POSTS", posts.map((p) => card(p, "es")).join("\n"));
   else { swap("BLOG", posts.slice(0, 3).map((p) => card(p, "es")).join("\n")); if (news) swap("NEWS", news.slice(0, 12).map((n) => newsRow(n, "es")).join("\n")); }
+  // the Resources tabs: Blog and Social News to their Spanish pages (Jobs has just one page)
+  html = html.replace(/<a href="(blog|news)\.html"( aria-current="page")?>(Blog|Social News)<\/a>(?=<a href="(news|jobs)\.html)/g, '<a href="es/$1.html"$2>$3</a>');
   html = html.replace(/<html lang="[^"]*"[^>]*>/, '<html lang="es" data-page-lang="es">').replace("<head>", '<head>\n  <base href="../">')
     .replaceAll(`href="${SITE}/${file}"`, `href="${SITE}/es/${file}"`).replaceAll(`content="${SITE}/${file}"`, `content="${SITE}/es/${file}"`)
     .replace(`hreflang="en" href="${SITE}/es/${file}"`, `hreflang="en" href="${SITE}/${file}"`).replace(`hreflang="x-default" href="${SITE}/es/${file}"`, `hreflang="x-default" href="${SITE}/${file}"`);
@@ -653,7 +655,7 @@ write("content/latest.json", `${JSON.stringify({
 }, null, 2)}\n`);
 
 // ---------- Sitemap & robots ----------
-const pages = ["", "pricing.html", "blog.html", "news.html", "book-a-call.html", "contact.html", "signup.html"];
+const pages = ["", "pricing.html", "blog.html", "news.html", "jobs.html", "book-a-call.html", "contact.html", "signup.html"];
 const today = new Date().toISOString().slice(0, 10);
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">

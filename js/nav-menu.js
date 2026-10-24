@@ -25,13 +25,13 @@
     },
     {
       // the newest news item / article big on the left (content/latest.json, written by blog-tools/build.mjs; tabs switch between
-      // them) and a list on the right, each section with its own colour (orange, pink, red, silver) and one line on what's there
+      // them) and a list on the right, each section with its own colour (gold, pink, red, green) and one line on what's there
       label: "Resources", type: "resources",
       cards: [
         { icon: "bookmark", title: "Saved boards", href: "saved.html", acc: "240, 184, 74", member: true },
         { icon: "file-text", title: "Blog", href: "blog.html", acc: "244, 114, 182" },
         { icon: "newspaper", title: "Social News", href: "news.html", acc: "255, 92, 92" },
-        { icon: "help-circle", title: "FAQ", href: "index.html#faq", acc: "186, 196, 214" },
+        { icon: "briefcase", title: "Jobs", href: "jobs.html", acc: "52, 211, 153" },
       ],
       featured: { eyebrow: "What is SCP?", title: "Sports Content Playbook in 2 minutes", href: "index.html#what-is-scp" },
     },
@@ -71,7 +71,7 @@
     mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/>',
     search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
     newspaper: '<path d="M15 18h-5M18 14h-8"/><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-4 0v-9a2 2 0 0 1 2-2h2"/><rect x="10" y="6" width="8" height="4" rx="1"/>',
-    "help-circle": '<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/>',
+    briefcase: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
   };
   const icon = (n) => `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ""}</svg>`;
   const CHEV = `<svg class="mm-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>`;

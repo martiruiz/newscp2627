@@ -8590,3 +8590,38 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 /* Menu "Saved boards": the bookmark filled, as on the saved boards page (the thin outline looked broken at this size) */
 .mm-rrow-gold .mm-ic { box-shadow: inset 0 1px 0 rgba(255,255,255,.45), 0 6px 14px -8px rgba(240,184,74,.8); }
 .mm-rrow-gold .mm-ic svg { width: 16px; height: 16px; fill: currentColor; stroke: none; }
+/* Resources: Blog · Social News · Jobs as tabs above each page (the Content Library's glass capsule; the current one lit) */
+.res-tabs { display: flex; justify-content: center; padding-top: 28px; }
+.res-tabs-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: min(460px, 100%); padding: 5px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--line); }
+.res-tabs-row a { display: grid; place-items: center; height: 42px; padding: 0 14px; border-radius: 999px; color: var(--muted); font: 600 15px var(--font-display); text-decoration: none; white-space: nowrap; transition: color .2s, background .2s; }
+.res-tabs-row a:hover { color: var(--text); background: rgba(var(--fg), .04); }
+.res-tabs-row a[aria-current="page"] { color: var(--text); background: var(--surface-2); box-shadow: inset 0 0 0 1px rgba(240,184,74,.55), 0 6px 18px -10px rgba(240,184,74,.7); }
+.res-tabs-row a[aria-current="page"]::before { content: ""; width: 6px; height: 6px; margin-right: 8px; border-radius: 50%; background: var(--gold); display: inline-block; vertical-align: 2px; }
+.res-tabs-row a[aria-current="page"] { display: flex; align-items: center; justify-content: center; }
+.res-tabs + .blog-hero { padding-top: 26px; }
+
+/* Jobs (jobs.html): the filters and one row per offer — logo, company and when, the title, a short summary, tags, Apply */
+.jobs-filters { display: grid; gap: 12px; margin-bottom: 22px; }
+.jobs-filters .f-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.jobs-filter-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.jobs-search { flex: 0 1 340px; min-width: 220px; }
+.jobs-list { display: grid; gap: 12px; }
+.jobs-loading { color: var(--muted); text-align: center; padding: 40px 0; }
+.job { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 18px; padding: 18px 20px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line-soft); transition: border-color .2s, transform .2s; }
+.job:hover { border-color: rgba(240,184,74,.45); transform: translateY(-1px); }
+.job-logo { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 14px; overflow: hidden; background: var(--surface-2); border: 1px solid var(--line-soft); font: 700 16px var(--font-display); color: var(--gold); }
+.job-logo img { width: 100%; height: 100%; object-fit: cover; }
+.job-co { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0; color: var(--muted); font-size: 13px; font-weight: 600; }
+.job-co span { color: var(--muted-dim); font-weight: 500; }
+.job h2 { margin: 3px 0 0; font: 600 19px/1.25 var(--font-display); letter-spacing: -.01em; }
+.job-sum { margin: 6px 0 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+.job-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 0; }
+.job-tags span { padding: 3px 10px; border-radius: 999px; background: var(--surface-2); color: var(--muted); font-size: 12px; font-weight: 600; }
+.job-tags .is-area { background: var(--gold-tint); color: var(--gold); }
+.job-go { white-space: nowrap; }
+@media (max-width: 720px) {
+  .job { grid-template-columns: auto minmax(0, 1fr); padding: 16px; gap: 14px; }
+  .job-logo { width: 46px; height: 46px; align-self: start; }
+  .job-go { grid-column: 1 / -1; justify-self: stretch; text-align: center; }
+  .res-tabs { padding-top: 18px; }
+}
