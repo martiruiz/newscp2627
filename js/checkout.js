@@ -204,7 +204,7 @@ window.SCP_CHECKOUT = (() => {
       const cta = m?.ready ? `<button class="btn btn-gold" type="button" data-checkout-plan="${esc(p.key)}" data-interval="month" data-currency="eur">${label(p)}</button>`
         : `<a class="btn btn-gold" href="signup.html?plan=${encodeURIComponent(p.key)}&interval=month">${label(p)}</a>`;
       return `<div class="pp-pick"><div class="pp-pick-top"><b>${esc(p.name)}</b>${m ? `<span><strong>${money(m.amount, "eur").replace(/[.,]00(?=\D|$)/, "")}</strong> / ${tx("month")}</span>` : ""}</div>
-        <p>${tx("Library, AI analyses and Content Plan")}</p>${cta}</div>`;
+        <p>${tx((p.entitlements || []).includes("ai.analyze_posts") ? "Library, AI analyses and Content Plan" : "The whole content library")}</p>${cta}</div>`;
     }).join("") + `<div class="pp-pick is-club"><div class="pp-pick-top"><b>${tx("My Club")}</b><span>${tx("Custom plan")}</span></div>
         <p>${tx("Your club's own library: first team, sections and academy")}</p><a class="btn btn-outline" href="book-a-call.html?for=clubs">${tx("Book a demo")}</a></div>
       <a class="pp-plans-all" href="pricing.html">${tx("Compare all plans")} →</a>`;

@@ -2502,4 +2502,10 @@ window.SCP_ES = {
   "Send it again ({n}s)": "Enviarlo de nuevo ({n}s)",
   "We've sent several emails in a short time, so this one couldn't go out yet. Wait a few minutes and try again; meanwhile, check whether an earlier one arrived (spam too), or continue with Google.": "Se han enviado varios emails en poco tiempo y este aún no ha podido salir. Espera unos minutos y vuelve a intentarlo; mientras, mira si te llegó uno anterior (también en spam) o continúa con Google.",
   "No plan (not a client)": "Sin plan (no cliente)",
+  "The library is for members": "La biblioteca es para miembros",
+  "Unlock the whole library": "Desbloquea toda la biblioteca",
+  "Real posts from clubs, leagues and brands, filtered by sport, format and competition, with AI that explains why they work. Try it free for 7 days.": "Posts reales de clubes, ligas y marcas, filtrados por deporte, formato y competición, con IA que te explica por qué funcionan. Pruébalo gratis 7 días.",
+  "Start my free trial": "Empezar mi prueba gratis",
+  "Cancel anytime · VAT included": "Cancela cuando quieras · IVA incluido",
+  "The whole content library": "Toda la biblioteca de contenido",
 };

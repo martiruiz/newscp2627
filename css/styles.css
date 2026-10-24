@@ -8426,3 +8426,18 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .auth-sent-ic svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .auth-back { justify-self: center; margin-top: 2px; padding: 6px 10px; border: 0; background: none; color: var(--muted); font: 600 13.5px var(--font-body); cursor: pointer; }
 .auth-back:hover { color: var(--text); }
+
+/* Content Library without a plan (js/library-lock.js): posts blurred, a padlock card with the plans to start the trial */
+.lib-locked .feed > :not(.lib-lock) { filter: blur(10px) saturate(.8); opacity: .55; pointer-events: none; user-select: none; }
+.lib-locked .filters { pointer-events: none; opacity: .5; }
+.lib-lock { position: sticky; top: 90px; z-index: 30; display: grid; justify-items: center; gap: 10px; width: min(520px, calc(100% - 32px)); margin: 30px auto -380px; padding: 30px 28px; border-radius: 24px; text-align: center;
+  background: linear-gradient(180deg, rgba(255,255,255,.05), transparent 45%), var(--surface); border: 1px solid rgba(240,184,74,.4); box-shadow: 0 40px 90px -30px rgba(0,0,0,.8), 0 0 0 8px rgba(240,184,74,.05); }
+.lib-lock-ic { display: grid; place-items: center; width: 60px; height: 60px; border-radius: 50%; border: 1px solid rgba(240,184,74,.55); background: rgba(240,184,74,.1); color: var(--gold); box-shadow: 0 0 40px -8px rgba(240,184,74,.45); }
+.lib-lock-ic svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.lib-lock-eb { margin: 6px 0 0; color: var(--gold); font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.lib-lock h2 { margin: 0; font: 600 clamp(24px, 3vw, 30px)/1.15 var(--font-display); letter-spacing: -.02em; }
+.lib-lock-sub { margin: 0 0 8px; color: var(--muted); font-size: 15px; line-height: 1.55; }
+.lib-lock .pp-plans { text-align: left; }
+.lib-lock-note { margin: 4px 0 0; color: var(--muted); font-size: 12.5px; }
+:root[data-theme="light"] .lib-lock { background: #fff; border-color: rgba(240,184,74,.5); box-shadow: 0 30px 70px -30px rgba(12,12,13,.35); }
+:root[data-theme="light"] .lib-lock-ic { color: #a8730f; }
