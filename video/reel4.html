@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>SCP reel 4 — overlay</title>
+<link rel="stylesheet" href="../css/fonts.css?v=1">
+<style>
+  /* Transparent overlay drawn over the talking-head clip (video/me/blur4.mp4), 1080×1920. ?bg shows a grey stand-in. */
+  :root { --gold: #f0b84a; --muted: #b4c0d3; }
+  html, body { margin: 0; background: transparent; }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; color: #fff; font-family: Inter, system-ui, sans-serif; }
+  .abs { position: absolute; }
+  .big { font-family: "Host Grotesk", Inter, sans-serif; font-weight: 700; letter-spacing: -0.04em; line-height: .9; text-transform: uppercase; white-space: nowrap; }
+  .goldfill { background: linear-gradient(100deg, #d99a2b, #f0b84a 40%, #ffe3a3 60%, #f0b84a 80%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .shadow { filter: drop-shadow(0 8px 24px rgba(0,0,0,.75)); }
+  .card { position: absolute; border-radius: 16px; overflow: hidden; background: #17213b; border: 1px solid rgba(255,255,255,.14); box-shadow: 0 24px 50px -20px rgba(0,0,0,.9); }
+  .card img { position: absolute; left: 0; top: 0; width: 100%; object-fit: cover; }
+  .card .vw { position: absolute; top: 10px; left: 10px; padding: 5px 10px; border-radius: 100px; background: rgba(8,12,24,.8); font: 700 17px Inter; }
+  .card .vw b { color: var(--gold); }
+  .panel { position: absolute; border-radius: 26px; background: rgba(13,20,40,.94); border: 1px solid rgba(255,255,255,.12); box-shadow: 0 40px 90px -30px rgba(0,0,0,.9); }
+  .chip { display: inline-flex; align-items: center; gap: 10px; height: 82px; padding: 0 34px; border-radius: 100px; border: 2px solid rgba(240,184,74,.6); background: rgba(13,20,40,.92); color: #fff; font: 700 40px "Host Grotesk"; white-space: nowrap; box-shadow: 0 14px 30px -12px rgba(0,0,0,.8); }
+  .chip.on { background: linear-gradient(90deg,#d99a2b,#f0b84a,#ffe3a3); color: #1a1206; border-color: transparent; }
+  .sp { display: inline-flex; align-items: center; gap: 16px; height: 96px; padding: 0 30px; border-radius: 24px; font: 700 40px "Host Grotesk"; }
+  .sp i { width: 50px; height: 50px; border-radius: 14px; background: rgba(26,18,6,.15); }
+  .sp-cc { background: linear-gradient(90deg, #d99a2b, #f0b84a 45%, #ffd98a); color: #1a1206; box-shadow: 0 20px 60px -10px rgba(240,184,74,.7); }
+  .sbox { display: flex; align-items: center; gap: 18px; height: 104px; padding: 0 30px; border-radius: 26px; border: 3px solid rgba(240,184,74,.75); background: rgba(13,20,40,.95); font: 600 40px Inter; box-shadow: 0 0 0 10px rgba(240,184,74,.1), 0 30px 60px -20px rgba(0,0,0,.8); }
+  .sbox svg { width: 40px; height: 40px; fill: none; stroke: var(--gold); stroke-width: 2.4; flex: none; }
+  /* captions */
+  #cap { position: absolute; left: 60px; right: 60px; top: 1430px; text-align: center; z-index: 40; }
+  #cap span { display: inline-block; margin: 0 9px; font: 800 70px/1.12 "Host Grotesk", Inter; letter-spacing: -0.02em; color: #fff;
+    text-shadow: 0 0 2px #000, 0 4px 0 rgba(0,0,0,.55), 0 10px 30px rgba(0,0,0,.6); -webkit-text-stroke: 2px rgba(0,0,0,.55); paint-order: stroke fill; }
+  #cap span.on { color: var(--gold); transform: scale(1.08); }
+  #cap span.hl { color: var(--gold); }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script>
+(async () => {
+  const Q = new URLSearchParams(location.search);
+  const W = 1080, H = 1920, TOTAL = 30.73;
+  const stage = document.getElementById("stage");
+  if (Q.has("bg")) stage.style.background = "#3a4152";
+  const pick = await (await fetch("real/pick.json")).json();
+  const words = await (await fetch("me/words4-clean.json")).json();
+  await document.fonts.load('700 100px "Host Grotesk"'); await document.fonts.load('800 70px "Host Grotesk"'); await document.fonts.load('600 40px Inter'); await document.fonts.load('700 20px Inter'); await document.fonts.ready;
+
+  const anims = [], ticks = [], seen = new WeakMap();
+  const E = { out: "cubic-bezier(.16,1,.3,1)", inout: "cubic-bezier(.65,0,.35,1)", in: "cubic-bezier(.7,0,.84,0)", slam: "cubic-bezier(.2,1.5,.35,1)", lin: "linear", soft: "cubic-bezier(.4,0,.2,1)" };
+  function A(el, kf, t, dur, ease = E.out) {
+    const n = seen.get(el) || 0; seen.set(el, n + 1);
+    const a = el.animate(kf, { delay: t * 1000, duration: Math.max(1, dur * 1000), easing: ease, fill: n ? "forwards" : "both" });
+    a.pause(); anims.push(a); return a;
+  }
+  const mk = (p, cls = "", html = "", css = {}) => { const e = document.createElement("div"); e.className = cls; e.innerHTML = html; Object.assign(e.style, css); p.append(e); return e; };
+  const px = (v) => v + "px";
+  const centred = "translate(-50%,-50%)";
+  const C = (x, y) => ({ left: px(x), top: px(y), transform: centred });
+  const fmtV = (n) => n >= 1e6 ? `${(n / 1e6).toFixed(n < 1e7 ? 1 : 0)}M` : `${Math.round(n / 1e3)}K`;
+  const SEARCH = `<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>`;
+  const W_ = (txt) => { const w = words.find((x) => x[2].toLowerCase().replace(/[¿?¡!.,]/g, "").startsWith(txt)); return w ? w[0] : 0; };
+  function block(a, b) { const s = mk(stage, "abs", "", { inset: 0 }); ticks.push((t) => { s.style.display = t >= a - .05 && t < b + .05 ? "" : "none"; }); return s; }
+  function card(parent, p, x, y, w, opt = {}) {
+    const h = w * Math.min(Math.max(p.r, .56), 1.78);
+    const c = mk(parent, "card", `<img src="real/${p.f}" style="height:${h}px">`, { left: px(x), top: px(y), width: px(w), height: px(h), ...(opt.css || {}) });
+    if (opt.views && p.v) mk(c, "vw", `<b>${fmtV(p.v)}</b> views`);
+    return { el: c, h };
+  }
+  function masonry(parent, list, cols, width, gap, opt = {}) {
+    const cw = (width - gap * (cols - 1)) / cols, ys = Array(cols).fill(0), out = [];
+    list.forEach((p) => { const c = ys.indexOf(Math.min(...ys)); const k = card(parent, p, c * (cw + gap), ys[c], cw, opt); ys[c] += k.h + gap; out.push(k.el); });
+    return out;
+  }
+  const out = (els, t, d = .25) => els.forEach((e) => A(e, [{ opacity: 1 }, { opacity: 0 }], t, d, E.soft));
+
+  // small brand mark at the top, all the time
+  const brand = mk(stage, "abs", `<img src="../assets/logo-scp.png" style="width:100%">`, { left: "50%", top: "56px", width: "190px", transform: "translateX(-50%)", zIndex: 30, filter: "drop-shadow(0 4px 14px rgba(0,0,0,.6))" });
+  A(brand, [{ opacity: 0 }, { opacity: .95 }], .1, .5, E.soft);
+  const nth = (key, n) => words.filter((x) => x[2].toLowerCase().replace(/[¿?¡!.,]/g, "").startsWith(key))[n]?.[0] ?? 0;
+
+  // a real photo of a laptop at home showing the real site, full screen, the camera slowly pushing in
+  function laptop(a, b, file, focus = [540, 1100], zoom = [1, 1.18], url = true) {
+    const s = block(a, b);
+    const ph = mk(s, "abs", `<img src="laptop/${file}" style="width:100%;height:100%;object-fit:cover">`, { inset: 0, transformOrigin: `${focus[0]}px ${focus[1]}px` });
+    A(ph, [{ opacity: 0, transform: `scale(${zoom[0] * 1.06})` }, { opacity: 1, transform: `scale(${zoom[0]})` }], a, .35, E.out);
+    A(ph, [{ transform: `scale(${zoom[0]})` }, { transform: `scale(${zoom[1]})` }], a + .35, b - a - .5, E.soft);
+    A(ph, [{ opacity: 1 }, { opacity: 0 }], b - .2, .2, E.soft);
+    const shade = mk(s, "abs", "", { inset: 0, background: "linear-gradient(rgba(7,11,23,.55), transparent 22%, transparent 62%, rgba(7,11,23,.75))" });
+    A(shade, [{ opacity: 0 }, { opacity: 1 }], a, .3, E.soft); A(shade, [{ opacity: 1 }, { opacity: 0 }], b - .2, .2, E.soft);
+    if (url) {
+      const u = mk(s, "abs", `<span style="color:#00d85b">🔒</span> sportscontentplaybook.com`, { left: "50%", top: "150px", transform: "translateX(-50%)", padding: "16px 30px", borderRadius: "100px", background: "rgba(255,255,255,.94)", color: "#121b33", font: "600 34px Inter", boxShadow: "0 16px 40px rgba(0,0,0,.45)", whiteSpace: "nowrap" });
+      A(u, [{ opacity: 0, transform: "translate(-50%,-20px)" }, { opacity: 1, transform: "translate(-50%,0)" }], a + .3, .35, E.out);
+      A(u, [{ opacity: 1 }, { opacity: 0 }], b - .2, .2, E.soft);
+    }
+    return s;
+  }
+
+  // ===== 0–4.5 500.000 sports posts in one database: laptop at home with the real library =====
+  {
+    const s = laptop(0, 4.55, "c-home2-shot-library.jpg", [530, 980], [1, 1.3]);
+    const num = mk(s, "big abs goldfill shadow", "0", { ...C(W / 2, 400), fontSize: "190px", zIndex: 3 });
+    const lab = mk(s, "big abs shadow", "CONTENIDOS DEPORTIVOS", { ...C(W / 2, 520), fontSize: "60px", zIndex: 3 });
+    const t0 = 0.05;
+    A(num, [{ opacity: 0, transform: `${centred} scale(.6)` }, { opacity: 1, transform: `${centred} scale(1)` }], t0, .35, E.slam);
+    A(lab, [{ opacity: 0 }, { opacity: 1 }], nth("contenidos", 0) - .1, .3, E.soft);
+    ticks.push((t) => { const k = Math.min(1, Math.max(0, (t - t0) / 1.1)); num.textContent = "+" + (Math.round((1 - Math.pow(1 - k, 3)) * 500) * 1000).toLocaleString("es-ES"); });
+    const one = mk(s, "chip on abs", "En una sola base de datos", { ...C(W / 2, 640), height: "88px", fontSize: "42px", zIndex: 3 });
+    A(one, [{ opacity: 0, transform: `${centred} scale(.4)` }, { opacity: 1, transform: `${centred} scale(1)` }], nth("sola", 0) - .1, .35, E.slam);
+    out([num, lab, one], 4.35, .2);
+  }
+
+  // ===== 4.5–17 what's inside: real posts at the top, phrase by phrase =====
+  {
+    const groups = [
+      ["LOS MEJORES CONTENIDOS", nth("contenidos", 1), pick.lineup.slice(3, 6)],
+      ["DE LOS MEJORES CLUBES", nth("clubes", 0), pick.lineup.slice(0, 3)],
+      ["LAS MEJORES CAMPAÑAS", nth("campañas", 0), pick.kit.slice(0, 3)],
+      ["LAS MEJORES COMPETICIONES", nth("competiciones", 0), pick.lineup.slice(8, 11)],
+      ["CREADORES QUE<br>MARCAN TENDENCIA", nth("creadores", 0), pick.views.slice(0, 3), true],
+      ["HOOKS QUE ATRAPAN", nth("hooks", 0), pick.views.slice(5, 8), true],
+      ["FORMATOS QUE FUNCIONAN", nth("formatos", 0), pick.views.slice(9, 12), true],
+      ["ESTILOS DE EDICIÓN", nth("estilos", 0), pick.signing.slice(0, 3), true],
+    ];
+    groups.forEach(([title, at, list, views], i) => {
+      const a = i ? groups[i][1] - .3 : 4.55, b = groups[i + 1] ? groups[i + 1][1] - .3 : nth("diseños", 0) - .2;
+      const s = block(a, b);
+      const row = mk(s, "abs", "", { left: "50px", right: "50px", top: "170px", height: "470px" });
+      list.forEach((p, k) => {
+        const c = card(row, { ...p, r: 1.4 }, k * 330, 0, 310, { views, css: { height: "430px" } });
+        c.el.querySelector("img").style.height = "430px";
+        A(c.el, [{ opacity: 0, transform: "translateY(70px) scale(.85)" }, { opacity: 1, transform: "translateY(0) scale(1)" }], a + .05 + k * .06, .3, E.slam);
+      });
+      const tt = mk(s, "big abs goldfill shadow", title, { ...C(W / 2, 690), fontSize: title.includes("<br>") ? "80px" : title.length > 20 ? "76px" : "92px", textAlign: "center", zIndex: 3 });
+      A(tt, [{ opacity: 0, transform: `${centred} translateY(30px)` }, { opacity: 1, transform: `${centred} translateY(0)` }], Math.max(a + .05, at - .2), .22, E.out);
+      out([row, tt], b - .12, .12);
+    });
+  }
+
+  // ===== 17–17.9 designs: laptop with a real post and its AI tags =====
+  {
+    const a = nth("diseños", 0) - .2;
+    const s = laptop(a, nth("todo", 1) + .45, "c-home2-shot-detail.jpg", [530, 980], [1.05, 1.25], false);
+    const t = mk(s, "big abs goldfill shadow", "DISEÑOS", { ...C(W / 2, 330), fontSize: "120px", zIndex: 3 });
+    A(t, [{ opacity: 0, transform: `${centred} scale(1.4)` }, { opacity: 1, transform: `${centred} scale(1)` }], a + .1, .22, E.out);
+  }
+
+  // ===== 17.6–22 all organised, find exactly what you need: laptop with the library + a real search =====
+  {
+    const a = nth("todo", 1) + .05, b = nth("porque", 0) - .1;
+    const s = laptop(a, b, "c-home3-shot-library.jpg", [540, 1100], [1, 1.25], false);
+    const t1 = mk(s, "big abs shadow", "TODO ORGANIZADO", { ...C(W / 2, 330), fontSize: "104px", zIndex: 3 });
+    A(t1, [{ opacity: 0, transform: `${centred} translateY(30px)` }, { opacity: 1, transform: `${centred} translateY(0)` }], nth("organizado", 0) - .15, .3, E.out);
+    const box = mk(s, "sbox abs", `${SEARCH}<span class="q"></span><span class="c" style="color:var(--gold)">|</span>`, { left: "70px", right: "70px", top: "450px", zIndex: 3 });
+    const q = box.querySelector(".q"), cur = box.querySelector(".c"), TXT = "fichajes con más de 1M de views", tq = nth("encontrar", 0) - .2;
+    A(box, [{ opacity: 0, transform: "translateY(30px)" }, { opacity: 1, transform: "translateY(0)" }], tq - .3, .3, E.out);
+    ticks.push((t) => { const k = Math.max(0, Math.min(1, (t - tq) / 1.3)); q.textContent = TXT.slice(0, Math.round(k * TXT.length)); cur.style.opacity = Math.floor(t * 2.6) % 2 ? 0 : 1; });
+    const t2 = mk(s, "big abs goldfill shadow", "EXACTAMENTE LO<br>QUE NECESITAS", { ...C(W / 2, 700), fontSize: "92px", textAlign: "center", zIndex: 3 });
+    A(t2, [{ opacity: 0, transform: `${centred} scale(1.4)` }, { opacity: 1, transform: `${centred} scale(1)` }], nth("exactamente", 0) - .05, .25, E.out);
+  }
+
+  // ===== 22–26 a good content plan shouldn't take you hours: laptop in the kitchen with the real Content Plan =====
+  {
+    const a = nth("porque", 0) - .1, b = nth("quieres", 0) - .15;
+    const s = laptop(a, b, "c-home3-shot-plan.jpg", [540, 1250], [1, 1.3], false);
+    const t1 = mk(s, "big abs shadow", "UN BUEN PLAN<br>DE CONTENIDO", { ...C(W / 2, 360), fontSize: "100px", textAlign: "center", zIndex: 3 });
+    A(t1, [{ opacity: 0, transform: `${centred} translateY(30px)` }, { opacity: 1, transform: `${centred} translateY(0)` }], nth("plan", 0) - .3, .3, E.out);
+    const t2 = mk(s, "big abs goldfill shadow", "SIN PERDER HORAS", { ...C(W / 2, 580), fontSize: "88px", zIndex: 3 });
+    A(t2, [{ opacity: 0, transform: `${centred} scale(1.5)` }, { opacity: 1, transform: `${centred} scale(1)` }], nth("debería", 0) - .05, .22, E.out);
+  }
+
+  // ===== 26–end "Si quieres acceder a la base de datos, comenta REEL y te lo mando." =====
+  {
+    const s = block(nth("quieres", 0) - .15, TOTAL);
+    const card1 = mk(s, "panel", "", { left: "70px", right: "70px", top: "190px", height: "540px", padding: "36px 40px", boxSizing: "border-box" });
+    mk(card1, "", `<div style="display:flex;align-items:center;gap:18px"><span style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#f58529,#dd2a7b,#8134af);flex:none"></span><div><b style="font:700 30px Inter">tu.cuenta</b><div style="font:500 22px Inter;color:#8b98ae">Comentar…</div></div></div>`);
+    const inp = mk(card1, "", `<span class="q" style="font:800 64px 'Host Grotesk';color:var(--gold);letter-spacing:.06em"></span><span class="c" style="font:400 60px Inter;color:#fff">|</span><span style="margin-left:auto;width:74px;height:74px;border-radius:50%;background:var(--gold);display:grid;place-items:center;font:700 34px Inter;color:#1a1206">➤</span>`, { display: "flex", alignItems: "center", gap: "8px", marginTop: "34px", height: "120px", padding: "0 18px 0 30px", borderRadius: "100px", border: "2px solid rgba(255,255,255,.18)", background: "rgba(255,255,255,.05)" });
+    const qEl = inp.querySelector(".q"), cEl = inp.querySelector(".c");
+    const tq = nth("comenta", 0) + .25;
+    ticks.push((t) => { const k = Math.max(0, Math.min(1, (t - tq) / .35)); qEl.textContent = "REEL".slice(0, Math.round(k * 4)); cEl.style.opacity = Math.floor(t * 2.6) % 2 ? 0 : 1; });
+    const dm = mk(card1, "", `📩 Te mando el acceso a la base de datos de <b style="color:var(--gold)">sportscontentplaybook.com</b>`, { marginTop: "40px", font: "600 32px/1.35 Inter", color: "#e6ebf5" });
+    A(card1, [{ opacity: 0, transform: "translateY(60px) scale(.9)" }, { opacity: 1, transform: "translateY(0) scale(1)" }], nth("quieres", 0) - .1, .35, E.slam);
+    A(dm, [{ opacity: 0, transform: "translateY(20px)" }, { opacity: 1, transform: "translateY(0)" }], nth("mando", 0) - .1, .3, E.out);
+  }
+
+  // ===== captions (word by word) =====
+  const cap = mk(stage, "", "", {}); cap.id = "cap";
+  const fix = (w) => w.replace(/^real$/i, "REEL");
+  const groups2 = []; let g = [];
+  words.forEach((w) => { g.push(w); if (g.length >= 4 || /[.?,!]$/.test(w[2])) { groups2.push(g); g = []; } });
+  if (g.length) groups2.push(g);
+  const HL = /^(500|contenidos|base|datos|clubes|campañas|competiciones|creadores|tendencia|hooks|formatos|edición|diseños|organizado|exactamente|plan|horas|reel)/i;
+  ticks.push((t) => {
+    const grp = groups2.find((x, i) => t >= x[0][0] - .05 && t < (groups2[i + 1] ? groups2[i + 1][0][0] - .05 : x[x.length - 1][1] + .6));
+    if (!grp) { cap.innerHTML = ""; return; }
+    cap.innerHTML = grp.map((w) => `<span class="${t >= w[0] && t < w[1] + .05 ? "on" : ""}${HL.test(w[2].replace(/^¿/, "")) ? " hl" : ""}">${fix(w[2])}</span>`).join(" ");
+  });
+
+  await Promise.all([...document.images].map((im) => im.complete ? 0 : new Promise((r) => { im.onload = im.onerror = r; })));
+  window.VIDEO = { W, H, TOTAL };
+  window.renderAt = (t) => { for (const f of ticks) f(t); for (const an of anims) an.currentTime = t * 1000; };
+  window.renderAt(Number(Q.get("t") || 0));
+  window.READY = true;
+})();
+</script>
+</body>
+</html>

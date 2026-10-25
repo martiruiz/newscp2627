@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Prototipo · Filtro Ocasión</title>
+<link rel="stylesheet" href="../css/fonts.css?v=1">
+<style>
+  :root {
+    --bg: #121b33; --surface: #17213b; --surface-2: #1d2845; --surface-3: #213050;
+    --gold: #f0b84a; --gold-mid: #f8cc75; --gold-tint: rgba(240, 184, 74, 0.16);
+    --grad: linear-gradient(90deg, #d99a2b, #f0b84a 55%, #ffd98c);
+    --text: #fff; --muted: #b4c0d3; --dim: rgba(180, 192, 211, 0.5);
+    --line: rgba(255, 255, 255, 0.1); --line-soft: rgba(255, 255, 255, 0.05);
+    --font-display: "Host Grotesk", system-ui, sans-serif; --font-body: "Inter", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body { min-height: 100vh; background: var(--bg); color: var(--text); font: 14px/1.4 var(--font-body); padding: 28px 24px 60px; }
+  button, input { font: inherit; color: inherit; }
+  button { cursor: pointer; background: none; border: 0; }
+  svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+  .proto-note { max-width: 1240px; margin: 0 auto 18px; color: var(--dim); font-size: 12.5px; letter-spacing: .02em; }
+  .proto-note b { color: var(--gold); font-weight: 600; }
+
+  /* the bar (same as today) */
+  .bar { max-width: 1240px; margin: 0 auto; display: flex; gap: 10px; position: relative; }
+  .bar-btn { flex: 1 1 0; display: flex; align-items: center; gap: 12px; height: 56px; padding: 0 16px; border-radius: 12px; border: 1px solid var(--line);
+    background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.015)); text-align: left; transition: border-color .2s; }
+  .bar-btn svg { stroke: var(--gold); width: 19px; height: 19px; }
+  .bar-btn .tx { display: grid; min-width: 0; line-height: 1.2; }
+  .bar-btn b { font-size: 14px; font-weight: 600; }
+  .bar-btn small { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bar-btn.is-open, .bar-btn.is-set { border-color: rgba(240,184,74,.6); }
+  .bar-btn.is-set small { color: var(--gold); }
+  .bar-btn em { margin-left: auto; min-width: 22px; height: 22px; padding: 0 7px; border-radius: 11px; display: grid; place-items: center; background: var(--grad); color: #1a1206; font: 700 11.5px/1 var(--font-body); font-style: normal; }
+  .bar-btn .chev { margin-left: auto; stroke: var(--muted); width: 15px; transition: transform .2s; }
+  .bar-btn em + .chev { margin-left: 8px; }
+  .bar-btn.is-open .chev { transform: rotate(180deg); }
+
+  /* the panel */
+  .panel { position: absolute; left: 0; right: 0; top: calc(100% + 8px); z-index: 10; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto; height: min(620px, calc(100vh - 140px));
+    border-radius: 18px; border: 1px solid var(--line); background: var(--surface); box-shadow: 0 40px 90px -24px rgba(0,0,0,.65); overflow: hidden; animation: in .2s ease; }
+  @keyframes in { from { opacity: 0; transform: translateY(-6px); } }
+  .panel-top { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-bottom: 1px solid var(--line-soft); }
+  .search { flex: 0 1 380px; display: flex; align-items: center; gap: 10px; height: 42px; padding: 0 14px; border-radius: 11px; background: var(--surface-2); border: 1px solid var(--line); }
+  .search:focus-within { border-color: rgba(240,184,74,.55); box-shadow: 0 0 0 3px rgba(240,184,74,.12); }
+  .search svg { stroke: var(--muted); width: 16px; }
+  .search input { flex: 1; min-width: 0; background: none; border: 0; outline: 0; font-size: 13.5px; }
+  .search input::placeholder { color: var(--dim); }
+  .search kbd { font: 600 11px var(--font-body); color: var(--dim); border: 1px solid var(--line); border-radius: 5px; padding: 1px 6px; }
+  .now { display: flex; align-items: center; gap: 8px; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+  .now-l { display: inline-flex; align-items: center; gap: 6px; font: 700 10.5px var(--font-body); letter-spacing: .1em; text-transform: uppercase; color: var(--gold); white-space: nowrap; }
+  .now-l svg { width: 14px; height: 14px; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border-radius: 100px; border: 1px solid var(--line); background: rgba(255,255,255,.03); white-space: nowrap; font-size: 13px; color: var(--muted); transition: all .15s; }
+  .pill:hover { color: var(--text); border-color: rgba(255,255,255,.22); }
+  .pill.is-on { background: var(--gold-tint); border-color: rgba(240,184,74,.6); color: var(--gold); }
+  .pill i { font-style: normal; font-size: 11px; color: var(--dim); }
+
+  .body { display: grid; grid-template-columns: 250px minmax(0, 1fr); min-height: 0; }
+  /* left: the occasions */
+  .rail { padding: 10px; border-right: 1px solid var(--line-soft); overflow-y: auto; display: grid; align-content: start; gap: 2px; }
+  .rail-h { padding: 10px 12px 6px; font: 700 10.5px var(--font-body); letter-spacing: .1em; text-transform: uppercase; color: var(--dim); }
+  .r-item { position: relative; display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 12px; border-radius: 11px; text-align: left; color: var(--muted); transition: background .15s, color .15s; }
+  .r-item:hover { background: rgba(255,255,255,.04); color: var(--text); }
+  .r-item.is-on { background: var(--surface-2); color: var(--text); box-shadow: inset 0 0 0 1px var(--line); }
+  .r-item.is-on::before { content: ""; position: absolute; left: -10px; top: 10px; bottom: 10px; width: 3px; border-radius: 0 3px 3px 0; background: var(--grad); }
+  .r-ic { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: rgba(255,255,255,.05); }
+  .r-item.is-on .r-ic { background: var(--gold-tint); color: var(--gold); }
+  .r-ic svg { width: 17px; height: 17px; }
+  .r-tx { display: grid; min-width: 0; line-height: 1.25; }
+  .r-tx b { font-size: 13.5px; font-weight: 600; }
+  .r-tx small { font-size: 11.5px; color: var(--dim); }
+  .r-n { margin-left: auto; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; display: grid; place-items: center; background: var(--grad); color: #1a1206; font: 700 11px/1 var(--font-body); }
+
+  /* right: what's inside */
+  .content { overflow-y: auto; padding: 22px 26px 26px; scrollbar-width: thin; scrollbar-color: var(--surface-3) transparent; }
+  .c-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+  .c-head h2 { font: 600 22px/1.15 var(--font-display); letter-spacing: -.01em; }
+  .c-head p { margin-top: 4px; color: var(--muted); font-size: 13px; }
+  .c-head .total { color: var(--dim); font-size: 12.5px; white-space: nowrap; }
+  .c-head .total b { color: var(--text); }
+  .phases { display: inline-flex; padding: 4px; gap: 4px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); margin-bottom: 16px; }
+  .phases button { display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 16px; border-radius: 9px; color: var(--muted); font-size: 13px; font-weight: 600; }
+  .phases button i { width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid currentColor; }
+  .phases button.is-on { background: var(--gold); color: #1a1206; }
+  .phases button.is-on i { background: #1a1206; border-color: #1a1206; }
+  .phases button.live i { border-color: #ff5d5d; background: #ff5d5d; box-shadow: 0 0 0 3px rgba(255,93,93,.25); }
+  .sub { margin: 20px 0 10px; font: 700 10.5px var(--font-body); letter-spacing: .1em; text-transform: uppercase; color: var(--dim); }
+  .sub:first-child { margin-top: 0; }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+  .card { position: relative; display: grid; grid-template-rows: 96px auto; border-radius: 13px; overflow: hidden; border: 1px solid var(--line); background: var(--surface-2); text-align: left; transition: transform .15s, border-color .15s, box-shadow .15s; }
+  .card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.22); }
+  .card .img { background-size: cover; background-position: center; position: relative; }
+  .card .img::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, rgba(23,33,59,.85)); }
+  .card .meta { padding: 9px 11px 11px; display: grid; gap: 2px; }
+  .card b { font-size: 13px; font-weight: 600; line-height: 1.25; }
+  .card small { font-size: 11.5px; color: var(--dim); }
+  .card .ck { position: absolute; top: 8px; right: 8px; z-index: 1; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; border: 1.5px solid rgba(255,255,255,.6); background: rgba(18,27,51,.45); backdrop-filter: blur(6px); }
+  .card .ck svg { width: 13px; height: 13px; stroke-width: 3; opacity: 0; }
+  .card.is-on { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold), 0 14px 30px -14px rgba(240,184,74,.55); }
+  .card.is-on .ck { background: var(--gold); border-color: var(--gold); color: #1a1206; }
+  .card.is-on .ck svg { opacity: 1; }
+  .card .hot { position: absolute; left: 8px; top: 8px; z-index: 1; padding: 2px 8px; border-radius: 100px; background: rgba(18,27,51,.7); backdrop-filter: blur(6px); color: var(--gold-mid); font: 700 10.5px var(--font-body); }
+  .card.is-low { opacity: .55; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .res .pill { height: 36px; padding: 0 14px; }
+  .res .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .rival { display: flex; align-items: center; gap: 10px; height: 42px; max-width: 420px; padding: 0 14px; border-radius: 11px; border: 1px dashed var(--line); color: var(--dim); }
+  .rival svg { width: 16px; }
+  .empty-search { padding: 40px 0; text-align: center; color: var(--dim); }
+
+  /* bottom: what you chose + live count */
+  .foot { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-top: 1px solid var(--line-soft); background: rgba(18,27,51,.55); }
+  .sel { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+  .sel-empty { color: var(--dim); font-size: 13px; }
+  .tag { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 6px 0 11px; border-radius: 100px; background: var(--gold-tint); border: 1px solid rgba(240,184,74,.45); color: var(--gold); font-size: 12.5px; font-weight: 600; white-space: nowrap; }
+  .tag small { color: rgba(240,184,74,.7); font-weight: 500; }
+  .tag button { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; }
+  .tag button:hover { background: rgba(240,184,74,.25); }
+  .tag svg { width: 12px; height: 12px; stroke-width: 2.4; }
+  .clear { color: var(--muted); font-size: 13px; text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
+  .go { display: inline-flex; align-items: center; gap: 10px; height: 44px; padding: 0 20px; border-radius: 100px; background: var(--grad); color: #1a1206; font-weight: 700; white-space: nowrap; box-shadow: 0 10px 24px -10px rgba(240,184,74,.7); transition: transform .15s; }
+  .go:hover { transform: translateY(-1px); }
+  .go svg { width: 16px; height: 16px; stroke-width: 2.4; }
+  .go .n { font-variant-numeric: tabular-nums; }
+
+  @media (max-width: 860px) {
+    body { padding: 16px; }
+    .bar { flex-direction: column; }
+    .panel { position: fixed; inset: 12px; height: auto; top: 12px; }
+    .panel-top { flex-wrap: wrap; } .search { flex-basis: 100%; }
+    .body { grid-template-columns: 1fr; grid-template-rows: auto minmax(0,1fr); }
+    .rail { display: flex; overflow-x: auto; border-right: 0; border-bottom: 1px solid var(--line-soft); padding: 8px; }
+    .rail-h { display: none; } .r-item { flex: none; width: auto; } .r-tx small { display: none; } .r-item.is-on::before { display: none; }
+    .content { padding: 16px; } .cards { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .foot { flex-wrap: wrap; } .sel { flex-basis: 100%; } .go { margin-left: auto; }
+  }
+</style>
+</head>
+<body>
+  <p class="proto-note"><b>Prototipo</b> · Filtro «Ocasión» rediseñado — datos reales del catálogo (número de posts), portadas de ejemplo. Prueba a buscar, cambiar de ocasión y marcar tarjetas.</p>
+  <div class="bar">
+    <button class="bar-btn is-open" type="button" data-bar>
+      <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+      <span class="tx"><b>Ocasión</b><small data-bar-sub>¿Sobre qué vas a publicar?</small></span>
+      <svg class="chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+    </button>
+    <button class="bar-btn" type="button"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg><span class="tx"><b>Objetivo y patrocinadores</b><small>¿Qué debe conseguir?</small></span><svg class="chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button>
+    <button class="bar-btn" type="button"><svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg><span class="tx"><b>Inspírate en</b><small>Deportes, competiciones y clubes</small></span><svg class="chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button>
+
+    <div class="panel" data-panel role="dialog" aria-label="Ocasión">
+      <div class="panel-top">
+        <label class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input data-q placeholder="Busca una ocasión: derbi, fichaje, cumpleaños…" autocomplete="off"><kbd>/</kbd></label>
+        <div class="now"><span class="now-l"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>Esta semana</span><span data-now></span></div>
+      </div>
+      <div class="body">
+        <nav class="rail" data-rail aria-label="Ocasiones"></nav>
+        <section class="content" data-content></section>
+      </div>
+      <div class="foot">
+        <div class="sel" data-sel></div>
+        <button class="clear" type="button" data-clear hidden>Limpiar</button>
+        <button class="go" type="button" data-go><span>Ver <span class="n" data-count>todos los</span> posts</span><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  const $ = (s, el = document) => el.querySelector(s);
+  const IMG = ["10229", "18490", "21156", "21174", "3655", "3661", "3760", "4146", "4148", "4219", "4232", "4350", "4571", "5080", "6526", "6915", "9476"].map((n) => `../assets/lib/${n}.jpg`);
+  const ICON = {
+    ball: '<circle cx="12" cy="12" r="9"/><path d="m12 7 4 3-1.5 5h-5L8 10z"/><path d="M12 3v4M21 10l-5 0M3 10l5 0M8 21l1.5-6M16 21l-1.5-6"/>',
+    swap: '<path d="M7 4 3 8l4 4"/><path d="M3 8h14"/><path d="m17 12 4 4-4 4"/><path d="M21 16H7"/>',
+    shirt: '<path d="M8 3 3 6l2 5 3-1v11h8V10l3 1 2-5-5-3a4 4 0 0 1-8 0z"/>',
+    flag: '<path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/>',
+    star: '<path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
+    mic: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
+    alert: '<path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>',
+    check: '<path d="M20 6 9 17l-5-5"/>', x: '<path d="M18 6 6 18M6 6l12 12"/>', vs: '<path d="m4 6 3 10 3-10M14 15c0 1 1 2 3 2s3-1 3-2.5S19 12 17 12s-3-1-3-2.5S15 7 17 7s3 1 3 2"/>',
+  };
+  const svg = (k) => `<svg viewBox="0 0 24 24">${ICON[k]}</svg>`;
+  // [name, posts] from the live catalog (2026-10-20)
+  const OCC = [
+    { key: "match", icon: "ball", name: "Día de partido", desc: "Antes, durante y después del partido", phases: {
+        Antes: [["Previa del partido", 5347], ["Cartel del partido", 1305], ["Calendario / horario", 457], ["Once inicial", 452], ["Convocatoria", 308], ["Cuenta atrás", 187]],
+        Directo: [["Cobertura del partido", 8087], ["Gol", 547], ["Descanso", 194]],
+        Después: [["Final del partido", 1278], ["Estadísticas", 1023], ["Frase del partido", 892], ["Clasificación", 98], ["Resumen semanal", 87], ["Votación MVP", 66]] },
+      results: [["Victoria", 2414, "#3ddc97"], ["Derrota", 388, "#ff6b6b"], ["Empate", 222, "#b4c0d3"]] },
+    { key: "market", icon: "swap", name: "Mercado de fichajes", desc: "Altas, renovaciones y despedidas", values: [["Gráfico de fichaje", 259], ["Fichaje", 234], ["Renovación", 109], ["Despedida", 105], ["Cesión", 6]] },
+    { key: "kit", icon: "shirt", name: "Equipación", desc: "Lanzamientos de camisetas y colecciones", values: [["Primera equipación", 285], ["Edición especial", 226], ["Retro / histórica", 118], ["Segunda equipación", 117], ["Ropa de entrenamiento", 66], ["Tercera equipación", 52], ["Portero", 5]] },
+    { key: "season", icon: "flag", name: "Temporada", desc: "Los grandes momentos del año", values: [["Pretemporada", 1069], ["Celebración de título", 327], ["Derbi", 265], ["Inicio de liga", 132], ["Final de copa", 93], ["Clasificación europea", 40], ["Último partido", 40], ["Ascenso", 4]] },
+    { key: "dates", icon: "star", name: "Fechas y efemérides", desc: "Récords, homenajes y fechas del calendario", values: [["Hito / récord", 3197], ["Entrenamiento", 2970], ["Homenaje", 1845], ["Throwback", 899], ["Premio", 844], ["Cumpleaños", 430], ["Halloween", 25], ["Navidad", 20], ["Orgullo", 8], ["Ramadán / Eid", 7], ["San Valentín", 4], ["Black Friday", 3], ["Día de la Mujer", 3], ["Año Nuevo", 3]] },
+    { key: "comms", icon: "mic", name: "Comunicación", desc: "Anuncios, prensa e información práctica", values: [["Anuncio oficial", 941], ["Info de entradas", 351], ["Comunicado", 343], ["Rueda de prensa", 342], ["Parte médico", 100]] },
+    { key: "crisis", icon: "alert", name: "Temas sensibles", desc: "Cómo lo comunican otros clubes, con cuidado", values: [["Condolencias", 98], ["Lesión grave", 75], ["Sanción", 47], ["Seguridad / incidente", 45], ["Disculpa", 18], ["Racismo / abusos", 5]] },
+  ];
+  const NOW = [["dates", "Halloween"], ["season", "Derbi"], ["match", "Previa del partido"], ["market", "Renovación"]];   // the calendar would pick these
+  let img = 0;
+  OCC.forEach((o) => { const all = o.phases ? Object.values(o.phases).flat().concat(o.results) : o.values; all.forEach((v) => (v.img = IMG[img++ % IMG.length])); o.total = all.reduce((s, v) => s + v[1], 0); });
+  const S = { occ: "match", phase: "Antes", sel: new Map(), q: "" };   // sel: "occ|name" → posts
+  const k = (o, n) => `${o}|${n}`;
+  const fmt = (n) => (n >= 1000 ? `${(n / 1000).toFixed(n >= 10000 ? 0 : 1).replace(".0", "")}k` : String(n));
+  const card = (o, v, hot) => { const on = S.sel.has(k(o.key, v[0]));
+    return `<button type="button" class="card${on ? " is-on" : ""}${v[1] < 20 ? " is-low" : ""}" data-pick="${k(o.key, v[0])}" data-n="${v[1]}" aria-pressed="${on}">
+      <span class="img" style="background-image:url(${v.img})"></span>${hot ? '<span class="hot">Popular</span>' : ""}<span class="ck">${svg("check")}</span>
+      <span class="meta"><b>${v[0]}</b><small>${v[1].toLocaleString("es")} posts</small></span></button>`; };
+
+  function rail() {
+    $("[data-rail]").innerHTML = `<p class="rail-h">Ocasiones</p>` + OCC.map((o) => { const n = [...S.sel.keys()].filter((x) => x.startsWith(o.key + "|")).length;
+      return `<button type="button" class="r-item${S.occ === o.key && !S.q ? " is-on" : ""}" data-occ="${o.key}"><span class="r-ic">${svg(o.icon)}</span><span class="r-tx"><b>${o.name}</b><small>${fmt(o.total)} posts</small></span>${n ? `<span class="r-n">${n}</span>` : ""}</button>`; }).join("");
+  }
+  function content() {
+    const c = $("[data-content]");
+    if (S.q) {   // search across every occasion
+      const q = S.q.toLowerCase();
+      const hits = OCC.map((o) => [o, (o.phases ? Object.values(o.phases).flat().concat(o.results) : o.values).filter((v) => v[0].toLowerCase().includes(q) || o.name.toLowerCase().includes(q))]).filter(([, l]) => l.length);
+      c.innerHTML = hits.length ? hits.map(([o, l]) => `<p class="sub">${o.name}</p><div class="cards">${l.map((v) => card(o, v)).join("")}</div>`).join("")
+        : `<p class="empty-search">Nada para «${S.q}». Prueba con «derbi», «fichaje» o «camiseta».</p>`;
+      return;
+    }
+    const o = OCC.find((x) => x.key === S.occ);
+    let h = `<div class="c-head"><div><h2>${o.name}</h2><p>${o.desc}</p></div><span class="total"><b>${o.total.toLocaleString("es")}</b> posts</span></div>`;
+    if (o.phases) {
+      h += `<div class="phases">${Object.keys(o.phases).map((p) => `<button type="button" class="${S.phase === p ? "is-on" : ""}${p === "Directo" ? " live" : ""}" data-phase="${p}"><i></i>${p}</button>`).join("")}</div>`;
+      const list = o.phases[S.phase];
+      h += `<div class="cards">${list.map((v, i) => card(o, v, i === 0)).join("")}</div>`;
+      if (S.phase !== "Antes") h += `<p class="sub">Resultado</p><div class="chips res">${o.results.map((v) => { const on = S.sel.has(k(o.key, v[0])); return `<button type="button" class="pill${on ? " is-on" : ""}" data-pick="${k(o.key, v[0])}" data-n="${v[1]}"><span class="dot" style="background:${v[2]}"></span>${v[0]} <i>${fmt(v[1])}</i></button>`; }).join("")}</div>`;
+      h += `<p class="sub">Rival</p><div class="rival">${svg("vs")}Busca un rival: Real Madrid, Bayern…</div>`;
+    } else {
+      h += `<div class="cards">${o.values.map((v, i) => card(o, v, i === 0)).join("")}</div>`;
+    }
+    c.innerHTML = h;
+  }
+  function foot() {
+    const sel = [...S.sel.entries()];
+    $("[data-sel]").innerHTML = sel.length ? sel.map(([key]) => { const [o, n] = key.split("|"); return `<span class="tag">${n} <small>· ${OCC.find((x) => x.key === o).name}</small><button type="button" data-unpick="${key}" aria-label="Quitar">${svg("x")}</button></span>`; }).join("")
+      : `<span class="sel-empty">Elige una o varias ocasiones · se suman entre ellas</span>`;
+    $("[data-clear]").hidden = !sel.length;
+    const n = sel.reduce((s, [, v]) => s + v, 0);   // values of the same filter add up (OR)
+    $("[data-count]").textContent = sel.length ? n.toLocaleString("es") : "todos los";
+    const b = $("[data-bar]"); b.classList.toggle("is-set", !!sel.length);
+    $("[data-bar-sub]").textContent = sel.length ? sel.map(([key]) => key.split("|")[1]).join(", ") : "¿Sobre qué vas a publicar?";
+    b.querySelector("em")?.remove(); if (sel.length) b.querySelector(".chev").insertAdjacentHTML("beforebegin", `<em>${sel.length}</em>`);
+  }
+  function now() { $("[data-now]").innerHTML = NOW.map(([o, n]) => { const v = OCC.find((x) => x.key === o); const all = v.phases ? Object.values(v.phases).flat() : v.values; const it = all.find((x) => x[0] === n);
+    return `<button type="button" class="pill${S.sel.has(k(o, n)) ? " is-on" : ""}" data-pick="${k(o, n)}" data-n="${it[1]}">${n} <i>${fmt(it[1])}</i></button>`; }).join(" "); }
+  const render = () => { rail(); content(); foot(); now(); };
+
+  document.addEventListener("click", (e) => {
+    const t = e.target.closest("[data-occ],[data-phase],[data-pick],[data-unpick],[data-clear],[data-bar]");
+    if (!t) return;
+    if (t.dataset.occ) { S.occ = t.dataset.occ; S.q = ""; $("[data-q]").value = ""; }
+    else if (t.dataset.phase) S.phase = t.dataset.phase;
+    else if (t.dataset.pick) S.sel.has(t.dataset.pick) ? S.sel.delete(t.dataset.pick) : S.sel.set(t.dataset.pick, Number(t.dataset.n));
+    else if (t.dataset.unpick) S.sel.delete(t.dataset.unpick);
+    else if (t.matches("[data-clear]")) S.sel.clear();
+    else if (t.matches("[data-bar]")) { const p = $("[data-panel]"); p.hidden = !p.hidden; t.classList.toggle("is-open", !p.hidden); return; }
+    render();
+  });
+  $("[data-q]").addEventListener("input", (e) => { S.q = e.target.value.trim(); rail(); content(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "/" && document.activeElement !== $("[data-q]")) { e.preventDefault(); $("[data-q]").focus(); }
+    if (e.key === "Escape") { $("[data-q]").value = ""; S.q = ""; render(); }
+    if ((e.key === "ArrowDown" || e.key === "ArrowUp") && document.activeElement?.dataset?.occ) {
+      e.preventDefault(); const i = OCC.findIndex((o) => o.key === S.occ) + (e.key === "ArrowDown" ? 1 : -1); S.occ = OCC[(i + OCC.length) % OCC.length].key; render(); $(`[data-occ="${S.occ}"]`).focus();
+    }
+  });
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,768 @@
+// Content Plan side panel inside the Content Library.
+// Open it from the "Content Plan" button: the member's plan for the week (or month) sits next to the posts, and any post
+// can be dragged onto a day (or onto "No date" to keep it as an idea). Shift+click or the grip selects several posts to
+// drag at once. "+" under each card adds it to a day from a mini calendar (works on touch screens too).
+// "Fill my week" proposes posts from the member's favourite profiles / sports for the empty days.
+// Entries are rows of org_entries with the post as inspiration ("ci-<id>"), like the full Content Plan page.
+// Only plans with the Content Plan feature can use it (my_entitlements.has_planner, also enforced by RLS).
+(() => {
+  const lib = document.querySelector("[data-library]");
+  const db = window.SCP_AUTH?.client;
+  const toggleBtn = document.querySelector("[data-plan-toggle]");
+  if (!lib || !db || !toggleBtn) return;
+  const T = window.SCP_THUMB;
+  const icon = (n) => (window.SCP_ICONS ? window.SCP_ICONS(n) : "");
+  const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+  const tx = (t, v) => (window.tx ? window.tx(t, v) : t);
+  const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+  const store = { get: (k) => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
+
+  const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => tx(d));
+  const DAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((d) => tx(d));
+  const STATUS = { idea: "Idea", planned: "Planned", in_production: "In production", published: "Published" };
+  const TYPE_ICON = { post: "image", carousel: "layers", reel: "film", story: "zap", video: "square-play", tiktok: "music-2" };
+  const COLS = "id,plan_id,entry_date,time_slot,label,status,content_type,copy,notes,inspiration";
+
+  // ---------- Dates ----------
+  const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const parse = (s) => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
+  const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+  const mondayOf = (d) => addDays(new Date(d.getFullYear(), d.getMonth(), d.getDate()), -((d.getDay() + 6) % 7));
+  const dow = (d) => (d.getDay() + 6) % 7;
+  const fmtDay = (date) => { const d = parse(date); return `${DAY_NAMES[dow(d)]} ${d.getDate()} ${d.toLocaleDateString(window.SCP_LOC || "en-GB", { month: "short" })}`; };
+  const monthGrid = (anchor) => { const start = mondayOf(new Date(anchor.getFullYear(), anchor.getMonth(), 1)); return Array.from({ length: 42 }, (_, i) => addDays(start, i)); };
+
+  // ---------- State ----------
+  const S = {
+    open: false, ready: null, ent: null, plans: [], planId: null,
+    view: store.get("scp-pp-view") === "month" ? "month" : "week", anchor: mondayOf(new Date()),
+    entries: [], refs: new Map(), selected: new Set(), suggest: null,
+    day: null,   // week view: one day opened big (a date), or null for the whole week
+  };
+  try {
+    const at = JSON.parse(store.get("scp-pp-at") || "null");
+    if (at?.anchor && Date.now() - (at.t || 0) < 12 * 3600e3 && /^\d{4}-\d{2}-\d{2}$/.test(at.anchor)) {
+      const [y, m, d] = at.anchor.split("-").map(Number);
+      S.anchor = S.view === "week" ? mondayOf(new Date(y, m - 1, d)) : new Date(y, m - 1, d);
+      if (S.view === "week" && at.day && /^\d{4}-\d{2}-\d{2}$/.test(at.day)) S.day = at.day;
+    }
+  } catch {}
+  const allowed = () => !S.ent || S.ent.has_planner;
+  const range = () => {
+    if (S.view === "week") { const m = mondayOf(S.anchor); return [m, addDays(m, 6)]; }
+    const g = monthGrid(S.anchor); return [g[0], g[41]];
+  };
+  const dated = () => S.entries.filter((e) => e.entry_date).sort((a, b) => (a.time_slot || "").localeCompare(b.time_slot || ""));
+  const pad2 = (n) => String(n).padStart(2, "0");
+  const QUARTERS = Array.from({ length: 96 }, (_, i) => `${pad2(Math.floor(i / 4))}:${pad2((i % 4) * 15)}`);   // times a post can have
+  const DROP_HOURS = Array.from({ length: 16 }, (_, i) => `${pad2(i + 8)}:00`);                                  // 08:00 → 23:00 while dragging
+  const undated = () => S.entries.filter((e) => !e.entry_date);
+
+  // ---------- Posts: what we know about each one (from the library, or fetched) ----------
+  const nameOf = (p, c) => { const v = p.tags?.[c]?.[0]; return (typeof v === "string" ? v : v?.name) || ""; };
+  const pretty = (s) => String(s || "").replace(/[_-]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  function norm(p) {
+    const fmt = nameOf(p, "format");
+    return {
+      id: Number(p.id), url: p.url, media_ratio: p.media_ratio, cover: p.cover_url || null,
+      reel: /^(reels?|shorts?|video)$/i.test(fmt) || /\/(reel|shorts)\//.test(p.url || ""),
+      who: pretty(nameOf(p, "club") || nameOf(p, "competition") || nameOf(p, "entity")) || "Post",
+      format: pretty(fmt),
+    };
+  }
+  const postInfo = (id) => S.refs.get(Number(id)) || (window.SCP_LIB?.post(id) ? norm(window.SCP_LIB.post(id)) : null);
+  const refId = (e) => (/^ci-\d+$/.test(e?.inspiration || "") ? Number(e.inspiration.slice(3)) : null);
+  // a post that was analysed with AI (its adaptation went into the notes, or I / my team analysed it): AI-coloured in the plan
+  const isAi = (e) => /^AI · /.test(e?.notes || "") || !!(refId(e) && window.SCP_LIB?.adapt?.(refId(e)));
+  const typeFor = (fmt) => { const f = (fmt || "").toLowerCase(); return /reel|video/.test(f) ? "reel" : /carousel/.test(f) ? "carousel" : /image|photo|post/.test(f) ? "post" : null; };
+  async function loadRefs(ids) {
+    const missing = [];
+    for (const id of new Set(ids.filter(Boolean))) {
+      if (S.refs.has(id)) continue;
+      const p = window.SCP_LIB?.post(id);
+      if (p) S.refs.set(id, norm(p)); else missing.push(id);
+    }
+    if (!missing.length) return;
+    const { data } = await db.from("content_ideas").select("id,url,media_ratio,cover_url,content_idea_tags(idea_catalog(category,name))").in("id", missing.slice(0, 200));
+    for (const row of data || []) {
+      const tags = {};
+      for (const { idea_catalog: v } of row.content_idea_tags || []) if (v) (tags[v.category] ||= []).push({ name: v.name });
+      S.refs.set(Number(row.id), norm({ ...row, tags }));
+    }
+  }
+
+  // ---------- Data ----------
+  function ready() {
+    S.ready ||= (async () => {
+      const { data: ent, error } = await window.SCP_entitlements();
+      if (!error) S.ent = ent;
+      if (!allowed()) return;
+      const { data, error: e1 } = await db.from("org_plans").select("id,name").order("created_at");
+      if (e1) throw e1;
+      S.plans = data || [];
+      if (!S.plans.length) {
+        const { data: created, error: e2 } = await db.from("org_plans").insert({ name: "My plan" }).select("id,name").single();
+        if (e2) throw e2;
+        S.plans = [created];
+      }
+      const saved = store.get("scp-org-plan");
+      S.planId = S.plans.some((p) => p.id === saved) ? saved : S.plans[0].id;
+    })().catch((e) => { S.ready = null; throw e; });
+    return S.ready;
+  }
+  async function loadEntries() {
+    const [from, to] = range();
+    const [a, b] = await Promise.all([
+      db.from("org_entries").select(COLS).eq("plan_id", S.planId).gte("entry_date", iso(from)).lte("entry_date", iso(to)).order("time_slot").order("created_at"),
+      db.from("org_entries").select(COLS).eq("plan_id", S.planId).is("entry_date", null).order("created_at", { ascending: false }).limit(40),
+    ]);
+    if (a.error || b.error) throw a.error || b.error;
+    S.entries = [...(a.data || []), ...(b.data || [])];
+    await loadRefs(S.entries.map(refId));
+  }
+  // Every write to the plan goes through here: retried once if the connection drops, a "Saving… / Saved" sign in the
+  // panel, and a warning if the page is closed or reloaded before it's stored.
+  let pending = 0, savedTimer = 0;
+  const netFail = (e) => e && (!e.code || e.code === "") && /fetch|network|load failed|timeout/i.test(e.message || "");
+  async function saving(run) {
+    pending++; saveSign();
+    try {
+      let r = await Promise.resolve().then(run).catch((err) => ({ error: err }));
+      if (r.error && netFail(r.error)) { await new Promise((res) => setTimeout(res, 1200)); r = await Promise.resolve().then(run).catch((err) => ({ error: err })); }
+      return r;
+    } finally { pending--; saveSign(); }
+  }
+  function saveSign() {
+    const el = $("[data-pp-saved]", panel);
+    clearTimeout(savedTimer);
+    if (!el) return;
+    el.hidden = false;
+    el.classList.toggle("is-saving", pending > 0);
+    el.innerHTML = pending > 0 ? `<span class="ai-spinner"></span>Saving…` : `${icon("check")}Saved`;
+    if (!pending) savedTimer = setTimeout(() => { el.hidden = true; }, 2500);
+  }
+  addEventListener("beforeunload", (e) => { if (pending > 0) { e.preventDefault(); e.returnValue = ""; } });
+  // Which week / day the panel shows, kept across reloads
+  const keepPlace = () => store.set("scp-pp-at", JSON.stringify({ anchor: iso(S.anchor), day: S.day, t: Date.now() }));
+
+  // Creates one entry per post. Returns the created rows (or null on error).
+  async function addPosts(ids, date, planId = S.planId, time = "12:00") {
+    try { await ready(); } catch (e) { toast(errText(e)); return null; }
+    planId ||= S.planId;
+    if (!planId) { toast("Your plan isn't ready yet — try again in a second."); return null; }
+    await loadRefs(ids);
+    const rows = ids.map((id) => {
+      const p = postInfo(id);
+      return {
+        plan_id: planId, entry_date: date || null, time_slot: date ? time : "12:00", status: date ? "planned" : "idea",
+        label: (p ? `Idea: ${p.who}${p.format ? ` · ${p.format}` : ""}` : "Idea from the library").slice(0, 140),
+        content_type: typeFor(p?.format), inspiration: `ci-${id}`,
+        ...(window.SCP_LIB?.adapt?.(id) ? { notes: window.SCP_LIB.adapt(id).slice(0, 2000) } : {}),   // the AI's adaptation, when the post was analysed
+      };
+    });
+    const { data, error } = await saving(() => db.from("org_entries").insert(rows).select(COLS));
+    if (error || !data?.length) { toast(error ? `Not saved: ${errText(error)}` : "Not saved — try again."); return null; }
+    if (planId === S.planId) {
+      const [from, to] = range();
+      for (const e of data) if (!e.entry_date || (e.entry_date >= iso(from) && e.entry_date <= iso(to))) S.entries.push(e);
+      render(data.map((e) => e.id));
+    }
+    clearSelection();
+    const where = date ? `${fmtDay(date)}${time !== "12:00" ? ` · ${time}` : ""}` : "No date";
+    const planName = planId !== S.planId ? ` in “${S.plans.find((p) => p.id === planId)?.name || "your plan"}”` : "";
+    toast(`${data.length === 1 ? "Added" : `${data.length} posts added`} to ${where}${planName}`, "Undo", async () => {
+      const { error: e } = await saving(() => db.from("org_entries").delete().in("id", data.map((x) => x.id)));
+      if (e) return toast(errText(e));
+      S.entries = S.entries.filter((x) => !data.some((d) => d.id === x.id));
+      render();
+      toast("Undone.");
+    });
+    return data;
+  }
+  async function moveEntry(id, date, time = null) {
+    const e = S.entries.find((x) => x.id === id);
+    if (!e || (e.entry_date === (date || null) && (!time || time === e.time_slot))) return;
+    const before = { entry_date: e.entry_date, status: e.status, time_slot: e.time_slot };
+    const changes = { entry_date: date || null, ...(date && time ? { time_slot: time } : {}), ...(date && e.status === "idea" ? { status: "planned" } : {}) };
+    Object.assign(e, changes);
+    const [from, to] = range();
+    if (date && (date < iso(from) || date > iso(to))) S.entries = S.entries.filter((x) => x !== e);
+    render([id]);
+    const { error } = await saving(() => db.from("org_entries").update({ ...changes, updated_at: new Date().toISOString() }).eq("id", id));
+    if (error) { Object.assign(e, before); toast(errText(error)); return render(); }
+    toast(`Moved to ${date ? `${fmtDay(date)} · ${e.time_slot}` : "No date"}`);
+  }
+  // Time of a planned post (the select on each entry)
+  async function setTime(id, time) {
+    const e = S.entries.find((x) => x.id === id);
+    if (!e || !time || e.time_slot === time) return;
+    const prev = e.time_slot;
+    e.time_slot = time;
+    render([id]);
+    const { error } = await saving(() => db.from("org_entries").update({ time_slot: time, updated_at: new Date().toISOString() }).eq("id", id));
+    if (error) { e.time_slot = prev; toast(errText(error)); return render(); }
+    toast(`${fmtDay(e.entry_date)} · ${time}`);
+  }
+  async function deleteEntry(id) {
+    const e = S.entries.find((x) => x.id === id);
+    if (!e) return;
+    S.entries = S.entries.filter((x) => x !== e);
+    render();
+    const { error } = await saving(() => db.from("org_entries").delete().eq("id", id));
+    if (error) { S.entries.push(e); render(); return toast(errText(error)); }
+    toast("Removed from your plan", "Undo", async () => {
+      const { error: e2 } = await saving(() => db.from("org_entries").insert(e));
+      if (e2) return toast(errText(e2));
+      S.entries.push(e); render([e.id]);
+    });
+  }
+  const errText = (e) => {
+    const m = e?.message || String(e);
+    return /row-level security|policy/i.test(m) ? "Your plan doesn't include the Content Plan." : /does not exist|schema cache/i.test(m) ? "The Content Plan isn't set up yet." : m;
+  };
+
+  // ---------- Panel ----------
+  const panel = document.createElement("aside");
+  panel.className = "pp";
+  panel.hidden = true;
+  panel.setAttribute("aria-label", "Content Plan");
+  lib.append(panel);
+  let collapsedByUs = false;
+
+  async function open() {
+    S.open = true;
+    panel.hidden = false;
+    lib.classList.add("plan-open");
+    toggleBtn.setAttribute("aria-pressed", "true");
+    store.set("scp-pp-open", "1");
+    // On laptop screens, make room for the posts by folding the filters (restored on close)
+    if (innerWidth > 960 && innerWidth < 1320 && !lib.classList.contains("filters-collapsed")) { $("[data-collapse]")?.click(); collapsedByUs = true; }
+    syncCards();
+    panel.innerHTML = `<div class="pp-loading"><span class="ai-spinner"></span></div>`;
+    try { await ready(); if (allowed()) await loadEntries(); render(); }
+    catch (e) { panel.innerHTML = `${headHtml()}<p class="pp-error">${esc(errText(e))}</p>`; }
+  }
+  function close() {
+    S.open = false;
+    panel.hidden = true;
+    lib.classList.remove("plan-open", "plan-day");
+    toggleBtn.setAttribute("aria-pressed", "false");
+    store.set("scp-pp-open", "");
+    if (collapsedByUs && lib.classList.contains("filters-collapsed")) $("[data-collapse]")?.click();
+    collapsedByUs = false;
+    clearSelection();
+    syncCards();
+  }
+  toggleBtn.addEventListener("click", () => (S.open ? close() : open()));
+
+  // ---------- Key dates (js/key-dates.js): marked on their day ----------
+  const keyDateOn = (date) => window.SCP_KEY_DATES?.on(date) || null;
+  const keyMark = (date) => { const k = keyDateOn(date); return k ? `<span class="pp-kd" title="${esc(k.name)}">${icon(k.icon)}<span>${esc(k.name)}</span></span>` : ""; };
+
+  function headHtml() {
+    return `<header class="pp-head">
+      <div class="pp-title"><span class="pp-eyebrow">${icon("calendar-days")}Content Plan</span>
+        ${S.plans.length ? `<div class="pp-planpick">
+          <button type="button" class="pp-plan-btn" data-pp-menu aria-haspopup="menu" aria-expanded="false"><b>${esc(S.plans.find((p) => p.id === S.planId)?.name || "My plan")}</b>${icon("chevron-down")}</button>
+          <div class="pp-menu" data-pp-menu-box role="menu" hidden></div>
+        </div>` : `<b class="pp-plan-name">Your plan</b>`}</div>
+      <span class="pp-saved" data-pp-saved role="status" aria-live="polite" hidden></span>
+      <a class="pp-icon" href="content-plan.html" title="Open the full Content Plan">${icon("arrow-up-right")}</a>
+      <button class="pp-icon" type="button" data-pp-close aria-label="Close the Content Plan">${icon("x")}</button>
+    </header>`;
+  }
+  function entryHtml(e) {
+    const r = S.refs.get(refId(e));
+    return `<div class="pp-entry s-${e.status}${isAi(e) ? " is-ai" : ""}" draggable="true" data-pp-entry="${e.id}" aria-label="${esc(e.label || "Untitled")} · open in the Content Plan">
+      ${r?.cover ? `<span class="pp-thumb pp-thumb-img" style="background-image:url('${esc(r.cover)}')"></span>` : r ? T.html(r, "pp-thumb") : `<span class="pp-thumb pp-thumb-none">${icon(TYPE_ICON[e.content_type] || "layout-grid")}</span>`}
+      <span class="pp-entry-txt"><b>${esc(e.label || "Untitled")}</b><small><i></i>${STATUS[e.status] || ""}${e.entry_date ? `<select class="pp-time" data-pp-time-of="${e.id}" aria-label="Time" title="Change the time">${QUARTERS.map((t) => `<option${t === e.time_slot ? " selected" : ""}>${t}</option>`).join("")}${QUARTERS.includes(e.time_slot) ? "" : `<option selected>${esc(e.time_slot || "12:00")}</option>`}</select>` : ""}</small></span>
+      <button type="button" class="pp-entry-x" data-pp-del="${e.id}" aria-label="Remove from the plan" title="Remove from the plan">${icon("x")}</button>
+    </div>`;
+  }
+  const timesHtml = (date) => `<div class="pp-times"><small>Drop on a time</small>${DROP_HOURS.map((t) => `<span class="pp-drop" data-pp-drop="${date}" data-pp-time="${t}">${t.slice(0, 2)}</span>`).join("")}</div>`;
+  // One day, big: the posts as cards with their cover, time and status
+  function dayHtml(date, i, today) {
+    const list = dated().filter((e) => e.entry_date === date);
+    const d = parse(date);
+    const card = (e) => {
+      const r = S.refs.get(refId(e));
+      const media = r?.cover ? `<span class="pp-big-img" style="background-image:url('${esc(r.cover)}')"></span>`
+        : r ? T.html(r, "pp-big-img") : `<span class="pp-big-img pp-thumb-none">${icon(TYPE_ICON[e.content_type] || "layout-grid")}</span>`;
+      return `<div class="pp-big s-${e.status}${isAi(e) ? " is-ai" : ""}" draggable="true" data-pp-entry="${e.id}" aria-label="${esc(e.label || "Untitled")} · open in the Content Plan">
+        ${media}
+        <select class="pp-time pp-big-time" data-pp-time-of="${e.id}" aria-label="Time" title="Change the time">${QUARTERS.map((t) => `<option${t === e.time_slot ? " selected" : ""}>${t}</option>`).join("")}${QUARTERS.includes(e.time_slot) ? "" : `<option selected>${esc(e.time_slot || "12:00")}</option>`}</select>
+        <button type="button" class="pp-entry-x" data-pp-del="${e.id}" aria-label="Remove from the plan" title="Remove from the plan">${icon("x")}</button>
+        <span class="pp-big-txt"><b>${esc(e.label || "Untitled")}</b><small><i></i>${STATUS[e.status] || ""}${r?.format ? ` · ${esc(r.format)}` : ""}</small></span>
+      </div>`;
+    };
+    return `<section class="pp-focus pp-drop${date === today ? " is-today" : ""}" data-pp-drop="${date}">
+      <header>
+        <button type="button" class="pp-icon" data-pp-day-go="-1" aria-label="Previous day">${icon("chevron-left")}</button>
+        <div><span>${d.toLocaleDateString(window.SCP_LOC || "en-GB", { weekday: "long" })}${date === today ? ` · <em>Today</em>` : ""}</span>
+          <b>${d.toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "long" })}</b>
+          <small>${list.length} post${list.length === 1 ? "" : "s"}</small>${keyMark(date)}</div>
+        <button type="button" class="pp-icon" data-pp-day-go="1" aria-label="Next day">${icon("chevron-right")}</button>
+      </header>
+      <div class="pp-big-grid">${list.map(card).join("") || `<p class="pp-focus-empty">${icon("calendar-plus")}<span>Nothing planned this day.<br>Drag posts from the library here.</span></p>`}</div>
+      ${timesHtml(date)}
+      <button type="button" class="pp-focus-back" data-pp-day="">${icon("calendar-days")}See the whole week</button>
+    </section>`;
+  }
+  function render(fresh = []) {
+    lib.classList.toggle("plan-day", S.open && S.view === "week" && !!S.day);   // one day open: a wider panel
+    keepPlace();
+    if (!S.open) return;
+    if (!allowed()) {
+      panel.innerHTML = `${headHtml()}<div class="pp-gate">${icon("lock")}<b>The Content Plan is part of Library + AI + Content Plan</b>
+        <p>Drag posts from the library onto the days of your week, keep ideas for later and track every post from idea to published.</p>
+        <button class="btn btn-gold" type="button" data-plans-picker aria-expanded="false">${tx("Get the Content Plan")}</button>
+        <div class="pp-plans" data-plans-picker-list hidden></div></div>`;
+      return;
+    }
+    const [from, to] = range();
+    const today = iso(new Date());
+    const label = S.view === "week"
+      ? (() => { const diff = Math.round((mondayOf(S.anchor) - mondayOf(new Date())) / (7 * 864e5)); return diff === 0 ? "This week" : diff === 1 ? "Next week" : diff === -1 ? "Last week" : `${from.toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" })} – ${to.toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "short" })}`; })()
+      : S.anchor.toLocaleDateString(window.SCP_LOC || "en-GB", { month: "long", year: "numeric" });
+    const days = Array.from({ length: 7 }, (_, i) => addDays(mondayOf(S.anchor), i));
+    const filled = new Set(dated().map((e) => e.entry_date));
+    const covered = days.filter((d) => filled.has(iso(d))).length;
+    const ideas = undated();
+
+    let body;
+    if (S.view === "week") {
+      body = `
+        <div class="pp-occ"><div class="pp-occ-top"><span><b>${covered}/7</b> days with content</span>${covered === 7 ? `<em>${icon("check")}Full week</em>` : ""}</div>
+          <div class="pp-dots">${days.map((d, i) => { const n = dated().filter((e) => e.entry_date === iso(d)).length; return `<button type="button" data-pp-day="${iso(d)}" class="${n ? "is-on" : ""}${iso(d) === today ? " is-today" : ""}${iso(d) === S.day ? " is-focus" : ""}" title="${DAYS[i]} · ${n} post${n === 1 ? "" : "s"} · see this day" aria-pressed="${iso(d) === S.day}"><i></i><small>${DAYS[i][0]}</small></button>`; }).join("")}</div></div>
+        <button class="pp-fill" type="button" data-pp-fill>${icon("sparkles")}Fill my week<small>posts from your favourites</small></button>
+        <div class="pp-suggest" data-pp-suggest ${S.suggest ? "" : "hidden"}>${S.suggest ? suggestHtml() : ""}</div>
+        ${S.day && days.some((d) => iso(d) === S.day) ? dayHtml(S.day, days.findIndex((d) => iso(d) === S.day), today) : `<div class="pp-days">${days.map((d, i) => {
+          const date = iso(d);
+          const list = dated().filter((e) => e.entry_date === date);
+          return `<section class="pp-day pp-drop${date === today ? " is-today" : ""}${date < today ? " is-past" : ""}${list.length ? "" : " is-empty"}" data-pp-drop="${date}">
+            <header><span>${DAYS[i]}</span><b>${d.getDate()}</b>${date === today ? `<em>Today</em>` : ""}${keyMark(date)}${list.length ? `<i class="pp-n">${list.length}</i>` : ""}</header>
+            <div class="pp-list">${list.map(entryHtml).join("")}<p class="pp-drop-hint">${list.length ? "" : "Drop a post here"}</p></div>
+            ${timesHtml(date)}
+          </section>`;
+        }).join("")}</div>`}`;
+    } else {
+      const month = S.anchor.getMonth();
+      body = `<div class="pp-month"><div class="pp-mhead">${DAYS.map((d) => `<span>${d[0]}</span>`).join("")}</div>
+        <div class="pp-mgrid">${monthGrid(S.anchor).map((d) => {
+          const date = iso(d);
+          const list = dated().filter((e) => e.entry_date === date);
+          return `<div class="pp-mday pp-drop${d.getMonth() !== month ? " is-out" : ""}${date === today ? " is-today" : ""}" data-pp-drop="${date}" title="${esc(list.map((e) => e.label || "Untitled").join("\n"))}">
+            <span>${d.getDate()}</span>${(() => { const k = keyDateOn(date); return k ? `<i class="pp-mkd" title="${esc(k.name)}">${icon(k.icon)}</i>` : ""; })()}<div class="pp-mdots">${list.slice(0, 4).map((e) => `<i class="s-${e.status}"></i>`).join("")}${list.length > 4 ? `<em>+${list.length - 4}</em>` : ""}</div>
+          </div>`;
+        }).join("")}</div>
+        <p class="pp-month-note">${dated().filter((e) => parse(e.entry_date).getMonth() === month).length} posts planned this month · drop posts on a day</p></div>`;
+    }
+    panel.innerHTML = `${headHtml()}
+      <div class="pp-bar">
+        <div class="pp-seg" role="tablist"><button type="button" role="tab" aria-selected="${S.view === "week"}" data-pp-view="week">Week</button><button type="button" role="tab" aria-selected="${S.view === "month"}" data-pp-view="month">Month</button></div>
+        <div class="pp-nav"><button type="button" data-pp-go="-1" aria-label="Previous">${icon("chevron-left")}</button><b>${esc(label)}</b><button type="button" data-pp-go="1" aria-label="Next">${icon("chevron-right")}</button>
+          <button type="button" class="pp-today" data-pp-go="0">Today</button></div>
+      </div>
+      <div class="pp-scroll">
+        <section class="pp-tray pp-drop" data-pp-drop="">
+          <header>${icon("inbox")}<b>No date</b><span>${ideas.length || ""}</span><small>ideas for later</small></header>
+          <div class="pp-list">${ideas.map(entryHtml).join("")}<p class="pp-drop-hint">${ideas.length ? "" : "Drop posts here to keep them as ideas"}</p></div>
+        </section>
+        ${body}
+      </div>
+      <footer class="pp-foot" data-pp-foot>${footHtml()}</footer>`;
+    fresh.forEach((id) => $(`[data-pp-entry="${CSS.escape(String(id))}"]`, panel)?.classList.add("is-new"));
+    if (pending) saveSign();
+    requestAnimationFrame(() => T.fit(panel));
+  }
+  const footHtml = () => S.selected.size
+    ? `<span><b>${S.selected.size} selected</b> · drag one of them onto a day</span><button type="button" data-pp-clear>Clear</button>`
+    : `<span>${icon("hand")}Drag posts onto a day · <kbd>Shift</kbd>+click to select several</span>`;
+  const renderFoot = () => { const f = $("[data-pp-foot]", panel); if (f) f.innerHTML = footHtml(); };
+
+  // Hover preview of a planned post (js/post-preview.js)
+  window.SCP_PREVIEW?.attach(panel, "[data-pp-entry]", (el) => {
+    const e = S.entries.find((x) => x.id === el.dataset.ppEntry);
+    if (!e) return null;
+    const r = S.refs.get(refId(e));
+    return {
+      post: r, title: e.label, status: e.status, statusLabel: STATUS[e.status],
+      lines: [e.entry_date ? `${fmtDay(e.entry_date)} · ${e.time_slot}` : "No date · idea", r ? `Reference: ${esc(r.who)}${r.format ? ` · ${esc(r.format)}` : ""}` : ""],
+      copy: e.copy, href: r?.url,
+    };
+  });
+
+  // Panel clicks
+  panel.addEventListener("click", async (e) => {
+    if (e.target.closest("[data-pp-close]")) return close();
+    const v = e.target.closest("[data-pp-view]");
+    if (v) { S.day = null; S.view = v.dataset.ppView; store.set("scp-pp-view", S.view); S.anchor = S.view === "week" ? mondayOf(S.anchor) : new Date(S.anchor); S.suggest = null; return reload(); }
+    const go = e.target.closest("[data-pp-go]");
+    if (go) {
+      const n = Number(go.dataset.ppGo);
+      S.day = null;
+      S.anchor = n === 0 ? (S.view === "week" ? mondayOf(new Date()) : new Date())
+        : S.view === "week" ? addDays(mondayOf(S.anchor), 7 * n) : new Date(S.anchor.getFullYear(), S.anchor.getMonth() + n, 1);
+      S.suggest = null;
+      return reload();
+    }
+    const del = e.target.closest("[data-pp-del]");
+    if (del) { e.stopPropagation(); return deleteEntry(del.dataset.ppDel); }
+    if (e.target.closest(".pp-time")) return;
+    const dayBtn = e.target.closest("[data-pp-day]");
+    if (dayBtn) { S.day = dayBtn.dataset.ppDay && dayBtn.dataset.ppDay !== S.day ? dayBtn.dataset.ppDay : null; return render(); }
+    const dayGo = e.target.closest("[data-pp-day-go]");
+    if (dayGo && S.day) {
+      const next = iso(addDays(parse(S.day), Number(dayGo.dataset.ppDayGo)));
+      const [from, to] = range();
+      S.day = next;
+      if (next < iso(from) || next > iso(to)) { S.anchor = mondayOf(parse(next)); S.suggest = null; return reload(); }
+      return render();
+    }
+    const ent = e.target.closest("[data-pp-entry]");
+    if (ent) return window.open(`content-plan.html#entry=${ent.dataset.ppEntry}`, "_blank", "noopener");
+    if (e.target.closest("[data-pp-clear]")) return clearSelection();
+    if (e.target.closest("[data-pp-fill]")) return fillWeek();
+    const sAct = e.target.closest("[data-sg]");
+    if (sAct) return suggestAction(sAct);
+    const mday = e.target.closest(".pp-mday");
+    if (mday) { S.day = mday.dataset.ppDrop; S.view = "week"; store.set("scp-pp-view", "week"); S.anchor = mondayOf(parse(mday.dataset.ppDrop)); return reload(); }
+  });
+  panel.addEventListener("change", async (e) => {
+    if (e.target.matches("[data-pp-time-of]")) return setTime(e.target.dataset.ppTimeOf, e.target.value);
+    if (e.target.matches("[data-sg-day]")) { const s = S.suggest?.items[Number(e.target.dataset.sgDay)]; if (s) s.date = e.target.value; }
+  });
+  // ---------- Plan menu (switch, rename, new plan) ----------
+  const menuBox = () => $("[data-pp-menu-box]", panel);
+  function menuList() {
+    return `<p class="pp-menu-cap">Your plans</p>
+      ${S.plans.map((p) => `<button type="button" role="menuitemradio" aria-checked="${p.id === S.planId}" class="pp-menu-item${p.id === S.planId ? " is-on" : ""}" data-pp-pick="${p.id}">
+        <span class="pp-menu-dot">${p.id === S.planId ? icon("check") : ""}</span><span class="pp-menu-name">${esc(p.name)}</span></button>`).join("")}
+      <hr>
+      <button type="button" role="menuitem" class="pp-menu-item" data-pp-menu-form="rename"><span class="pp-menu-dot">${icon("pencil")}</span>Rename this plan</button>
+      <button type="button" role="menuitem" class="pp-menu-item is-gold" data-pp-menu-form="new"><span class="pp-menu-dot">${icon("plus")}</span>New plan</button>`;
+  }
+  function menuForm(kind) {
+    const cur = S.plans.find((p) => p.id === S.planId);
+    return `<form class="pp-menu-form" data-pp-form="${kind}">
+      <label>${kind === "new" ? "Name of the new plan" : "Rename this plan"}</label>
+      <input type="text" maxlength="80" required value="${kind === "new" ? "" : esc(cur?.name || "")}" placeholder="${kind === "new" ? "e.g. Pre-season, Kit launch, Women's team" : ""}">
+      <div><button type="button" class="pp-menu-cancel" data-pp-menu-back>Cancel</button><button type="submit" class="btn btn-gold">${kind === "new" ? "Create" : "Save"}</button></div>
+    </form>`;
+  }
+  function openMenu(html = menuList()) {
+    const box = menuBox();
+    if (!box) return;
+    box.innerHTML = html;
+    box.hidden = false;
+    $("[data-pp-menu]", panel)?.setAttribute("aria-expanded", "true");
+    const input = $("input", box);
+    if (input) { input.focus(); input.select(); }
+  }
+  function closeMenu() {
+    const box = menuBox();
+    if (box) box.hidden = true;
+    $("[data-pp-menu]", panel)?.setAttribute("aria-expanded", "false");
+  }
+  async function switchPlan(id) {
+    closeMenu();
+    if (!id || id === S.planId) return;
+    S.planId = id;
+    store.set("scp-org-plan", S.planId);
+    S.suggest = null;
+    return reload();
+  }
+  panel.addEventListener("click", (e) => {
+    if (e.target.closest("[data-pp-menu]")) { e.stopPropagation(); return menuBox()?.hidden ? openMenu() : closeMenu(); }
+    const pick = e.target.closest("[data-pp-pick]");
+    if (pick) return switchPlan(pick.dataset.ppPick);
+    const form = e.target.closest("[data-pp-menu-form]");
+    if (form) return openMenu(menuForm(form.dataset.ppMenuForm));
+    if (e.target.closest("[data-pp-menu-back]")) return openMenu();
+  });
+  panel.addEventListener("submit", async (e) => {
+    const f = e.target.closest("[data-pp-form]");
+    if (!f) return;
+    e.preventDefault();
+    const name = $("input", f).value.trim().slice(0, 80);
+    if (!name) return;
+    const btn = $("[type=submit]", f);
+    btn.disabled = true;
+    if (f.dataset.ppForm === "new") {
+      const { data, error } = await saving(() => db.from("org_plans").insert({ name }).select("id,name").single());
+      if (error) { btn.disabled = false; return toast(errText(error)); }
+      S.plans.push(data);
+      toast(`Plan “${name}” created`);
+      return switchPlan(data.id);
+    }
+    const cur = S.plans.find((p) => p.id === S.planId);
+    if (!cur || name === cur.name) return closeMenu();
+    const { error } = await saving(() => db.from("org_plans").update({ name }).eq("id", cur.id));
+    if (error) { btn.disabled = false; return toast(errText(error)); }
+    cur.name = name;
+    closeMenu();
+    render();
+  });
+  document.addEventListener("mousedown", (e) => { const box = menuBox(); if (box && !box.hidden && !e.target.closest(".pp-planpick")) closeMenu(); });
+  document.addEventListener("keydown", (e) => { const box = menuBox(); if (e.key === "Escape" && box && !box.hidden) { e.stopPropagation(); closeMenu(); } }, true);
+  async function reload() {
+    try { await loadEntries(); } catch (e) { toast(errText(e)); }
+    render();
+  }
+
+  // ---------- Selecting several posts (Shift+click or the grip on each card) ----------
+  function syncCards() {
+    $$(".lib-card").forEach((c) => {
+      c.draggable = S.open;
+      c.classList.toggle("is-selected", S.selected.has(Number(c.dataset.id)));
+    });
+  }
+  new MutationObserver(() => { if (S.open || S.selected.size) syncCards(); }).observe($("[data-posts]") || lib, { childList: true, subtree: true });
+  function toggleSelect(id) {
+    S.selected.has(id) ? S.selected.delete(id) : S.selected.add(id);
+    syncCards();
+    renderFoot();
+  }
+  function clearSelection() { S.selected.clear(); syncCards(); renderFoot(); }
+  document.addEventListener("click", (e) => {
+    const card = e.target.closest?.(".lib-card");
+    if (!card || e.target.closest("[data-plan-add]")) return;
+    const grip = e.target.closest("[data-pp-grip]");
+    if (!grip && !(e.shiftKey && S.open)) return;
+    e.preventDefault(); e.stopPropagation();
+    if (!S.open) open();
+    toggleSelect(Number(card.dataset.id));
+  }, true);
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && S.selected.size && !document.querySelector(".pp-pop")) clearSelection(); });
+
+  // ---------- Drag & drop ----------
+  let ghostEl = null;
+  function dragGhost(ids, ev) {
+    ghostEl?.remove();
+    const p = postInfo(ids[0]);
+    ghostEl = document.createElement("div");
+    ghostEl.className = "pp-ghost";
+    ghostEl.innerHTML = `${icon("calendar-plus")}<span><b>${ids.length > 1 ? `${ids.length} posts` : esc(p?.who || "Post")}</b><small>${ids.length > 1 ? "drop on a day" : esc(p?.format || "drop on a day")}</small></span>`;
+    document.body.append(ghostEl);
+    ev.dataTransfer.setDragImage(ghostEl, 22, 22);
+    setTimeout(() => { ghostEl?.remove(); ghostEl = null; }, 0);
+  }
+  document.addEventListener("dragstart", (e) => {
+    if (!S.open || !e.target.closest) return;
+    const ent = e.target.closest("[data-pp-entry]");
+    if (ent) {
+      e.dataTransfer.setData("text/scp-entry", ent.dataset.ppEntry);
+      e.dataTransfer.effectAllowed = "move";
+      ent.classList.add("is-dragging");
+      panel.classList.add("is-receiving");
+      return;
+    }
+    const card = e.target.closest(".lib-card");
+    if (!card) return;
+    const id = Number(card.dataset.id);
+    const ids = S.selected.has(id) ? [...S.selected] : [id];
+    e.dataTransfer.setData("text/scp-ideas", JSON.stringify(ids));
+    e.dataTransfer.effectAllowed = "copy";
+    dragGhost(ids, e);
+    ids.forEach((x) => $(`.lib-card[data-id="${x}"]`)?.classList.add("is-dragging"));
+    panel.classList.add("is-receiving");
+  });
+  document.addEventListener("dragend", () => {
+    $$(".is-dragging").forEach((x) => x.classList.remove("is-dragging"));
+    $$(".pp-drop.is-over", panel).forEach((x) => x.classList.remove("is-over"));
+    panel.classList.remove("is-receiving");
+  });
+  const accepts = (e) => e.dataTransfer && [...e.dataTransfer.types].some((t) => t === "text/scp-ideas" || t === "text/scp-entry");
+  panel.addEventListener("dragover", (e) => {
+    const zone = e.target.closest("[data-pp-drop]");
+    if (!zone || !accepts(e)) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = [...e.dataTransfer.types].includes("text/scp-entry") ? "move" : "copy";
+    const day = zone.closest(".pp-day, .pp-focus");
+    $$(".pp-drop.is-over", panel).forEach((x) => x !== zone && x !== day && x.classList.remove("is-over"));
+    zone.classList.add("is-over");
+    day?.classList.add("is-over");
+  });
+  panel.addEventListener("dragleave", (e) => { const z = e.target.closest("[data-pp-drop]"); if (z && !z.contains(e.relatedTarget)) z.classList.remove("is-over"); });
+  panel.addEventListener("dragleave", (e) => { const d = e.target.closest(".pp-day, .pp-focus"); if (d && !d.contains(e.relatedTarget)) d.classList.remove("is-over"); });
+  panel.addEventListener("drop", async (e) => {
+    const zone = e.target.closest("[data-pp-drop]");
+    if (!zone || !accepts(e)) return;
+    e.preventDefault();
+    $$(".is-over", panel).forEach((x) => x.classList.remove("is-over"));
+    panel.classList.remove("is-receiving");
+    const date = zone.dataset.ppDrop || null;
+    const time = zone.dataset.ppTime || null;
+    const moving = e.dataTransfer.getData("text/scp-entry");
+    if (moving) return moveEntry(moving, date, time);
+    let ids = [];
+    try { ids = JSON.parse(e.dataTransfer.getData("text/scp-ideas")).map(Number).filter(Boolean); } catch {}
+    if (ids.length) addPosts(ids, date, S.planId, time || "12:00");
+  });
+
+  // ---------- "+" under each card: add to a day from a mini calendar (also on touch screens) ----------
+  let pop = null;
+  const closePop = () => { pop?.remove(); pop = null; document.removeEventListener("mousedown", outsidePop, true); };
+  const outsidePop = (e) => { if (pop && !pop.contains(e.target) && !e.target.closest("[data-plan-add]")) closePop(); };
+  document.addEventListener("click", async (e) => {
+    const btn = e.target.closest?.("[data-plan-add]");
+    if (!btn) return;
+    e.preventDefault(); e.stopPropagation();
+    if (pop && pop.dataset.for === btn.dataset.planAdd) return closePop();
+    const id = Number(btn.dataset.planAdd);
+    quickAdd(btn, S.selected.has(id) ? [...S.selected] : [id]);
+  }, true);
+  async function quickAdd(btn, ids) {
+    closePop();
+    pop = document.createElement("div");
+    pop.className = "pp-pop";
+    pop.dataset.for = btn.dataset.planAdd;
+    pop.innerHTML = `<div class="pp-loading"><span class="ai-spinner"></span></div>`;
+    document.body.append(pop);
+    place(btn);
+    setTimeout(() => document.addEventListener("mousedown", outsidePop, true));
+    try { await ready(); } catch (e) { pop.innerHTML = `<p class="pp-error">${esc(errText(e))}</p>`; return; }
+    if (!pop) return;
+    if (!allowed()) {
+      pop.innerHTML = `<div class="pp-gate is-small">${icon("lock")}<b>Plan this post in your Content Plan</b><p>Part of Library + AI + Content Plan.</p><a class="btn btn-gold" href="${window.SCP_upgradeHref("planner", S.ent?.plan)}">${tx("Get the Content Plan")}</a></div>`;
+      return place(btn);
+    }
+    const st = { planId: S.planId, month: new Date(), counts: new Map() };
+    const draw = async () => {
+      const g = monthGrid(st.month);
+      const { data } = await db.from("org_entries").select("entry_date").eq("plan_id", st.planId).gte("entry_date", iso(g[0])).lte("entry_date", iso(g[41]));
+      st.counts = new Map();
+      for (const r of data || []) st.counts.set(r.entry_date, (st.counts.get(r.entry_date) || 0) + 1);
+      if (!pop) return;
+      const today = iso(new Date());
+      const p = postInfo(ids[0]);
+      pop.innerHTML = `
+        <header class="pp-pop-head"><b>${icon("calendar-plus")}Add to Content Plan</b><span>${ids.length > 1 ? `${ids.length} posts selected` : esc([p?.who, p?.format].filter(Boolean).join(" · "))}</span></header>
+        ${S.plans.length > 1 ? `<select class="pp-plan" data-qp-plan aria-label="Plan">${S.plans.map((x) => `<option value="${x.id}"${x.id === st.planId ? " selected" : ""}>${esc(x.name)}</option>`).join("")}</select>` : ""}
+        <div class="pp-cal-nav"><button type="button" data-qp-month="-1" aria-label="Previous month">${icon("chevron-left")}</button><b>${st.month.toLocaleDateString(window.SCP_LOC || "en-GB", { month: "long", year: "numeric" })}</b><button type="button" data-qp-month="1" aria-label="Next month">${icon("chevron-right")}</button></div>
+        <div class="pp-cal">${DAYS.map((d) => `<span class="pp-cal-h">${d[0]}</span>`).join("")}${g.map((d) => {
+          const date = iso(d), n = st.counts.get(date) || 0;
+          return `<button type="button" class="${d.getMonth() !== st.month.getMonth() ? "is-out" : ""}${date === today ? " is-today" : ""}${date < today ? " is-past" : ""}" data-qp-day="${date}" title="${fmtDay(date)}${n ? ` · ${n} planned` : ""}">${d.getDate()}${n ? `<i>${"•".repeat(Math.min(n, 3))}</i>` : ""}</button>`;
+        }).join("")}</div>
+        <button type="button" class="pp-pop-idea" data-qp-day="">${icon("inbox")}No date — keep it as an idea</button>`;
+      place(btn);
+    };
+    pop.addEventListener("click", async (e) => {
+      const m = e.target.closest("[data-qp-month]");
+      if (m) { st.month = new Date(st.month.getFullYear(), st.month.getMonth() + Number(m.dataset.qpMonth), 1); return draw(); }
+      const d = e.target.closest("[data-qp-day]");
+      if (d) { const date = d.dataset.qpDay || null; closePop(); addPosts(ids, date, st.planId); }
+    });
+    pop.addEventListener("change", (e) => { if (e.target.matches("[data-qp-plan]")) { st.planId = e.target.value; draw(); } });
+    draw();
+  }
+  function place(btn) {
+    if (!pop) return;
+    if (innerWidth <= 640) { pop.classList.add("is-sheet"); pop.style.left = pop.style.top = ""; return; }
+    const r = btn.getBoundingClientRect();
+    const w = pop.offsetWidth, h = pop.offsetHeight;
+    pop.style.left = `${Math.max(12, Math.min(innerWidth - w - 12, r.right - w))}px`;
+    pop.style.top = `${r.bottom + 8 + h > innerHeight ? Math.max(12, r.top - h - 8) : r.bottom + 8}px`;
+  }
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && pop) closePop(); });
+  addEventListener("scroll", () => pop && !pop.classList.contains("is-sheet") && closePop(), { passive: true });
+
+  // ---------- "Fill my week": posts from the member's favourite profiles / sports for the empty days ----------
+  async function fillWeek() {
+    S.suggest = { loading: true, items: [], queue: [] };
+    render();
+    try {
+      const prefs = (await window.SCP_AUTH?.getProfile?.())?.profile?.preferences || {};
+      const boost = [...(prefs.favouriteProfiles || []), ...(prefs.favouriteCreators || [])].map((f) => Number(f.id)).filter(Boolean);
+      const boost2 = [...(prefs.sports || []), ...(prefs.competitions || [])].map(Number).filter(Boolean);
+      const [{ data: used }, { data: res, error }] = await Promise.all([
+        db.from("org_entries").select("inspiration").eq("plan_id", S.planId).not("inspiration", "is", null),
+        db.rpc("library_ideas", { p_order: boost.length || boost2.length ? "foryou" : "random", p_seed: String(Date.now()), p_boost: boost.length ? boost : null, p_boost2: boost2.length ? boost2 : null, p_limit: 60 }),
+      ]);
+      if (error) throw error;
+      const taken = new Set((used || []).map((u) => u.inspiration));
+      // one post per profile first, so the week isn't five posts of the same club
+      const rows = (res?.data || []).filter((p) => !taken.has(`ci-${p.id}`));
+      const seen = new Set(), first = [], rest = [];
+      for (const p of rows) { const n = norm(p); S.refs.set(n.id, n); (seen.has(n.who) ? rest : (seen.add(n.who), first)).push(n.id); }
+      const queue = [...first, ...rest];
+      // Empty days of this week (from today on, if it's the current week), then the other days
+      const days = Array.from({ length: 7 }, (_, i) => iso(addDays(mondayOf(S.anchor), i)));
+      const today = iso(new Date());
+      const avail = days.filter((d) => d >= today);
+      if (!avail.length) { S.suggest = { done: "This week is over — move to next week to fill it." }; return render(); }
+      const filled = new Set(dated().map((e) => e.entry_date));
+      const order = [...avail.filter((d) => !filled.has(d)), ...avail.filter((d) => filled.has(d))];
+      const items = queue.splice(0, 5).map((id, i) => ({ id, date: order[i % order.length] }));
+      if (!items.length) { S.suggest = { done: "No new posts to suggest right now — every match is already in your plan." }; return render(); }
+      S.suggest = { items, queue, days: avail, personal: Boolean(boost.length || boost2.length) };
+    } catch (e) { S.suggest = { done: errText(e) }; }
+    render();
+  }
+  function suggestHtml() {
+    const s = S.suggest;
+    if (s.loading) return `<div class="pp-loading is-inline"><span class="ai-spinner"></span>Finding posts for your week…</div>`;
+    if (s.done) return `<p class="pp-sg-note">${esc(s.done)}</p><div class="pp-sg-actions"><button type="button" data-sg="cancel">Close</button></div>`;
+    return `<p class="pp-sg-title">${icon("sparkles")}${s.items.length} ideas for this week<small>${s.personal ? "from your favourite profiles and sports" : "add favourites in your profile for better picks"}</small></p>
+      <div class="pp-sg-list">${s.items.map((it, i) => {
+        const p = S.refs.get(it.id);
+        return `<div class="pp-sg">${T.html(p, "pp-thumb")}
+          <span class="pp-entry-txt"><b>${esc(p?.who)}</b><small>${esc(p?.format || "Post")}</small></span>
+          <select data-sg-day="${i}" aria-label="Day">${s.days.map((d) => `<option value="${d}"${d === it.date ? " selected" : ""}>${DAYS[dow(parse(d))]} ${parse(d).getDate()}</option>`).join("")}</select>
+          <a class="pp-sg-btn" href="content-library.html#post=${it.id}" target="_blank" rel="noopener" title="See the post">${icon("arrow-up-right")}</a>
+          <button type="button" class="pp-sg-btn" data-sg="skip" data-i="${i}" title="Show me another one" aria-label="Show another post">${icon("repeat")}</button>
+        </div>`;
+      }).join("")}</div>
+      <div class="pp-sg-actions"><button type="button" data-sg="cancel">Cancel</button><button type="button" data-sg="shuffle">${icon("repeat")}New ideas</button><button type="button" class="is-gold" data-sg="add">Add ${s.items.length} to my week</button></div>`;
+  }
+  async function suggestAction(b) {
+    const s = S.suggest;
+    const act = b.dataset.sg;
+    if (act === "cancel") { S.suggest = null; return render(); }
+    if (act === "shuffle") return fillWeek();
+    if (act === "skip") {
+      const i = Number(b.dataset.i);
+      const next = s.queue.shift();
+      if (next) s.items[i] = { id: next, date: s.items[i].date }; else s.items.splice(i, 1);
+      if (!s.items.length) S.suggest = null;
+      return render();
+    }
+    if (act === "add") {
+      b.disabled = true;
+      const items = s.items;
+      S.suggest = null;
+      const rows = [];
+      for (const it of items) {
+        const p = S.refs.get(it.id);
+        rows.push({ plan_id: S.planId, entry_date: it.date, time_slot: "12:00", status: "planned", label: `Idea: ${p?.who || "Post"}${p?.format ? ` · ${p.format}` : ""}`.slice(0, 140), content_type: typeFor(p?.format), inspiration: `ci-${it.id}` });
+      }
+      const { data, error } = await saving(() => db.from("org_entries").insert(rows).select(COLS));
+      if (error) { toast(errText(error)); return render(); }
+      S.entries.push(...data);
+      render(data.map((e) => e.id));
+      toast(`${data.length} posts added to your week`, "Undo", async () => {
+        const { error: e } = await saving(() => db.from("org_entries").delete().in("id", data.map((x) => x.id)));
+        if (e) return toast(errText(e));
+        S.entries = S.entries.filter((x) => !data.some((d) => d.id === x.id));
+        render();
+      });
+    }
+  }
+
+  // ---------- Toast ----------
+  let toastTimer;
+  function toast(text, action, onAction) {
+    $(".lib-toast")?.remove();
+    const t = document.createElement("div");
+    t.className = "lib-toast";
+    t.innerHTML = `<span>${esc(text)}</span>${action ? `<button type="button">${esc(action)}</button>` : ""}`;
+    document.body.append(t);
+    if (action) t.querySelector("button").addEventListener("click", () => { t.remove(); onAction(); });
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.remove(), action ? 8000 : 3200);
+  }
+
+  new ResizeObserver(() => S.open && T.fit(panel)).observe(panel);
+  if (store.get("scp-pp-open") === "1" && innerWidth > 960) open();
+})();

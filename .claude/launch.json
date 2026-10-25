@@ -1,0 +1,15 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "scp-web",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "/Users/martiruiz/Desktop/NOU SCP 202627/.claude/serve.py",
+        "5173",
+        "/Users/martiruiz/Desktop/NOU SCP 202627"
+      ],
+      "port": 5173
+    }
+  ]
+}

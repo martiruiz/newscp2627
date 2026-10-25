@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Admin — Sports Content Playbook</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-s-32.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon-s-64.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-s-192.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon-s.png">
+  <link rel="stylesheet" href="css/fonts.css?v=1">
+  <link rel="stylesheet" href="css/styles.css?v=20261027f">
+  <script src="js/theme.js?v=20261101a"></script>
+</head>
+<body class="auth-page">
+  <main class="admin container">
+    <header class="admin-head">
+      <a class="brand" href="index.html" aria-label="Sports Content Playbook home"><img class="brand-logo" src="assets/logo-scp.png" alt="Sports Content Playbook" width="900" height="367"></a>
+      <div class="admin-user" data-admin-user hidden>
+        <span data-admin-email></span>
+        <span class="pill pill-gold pill-sm" data-admin-role></span>
+        <button class="btn btn-outline" type="button" data-logout>Log out</button>
+      </div>
+    </header>
+
+    <p class="admin-message" data-admin-message>Loading…</p>
+
+    <section data-admin-panel hidden>
+      <div class="admin-title">
+        <h1 class="section-title section-title-md">Users</h1>
+        <p class="admin-count" data-admin-count></p>
+      </div>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr><th>Name</th><th>Email</th><th>Plan</th><th>Signed up</th><th>Role</th></tr>
+          </thead>
+          <tbody data-admin-rows></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/vendor/supabase-2.117.0.min.js"></script>
+  <script src="js/config.js?v=20261020lf"></script>
+  <script src="js/auth.js?v=20261024u"></script>
+  <script src="js/admin.js?v=20261019a"></script>
+</body>
+</html>

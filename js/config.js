@@ -1,0 +1,24 @@
+// Site configuration.
+// Supabase: Dashboard → Project Settings → API.
+// The anon/publishable key is meant to be public — never put the service_role key here.
+window.SCP_CONFIG = {
+  supabaseUrl: "https://wppdbomtiliutpxsimtp.supabase.co",
+  supabaseAnonKey: "sb_publishable_oq57pA0ZaavEQPDBYeWH-w_TRybCb05",
+
+  // Where users land after signing up or logging in
+  afterLoginPath: "content-library.html",
+
+  // Demo bookings: the Google Calendar booking page (Calendar → Create → Appointment schedule → Share → link).
+  // When set, the demo forms show the calendar so visitors pick a time themselves; the request form stays below.
+  // Lead flow (js/lead-flow.js): "new" = interactive form everywhere, "classic" = old forms, "ab" = 50/50 test (?lf=… forces one)
+  leadFlow: { variant: "new" },
+  demoBookingUrl: "https://cal.com/sports-content-playbook/30min",
+  // Optional: the same demo as a second Cal.com event with its interface language set to Spanish
+  // (Cal.com → event → Advanced → Interface language). Used when the website is in Spanish.
+  demoBookingUrlEs: "",
+
+  // Home dock: company LinkedIn page (the LinkedIn button is hidden while this is empty)
+  linkedinUrl: "https://www.linkedin.com/company/sportscontentplaybook",
+  // Newsletter lead magnet: if a file / page URL is set, the pop-up offers it to download right after signing up
+  newsletterResourceUrl: "",
+};

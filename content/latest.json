@@ -1,0 +1,25 @@
+{
+  "blog": {
+    "title": "From one-off clips to series: the episodic shift in sports social media trends",
+    "href": "blog/episodic-series-sports-social-media-trends.html",
+    "image": "assets/blog/episodic-web-series-ballpark-filming-sports-social-media-trends.jpg",
+    "date": "2026-10-19"
+  },
+  "news": {
+    "title": "How Barcelona, Liverpool and PSG Turn Google Gemini Deals Into Useful Fan Content",
+    "href": "news/how-barcelona-liverpool-and-psg-turn-google-gemini-deals-into-useful-12.html",
+    "image": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/8b2de9c1-bb02-489c-97b8-65acf69d54e0/Untitled_design.png?t=1792696078",
+    "platform": "ai",
+    "date": "2026-10-22"
+  },
+  "es": {
+    "blog": {
+      "title": "De clips sueltos a series: el giro episódico en las tendencias de redes sociales deportivas",
+      "href": "es/blog/episodic-series-sports-social-media-trends.html"
+    },
+    "news": {
+      "title": "Cómo Barcelona, Liverpool y PSG convierten los acuerdos con Google Gemini en contenido útil para los aficionados",
+      "href": "es/news/how-barcelona-liverpool-and-psg-turn-google-gemini-deals-into-useful-12.html"
+    }
+  }
+}

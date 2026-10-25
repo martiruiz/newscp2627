@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Log in — SCP Admin</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-s-32.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="../assets/favicon-s-64.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="../assets/favicon-s-192.png">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon-s.png">
+  <link rel="stylesheet" href="../css/fonts.css?v=1">
+  <link rel="stylesheet" href="css/admin.css?v=20261027h">
+  <script src="../js/theme.js?v=20261101a"></script>
+</head>
+<body>
+  <main class="login">
+    <div class="hexbg" aria-hidden="true" data-hexbg></div>
+    <div class="login-card2">
+      <div class="login-vis" aria-hidden="true">
+        <p class="login-tag" data-login-tag>All your <em>content</em>,<br>one <em>access</em>.</p>
+        <p class="login-small">Internal panel · Sports Content Playbook</p>
+      </div>
+      <div class="login-card">
+        <div class="login-logo"><div class="login-brand"><img src="../assets/logo-scp.png" alt="Sports Content Playbook"><span>Admin</span></div>
+          <div class="side-lang login-lang" role="group" aria-label="Language" data-i18n-skip><button type="button" data-admin-lang="en">EN</button><button type="button" data-admin-lang="es">ES</button><button type="button" data-admin-lang="ca">CA</button></div></div>
+        <form novalidate data-login>
+          <label class="field"><span class="label">Email</span><input class="input" type="email" name="email" autocomplete="email" required></label>
+          <label class="field" data-pw><span class="label">Password</span><input class="input" type="password" name="password" autocomplete="current-password"></label>
+          <p class="error-text" data-msg hidden></p>
+          <button class="btn btn-primary" type="submit" data-submit>Sign In</button>
+        </form>
+        <p class="login-alt"><button class="link" type="button" data-toggle>Email me a login link instead</button></p>
+        <a class="login-site" href="../index.html"><span aria-hidden="true">←</span> sportscontentplaybook.com</a>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/i18n-admin-dict.js?v=20261027c"></script>
+  <script src="js/i18n-admin-dict2.js?v=20261027c"></script>
+  <script src="js/i18n-admin-dict3.js?v=20261027c"></script>
+  <script src="js/i18n-admin-dict4.js?v=20261027c"></script>
+  <script src="js/i18n-admin-dict5.js?v=20261027c"></script>
+  <script src="js/i18n-admin.js?v=20261027c"></script>
+  <script src="../js/vendor/supabase-2.117.0.min.js"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script>
+    // background: a hexagon grid whose edges light up in gold around the pointer (eased)
+    (() => {
+      const bg = document.querySelector("[data-hexbg]");
+      if (!bg || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      let x = innerWidth * 0.3, y = innerHeight * 0.25, tx = x, ty = y;
+      addEventListener("pointermove", (e) => { tx = e.clientX; ty = e.clientY; }, { passive: true });
+      const tick = () => { x += (tx - x) * 0.12; y += (ty - y) * 0.12; bg.style.setProperty("--mx", `${x}px`); bg.style.setProperty("--my", `${y}px`); requestAnimationFrame(tick); };
+      tick();
+    })();
+    // language: the same switch as the sidebar (js/i18n-admin.js)
+    document.querySelectorAll("[data-admin-lang]").forEach((b) => {
+      b.setAttribute("aria-pressed", String(b.dataset.adminLang === (window.SCPA_LANG || "en")));
+      b.addEventListener("click", () => { if (b.dataset.adminLang !== window.SCPA_LANG) window.SCPA_setLang?.(b.dataset.adminLang); });
+    });
+    // the tagline in the admin's language (its words in gold italics)
+    document.querySelector("[data-login-tag]").innerHTML = { es: "Todo tu <em>contenido</em>,<br>un solo <em>acceso</em>.", ca: "Tot el teu <em>contingut</em>,<br>un sol <em>accés</em>." }[window.SCPA_LANG] || document.querySelector("[data-login-tag]").innerHTML;
+    (async () => {
+      const auth = window.SCP_AUTH;
+      const form = document.querySelector("[data-login]");
+      const msg = document.querySelector("[data-msg]");
+      const pw = document.querySelector("[data-pw]");
+      const submit = document.querySelector("[data-submit]");
+      const params = new URLSearchParams(location.search);
+      const next = /^[a-z0-9-]+\.html$/i.test(params.get("next") || "") ? params.get("next") : "content-ideas.html";
+      const target = new URL(next, location.href).href;
+      let magic = false;
+      const show = (text, ok) => { msg.textContent = text; msg.className = ok ? "ok-text" : "error-text"; msg.hidden = false; };
+
+      if (!auth?.ready) return show("Supabase isn't connected yet (keys missing in js/config.js).");
+      let leaving = false;
+      const go = () => { if (!leaving) { leaving = true; location.replace(target); } };
+      const { data: { session } } = await auth.client.auth.getSession();
+      if (session) return go();
+      // Arriving from an email login link: Supabase signs in from the URL, then we move on
+      auth.client.auth.onAuthStateChange((event, s) => { if (s && event === "SIGNED_IN") go(); });
+
+      document.querySelector("[data-toggle]").addEventListener("click", (e) => {
+        magic = !magic;
+        pw.hidden = magic;
+        submit.textContent = magic ? "Send login link" : "Sign In";
+        e.target.textContent = magic ? "Use a password instead" : "Email me a login link instead";
+        msg.hidden = true;
+      });
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const email = form.email.value.trim();
+        if (!email || !form.email.checkValidity()) return show("Please enter a valid email.");
+        submit.disabled = true;
+        try {
+          if (magic) {
+            const { error } = await auth.client.auth.signInWithOtp({ email, options: { emailRedirectTo: target, shouldCreateUser: false } });
+            if (error) throw error;
+            show("Check your inbox — we've sent you a login link.", true);
+          } else {
+            const { error } = await auth.client.auth.signInWithPassword({ email, password: form.password.value });
+            if (error) throw new Error("Wrong email or password.");
+            go();
+          }
+        } catch (err) {
+          show(/signups not allowed|not found/i.test(err.message) ? "There's no account with that email." : err.message);
+        } finally { submit.disabled = false; }
+      });
+    })();
+  </script>
+</body>
+</html>

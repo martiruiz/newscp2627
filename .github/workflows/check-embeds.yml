@@ -1,0 +1,30 @@
+name: Check library posts
+
+# Every day: hides imported posts that were deleted or made private on Instagram.
+on:
+  schedule:
+    - cron: "30 4 * * *"
+  workflow_dispatch: {}      # "Run workflow" button in GitHub → Actions
+
+concurrency:
+  group: check-embeds
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: pipeline/package-lock.json
+      - run: npm ci
+        working-directory: pipeline
+      - run: node library/check-embeds.mjs
+        working-directory: pipeline
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}

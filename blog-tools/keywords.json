@@ -1,0 +1,25 @@
+{
+  "site_url": "https://sportscontentplaybook.com",
+  "keywords": [
+    { "keyword": "Sports Content Ideas", "priority": "very high", "pillar": true, "link": "index.html" },
+    { "keyword": "Sports Social Media Content Ideas", "priority": "very high", "pillar": true, "link": "signup.html" },
+    { "keyword": "Sports Social Media Tools", "priority": "very high", "pillar": true, "link": "pricing.html" },
+    { "keyword": "Sports Content Calendar", "priority": "very high", "pillar": true, "link": "signup.html" },
+    { "keyword": "Sports Content Creation Tools", "priority": "very high", "pillar": true, "link": "index.html#how-it-works" },
+    { "keyword": "Football Social Media Content Ideas", "priority": "very high", "link": "signup.html" },
+    { "keyword": "Social Media Ideas for Sports Teams", "priority": "very high", "link": "index.html" },
+    { "keyword": "Sports Content Planning Tool", "priority": "very high", "link": "pricing.html" },
+    { "keyword": "Sports Social Media Strategy", "priority": "high", "link": "index.html#how-it-works" },
+    { "keyword": "Sports Marketing Tools", "priority": "high", "link": "pricing.html" },
+    { "keyword": "Sports Instagram Content Ideas", "priority": "high", "link": "signup.html" },
+    { "keyword": "Sports TikTok Content Ideas", "priority": "high", "link": "signup.html" },
+    { "keyword": "Sports Reels Ideas", "priority": "high", "link": "signup.html" },
+    { "keyword": "AI Tools for Sports Content Creation", "priority": "high", "link": "index.html#how-it-works" },
+    { "keyword": "Sports Social Media Trends", "priority": "high", "link": "news.html" }
+  ],
+  "types": {
+    "news":   { "label": "News & updates",        "min_words": 500,  "max_words": 800 },
+    "trends": { "label": "Social media trends",   "min_words": 800,  "max_words": 1200 },
+    "ideas":  { "label": "Sports content ideas",  "min_words": 1200, "max_words": 1800 }
+  }
+}

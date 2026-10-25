@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en" class="auth-checking">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Content Plan — Sports Content Playbook</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-s-32.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon-s-64.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-s-192.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon-s.png">
+  <link rel="stylesheet" href="css/fonts.css?v=1">
+  <link rel="stylesheet" href="css/styles.css?v=20261027f">
+  <script src="js/theme.js?v=20261101a"></script>
+  <script src="js/i18n.js?v=20261027e"></script>
+  <style>.auth-checking body { visibility: hidden; }</style>
+  <script src="js/vendor/supabase-2.117.0.min.js"></script>
+  <script src="js/config.js?v=20261020lf"></script>
+  <script src="js/auth.js?v=20261024u"></script>
+  <script src="js/guard.js?v=20261025j"></script>
+</head>
+<body class="org-page">
+  <header class="site-nav" data-nav>
+    <a class="brand" href="index.html" aria-label="Sports Content Playbook home"><img class="brand-logo" src="assets/logo-scp.png" alt="Sports Content Playbook" width="900" height="367"></a>
+    <nav class="nav-links" aria-label="Main">
+      <a href="index.html#how-it-works">How it works</a>
+      <a href="content-library.html">Content Library</a>
+      <a href="content-plan.html" aria-current="page">Content Plan</a>
+      <a href="news.html">Social News</a>
+      <a href="pricing.html">Pricing</a>
+    </nav>
+    <div class="nav-actions">
+      <a class="nav-user" href="profile.html" data-user-link><span class="nav-avatar" data-user-initials></span><span data-user-name></span></a>
+      <a class="btn btn-outline" href="admin/content-ideas.html" hidden data-admin-link>Admin</a>
+      <button class="btn btn-outline" type="button" data-logout>Log out</button>
+    </div>
+    <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" data-nav-toggle><span></span></button>
+  </header>
+
+  <main class="org" data-org>
+    <header class="org-head">
+      <div>
+        <p class="org-eyebrow"><span data-icon="layout-grid"></span>Content Plan</p>
+        <h1>Your content plan</h1>
+        <p class="org-sub">Plan your club's week, track every post and keep your recurring formats covered.</p>
+      </div>
+      <div class="org-controls">
+      <div class="org-plan">
+        <label class="org-plan-pick"><span data-icon="layers"></span><select data-plan aria-label="Plan"></select></label>
+        <button class="pill pill-dark" type="button" data-new-plan><span data-icon="plus"></span>New plan</button>
+      </div>
+      <div class="org-view" role="tablist" aria-label="View">
+        <button type="button" role="tab" aria-selected="true" data-view="week">Week</button>
+        <button type="button" role="tab" aria-selected="false" data-view="month">Month</button>
+      </div>
+      <div class="org-week">
+        <button class="org-nav-btn" type="button" aria-label="Previous week" data-week="-1"><span data-icon="chevron-left"></span></button>
+        <div class="org-week-label"><b data-week-label>This week</b><span data-week-range></span></div>
+        <button class="org-nav-btn" type="button" aria-label="Next week" data-week="1"><span data-icon="chevron-right"></span></button>
+        <button class="pill pill-dark" type="button" data-week="0">Today</button>
+      </div>
+      </div>
+    </header>
+
+    <section class="org-gate" hidden data-gate>
+      <span data-icon="lock"></span>
+      <div><b>The Content Plan is part of Library + AI + Content Plan</b>
+      <p>Drag posts from the Content Library into weekly and monthly plans, write the copy and notes, and track every post from idea to published.</p>
+      <button class="btn btn-gold" type="button" data-plans-picker aria-expanded="false">Get the Content Plan</button>
+      <div class="pp-plans" data-plans-picker-list hidden></div></div>
+    </section>
+
+    <div data-planner>
+    <section class="org-bar">
+      <div class="org-progress">
+        <div class="org-progress-top"><b data-base-title>Weekly base</b><span data-base-count></span></div>
+        <div class="org-progress-track"><i data-base-fill></i></div>
+      </div>
+      <div class="org-legend" data-legend></div>
+      <div class="org-actions">
+        <button class="pill pill-dark" type="button" data-edit-base><span data-icon="repeat"></span>Weekly base</button>
+        <div class="org-dl">
+          <button class="pill pill-dark" type="button" aria-haspopup="menu" aria-expanded="false" data-dl-toggle><span data-icon="download"></span>Download</button>
+          <div class="org-dl-menu" role="menu" hidden data-dl-menu>
+            <p class="org-dl-head" data-dl-scope>This week</p>
+            <button type="button" role="menuitem" data-dl="pdf"><span data-icon="file-text"></span><span><b>PDF</b><small>Print-ready plan, day by day</small></span></button>
+            <button type="button" role="menuitem" data-dl="xlsx"><span data-icon="sheet"></span><span><b>Excel</b><small>One row per post (.xlsx)</small></span></button>
+            <button type="button" role="menuitem" data-dl="ics"><span data-icon="calendar-days"></span><span><b>Calendar</b><small>Google, Outlook, Apple (.ics)</small></span></button>
+            <label class="org-dl-opt"><input type="checkbox" checked data-dl-ideas>Include “No date” ideas</label>
+          </div>
+        </div>
+        <button class="pill pill-dark" type="button" data-toggle-insp><span data-icon="bookmark"></span>Ideas &amp; inspiration</button>
+        <a class="pill pill-gold" href="content-library.html"><span data-icon="plus"></span>Add from the library</a>
+      </div>
+    </section>
+    <p class="org-error" hidden data-org-error></p>
+
+    <div class="org-days-mobile" data-mobile-days></div>
+
+    <div class="org-layout" data-layout>
+      <div class="org-grid-wrap" data-week-view><table class="org-grid" data-grid></table></div>
+      <div class="org-month" hidden data-month-view></div>
+      <aside class="org-insp" data-insp>
+        <section class="org-tray" data-cell="|12:00">
+          <div class="org-insp-head"><b><span data-icon="inbox"></span>No date</b><span>Ideas for later · drag them onto a day</span></div>
+          <div class="org-tray-list" data-undated></div>
+          <button class="org-tray-add" type="button" data-add><span data-icon="plus"></span>New idea</button>
+        </section>
+        <div class="org-insp-head"><b>Inspiration</b><span>Your saved boards · open one and drag a post into your plan</span></div>
+        <div class="org-insp-list" data-insp-list></div>
+      </aside>
+    </div>
+    </div>
+  </main>
+
+  <!-- Entry -->
+  <div class="org-modal" hidden data-entry-modal role="dialog" aria-modal="true" aria-label="Planned post">
+    <div class="org-panel" data-entry-panel></div>
+  </div>
+  <!-- Weekly base -->
+  <div class="org-modal" hidden data-base-modal role="dialog" aria-modal="true" aria-label="Weekly base">
+    <div class="org-panel org-panel-wide" data-base-panel></div>
+  </div>
+
+  <script src="js/icons.js?v=20261031b"></script>
+  <script src="js/boards.js?v=20261031a"></script>
+  <script src="js/thumbs.js?v=20261018p"></script>
+  <script src="js/post-preview.js?v=20261018p"></script>
+  <script src="js/time-picker.js?v=20261018p"></script>
+  <script src="js/date-picker.js?v=20261018p"></script>
+  <script src="js/key-dates.js?v=20261025a"></script>
+  <script src="js/content-plan.js?v=20261102m" defer></script>
+  <script src="js/checkout.js?v=20261024w"></script>
+  <script src="js/nav-menu.js?v=20261027c"></script>
+  <script src="js/consent.js?v=20261027a"></script>
+  <script src="js/lead-flow.js?v=20261103o"></script>
+  <script src="js/promo-bar.js?v=20261020a"></script>
+  <script src="js/main.js?v=20261024zg"></script>
+</body>
+</html>

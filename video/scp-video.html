@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SCP video</title>
+<link rel="stylesheet" href="../css/fonts.css?v=1">
+<style>
+  :root { --gold: #f0b84a; --gold2: #ffd98a; --bg: #0b1020; --ink: #fff; --muted: #b4c0d3; --line: rgba(255,255,255,.12); }
+  html, body { margin: 0; background: #000; }
+  #stage { position: relative; overflow: hidden; color: var(--ink); font-family: Inter, system-ui, sans-serif;
+    background: radial-gradient(120% 90% at 50% 35%, #1a2646 0%, #0d1428 55%, #070b17 100%); }
+  .scene { position: absolute; inset: 0; overflow: hidden; }
+  .abs { position: absolute; }
+  .big { font-family: "Host Grotesk", Inter, sans-serif; font-weight: 700; letter-spacing: -0.045em; line-height: .86; text-transform: uppercase; white-space: nowrap; }
+  .small { font-weight: 500; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+  .gold { color: var(--gold); }
+  .goldfill { background: linear-gradient(100deg, #d99a2b, #f0b84a 40%, #ffe3a3 60%, #f0b84a 80%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .grain { position: absolute; inset: 0; pointer-events: none; z-index: 50; opacity: .07; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+  .vignette { position: absolute; inset: 0; pointer-events: none; z-index: 49; background: radial-gradient(120% 100% at 50% 50%, transparent 55%, rgba(0,0,0,.55) 100%); }
+  .glow { position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; }
+  /* cards (library) */
+  .card { position: absolute; border-radius: 18px; overflow: hidden; background: #17213b; border: 1px solid rgba(255,255,255,.08); box-shadow: 0 20px 40px -20px rgba(0,0,0,.7); }
+  .card .cv { position: absolute; left: 0; right: 0; top: 0; }
+  .card .ft { position: absolute; left: 0; right: 0; bottom: 0; height: 54px; display: flex; align-items: center; gap: 10px; padding: 0 14px; background: #17213b; }
+  .card .av { width: 26px; height: 26px; border-radius: 50%; background: rgba(255,255,255,.14); flex: none; }
+  .card .ln { height: 9px; border-radius: 5px; background: rgba(255,255,255,.16); }
+  .badge { position: absolute; top: 12px; left: 12px; padding: 5px 11px; border-radius: 100px; font: 700 13px Inter; color: #fff; }
+  .chip { display: inline-flex; align-items: center; gap: 8px; padding: 0 18px; height: 44px; border-radius: 100px; border: 1px solid rgba(240,184,74,.55); background: rgba(240,184,74,.12); color: var(--gold); font: 600 18px Inter; white-space: nowrap; }
+  .chip.w { border-color: rgba(255,255,255,.22); background: rgba(255,255,255,.06); color: #fff; }
+  .panel { position: absolute; border-radius: 22px; background: rgba(23,33,59,.92); border: 1px solid rgba(255,255,255,.1); box-shadow: 0 40px 80px -30px rgba(0,0,0,.8); }
+  .sp { display: flex; align-items: center; gap: 14px; height: 64px; padding: 0 18px; border-radius: 16px; font: 700 19px "Host Grotesk"; color: #fff; }
+  .sp i { width: 34px; height: 34px; border-radius: 10px; background: rgba(255,255,255,.22); flex: none; }
+  .sp-top { background: linear-gradient(90deg, #f32f71, #ff685c); }
+  .sp-rep { background: linear-gradient(90deg, #00d85b, #00ccdd); }
+  .sp-cc { background: linear-gradient(90deg, #d99a2b, #f0b84a 45%, #ffd98a); color: #1a1206; }
+  .sp-cc i { background: rgba(26,18,6,.15); }
+  .sp-over { background: linear-gradient(90deg, #4d5bff, #7a5cff); }
+  .bar { height: 12px; border-radius: 6px; background: rgba(255,255,255,.12); }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script>
+(async () => {
+  const Q = new URLSearchParams(location.search);
+  const P = Q.get("f") === "v";                       // vertical 9:16
+  const W = P ? 1080 : 1920, H = P ? 1920 : 1080;
+  const D = (Q.get("d") || "7.4,5,2.6,13,8,9,6.5,6.8,7").split(",").map(Number);   // scene lengths (s), from the voice-over
+  const T0 = D.map((_, i) => D.slice(0, i).reduce((a, b) => a + b, 0));
+  const TOTAL = T0[8] + D[8];
+  const stage = document.getElementById("stage");
+  Object.assign(stage.style, { width: W + "px", height: H + "px" });
+  await document.fonts.load('700 100px "Host Grotesk"'); await document.fonts.load('500 20px Inter'); await document.fonts.load('700 20px Inter'); await document.fonts.ready;
+
+  // ---------- timeline helpers ----------
+  const anims = [], ticks = [], seen = new WeakMap();
+  const E = { out: "cubic-bezier(.16,1,.3,1)", inout: "cubic-bezier(.65,0,.35,1)", in: "cubic-bezier(.7,0,.84,0)", slam: "cubic-bezier(.2,1.5,.35,1)", lin: "linear", soft: "cubic-bezier(.4,0,.2,1)" };
+  function A(el, kf, t, dur, ease = E.out) {
+    const n = seen.get(el) || 0; seen.set(el, n + 1);
+    const a = el.animate(kf, { delay: t * 1000, duration: Math.max(1, dur * 1000), easing: ease, fill: n ? "forwards" : "both" });
+    a.pause(); anims.push(a); return a;
+  }
+  const mk = (parent, cls = "", html = "", css = {}) => { const e = document.createElement("div"); e.className = cls; e.innerHTML = html; Object.assign(e.style, css); parent.append(e); return e; };
+  const px = (v) => v + "px";
+  const L = (h, v) => (P ? v : h);
+  let seed = 7; const rnd = () => { seed |= 0; seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  const pick = (a) => a[Math.floor(rnd() * a.length)];
+  const C = (x, y) => ({ left: px(x), top: px(y), transform: "translate(-50%,-50%)" });   // position of a centred element
+  const centred = "translate(-50%,-50%)";
+  function scene(i) {
+    const s = mk(stage, "scene");
+    const a = T0[i], b = T0[i] + D[i];
+    ticks.push((t) => { s.style.display = t >= a - 0.04 && t < b + 0.04 ? "" : "none"; });
+    return { s, a, b, d: D[i] };
+  }
+  // abstract "photo" covers: soft colour fields, no people, no logos
+  const PAL = [["#1f6b45", "#2f8f5b", "#0e2a1d"], ["#24407a", "#4062b0", "#0d1733"], ["#7a2430", "#b8404c", "#2a0d12"], ["#6b4a1a", "#c99032", "#22180a"], ["#3a2a6b", "#6a54c0", "#140f2a"], ["#16596b", "#2fa3b8", "#0a2228"], ["#555d6b", "#9aa3b2", "#1a1d24"]];
+  function cover() {
+    const [a, b, c] = pick(PAL);
+    return `radial-gradient(circle at ${20 + rnd() * 60}% ${20 + rnd() * 50}%, ${b}cc, transparent 55%), radial-gradient(circle at ${rnd() * 100}% ${60 + rnd() * 40}%, ${a}, transparent 60%), radial-gradient(ellipse at 50% 110%, rgba(255,255,255,.18), transparent 50%), linear-gradient(${150 + rnd() * 60}deg, ${a}, ${c})`;
+  }
+  function card(parent, x, y, w, ratio, extra = {}) {
+    const ch = w * ratio, h = ch + 54;
+    const c = mk(parent, "card", "", { left: px(x), top: px(y), width: px(w), height: px(h), ...extra });
+    mk(c, "cv", "", { height: px(ch), background: cover() });
+    mk(c, "ft", `<span class="av"></span><span class="ln" style="width:${40 + rnd() * 35}%"></span>`);
+    return c;
+  }
+  const RATIOS = [1.25, 1.78, 1, 1.25, 1.78, 1.25];
+
+  // ---------- global background ----------
+  const g1 = mk(stage, "glow", "", { width: px(W * .7), height: px(W * .7), left: px(-W * .2), top: px(-W * .25), background: "rgba(240,184,74,.10)" });
+  const g2 = mk(stage, "glow", "", { width: px(W * .6), height: px(W * .6), left: px(W * .6), top: px(H * .55), background: "rgba(77,91,255,.10)" });
+  A(g1, [{ transform: "translate(0,0)" }, { transform: `translate(${W * .3}px,${H * .25}px)` }], 0, TOTAL, E.lin);
+  A(g2, [{ transform: "translate(0,0)" }, { transform: `translate(${-W * .35}px,${-H * .3}px)` }], 0, TOTAL, E.lin);
+
+  // ======================= 1 · The problem =======================
+  {
+    const { s, a } = scene(0);
+    const fs = L(300, 210);
+    const same = mk(s, "big abs", P ? "SAME<br>FEED" : "SAME FEED", { ...C(W / 2, H / 2), fontSize: px(fs), textAlign: "center" });
+    A(same, [{ transform: `${centred} scale(1.9)`, opacity: 0, filter: "blur(18px)" }, { transform: `${centred} scale(1.05)`, opacity: 1, filter: "blur(0px)" }], a + .15, 2.2, E.out);
+    A(same, [{ transform: `${centred} scale(1.05)`, opacity: 1 }, { transform: `${centred} scale(.95)`, opacity: .08 }], a + 2.45, .4, E.soft);
+    A(same, [{ opacity: .08 }, { opacity: 0 }], a + 5.6, .25, E.soft);
+    // notifications popping around
+    const spots = P ? [[180, 520], [880, 620], [220, 1380], [860, 1300], [540, 360]] : [[330, 250], [1600, 300], [260, 820], [1650, 800], [980, 150]];
+    ["+1", "+12", "+48", "+99", "+3"].forEach((n, i) => {
+      const b = mk(s, "abs", n, { ...C(...spots[i]), padding: "10px 18px", borderRadius: "100px", background: "#ff3b5c", font: "700 26px Inter", boxShadow: "0 10px 30px rgba(255,59,92,.4)" });
+      A(b, [{ transform: `${centred} scale(0)`, opacity: 0 }, { transform: `${centred} scale(1)`, opacity: 1 }], a + .6 + i * .32, .35, E.slam);
+      A(b, [{ opacity: 1 }, { opacity: 0 }], a + 2.4, .3, E.soft);
+    });
+    // fast words
+    const words = [["matchday", P ? [540, 640] : [560, 380]], ["signings", P ? [540, 960] : [1360, 540]], ["sponsors", P ? [540, 1280] : [640, 720]]];
+    words.forEach(([w, pos], i) => {
+      const e = mk(s, "small abs", w, { ...C(...pos), fontSize: px(L(44, 48)), color: "#fff", letterSpacing: ".3em" });
+      A(e, [{ transform: `${centred} translateX(-60px)`, opacity: 0 }, { transform: `${centred} translateX(0)`, opacity: 1 }], a + 3.05 + i * .75, .22, E.out);
+      A(e, [{ opacity: 1, filter: "blur(0)" }, { opacity: 0, filter: "blur(10px)" }], a + 3.7 + i * .75, .35, E.soft);
+    });
+    const ew = mk(s, "big abs gold", P ? "EVERY<br>WEEK" : "EVERY WEEK", { ...C(W / 2, H / 2), fontSize: px(L(240, 200)), textAlign: "center" });
+    A(ew, [{ transform: `${centred} translateY(-${H}px)`, opacity: 1 }, { transform: `${centred} translateY(0)`, opacity: 1 }], a + 5.85, .28, E.in);
+    A(ew, [{ transform: `${centred} translate(0,0)` }, { transform: `${centred} translate(-14px,8px)` }, { transform: `${centred} translate(12px,-6px)` }, { transform: `${centred} translate(-6px,4px)` }, { transform: `${centred} translate(0,0)` }], a + 6.13, .35, E.lin);
+    A(ew, [{ opacity: 1 }, { opacity: 0 }], a + D[0] - .35, .3, E.soft);
+    const q = mk(s, "small abs", "what do we post today?<span class='cur'>|</span>", { ...C(W / 2, L(H - 120, H - 220)), fontSize: px(26), letterSpacing: ".18em" });
+    A(q, [{ opacity: 0 }, { opacity: .8 }], a + .2, .6, E.soft);
+    A(q, [{ opacity: .8 }, { opacity: 0 }], a + 5.6, .3, E.soft);
+    const cur = q.querySelector(".cur"); ticks.push((t) => { cur.style.opacity = Math.floor(t * 2.2) % 2 ? 0 : 1; });
+  }
+
+  // ======================= 2 · Hours of scrolling… guessing =======================
+  {
+    const { s, a, d } = scene(1);
+    s.style.filter = "saturate(.35)";
+    const pw = L(470, 600), ph = pw * 2.05;
+    const phone = mk(s, "abs", "", { ...C(W / 2, H / 2 + L(0, -40)), width: px(pw), height: px(ph), borderRadius: "56px", border: "10px solid #222a3d", background: "#0f1628", overflow: "hidden", boxShadow: "0 60px 120px -40px #000" });
+    const feed = mk(phone, "abs", "", { left: "18px", right: "18px", top: "0" });
+    for (let i = 0; i < 16; i++) card(feed, 0, i * (pw * 1.05), pw - 56, 1.25);
+    A(phone, [{ transform: `${centred} scale(.92) rotate(-4deg)` }, { transform: `${centred} scale(1) rotate(2deg)` }], a, d, E.lin);
+    A(feed, [{ transform: "translateY(0)" }, { transform: `translateY(-${pw * 1.05 * 9}px)` }], a, d, "cubic-bezier(.3,.1,.6,1)");
+    const hrs = mk(s, "small abs", "hours of scrolling…", { ...C(L(400, W / 2), L(H / 2, 200)), fontSize: px(L(30, 40)), color: "#fff" });
+    A(hrs, [{ transform: `${centred} translateY(60px)`, opacity: 0 }, { transform: `${centred} translateY(-60px)`, opacity: .9 }], a + .2, 3.1, E.lin);
+    A(hrs, [{ opacity: .9 }, { opacity: 0 }], a + 3.2, .3, E.soft);
+    // clock
+    const clock = mk(s, "abs", "", { ...C(L(1500, W / 2), L(H / 2 - 150, H - 330)), width: "130px", height: "130px", borderRadius: "50%", border: "6px solid rgba(255,255,255,.5)" });
+    const hand = mk(clock, "abs", "", { left: "59px", top: "14px", width: "6px", height: "52px", borderRadius: "3px", background: "#fff", transformOrigin: "50% 100%" });
+    A(hand, [{ transform: "rotate(0deg)" }, { transform: "rotate(1440deg)" }], a, d, E.lin);
+    A(clock, [{ opacity: 0 }, { opacity: .8 }], a + .5, .5, E.soft);
+    const gs = mk(s, "big abs", "GUESSING", { ...C(W / 2, H / 2 + L(0, 520)), fontSize: px(L(230, 170)) });
+    A(gs, [{ opacity: 0, transform: `${centred} scale(1.1)`, filter: "blur(0px)" }, { opacity: 1, transform: `${centred} scale(1)`, filter: "blur(0px)" }], a + 3.4, .2, E.out);
+    A(gs, [{ opacity: 1, filter: "blur(0px)", letterSpacing: "-0.045em" }, { opacity: 0, filter: "blur(28px)", letterSpacing: ".2em" }], a + 3.9, d - 4.05, E.soft);
+  }
+
+  // ======================= 3 · Not anymore. =======================
+  {
+    const { s, a, d } = scene(2);
+    s.style.background = "#000";
+    const nm = mk(s, "big abs goldfill", P ? `N<span class="o">O</span>T<br>ANYMORE.` : `N<span class="o">O</span>T ANYMORE.`, { ...C(W / 2, H / 2), fontSize: px(L(260, 185)), textAlign: "center" });
+    const o = nm.querySelector(".o");
+    // zoom through the "O"
+    const r = nm.getBoundingClientRect(), ro = o.getBoundingClientRect();
+    nm.style.transformOrigin = `${ro.left - r.left + ro.width / 2}px ${ro.top - r.top + ro.height * .55}px`;
+    A(nm, [{ transform: `${centred} scale(3)`, opacity: 0 }, { transform: `${centred} scale(1)`, opacity: 1 }], a + .5, .22, E.out);
+    A(nm, [{ transform: `${centred} scale(1)` }, { transform: `${centred} scale(1.06)` }], a + .72, 1, E.lin);
+    A(nm, [{ transform: `${centred} scale(1.06)`, opacity: 1 }, { transform: `${centred} scale(60)`, opacity: 1 }], a + d - .75, .75, E.in);
+    const flash = mk(s, "abs", "", { inset: 0, background: "radial-gradient(circle, #ffe3a3, #f0b84a 40%, #1a2646 100%)" });
+    A(flash, [{ opacity: 0 }, { opacity: 1 }], a + d - .18, .18, E.in);
+  }
+
+  // ======================= 4 · Proof: flight through the platform =======================
+  {
+    const { s, a, d } = scene(3);
+    const world = mk(s, "abs", "", { inset: 0, perspective: "1300px", perspectiveOrigin: "50% 30%" });
+    const cols = L(9, 6), cw = 250, gap = 26;
+    const planeW = cols * (cw + gap);
+    const plane = mk(world, "abs", "", { left: px(W / 2 - planeW / 2), top: px(H * .1), width: px(planeW), height: "7000px", transformStyle: "preserve-3d", transformOrigin: "50% 0%" });
+    const colY = Array(cols).fill(0);
+    for (let n = 0; n < cols * 22; n++) {
+      const c = colY.indexOf(Math.min(...colY));
+      const ratio = pick(RATIOS);
+      const el = card(plane, c * (cw + gap), colY[c], cw, ratio);
+      if (rnd() < .12) mk(el, "badge", pick(["Top Picks", "Replicable", "Overperforming"]), { background: pick(["linear-gradient(90deg,#f32f71,#ff685c)", "linear-gradient(90deg,#00d85b,#00ccdd)", "linear-gradient(90deg,#4d5bff,#7a5cff)"]) });
+      colY[c] += cw * ratio + 54 + gap;
+    }
+    // camera: dive in, rise, scroll, descend
+    A(plane, [
+      { transform: "translateZ(-200px) rotateX(72deg) translateY(0px)", offset: 0 },
+      { transform: "translateZ(260px) rotateX(58deg) rotateZ(-4deg) translateY(-900px)", offset: .3 },
+      { transform: "translateZ(-500px) rotateX(48deg) rotateZ(5deg) translateY(-2300px)", offset: .65 },
+      { transform: "translateZ(120px) rotateX(38deg) rotateZ(-2deg) translateY(-3600px)", offset: 1 },
+    ], a, d, E.inout);
+    A(world, [{ opacity: 0, filter: "blur(20px)" }, { opacity: 1, filter: "blur(0px)" }], a, .6, E.out);
+    // floating layer: sports and filter chips at different depths
+    const fl = mk(s, "abs", "", { inset: 0, perspective: "1000px" });
+    const tags = ["Football", "Basketball", "Matchday", "Signings", "Sponsors", "Reels", "Kit launch", "Derby", "Tennis", "Handball", "Carousels", "Starting XI"];
+    tags.forEach((t, i) => {
+      const z = -200 + rnd() * 700, x = rnd() * W, y = H * .15 + rnd() * H * .75;
+      const e = mk(fl, `chip abs${i % 3 ? " w" : ""}`, t, { left: px(x), top: px(y), fontSize: px(L(20, 24)) });
+      A(e, [{ transform: `translate3d(0, 80px, ${z}px)`, opacity: 0 }, { transform: `translate3d(${(rnd() - .5) * 300}px, -260px, ${z + 200}px)`, opacity: .95, offset: .5 }, { transform: `translate3d(${(rnd() - .5) * 400}px, -620px, ${z + 400}px)`, opacity: 0 }], a + .8 + i * .55, 5.5, E.lin);
+    });
+    // numbers
+    const shade = mk(s, "abs", "", { inset: 0, background: "radial-gradient(70% 55% at 50% 50%, rgba(7,11,23,.82), rgba(7,11,23,0) 75%)" });
+    A(shade, [{ opacity: 0 }, { opacity: 1 }], a + 4.3, .5, E.soft);
+    const num = mk(s, "big abs goldfill", "0", { ...C(W / 2, H / 2 - L(40, 120)), fontSize: px(L(250, 200)) });
+    const lab = mk(s, "small abs", "posts", { ...C(W / 2, H / 2 + L(110, 20)), fontSize: px(L(34, 40)), color: "#fff" });
+    A(num, [{ opacity: 0, transform: `${centred} scale(.6)` }, { opacity: 1, transform: `${centred} scale(1)` }], a + 4.6, .5, E.slam);
+    A(lab, [{ opacity: 0 }, { opacity: 1 }], a + 4.9, .4, E.soft);
+    ticks.push((t) => { const k = Math.min(1, Math.max(0, (t - a - 4.6) / 2.1)); const e = 1 - Math.pow(1 - k, 3); num.textContent = (Math.round(e * 500000 / 1000) * 1000).toLocaleString("en-US") + (k >= 1 ? "+" : ""); });
+    const row = mk(s, "abs", "", { ...C(W / 2, H / 2 + L(230, 200)), display: "flex", flexDirection: P ? "column" : "row", alignItems: "center", gap: P ? "18px" : "70px", transform: centred });
+    const n1 = mk(row, "big", `770+ <span class="small" style="font-size:.28em;letter-spacing:.2em;color:#fff">clubs</span>`, { fontSize: px(L(110, 110)) });
+    const n2 = mk(row, "big", `110+ <span class="small" style="font-size:.28em;letter-spacing:.2em;color:#fff">competitions</span>`, { fontSize: px(L(110, 110)) });
+    A(n1, [{ opacity: 0, transform: "translateY(40px)" }, { opacity: 1, transform: "translateY(0)" }], a + 7.3, .45, E.out);
+    A(n2, [{ opacity: 0, transform: "translateY(40px)" }, { opacity: 1, transform: "translateY(0)" }], a + 8.6, .45, E.out);
+    const grow = mk(s, "small abs", "growing every day", { ...C(W / 2, H - L(120, 260)), fontSize: px(L(30, 36)), color: "#fff" });
+    A(grow, [{ opacity: 0, transform: `${centred} translateX(${W * .25}px)` }, { opacity: .9, transform: `${centred} translateX(0)`, offset: .3 }, { opacity: .9, transform: `${centred} translateX(-${W * .05}px)`, offset: .8 }, { opacity: 0, transform: `${centred} translateX(-${W * .2}px)` }], a + 10.4, d - 10.5, E.lin);
+    [num, lab, row].forEach((e) => A(e, [{ opacity: 1 }, { opacity: 0 }], a + d - .5, .4, E.soft));
+    A(shade, [{ opacity: 1 }, { opacity: 0 }], a + d - .5, .4, E.soft);
+  }
+
+  // ======================= 5 · Search → the posts that worked =======================
+  {
+    const { s, a, d } = scene(4);
+    const app = mk(s, "abs", "", { inset: 0, perspective: "1800px" });
+    const ui = mk(app, "abs", "", { left: px(L(110, 50)), top: px(L(70, 160)), width: px(W - L(220, 100)), height: px(H - L(140, 320)), borderRadius: "28px", background: "rgba(13,20,40,.92)", border: "1px solid rgba(255,255,255,.1)", overflow: "hidden", transformOrigin: "50% 40%" });
+    A(ui, [{ transform: "rotateX(14deg) rotateY(-10deg) scale(.9)", opacity: 0 }, { transform: "rotateX(6deg) rotateY(-4deg) scale(.97)", opacity: 1, offset: .15 }, { transform: "rotateX(0deg) rotateY(3deg) scale(1.02)", opacity: 1 }], a, d, E.soft);
+    const sideW = P ? 0 : 430;
+    if (!P) {
+      const side = mk(ui, "abs", "", { left: 0, top: 0, bottom: 0, width: px(sideW), borderRight: "1px solid rgba(255,255,255,.08)", padding: "34px 28px", boxSizing: "border-box" });
+      mk(side, "", "Filters", { font: "700 30px 'Host Grotesk'", marginBottom: "26px" });
+      const sps = [["sp-top", "Top Picks"], ["sp-rep", "Replicable Ideas"], ["sp-cc", "Content Creators"], ["sp-over", "Overperforming"]].map(([c, t]) => mk(side, `sp ${c}`, `<i></i>${t}`, { marginBottom: "12px" }));
+      sps.forEach((e, i) => A(e, [{ filter: "brightness(1)", transform: "scale(1)" }, { filter: "brightness(1.35)", transform: "scale(1.04)" }, { filter: "brightness(1)", transform: "scale(1)" }], a + 4.3 + i * .25, .6, E.soft));
+      for (let i = 0; i < 6; i++) { const r = mk(side, "", "", { display: "flex", gap: "14px", alignItems: "center", height: "58px", borderBottom: "1px solid rgba(255,255,255,.06)" }); mk(r, "bar", "", { width: "26px", height: "26px", borderRadius: "8px" }); mk(r, "bar", "", { width: px(120 + rnd() * 120) }); }
+    }
+    const main = mk(ui, "abs", "", { left: px(sideW + L(36, 30)), right: px(L(36, 30)), top: px(L(32, 36)), bottom: 0 });
+    const sbox = mk(main, "", "", { position: "relative", height: px(L(76, 88)), borderRadius: "20px", border: "2px solid rgba(240,184,74,.6)", background: "rgba(240,184,74,.06)", display: "flex", alignItems: "center", padding: "0 26px", font: `500 ${L(28, 32)}px Inter`, color: "#fff", boxShadow: "0 0 0 8px rgba(240,184,74,.08)" });
+    const typed = mk(sbox, "", "", {}), caret = mk(sbox, "", "|", { color: "var(--gold)", marginLeft: "2px" });
+    const phrase = "signing reels that went viral";
+    ticks.push((t) => { const k = Math.max(0, Math.min(1, (t - a - 1.55) / 1.35)); typed.textContent = phrase.slice(0, Math.round(k * phrase.length)); caret.style.opacity = Math.floor(t * 2.4) % 2 ? 0 : 1; });
+    // suggestion
+    const sug = mk(main, "panel", "", { position: "absolute", left: 0, right: P ? 0 : "35%", top: px(L(92, 104)), padding: "18px 22px", zIndex: 5 });
+    mk(sug, "", "Search with 3 filters", { font: "700 22px Inter", color: "var(--gold)", marginBottom: "12px" });
+    const sr = mk(sug, "", "", { display: "flex", gap: "10px", flexWrap: "wrap" });
+    ["Signings", "Reels", "Overperforming"].forEach((t) => mk(sr, "chip w", t, { fontSize: "17px", height: "38px" }));
+    A(sug, [{ opacity: 0, transform: "translateY(-14px)" }, { opacity: 1, transform: "translateY(0)" }], a + 3.05, .3, E.out);
+    A(sug, [{ opacity: 1 }, { opacity: 0 }], a + 3.7, .2, E.soft);
+    // active filters
+    const act = mk(main, "", "", { display: "flex", gap: "12px", marginTop: "20px", height: "44px", flexWrap: "wrap" });
+    ["Signings", "Reels", "Overperforming"].forEach((t, i) => { const c = mk(act, "chip", `${t} ✕`); A(c, [{ opacity: 0, transform: "scale(.4)" }, { opacity: 1, transform: "scale(1)" }], a + 3.75 + i * .18, .35, E.slam); });
+    // grid: before → after
+    const gw = (W - L(220, 100)) - sideW - L(72, 60), gcols = L(4, 2), gg = 22, cwid = (gw - gg * (gcols - 1)) / gcols;
+    const grid = mk(main, "abs", "", { left: 0, right: 0, top: px(L(190, 220)), bottom: 0 });
+    const build = (after) => {
+      const layer = mk(grid, "abs", "", { inset: 0 });
+      const cy = Array(gcols).fill(0);
+      for (let n = 0; n < gcols * 4; n++) {
+        const c = cy.indexOf(Math.min(...cy)), ratio = after ? 1.6 : pick(RATIOS);
+        const el = card(layer, c * (cwid + gg), cy[c], cwid, ratio);
+        if (after) mk(el, "badge", "Overperforming", { background: "linear-gradient(90deg,#4d5bff,#7a5cff)" });
+        if (after) A(el, [{ opacity: 0, transform: "translateY(60px) scale(.9)" }, { opacity: 1, transform: "translateY(0) scale(1)" }], a + 4.15 + n * .05, .45, E.out);
+        cy[c] += cwid * ratio + 54 + gg;
+      }
+      return layer;
+    };
+    const before = build(false);
+    A(before, [{ opacity: 1, filter: "blur(0)" }, { opacity: 0, filter: "blur(12px)" }], a + 3.95, .4, E.soft);
+    build(true);
+    const wk = mk(s, "big abs goldfill", "WORKED.", { ...C(W / 2, H / 2), fontSize: px(L(330, 230)), zIndex: 10, textShadow: "0 30px 80px rgba(0,0,0,.6)" });
+    const dim = mk(s, "abs", "", { inset: 0, background: "rgba(7,11,23,.72)", zIndex: 9 });
+    A(dim, [{ opacity: 0 }, { opacity: 1 }], a + 4.85, .2, E.soft);
+    A(wk, [{ opacity: 0, transform: `${centred} scale(1.8)` }, { opacity: 1, transform: `${centred} scale(1)` }], a + 4.95, .2, E.out);
+    A(wk, [{ transform: `${centred} scale(1)` }, { transform: `${centred} scale(1.08)` }], a + 5.15, d - 5.5, E.lin);
+    A(wk, [{ opacity: 1 }, { opacity: 0 }], a + d - .35, .3, E.soft);
+    A(dim, [{ opacity: 1 }, { opacity: 0 }], a + d - .35, .3, E.soft);
+  }
+
+  // ======================= 6 · AI analysis =======================
+  {
+    const { s, a, d } = scene(5);
+    const pw = L(560, 640), ph = pw * 1.25;
+    const post = mk(s, "abs", "", { ...C(L(560, W / 2), L(H / 2, 620)), width: px(pw), height: px(ph), borderRadius: "28px", overflow: "hidden", boxShadow: "0 60px 120px -40px #000",
+      background: "repeating-conic-gradient(from 200deg at 50% -10%, rgba(255,255,255,.07) 0 4deg, transparent 4deg 12deg), radial-gradient(circle at 50% 0%, #4a64d8, transparent 60%), linear-gradient(170deg, #1d2b66, #0b1230)" });
+    mk(post, "small abs", "full time", { left: "50%", top: "16%", transform: "translateX(-50%)", fontSize: "26px", color: "#ffe3a3", letterSpacing: ".4em" });
+    mk(post, "big abs", "2 – 1", { left: "50%", top: "30%", transform: "translateX(-50%)", fontSize: px(pw * .32) });
+    mk(post, "small abs", "home · away", { left: "50%", top: "62%", transform: "translateX(-50%)", fontSize: "22px", color: "#fff" });
+    mk(post, "abs", "", { left: "12%", right: "12%", bottom: "12%", height: "6px", borderRadius: "3px", background: "linear-gradient(90deg,#f0b84a,#ffe3a3)" });
+    A(post, [{ opacity: 0, transform: `${centred} perspective(1400px) rotateY(25deg) scale(.7)` }, { opacity: 1, transform: `${centred} perspective(1400px) rotateY(8deg) scale(1)` }], a + .1, .9, E.out);
+    A(post, [{ transform: `${centred} perspective(1400px) rotateY(8deg) scale(1)` }, { transform: `${centred} perspective(1400px) rotateY(-4deg) scale(1.04)` }], a + 1, d - 1.2, E.soft);
+    // analysis panel
+    const pan = mk(s, "panel", "", P ? { left: "60px", right: "60px", top: "1150px", padding: "34px 36px" } : { left: "980px", width: "800px", top: "170px", padding: "40px 44px" });
+    const head = mk(pan, "", `<span style="color:var(--gold)">✦</span> AI analysis`, { font: "700 30px 'Host Grotesk'", marginBottom: "26px" });
+    A(pan, [{ opacity: 0, transform: "translateX(80px)" }, { opacity: 1, transform: "translateX(0)" }], a + 1.1, .6, E.out);
+    const items = [["Hook", "The result fills the frame: you get it in one second."], ["Format", "Designed graphic · 4:5 · out minutes after the whistle."], ["Why it works", "Instant, shareable, made to be reposted by fans."], ["Make it yours", "Your colours, your score, before anyone else posts."]];
+    items.forEach(([k, v], i) => {
+      const it = mk(pan, "", `<div class="small" style="font-size:17px;color:var(--gold);margin-bottom:8px">${k}</div><div style="font:500 ${L(25, 27)}px/1.35 Inter;color:#e6ebf5">${v}</div>`, { padding: "16px 0", borderTop: "1px solid rgba(255,255,255,.08)" });
+      A(it, [{ opacity: 0, transform: "translateY(20px)" }, { opacity: 1, transform: "translateY(0)" }], a + 1.3 + i * 1.25, .5, E.out);
+    });
+    // kinetic words over it
+    const kw = [["HOOK", 260, P ? [540, 300] : [700, 200], 3.2], ["format", 0, P ? [540, 420] : [1500, 960], 3.95], ["TIMING", 200, P ? [540, 330] : [520, 930], 4.85]];
+    kw.forEach(([w, size, pos, t]) => {
+      const e = size ? mk(s, "big abs gold", w, { ...C(...pos), fontSize: px(P ? size * .75 : size), zIndex: 10 }) : mk(s, "small abs", w, { ...C(...pos), fontSize: "46px", color: "#fff", zIndex: 10, letterSpacing: ".5em" });
+      A(e, [{ opacity: 0, transform: `${centred} scale(${size ? 1.6 : .8})` }, { opacity: 1, transform: `${centred} scale(1)` }], a + t, size ? .2 : .5, size ? E.out : E.soft);
+      A(e, [{ opacity: 1 }, { opacity: 0 }], a + t + (size ? .75 : 1), .3, E.soft);
+    });
+    const miy = mk(s, "big abs goldfill", "", { ...C(W / 2, L(H - 120, H - 150)), fontSize: px(L(120, 110)), zIndex: 10 });
+    const miyT = "MAKE IT YOURS";
+    ticks.push((t) => { const k = Math.max(0, Math.min(1, (t - a - 5.95) / 1.2)); miy.textContent = miyT.slice(0, Math.round(k * miyT.length)); });
+    A(miy, [{ opacity: 1 }, { opacity: 0 }], a + d - .35, .3, E.soft);
+  }
+
+  // ======================= 7 · Content Plan: the week fills =======================
+  {
+    const { s, a, d } = scene(6);
+    const days = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
+    const top = L(260, 420), colW = L(220, 132), gap = L(22, 10), left = (W - (colW * 7 + gap * 6)) / 2, colH = L(560, 900);
+    const head = mk(s, "abs", "", { left: px(left), top: px(top - 120), width: px(colW * 7 + gap * 6) });
+    const htxt = mk(head, "", "", { font: `600 ${L(30, 34)}px Inter`, marginBottom: "16px" });
+    const hb = mk(head, "bar", "", { height: "14px" });
+    const hf = mk(hb, "", "", { height: "100%", width: "0%", borderRadius: "7px", background: "linear-gradient(90deg,#d99a2b,#f0b84a,#ffe3a3)", boxShadow: "0 0 24px rgba(240,184,74,.6)" });
+    A(head, [{ opacity: 0 }, { opacity: 1 }], a + .2, .5, E.soft);
+    const cols = days.map((dd, i) => {
+      const c = mk(s, "abs", `<div class="small" style="font-size:${L(20, 18)}px;color:#fff;text-align:center;padding:16px 0">${dd}</div>`, { left: px(left + i * (colW + gap)), top: px(top), width: px(colW), height: px(colH), borderRadius: "20px", background: "rgba(255,255,255,.04)", border: "1px solid rgba(255,255,255,.08)" });
+      A(c, [{ opacity: 0, transform: "translateY(40px)" }, { opacity: 1, transform: "translateY(0)" }], a + .2 + i * .06, .5, E.out);
+      return c;
+    });
+    const T = (i) => a + .45 + i * .42;
+    days.forEach((_, i) => {
+      const cwid = colW - L(28, 16), el = card(s, 0, 0, cwid, 1.15, {});
+      const tx = left + i * (colW + gap) + L(14, 8), ty = top + L(70, 64);
+      const sx = L(-300, W / 2 - cwid / 2), sy = L(H / 2, H + 100);
+      el.style.left = px(tx); el.style.top = px(ty);
+      A(el, [{ transform: `translate(${sx - tx}px, ${sy - ty}px) rotate(-14deg) scale(1.3)`, opacity: 0 }, { transform: `translate(${(sx - tx) * .4}px, ${(sy - ty) * .4 - 160}px) rotate(-6deg) scale(1.15)`, opacity: 1, offset: .55 }, { transform: "translate(0,0) rotate(0) scale(1)", opacity: 1 }], T(i), .75, E.inout);
+      const col = cols[i];
+      A(col, [{ borderColor: "rgba(255,255,255,.08)", background: "rgba(255,255,255,.04)" }, { borderColor: "rgba(240,184,74,.7)", background: "rgba(240,184,74,.08)" }], T(i) + .7, .3, E.soft);
+    });
+    ticks.push((t) => { const n = [0, 1, 2, 3, 4, 5, 6].filter((i) => t >= T(i) + .72).length; htxt.innerHTML = `<b style="font-family:'Host Grotesk';font-size:1.3em">${n}/7</b> days with content${n === 7 ? ' <span style="color:#00d85b">✓ Full week</span>' : ""}`; hf.style.width = (n / 7 * 100) + "%"; });
+    const yw = mk(s, "small abs", "your whole week", { ...C(W / 2, L(110, 200)), fontSize: px(L(32, 38)), color: "#fff" });
+    A(yw, [{ opacity: 0, transform: `${centred} translateX(-80px)` }, { opacity: .9, transform: `${centred} translateX(80px)` }], a + .4, d - 1, E.lin);
+    const rd = mk(s, "big abs goldfill", "READY.", { ...C(W / 2, L(H - 120, H - 260)), fontSize: px(L(170, 200)) });
+    A(rd, [{ opacity: 0, transform: `${centred} scale(1.6)` }, { opacity: 1, transform: `${centred} scale(1)` }], T(6) + .85, .25, E.out);
+    A(s, [{ opacity: 1 }, { opacity: 0 }], a + d - .3, .3, E.soft);
+  }
+
+  // ======================= 8 · Hours → Minutes, Guesswork → Proof, Blank page → Full week =======================
+  {
+    const { s, a, d } = scene(7);
+    const pairs = [["hours", "MINUTES"], ["guesswork", "PROOF"], ["blank page", "FULL WEEK"]];
+    const seg = .95;
+    pairs.forEach(([from, to], i) => {
+      const t = a + .1 + i * seg, sp = 1 - i * .22;      // each faster
+      const f = mk(s, "small abs", from, { ...C(W / 2, H / 2 - L(150, 200)), fontSize: px(L(52, 56)), color: "#8b98ae", letterSpacing: ".3em" });
+      const arrow = mk(s, "abs", "↓", { ...C(W / 2, H / 2 - L(70, 110)), font: "300 60px Inter", color: "#8b98ae" });
+      const tt = mk(s, "big abs goldfill", to, { ...C(W / 2, H / 2 + L(90, 70)), fontSize: px(L(to.length > 6 ? 230 : 280, to.length > 6 ? 150 : 200)) });
+      A(f, [{ opacity: 0, transform: `${centred} translateY(-30px)` }, { opacity: 1, transform: `${centred} translateY(0)` }], t, .25 * sp, E.out);
+      A(arrow, [{ opacity: 0 }, { opacity: 1 }], t + .3 * sp, .15, E.soft);
+      A(tt, [{ opacity: 0, transform: `${centred} scale(2.4)` }, { opacity: 1, transform: `${centred} scale(1)` }], t + .45 * sp, .18, E.out);
+      A(f, [{ opacity: 1, transform: `${centred} scale(1)` }, { opacity: .25, transform: `${centred} scale(.85)` }], t + .55 * sp, .2, E.soft);
+      [f, arrow, tt].forEach((e) => A(e, [{ opacity: 1 }, { opacity: 0 }], t + seg - .12, .1, E.soft));
+    });
+    // "This is how sports social teams get ahead."
+    const sm = mk(s, "small abs", "this is how sports social teams", { ...C(W / 2, H / 2 - L(120, 160)), fontSize: px(L(34, 34)), color: "#fff", letterSpacing: ".2em", whiteSpace: P ? "normal" : "nowrap", width: P ? "860px" : "auto", textAlign: "center" });
+    A(sm, [{ opacity: 0, transform: `${centred} translateY(20px)` }, { opacity: 1, transform: `${centred} translateY(0)` }], a + 2.95, .4, E.out);
+    const ga = mk(s, "big abs goldfill", P ? "GET<br>AHEAD." : "GET AHEAD.", { ...C(W / 2, H / 2 + L(60, 120)), fontSize: px(L(250, 220)), textAlign: "center" });
+    A(ga, [{ opacity: 0, transform: `${centred} translateX(-${W * .6}px) skewX(-12deg)` }, { opacity: 1, transform: `${centred} translateX(0) skewX(0)` }], a + 4.85, .35, E.out);
+    A(ga, [{ transform: `${centred} translateX(0)` }, { transform: `${centred} translateX(${W * .03}px)` }], a + 5.3, d - 5.6, E.lin);
+    [sm, ga].forEach((e) => A(e, [{ opacity: 1 }, { opacity: 0 }], a + d - .3, .25, E.soft));
+  }
+
+  // ======================= 9 · Logo + CTA =======================
+  {
+    const { s, a, d } = scene(8);
+    const ring = mk(s, "abs", "", { ...C(W / 2, H / 2 - L(70, 120)), width: "560px", height: "560px", borderRadius: "50%", background: "radial-gradient(circle, rgba(240,184,74,.25), transparent 65%)" });
+    A(ring, [{ opacity: 0, transform: `${centred} scale(.4)` }, { opacity: 1, transform: `${centred} scale(1.2)` }], a + .1, 1.6, E.out);
+    const word = mk(s, "abs", `<img src="../assets/logo-scp.png" style="width:100%">`, { ...C(W / 2, H / 2 - L(70, 120)), width: px(L(720, 820)) });
+    A(word, [{ opacity: 0, transform: `${centred} scale(1.25)`, filter: "blur(16px)", letterSpacing: "0" }, { opacity: 1, transform: `${centred} scale(1)`, filter: "blur(0)" }], a + .25, 1.1, E.out);
+    A(word, [{ transform: `${centred} scale(1)` }, { transform: `${centred} scale(1.04)` }], a + 1.35, d - 1.6, E.lin);
+    const tag = mk(s, "small abs", P ? "the playbook every<br>sports social team needs" : "the playbook every sports social team needs", { ...C(W / 2, H / 2 + L(230, 280)), fontSize: px(L(26, 24)), color: "#fff", letterSpacing: ".16em", whiteSpace: P ? "normal" : "nowrap", textAlign: "center", width: P ? "760px" : "auto", lineHeight: "1.5" });
+    A(tag, [{ opacity: 0 }, { opacity: .9 }], a + 1.8, .7, E.soft);
+    const btn = mk(s, "abs", "Try it for free", { ...C(W / 2, H / 2 + L(340, 420)), padding: "22px 54px", borderRadius: "100px", background: "linear-gradient(90deg,#d99a2b,#f0b84a,#ffe3a3)", color: "#1a1206", font: "700 30px Inter", boxShadow: "0 20px 60px -10px rgba(240,184,74,.6)" });
+    A(btn, [{ opacity: 0, transform: `${centred} scale(.6)` }, { opacity: 1, transform: `${centred} scale(1)` }], a + 4.25, .4, E.slam);
+    A(btn, [{ boxShadow: "0 20px 60px -10px rgba(240,184,74,.6)" }, { boxShadow: "0 20px 90px 0px rgba(240,184,74,.9)" }, { boxShadow: "0 20px 60px -10px rgba(240,184,74,.6)" }], a + 4.8, 1.6, E.soft);
+  }
+
+  mk(stage, "vignette"); mk(stage, "grain");
+
+  // ---------- API for the renderer ----------
+  await Promise.all([...document.images].map((im) => im.complete ? 0 : new Promise((r) => { im.onload = im.onerror = r; })));
+  window.VIDEO = { W, H, TOTAL, T0, D };
+  window.renderAt = (t) => { for (const f of ticks) f(t); for (const an of anims) an.currentTime = t * 1000; };
+  window.renderAt(Number(Q.get("t") || 0));
+  // preview: ?play
+  if (Q.has("play")) { const st = performance.now(); const loop = () => { const t = (performance.now() - st) / 1000 % TOTAL; window.renderAt(t); requestAnimationFrame(loop); }; loop(); }
+  window.READY = true;
+})();
+</script>
+</body>
+</html>

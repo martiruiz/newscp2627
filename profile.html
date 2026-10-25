@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en" class="auth-checking">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>My profile — Sports Content Playbook</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-s-32.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon-s-64.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-s-192.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon-s.png">
+  <link rel="stylesheet" href="css/fonts.css?v=1">
+  <link rel="stylesheet" href="css/styles.css?v=20261027f">
+  <script src="js/theme.js?v=20261101a"></script>
+  <script src="js/i18n.js?v=20261027e"></script>
+  <style>.auth-checking body { visibility: hidden; }</style>
+  <script src="js/vendor/supabase-2.117.0.min.js"></script>
+  <script src="js/config.js?v=20261020lf"></script>
+  <script src="js/auth.js?v=20261024u"></script>
+  <script src="js/guard.js?v=20261025j"></script>
+</head>
+<body class="profile-page">
+  <header class="site-nav" data-nav>
+    <a class="brand" href="index.html" aria-label="Sports Content Playbook home"><img class="brand-logo" src="assets/logo-scp.png" alt="Sports Content Playbook" width="900" height="367"></a>
+    <nav class="nav-links" aria-label="Main">
+      <a href="index.html#how-it-works">How it works</a>
+      <a href="content-library.html">Content Library</a>
+      <a href="content-plan.html">Content Plan</a>
+      <a href="news.html">Social News</a>
+      <a href="pricing.html">Pricing</a>
+    </nav>
+    <div class="nav-actions">
+      <a class="nav-user" href="profile.html" aria-current="page" data-user-link><span class="nav-avatar" data-user-initials></span><span data-user-name></span></a>
+      <a class="btn btn-outline" href="admin/content-ideas.html" hidden data-admin-link>Admin</a>
+      <button class="btn btn-outline" type="button" data-logout>Log out</button>
+    </div>
+    <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" data-nav-toggle><span></span></button>
+  </header>
+
+  <main class="pf" data-pf>
+    <!-- Hero -->
+    <section class="pf-hero">
+      <div class="pf-id">
+        <div class="pf-photo">
+          <button class="pf-avatar" data-pf-avatar type="button" data-pf-photo aria-label="Change profile photo"><span data-user-initials></span><span class="pf-cam"><span data-icon="camera"></span></span></button>
+          <input type="file" accept="image/*" hidden data-pf-file>
+          <button class="pf-photo-remove" type="button" hidden data-pf-photo-remove>Remove photo</button>
+          <p class="pf-photo-status" data-pf-photo-status></p>
+        </div>
+        <div>
+          <p class="pf-eyebrow" data-pf-role>Your profile</p>
+          <h1 data-profile-title>My profile</h1>
+          <p class="pf-org" data-pf-org></p>
+          <span class="pf-plan-chip" data-pf-plan hidden></span>
+        </div>
+      </div>
+      <div class="pf-meter" data-pf-meter>
+        <span class="pf-meter-glow" aria-hidden="true"></span><svg viewBox="0 0 120 120" aria-hidden="true"><defs><linearGradient id="pf-ring-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe0a0"/><stop offset=".55" stop-color="#f0b84a"/><stop offset="1" stop-color="#d9962a"/></linearGradient></defs><circle cx="60" cy="60" r="52" class="pf-ring-bg"/><circle cx="60" cy="60" r="52" class="pf-ring" data-pf-ring/></svg>
+        <div class="pf-meter-text"><b data-pf-pct>0%</b><span>complete</span></div>
+      </div>
+      <div class="pf-why">
+        <b>Make the library yours</b>
+        <p>Tell us about your club and your favourite profiles. We'll put their new posts first in the Content Library and send you newsletters that fit what you do.</p>
+        <p class="pf-next" data-pf-next></p>
+      </div>
+    </section>
+
+    <div class="pf-layout">
+      <nav class="pf-nav" aria-label="Profile sections" data-pf-nav>
+        <a href="#about"><span data-icon="user"></span>About you</a>
+        <a href="#club"><span data-icon="trophy"></span>Your sport</a>
+        <a href="#channels"><span data-icon="megaphone"></span>Channels</a>
+        <a href="#favourites"><span data-icon="star"></span>Favourites</a>
+        <a href="#goals"><span data-icon="target"></span>Goals &amp; content</a>
+        <a href="#newsletter"><span data-icon="mail"></span>Newsletter</a>
+        <a href="#billing"><span data-icon="star"></span>Billing &amp; membership</a>
+        <a href="#security"><span data-icon="lock"></span>Account</a>
+      </nav>
+
+      <form class="pf-form" novalidate data-pf-form>
+        <section class="pf-card pf-about" id="about">
+          <header class="pf-head">
+            <span class="pf-head-ic"><span data-icon="user"></span></span>
+            <div><h2>About you</h2><p>Who's using the platform.</p></div>
+            <span class="pf-sec-prog" data-sec-prog="about"></span>
+          </header>
+          <div class="pf-grid">
+            <label class="pf-field">First name<span class="pf-in"><span data-icon="user"></span><input name="first_name" type="text" autocomplete="given-name" required placeholder="Your name"></span></label>
+            <label class="pf-field">Last name<span class="pf-in"><span data-icon="user"></span><input name="last_name" type="text" autocomplete="family-name" placeholder="Your last name"></span></label>
+            <label class="pf-field">Email<span class="pf-in is-locked"><span data-icon="mail"></span><input name="email" type="email" disabled><span class="pf-verified" data-pf-verified hidden><span data-icon="check"></span>Verified</span><span class="pf-lock"><span data-icon="lock"></span></span></span></label>
+            <div class="pf-field">Country<input name="country" type="hidden"><div class="pf-country" data-pf-country></div></div>
+          </div>
+          <div class="pf-q"><span>Your role <small>We use it to tailor your library and your recommendations.</small></span><div class="pf-roles" data-single="role"></div></div>
+          <div class="pf-q"><span>Content language <small>The language you post in: ideas in it come first.</small></span><div class="pf-chips" data-single="language"></div></div>
+        </section>
+
+        <section class="pf-card pf-about" id="club">
+          <header class="pf-head">
+            <span class="pf-head-ic"><span data-icon="trophy"></span></span>
+            <div><h2>Your sport</h2><p>The organisation you create content for.</p></div>
+            <span class="pf-sec-prog" data-sec-prog="club"></span>
+          </header>
+          <div class="pf-grid">
+            <label class="pf-field pf-wide">Organisation<input name="organization" type="text" placeholder="e.g. FC Barcelona Femení, Liga F, Nike…"></label>
+          </div>
+          <div class="pf-q"><span>Type of organisation</span><div class="pf-roles" data-single="orgType"></div></div>
+          <div class="pf-q"><span>Sports <small>Yours first in the library.</small></span><div class="pf-chips" data-catalog-chips="sport"></div></div>
+          <div class="pf-q"><span>Competitions you follow</span><div class="pf-picker" data-picker="competitions" data-source="competition" data-max="10" data-placeholder="Search competitions…"></div></div>
+          <div class="pf-q"><span>Content team size</span><div class="pf-seg" data-single="teamSize"></div></div>
+        </section>
+
+        <section class="pf-card pf-about" id="channels">
+          <header class="pf-head">
+            <span class="pf-head-ic"><span data-icon="megaphone"></span></span>
+            <div><h2>Channels</h2><p>Where you publish.</p></div>
+            <span class="pf-sec-prog" data-sec-prog="channels"></span>
+          </header>
+          <div class="pf-q"><span>Platforms you manage</span><div class="pf-roles" data-multi="platforms"></div></div>
+          <div class="pf-q"><span>Followers on your main account</span><div class="pf-seg" data-single="audience"></div></div>
+        </section>
+
+        <section class="pf-card pf-about" id="favourites">
+          <header class="pf-head">
+            <span class="pf-head-ic"><span data-icon="star"></span></span>
+            <div><h2>Your favourites</h2><p>Up to 5 of each. Their new posts appear first in your Content Library (“For you”).</p></div>
+            <span class="pf-sec-prog" data-sec-prog="favourites"></span>
+          </header>
+          <div class="pf-q"><span>Favourite social network <small>its posts come first in your Content Library</small></span><div class="pf-chips" data-single="favouritePlatform"></div></div>
+          <div class="pf-q"><span>5 favourite profiles <small>clubs, leagues, brands</small></span><div class="pf-picker" data-picker="favouriteProfiles" data-source="club" data-max="5" data-free data-placeholder="Search a profile, or type any name…"></div></div>
+          <div class="pf-q"><span>5 favourite creator accounts <small>marked with a star in the Content Library (Content Creators → Accounts)</small></span><div class="pf-picker" data-picker="favouriteCreatorAccounts" data-source="accounts" data-max="5" data-placeholder="Search an account…"></div></div>
+        </section>
+
+        <section class="pf-card pf-about" id="goals">
+          <header class="pf-head">
+            <span class="pf-head-ic"><span data-icon="target"></span></span>
+            <div><h2>Goals &amp; content</h2><p>What you want your content to achieve.</p></div>
+            <span class="pf-sec-prog" data-sec-prog="goals"></span>
+          </header>
+          <div class="pf-q"><span>Main goals</span><div class="pf-roles" data-multi="goals"></div></div>
+          <div class="pf-q"><span>Formats you make most</span><div class="pf-roles" data-multi="formats"></div></div>
+          <div class="pf-q"><span>Topics you care about</span><div class="pf-roles" data-multi="topics"></div></div>
+          <label class="pf-field pf-wide">Your biggest content challenge right now<textarea name="challenge" rows="3" maxlength="500" placeholder="e.g. We struggle to come up with matchday ideas that aren't just scores and line-ups."></textarea></label>
+        </section>
+
+        <section class="pf-card pf-about" id="newsletter">
+          <header class="pf-head">
+            <span class="pf-head-ic"><span data-icon="mail"></span></span>
+            <div><h2>Newsletter</h2><p>Ideas and platform news, picked for your profile.</p></div>
+            <span class="pf-sec-prog" data-sec-prog="newsletter"></span>
+          </header>
+          <!-- for now only the subscription; how often, the preview and the topics are hidden (data-nl-later) -->
+          <label class="pf-switch"><input type="checkbox" name="newsletter"><span class="switch" aria-hidden="true"></span><span><b>Send me the Sports Content Playbook newsletter</b><small>You can unsubscribe any time.</small></span></label>
+          <div class="pf-q" data-newsletter-only data-nl-later><span>How often</span><div class="pf-seg" data-single="frequency"></div></div>
+          <div class="pf-nl-prev" data-newsletter-only data-nl-later aria-hidden="true"><div class="pf-nl-mail"><i class="pf-nl-logo"></i><i class="pf-nl-l w60"></i><i class="pf-nl-l"></i><div class="pf-nl-th"><i></i><i></i><i></i></div><i class="pf-nl-l w70"></i><i class="pf-nl-btn"></i></div><p>This is what lands in your inbox: the week's best posts for your profile, with ideas to adapt them.</p></div>
+          <div class="pf-q" data-newsletter-only data-nl-later><span>What you want in it</span><div class="pf-chips" data-multi="newsletterTopics"></div></div>
+        </section>
+
+        <section class="pf-card pf-about pf-billing" id="billing">
+          <header class="pf-head">
+            <span class="pf-head-ic"><span data-icon="file-text"></span></span>
+            <div><h2>Billing &amp; membership</h2><p>Your plan, what you pay and when, invoices and payment method.</p></div>
+          </header>
+          <div data-billing><p class="pf-billing-loading">Loading…</p></div>
+        </section>
+
+        <section class="pf-card pf-about" id="security">
+          <header class="pf-head">
+            <span class="pf-head-ic"><span data-icon="lock"></span></span>
+            <div><h2>Account</h2><p>Sign-in and security.</p></div>
+          </header>
+          <div class="pf-acc">
+            <div class="pf-acc-box">
+              <div class="pf-acc-h"><span class="pf-acc-ic"><span data-icon="earth"></span></span><div><b>Website language</b><small>The language of the website and of the e-mails we send you.</small></div></div>
+              <div class="pf-lang" data-lang-slot="full"></div>
+            </div>
+            <div class="pf-acc-box">
+              <div class="pf-acc-h"><span class="pf-acc-ic"><span data-icon="lock"></span></span><div><b>Password</b><small>Choose a new one with at least 8 characters.</small></div></div>
+              <div class="pf-field"><span class="pf-in"><span data-icon="lock"></span><input name="password" type="password" autocomplete="new-password" minlength="8" placeholder="New password" aria-label="New password"><button class="pf-eye" type="button" aria-label="Show password" data-pw-eye><span data-icon="eye"></span></button></span>
+                <div class="pf-str" data-pw-str hidden><i></i><i></i><i></i><i></i></div><small class="pf-str-t" data-pw-str-t></small></div>
+              <div class="pf-row"><button class="btn btn-gold" type="button" data-password-save>Update password</button><p class="form-status" role="status" data-password-status></p></div>
+            </div>
+          </div>
+        </section>
+      </form>
+    </div>
+
+    <div class="pf-savebar" data-pf-savebar hidden>
+      <p data-pf-status>You have unsaved changes</p>
+      <button class="btn btn-outline" type="button" data-pf-discard>Discard</button>
+      <button class="btn btn-gold" type="button" data-pf-save>Save profile</button>
+    </div>
+  </main>
+
+  <script src="js/icons.js?v=20261031b"></script>
+  <script src="js/checkout.js?v=20261024w"></script>
+  <script src="js/profile.js?v=20261101e" defer></script>
+  <script src="js/profile-billing.js?v=20261031w" defer></script>
+  <script src="js/nav-menu.js?v=20261027c"></script>
+  <script src="js/consent.js?v=20261027a"></script>
+  <script src="js/lead-flow.js?v=20261103o"></script>
+  <script src="js/promo-bar.js?v=20261020a"></script>
+  <script src="js/main.js?v=20261024zg"></script>
+</body>
+</html>

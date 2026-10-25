@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en" data-always-dark>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Log in — Sports Content Playbook</title>
+  <meta name="description" content="Log in to Sports Content Playbook: your content library, AI analyses, content plan and saved boards for sports social media teams.">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-s-32.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon-s-64.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-s-192.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon-s.png">
+  <link rel="stylesheet" href="css/fonts.css?v=1">
+  <link rel="stylesheet" href="css/styles.css?v=20261027f">
+  <script src="js/theme.js?v=20261101a"></script>
+  <script src="js/i18n.js?v=20261027e"></script>
+</head>
+<body class="auth-page" data-auth-mode="login">
+  <main class="auth">
+    <a class="auth-logo" href="index.html" aria-label="Sports Content Playbook home"><img class="brand-logo" src="assets/logo-scp.png" alt="Sports Content Playbook" width="900" height="367"></a>
+    <h1>Log in to <span class="gold">Sports Content Playbook</span></h1>
+    <p class="auth-plan" hidden data-plan-summary></p>
+
+    <div class="auth-card">
+      <div class="auth-lang" data-lang-slot></div>
+      <form novalidate data-signup-form>
+        <label class="auth-field">Email
+          <input name="email" type="email" placeholder="Your email address" autocomplete="email" required>
+        </label>
+        <label class="auth-field" data-password-field>Password
+          <input name="password" type="password" placeholder="Your password" autocomplete="current-password" required minlength="6">
+        </label>
+        <button class="btn btn-gold auth-submit" type="submit" data-submit-label>Log in</button>
+        <button class="auth-toggle link-gold" type="button" data-forgot>Forgot your password? Set a new one</button>
+      </form>
+      <form novalidate data-reset-form hidden>
+        <p class="auth-reset-sub">Choose a password for your account. You'll use it, with your email, to log in.</p>
+        <label class="auth-field">New password
+          <input name="password" type="password" placeholder="At least 8 characters" autocomplete="new-password" required minlength="8">
+        </label>
+        <label class="auth-field">Repeat the password
+          <input name="password2" type="password" placeholder="The same password" autocomplete="new-password" required minlength="8">
+        </label>
+        <button class="btn btn-gold auth-submit" type="submit">Save password and continue</button>
+      </form>
+
+      <!-- "Forgot your password?": its own step (js/signup.js) — the email (filled in if already typed), one button, then "check your inbox" -->
+      <div class="auth-forgot" hidden data-forgot-view>
+        <form novalidate data-forgot-form>
+          <p class="auth-forgot-t">Get back into your account</p>
+          <p class="auth-forgot-sub">Write your email and we'll send you a link to choose a new password.</p>
+          <label class="auth-field">Email
+            <input name="email" type="email" placeholder="Your email address" autocomplete="email" required>
+          </label>
+          <button class="btn btn-gold auth-submit" type="submit">Send me the link</button>
+        </form>
+        <div class="auth-sent" hidden data-forgot-sent>
+          <span class="auth-sent-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></svg></span>
+          <p class="auth-forgot-t">Check your inbox</p>
+          <p class="auth-forgot-sub">We've sent a link to <b data-forgot-to></b>. Open it to choose a new password. It may take a minute; check your spam folder too.</p>
+          <button class="auth-toggle link-gold" type="button" data-forgot-again>Send it again</button>
+        </div>
+        <button class="auth-back" type="button" data-forgot-back>← Back to log in</button>
+      </div>
+
+      <div class="auth-or"><span>or</span></div>
+
+      <button class="auth-google" type="button" data-google-signup>
+        <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.6 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>
+        Continue with Google
+      </button>
+
+      <p class="form-status" role="status" data-auth-status></p>
+
+      <p class="auth-switch">Don’t have an account? <a class="link-gold" href="signup.html">Sign up</a></p>
+    </div>
+
+    <p class="auth-legal"><a href="index.html">← Back to the website</a></p>
+  </main>
+
+  <script src="js/auth-tunnel.js?v=20261020h" defer></script>
+  <script src="js/auth-bg.js?v=20261020c" defer></script>
+  <script src="js/vendor/supabase-2.117.0.min.js"></script>
+  <script src="js/config.js?v=20261020lf"></script>
+  <script src="js/auth.js?v=20261024u"></script>
+  <script src="js/consent.js?v=20261027a"></script>
+  <script src="js/lead-flow.js?v=20261103o"></script>
+  <script src="js/main.js?v=20261024zg"></script>
+  <script src="js/signup.js?v=20261024t"></script>
+  <script src="js/checkout.js?v=20261024w"></script>
+</body>
+</html>

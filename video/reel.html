@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>SCP reel — overlay</title>
+<link rel="stylesheet" href="../css/fonts.css?v=1">
+<style>
+  /* Transparent overlay drawn over the talking-head clip (video/me/blur.mp4), 1080×1920. ?bg shows a grey stand-in. */
+  :root { --gold: #f0b84a; --muted: #b4c0d3; }
+  html, body { margin: 0; background: transparent; }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; color: #fff; font-family: Inter, system-ui, sans-serif; }
+  .abs { position: absolute; }
+  .big { font-family: "Host Grotesk", Inter, sans-serif; font-weight: 700; letter-spacing: -0.04em; line-height: .9; text-transform: uppercase; white-space: nowrap; }
+  .goldfill { background: linear-gradient(100deg, #d99a2b, #f0b84a 40%, #ffe3a3 60%, #f0b84a 80%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .shadow { filter: drop-shadow(0 8px 24px rgba(0,0,0,.75)); }
+  .card { position: absolute; border-radius: 16px; overflow: hidden; background: #17213b; border: 1px solid rgba(255,255,255,.14); box-shadow: 0 24px 50px -20px rgba(0,0,0,.9); }
+  .card img { position: absolute; left: 0; top: 0; width: 100%; object-fit: cover; }
+  .card .vw { position: absolute; top: 10px; left: 10px; padding: 5px 10px; border-radius: 100px; background: rgba(8,12,24,.8); font: 700 17px Inter; }
+  .card .vw b { color: var(--gold); }
+  .panel { position: absolute; border-radius: 26px; background: rgba(13,20,40,.94); border: 1px solid rgba(255,255,255,.12); box-shadow: 0 40px 90px -30px rgba(0,0,0,.9); }
+  .chip { display: inline-flex; align-items: center; gap: 10px; height: 82px; padding: 0 34px; border-radius: 100px; border: 2px solid rgba(240,184,74,.6); background: rgba(13,20,40,.92); color: #fff; font: 700 40px "Host Grotesk"; white-space: nowrap; box-shadow: 0 14px 30px -12px rgba(0,0,0,.8); }
+  .chip.on { background: linear-gradient(90deg,#d99a2b,#f0b84a,#ffe3a3); color: #1a1206; border-color: transparent; }
+  .sp { display: inline-flex; align-items: center; gap: 16px; height: 96px; padding: 0 30px; border-radius: 24px; font: 700 40px "Host Grotesk"; }
+  .sp i { width: 50px; height: 50px; border-radius: 14px; background: rgba(26,18,6,.15); }
+  .sp-cc { background: linear-gradient(90deg, #d99a2b, #f0b84a 45%, #ffd98a); color: #1a1206; box-shadow: 0 20px 60px -10px rgba(240,184,74,.7); }
+  .sbox { display: flex; align-items: center; gap: 18px; height: 104px; padding: 0 30px; border-radius: 26px; border: 3px solid rgba(240,184,74,.75); background: rgba(13,20,40,.95); font: 600 40px Inter; box-shadow: 0 0 0 10px rgba(240,184,74,.1), 0 30px 60px -20px rgba(0,0,0,.8); }
+  .sbox svg { width: 40px; height: 40px; fill: none; stroke: var(--gold); stroke-width: 2.4; flex: none; }
+  /* captions */
+  #cap { position: absolute; left: 60px; right: 60px; top: 1430px; text-align: center; z-index: 40; }
+  #cap span { display: inline-block; margin: 0 9px; font: 800 70px/1.12 "Host Grotesk", Inter; letter-spacing: -0.02em; color: #fff;
+    text-shadow: 0 0 2px #000, 0 4px 0 rgba(0,0,0,.55), 0 10px 30px rgba(0,0,0,.6); -webkit-text-stroke: 2px rgba(0,0,0,.55); paint-order: stroke fill; }
+  #cap span.on { color: var(--gold); transform: scale(1.08); }
+  #cap span.hl { color: var(--gold); }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script>
+(async () => {
+  const Q = new URLSearchParams(location.search);
+  const W = 1080, H = 1920, TOTAL = 32.33;
+  const stage = document.getElementById("stage");
+  if (Q.has("bg")) stage.style.background = "#3a4152";
+  const pick = await (await fetch("real/pick.json")).json();
+  const words = await (await fetch("me/words-clean.json")).json();
+  await document.fonts.load('700 100px "Host Grotesk"'); await document.fonts.load('800 70px "Host Grotesk"'); await document.fonts.load('600 40px Inter'); await document.fonts.load('700 20px Inter'); await document.fonts.ready;
+
+  const anims = [], ticks = [], seen = new WeakMap();
+  const E = { out: "cubic-bezier(.16,1,.3,1)", inout: "cubic-bezier(.65,0,.35,1)", in: "cubic-bezier(.7,0,.84,0)", slam: "cubic-bezier(.2,1.5,.35,1)", lin: "linear", soft: "cubic-bezier(.4,0,.2,1)" };
+  function A(el, kf, t, dur, ease = E.out) {
+    const n = seen.get(el) || 0; seen.set(el, n + 1);
+    const a = el.animate(kf, { delay: t * 1000, duration: Math.max(1, dur * 1000), easing: ease, fill: n ? "forwards" : "both" });
+    a.pause(); anims.push(a); return a;
+  }
+  const mk = (p, cls = "", html = "", css = {}) => { const e = document.createElement("div"); e.className = cls; e.innerHTML = html; Object.assign(e.style, css); p.append(e); return e; };
+  const px = (v) => v + "px";
+  const centred = "translate(-50%,-50%)";
+  const C = (x, y) => ({ left: px(x), top: px(y), transform: centred });
+  const fmtV = (n) => n >= 1e6 ? `${(n / 1e6).toFixed(n < 1e7 ? 1 : 0)}M` : `${Math.round(n / 1e3)}K`;
+  const SEARCH = `<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>`;
+  const W_ = (txt) => { const w = words.find((x) => x[2].toLowerCase().replace(/[¿?¡!.,]/g, "").startsWith(txt)); return w ? w[0] : 0; };
+  function block(a, b) { const s = mk(stage, "abs", "", { inset: 0 }); ticks.push((t) => { s.style.display = t >= a - .05 && t < b + .05 ? "" : "none"; }); return s; }
+  function card(parent, p, x, y, w, opt = {}) {
+    const h = w * Math.min(Math.max(p.r, .56), 1.78);
+    const c = mk(parent, "card", `<img src="real/${p.f}" style="height:${h}px">`, { left: px(x), top: px(y), width: px(w), height: px(h), ...(opt.css || {}) });
+    if (opt.views && p.v) mk(c, "vw", `<b>${fmtV(p.v)}</b> views`);
+    return { el: c, h };
+  }
+  function masonry(parent, list, cols, width, gap, opt = {}) {
+    const cw = (width - gap * (cols - 1)) / cols, ys = Array(cols).fill(0), out = [];
+    list.forEach((p) => { const c = ys.indexOf(Math.min(...ys)); const k = card(parent, p, c * (cw + gap), ys[c], cw, opt); ys[c] += k.h + gap; out.push(k.el); });
+    return out;
+  }
+  const out = (els, t, d = .25) => els.forEach((e) => A(e, [{ opacity: 1 }, { opacity: 0 }], t, d, E.soft));
+
+  // small brand mark at the top, all the time
+  const brand = mk(stage, "abs", `<img src="../assets/logo-scp.png" style="width:100%">`, { left: "50%", top: "56px", width: "190px", transform: "translateX(-50%)", zIndex: 30, filter: "drop-shadow(0 4px 14px rgba(0,0,0,.6))" });
+  A(brand, [{ opacity: 0 }, { opacity: .95 }], .1, .5, E.soft);
+
+  // ===== A · 0–3.1 "¿Sabes qué tienen en común los mejores creadores…?" — real posts + Content Creators =====
+  {
+    const s = block(0, 3.15);
+    const box = mk(s, "abs", "", { left: "40px", right: "40px", top: "170px", height: "600px" });
+    const list = [...pick.views.slice(0, 4), ...pick.signing.slice(0, 4), ...pick.lineup.slice(0, 4)];
+    list.forEach((p, i) => {
+      const col = i % 4, row = Math.floor(i / 4), w = 235;
+      const k = card(box, { ...p, r: 1.25 }, col * 255, row * 200, w, { css: { height: "185px" } });
+      k.el.querySelector("img").style.height = "185px";
+      A(k.el, [{ opacity: 0, transform: `scale(.5) rotate(${(i % 3 - 1) * 6}deg)` }, { opacity: 1, transform: `scale(1) rotate(${(i % 3 - 1) * 2}deg)` }], .05 + i * .07, .35, E.slam);
+    });
+    const cc = mk(s, "sp sp-cc abs", "<i></i>Content Creators", { ...C(W / 2, 470), zIndex: 3 });
+    A(cc, [{ opacity: 0, transform: `${centred} scale(.4)` }, { opacity: 1, transform: `${centred} scale(1)` }], W_("creadores") - .1, .35, E.slam);
+    out([box, cc], 2.95, .2);
+  }
+
+  // ===== B · 3.1–6.3 "No dependen de la inspiración, analizan lo que funciona" =====
+  {
+    const s = block(3.05, 6.35);
+    const ins = mk(s, "big abs shadow", "INSPIRACIÓN", { ...C(W / 2, 330), fontSize: "130px" });
+    A(ins, [{ opacity: 0, transform: `${centred} scale(1.4)` }, { opacity: 1, transform: `${centred} scale(1)` }], W_("inspiración") - .15, .25, E.out);
+    const strike = mk(s, "abs", "", { left: "110px", top: "320px", height: "16px", width: "0px", borderRadius: "8px", background: "#ff3b5c", zIndex: 2 });
+    A(strike, [{ width: "0px" }, { width: "860px" }], W_("inspiración") + .45, .3, E.out);
+    out([ins, strike], 4.55, .2);
+    const fw = mk(s, "abs", "", { left: "0", right: "0", top: "150px", height: "640px" });
+    pick.views.slice(0, 3).forEach((p, i) => {
+      const k = card(fw, p, 0, 0, 280, { views: true });
+      const x = W / 2 - 140 + (i - 1) * 300, rot = (i - 1) * 8;
+      A(k.el, [{ opacity: 0, transform: `translate(${W / 2 - 140}px, 160px) rotate(0) scale(.6)` }, { opacity: 1, transform: `translate(${x}px, ${i === 1 ? 0 : 40}px) rotate(${rot}deg) scale(1)` }], 4.6 + i * .08, .45, E.slam);
+    });
+    const lqf = mk(s, "big abs goldfill shadow", "LO QUE FUNCIONA", { ...C(W / 2, 700), fontSize: "104px", zIndex: 3 });
+    A(lqf, [{ opacity: 0, transform: `${centred} translateY(40px)` }, { opacity: 1, transform: `${centred} translateY(0)` }], W_("funciona") - .2, .3, E.out);
+    out([fw, lqf], 6.15, .2);
+  }
+
+  // ===== C · 6.3–13.5 the platform full screen: base de datos + 500.000 + clubes / competiciones / creadores =====
+  {
+    const s = block(6.3, 13.55);
+    const sheet = mk(s, "abs", "", { inset: 0, background: "radial-gradient(120% 80% at 50% 30%, #1a2646, #0b1020 70%)" });
+    A(sheet, [{ transform: "translateY(100%)" }, { transform: "translateY(0)" }], 6.3, .45, E.out);
+    A(sheet, [{ transform: "translateY(0)" }, { transform: "translateY(100%)" }], 13.15, .4, E.in);
+    const ui = mk(sheet, "panel", "", { left: "40px", right: "40px", top: "170px", height: "1180px", overflow: "hidden" });
+    mk(ui, "sbox", `${SEARCH}<span style="color:#8b98ae;font-size:32px">Busca filtros o escribe lo que necesitas…</span>`, { position: "absolute", left: "26px", right: "26px", top: "26px", height: "88px" });
+    const grid = mk(ui, "abs", "", { left: "26px", right: "26px", top: "140px", height: "4000px" });
+    masonry(grid, [...pick.lineup.slice(0, 9), ...pick.views.slice(3, 9), ...pick.kit.slice(0, 9)], 3, 948, 16, { views: true });
+    A(grid, [{ transform: "translateY(0)" }, { transform: "translateY(-1500px)" }], 6.6, 6.6, E.inout);
+    const shade = mk(sheet, "abs", "", { inset: 0, background: "radial-gradient(70% 40% at 50% 45%, rgba(7,11,23,.9), rgba(7,11,23,.1) 80%)" });
+    A(shade, [{ opacity: 0 }, { opacity: 1 }], W_("medio") - .3, .4, E.soft);
+    const num = mk(sheet, "big abs goldfill shadow", "0", { ...C(W / 2, 700), fontSize: "190px" });
+    const lab = mk(sheet, "big abs shadow", "CONTENIDOS", { ...C(W / 2, 830), fontSize: "64px" });
+    const t0 = W_("medio") - .2;
+    A(num, [{ opacity: 0, transform: `${centred} scale(.6)` }, { opacity: 1, transform: `${centred} scale(1)` }], t0, .4, E.slam);
+    A(lab, [{ opacity: 0 }, { opacity: 1 }], t0 + .3, .3, E.soft);
+    ticks.push((t) => { const k = Math.min(1, Math.max(0, (t - t0) / 1.3)); num.textContent = "+" + (Math.round((1 - Math.pow(1 - k, 3)) * 500) * 1000).toLocaleString("es-ES"); });
+    [["CLUBES", "clubes"], ["COMPETICIONES", "competiciones"], ["CREADORES", "creadores", 1]].forEach(([w, key, nth], i) => {
+      const at = nth ? words.filter((x) => x[2].toLowerCase().startsWith(key))[1][0] : W_(key);
+      const c = mk(sheet, "chip on abs", w, { ...C(W / 2, 980 + i * 92) });
+      A(c, [{ opacity: 0, transform: `${centred} scale(.4)` }, { opacity: 1, transform: `${centred} scale(1)` }], at - .1, .3, E.slam);
+    });
+  }
+
+  // ===== D · 13.5–18.8 "Puedes buscar por deporte, competición, plataforma, formatos, estilo, hook o creador" =====
+  {
+    const s = block(13.5, 18.85);
+    const t = mk(s, "big abs shadow", "BUSCA POR", { ...C(W / 2, 220), fontSize: "92px" });
+    A(t, [{ opacity: 0, transform: `${centred} translateY(-30px)` }, { opacity: 1, transform: `${centred} translateY(0)` }], 13.55, .3, E.out);
+    const wrap = mk(s, "abs", "", { left: "60px", right: "60px", top: "300px", display: "flex", flexWrap: "wrap", gap: "18px", justifyContent: "center" });
+    [["⚽ Deporte", "deporte"], ["🏆 Competición", "competición"], ["📱 Plataforma", "plataforma"], ["🎬 Formato", "formatos"], ["🎨 Estilo", "estilo"], ["🪝 Hook", "hook"], ["⭐ Creador", "creador."]].forEach(([label, key]) => {
+      const at = key === "creador." ? words.filter((x) => x[2].toLowerCase() === "creador.")[0][0] : W_(key);
+      const c = mk(wrap, "chip", label);
+      A(c, [{ opacity: 0, transform: "scale(.3)" }, { opacity: 1, transform: "scale(1.12)", offset: .6 }, { opacity: 1, transform: "scale(1)" }], at - .05, .35, E.out);
+      A(c, [{ background: "rgba(13,20,40,.92)", color: "#fff" }, { background: "rgba(240,184,74,.95)", color: "#1a1206" }], at + .05, .2, E.soft);
+      A(c, [{ background: "rgba(240,184,74,.95)", color: "#1a1206" }, { background: "rgba(13,20,40,.92)", color: "#fff" }], at + .7, .3, E.soft);
+    });
+    out([t, wrap], 18.65, .2);
+  }
+
+  // ===== E/F · searches: football creators (18.8–21.3) and Instagram basketball (22.1–24.2) =====
+  function searchBlock(a, b, q, list, hit, label) {
+    const s = block(a, b);
+    const sb = mk(s, "sbox abs", `${SEARCH}<span class="q"></span><span class="c" style="color:var(--gold)">|</span>`, { left: "50px", right: "50px", top: "170px" });
+    A(sb, [{ opacity: 0, transform: "translateY(-30px)" }, { opacity: 1, transform: "translateY(0)" }], a, .3, E.out);
+    const qEl = sb.querySelector(".q"), cEl = sb.querySelector(".c");
+    ticks.push((t) => { const k = Math.max(0, Math.min(1, (t - a - .3) / 1.1)); qEl.textContent = q.slice(0, Math.round(k * q.length)); cEl.style.opacity = Math.floor(t * 2.6) % 2 ? 0 : 1; });
+    const row = mk(s, "abs", "", { left: "50px", right: "50px", top: "310px", height: "500px" });
+    list.slice(0, 3).forEach((p, i) => {
+      const w = 310, k = card(row, { ...p, r: 1.4 }, i * 330, 0, w, { views: true, css: { height: "430px" } });
+      k.el.querySelector("img").style.height = "430px";
+      A(k.el, [{ opacity: 0, transform: "translateY(80px) scale(.85)" }, { opacity: 1, transform: "translateY(0) scale(1)" }], hit - .25 + i * .08, .4, E.slam);
+    });
+    const ok = mk(s, "big abs goldfill shadow", label, { ...C(W / 2, 780), fontSize: "96px", zIndex: 3 });
+    A(ok, [{ opacity: 0, transform: `${centred} scale(1.5)` }, { opacity: 1, transform: `${centred} scale(1)` }], hit, .22, E.out);
+    out([sb, row, ok], b - .2, .18);
+  }
+  searchBlock(18.8, 21.95, "creadores de fútbol", pick.football.slice(4, 8), W_("buscas"), "LO BUSCAS.");
+  searchBlock(22.05, 24.75, "Instagram · baloncesto", pick.basket, W_("encuentras"), "LAS ENCUENTRAS.");
+
+  // ===== G · 24.8–27.9 Content Plan (full screen) =====
+  {
+    const s = block(24.8, 27.95);
+    const sheet = mk(s, "abs", "", { inset: 0, background: "radial-gradient(120% 80% at 50% 30%, #1a2646, #0b1020 70%)" });
+    A(sheet, [{ transform: "translateY(100%)" }, { transform: "translateY(0)" }], 24.8, .4, E.out);
+    A(sheet, [{ transform: "translateY(0)" }, { transform: "translateY(100%)" }], 27.6, .35, E.in);
+    mk(sheet, "big abs", "CONTENT PLAN", { ...C(W / 2, 230), fontSize: "86px" });
+    const days = ["L", "M", "X", "J", "V", "S", "D"], left = 60, colW = 126, gap = 10, top = 420;
+    const head = mk(sheet, "abs", "", { left: px(left), top: "320px", width: px(colW * 7 + gap * 6) });
+    const htxt = mk(head, "", "", { font: "700 34px Inter", marginBottom: "14px" });
+    const hb = mk(head, "", "", { height: "16px", borderRadius: "8px", background: "rgba(255,255,255,.12)" });
+    const hf = mk(hb, "", "", { height: "100%", width: "0%", borderRadius: "8px", background: "linear-gradient(90deg,#d99a2b,#f0b84a,#ffe3a3)" });
+    const cols = days.map((d, i) => mk(sheet, "abs", `<div style="text-align:center;font:700 26px Inter;padding:16px 0;color:#cfd8e6">${d}</div>`, { left: px(left + i * (colW + gap)), top: px(top), width: px(colW), height: "820px", borderRadius: "18px", background: "rgba(255,255,255,.05)", border: "1px solid rgba(255,255,255,.1)" }));
+    const T = (i) => 25.2 + i * .26;
+    [pick.lineup[0], pick.kit[0], pick.signing[0], pick.views[0], pick.basket[0], pick.kit[2], pick.lineup[5]].forEach((p, i) => {
+      const k = card(sheet, { ...p, r: 1.25 }, left + i * (colW + gap) + 8, top + 64, colW - 16);
+      A(k.el, [{ opacity: 0, transform: "translateY(700px) rotate(-10deg) scale(1.3)" }, { opacity: 1, transform: "translateY(0) rotate(0) scale(1)" }], T(i), .45, E.inout);
+      A(cols[i], [{ borderColor: "rgba(255,255,255,.1)" }, { borderColor: "rgba(240,184,74,.8)" }], T(i) + .4, .2, E.soft);
+    });
+    ticks.push((t) => { const n = [0, 1, 2, 3, 4, 5, 6].filter((i) => t >= T(i) + .42).length; htxt.innerHTML = `${n}/7 días con contenido${n === 7 ? ' <span style="color:#00d85b">✓</span>' : ""}`; hf.style.width = (n / 7 * 100) + "%"; });
+    const lt = mk(sheet, "big abs goldfill shadow", "LA TIENES.", { ...C(W / 2, 1360), fontSize: "120px" });
+    A(lt, [{ opacity: 0, transform: `${centred} scale(1.5)` }, { opacity: 1, transform: `${centred} scale(1)` }], W_("tienes") - .1, .22, E.out);
+  }
+
+  // ===== H · 28.1–30.4 "Menos tiempo buscando ideas, más tiempo creando contenido" =====
+  {
+    const s = block(28.05, 30.6);
+    const m1 = mk(s, "big abs shadow", "MENOS TIEMPO<br>BUSCANDO", { ...C(W / 2, 330), fontSize: "100px", textAlign: "center", color: "#cfd8e6" });
+    A(m1, [{ opacity: 0, transform: `${centred} translateY(-30px)` }, { opacity: 1, transform: `${centred} translateY(0)` }], 28.1, .25, E.out);
+    A(m1, [{ opacity: 1, transform: `${centred} scale(1)` }, { opacity: .35, transform: `${centred} scale(.62) translateY(-170px)` }], W_("más") - .1, .3, E.inout);
+    const m2 = mk(s, "big abs goldfill shadow", "MÁS TIEMPO<br>CREANDO", { ...C(W / 2, 520), fontSize: "140px", textAlign: "center" });
+    A(m2, [{ opacity: 0, transform: `${centred} scale(1.6)` }, { opacity: 1, transform: `${centred} scale(1)` }], W_("más"), .25, E.out);
+    out([m1, m2], 30.45, .2);
+  }
+
+  // ===== I · 30.8–end "Comenta REEL y te mando el link" =====
+  {
+    const s = block(30.6, TOTAL);
+    const card1 = mk(s, "panel", "", { left: "70px", right: "70px", top: "190px", height: "520px", padding: "36px 40px", boxSizing: "border-box" });
+    mk(card1, "", `<div style="display:flex;align-items:center;gap:18px"><span style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#f58529,#dd2a7b,#8134af);flex:none"></span><div><b style="font:700 30px Inter">tu.cuenta</b><div style="font:500 22px Inter;color:#8b98ae">Comentar…</div></div></div>`);
+    const inp = mk(card1, "", `<span class="q" style="font:800 64px 'Host Grotesk';color:var(--gold);letter-spacing:.06em"></span><span class="c" style="font:400 60px Inter;color:#fff">|</span><span style="margin-left:auto;width:74px;height:74px;border-radius:50%;background:var(--gold);display:grid;place-items:center;font:700 34px Inter;color:#1a1206">➤</span>`, { display: "flex", alignItems: "center", gap: "8px", marginTop: "34px", height: "120px", padding: "0 18px 0 30px", borderRadius: "100px", border: "2px solid rgba(255,255,255,.18)", background: "rgba(255,255,255,.05)" });
+    const qEl = inp.querySelector(".q"), cEl = inp.querySelector(".c");
+    ticks.push((t) => { const k = Math.max(0, Math.min(1, (t - 31.0) / .4)); qEl.textContent = "REEL".slice(0, Math.round(k * 4)); cEl.style.opacity = Math.floor(t * 2.6) % 2 ? 0 : 1; });
+    const dm = mk(card1, "", `📩 Te mando el link de <b style="color:var(--gold)">Sports Content Playbook</b>`, { marginTop: "40px", font: "600 32px/1.35 Inter", color: "#e6ebf5" });
+    A(card1, [{ opacity: 0, transform: "translateY(60px) scale(.9)" }, { opacity: 1, transform: "translateY(0) scale(1)" }], 30.7, .4, E.slam);
+    A(dm, [{ opacity: 0, transform: "translateY(20px)" }, { opacity: 1, transform: "translateY(0)" }], W_("mando") - .1, .3, E.out);
+  }
+
+  // ===== captions (word by word, groups of up to 4, never across a sentence end) =====
+  const cap = mk(stage, "", "", {}); cap.id = "cap";
+  const fix = (w) => w.replace(/^Balancesto/i, "baloncesto").replace(/^Reel$/i, "REEL");
+  const groups = []; let g = [];
+  words.forEach((w) => { g.push(w); if (g.length >= 4 || /[.?,!]$/.test(w[2])) { groups.push(g); g = []; } });
+  if (g.length) groups.push(g);
+  const HL = /^(funciona|medio|millón|clubes|competiciones|creadores|fútbol|instagram|baloncesto|balancesto|contenido\?|creando|reel|link\.)/i;
+  ticks.push((t) => {
+    const grp = groups.find((x, i) => t >= x[0][0] - .05 && t < (groups[i + 1] ? groups[i + 1][0][0] - .05 : x[x.length - 1][1] + .6));
+    if (!grp) { cap.innerHTML = ""; return; }
+    cap.innerHTML = grp.map((w) => `<span class="${t >= w[0] && t < w[1] + .05 ? "on" : ""}${HL.test(w[2]) ? " hl" : ""}">${fix(w[2])}</span>`).join(" ");
+  });
+
+  await Promise.all([...document.images].map((im) => im.complete ? 0 : new Promise((r) => { im.onload = im.onerror = r; })));
+  window.VIDEO = { W, H, TOTAL };
+  window.renderAt = (t) => { for (const f of ticks) f(t); for (const an of anims) an.currentTime = t * 1000; };
+  window.renderAt(Number(Q.get("t") || 0));
+  window.READY = true;
+})();
+</script>
+</body>
+</html>

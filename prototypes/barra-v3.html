@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Prototipo · Barra de filtros v3</title>
+<link rel="stylesheet" href="../css/fonts.css?v=1">
+<script src="../js/i18n.js?v=20261027e"></script>
+<script src="../js/vendor/supabase-2.117.0.min.js"></script>
+<script src="../js/config.js?v=20261020lf"></script>
+<script src="../js/auth.js?v=20261024u"></script>
+<style>
+  :root { --bg: #121b33; --surface: #17213b; --surface-2: #1d2845; --surface-3: #213050; --gold: #f0b84a;
+    --grad: linear-gradient(90deg, #d99a2b, #f0b84a 55%, #ffe0a0); --text: #fff; --muted: #b4c0d3; --line: rgba(255,255,255,.1); --line-soft: rgba(255,255,255,.05);
+    --display: "Host Grotesk", Inter, sans-serif; --ease: cubic-bezier(.2,.8,.2,1); }
+  * { box-sizing: border-box; margin: 0; }
+  body { color: var(--text); font: 14px/1.45 Inter, system-ui, sans-serif; background: var(--bg); padding: 0 16px 90px; }
+  button, input { font: inherit; color: inherit; background: none; border: 0; }
+  button { cursor: pointer; }
+  .page { max-width: 1180px; margin: 0 auto; }
+  header.top { padding: 44px 0 6px; }
+  .ptag { font: 700 11px Inter; letter-spacing: .18em; text-transform: uppercase; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  header.top h1 { font: 600 30px/1.15 var(--display); margin-top: 6px; }
+  header.top p { color: var(--muted); max-width: 800px; margin-top: 10px; }
+  .prop { margin-top: 54px; padding-top: 32px; border-top: 1px solid var(--line); }
+  .prop h2 { font: 600 23px var(--display); margin: 6px 0; }
+  .prop > p { color: var(--muted); max-width: 840px; margin-bottom: 18px; }
+  .stage { position: relative; border-radius: 22px; padding: 22px; background: var(--surface); border: 1px solid var(--line); overflow: hidden; }
+  .cov { background: #1b2541 center / cover no-repeat; }
+  .cov.loading { background-image: linear-gradient(110deg, #1b2541 30%, #24304f 50%, #1b2541 70%); background-size: 200% 100%; animation: sh 1.2s linear infinite; }
+  @keyframes sh { to { background-position: -200% 0; } }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px); } }
+  .fade { animation: fade .4s var(--ease); }
+  /* the current capsule, reused */
+  .caps { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); padding: 5px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--line); }
+  .caps .lens { position: absolute; top: 5px; bottom: 5px; left: 5px; width: calc((100% - 10px)/3); border-radius: 999px; background: var(--surface-2); box-shadow: inset 0 0 0 1px rgba(255,255,255,.14); transition: transform .55s cubic-bezier(.32,.72,0,1); }
+  .caps button { position: relative; height: 44px; font: 600 15px var(--display); display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .opt { position: relative; aspect-ratio: 4/5; border-radius: 13px; overflow: hidden; text-align: left; border: 1px solid var(--line-soft); transition: transform .3s var(--ease), box-shadow .3s; }
+  .opt::after { content: ""; position: absolute; inset: 45% 0 0; background: linear-gradient(transparent, rgba(8,12,26,.94)); }
+  .opt span { position: absolute; z-index: 1; left: 10px; right: 10px; bottom: 9px; font: 600 13px/1.25 var(--display); }
+  .opt small { display: block; font: 500 11px Inter; color: var(--muted); }
+  .opt:hover { transform: translateY(-3px); }
+  .opt.on { box-shadow: 0 0 0 2px var(--gold); }
+  .opt.on::before { content: "✓"; position: absolute; z-index: 2; top: 8px; right: 8px; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; color: #1a1206; background: var(--grad); }
+  .grid5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+  .pills { display: flex; gap: 6px; flex-wrap: wrap; }
+  .pills button { padding: 6px 12px; border-radius: 999px; font-size: 12.5px; color: var(--muted); border: 1px solid var(--line-soft); }
+  .pills button.on { color: #fff; border-color: rgba(240,184,74,.6); background: rgba(240,184,74,.08); }
+  .note { color: var(--muted); font-size: 13px; padding: 26px 0; text-align: center; }
+
+  /* 1 · summary tabs */
+  .p1 .caps button { flex-direction: column; gap: 2px; height: 58px; }
+  .p1 .caps small { display: flex; align-items: center; gap: 4px; font: 500 11.5px Inter; color: var(--muted); }
+  .p1 .caps small.set { color: var(--gold); }
+  .p1 .stack { display: inline-flex; }
+  .p1 .stack i { width: 18px; height: 18px; border-radius: 50%; margin-left: -6px; border: 2px solid var(--surface); }
+  .p1 .stack i:first-child { margin-left: 0; }
+  .p1 .panel { margin-top: 14px; padding: 16px; border-radius: 18px; background: rgba(18,27,51,.8); border: 1px solid var(--line); }
+  .p1 .panel .pills { margin-bottom: 12px; }
+
+  /* 2 · live result column */
+  .p2 .wrap { display: grid; grid-template-columns: 180px 1fr 250px; margin-top: 14px; border-radius: 18px; border: 1px solid var(--line); background: rgba(18,27,51,.8); overflow: hidden; min-height: 380px; }
+  .p2 .rail { padding: 12px 8px; border-right: 1px solid var(--line-soft); }
+  .p2 .rail button { display: block; width: 100%; text-align: left; padding: 8px 10px; border-radius: 9px; color: var(--muted); font-size: 13px; }
+  .p2 .rail button.on { background: rgba(240,184,74,.1); color: #fff; box-shadow: inset 2px 0 0 var(--gold); }
+  .p2 .main { padding: 16px; }
+  .p2 .main .grid5 { grid-template-columns: repeat(4, 1fr); }
+  .p2 .res { padding: 16px; border-left: 1px solid var(--line-soft); background: linear-gradient(180deg, rgba(240,184,74,.06), transparent 50%); }
+  .p2 .res b { font: 600 26px var(--display); display: block; }
+  .p2 .res small { color: var(--muted); }
+  .p2 .res .mini { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin: 14px 0; }
+  .p2 .res .mini i { aspect-ratio: 4/5; border-radius: 9px; }
+  .p2 .res .go { width: 100%; height: 42px; border-radius: 999px; color: #1a1206; background: var(--grad); font: 600 14px var(--display); }
+
+  /* 3 · side drawer */
+  .p3 .stage { min-height: 480px; }
+  .p3 .fake { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 16px; opacity: .35; }
+  .p3 .fake i { aspect-ratio: 4/5; border-radius: 12px; }
+  .p3 .drawer { position: absolute; top: 0; right: 0; bottom: 0; width: min(520px, 92%); background: #141d36; border-left: 1px solid var(--line); box-shadow: -30px 0 60px -20px rgba(0,0,0,.6); padding: 20px; transform: translateX(105%); transition: transform .5s var(--ease); overflow-y: auto; }
+  .p3 .drawer.open { transform: none; }
+  .p3 .drawer h3 { font: 600 20px var(--display); display: flex; justify-content: space-between; align-items: center; }
+  .p3 .drawer h3 button { font: 500 13px Inter; color: var(--muted); }
+  .p3 .sec { margin-top: 18px; }
+  .p3 .sec p { font: 700 10.5px Inter; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .p3 .row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+  .p3 .row .opt { flex: none; width: 120px; }
+
+  /* 4 · one smart search */
+  .p4 .search { display: flex; align-items: center; gap: 12px; height: 56px; padding: 0 20px; border-radius: 16px; background: var(--surface-2); border: 1px solid rgba(240,184,74,.4); box-shadow: 0 0 0 4px rgba(240,184,74,.08); }
+  .p4 .search input { flex: 1; outline: 0; font: 500 16px var(--display); }
+  .p4 .search kbd { font: 600 11px Inter; color: var(--muted); padding: 3px 7px; border-radius: 6px; border: 1px solid var(--line); }
+  .p4 .chips { display: flex; gap: 8px; margin: 12px 0 14px; flex-wrap: wrap; }
+  .p4 .chips span { padding: 6px 12px; border-radius: 999px; font-size: 12.5px; border: 1px solid var(--line); color: var(--muted); }
+  .p4 .chips span b { color: var(--gold); font-weight: 600; }
+  .p4 .grp { margin-bottom: 14px; }
+  .p4 .grp p { font: 700 10.5px Inter; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .p4 .grp .grid5 { grid-template-columns: repeat(6, 1fr); }
+
+  /* 5 · stories */
+  .p5 .stories { display: flex; gap: 18px; overflow-x: auto; padding: 14px 4px 6px; }
+  .p5 .story { flex: none; width: 86px; text-align: center; font-size: 12px; color: var(--muted); }
+  .p5 .story i { display: block; width: 78px; height: 78px; margin: 0 auto 8px; border-radius: 50%; padding: 3px; background: var(--grad); }
+  .p5 .story i b { display: block; width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--surface); }
+  .p5 .story.on { color: #fff; }
+  .p5 .story.on i { box-shadow: 0 0 0 3px rgba(240,184,74,.35); }
+  .p5 .story:not(.seen) i { background: var(--grad); }
+  .p5 .story.seen i { background: var(--line); }
+
+  @media (max-width: 860px) {
+    .grid5, .p4 .grp .grid5 { grid-template-columns: repeat(2, 1fr); }
+    .p2 .wrap { grid-template-columns: 1fr; } .p2 .rail { display: flex; flex-wrap: wrap; border-right: 0; } .p2 .rail button { width: auto; } .p2 .res { border-left: 0; border-top: 1px solid var(--line-soft); }
+    .caps button { font-size: 12.5px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="top">
+    <span class="ptag">Prototip · Barra de filtres · v3</span>
+    <h1>5 maneres de millorar Inspírate en · Match Day · Objetivo y patrocinadores</h1>
+    <p>Totes amb continguts reals (la portada del post més vist de cada opció). Es pot clicar tot: pestanyes, grups i opcions.</p>
+  </header>
+
+  <section class="prop p1"><span class="ptag">Proposta 1</span><h2>«Pestanyes que resumeixen»</h2>
+    <p>La mateixa càpsula d'ara, però cada pestanya diu el que hi has triat («Previa del partido +2») amb les miniatures de les portades. Sense obrir res, saps quina cerca tens feta. El panell és el d'ara amb les pestanyes de grups a dalt.</p>
+    <div class="stage" id="p1"></div></section>
+
+  <section class="prop p2"><span class="ptag">Proposta 2</span><h2>«Panell amb el resultat en directe»</h2>
+    <p>Al panell s'hi afegeix una columna a la dreta amb el nombre de posts que trobaràs i 4 dels més vistos, que canvien a cada clic. L'usuari veu l'efecte de cada filtre abans de tancar el panell.</p>
+    <div class="stage" id="p2"></div></section>
+
+  <section class="prop p3"><span class="ptag">Proposta 3</span><h2>«Calaix lateral»</h2>
+    <p>En clicar una pestanya s'obre un calaix des de la dreta, de dalt a baix de la pantalla, amb tots els grups un sota l'altre en files de portades que es llisquen. Hi cap molt més i els posts del darrere es continuen veient.</p>
+    <div class="stage" id="p3"></div></section>
+
+  <section class="prop p4"><span class="ptag">Proposta 4</span><h2>«Un sol cercador intel·ligent»</h2>
+    <p>Sobre les pestanyes, un cercador gran que busca a les tres alhora: escrius «gol» i surten opcions de Match Day, Inspírate en i Objetivo agrupades, amb portada. Les pestanyes continuen per a qui prefereix navegar.</p>
+    <div class="stage" id="p4"></div></section>
+
+  <section class="prop p5"><span class="ptag">Proposta 5</span><h2>«Stories»</h2>
+    <p>Cada pestanya obre una fila de cercles com els destacats d'Instagram, un per opció i amb la portada a dins. Clic i queda triat. És el més compacte (no tapa la graella) i el més familiar per a un CM o un creador.</p>
+    <div class="stage" id="p5"></div></section>
+</div>
+
+<script>
+(async () => {
+  const db = window.SCP_AUTH?.client;
+  const T = (s) => (window.tx ? window.tx(s) : s);
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const k = (n) => Number(n).toLocaleString("es-ES", { notation: "compact", maximumFractionDigits: 1 });
+  const $ = (s, el = document) => el.querySelector(s), $$ = (s, el = document) => [...el.querySelectorAll(s)];
+  if (!db || !(await db.auth.getSession()).data.session) { $$(".stage").forEach((s) => (s.innerHTML = `<p class="note">Inicia sesión en la plataforma (en esta misma pestaña) para ver los contenidos reales.</p>`)); return; }
+
+  const cat = [];
+  for (let f = 0; ; f += 1000) { const { data } = await db.rpc("catalog_with_counts").range(f, f + 999); cat.push(...(data || [])); if (!data || data.length < 1000) break; }
+  const byCat = {};
+  for (const r of cat) if (Number(r.ideas) > 0) (byCat[r.category] ||= []).push({ id: Number(r.id), category: r.category, name: r.name, n: Number(r.ideas) });
+  const top = (c, m = 8) => [...(byCat[c] || [])].sort((a, b) => b.n - a.n).slice(0, m);
+  const named = (c, n) => (byCat[c] || []).find((v) => v.name.toLowerCase() === n.toLowerCase());
+  const TABS = [
+    { t: "Inspírate en", groups: [["Deporte", () => top("sport")], ["Competición", () => top("competition")], ["Club", () => top("club")], ["Jugadores", () => [named("campaign", "Player Appearance")].filter(Boolean)], ["Patrocinadores", () => top("sponsor_integration")]] },
+    { t: "Match Day", groups: [["Día de partido", () => ["Matchday preview", "Matchday poster", "Starting XI", "Goal", "Full-time", "MOTM vote", "Stats card", "Match coverage"].map((n) => named("matchday_graphic", n) || named("moment", n)).filter(Boolean)], ["Diseño gráfico", () => [named("campaign", "Graphic Design"), ...top("matchday_graphic", 7)].filter(Boolean)], ["Mercado", () => top("transfer")], ["Equipaciones", () => top("kit")], ["Tono", () => top("angle")]] },
+    { t: "Objetivo y patrocinadores", groups: [["Objetivo", () => top("goal")], ["Llamada a la acción", () => top("cta")], ["Marcas", () => top("sponsor")], ["Integración", () => top("sponsor_integration")], ["Sector", () => top("sponsor_sector")]] },
+  ];
+  const sel = new Set(), on = (v) => sel.has(v.id), flip = (id) => (sel.has(id) ? sel.delete(id) : sel.add(id));
+  const all = new Map(cat.map((r) => [Number(r.id), r]));
+
+  // covers, a few at a time (big values are slow)
+  const covers = new Map(), asked = new Set();
+  async function loadCovers() {
+    const ids = [...new Set($$("[data-cv]").map((e) => Number(e.dataset.cv)))].filter((id) => !asked.has(id));
+    ids.forEach((id) => asked.add(id));
+    const parts = []; for (let i = 0; i < ids.length; i += 3) parts.push(ids.slice(i, i + 3));
+    const run = async () => { for (let p; (p = parts.shift()); ) {
+      const { data } = await db.rpc("value_covers", { p_ids: p }).then((r) => r, () => ({}));
+      p.forEach((id) => covers.set(id, ""));
+      for (const r of data || []) if (r.cover) covers.set(Number(r.id), r.cover);
+      for (const id of p) $$(`[data-cv="${id}"]`).forEach((el) => { el.classList.remove("loading"); if (covers.get(id)) el.style.backgroundImage = `url('${covers.get(id)}')`; });
+    } };
+    await Promise.all([run(), run(), run()]);
+  }
+  const cv = (v, cls = "") => { const c = covers.get(v.id); return `class="cov ${cls}${c === undefined ? " loading" : ""}" data-cv="${v.id}"${c ? ` style="background-image:url('${esc(c)}')"` : ""}`; };
+  const optHtml = (v) => `<button ${cv(v, `opt${on(v) ? " on" : ""}`)} data-o="${v.id}"><span>${esc(T(v.name))}<small>${k(v.n)} posts</small></span></button>`;
+  const caps = (cur, inner) => `<div class="caps"><span class="lens" style="transform:translateX(${cur * 100}%)"></span>${TABS.map((t, i) => `<button data-t="${i}">${inner ? inner(t, i) : esc(t.t)}</button>`).join("")}</div>`;
+  const chosenIn = (t) => t.groups.flatMap(([, f]) => f()).filter((v, i, a) => on(v) && a.findIndex((x) => x.id === v.id) === i);
+  const redrawAll = () => { draw1(); draw2(); draw3(); draw4(); draw5(); loadCovers(); };
+  document.addEventListener("click", (e) => { const o = e.target.closest("[data-o]"); if (o) { flip(Number(o.dataset.o)); redrawAll(); } });
+
+  // ---------- 1 ----------
+  const s1 = { t: 1, g: 0 };
+  function draw1() {
+    const el = $("#p1"), t = TABS[s1.t];
+    el.innerHTML = caps(s1.t, (tb) => { const c = chosenIn(tb); return `${esc(tb.t)}<small class="${c.length ? "set" : ""}">${c.length ? `<span class="stack">${c.slice(0, 3).map((v) => `<i ${cv(v)}></i>`).join("")}</span>${esc(T(c[0].name))}${c.length > 1 ? ` +${c.length - 1}` : ""}` : "Cualquiera"}</small>`; })
+      + `<div class="panel"><div class="pills">${t.groups.map(([n], i) => `<button data-g1="${i}" class="${i === s1.g ? "on" : ""}">${esc(n)}</button>`).join("")}</div><div class="grid5">${t.groups[s1.g][1]().map(optHtml).join("")}</div></div>`;
+  }
+  $("#p1").addEventListener("click", (e) => { const t = e.target.closest("[data-t]"); if (t) { s1.t = +t.dataset.t; s1.g = 0; draw1(); loadCovers(); } const g = e.target.closest("[data-g1]"); if (g) { s1.g = +g.dataset.g1; draw1(); loadCovers(); } });
+
+  // ---------- 2 ----------
+  const s2 = { t: 1, g: 0, key: "", res: null };
+  async function result() {
+    const f = {}; [...sel].forEach((id) => { const v = all.get(id); if (v) (f[v.category] ||= { ids: [], mode: "any" }).ids.push(id); });
+    const key = JSON.stringify(f); if (key === s2.key) return; s2.key = key; s2.res = null; draw2();
+    const { data } = await db.rpc("library_ideas", { p_filters: f, p_q: null, p_from: null, p_to: null, p_order: "views", p_seed: "", p_ids: null, p_limit: 12, p_offset: 0, p_min_views: null, p_max_views: null });
+    if (key !== s2.key) return; s2.res = data; draw2();
+  }
+  function draw2() {
+    const el = $("#p2"), t = TABS[s2.t], r = s2.res;
+    const mini = (r?.data || []).filter((p) => p.cover_url).slice(0, 4);
+    el.innerHTML = caps(s2.t) + `<div class="wrap"><nav class="rail">${t.groups.map(([n], i) => `<button data-g2="${i}" class="${i === s2.g ? "on" : ""}">${esc(n)}</button>`).join("")}</nav>
+      <div class="main"><div class="grid5">${t.groups[s2.g][1]().map(optHtml).join("")}</div></div>
+      <aside class="res"><small>Encontrarás</small><b>${r ? Number(r.total).toLocaleString("es-ES") : "…"}</b><small>posts · los más vistos:</small>
+        <div class="mini">${mini.map((p) => `<i class="cov" style="background-image:url('${esc(p.cover_url)}')"></i>`).join("") || `<i class="cov loading"></i><i class="cov loading"></i><i class="cov loading"></i><i class="cov loading"></i>`}</div>
+        <button class="go">Ver posts</button></aside></div>`;
+    result();
+  }
+  $("#p2").addEventListener("click", (e) => { const t = e.target.closest("[data-t]"); if (t) { s2.t = +t.dataset.t; s2.g = 0; draw2(); loadCovers(); } const g = e.target.closest("[data-g2]"); if (g) { s2.g = +g.dataset.g2; draw2(); loadCovers(); } });
+
+  // ---------- 3 ----------
+  const s3 = { t: 1, open: false };
+  function draw3() {
+    const el = $("#p3"), t = TABS[s3.t];
+    el.innerHTML = caps(s3.open ? s3.t : -100) + `<div class="fake">${Array.from({ length: 8 }, () => `<i class="cov"></i>`).join("")}</div>
+      <div class="drawer${s3.open ? " open" : ""}"><h3>${esc(t.t)}<button data-close>Cerrar ✕</button></h3>
+      ${t.groups.map(([n, f]) => `<div class="sec"><p>${esc(n)}</p><div class="row">${f().map(optHtml).join("")}</div></div>`).join("")}</div>`;
+    $$(".fake i", el).forEach((i, n) => { const v = top("matchday_graphic", 8)[n]; if (v && covers.get(v.id)) i.style.backgroundImage = `url('${covers.get(v.id)}')`; });
+  }
+  $("#p3").addEventListener("click", (e) => { const t = e.target.closest("[data-t]"); if (t) { s3.t = +t.dataset.t; s3.open = true; draw3(); loadCovers(); } if (e.target.closest("[data-close]")) { s3.open = false; draw3(); } });
+
+  // ---------- 4 ----------
+  const s4 = { q: "gol", t: 1 };
+  const fold = (x) => String(x || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  function draw4() {
+    const el = $("#p4"), q = fold(s4.q);
+    const hits = TABS.map((t) => [t.t, t.groups.flatMap(([, f]) => f()).filter((v, i, a) => a.findIndex((x) => x.id === v.id) === i && (!q || fold(v.name).includes(q) || fold(T(v.name)).includes(q))).slice(0, 6)]).filter(([, l]) => l.length);
+    const focus = document.activeElement?.matches?.("#p4 input");
+    el.innerHTML = `<label class="search">🔍<input value="${esc(s4.q)}" placeholder="Busca: gol, derbi, Nike, LaLiga, fichaje…"><kbd>⌘K</kbd></label>
+      <div class="chips">${["gol", "previa", "fichaje", "nike", "sorteo"].map((x) => `<span data-q="${x}">Prueba <b>${x}</b></span>`).join("")}</div>
+      ${hits.map(([n, l]) => `<div class="grp"><p>${esc(n)}</p><div class="grid5">${l.map(optHtml).join("")}</div></div>`).join("") || `<p class="note">Nada coincide con «${esc(s4.q)}».</p>`}
+      ${caps(s4.t)}`;
+    if (focus) { const i = $("#p4 input"); i.focus(); i.setSelectionRange(i.value.length, i.value.length); }
+  }
+  $("#p4").addEventListener("input", (e) => { if (e.target.matches("input")) { s4.q = e.target.value; draw4(); loadCovers(); } });
+  $("#p4").addEventListener("click", (e) => { const c = e.target.closest("[data-q]"); if (c) { s4.q = c.dataset.q; draw4(); loadCovers(); } const t = e.target.closest("[data-t]"); if (t) { s4.t = +t.dataset.t; draw4(); } });
+
+  // ---------- 5 ----------
+  const s5 = { t: 1 };
+  function draw5() {
+    const el = $("#p5"), t = TABS[s5.t];
+    el.innerHTML = caps(s5.t) + t.groups.map(([n, f]) => `<p style="margin:16px 4px 0;font:700 10.5px Inter;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">${esc(n)}</p>
+      <div class="stories">${f().map((v) => `<button class="story${on(v) ? " on" : " seen"}" data-o="${v.id}"><i><b ${cv(v)}></b></i>${esc(T(v.name))}</button>`).join("")}</div>`).join("");
+  }
+  $("#p5").addEventListener("click", (e) => { const t = e.target.closest("[data-t]"); if (t) { s5.t = +t.dataset.t; draw5(); loadCovers(); } });
+
+  redrawAll();
+})();
+</script>
+</body>
+</html>
