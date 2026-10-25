@@ -42,13 +42,14 @@
   const source = (l) => [l.utm?.utm_source, l.utm?.utm_campaign].filter(Boolean).join(" / ") || l.utm?.referrer || l.source_page || "—";
 
   async function load() {
-    const p = Object.fromEntries(Object.entries(f).filter(([, v]) => v !== "" && v !== false));
+    const p = Object.fromEntries(Object.entries(f).filter(([k, v]) => v !== "" && v !== false && k !== "identified"));
     const { data, error } = await A.db.rpc("admin_leads", { p });
     if (error) {
       ($("[data-list]") || $("[data-board]")).innerHTML = `<p class="panel-pad muted">${esc(/admin_leads|does not exist|schema cache/i.test(error.message) ? "Leads aren't set up yet — run supabase/leads.sql in Supabase." : A.errMsg(error))}</p>`;
       $("[data-sub]").textContent = ""; return;
     }
-    leads = data || [];
+    // "With email or phone": clients you added by hand always count, even with just a name
+    leads = (data || []).filter((l) => !f.identified || l.email || l.phone || l.source_page === "admin");
     const booked = leads.filter((l) => l.meeting_status === "booked" || l.meeting_status === "rescheduled").length;
     $("[data-sub]").textContent = `${num(leads.length)} lead${leads.length === 1 ? "" : "s"} · ${num(booked)} upcoming demo${booked === 1 ? "" : "s"}`;
     const kpi = (label, tip, n, cls = "") => `<div class="aud-kpi${cls ? ` ${cls}` : ""}"><span>${label} ${info(tip)}</span><b>${n}</b></div>`;
