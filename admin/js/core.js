@@ -53,7 +53,6 @@
     mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
     crown: '<path d="M3 8l4 4 5-7 5 7 4-4-2 11H5z"/>',
     inbox: '<path d="M3 13h5l1.5 3h5L16 13h5"/><path d="M5 5h14l2 8v6H3v-6z"/>',
-    panel: '<rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M9 4v16"/>',
     home: '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>',
   };
   const icon = (name) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ""}</svg>`;
@@ -212,12 +211,11 @@
     const side = $("[data-side]");
     if (!side) return;
     side.innerHTML = `
-      <div class="side-brand"><img class="side-wordmark" src="../assets/logo-scp.png" alt="Sports Content Playbook"><img class="side-mark" src="../assets/favicon-s-192.png" alt="SCP"><b>Admin</b>
-        <button class="side-toggle" type="button" data-side-toggle aria-label="Collapse the menu" title="Collapse the menu ( [ )">${icon("panel")}</button></div>
+      <div class="side-brand"><img class="side-wordmark" src="../assets/logo-scp.png" alt="Sports Content Playbook"><img class="side-mark" src="../assets/favicon-s-192.png" alt="SCP"><b>Admin</b></div>
       <label class="side-search" data-tip="Go to… ( / )">${icon("search")}<input type="search" placeholder="Go to…" aria-label="Go to a section" autocomplete="off" data-side-search><kbd>/</kbd></label>
       <nav aria-label="Admin">${[["Platform content", NAV.filter((n) => !n.group)], ["Superadmin", NAV.filter((n) => n.group === "super")]].map(([t, list]) => `<p class="side-group">${t}</p>${list.map((n) => `<a href="${n.href}" data-tip="${esc(n.label)}"${n.key === pageKey ? ' aria-current="page"' : ""}>${icon(n.icon)}<span class="side-label">${n.label}</span></a>`).join("")}`).join("")}<p class="side-none" hidden>No section matches</p></nav>
-      <a class="side-cta" href="../content-library.html" data-tip="Open Content Library"><span class="side-label">Open Content Library</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg></a>
-      <a class="side-home" href="../index.html" data-tip="Home page">${icon("home")}<span class="side-label">Home page</span></a>
+      <div class="side-jump"><a class="side-cta" href="../content-library.html" data-tip="Open Content Library" title="Open Content Library" aria-label="Open Content Library">${icon("library")}</a>
+      <a class="side-home" href="../index.html" data-tip="Home page" title="Home page" aria-label="Home page">${icon("home")}</a></div>
       <div class="side-foot">
         <p class="side-user" title="${esc(session.user.email)}">${esc(session.user.email)}${profile?.role ? ` · ${esc(profile.role)}` : ""}</p>
         <a href="account.html" data-tip="Account"${pageKey === "account" ? ' aria-current="page"' : ""}>${icon("account")}<span class="side-label">Account</span></a>
@@ -228,12 +226,11 @@
     // collapse to an icon rail (remembered in this browser); "[" toggles it, "/" jumps to the section search
     const mini = (on) => {
       document.documentElement.classList.toggle("side-mini", on);
-      const t = $("[data-side-toggle]", side), label = on ? "Expand the menu" : "Collapse the menu";
-      t.setAttribute("aria-label", label); t.title = `${label} ( [ )`;
+      const b = $(".side-brand", side); b.title = `${on ? "Expand the menu" : "Collapse the menu"} ( [ )`;
       try { localStorage.setItem("scpa-side-mini", on ? "1" : ""); } catch {}
     };
     mini(document.documentElement.classList.contains("side-mini"));
-    // the panel button, or a click on the logo / "Admin" header, folds or unfolds the column
+    // a click on the logo / "Admin" header, folds or unfolds the column
     $(".side-brand", side).addEventListener("click", () => mini(!document.documentElement.classList.contains("side-mini")));
     // the tooltip says what the link says, in the admin's language
     side.addEventListener("pointerover", (e) => { const a = e.target.closest("[data-tip]"); const t = a?.querySelector(".side-label")?.textContent.trim(); if (t) a.dataset.tip = t; });
