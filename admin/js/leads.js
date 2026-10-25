@@ -10,7 +10,7 @@
   const ORG = { club: "Sports Club / Team", agency: "Sports Agency", company: "Sports company", league: "League / Federation", event: "Sports Event Organizer", creator: "Content Creator", other: "Other" };
   const SIZE = { "1": "Just me", "2-5": "2–5", "6-15": "6–15", "15+": "15+" };
   const CH = { ideas: "Fresh content ideas", ai_time: "Saving time with AI", calendar: "Content calendar", performance: "Content performance", multiple_teams: "Multiple teams", exploring: "Exploring SCP" };
-  const STATUS = { new: "New", qualified: "Qualified", demo_booked: "Demo booked", demo_completed: "Demo completed", customer: "Customer", lost: "Lost" };
+  const STATUS = { new: "New", qualified: "Qualified", demo_booked: "Demo booked", demo_completed: "Demo completed", trial: "In trial", customer: "Customer", lost: "Lost" };
   const MEET = { none: "—", booked: "Booked", rescheduled: "Rescheduled", cancelled: "Cancelled", completed: "Completed", no_show: "No-show" };
   const f = { q: "", status: "", org_type: "", challenge: "", identified: true };
   let leads = [], tab = "all";
@@ -26,7 +26,7 @@
       <label class="check-inline"><input type="checkbox" data-f="identified" checked> With email or phone</label>
     </div>`;
   main.innerHTML = CRM ? `<div class="page-head"><div><h1>CRM</h1><p data-sub>Loading…</p></div>
-    <div class="head-actions"><a class="btn" href="leads.html">${icon("external")}Leads &amp; Demos</a></div></div>
+    <div class="head-actions"><a class="btn" href="leads.html">${icon("external")}Leads &amp; Demos</a><button class="btn btn-primary" type="button" data-add>${icon("plus")}Add client</button></div></div>
     <div class="aud-kpis" data-kpis></div>${filters}
     <section class="panel ld-crm"><header class="aud-h aud-h-lg"><h2>Pipeline</h2>${info("Every lead as a card in its commercial stage. Drag a card to another column to change its status; click a card for every answer, the demo and notes. The filters above apply here too.")}<span class="spacer"></span><b class="aud-count" data-crm-count></b></header><div class="crm-board" data-board></div></section>`
   : `<div class="page-head"><div><h1>Leads &amp; Demos</h1><p data-sub>Loading…</p></div>
@@ -60,7 +60,7 @@
   }
 
   // CRM board: one column per commercial status; drag a card to move it
-  const COLS = { new: "", qualified: "is-gold", demo_booked: "is-gold", demo_completed: "is-blue", customer: "is-green", lost: "is-red" };
+  const COLS = { new: "", qualified: "is-gold", demo_booked: "is-gold", demo_completed: "is-blue", trial: "is-blue", customer: "is-green", lost: "is-red" };
   function board() {
     $("[data-crm-count]").textContent = num(leads.length);
     $("[data-board]").innerHTML = Object.entries(STATUS).map(([k, label]) => {
@@ -68,7 +68,7 @@
       return `<div class="crm-col ${COLS[k]}" data-col="${k}"><header><span class="crm-dot"></span><b>${label}</b><span class="crm-n">${num(list.length)}</span></header>
         <div class="crm-cards">${list.map((l) => `<article class="crm-card" draggable="true" data-card="${l.id}">
           <div class="ld-person"><span class="ld-av">${esc((l.name || l.email || l.phone || "?").trim().charAt(0).toUpperCase())}</span><span><b>${esc(l.name || (l.phone ? "Phone lead" : "Anonymous"))}</b><small>${esc(l.organization || ORG[l.org_type] || l.email || l.phone || "—")}</small></span></div>
-          <div class="crm-meta">${l.meeting_at ? `<span class="ld-pill is-gold">Demo · ${fmt(l.meeting_at)}</span>` : ""}${l.phone ? `<span class="crm-tag">Phone</span>` : ""}${(l.message || "").trim() ? `<span class="crm-tag">Message</span>` : ""}<span class="crm-when">${fmt(l.updated_at)}</span></div>
+          <div class="crm-meta">${l.status === "trial" && !l.seen_at ? `<span class="ld-pill is-gold">● New trial</span>` : ""}${l.status === "trial" && l.trial_end ? `<span class="crm-tag">Trial ends ${fmt(l.trial_end)}</span>` : ""}${l.meeting_at ? `<span class="ld-pill is-gold">Demo · ${fmt(l.meeting_at)}</span>` : ""}${l.phone ? `<span class="crm-tag">Phone</span>` : ""}${(l.message || "").trim() ? `<span class="crm-tag">Message</span>` : ""}<span class="crm-when">${fmt(l.updated_at)}</span></div>
         </article>`).join("") || `<p class="crm-empty">—</p>`}</div></div>`;
     }).join("");
   }
@@ -124,27 +124,54 @@
       <div class="ld-funnel-cols" style="grid-template-columns:repeat(${Math.max(1, variants.length)},minmax(0,1fr))">${(variants.length ? variants : [""]).map((v) => `<div>${variants.length > 1 ? `<h3>${esc(v)}</h3>` : ""}<ol class="ld-steps">${col(v)}</ol></div>`).join("")}</div>`;
   }
 
+  // every field saves on its own as you type or change it
   function openLead(id) {
     const l = leads.find((x) => x.id === id); if (!l) return;
     const kv = (k, v) => `<div class="kv"><span>${k}</span><b>${v}</b></div>`;
-    const m = A.modal({ title: l.name || (l.phone ? "Phone lead" : "Anonymous lead"), sub: [l.email, l.phone].filter(Boolean).join(" · ") || "No email yet", size: "lg",
-      body: `<div class="kv-grid">${l.phone ? kv("Phone", `<a href="https://wa.me/${esc(l.phone.replace(/[^0-9]/g, ""))}" target="_blank" rel="noopener">${esc(l.phone)}</a>`) : ""}${kv("Organisation", esc(l.organization || "—"))}${kv("Type", esc(ORG[l.org_type] || "—"))}${kv("Team", esc(SIZE[l.team_size] || "—"))}${kv("Need", esc(CH[l.challenge] || "—"))}
-        ${kv("Recommended", l.recommendation === "demo" ? "Demo" : l.recommendation === "trial" ? "Free trial" : "—")}${kv("Created", fmt(l.created_at))}
+    const field = (k, label, type = "text") => `<label class="ld-field"><span>${label}</span><input class="input" type="${type}" data-k="${k}" value="${esc(l[k] || "")}"></label>`;
+    const opts = (map, cur, none) => (none ? `<option value="">${none}</option>` : "") + Object.entries(map).map(([k, v]) => `<option value="${k}"${cur === k ? " selected" : ""}>${v}</option>`).join("");
+    const m = A.modal({ title: l.name || l.email || (l.phone ? "Phone lead" : "Anonymous lead"), sub: `<span data-saved class="muted">Changes save automatically</span>`, size: "lg",
+      body: `<div class="ld-fields">${field("name", "Name")}${field("email", "Email", "email")}${field("phone", "Phone", "tel")}${field("organization", "Organisation")}
+          <label class="ld-field"><span>Type</span><select class="select" data-k="org_type">${opts(ORG, l.org_type, "—")}</select></label>
+          <label class="ld-field"><span>Status</span><select class="select" data-k="status">${opts(STATUS, l.status)}</select></label>
+          <label class="ld-field"><span>Demo status</span><select class="select" data-k="meeting_status">${opts(MEET, l.meeting_status)}</select></label></div>
+        <h3>Notes</h3><textarea class="input" rows="4" data-k="admin_notes" style="width:100%">${esc(l.admin_notes || "")}</textarea>
+        <div class="kv-grid">${l.phone ? kv("WhatsApp", `<a href="https://wa.me/${esc(l.phone.replace(/[^0-9]/g, ""))}" target="_blank" rel="noopener">${esc(l.phone)}</a>`) : ""}${kv("Team", esc(SIZE[l.team_size] || "—"))}${kv("Need", esc(CH[l.challenge] || "—"))}
+        ${kv("Recommended", l.recommendation === "demo" ? "Demo" : l.recommendation === "trial" ? "Free trial" : "—")}${kv("Created", fmt(l.created_at))}${l.trial_end ? kv("Trial ends", fmt(l.trial_end)) : ""}
         ${kv("Demo", l.meeting_at ? `${fmt(l.meeting_at)} · ${esc(MEET[l.meeting_status])}${l.meeting_source ? ` (${esc(l.meeting_source)})` : ""}` : "—")}
         ${kv("Source page", esc(l.source_page || "—"))}${kv("CTA", esc(l.cta || "—"))}${kv("Campaign", esc(Object.entries(l.utm || {}).map(([k, v]) => `${k}: ${v}`).join(" · ") || "—"))}
         ${kv("Language", esc(l.lang || "—"))}${kv("A/B variant", esc(l.variant || "—"))}
         ${kv("Privacy accepted", l.privacy_accepted_at ? fmt(l.privacy_accepted_at) : "—")}${kv("Marketing consent", l.marketing_consent ? `Yes · ${fmt(l.marketing_consent_at)}` : "No")}</div>
-        ${l.message ? `<h3>Message</h3><p style="white-space:pre-wrap">${esc(l.message)}</p>` : ""}
-        <h3>Demo status</h3><select class="select" data-meet>${Object.entries(MEET).map(([k, v]) => `<option value="${k}"${l.meeting_status === k ? " selected" : ""}>${k === "none" ? "No demo" : v}</option>`).join("")}</select>
-        <h3>Notes</h3><textarea class="input" rows="4" data-notes style="width:100%">${esc(l.admin_notes || "")}</textarea>`,
-      foot: `<button class="btn btn-primary" type="button" data-save>Save</button>` });
-    $("[data-save]", m.el).addEventListener("click", async () => {
-      const { error } = await A.db.rpc("admin_set_lead", { p_id: id, p: { meeting_status: $("[data-meet]", m.el).value, admin_notes: $("[data-notes]", m.el).value } });
-      if (error) return A.toast(A.errMsg(error), "err");
-      A.toast("Saved"); m.close(); load();
+        ${l.message ? `<h3>Message</h3><p style="white-space:pre-wrap">${esc(l.message)}</p>` : ""}`,
+      onClose: () => render() });
+    const saved = $("[data-saved]", m.el), pending = {};
+    const flush = A.debounce(async () => {
+      const p = { ...pending }; Object.keys(pending).forEach((k) => delete pending[k]);
+      saved.textContent = "Saving…";
+      const { error } = await A.db.rpc("admin_set_lead", { p_id: id, p });
+      if (error) { saved.textContent = A.errMsg(error); return A.toast(A.errMsg(error), "err"); }
+      Object.assign(l, p, { updated_at: new Date().toISOString() });
+      saved.textContent = "Saved ✓";
+    }, 600);
+    m.el.addEventListener("input", (e) => { const el = e.target.closest("[data-k]"); if (el) { pending[el.dataset.k] = el.value; flush(); } });
+    // opening a new trial marks it as seen (it leaves the menu badge)
+    if (l.status === "trial" && !l.seen_at) A.db.rpc("admin_set_lead", { p_id: id, p: { seen: true } }).then(({ error }) => { if (!error) { l.seen_at = new Date().toISOString(); A.crmBadge?.(); } });
+  }
+  async function addLead() {
+    const m = A.modal({ title: "Add client", sub: "A lead or client you met outside the website.", size: "lg",
+      body: `<div class="ld-fields">${[["name", "Name"], ["email", "Email", "email"], ["phone", "Phone", "tel"], ["organization", "Organisation"]].map(([k, label, type = "text"]) => `<label class="ld-field"><span>${label}</span><input class="input" type="${type}" data-k="${k}"></label>`).join("")}
+          <label class="ld-field"><span>Type</span><select class="select" data-k="org_type"><option value="">—</option>${Object.entries(ORG).map(([k, v]) => `<option value="${k}">${v}</option>`).join("")}</select></label>
+          <label class="ld-field"><span>Status</span><select class="select" data-k="status">${Object.entries(STATUS).map(([k, v]) => `<option value="${k}">${v}</option>`).join("")}</select></label></div>
+        <h3>Notes</h3><textarea class="input" rows="3" data-k="admin_notes" style="width:100%"></textarea>`,
+      foot: `<button class="btn btn-primary" type="button" data-create>Add</button>` });
+    $("[data-create]", m.el).addEventListener("click", async () => {
+      const p = Object.fromEntries($$("[data-k]", m.el).map((el) => [el.dataset.k, el.value.trim()]));
+      if (!p.name && !p.email && !p.phone && !p.organization) return A.toast("Add at least a name, email, phone or organisation.", "err");
+      const { data: newId, error } = await A.db.rpc("admin_add_lead", { p });
+      if (error) return A.toast(/admin_add_lead|schema cache/i.test(error.message) ? "Run supabase/crm.sql in Supabase first." : A.errMsg(error), "err");
+      m.close(); A.toast("Added"); await load(); openLead(newId);
     });
   }
-
   async function editRules() {
     const { data: r, error } = await A.db.rpc("admin_lead_rules", { p_rules: null });
     if (error) return A.toast(A.errMsg(error), "err");
@@ -174,6 +201,7 @@
     const tb = e.target.closest("[data-tab]");
     if (tb) { e.preventDefault(); tab = tb.dataset.tab; return render(); }
     if (e.target.closest("[data-rules]")) return editRules();
+    if (e.target.closest("[data-add]")) return addLead();
     if (e.target.closest("[data-export]")) {
       // only people who gave marketing consent
       const ok = leads.filter((l) => l.email && l.marketing_consent);

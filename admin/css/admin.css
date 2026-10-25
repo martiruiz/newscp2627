@@ -1770,3 +1770,10 @@ select.cs-native { display: none !important; }
 .side-jump a.side-cta, .side-jump a.side-home { flex: 1; height: 40px; margin: 0; padding: 0; }
 .side-jump svg { width: 18px; height: 18px; }
 @media (max-width: 860px) { .side-jump { margin: 0; } .side-jump a.side-cta, .side-jump a.side-home { flex: none; width: 40px; } }
+/* CRM: new trials badge in the menu */
+.side a .side-badge { margin-left: auto; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font-size: 11.5px; font-weight: 700; display: grid; place-items: center; box-shadow: 0 0 10px rgba(240, 184, 74, 0.6); }
+@media (min-width: 861px) { .side-mini .side a .side-badge { position: absolute; top: 2px; right: 0; min-width: 16px; height: 16px; padding: 0 4px; font-size: 10px; } }
+/* CRM: editable lead card */
+.ld-fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 6px; }
+.ld-field { display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; color: var(--muted); }
+.ld-field .input, .ld-field .select { width: 100%; }

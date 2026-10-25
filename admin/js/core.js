@@ -258,6 +258,8 @@
       if (e.key === "/") { e.preventDefault(); if (document.documentElement.classList.contains("side-mini")) mini(false); find.focus(); }
       if (e.key === "[") { e.preventDefault(); mini(!document.documentElement.classList.contains("side-mini")); }
     });
+    // CRM: new free trials the admins haven't opened yet, as a badge on the menu (checked every minute)
+    if (side.querySelector('a[href="crm.html"]') && !window.__scpaCrmPoll) { window.__scpaCrmPoll = setInterval(crmBadge, 60000); crmBadge(); }
     side.addEventListener("click", (e) => { const b = e.target.closest("[data-admin-lang]"); if (b && b.dataset.adminLang !== window.SCPA_LANG) window.SCPA_setLang?.(b.dataset.adminLang); });
     // asks first, in a little bubble right above the button; once signed out, the SCP log-in page (the site's, not the admin's)
     const out = $("[data-logout]", side);
@@ -660,11 +662,23 @@
     activateEmbeds($("[data-embed]", m.el));
   }
 
+  let crmLast = null;
+  async function crmBadge() {
+    const a = document.querySelector('[data-side] a[href="crm.html"]'); if (!a) return;
+    const { data: n, error } = await db.rpc("admin_crm_unseen");
+    if (error) return;
+    let bd = a.querySelector(".side-badge");
+    if (!n) bd?.remove();
+    else { if (!bd) a.insertAdjacentHTML("beforeend", '<b class="side-badge"></b>'), bd = a.querySelector(".side-badge"); bd.textContent = n; bd.title = `${n} new trial${n === 1 ? "" : "s"}`; }
+    if (crmLast !== null && n > crmLast) toast(`New free trial in the CRM (${n})`);
+    crmLast = n;
+  }
+
   window.SCPA = {
     db, auth, CATEGORIES, CAT_LABEL, CATALOG_ORDER, icon, info, $, $$, esc, store, fmtDate, fmtDateTime, num, debounce, chunk, errMsg, rpc,
     toast, modal, confirmDialog, boot, loadCatalog, MultiSelect, FilterPanel, pager, CSV_COLUMNS, toCSV, csvCell, downloadBlob,
     ideaToCsvRow, cleanEmbed, embedKind, activateEmbeds, platformOfUrl, postUrl, openIdeaEditor, openIdeaPreview,
-    resetCatalog: () => { catalogCache = null; },
+    resetCatalog: () => { catalogCache = null; }, crmBadge,
   };
 
   // ---------- Own dropdowns: every <select> of the admin gets a styled button + menu (.cs-btn / .cs-menu) ----------
