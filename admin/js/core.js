@@ -211,7 +211,7 @@
     const side = $("[data-side]");
     if (!side) return;
     side.innerHTML = `
-      <div class="side-brand"><img class="side-wordmark" src="../assets/logo-scp.png" alt="Sports Content Playbook"><img class="side-mark" src="../assets/icon-logo.svg" alt="SCP"><b>Admin</b>
+      <div class="side-brand"><img class="side-wordmark" src="../assets/logo-scp.png" alt="Sports Content Playbook"><img class="side-mark" src="../assets/favicon-s-192.png" alt="SCP"><b>Admin</b>
         <button class="side-toggle" type="button" data-side-toggle aria-label="Collapse the menu" title="Collapse the menu ( [ )">${icon("panel")}</button></div>
       <label class="side-search" data-tip="Go to… ( / )">${icon("search")}<input type="search" placeholder="Go to…" aria-label="Go to a section" autocomplete="off" data-side-search><kbd>/</kbd></label>
       <nav aria-label="Admin">${[["Platform content", NAV.filter((n) => !n.group)], ["Superadmin", NAV.filter((n) => n.group === "super")]].map(([t, list]) => `<p class="side-group">${t}</p>${list.map((n) => `<a href="${n.href}" data-tip="${esc(n.label)}"${n.key === pageKey ? ' aria-current="page"' : ""}>${icon(n.icon)}<span class="side-label">${n.label}</span></a>`).join("")}`).join("")}<p class="side-none" hidden>No section matches</p></nav>
@@ -232,7 +232,8 @@
       try { localStorage.setItem("scpa-side-mini", on ? "1" : ""); } catch {}
     };
     mini(document.documentElement.classList.contains("side-mini"));
-    $("[data-side-toggle]", side).addEventListener("click", () => mini(!document.documentElement.classList.contains("side-mini")));
+    // the panel button, or a click on the logo / "Admin" header, folds or unfolds the column
+    $(".side-brand", side).addEventListener("click", () => mini(!document.documentElement.classList.contains("side-mini")));
     // the tooltip says what the link says, in the admin's language
     side.addEventListener("pointerover", (e) => { const a = e.target.closest("[data-tip]"); const t = a?.querySelector(".side-label")?.textContent.trim(); if (t) a.dataset.tip = t; });
     const find = $("[data-side-search]", side), links = [...side.querySelectorAll("nav a")];

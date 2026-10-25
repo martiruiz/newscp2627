@@ -1767,3 +1767,6 @@ select.cs-native { display: none !important; }
   }
 }
 @media (max-width: 860px) { .side-toggle, .side-search { display: none; } .side-brand { padding-right: 8px; } }
+
+.side-brand { cursor: pointer; }
+.side-brand .side-mark { border-radius: 9px; }
