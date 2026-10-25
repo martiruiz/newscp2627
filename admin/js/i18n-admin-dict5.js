@@ -504,4 +504,8 @@ window.SCPA_DICT = Object.assign(window.SCPA_DICT || {}, {
   "Run supabase/crm.sql in Supabase first.": ["Primero ejecuta supabase/crm.sql en Supabase.", "Primer executa supabase/crm.sql a Supabase."],
   "Another lead already has this e-mail.": ["Otro lead ya tiene este email.", "Un altre lead ja té aquest email."],
   "A lead with this e-mail already exists.": ["Ya existe un lead con este email.", "Ja existeix un lead amb aquest email."],
+  "Delete this client?": ["¿Eliminar este cliente?", "Vols esborrar aquest client?"],
+  "It will be removed from the CRM for good.": ["Se eliminará del CRM para siempre.", "S'esborrarà del CRM per sempre."],
+  "Deleted": ["Eliminado", "Esborrat"],
+  "Run supabase/crm-delete.sql in Supabase first.": ["Primero ejecuta supabase/crm-delete.sql en Supabase.", "Primer executa supabase/crm-delete.sql a Supabase."],
 });

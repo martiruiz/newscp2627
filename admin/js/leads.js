@@ -144,7 +144,13 @@
         ${kv("Language", esc(l.lang || "—"))}${kv("A/B variant", esc(l.variant || "—"))}
         ${kv("Privacy accepted", l.privacy_accepted_at ? fmt(l.privacy_accepted_at) : "—")}${kv("Marketing consent", l.marketing_consent ? `Yes · ${fmt(l.marketing_consent_at)}` : "No")}</div>
         ${l.message ? `<h3>Message</h3><p style="white-space:pre-wrap">${esc(l.message)}</p>` : ""}`,
-      onClose: () => render() });
+      foot: `<button class="btn btn-danger" type="button" data-del>${icon("trash")}Delete</button>`, onClose: () => render() });
+    $("[data-del]", m.el).addEventListener("click", async () => {
+      if (!await A.confirmDialog({ title: "Delete this client?", text: "It will be removed from the CRM for good.", confirm: "Delete", danger: true })) return;
+      const { error } = await A.db.rpc("admin_delete_lead", { p_id: id });
+      if (error) return A.toast(/admin_delete_lead|schema cache/i.test(error.message) ? "Run supabase/crm-delete.sql in Supabase first." : A.errMsg(error), "err");
+      leads = leads.filter((x) => x.id !== id); m.close(); A.toast("Deleted"); A.crmBadge?.();
+    });
     const saved = $("[data-saved]", m.el), pending = {};
     const flush = A.debounce(async () => {
       const p = { ...pending }; Object.keys(pending).forEach((k) => delete pending[k]);
