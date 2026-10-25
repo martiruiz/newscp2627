@@ -97,3 +97,5 @@
   .rs-list { grid-template-columns: 1fr; }
   .rs-cover .rs-cover-2 { display: none; }
 }
+
+.rs-grid[hidden], .rs-cover[hidden], .rs-sub[hidden] { display: none; }

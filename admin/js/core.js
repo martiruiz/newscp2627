@@ -162,6 +162,7 @@
     { href: "blog.html", label: "Blog", icon: "edit", key: "blog" },
     { href: "news.html", label: "Social News", icon: "external", key: "news" },
     { href: "jobs.html", label: "Jobs", icon: "briefcase", key: "jobs" },
+    { href: "resources.html", label: "Resources", icon: "tag", key: "resources" },
     { href: "smart-review.html", label: "Smart filters", icon: "smart", key: "smart" },
     { href: "profiles.html", label: "Scraped profiles", icon: "audience", key: "profiles" },
     { href: "my-club.html", label: "My Club", icon: "audience", key: "myclub", group: "super" },
