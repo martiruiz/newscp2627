@@ -41,6 +41,10 @@ insert into public.resources (slug, title, description, bullets, status, cover_u
  ('calendar-2026-27', 'Sports Content Calendar 2026–27', '28 key dates from October to May across 9 sports, each with a content angle you can use.',
   E'28 dates, 8 months, 9 sports\nA content angle for every date\nStatus on every date', 'live',
   'assets/resources/calendar-cover.webp', 'assets/resources/Sports-Content-Calendar-2026-27.pdf', 'sports-content-calendar.html', 10, true),
- ('content-ideas', 'Content ideas for every moment', 'Ready-to-adapt post ideas for match day, signings, results, behind the scenes and the off-season.', null, 'soon', null, null, null, 20, true),
- ('ai-prompts', 'AI prompts for sports community managers', 'Prompts to draft captions, plan the week and adapt a reference post to your club’s tone.', null, 'soon', null, null, null, 30, true)
+ ('content-ideas', 'The Moment Playbook', 'Six key moments in a club''s season, with real examples from the library, hooks to adapt and a checklist for each.',
+  E'6 moments: match day, signing, return, club history, academy, tickets\nReal examples from the SCP library, labelled observed or hypothesis\nHook templates and a checklist for each moment', 'live',
+  'assets/resources/moment-cover.webp', 'assets/resources/The-Moment-Playbook.pdf', null, 20, true),
+ ('ai-prompts', 'Prompt Pack for Sports Social Managers', '14 ready-to-use prompts for hooks, captions, planning, sponsors and reporting, including how to turn a reference into your own post.',
+  E'14 prompts to copy and paste\nA worked example from a real library post\nA fact-check step before you publish', 'live',
+  'assets/resources/prompts-cover.webp', 'assets/resources/Prompt-Pack-Sports-Social-Managers.pdf', null, 30, true)
 on conflict (slug) do nothing;
