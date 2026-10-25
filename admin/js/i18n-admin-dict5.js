@@ -491,4 +491,6 @@ window.SCPA_DICT = Object.assign(window.SCPA_DICT || {}, {
   "Go to…": ["Ir a…", "Anar a…"],
   "Go to a section": ["Ir a una sección", "Anar a una secció"],
   "No section matches": ["Ninguna sección coincide", "Cap secció no coincideix"],
+  "Open the CRM": ["Abrir el CRM", "Obrir el CRM"],
+  "Every lead as a card in its commercial stage. Drag a card to another column to change its status; click a card for every answer, the demo and notes. The filters above apply here too.": ["Cada lead como una tarjeta en su fase comercial. Arrastra una tarjeta a otra columna para cambiar su estado; haz clic en una tarjeta para ver todas las respuestas, la demo y las notas. Los filtros de arriba también se aplican aquí.", "Cada lead com una targeta en la seva fase comercial. Arrossega una targeta a una altra columna per canviar-ne l'estat; fes clic en una targeta per veure totes les respostes, la demo i les notes. Els filtres de dalt també s'apliquen aquí."],
 });

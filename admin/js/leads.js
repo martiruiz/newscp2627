@@ -4,8 +4,9 @@
 (async () => {
   const A = window.SCPA;
   const { $, $$, esc, icon, num, info } = A;
-  try { await A.boot("leads"); } catch { return; }
   const main = $("[data-main]");
+  const CRM = main.dataset.view === "crm";   // admin/crm.html: the pipeline board on its own page
+  try { await A.boot(CRM ? "crm" : "leads"); } catch { return; }
   const ORG = { club: "Sports Club / Team", agency: "Sports Agency", company: "Sports company", league: "League / Federation", event: "Sports Event Organizer", creator: "Content Creator", other: "Other" };
   const SIZE = { "1": "Just me", "2-5": "2–5", "6-15": "6–15", "15+": "15+" };
   const CH = { ideas: "Fresh content ideas", ai_time: "Saving time with AI", calendar: "Content calendar", performance: "Content performance", multiple_teams: "Multiple teams", exploring: "Exploring SCP" };
@@ -17,19 +18,23 @@
   const TABS = [["all", "All", () => true], ["demos", "Booked demos", (l) => !!l.meeting_at || (l.meeting_status && l.meeting_status !== "none")],
     ["phone", "Phone contacts", (l) => !!l.phone], ["messages", "Messages", (l) => !!(l.message || "").trim()]];
 
-  main.innerHTML = `<div class="page-head"><div><h1>Leads &amp; Demos</h1><p data-sub>Loading…</p></div>
-    <div class="head-actions"><button class="btn" type="button" data-rules>${icon("edit")}Recommendation rules</button>
-    <button class="btn btn-primary" type="button" data-export>${icon("download")}Export authorised contacts</button></div></div>
-    <div class="aud-kpis" data-kpis></div>
-    <section class="panel ld-crm"><header class="aud-h aud-h-lg"><h2>Pipeline</h2>${info("Your CRM: every lead as a card in its commercial stage. Drag a card to another column to change its status (or use the status in the list below); click a card for every answer, the demo and notes. The filters below apply here too.")}<span class="spacer"></span><b class="aud-count" data-crm-count></b></header><div class="crm-board" data-board></div></section>
-    <section class="panel ld-funnel" data-funnel><p class="muted panel-pad">Loading the funnel…</p></section>
-    <div class="aud-filters panel ld-filters">
+  const filters = `<div class="aud-filters panel ld-filters">
       <input class="input" type="search" placeholder="Search name, email, organisation…" data-f="q">
       <select class="select" data-f="status"><option value="">All statuses</option>${Object.entries(STATUS).map(([k, v]) => `<option value="${k}">${v}</option>`).join("")}</select>
       <select class="select" data-f="org_type"><option value="">All organisation types</option>${Object.entries(ORG).map(([k, v]) => `<option value="${k}">${v}</option>`).join("")}</select>
       <select class="select" data-f="challenge"><option value="">All needs</option>${Object.entries(CH).map(([k, v]) => `<option value="${k}">${v}</option>`).join("")}</select>
       <label class="check-inline"><input type="checkbox" data-f="identified" checked> With email or phone</label>
-    </div>
+    </div>`;
+  main.innerHTML = CRM ? `<div class="page-head"><div><h1>CRM</h1><p data-sub>Loading…</p></div>
+    <div class="head-actions"><a class="btn" href="leads.html">${icon("external")}Leads &amp; Demos</a></div></div>
+    <div class="aud-kpis" data-kpis></div>${filters}
+    <section class="panel ld-crm"><header class="aud-h aud-h-lg"><h2>Pipeline</h2>${info("Every lead as a card in its commercial stage. Drag a card to another column to change its status; click a card for every answer, the demo and notes. The filters above apply here too.")}<span class="spacer"></span><b class="aud-count" data-crm-count></b></header><div class="crm-board" data-board></div></section>`
+  : `<div class="page-head"><div><h1>Leads &amp; Demos</h1><p data-sub>Loading…</p></div>
+    <div class="head-actions"><a class="btn" href="crm.html">${icon("columns")}Open the CRM</a><button class="btn" type="button" data-rules>${icon("edit")}Recommendation rules</button>
+    <button class="btn btn-primary" type="button" data-export>${icon("download")}Export authorised contacts</button></div></div>
+    <div class="aud-kpis" data-kpis></div>
+    <section class="panel ld-funnel" data-funnel><p class="muted panel-pad">Loading the funnel…</p></section>
+    ${filters}
     <nav class="ms-tabs ld-tabs" role="tablist" data-tabs></nav>
     <section class="panel ld-list"><header class="aud-h aud-h-lg"><h2>Leads</h2>${info("People who left their details in the lead form (Book a demo / Contact / the home questions), newest activity first. Click a row for every answer, the demo and notes; change the commercial status right in the list. Filters above apply.")}<span class="spacer"></span><b class="aud-count" data-count></b></header><div data-list><p class="muted panel-pad">Loading…</p></div></section>`;
 
@@ -40,7 +45,7 @@
     const p = Object.fromEntries(Object.entries(f).filter(([, v]) => v !== "" && v !== false));
     const { data, error } = await A.db.rpc("admin_leads", { p });
     if (error) {
-      $("[data-list]").innerHTML = `<p class="panel-pad muted">${esc(/admin_leads|does not exist|schema cache/i.test(error.message) ? "Leads aren't set up yet — run supabase/leads.sql in Supabase." : A.errMsg(error))}</p>`;
+      ($("[data-list]") || $("[data-board]")).innerHTML = `<p class="panel-pad muted">${esc(/admin_leads|does not exist|schema cache/i.test(error.message) ? "Leads aren't set up yet — run supabase/leads.sql in Supabase." : A.errMsg(error))}</p>`;
       $("[data-sub]").textContent = ""; return;
     }
     leads = data || [];
@@ -85,7 +90,8 @@
   });
 
   function render() {
-    board();
+    if ($("[data-board]")) board();
+    if (!$("[data-list]")) return;
     $("[data-tabs]").innerHTML = TABS.map(([k, label, ok]) => `<a href="#" role="tab" data-tab="${k}" aria-selected="${tab === k}">${label} <b>${num(leads.filter(ok).length)}</b></a>`).join("");
     const list = leads.filter(TABS.find(([k]) => k === tab)[2]);
     $("[data-count]").textContent = num(list.length);
@@ -182,5 +188,5 @@
     if (row && !e.target.closest("select")) openLead(row.dataset.id);
   });
 
-  load(); funnel();
+  load(); if (!CRM) funnel();
 })();
