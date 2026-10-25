@@ -19,6 +19,7 @@
   // Order used on the Filters page (same as the previous back-end)
   const CATALOG_ORDER = ["sport", "entity", "competition", "club", "platform", "format", "campaign", "trend"];
 
+  try { if (localStorage.getItem("scpa-side-mini") === "1" && innerWidth > 860) document.documentElement.classList.add("side-mini"); } catch {}
   const ICONS = {
     ideas: '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6M10 22h4"/>',   // a light bulb (an idea)
     library: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
@@ -48,6 +49,12 @@
     sparkles: '<path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/>',
     search: '<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',
     globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+    news: '<path d="M4 5h13v14a2 2 0 0 0 2 2H6a2 2 0 0 1-2-2z"/><path d="M17 9h3v10a2 2 0 0 1-2 2M8 9h5M8 13h5M8 17h3"/>',
+    mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
+    crown: '<path d="M3 8l4 4 5-7 5 7 4-4-2 11H5z"/>',
+    inbox: '<path d="M3 13h5l1.5 3h5L16 13h5"/><path d="M5 5h14l2 8v6H3v-6z"/>',
+    panel: '<rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M9 4v16"/>',
+    home: '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>',
   };
   const icon = (name) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ""}</svg>`;
 
@@ -161,16 +168,16 @@
     { href: "filters.html", label: "Filters", icon: "filters", key: "filters" },
     { href: "seo.html", label: "SEO", icon: "globe", key: "seo" },
     { href: "blog.html", label: "Blog", icon: "edit", key: "blog" },
-    { href: "news.html", label: "Social News", icon: "external", key: "news" },
+    { href: "news.html", label: "Social News", icon: "news", key: "news" },
     { href: "jobs.html", label: "Jobs", icon: "briefcase", key: "jobs" },
     { href: "resources.html", label: "Resources", icon: "tag", key: "resources" },
     { href: "content.html", label: "Content hub", icon: "calendar", key: "content" },
     { href: "smart-review.html", label: "Smart filters", icon: "smart", key: "smart" },
     { href: "profiles.html", label: "Scraped profiles", icon: "audience", key: "profiles" },
-    { href: "my-club.html", label: "My Club", icon: "audience", key: "myclub", group: "super" },
+    { href: "my-club.html", label: "My Club", icon: "crown", key: "myclub", group: "super" },
     { href: "memberships.html", label: "Memberships", icon: "billing", key: "memberships", group: "super" },
-    { href: "audience.html", label: "Newsletter", icon: "audience", key: "audience", group: "super" },
-    { href: "leads.html", label: "Leads & Demos", icon: "users", key: "leads", group: "super" },
+    { href: "audience.html", label: "Newsletter", icon: "mail", key: "audience", group: "super" },
+    { href: "leads.html", label: "Leads & Demos", icon: "inbox", key: "leads", group: "super" },
     { href: "promo-codes.html", label: "Promo codes", icon: "tag", key: "promo", group: "super" },
     { href: "users.html", label: "Users", icon: "users", key: "users", group: "super" },
   ];
@@ -204,17 +211,54 @@
     const side = $("[data-side]");
     if (!side) return;
     side.innerHTML = `
-      <div class="side-brand"><img class="side-wordmark" src="../assets/logo-scp.png" alt="Sports Content Playbook"><div><b>Admin</b></div></div>
-      <nav aria-label="Admin">${[["Platform content", NAV.filter((n) => !n.group)], ["Superadmin", NAV.filter((n) => n.group === "super")]].map(([t, list]) => `<p class="side-group">${t}</p>${list.map((n) => `<a href="${n.href}"${n.key === pageKey ? ' aria-current="page"' : ""}>${icon(n.icon)}${n.label}</a>`).join("")}`).join("")}</nav>
-      <a class="side-cta" href="../content-library.html">Open Content Library<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg></a>
-      <a class="side-home" href="../index.html"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>Home page</a>
+      <div class="side-brand"><img class="side-wordmark" src="../assets/logo-scp.png" alt="Sports Content Playbook"><img class="side-mark" src="../assets/icon-logo.svg" alt="SCP"><b>Admin</b>
+        <button class="side-toggle" type="button" data-side-toggle aria-label="Collapse the menu" title="Collapse the menu ( [ )">${icon("panel")}</button></div>
+      <label class="side-search" data-tip="Go to… ( / )">${icon("search")}<input type="search" placeholder="Go to…" aria-label="Go to a section" autocomplete="off" data-side-search><kbd>/</kbd></label>
+      <nav aria-label="Admin">${[["Platform content", NAV.filter((n) => !n.group)], ["Superadmin", NAV.filter((n) => n.group === "super")]].map(([t, list]) => `<p class="side-group">${t}</p>${list.map((n) => `<a href="${n.href}" data-tip="${esc(n.label)}"${n.key === pageKey ? ' aria-current="page"' : ""}>${icon(n.icon)}<span class="side-label">${n.label}</span></a>`).join("")}`).join("")}<p class="side-none" hidden>No section matches</p></nav>
+      <a class="side-cta" href="../content-library.html" data-tip="Open Content Library"><span class="side-label">Open Content Library</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg></a>
+      <a class="side-home" href="../index.html" data-tip="Home page">${icon("home")}<span class="side-label">Home page</span></a>
       <div class="side-foot">
         <p class="side-user" title="${esc(session.user.email)}">${esc(session.user.email)}${profile?.role ? ` · ${esc(profile.role)}` : ""}</p>
-        <a href="account.html"${pageKey === "account" ? ' aria-current="page"' : ""}>${icon("account")}Account</a>
-        <button class="side-btn" type="button" data-logout>${icon("logout")}Logout</button>
+        <a href="account.html" data-tip="Account"${pageKey === "account" ? ' aria-current="page"' : ""}>${icon("account")}<span class="side-label">Account</span></a>
+        <button class="side-btn" type="button" data-logout data-tip="Logout">${icon("logout")}<span class="side-label">Logout</span></button>
         <div class="side-prefs">${window.SCP_THEME?.button || ""}<div class="side-lang" role="group" aria-label="${esc(window.SCPA_t ? window.SCPA_t("Language") : "Language")}" data-i18n-skip>${["en", "es", "ca"].map((l) => `<button type="button" data-admin-lang="${l}" aria-pressed="${(window.SCPA_LANG || "en") === l}">${l.toUpperCase()}</button>`).join("")}</div></div>
       </div>`;
     side.querySelectorAll("[data-theme-toggle]").forEach((b) => window.SCP_THEME.paint(b));
+    // collapse to an icon rail (remembered in this browser); "[" toggles it, "/" jumps to the section search
+    const mini = (on) => {
+      document.documentElement.classList.toggle("side-mini", on);
+      const t = $("[data-side-toggle]", side), label = on ? "Expand the menu" : "Collapse the menu";
+      t.setAttribute("aria-label", label); t.title = `${label} ( [ )`;
+      try { localStorage.setItem("scpa-side-mini", on ? "1" : ""); } catch {}
+    };
+    mini(document.documentElement.classList.contains("side-mini"));
+    $("[data-side-toggle]", side).addEventListener("click", () => mini(!document.documentElement.classList.contains("side-mini")));
+    // the tooltip says what the link says, in the admin's language
+    side.addEventListener("pointerover", (e) => { const a = e.target.closest("[data-tip]"); const t = a?.querySelector(".side-label")?.textContent.trim(); if (t) a.dataset.tip = t; });
+    const find = $("[data-side-search]", side), links = [...side.querySelectorAll("nav a")];
+    const filter = () => {
+      const q = find.value.trim().toLowerCase();
+      links.forEach((a) => { a.hidden = !!q && !a.textContent.toLowerCase().includes(q); });
+      side.querySelectorAll(".side-group").forEach((g) => {
+        let n = g.nextElementSibling, any = false;
+        while (n && n.tagName === "A") { if (!n.hidden) any = true; n = n.nextElementSibling; }
+        g.hidden = !any;
+      });
+      $(".side-none", side).hidden = !q || links.some((a) => !a.hidden);
+    };
+    find.addEventListener("input", filter);
+    find.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") { const a = links.find((l) => !l.hidden); if (a) location.href = a.href; }
+      if (e.key === "Escape") { find.value = ""; filter(); find.blur(); }
+    });
+    $(".side-search", side).addEventListener("click", () => { if (document.documentElement.classList.contains("side-mini")) { mini(false); setTimeout(() => find.focus(), 220); } });
+    if (!window.__scpaSideKeys) window.__scpaSideKeys = true, document.addEventListener("keydown", (e) => {
+      const side = $("[data-side]"), find = side && $("[data-side-search]", side);
+      if (!find) return;
+      if (e.metaKey || e.ctrlKey || e.altKey || e.target.closest?.("input, textarea, select, [contenteditable]")) return;
+      if (e.key === "/") { e.preventDefault(); if (document.documentElement.classList.contains("side-mini")) mini(false); find.focus(); }
+      if (e.key === "[") { e.preventDefault(); mini(!document.documentElement.classList.contains("side-mini")); }
+    });
     side.addEventListener("click", (e) => { const b = e.target.closest("[data-admin-lang]"); if (b && b.dataset.adminLang !== window.SCPA_LANG) window.SCPA_setLang?.(b.dataset.adminLang); });
     // asks first, in a little bubble right above the button; once signed out, the SCP log-in page (the site's, not the admin's)
     const out = $("[data-logout]", side);

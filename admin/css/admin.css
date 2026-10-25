@@ -1720,3 +1720,50 @@ select.cs-native { display: none !important; }
 .ch-script { min-height: 220px; font-family: var(--mono); font-size: 13px; line-height: 1.55; }
 @media (max-width: 1100px) { .ch-filter-row { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 640px) { .ch-filter-row { grid-template-columns: 1fr 1fr; } .ch-kv { grid-template-columns: 1fr; } .ch-stat { min-width: 88px; } }
+/* Sidebar: collapses to an icon rail ("[" or the panel button, remembered), a "Go to…" search ("/"), tooltips when collapsed */
+.app { transition: grid-template-columns .22s ease; }
+.side { overflow-y: auto; overflow-x: hidden; scrollbar-width: none; }
+.side::-webkit-scrollbar { display: none; }
+.side-brand { position: relative; padding-right: 36px; }
+.side-brand .side-mark { display: none; width: 30px; height: 30px; margin: 0 auto; }
+.side-toggle { position: absolute; top: 2px; right: 0; display: grid; place-items: center; width: 32px; height: 32px; border: 0; border-radius: 9px; background: transparent; color: var(--dim); cursor: pointer; transition: color .15s, background .15s; }
+.side-toggle:hover { color: var(--text); background: var(--panel-2); }
+.side-toggle svg { width: 18px; height: 18px; }
+.side-search { display: flex; align-items: center; gap: 10px; height: 38px; margin: 0 0 14px; padding: 0 10px 0 14px; border-radius: 12px; background: var(--panel-2); box-shadow: inset 0 0 0 1px var(--border); color: var(--dim); cursor: text; transition: box-shadow .15s; }
+.side-search:focus-within { box-shadow: inset 0 0 0 1px rgba(240, 184, 74, 0.55); color: var(--accent-light); }
+.side-search svg { width: 16px; height: 16px; flex-shrink: 0; }
+.side-search input { flex: 1; min-width: 0; height: 100%; border: 0; background: none; outline: 0; color: var(--text); font: 500 13.5px var(--font); }
+.side-search input::-webkit-search-cancel-button { display: none; }
+.side-search kbd { padding: 1px 7px; border-radius: 6px; box-shadow: inset 0 0 0 1px var(--border-2); color: var(--dim); font: 600 11px var(--font); }
+.side-none { padding: 8px 16px; font-size: 12.5px; color: var(--dim); }
+.side a, .side .side-btn { position: relative; }
+.side-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (min-width: 861px) {
+  .side-mini .app { grid-template-columns: 76px minmax(0, 1fr); }
+  .side-mini .side { padding: 22px 12px 18px; overflow: visible; z-index: 40; }
+  .side-mini .side-brand { flex-direction: column; gap: 14px; padding: 0 0 18px; }
+  .side-mini .side-brand .side-wordmark, .side-mini .side-brand b { display: none; }
+  .side-mini .side-brand .side-mark { display: block; }
+  .side-mini .side-toggle { position: static; margin: 0 auto; }
+  .side-mini .side-toggle svg { transform: scaleX(-1); }
+  .side-mini .side-search { justify-content: center; padding: 0; width: 44px; margin: 0 auto 12px; cursor: pointer; }
+  .side-mini .side-search input, .side-mini .side-search kbd { display: none; }
+  .side-mini .side-group { height: 1px; margin: 10px 8px; overflow: hidden; color: transparent; background: var(--border); }
+  .side-mini .side a, .side-mini .side .side-btn { justify-content: center; gap: 0; width: 44px; height: 42px; margin-left: auto; margin-right: auto; padding: 0; }
+  .side-mini .side-label { display: none; }
+  .side-mini .side a.side-cta { width: 44px; padding: 0; }
+  .side-mini .side a.side-home { width: 44px; }
+  .side-mini .side-user { display: none; }
+  .side-mini .side-prefs { flex-direction: column; gap: 8px; }
+  .side-mini .side-lang { flex-direction: column; border-radius: 16px; }
+  .side-mini .side-ask { left: 0; right: auto; width: 240px; }
+  /* tooltips beside the rail */
+  .side-mini .side [data-tip]:hover { overflow: visible; }
+  .side-mini .side a[aria-current="page"]:hover::after { display: none; }
+  .side-mini .side [data-tip]:hover::before, .side-mini .side [data-tip]:focus-visible::before {
+    content: attr(data-tip); position: absolute; left: calc(100% + 12px); top: 50%; transform: translateY(-50%); z-index: 30;
+    padding: 6px 11px; border-radius: 8px; background: var(--panel-3); box-shadow: 0 10px 24px -10px rgba(0, 0, 0, .7), inset 0 0 0 1px var(--border-2);
+    color: var(--text); font: 600 12.5px var(--font); white-space: nowrap; pointer-events: none;
+  }
+}
+@media (max-width: 860px) { .side-toggle, .side-search { display: none; } .side-brand { padding-right: 8px; } }

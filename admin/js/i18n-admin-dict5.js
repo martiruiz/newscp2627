@@ -484,4 +484,11 @@ window.SCPA_DICT = Object.assign(window.SCPA_DICT || {}, {
   "Drop the MemberPress or Stripe CSV here": ["Arrastra aquí el CSV de MemberPress o de Stripe", "Arrossega aquí el CSV de MemberPress o d'Stripe"],
   "or click to browse": ["o haz clic para buscarlo", "o fes clic per buscar-lo"],
   "Nothing changes in Stripe; renewal dates and prices of migrated members stay as they are. Passwords aren't imported: members set theirs with “Forgot password”.": ["En Stripe no cambia nada: las fechas de renovación y los precios de los miembros migrados se mantienen. Las contraseñas no se importan: cada miembro pone la suya con «He olvidado la contraseña».", "A Stripe no canvia res: les dates de renovació i els preus dels membres migrats es mantenen. Les contrasenyes no s'importen: cada membre posa la seva amb «He oblidat la contrasenya»."],
+  "Collapse the menu": ["Plegar el menú", "Plegar el menú"],
+  "Expand the menu": ["Desplegar el menú", "Desplegar el menú"],
+  "Collapse the menu ( [ )": ["Plegar el menú ( [ )", "Plegar el menú ( [ )"],
+  "Expand the menu ( [ )": ["Desplegar el menú ( [ )", "Desplegar el menú ( [ )"],
+  "Go to…": ["Ir a…", "Anar a…"],
+  "Go to a section": ["Ir a una sección", "Anar a una secció"],
+  "No section matches": ["Ninguna sección coincide", "Cap secció no coincideix"],
 });
