@@ -1,5 +1,52 @@
 [
   {
+    "id": 14,
+    "url": "https://www.sponconsports.com/p/manchester-united-turns-starting-xi-graphics-into-art-with-snapdragon",
+    "source_name": "SponCon Sports",
+    "platform": "instagram",
+    "title": "Manchester United and Snapdragon turn Champions League Starting XI graphics into illustrated portraits",
+    "paragraphs": [
+      "Manchester United has commissioned Stanley Chow, a local illustrator and lifelong supporter, to draw custom portraits of the club's Starting XI for its Champions League fixtures this season. Each player appears in the Snapdragon-branded kit, and the artwork is photographed on Snapdragon-powered phones against scenic backdrops in host cities such as Como and Madrid.",
+      "On Instagram, United is pairing the carousel with the platform's new multiple captions feature, labelling each player as fans swipe through the portraits. The approach gives a routine matchday asset a premium, collectible feel while weaving the sponsor's product into the story rather than simply stamping a logo on a template.",
+      "For social teams, the takeaway is that lineup announcements are among the most reliable sponsorship inventory and can be refreshed creatively. Clubs could commission fan artists for marquee fixtures, tie visuals to away-trip locations, or let a tech partner's device become part of the production. Testing Instagram's per-slide captions on carousels is an easy way to add context without cluttering the artwork."
+    ],
+    "relevant": true,
+    "published_at": "2026-10-26T14:00:00+00:00",
+    "created_at": "2026-10-26T21:59:12.531209+00:00",
+    "edited_at": null,
+    "slug": "manchester-united-and-snapdragon-turn-champions-league-starting-xi-14",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/cc28aff8-f266-41a4-8a9c-963dfcf38050/Untitled_design.gif?t=1792866027",
+    "es": {
+      "title": "Manchester United y Snapdragon convierten las alineaciones de la Champions League en retratos ilustrados",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "El Manchester United ha encargado a Stanley Chow, ilustrador local y seguidor del club de toda la vida, que dibuje retratos personalizados del equipo titular para sus partidos de la Champions League esta temporada. Cada jugador aparece con la equipación de marca Snapdragon, y la obra se fotografía en teléfonos con tecnología Snapdragon frente a escenarios pintorescos en ciudades anfitrionas como Como y Madrid.",
+        "En Instagram, United combina el carrusel con la nueva función de pies de foto múltiples de la plataforma, etiquetando a cada jugador mientras los aficionados deslizan los retratos. El enfoque da a un recurso rutinario del día de partido un aire premium y coleccionable, a la vez que integra el producto del patrocinador en la historia en lugar de limitarse a estampar un logotipo en una plantilla.",
+        "Para los equipos de redes sociales, la conclusión es que los anuncios de alineaciones se cuentan entre el inventario de patrocinio más fiable y pueden renovarse de forma creativa. Los clubes podrían encargar a artistas aficionados para partidos destacados, vincular las imágenes a ubicaciones de desplazamientos como viajes fuera de casa, o dejar que el dispositivo de un socio tecnológico forme parte de la producción. Probar los pies de foto por diapositiva de Instagram en los carruseles es una forma sencilla de añadir contexto sin saturar la obra."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-10-26T21:59:12.531209+00:00",
+      "model": "claude-haiku-5-5",
+      "translated_at": "2026-10-26T22:00:41.435Z",
+      "tokens": {
+        "in": 1388,
+        "out": 629
+      }
+    }
+  },
+  {
     "id": 12,
     "url": "https://www.sponconsports.com/p/what-fc-barcelona-gets-right-about-ai-content",
     "source_name": "SponCon Sports",

@@ -8,20 +8,8 @@
   {
     "account": "espn",
     "account_platform": "tiktok",
-    "views": 4000000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547235.jpg"
-  },
-  {
-    "account": "espn",
-    "account_platform": "tiktok",
     "views": 3700000,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547217.jpg"
-  },
-  {
-    "account": "nfl",
-    "account_platform": "tiktok",
-    "views": 2900000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547259.jpg"
   },
   {
     "account": "espn",
@@ -30,28 +18,10 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547223.jpg"
   },
   {
-    "account": "fcbarcelona",
-    "account_platform": "tiktok",
-    "views": 2400000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547001.jpg"
-  },
-  {
     "account": "pacers",
     "account_platform": "tiktok",
     "views": 1800000,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547144.jpg"
-  },
-  {
-    "account": "caosasuna",
-    "account_platform": "tiktok",
-    "views": 1500000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547032.jpg"
-  },
-  {
-    "account": "nba",
-    "account_platform": "tiktok",
-    "views": 1400000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547170.jpg"
   },
   {
     "account": "spursofficial",
@@ -60,28 +30,16 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547082.jpg"
   },
   {
-    "account": "nba",
-    "account_platform": "tiktok",
-    "views": 1300000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547171.jpg"
-  },
-  {
-    "account": "juegodedoce",
-    "account_platform": "tiktok",
-    "views": 1200000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/544/544817.jpg"
-  },
-  {
     "account": "premierleague",
     "account_platform": "tiktok",
     "views": 1200000,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547096.jpg"
   },
   {
-    "account": "espn",
+    "account": "juegodedoce",
     "account_platform": "tiktok",
-    "views": 937200,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547233.jpg"
+    "views": 1200000,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/544/544817.jpg"
   },
   {
     "account": "espn",
@@ -94,12 +52,6 @@
     "account_platform": "tiktok",
     "views": 670000,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547081.jpg"
-  },
-  {
-    "account": "davooxeneize",
-    "account_platform": "tiktok",
-    "views": 647200,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/544/544848.png"
   },
   {
     "account": "espn",
@@ -126,12 +78,6 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547095.jpg"
   },
   {
-    "account": "nfl",
-    "account_platform": "tiktok",
-    "views": 523200,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547258.jpg"
-  },
-  {
     "account": "espn",
     "account_platform": "tiktok",
     "views": 450500,
@@ -152,18 +98,6 @@
   {
     "account": "espn",
     "account_platform": "tiktok",
-    "views": 297700,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547236.jpg"
-  },
-  {
-    "account": "espn",
-    "account_platform": "tiktok",
-    "views": 269600,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547237.jpg"
-  },
-  {
-    "account": "espn",
-    "account_platform": "tiktok",
     "views": 255200,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547216.jpg"
   },
@@ -178,5 +112,71 @@
     "account_platform": "tiktok",
     "views": 191900,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547140.jpg"
+  },
+  {
+    "account": "spursofficial",
+    "account_platform": "tiktok",
+    "views": 181200,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547084.jpg"
+  },
+  {
+    "account": "timberwolves",
+    "account_platform": "tiktok",
+    "views": 176900,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547149.jpg"
+  },
+  {
+    "account": "spursofficial",
+    "account_platform": "tiktok",
+    "views": 172800,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547083.jpg"
+  },
+  {
+    "account": "premierleague",
+    "account_platform": "tiktok",
+    "views": 147400,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547094.jpg"
+  },
+  {
+    "account": "insaneshayne",
+    "account_platform": "tiktok",
+    "views": 134200,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/544/544870.jpg"
+  },
+  {
+    "account": "espn",
+    "account_platform": "tiktok",
+    "views": 105200,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547222.jpg"
+  },
+  {
+    "account": "espn",
+    "account_platform": "tiktok",
+    "views": 89000,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547230.jpg"
+  },
+  {
+    "account": "jerofreixas",
+    "account_platform": "tiktok",
+    "views": 88300,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/544/544873.jpg"
+  },
+  {
+    "account": "espn",
+    "account_platform": "tiktok",
+    "views": 76400,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547231.jpg"
+  },
+  {
+    "account": "nfl",
+    "account_platform": "tiktok",
+    "views": 55700,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547257.jpg"
+  },
+  {
+    "account": "espn",
+    "account_platform": "tiktok",
+    "views": 46200,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547221.png"
   }
 ]
