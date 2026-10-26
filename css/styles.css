@@ -8845,3 +8845,11 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .plan-switches { width: 100%; max-width: 1160px; margin-left: auto; margin-right: auto; margin-bottom: 24px; }
 .plan-switches + .plans { margin-top: 24px; }
 @media (min-width: 721px) { .plan-switches.has-audience { justify-content: flex-end; } }
+/* the yearly saving stands out (26/10): solid gold when yearly is on, gold outline inviting to it when monthly */
+.plan-switches .plan-save-live { border-color: rgba(240, 184, 74, 0.55); color: var(--gold-light); font-weight: 700; }
+.plan-switches .plan-save-live.is-on { position: relative; overflow: hidden; border-color: transparent; color: var(--on-gold);
+  background: radial-gradient(64% 64% at 50% 100%, var(--gold-light) 0%, var(--gold-mid) 50%, var(--gold) 100%); box-shadow: 0 0 0 1px rgba(255, 224, 160, 0.6), 0 10px 28px -8px rgba(240, 184, 74, 0.85); }
+.plan-switches .plan-save-live.is-on b { color: var(--on-gold); font-size: 17px; font-weight: 800; }
+.plan-switches .plan-save-live.is-on::after { content: ""; position: absolute; top: 0; bottom: 0; left: -60%; width: 40%; pointer-events: none;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.6), transparent); transform: skewX(-20deg); animation: ivShine 2.8s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .plan-switches .plan-save-live.is-on::after { animation: none; } }
