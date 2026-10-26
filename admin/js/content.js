@@ -1,5 +1,5 @@
 // SCP Admin — Content hub: the day-by-day plan (26/10 – 30/11/2026) for every network and the website, with the script and the
-// production status of each piece. Three views: Calendar (by day), Pipeline (by stage) and Scripts & video.
+// production status of each piece. Four views: Week grid (drag to reschedule), Calendar (by day), Pipeline (by stage, drag to change stage) and Scripts & video.
 // Data: table "content_items" (supabase/content-hub.sql). Only admins can read it.
 (async () => {
   const A = window.SCPA;
@@ -13,15 +13,18 @@
   const today = new Date().toISOString().slice(0, 10);
   const fmt = (d) => (d ? d.slice(8, 10) + "/" + d.slice(5, 7) : "");
   const natural = (a, b) => a.localeCompare(b, undefined, { numeric: true });
+  const DAYS = ["Dilluns", "Dimarts", "Dimecres", "Dijous", "Divendres", "Dissabte", "Diumenge"];
+  const isoPlus = (d, n) => new Date(Date.parse(d + "T00:00:00Z") + n * 864e5).toISOString().slice(0, 10);
+  const thumb = (i) => (/^https?:\/\/\S+\.(jpe?g|png|webp)(\?\S*)?$/i.test(i.link || "") ? `<img src="${esc(i.link)}" alt="" loading="lazy">` : "");
   const fail = (e) => A.toast(/relation .*content_items|does not exist|schema cache|row-level/i.test(e.message || "") ? "Run supabase/content-hub.sql in Supabase first." : e.message || String(e), "err");
 
   const v = A.store?.get?.("ch-state") || {};
-  const S = { view: v.view || "week", week: v.week || "1", net: "", vert: "", stage: "", owner: "", q: "" };
+  const S = { view: v.view || "grid", week: v.week || "1", net: "", vert: "", stage: "", owner: "", q: "" };
   let items = [];
 
   main.innerHTML = `<div class="page-head"><div><h1>Content hub</h1><p>The whole content plan in one place: what goes out each day on every network and on the website, its script and where it is in production. 26/10 – 30/11/2026.</p></div>
     <div class="head-actions"><div class="seg" data-views>
-      <button type="button" data-v="week">Calendar</button><button type="button" data-v="board">Pipeline</button><button type="button" data-v="scripts">Scripts &amp; video</button></div>
+      <button type="button" data-v="grid">Week grid</button><button type="button" data-v="week">Calendar</button><button type="button" data-v="board">Pipeline</button><button type="button" data-v="scripts">Scripts &amp; video</button></div>
       <button class="btn btn-ghost" type="button" data-copy>${icon("copy")}Copy status for Claude</button></div></div>
     <div class="ch-stats" data-stats></div>
     <section class="panel ch-filters"><div class="ch-filter-row">
@@ -69,13 +72,18 @@
     if (!items.length) { body.innerHTML = `<div class="panel panel-pad"><p class="muted">No pieces yet. Run <code>supabase/content-hub.sql</code> in Supabase to load the plan.</p></div>`; return; }
     if (!list.length) { body.innerHTML = `<div class="panel table-empty">No pieces match these filters.</div>`; return; }
     const head = `<thead><tr><th>Network</th><th>Piece</th><th>Stage</th><th></th></tr></thead>`;
-    if (S.view === "week") {
+    if (S.view === "grid") {
+      const wk = S.week === "all" ? (items.find((i) => i.pub_date >= today) || items[0] || {}).week || 1 : Number(S.week);
+      const mon = isoPlus("2026-10-26", (wk - 1) * 7);
+      body.innerHTML = `<div class="ch-grid">` + DAYS.map((dn, k) => { const d = isoPlus(mon, k), x = list.filter((i) => i.pub_date === d);
+        return `<div class="ch-gday${d === today ? " is-today" : ""}" data-drop-date="${d}" data-drop-name="${dn}" data-drop-week="${wk}"><h3>${dn.slice(0, 3)} <span>${fmt(d)}</span><em>${x.length}</em></h3>${x.map((i) => `<button type="button" class="ch-gcard is-${TONE[i.stage] || "off"}" draggable="true" data-edit="${esc(i.id)}">${thumb(i)}<small>${esc(i.network)}</small><b>${esc(i.topic)}</b>${badge(i.stage)}</button>`).join("") || `<p class="muted ch-none">Nothing planned</p>`}</div>`; }).join("") + `</div><p class="muted ch-none">Drag a piece to another day to move it. Click it to edit the script, link and stage. To show a preview, paste the image URL of the carousel in "Audio, video or document".</p>`;
+    } else if (S.view === "week") {
       const g = {}; list.forEach((i) => (g[i.pub_date] = g[i.pub_date] || []).push(i));
       body.innerHTML = Object.keys(g).sort().map((d) => `<section class="panel ch-day${d === today ? " is-today" : ""}"><header><h2>${esc(g[d][0].day_name || "")} ${fmt(d)}</h2><span class="muted">${g[d].length} pieces</span></header>
         <div class="table-wrap"><table class="data ch-table">${head}<tbody>${g[d].map((i) => row(i)).join("")}</tbody></table></div></section>`).join("");
     } else if (S.view === "board") {
       body.innerHTML = `<div class="ch-board">` + ALL.map((s) => { const x = list.filter((i) => i.stage === s);
-        return `<div class="ch-col"><h3>${esc(s)}<span>${x.length}</span></h3>${x.slice(0, 80).map((i) => `<button type="button" class="ch-card" data-edit="${esc(i.id)}"><small>${fmt(i.pub_date)} · ${esc(i.network)}</small><b>${esc(i.topic)}</b></button>`).join("") || `<p class="muted ch-none">Nothing here</p>`}${x.length > 80 ? `<p class="muted ch-none">Filter to see the rest</p>` : ""}</div>`; }).join("") + `</div>`;
+        return `<div class="ch-col" data-drop-stage="${esc(s)}"><h3>${esc(s)}<span>${x.length}</span></h3>${x.slice(0, 80).map((i) => `<button type="button" class="ch-card" draggable="true" data-edit="${esc(i.id)}"><small>${fmt(i.pub_date)} · ${esc(i.network)}</small><b>${esc(i.topic)}</b></button>`).join("") || `<p class="muted ch-none">Nothing here</p>`}${x.length > 80 ? `<p class="muted ch-none">Filter to see the rest</p>` : ""}</div>`; }).join("") + `</div>`;
     } else {
       const x = list.filter((i) => i.script || /càmera|Motion/i.test(i.production || ""));
       body.innerHTML = x.length ? `<section class="panel"><div class="table-wrap"><table class="data ch-table">${head}<tbody>${x.map((i) => row(i, true)).join("")}</tbody></table></div></section>` : `<div class="panel table-empty">No scripts or videos with these filters.</div>`;
@@ -103,6 +111,18 @@
       await save(i.id, { stage: f.stage.value, script: f.script.value.trim() || null, link: f.link.value.trim() || null, comment: f.comment.value.trim() || null }, "Saved."); m.close();
     };
   }
+
+  let dragId = null;
+  main.addEventListener("dragstart", (e) => { const c = e.target.closest("[draggable][data-edit]"); if (!c) return; dragId = c.dataset.edit; e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", dragId); });
+  main.addEventListener("dragover", (e) => { const z = e.target.closest("[data-drop-date],[data-drop-stage]"); if (!z || !dragId) return; e.preventDefault(); z.classList.add("is-over"); });
+  main.addEventListener("dragleave", (e) => { e.target.closest?.("[data-drop-date],[data-drop-stage]")?.classList.remove("is-over"); });
+  main.addEventListener("drop", (e) => {
+    const z = e.target.closest("[data-drop-date],[data-drop-stage]"); if (!z || !dragId) return; e.preventDefault(); z.classList.remove("is-over");
+    const i = items.find((x) => x.id === dragId); dragId = null; if (!i) return;
+    if (z.dataset.dropDate) { if (i.pub_date !== z.dataset.dropDate) save(i.id, { pub_date: z.dataset.dropDate, day_name: z.dataset.dropName, week: Number(z.dataset.dropWeek) }, `Moved to ${z.dataset.dropName} ${fmt(z.dataset.dropDate)}.`); }
+    else if (i.stage !== z.dataset.dropStage) save(i.id, { stage: z.dataset.dropStage }, `Moved to “${z.dataset.dropStage}”.`);
+  });
+  main.addEventListener("dragend", () => { dragId = null; main.querySelectorAll(".is-over").forEach((n) => n.classList.remove("is-over")); });
 
   main.addEventListener("click", (e) => {
     const nx = e.target.closest("[data-next]");
