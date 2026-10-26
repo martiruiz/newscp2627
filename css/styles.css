@@ -8838,3 +8838,6 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .plan-switches button.plan-save-live:hover { background: rgba(240, 184, 74, 0.1); border-color: rgba(240, 184, 74, 0.4); }
 .plan-switches .plan-save-live.is-on { background: linear-gradient(180deg, rgba(240, 184, 74, 0.3), rgba(240, 184, 74, 0.12)); border-color: rgba(240, 184, 74, 0.7); color: var(--text); box-shadow: none; }
 .plan-switches .plan-save-live.is-on b { color: var(--gold-light); }
+/* wider plan cards (26/10) */
+.plans.is-3 { max-width: 1160px; gap: 20px; }
+@media (max-width: 860px) { .plans.is-3 { grid-template-columns: minmax(0, 520px); } }
