@@ -120,28 +120,22 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547239.jpg"
   },
   {
-    "account": "nuggets",
-    "account_platform": "tiktok",
-    "views": 1400000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547137.png"
-  },
-  {
     "account": "nba",
     "account_platform": "tiktok",
     "views": 1400000,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547170.jpg"
   },
   {
-    "account": "spursofficial",
-    "account_platform": "tiktok",
-    "views": 1300000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547082.jpg"
-  },
-  {
     "account": "nba",
     "account_platform": "tiktok",
     "views": 1300000,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547171.jpg"
+  },
+  {
+    "account": "spursofficial",
+    "account_platform": "tiktok",
+    "views": 1300000,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547082.jpg"
   },
   {
     "account": "caosasuna",
@@ -178,5 +172,11 @@
     "account_platform": "tiktok",
     "views": 1100000,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547238.jpg"
+  },
+  {
+    "account": "nba",
+    "account_platform": "tiktok",
+    "views": 1000000,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547178.jpg"
   }
 ]
