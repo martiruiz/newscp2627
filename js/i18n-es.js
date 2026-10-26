@@ -2573,8 +2573,6 @@ window.SCP_ES = {
   "Content criteria": "Criterios de selección",
   "Sports content ideas in short videos": "Ideas de contenido deportivo en vídeos cortos",
   "{n}-day free trial on every plan · card required · cancel anytime": "{n} días de prueba gratis en todos los planes · tarjeta necesaria · cancela cuando quieras",
-  "Individual plans": "Planes individuales",
-  "Business plans": "Planes business",
   "Plans": "Planes",
   "Content Creator": "Content Creator",
   "The library: every sport, club and competition": "La biblioteca: todos los deportes, clubes y competiciones",
@@ -2612,7 +2610,6 @@ window.SCP_ES = {
   "We show you your club's library in 30 minutes": "Te enseñamos la biblioteca de tu club en 30 minutos",
   "Tell us about your team and we'll recommend the right plan.": "Cuéntanos cómo es tu equipo y te recomendamos el plan que encaja.",
   "{x} billed yearly": "{x} facturados al año",
-  "Everything in {plan}, plus:": "Todo lo de {plan}, más:",
   "Find out why content works and adapt it to your club with AI": "Descubre por qué funciona un contenido y adáptalo a tu club con IA",
   "Find ideas and organise what to publish": "Encuentra ideas y organiza qué publicar",
   "Find sports content ideas": "Encuentra ideas de contenido deportivo",
@@ -2640,4 +2637,6 @@ window.SCP_ES = {
   "Join now and keep this price for good": "Apúntate y mantén este precio para siempre",
   "From {price}": "Desde {price}",
   "Custom plan, priced for the size of your club": "Plan a medida, con un precio según el tamaño de tu club",
+  "The library: every sport, club and competition, with filters": "La biblioteca: todos los deportes, clubes y competiciones, con filtros",
+  "Extra analysis packs for every plan. Your monthly analyses are used first; pack analyses never expire.": "Packs de análisis extra para todos los planes. Primero se usan los análisis del mes; los de los packs no caducan.",
 };

@@ -8774,9 +8774,6 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 :root[data-theme="light"] .news-filters .ptile-grid .ptile:not(:hover):not([aria-pressed="true"]) img { filter: brightness(0); opacity: .75; }
 @media (prefers-reduced-motion: reduce) { .news-filters .ptile-grid .ptile { transition: background .2s; } .news-filters .ptile-grid .ptile:is(:hover, [aria-pressed="true"]) { transform: none; } }
 /* Pricing: "Individual plans / Business plans" tabs, top left of the switches; Business = the My Club card on its own */
-.plan-switches.has-audience .plan-audience { margin-right: auto; }
-.plans.is-business { grid-template-columns: minmax(0, 440px); justify-content: center; }
-@media (max-width: 720px) { .plan-switches.has-audience .plan-audience { margin: 0 auto; flex-basis: 100%; justify-content: center; } }
 /* Library: parts that depend on the plan (Content creators, Match Day, Brands & sponsors) */
 .lf-sp.is-locked { opacity: .75; text-decoration: none; }
 .lf-sp.is-locked .lf-sp-n svg { width: 14px; height: 14px; }
@@ -8842,9 +8839,8 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .plans.is-3 { max-width: 1160px; gap: 20px; }
 @media (max-width: 860px) { .plans.is-3 { grid-template-columns: minmax(0, 520px); } }
 /* switches row lined up with the cards' edges, closer to them (26/10) */
-.plan-switches { width: 100%; max-width: 1160px; margin-left: auto; margin-right: auto; margin-bottom: 24px; }
+.plan-switches { width: 100%; margin-left: auto; margin-right: auto; margin-bottom: 24px; }
 .plan-switches + .plans { margin-top: 24px; }
-@media (min-width: 721px) { .plan-switches.has-audience { justify-content: flex-end; } }
 /* the yearly saving stands out (26/10): solid gold when yearly is on, gold outline inviting to it when monthly */
 .plan-switches .plan-save-live { border-color: rgba(240, 184, 74, 0.55); color: var(--gold-light); font-weight: 700; }
 .plan-switches .plan-save-live.is-on { position: relative; overflow: hidden; border-color: transparent; color: var(--on-gold);
@@ -8854,7 +8850,7 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
   background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.6), transparent); transform: skewX(-20deg); animation: ivShine 2.8s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .plan-switches .plan-save-live.is-on::after { animation: none; } }
 /* "Not sure which plan" (26/10): a strip as wide as the cards, same box, white button like the plan buttons */
-.plan-help { width: 100%; max-width: 1160px; justify-content: space-between; gap: 16px; margin: 28px auto 0; padding: 16px 16px 16px 18px; border-radius: 20px;
+.plan-help { width: 100%; justify-content: space-between; gap: 16px; margin: 28px auto 0; padding: 16px 16px 16px 18px; border-radius: 20px;
   background: linear-gradient(90deg, rgba(240, 184, 74, 0.12), transparent 60%), rgba(255, 255, 255, 0.035); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: none; }
 .plan-help-ic { width: 42px; height: 42px; border-radius: 12px; border: 0.5px solid rgba(240, 184, 74, 0.35); background: rgba(240, 184, 74, 0.12); }
 .plan-help-tx { flex: 1; min-width: 220px; display: grid; gap: 2px; text-align: left; }
