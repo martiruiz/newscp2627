@@ -96,7 +96,7 @@
       : has("library.creators") ? [tx("Library + Content creators"), tx("Posts by sports creators and their filters"), tx("Plan your week with the Content Plan")]
       : [tx("Content Library"), tx("Every sport, club and competition"), tx("Filters and saved boards")];
     const forWho = tx(hasAi ? "For social media teams and agencies" : has("library.creators") ? "For creators who post every day" : "To find ideas every week");
-    const under = note || (was && price ? tx("You save {x} a month, for good", { x: fmt((was - price.amount) * seats, currency) }) : trial ? tx("{n}-day free trial · cancel anytime", { n: trial }) : "");
+    const under = note || (was && price ? tx(iv === "year" ? "You save {x} a year" : "You save {x} a month, for good", { x: fmt((was - price.amount) * seats, currency) }) : trial ? tx("{n}-day free trial · cancel anytime", { n: trial }) : "");
     const tone = p.highlighted ? "is-best" : has("library.creators") ? "tone-blue" : "tone-slate";
     return `<article class="plan-card v2 ${tone}${isCurrent ? " is-current" : ""}${p.key === wanted ? " is-wanted" : ""}" data-plan-key="${esc(p.key)}">
       ${isCurrent ? flag : ""}
@@ -123,9 +123,9 @@
   // "My Club" (last card): the private plan for a club (Admin → My Club) — its own library with every team, section, player and
   // sponsor, uploaded by us every day. A custom plan (no price shown): it opens the demo form for clubs. Same rows as the plan cards.
   function clubCard() {
-    const gets = [tx("Your club's own library: first team, sections and academy"), tx("Your players' and sponsors' posts, in one place"), tx("We upload your club's posts every day"), tx("Private: only your marketing and communications team can see it"), tx("Everything in Library + AI + Content Plan")];
-    return `<article class="plan-card v2 is-custom is-club" data-plan-key="my-club">
-      <header class="plan-head"><h3>${tx("My Club")}</h3><span class="plan-pick is-club">${tx("For clubs")}</span></header>
+    const gets = [tx("Your club's own library: first team, sections and academy"), tx("Your players' and sponsors' posts, in one place"), tx("We upload your club's posts every day"), tx("Private: only your marketing and communications team can see it"), tx("Everything in Pro")];
+    return `<article class="plan-card v2 is-custom tone-slate" data-plan-key="my-club">
+      <header class="plan-head"><h3>${tx("Enterprise")}</h3><span class="plan-pick">${tx("For clubs")}</span></header>
       <p class="plan-for">${tx("Your club's own private library")}</p>
       <div class="plan-hero">${pic("club")}<div><b>${tx("Your club, every day")}</b><small>${tx("First team, sections and academy")}</small><small>${tx("We upload your club's posts every day")}</small></div></div>
       <p class="plan-price"><b class="plan-price-text">${tx("Custom plan")}</b></p>
@@ -157,7 +157,7 @@
     const cta = club ? `<tr class="cmp-cta"><th scope="row"></th>${plans.map(() => "<td></td>").join("")}<td class="is-club"><a class="cmp-club-btn" href="book-a-call.html?for=clubs" data-cta="pricing-compare-club">${tx("Book a demo")}</a></td></tr>` : "";
     const trialDays = Math.min(...plans.map((p) => p.trial_days || 0));
     const note = trialDays > 0 ? `<p class="cmp-note">${tx("{n}-day free trial on every plan · card required · cancel anytime", { n: trialDays })}</p>` : "";
-    return `<div class="cmp-wrap"><table class="cmp"><thead><tr><th></th>${plans.map((p) => `<th scope="col"${p.highlighted ? ' class="is-best"' : ""}>${esc(p.name)}</th>`).join("")}${club ? `<th scope="col" class="is-club">${tx("My Club")}</th>` : ""}</tr></thead><tbody>${price}${rows}${cta}</tbody></table></div>${note}`;
+    return `<div class="cmp-wrap"><table class="cmp"><thead><tr><th></th>${plans.map((p) => `<th scope="col"${p.highlighted ? ' class="is-best"' : ""}>${esc(p.name)}</th>`).join("")}${club ? `<th scope="col" class="is-club">${tx("Enterprise")}</th>` : ""}</tr></thead><tbody>${price}${rows}${cta}</tbody></table></div>${note}`;
   }
 
 

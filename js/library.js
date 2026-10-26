@@ -107,10 +107,10 @@
 
   let catalog = { byCat: {}, byId: new Map() };
   // parts of the library that depend on the plan (supabase/plans-2026-10.sql): Content creators (Content Creator and up),
-  // Match Day and Brands & sponsors (Library + AI + Content Plan). Unknown until the member's permissions load → open.
+  // Match Day and Brands & sponsors (Pro). Unknown until the member's permissions load → open.
   let perms = null;   // { staff, list }
   const can = (k) => !perms || perms.staff || perms.list.includes(k);
-  const LOCK_MSG = { "library.creators": "Not in your plan: available from Content Creator", "library.matchday": "Not in your plan: available in Library + AI + Content Plan", "library.brands": "Not in your plan: available in Library + AI + Content Plan" };
+  const LOCK_MSG = { "library.creators": "Not in your plan: available from Content Creator", "library.matchday": "Not in your plan: available in Pro", "library.brands": "Not in your plan: available in Pro" };
   const lockedHtml = (k) => `<div class="lf-locked">${svg("lock")}<p>${esc(tx(LOCK_MSG[k]))}</p><a class="lf-locked-btn" href="pricing.html">${esc(tx("See plans"))}</a></div>`;
   const selected = Object.fromEntries(CATEGORIES.map((c) => [c.key, new Set()])); // category -> Set(value ids)
   let counts = null; // value id -> posts with the other filters applied (null = not counted: show catalog totals)
@@ -2396,7 +2396,7 @@
     if (!ai.ent) await loadAi().catch(() => {});
     if (!area()) return;
     if (!ai.ent?.has_ai) {
-      area().innerHTML = `<div class="ai-gate">${icon("lock")}<div><b>AI analyses are part of Library + AI + Content Plan</b>
+      area().innerHTML = `<div class="ai-gate">${icon("lock")}<div><b>AI analyses are part of Pro</b>
         <p>Hook, why it works, format, angle, visual breakdown and how to adapt it to your club, for any post in the library.</p>
         <button class="btn btn-gold" type="button" data-plans-picker="ai.analyze_posts" aria-expanded="false">${esc(tx("Get AI analyses"))}</button>
         <div class="pp-plans" data-plans-picker-list hidden></div></div></div>`;

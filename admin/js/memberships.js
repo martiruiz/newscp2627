@@ -646,7 +646,7 @@
   // ============================================================================================ Cancellation reasons
   async function cancellations() {
     const REASON = { price: "It's too expensive", unused: "I don't use it enough", missing: "Something's missing", other: "Another reason" };
-    const PLAN = { library: "Library", library_ai: "Library + AI", library_planner: "Library + Content Plan", all_access: "Library + AI + Content Plan" };
+    const PLAN = { library: "Library", library_ai: "Library + AI", library_planner: "Library + Content Plan", all_access: "Pro" };
     view.innerHTML = `<div class="ms-row"><select class="select" data-cf-days><option value="30">Last 30 days</option><option value="90" selected>Last 90 days</option><option value="365">Last 12 months</option></select></div><div data-cf>Loading…</div>`;
     const draw = async () => {
       let d;

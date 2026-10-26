@@ -314,7 +314,7 @@
     keepPlace();
     if (!S.open) return;
     if (!allowed()) {
-      panel.innerHTML = `${headHtml()}<div class="pp-gate">${icon("lock")}<b>The Content Plan is part of Library + AI + Content Plan</b>
+      panel.innerHTML = `${headHtml()}<div class="pp-gate">${icon("lock")}<b>The Content Plan is part of Pro</b>
         <p>Drag posts from the library onto the days of your week, keep ideas for later and track every post from idea to published.</p>
         <button class="btn btn-gold" type="button" data-plans-picker aria-expanded="false">${tx("Get the Content Plan")}</button>
         <div class="pp-plans" data-plans-picker-list hidden></div></div>`;
@@ -625,7 +625,7 @@
     try { await ready(); } catch (e) { pop.innerHTML = `<p class="pp-error">${esc(errText(e))}</p>`; return; }
     if (!pop) return;
     if (!allowed()) {
-      pop.innerHTML = `<div class="pp-gate is-small">${icon("lock")}<b>Plan this post in your Content Plan</b><p>Part of Library + AI + Content Plan.</p><a class="btn btn-gold" href="${window.SCP_upgradeHref("planner", S.ent?.plan)}">${tx("Get the Content Plan")}</a></div>`;
+      pop.innerHTML = `<div class="pp-gate is-small">${icon("lock")}<b>Plan this post in your Content Plan</b><p>Part of Pro.</p><a class="btn btn-gold" href="${window.SCP_upgradeHref("planner", S.ent?.plan)}">${tx("Get the Content Plan")}</a></div>`;
       return place(btn);
     }
     const st = { planId: S.planId, month: new Date(), counts: new Map() };
