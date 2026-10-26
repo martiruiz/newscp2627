@@ -1,0 +1,32 @@
+name: Jobs search
+
+# Every Monday (07:30 UTC) Claude searches the web for open roles in sports digital marketing and adds them hidden to the
+# "jobs" table (pipeline/jobs.js). Review and publish them in Admin → Jobs.
+on:
+  schedule:
+    - cron: "30 7 * * 1"
+  workflow_dispatch: {}
+
+concurrency:
+  group: jobs-search
+  cancel-in-progress: false
+
+jobs:
+  search:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: pipeline/package-lock.json
+      - run: npm ci
+        working-directory: pipeline
+      - run: node jobs.js
+        working-directory: pipeline
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}

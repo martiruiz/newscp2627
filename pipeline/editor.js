@@ -17,9 +17,11 @@ You receive one article from an external source (often in Spanish). Your job:
    - title: a clear, specific headline (max ~14 words), no emojis, no clickbait.
    - paragraphs: 2 or 3 short paragraphs (40-80 words each). First explain what happened. Then explain what it means for sports social media teams and how a club, league or athlete could use it.
    Write in your own words: do not copy sentences from the source and do not quote more than a few words. Stick to facts that are in the article; never invent figures, dates or quotes.
-4. If not relevant, still return the platform and an English title, and an empty paragraphs list.`;
+4. If not relevant, still return the platform and an English title, and an empty paragraphs list.
 
-const SCHEMA = {
+Return a list of stories. Usually the article is one news item: return one story. When the user message says the source is a newsletter with several news items, return one story per separate news item, up to the number it allows, best ones first.`;
+
+const STORY = {
   type: "object",
   additionalProperties: false,
   properties: {
@@ -30,21 +32,38 @@ const SCHEMA = {
   },
   required: ["relevant", "platform", "title", "paragraphs"],
 };
+const SCHEMA = { type: "object", additionalProperties: false, properties: { stories: { type: "array", items: STORY } }, required: ["stories"] };
 
-const Result = z.object({
+const Story = z.object({
   relevant: z.boolean(),
   platform: z.enum(PLATFORMS),
   title: z.string().min(1),
   paragraphs: z.array(z.string().min(1)),
 });
+const Result = z.object({ stories: z.array(Story).min(1) });
 
 const client = new Anthropic(); // reads ANTHROPIC_API_KEY
 
-// Running token totals for the cost line at the end of each run
-export const usage = { input: 0, output: 0 };
+// Running token totals for the cost line at the end of each run (triage: the cheap first pass)
+export const usage = { input: 0, output: 0, triageInput: 0, triageOutput: 0 };
 
-/** Returns { relevant, platform, title, paragraphs } or null if the model declined. */
-export async function editArticle(item, sourceName) {
+// Cheap first pass for high-volume feeds: title + start of the text → could this matter to a sports social media team?
+export async function worthEditing(item) {
+  const response = await client.messages.create({
+    model: "claude-haiku-5-5",
+    max_tokens: 200,
+    output_config: { format: { type: "json_schema", schema: { type: "object", additionalProperties: false, properties: { keep: { type: "boolean" } }, required: ["keep"] } } },
+    system: "You screen news for Sports Content Playbook, read by the social media teams of sports clubs, leagues, athletes and sports brands. keep = true only if the story is about social media platforms (features, algorithms, policies), content, creators, fan engagement, sports sponsorship or brand activations, or AI tools a social team could use. Results, transfers, betting odds, finance, legal and pure business news: keep = false.",
+    messages: [{ role: "user", content: `Title: ${item.title}\n\n${item.body.slice(0, 1200)}` }],
+  });
+  usage.triageInput += response.usage.input_tokens ?? 0;
+  usage.triageOutput += response.usage.output_tokens ?? 0;
+  const t = response.content.find((b) => b.type === "text");
+  try { return t ? JSON.parse(t.text).keep === true : false; } catch { return false; }
+}
+
+/** Returns [{ relevant, platform, title, paragraphs }] (one per news item, up to `stories`) or null if the model declined. */
+export async function editArticle(item, sourceName, stories = 1) {
   const response = await client.beta.messages.create({
     model: "claude-opus-5-5",
     max_tokens: 16000,
@@ -58,7 +77,7 @@ export async function editArticle(item, sourceName) {
     messages: [
       {
         role: "user",
-        content: `Source: ${sourceName}\nURL: ${item.url}\nOriginal title: ${item.title}\n\nArticle text:\n${item.body}`,
+        content: `Source: ${sourceName}${stories > 1 ? ` (a newsletter with several news items: up to ${stories} stories)` : " (one story)"}\nURL: ${item.url}\nOriginal title: ${item.title}\n\nArticle text:\n${item.body}`,
       },
     ],
   });
@@ -82,11 +101,12 @@ export async function editArticle(item, sourceName) {
     console.warn(`  ! invalid output for ${item.url}: ${parsed.error.message}`);
     return null;
   }
-  const out = parsed.data;
   // A relevant story must have 2-3 paragraphs
-  if (out.relevant && (out.paragraphs.length < 2 || out.paragraphs.length > 3)) {
-    out.paragraphs = out.paragraphs.slice(0, 3);
-    if (out.paragraphs.length < 2) out.relevant = false;
-  }
-  return out;
+  return parsed.data.stories.slice(0, stories).map((out) => {
+    if (out.relevant && (out.paragraphs.length < 2 || out.paragraphs.length > 3)) {
+      out.paragraphs = out.paragraphs.slice(0, 3);
+      if (out.paragraphs.length < 2) out.relevant = false;
+    }
+    return out;
+  });
 }

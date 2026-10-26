@@ -59,20 +59,30 @@ for (const source of SOURCES) {
       continue;
     }
     try {
-      const edited = await editArticle(item, source.name);
-      if (!edited) { skipped++; continue; }
-      const { error } = await db.from("news").insert({
-        url: item.url,
-        source_name: source.name,
-        platform: edited.platform,
-        title: edited.title,
-        paragraphs: edited.relevant ? edited.paragraphs : [],
-        relevant: edited.relevant,
-        published_at: toIso(item.published) ?? new Date().toISOString(),
-      });
-      if (error) throw error;
-      console.log(`  ${edited.relevant ? "✓" : "–"} [${edited.platform}] ${edited.title}`);
-      if (edited.relevant) added++;
+      if (source.triage && !(await editor.worthEditing(item))) {
+        // not for us: stored as not relevant so it isn't screened again
+        const { error } = await db.from("news").insert({ url: item.url, source_name: source.name, platform: "other", title: item.title, paragraphs: [], relevant: false, published_at: toIso(item.published) ?? new Date().toISOString() });
+        if (error) throw error;
+        console.log(`  – (triage) ${item.title}`);
+        continue;
+      }
+      const stories = await editArticle(item, source.name, source.stories || 1);
+      if (!stories) { skipped++; continue; }
+      // a newsletter with several stories: the 2nd, 3rd… keep the article's URL with #2, #3… (the URL must be unique)
+      for (const [i, edited] of stories.entries()) {
+        const { error } = await db.from("news").insert({
+          url: i ? `${item.url}#${i + 1}` : item.url,
+          source_name: source.name,
+          platform: edited.platform,
+          title: edited.title,
+          paragraphs: edited.relevant ? edited.paragraphs : [],
+          relevant: edited.relevant,
+          published_at: toIso(item.published) ?? new Date().toISOString(),
+        });
+        if (error) throw error;
+        console.log(`  ${edited.relevant ? "✓" : "–"} [${edited.platform}] ${edited.title}`);
+        if (edited.relevant) added++;
+      }
     } catch (err) {
       skipped++;
       if (err instanceof Anthropic.RateLimitError) {
@@ -89,8 +99,8 @@ for (const source of SOURCES) {
 
 console.log(`\nDone. ${added} relevant stories published, ${skipped} skipped.`);
 if (editor) {
-  const { input, output } = editor.usage;
-  // Claude Opus 5.5 list price: $4 / MTok input, $20 / MTok output
-  const cost = (input * 4 + output * 20) / 1e6;
-  console.log(`Claude usage: ${input} input + ${output} output tokens ≈ $${cost.toFixed(2)}`);
+  const { input, output, triageInput, triageOutput } = editor.usage;
+  // list prices: Claude Opus 5.5 $4 / $20 per MTok (writing), Claude Haiku 5.5 $1 / $5 per MTok (triage)
+  const cost = (input * 4 + output * 20 + triageInput * 1 + triageOutput * 5) / 1e6;
+  console.log(`Claude usage: ${input} + ${output} tokens (writing), ${triageInput} + ${triageOutput} (triage) ≈ $${cost.toFixed(2)}`);
 }

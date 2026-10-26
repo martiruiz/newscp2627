@@ -8,6 +8,7 @@
 //                                               content/top.json (the week's 3 most viewed posts, for the 404 page)
 //   node blog-tools/sync-db.mjs ok             → the posts changed since their last publish are marked published
 //   node blog-tools/sync-db.mjs fail <logfile> → those posts get the build's error (shown in the admin)
+//   node blog-tools/sync-db.mjs daily          → the newest draft (by its date) is published with today's date, unless a post already has today's date
 // Needs SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (GitHub secrets). No files are ever deleted: hiding a post = draft.
 import fs from "node:fs";
 import path from "node:path";
@@ -107,6 +108,13 @@ if (mode === "export") {
     fs.writeFileSync(path.join(ROOT, "content/blog", `${p.slug}.json`), `${JSON.stringify(out, null, 2)}\n`);
   }
   console.log(`${posts.length} posts exported · ${posts.filter(pending).length} changed since their last publish`);
+} else if (mode === "daily") {
+  const next = posts.filter((p) => p.draft).sort((a, b) => String(b.data?.date || "").localeCompare(String(a.data?.date || "")))[0];
+  if (!next) { console.log("No drafts left."); process.exit(0); }
+  const today = new Date().toISOString().slice(0, 10);
+  if (posts.some((p) => !p.draft && p.data?.date === today)) { console.log("A post already went out today."); process.exit(0); }
+  await rest(`blog_posts?slug=eq.${encodeURIComponent(next.slug)}`, { method: "PATCH", body: JSON.stringify({ draft: false, data: { ...next.data, date: today }, updated_at: new Date().toISOString() }), headers: { Prefer: "return=minimal" } });
+  console.log(`Today's post: ${next.slug} (${posts.filter((p) => p.draft).length - 1} drafts left)`);
 } else if (mode === "ok" || mode === "fail") {
   const error = mode === "fail" ? (fs.existsSync(logFile || "") ? fs.readFileSync(logFile, "utf8") : "The build failed.").slice(-2000) : null;
   for (const p of posts.filter(pending)) {
@@ -115,6 +123,6 @@ if (mode === "export") {
   }
   console.log(`${posts.filter(pending).length} posts marked ${mode === "ok" ? "published" : "with the error"}`);
 } else {
-  console.error("Usage: node blog-tools/sync-db.mjs export | ok | fail <logfile>");
+  console.error("Usage: node blog-tools/sync-db.mjs export | ok | fail <logfile> | daily");
   process.exit(1);
 }
