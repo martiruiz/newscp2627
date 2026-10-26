@@ -1,0 +1,50 @@
+{
+ "label": "Oct 2026",
+ "items": [
+  {
+   "img": "tiktok",
+   "brand": "tiktok",
+   "platform": "TikTok",
+   "title": "Reposting a <span class='g'>single comment</span> is now possible.",
+   "para": "Funny or useful replies can earn reach on their own, outside the original thread.",
+   "tip": "Community management becomes a <span class='g'>growth lever</span>. Keep fast, on-brand replies and tight moderation.",
+   "date": "22 Oct"
+  },
+  {
+   "img": "reels",
+   "brand": "instagram",
+   "platform": "Instagram",
+   "title": "A home screen that opens on <span class='g'>Reels</span> is in test.",
+   "para": "Reels fill the first tab, Stories sit above them and sound plays by default.",
+   "tip": "Plan <span class='g'>vertical video</span> versions of lineups and final scores, with strong first seconds.",
+   "date": "8 Oct"
+  },
+  {
+   "img": "mosseri",
+   "brand": "instagram",
+   "platform": "Instagram",
+   "title": "Mosseri on ranking: <span class='g'>4&nbsp;signals</span>.",
+   "para": "Interaction rates, timing, originality and testing with non-followers.",
+   "tip": "Judge posts by <span class='g'>engagement rate</span>, favour original footage and test with Trial Reels.",
+   "date": "1 Oct"
+  },
+  {
+   "img": "facebook",
+   "brand": "facebook",
+   "platform": "Facebook",
+   "title": "Your Algorithm lets fans <span class='g'>choose topics</span>.",
+   "para": "Users add topics, say why they liked a post and describe what they want to see more or less of.",
+   "tip": "Tie posts to <span class='g'>topics fans would pick</span>: team, competition, players. Use clear captions and content pillars.",
+   "date": "15 Oct"
+  },
+  {
+   "img": "meta",
+   "brand": "meta",
+   "platform": "Meta",
+   "title": "Meta One bundles <span class='g'>AI tools</span> with app perks.",
+   "para": "New plans for businesses, creators and heavy AI users, from $2.99 to $499 a month.",
+   "tip": "<span class='g'>Trial a low tier</span> on one account, such as an academy channel, before scaling.",
+   "date": "18 Sep"
+  }
+ ]
+}

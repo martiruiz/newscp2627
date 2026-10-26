@@ -1,0 +1,95 @@
+{
+ "range": "19–25 Oct",
+ "jobs": [
+  {
+   "id": 67,
+   "title": "Manager, Global Social Monetization",
+   "company": "NFL",
+   "location": "New York, NY",
+   "type": "full-time",
+   "area": "social",
+   "added": "25 Oct"
+  },
+  {
+   "id": 62,
+   "title": "Social Editor / Producer",
+   "company": "Overtime",
+   "location": "Brooklyn, NY",
+   "type": "full-time",
+   "area": "social",
+   "added": "25 Oct"
+  },
+  {
+   "id": 57,
+   "title": "Media Design Manager Global Commerce",
+   "company": "FC Bayern München",
+   "location": "Munich, Germany",
+   "type": "full-time",
+   "area": "design",
+   "added": "24 Oct"
+  },
+  {
+   "id": 54,
+   "title": "Manager, Broadcast Motion Design",
+   "company": "Major League Soccer",
+   "location": "Stamford, CT",
+   "type": "full-time",
+   "area": "design",
+   "added": "24 Oct"
+  },
+  {
+   "id": 69,
+   "title": "Editor II",
+   "company": "UFC",
+   "location": "Las Vegas, NV",
+   "type": "full-time",
+   "area": "video",
+   "added": "25 Oct"
+  },
+  {
+   "id": 68,
+   "title": "Sr. Director, Content – Flag Football",
+   "company": "TMRW Sports",
+   "location": "Orlando, FL",
+   "type": "full-time",
+   "area": "content",
+   "added": "25 Oct"
+  },
+  {
+   "id": 61,
+   "title": "VP of Content",
+   "company": "LPGA",
+   "location": "United States",
+   "type": "full-time",
+   "area": "content",
+   "added": "25 Oct"
+  },
+  {
+   "id": 65,
+   "title": "Marketing Manager, Americas",
+   "company": "SailGP",
+   "location": "New York, NY",
+   "type": "full-time",
+   "area": "marketing",
+   "added": "25 Oct"
+  },
+  {
+   "id": 64,
+   "title": "Manager, Business Development – Sponsorship",
+   "company": "NHL",
+   "location": "New York, NY",
+   "type": "full-time",
+   "area": "partnerships",
+   "added": "25 Oct"
+  },
+  {
+   "id": 55,
+   "title": "Content Intern",
+   "company": "MLSE",
+   "location": "Toronto, Canada",
+   "type": "internship",
+   "area": "content",
+   "added": "24 Oct"
+  }
+ ]
+}
