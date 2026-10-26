@@ -8865,3 +8865,11 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 @media (max-width: 640px) { .plan-help { padding: 16px; text-align: left; } .plan-help-tx { flex: 1 1 0; min-width: 0; } }
 /* Enterprise (the club plan) looks like the other plan cards: "Custom plan" in the price's place, white button */
 .plan-card.v2 .plan-price b.plan-price-text { font-size: 30px; color: var(--text); background: none; -webkit-text-fill-color: currentColor; }
+/* the comparison table folds away (26/10): the cards say each plan's step, the table has every detail */
+.cmp-details > summary { display: flex; flex-direction: column; align-items: center; gap: 12px; cursor: pointer; list-style: none; }
+.cmp-details > summary::-webkit-details-marker { display: none; }
+.cmp-toggle { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 18px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.045); color: var(--text); font-size: 14px; font-weight: 600; }
+.cmp-toggle::after { content: ""; width: 8px; height: 8px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg) translateY(-2px); transition: transform 0.2s; }
+.cmp-details[open] .cmp-toggle::after { transform: rotate(-135deg) translateY(-2px); }
+.cmp-details[open] > summary { margin-bottom: 24px; }
+.plan-hero { align-items: center; }

@@ -30,7 +30,6 @@
   const hasYear = (p) => !!priceOf(p, currency, "year");
   // yearly = how many months free (12 × monthly − yearly) and how much that is
   const monthsFree = (p) => { const m = priceOf(p, currency, "month"), y = priceOf(p, currency, "year"); return m && y ? Math.round((m.amount * 12 - y.amount) / m.amount) : 0; };
-  const yearSave = (p) => { const m = priceOf(p, currency, "month"), y = priceOf(p, currency, "year"); return m && y ? m.amount * 12 - y.amount : 0; };
   const saving = (p) => { const m = priceOf(p, currency, "month"), y = priceOf(p, currency, "year"); return m && y ? Math.round((1 - y.amount / (m.amount * 12)) * 100) : 0; };
   const currentSub = () => mine?.subscription && ["active", "trialing", "past_due", "unpaid"].includes(mine.subscription.status) && mine.subscription.source === "stripe" ? mine.subscription : null;
 
@@ -42,7 +41,7 @@
     const isCurrent = cur?.plan === p.key;
     const trial = p.trial_days > 0 && (!mine || mine.trial_eligible) ? p.trial_days : 0;
     const has = (k) => (p.entitlements || []).includes(k);
-    const hasAi = has("ai.analyze_posts"), lib = has("library.access"), cp = has("planner.access");
+    const hasAi = has("ai.analyze_posts"), cp = has("planner.access");
     let cta;
     const btn = p.highlighted || solo ? "btn-gold" : "btn-outline";   // the main plan stands out; green is only the trial's state
     if (isCurrent) cta = `<a class="btn ${btn} plan-cta" href="profile.html#billing">${tx("Manage your plan")}</a>`;
@@ -64,49 +63,50 @@
     // with more than one user the big number is the total; the price per user goes underneath
     // the line under the price always fits on one line: users or the yearly saving, then VAT
     // (with more users, "VAT incl." moves next to the price so the saving for all of them fits)
-    // yearly: the big number is the total paid once a year (all users); 12 monthly payments crossed out + a green "you save" pill;
-    // monthly → a pill that switches to yearly and says what it would cost and save
     // the yearly price / saving, "All included" and the bulk-AI note are no longer shown on the cards (kept short)
-    const was = iv === "year" && yearSave(p) > 0 ? priceOf(p, currency, "month").amount * 12
-      : iv === "month" && price && Number(p.compare_month) > price.amount && currency === "eur" ? Number(p.compare_month) : 0;
-    const big = !price ? 0 : Math.round(price.amount * seats);   // no decimals
+    // yearly: the saving is said once, in the switch ("2 months free"); the card shows what it comes to per month and the yearly charge
+    const was = iv === "month" && price && Number(p.compare_month) > price.amount && currency === "eur" ? Number(p.compare_month) : 0;
+    const big = !price ? 0 : iv === "year" ? Math.round(price.amount * seats / 12 * 100) / 100 : Math.round(price.amount * seats);
     // one user, monthly: nothing under the price; more users or yearly: the breakdown and "VAT incl."
     const parts = !price ? [] : [
-      seats > 1 ? tx("{n} users × {price}/user", { n: seats, price: fmt(price.amount, currency) }) : "",
+      iv === "year" ? tx("{x} billed yearly", { x: fmt(Math.round(price.amount * seats), currency) }) : "",
+      seats > 1 ? tx("{n} users × {price}/user", { n: seats, price: fmt(iv === "year" ? Math.round(price.amount / 12 * 100) / 100 : price.amount, currency) }) : "",
     ].filter(Boolean);
     // yearly: "same as X/month" only when hovering (or tapping) the price, not at first sight
-    const tip = price && iv === "year" ? `${tx("same as {price}/month", { price: fmt(Math.round(price.amount * seats / 12), currency) })} · ${tx("VAT incl.")}` : "";
     const sub = parts.length ? [...parts, tx("VAT incl.")].join(" · ") : "";
     // what you get, in words (not just ✓ / –)
     // big purchases get more AI (plans.ai_bulk_*): over the threshold (price × users) → the bulk quota per user
     const bulk = hasAi && p.ai_bulk_units > (p.ai_monthly_units || 0) && price ? { n: p.ai_bulk_units, min: Number(p.ai_bulk_min_amount || 0), on: price.amount * seats > Number(p.ai_bulk_min_amount || 0) } : null;
     const units = p.ai_unlimited ? tx("Unlimited") : bulk?.on ? bulk.n : p.ai_monthly_units;
+    // each plan is one step up: "Everything in <the plan before>, plus:" and only what it adds (the comparison below has every detail)
+    const shown = (data?.plans || []).filter((x) => x.visibility !== "hidden");
+    const prev = shown[shown.findIndex((x) => x.key === p.key) - 1];
+    const adds = (k) => has(k) && !(prev?.entitlements || []).includes(k);
     const gets = [
-      lib && tx(has("library.matchday") && has("library.creators") ? "The whole library: every sport, club and competition" : "The library: every sport, club and competition"),
-      lib && tx("Filters by sport, competition, format and goal"),
-      has("library.creators") && tx("Content creators: posts by sports creators and their filters"),
-      has("library.matchday") && tx("Match Day and Brands & sponsors filters"),
-      has("library.save_posts") && tx("Saved boards to keep your ideas"),
-      cp && tx("Content Plan: weekly and monthly calendar"),
-      hasAi && tx("{n} AI analyses a month per user: hook, why it works, how to adapt it", { n: units }),
+      adds("library.access") && tx("The library: every sport, club and competition"),
+      adds("library.access") && tx("Filters by sport, competition, format and goal"),
+      adds("library.save_posts") && tx("Saved boards to keep your ideas"),
+      adds("library.creators") && tx("Content creators: posts by sports creators and their filters"),
+      adds("planner.access") && tx("Content Plan: weekly and monthly calendar"),
+      adds("library.matchday") && tx("Match Day and Brands & sponsors filters"),
+      adds("ai.analyze_posts") && tx("{n} AI analyses a month per user: hook, why it works, how to adapt it", { n: units }),
     ].filter(Boolean);
     // card layout: name + discount pill, who it's for, a highlight box, price, button (+ a line under it), what's included
     const off = was && price ? Math.round((1 - price.amount / was) * 100) : 0;
-    const hero = hasAi ? [tx("{n} AI analyses a month", { n: units }), tx("Hook, why it works and how to adapt it"), tx("Plus everything in the library and the Content Plan")]
-      : has("library.creators") ? [tx("Library + Content creators"), tx("Posts by sports creators and their filters"), tx("Plan your week with the Content Plan")]
-      : [tx("Content Library"), tx("Every sport, club and competition"), tx("Filters and saved boards")];
+    // the step this plan adds, in one line (the list underneath says how)
+    const hero = tx(hasAi ? "Find out why content works and adapt it to your club with AI" : cp ? "Find ideas and organise what to publish" : "Find sports content ideas");
     const forWho = tx(hasAi ? "For social media teams and agencies" : has("library.creators") ? "For creators who post every day" : "To find ideas every week");
-    const under = note || (was && price ? tx(iv === "year" ? "You save {x} a year" : "You save {x} a month, for good", { x: fmt((was - price.amount) * seats, currency) }) : trial ? tx("{n}-day free trial · cancel anytime", { n: trial }) : "");
+    const under = note || (was && price ? tx("You save {x} a month, for good", { x: fmt((was - price.amount) * seats, currency) }) : trial ? tx("{n}-day free trial · cancel anytime", { n: trial }) : "");
     const tone = p.highlighted ? "is-best" : has("library.creators") ? "tone-blue" : "tone-slate";
     return `<article class="plan-card v2 ${tone}${isCurrent ? " is-current" : ""}${p.key === wanted ? " is-wanted" : ""}" data-plan-key="${esc(p.key)}">
       ${isCurrent ? flag : ""}
       <header class="plan-head"><h3>${esc(p.name)}</h3>${off > 0 ? `<span class="plan-off">-${off}%</span>` : ""}${p.highlighted && !isCurrent ? `<span class="plan-pick">${tx("Recommended")}</span>` : ""}</header>
       <p class="plan-for">${forWho}</p>
-      <div class="plan-hero">${pic(hasAi ? "all" : "lib")}<div><b>${hero[0]}</b><small>${hero[1]}</small><small>${hero[2]}</small></div></div>
-      <p class="plan-price">${seats > 1 && price ? `<em class="plan-total">${tx("Total")}</em>` : ""}${was ? `<s class="plan-was">${fmt(was * seats, currency)}</s>` : ""}${price ? `<b data-price="${big}" data-cur="${currency}"${tip ? ` class="has-tip" tabindex="0" data-tip="${esc(tip)}"` : ""}>${fmt(big, currency)}</b><span>${iv === "year" ? `/ ${per("year")}` : seats > 1 ? `/ ${per("month")}` : tx("/ {per} per user", { per: per("month") })}</span>` : `<b>—</b>`}</p>
+      <div class="plan-hero">${pic(hasAi ? "all" : "lib")}<div><b>${hero}</b></div></div>
+      <p class="plan-price">${seats > 1 && price ? `<em class="plan-total">${tx("Total")}</em>` : ""}${was ? `<s class="plan-was">${fmt(was * seats, currency)}</s>` : ""}${price ? `<b data-price="${big}" data-cur="${currency}">${fmt(big, currency)}</b><span>${seats > 1 ? `/ ${per("month")}` : tx("/ {per} per user", { per: per("month") })}</span>` : `<b>—</b>`}</p>
       <p class="plan-sub">${sub}</p>
       <div class="plan-ctabox">${cta}<p class="plan-note">${under}</p></div>
-      <div class="plan-incl"><h4>${tx("What's included")}</h4><ul class="plan-gets">${gets.map(keyPoint).join("")}</ul></div>
+      <div class="plan-incl"><h4>${prev ? tx("Everything in {plan}, plus:", { plan: esc(prev.name) }) : tx("What's included")}</h4><ul class="plan-gets">${gets.map(keyPoint).join("")}</ul></div>
     </article>`;
   }
 
@@ -123,15 +123,15 @@
   // "My Club" (last card): the private plan for a club (Admin → My Club) — its own library with every team, section, player and
   // sponsor, uploaded by us every day. A custom plan (no price shown): it opens the demo form for clubs. Same rows as the plan cards.
   function clubCard() {
-    const gets = [tx("Your club's own library: first team, sections and academy"), tx("Your players' and sponsors' posts, in one place"), tx("We upload your club's posts every day"), tx("Private: only your marketing and communications team can see it"), tx("Everything in Pro")];
+    const gets = [tx("Your club's own library: first team, sections and academy"), tx("Your players' and sponsors' posts, in one place"), tx("We upload your club's posts every day"), tx("Private: only your marketing and communications team can see it")];
     return `<article class="plan-card v2 is-custom tone-slate" data-plan-key="my-club">
       <header class="plan-head"><h3>${tx("Enterprise")}</h3><span class="plan-pick">${tx("For clubs")}</span></header>
       <p class="plan-for">${tx("Your club's own private library")}</p>
-      <div class="plan-hero">${pic("club")}<div><b>${tx("Your club, every day")}</b><small>${tx("First team, sections and academy")}</small><small>${tx("We upload your club's posts every day")}</small></div></div>
+      <div class="plan-hero">${pic("club")}<div><b>${tx("All your players', sections' and sponsors' content in one place")}</b></div></div>
       <p class="plan-price"><b class="plan-price-text">${tx("Custom plan")}</b></p>
       <p class="plan-sub"></p>
       <div class="plan-ctabox"><a class="btn btn-outline plan-cta" href="book-a-call.html?for=clubs" data-cta="pricing-my-club"><span>${tx("Book a demo")}</span><i class="plan-cta-arrow" aria-hidden="true">→</i></a><p class="plan-note">${tx("We show you your club's library in 30 minutes")}</p></div>
-      <div class="plan-incl"><h4>${tx("What's included")}</h4><ul class="plan-gets">${gets.map(keyPoint).join("")}</ul></div>
+      <div class="plan-incl"><h4>${tx("Everything in {plan}, plus:", { plan: "Pro" })}</h4><ul class="plan-gets">${gets.map(keyPoint).join("")}</ul></div>
     </article>`;
   }
 
@@ -165,9 +165,6 @@
     const curs = (data.currencies || ["eur"]).filter((c) => plans.some((p) => p.prices.some((x) => x.currency === c)));
     const best = Math.max(0, ...plans.map(saving));
     const anyYear = plans.some((p) => p.prices.some((x) => x.interval === "year" && x.currency === currency));
-    // what the yearly payment saves for all the users (the recommended plan), shown next to the users and updated with them
-    const ref = plans.find((p) => p.highlighted) || plans[plans.length - 1];
-    const save = ref ? Math.round(yearSave(ref) * seats) : 0;
     const aud = privatePlan ? "" : `<div class="plan-interval plan-audience" role="tablist" aria-label="${esc(tx("Plans"))}">
         <button type="button" role="tab" aria-selected="${audience === "individual"}" data-audience-pick="individual">${tx("Individual plans")}</button>
         <button type="button" role="tab" aria-selected="${audience === "business"}" data-audience-pick="business">${tx("Business plans")}</button>
@@ -185,9 +182,6 @@
         <input type="number" inputmode="numeric" min="1" max="${MAX_SEATS}" value="${seats}" aria-label="${esc(tx("Users"))}" data-seats-in>
         <button type="button" data-seats-step="1" aria-label="${esc(tx("More users"))}">+</button>
       </div>`}
-      ${privatePlan || !save ? "" : interval === "year"
-        ? `<span class="plan-save-live is-on" data-k="${save}">${tx("You save {x} a year", { x: `<b>${fmt(save, currency)}</b>` })}</span>`
-        : `<button type="button" class="plan-save-live" data-interval-pick="year" data-k="${save}">${tx("Yearly, you'd save {x}", { x: `<b>${fmt(save, currency)}</b>` })}</button>`}
       ${curs.length > 1 ? `<div class="plan-interval plan-currency" role="tablist" aria-label="Currency">${curs.map((c) => `<button type="button" role="tab" aria-selected="${currency === c}" data-currency-pick="${c}">${c.toUpperCase()}</button>`).join("")}</div>` : ""}
     </div>`;
   }
