@@ -23,6 +23,8 @@
   let seats = Math.min(MAX_SEATS, Math.max(1, Number(store.get("scp-seats")) || 1));
   let mine = null;          // my_membership() for signed-in members
   let privateToken = null, privatePlan = null;
+  // "Individual plans" (Library, Content Creator, the full plan) or "Business plans" (My Club, custom, with a demo)
+  let audience = /[?&]for=(clubs|business)/.test(location.search) || store.get("scp-audience") === "business" ? "business" : "individual";
 
   const priceOf = (p, cur = currency, iv = interval) => p.prices.find((x) => x.currency === cur && x.interval === iv);
   const hasYear = (p) => !!priceOf(p, currency, "year");
@@ -69,7 +71,8 @@
     // yearly: the big number is the total paid once a year (all users); 12 monthly payments crossed out + a green "you save" pill;
     // monthly → a pill that switches to yearly and says what it would cost and save
     // the yearly price / saving, "All included" and the bulk-AI note are no longer shown on the cards (kept short)
-    const was = iv === "year" && yearSave(p) > 0 ? priceOf(p, currency, "month").amount * 12 : 0;
+    const was = iv === "year" && yearSave(p) > 0 ? priceOf(p, currency, "month").amount * 12
+      : iv === "month" && price && Number(p.compare_month) > price.amount && currency === "eur" ? Number(p.compare_month) : 0;
     const big = !price ? 0 : Math.round(price.amount * seats);   // no decimals
     // one user, monthly: nothing under the price; more users or yearly: the breakdown and "VAT incl."
     const parts = !price ? [] : [
@@ -83,8 +86,10 @@
     const bulk = hasAi && p.ai_bulk_units > (p.ai_monthly_units || 0) && price ? { n: p.ai_bulk_units, min: Number(p.ai_bulk_min_amount || 0), on: price.amount * seats > Number(p.ai_bulk_min_amount || 0) } : null;
     const units = p.ai_unlimited ? tx("Unlimited") : bulk?.on ? bulk.n : p.ai_monthly_units;
     const gets = [
-      lib && tx("The whole library: every sport, club and competition"),
+      lib && tx(has("library.matchday") && has("library.creators") ? "The whole library: every sport, club and competition" : "The library: every sport, club and competition"),
       lib && tx("Filters by sport, competition, format and goal"),
+      has("library.creators") && tx("Content creators: posts by sports creators and their filters"),
+      has("library.matchday") && tx("Match Day and Brands & sponsors filters"),
       has("library.save_posts") && tx("Saved boards to keep your ideas"),
       cp && tx("Content Plan: weekly and monthly calendar"),
       hasAi && tx("{n} AI analyses a month per user: hook, why it works, how to adapt it", { n: units }),
@@ -136,8 +141,10 @@
     const club = !privatePlan;   // My Club column (everything in the full plan + the club's own space)
     const row = (label, sub, cell, clubCell = yes) => `<tr><th scope="row">${tx(label)}${sub ? `<small>${tx(sub)}</small>` : ""}</th>${plans.map((p) => `<td>${cell(p)}</td>`).join("")}${club ? `<td class="is-club">${clubCell}</td>` : ""}</tr>`;
     const rows = [
-      row("Content Library", "Every post, filter and category, updated daily", (p) => (has(p, "library.access") ? yes : no)),
+      row("Content Library", "Every sport, club and competition, updated daily", (p) => (has(p, "library.access") ? yes : no)),
       row("Save posts to boards", "", (p) => (has(p, "library.save_posts") ? yes : no)),
+      row("Content creators filter", "Posts by sports content creators", (p) => (has(p, "library.creators") ? yes : no)),
+      row("Match Day and Brands & sponsors", "Before, during and after the match; sponsor and brand content", (p) => (has(p, "library.matchday") ? yes : no)),
       row("Content Plan", "Weekly and monthly calendars, drag and drop, PDF / Excel / calendar export", (p) => (has(p, "planner.access") ? yes : no)),
       row("AI analyses per month", "Hook, why it works, format and how to adapt it", (p) => (!has(p, "ai.analyze_posts") ? no : p.ai_unlimited ? tx("Unlimited") : `<b>${p.ai_monthly_units || "–"}</b>`), `<b>${tx("Tailored")}</b>`),
       row("Your club's own library", "First team, sections and academy, private to your club", () => no),
@@ -147,7 +154,7 @@
     const price = `<tr class="cmp-price"><th scope="row">${tx("Price")}</th>${plans.map((p) => { const x = priceOf(p); return `<td>${x ? `${fmt(x.amount * seats, currency)}<small>/ ${per(x.interval)}${seats > 1 ? "" : ` ${tx("per user")}`}</small>` : "–"}</td>`; }).join("")}${club ? `<td class="is-club"><span class="cmp-custom">${tx("Custom plan")}</span></td>` : ""}</tr>`;
     const cta = club ? `<tr class="cmp-cta"><th scope="row"></th>${plans.map(() => "<td></td>").join("")}<td class="is-club"><a class="cmp-club-btn" href="book-a-call.html?for=clubs" data-cta="pricing-compare-club">${tx("Book a demo")}</a></td></tr>` : "";
     const trialDays = Math.min(...plans.map((p) => p.trial_days || 0));
-    const note = trialDays > 0 ? `<p class="cmp-note">${tx("{n}-day free trial on Library and Library + AI + Content Plan · card required · cancel anytime", { n: trialDays })}</p>` : "";
+    const note = trialDays > 0 ? `<p class="cmp-note">${tx("{n}-day free trial on every plan · card required · cancel anytime", { n: trialDays })}</p>` : "";
     return `<div class="cmp-wrap"><table class="cmp"><thead><tr><th></th>${plans.map((p) => `<th scope="col"${p.highlighted ? ' class="is-best"' : ""}>${esc(p.name)}</th>`).join("")}${club ? `<th scope="col" class="is-club">${tx("My Club")}</th>` : ""}</tr></thead><tbody>${price}${rows}${cta}</tbody></table></div>${note}`;
   }
 
@@ -159,7 +166,13 @@
     // what the yearly payment saves for all the users (the recommended plan), shown next to the users and updated with them
     const ref = plans.find((p) => p.highlighted) || plans[plans.length - 1];
     const save = ref ? Math.round(yearSave(ref) * seats) : 0;
-    return `<div class="plan-switches">
+    const aud = privatePlan ? "" : `<div class="plan-interval plan-audience" role="tablist" aria-label="${esc(tx("Plans"))}">
+        <button type="button" role="tab" aria-selected="${audience === "individual"}" data-audience-pick="individual">${tx("Individual plans")}</button>
+        <button type="button" role="tab" aria-selected="${audience === "business"}" data-audience-pick="business">${tx("Business plans")}</button>
+      </div>`;
+    if (audience === "business" && !privatePlan) return `<div class="plan-switches has-audience">${aud}</div>`;
+    return `<div class="plan-switches${aud ? " has-audience" : ""}">
+      ${aud}
       ${anyYear ? `<div class="plan-interval" role="tablist" aria-label="Billing period">
         <button type="button" role="tab" aria-selected="${interval === "month"}" data-interval-pick="month">Monthly</button>
         <button type="button" role="tab" aria-selected="${interval === "year"}" data-interval-pick="year">Yearly${plans.some((p) => monthsFree(p) > 0) ? `<em>${tx("{n} months free", { n: Math.max(...plans.map(monthsFree)) })}</em>` : ""}</button>
@@ -230,11 +243,12 @@
     const plans = privatePlan ? [privatePlan] : data.plans;
     boxes.forEach((b) => {
       b.classList.toggle("is-solo", plans.length === 1);
-      const custom = !privatePlan && plans.length > 1;
-      const cards = plans.length + (custom ? 1 : 0);   // + My Club (last)
+      const business = !privatePlan && audience === "business";
+      const cards = business ? 1 : plans.length;
       b.style.setProperty("--plan-cols", Math.min(4, cards));
       b.classList.toggle("is-3", cards === 3);
-      b.innerHTML = plans.length ? plans.map((p) => planCard(p, { solo: plans.length === 1 })).join("") + (custom ? clubCard() : "") : `<p class="plans-empty">Plans will be published here soon. <a class="link-gold" href="contact.html">Contact us</a> in the meantime.</p>`;
+      b.classList.toggle("is-business", business);
+      b.innerHTML = business ? clubCard() : plans.length ? plans.map((p) => planCard(p, { solo: plans.length === 1 })).join("") : `<p class="plans-empty">Plans will be published here soon. <a class="link-gold" href="contact.html">Contact us</a> in the meantime.</p>`;
       decorate(b, swap);
       b.classList.toggle("is-v2", !privatePlan && plans.length > 1);
       // not sure which plan? one line under the cards opens the demo form (FAQ) or the demo page
@@ -248,6 +262,7 @@
       if (prev) prev.outerHTML = switches(plans); else b.insertAdjacentHTML("beforebegin", switches(plans));
     });
     if (compareBox) compareBox.innerHTML = privatePlan ? "" : compareHtml(plans);
+    document.querySelectorAll(".compare-wrap, .packs-wrap").forEach((el) => { if (!privatePlan) el.hidden = audience === "business"; });
     const legal = document.querySelector("[data-legal]");
     if (legal && data.legal) legal.innerHTML = [data.legal.terms_url && `<a href="${esc(data.legal.terms_url)}">Terms of service</a>`, data.legal.privacy_url && `<a href="${esc(data.legal.privacy_url)}">Privacy policy</a>`].filter(Boolean).join(" · ");
   }
@@ -345,6 +360,8 @@
     draw();
     packs();
     document.addEventListener("click", (e) => {
+      const au = e.target.closest("[data-audience-pick]");
+      if (au && au.dataset.audiencePick !== audience) { audience = au.dataset.audiencePick; store.set("scp-audience", audience); draw(true); }
       const iv = e.target.closest("[data-interval-pick]");
       if (iv && iv.dataset.intervalPick !== interval) { interval = iv.dataset.intervalPick; store.set("scp-interval", interval); draw(true); }
       const st = e.target.closest("[data-seats-step]");

@@ -5,10 +5,11 @@
 // member's entitlements through SCP_entitlements(), which then answers as that plan would. Only for staff; the data the
 // database lets them read doesn't change, only what the pages show and lock.
 const VIEW_AS_PLANS = {
-  // the plans on sale now (pricing): Library and Library + AI + Content Plan; the old Library + AI / Library + Content Plan are gone
+  // the plans on sale now (pricing): Library, Content Creator and Library + AI + Content Plan; Library + AI is gone
   none: { name: "No plan (not a client)", ai: false, planner: false, units: 0, library: false },   // signed up, never paid / trial over
-  library: { name: "Library", ai: false, planner: false, units: 0 },
-  all_access: { name: "Library + AI + Content Plan", ai: true, planner: true, units: 30 },
+  library: { name: "Library", ai: false, planner: false, units: 0, perms: [] },
+  library_planner: { name: "Content Creator", ai: false, planner: true, units: 0, perms: ["library.creators"] },
+  all_access: { name: "Library + AI + Content Plan", ai: true, planner: true, units: 30, perms: ["library.creators", "library.matchday", "library.brands"] },
 };
 window.SCP_VIEW_AS_PLANS = VIEW_AS_PLANS;
 window.SCP_viewAs = () => { try { const v = localStorage.getItem("scp-view-as"); return VIEW_AS_PLANS[v] ? v : null; } catch { return null; } };
@@ -16,7 +17,7 @@ window.SCP_entitlements = async () => {
   const res = await window.SCP_AUTH.client.rpc("my_entitlements");
   const v = window.SCP_viewAs(), p = VIEW_AS_PLANS[v];
   if (!p || !res.data?.is_staff) return res;
-  return { ...res, data: { ...res.data, is_staff: false, plan: p.library === false ? null : v, plan_name: p.library === false ? null : p.name, has_library: p.library !== false, has_ai: p.ai, has_planner: p.planner,
+  return { ...res, data: { ...res.data, is_staff: false, plan: p.library === false ? null : v, plan_name: p.library === false ? null : p.name, has_library: p.library !== false, has_ai: p.ai, has_planner: p.planner, entitlements: p.perms || [],
     monthly_limit: p.units, monthly_used: 0, monthly_left: p.units, pack_left: 0, viewing_as: v } };
 };
 window.SCP_upgradeHref = () => "pricing.html?plan=all_access";

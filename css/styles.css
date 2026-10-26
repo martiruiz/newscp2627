@@ -8773,3 +8773,15 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .news-filters .ptile-grid .ptile:is([data-platform="all"], [data-platform="snapchat"]):is(:hover, [aria-pressed="true"]) span { color: #1a1205; }
 :root[data-theme="light"] .news-filters .ptile-grid .ptile:not(:hover):not([aria-pressed="true"]) img { filter: brightness(0); opacity: .75; }
 @media (prefers-reduced-motion: reduce) { .news-filters .ptile-grid .ptile { transition: background .2s; } .news-filters .ptile-grid .ptile:is(:hover, [aria-pressed="true"]) { transform: none; } }
+/* Pricing: "Individual plans / Business plans" tabs, top left of the switches; Business = the My Club card on its own */
+.plan-switches.has-audience .plan-audience { margin-right: auto; }
+.plans.is-business { grid-template-columns: minmax(0, 440px); justify-content: center; }
+@media (max-width: 720px) { .plan-switches.has-audience .plan-audience { margin: 0 auto; flex-basis: 100%; justify-content: center; } }
+/* Library: parts that depend on the plan (Content creators, Match Day, Brands & sponsors) */
+.lf-sp.is-locked { opacity: .75; text-decoration: none; }
+.lf-sp.is-locked .lf-sp-n svg { width: 14px; height: 14px; }
+.lf-locked { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 14px; border-radius: 14px; background: var(--surface); border: 0.5px dashed var(--line); color: var(--muted); font-size: 13px; }
+.lf-locked > svg { width: 18px; height: 18px; color: var(--gold); }
+.lf-locked p { margin: 0; }
+.lf-locked-btn { display: inline-flex; padding: 7px 14px; border-radius: 999px; background: var(--gold); color: #1a1205; font-weight: 700; font-size: 13px; text-decoration: none; }
+.lfp-locked { padding: 22px; max-width: 420px; }

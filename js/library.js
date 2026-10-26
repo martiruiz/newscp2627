@@ -106,6 +106,12 @@
   const kfmt = (n) => (n >= 1e6 ? `${(n / 1e6).toFixed(n < 1e7 ? 1 : 0).replace(".0", "")}M` : n >= 1e4 ? `${Math.round(n / 1e3)}k` : n >= 1e3 ? `${(n / 1e3).toFixed(1).replace(".0", "")}k` : String(n));
 
   let catalog = { byCat: {}, byId: new Map() };
+  // parts of the library that depend on the plan (supabase/plans-2026-10.sql): Content creators (Content Creator and up),
+  // Match Day and Brands & sponsors (Library + AI + Content Plan). Unknown until the member's permissions load → open.
+  let perms = null;   // { staff, list }
+  const can = (k) => !perms || perms.staff || perms.list.includes(k);
+  const LOCK_MSG = { "library.creators": "Not in your plan: available from Content Creator", "library.matchday": "Not in your plan: available in Library + AI + Content Plan", "library.brands": "Not in your plan: available in Library + AI + Content Plan" };
+  const lockedHtml = (k) => `<div class="lf-locked">${svg("lock")}<p>${esc(tx(LOCK_MSG[k]))}</p><a class="lf-locked-btn" href="pricing.html">${esc(tx("See plans"))}</a></div>`;
   const selected = Object.fromEntries(CATEGORIES.map((c) => [c.key, new Set()])); // category -> Set(value ids)
   let counts = null; // value id -> posts with the other filters applied (null = not counted: show catalog totals)
 
@@ -166,6 +172,7 @@
     cursor: '<path d="M3 11l18-8-8 18-2-8z"/>',
     eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
     clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    lock: '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
     shape: '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16"/>',
     chev: '<path d="m6 9 6 6 6-6"/>',
     check: '<path d="m5 12 5 5 9-10"/>',
@@ -376,7 +383,12 @@
     }
     // "Content Creators" (Publisher type): its own gold button right under Replicable ideas
     const cc = (catalog.byCat.entity || []).find((v) => v.name.toLowerCase() === "content creators");
-    if (cc) {
+    if (cc && !can("library.creators")) {
+      const s = special(cc);
+      const at = sp.findIndex((v) => v.name.toLowerCase() === "replicable ideas");
+      rows.splice(at >= 0 ? at + 2 : rows.length, 0, `<a class="lf-sp ${s.cls} is-locked" href="pricing.html" title="${esc(tx(LOCK_MSG["library.creators"]))}">
+        <span class="lf-sp-ic">${svg(s.ico)}</span><span class="lf-sp-tx"><b>${esc(tx("Content Creators"))}</b></span><span class="lf-sp-n">${svg("lock")}</span></a>`);
+    } else if (cc) {
       const n = countOf(cc), on = isOn(cc), zero = n === 0 && !on;
       const s = special(cc);
       const btn = `<button type="button" class="lf-sp ${s.cls}${on ? " is-on" : ""}${zero ? " is-zero" : ""}" aria-pressed="${on}" ${zero ? 'aria-disabled="true" ' : ""}data-facet="entity" data-id="${cc.id}" data-sp-tip="${esc(tx(s.desc))}">
@@ -694,8 +706,8 @@
   function renderFacets() {
     const parts = {
       discover: (has("trend") || views.hist) && discoverHtml(),
-      occasion: !LAYOUT_BEFORE && (CATEGORIES.some((c) => c.sec === "occasion" && has(c.key))) && occasionHtml(),
-      goal: !LAYOUT_BEFORE && CATEGORIES.some((c) => c.sec === "goal" && has(c.key)) && goalHtml(),
+      occasion: !LAYOUT_BEFORE && (CATEGORIES.some((c) => c.sec === "occasion" && has(c.key))) && (can("library.matchday") ? occasionHtml() : lockedHtml("library.matchday")),
+      goal: !LAYOUT_BEFORE && CATEGORIES.some((c) => c.sec === "goal" && has(c.key)) && (can("library.brands") ? goalHtml() : lockedHtml("library.brands")),
       where: !LAYOUT_BEFORE && (has("platform") || has("format")) && `${has("platform") ? `<div class="lf-grp">${platformHtml()}</div>` : ""}${has("format") || has("aspect_ratio") || has("duration") || has("language") ? `<div class="lf-grp">${formatHtml()}</div>` : ""}`,
       benchmark: !LAYOUT_BEFORE && CATEGORIES.some((c) => c.sec === "benchmark" && has(c.key)) && likeMineHtml() + groupHtml("benchmark"),
       format: (has("format") || has("aspect_ratio") || has("duration") || has("language")) && formatHtml(),
@@ -874,7 +886,8 @@
     <div class="lfp-res-mini">${(ui.peek || []).map((p) => `<span style="background-image:url('${esc(p.cover_url)}')">${p.views ? `<em>${kfmt(p.views)}</em>` : ""}</span>`).join("") || "<span></span><span></span><span></span><span></span>"}</div>
     <button type="button" class="lfp-go" data-lfb-close><span data-lfb-go>${esc(goLabel())}</span>${icon("arrow-up-right")}</button>`;
   const goLabel = () => (ui.total == null ? tx("Show posts") : ui.total ? tx("Show {n} posts", { n: Number(ui.total).toLocaleString(window.SCP_LOC || "en-GB") }) : tx("No posts — change the filters"));
-  const lfpHtml = (sec) => `<div class="lfp-top">${lfpTop(sec)}</div><div class="lfp-body"><nav class="lfp-rail" aria-label="${esc(tx("Groups"))}">${lfpRail(sec)}</nav><div class="lfp-main" data-lfp-main>${lfpMain(sec)}</div><aside class="lfp-res" data-lfp-res>${resHtml()}</aside></div><div class="lfp-foot">${lfpFoot(sec)}</div>`;
+  const SEC_PERM = { occasion: "library.matchday", goal: "library.brands" };
+  const lfpHtml = (sec) => SEC_PERM[sec] && !can(SEC_PERM[sec]) ? `<div class="lfp-locked">${lockedHtml(SEC_PERM[sec])}</div>` : `<div class="lfp-top">${lfpTop(sec)}</div><div class="lfp-body"><nav class="lfp-rail" aria-label="${esc(tx("Groups"))}">${lfpRail(sec)}</nav><div class="lfp-main" data-lfp-main>${lfpMain(sec)}</div><aside class="lfp-res" data-lfp-res>${resHtml()}</aside></div><div class="lfp-foot">${lfpFoot(sec)}</div>`;
   const coverAsked = new Set();
   const coverUsed = new Set();   // the photos already given to a card
   let noTopCovers = false;       // value_covers_top not in Supabase yet: the old function only
@@ -2071,6 +2084,8 @@
   async function loadAi() {
     const [{ data: ent }, { data: ids }] = await Promise.all([window.SCP_entitlements(), db.rpc("my_unlocked_posts")]);
     ai.ent = ent || null;
+    // the plan's permissions (staff "view as" a plan: the permissions of that plan, auth.js)
+    if (ai.ent) { perms = { staff: !!ai.ent.is_staff, list: ai.ent.entitlements || [] }; if (catalog.byId.size) renderFacets(); }
     ai.unlocked = new Set((ids || []).map(Number));
     if (!ai.ent?.has_ai) { renderAiMine(); return; }
     // "My AI analyses": the analyses themselves (readable by whoever unlocked them) and the ones of my team (supabase/ai-team.sql)
