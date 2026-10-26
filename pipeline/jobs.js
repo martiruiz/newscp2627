@@ -33,7 +33,7 @@ const usage = { input: 0, output: 0 };
 async function screen(item) {
   const res = await client.messages.create({
     model: "claude-haiku-5-5",
-    max_tokens: 600,
+    max_tokens: 1500,
     output_config: { format: { type: "json_schema", schema: SCHEMA } },
     system: SYSTEM,
     messages: [{ role: "user", content: `Title: ${item.title}\n\n${item.body.slice(0, 2500)}` }],
