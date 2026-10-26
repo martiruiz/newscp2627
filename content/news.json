@@ -21,7 +21,54 @@
     "faq": [],
     "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/cc28aff8-f266-41a4-8a9c-963dfcf38050/Untitled_design.gif?t=1792866027",
     "es": {
+      "faq": [],
+      "model": "claude-haiku-5-5",
       "title": "Manchester United y Snapdragon convierten las alineaciones de la Champions League en retratos ilustrados",
+      "tokens": {
+        "in": 1388,
+        "out": 629
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [],
+      "meta_title": "",
+      "paragraphs": [
+        "El Manchester United ha encargado a Stanley Chow, ilustrador local y seguidor del club de toda la vida, que dibuje retratos personalizados del equipo titular para sus partidos de la Champions League esta temporada. Cada jugador aparece con la equipación de marca Snapdragon, y la obra se fotografía en teléfonos con tecnología Snapdragon frente a escenarios pintorescos en ciudades anfitrionas como Como y Madrid.",
+        "En Instagram, United combina el carrusel con la nueva función de pies de foto múltiples de la plataforma, etiquetando a cada jugador mientras los aficionados deslizan los retratos. El enfoque da a un recurso rutinario del día de partido un aire premium y coleccionable, a la vez que integra el producto del patrocinador en la historia en lugar de limitarse a estampar un logotipo en una plantilla.",
+        "Para los equipos de redes sociales, la conclusión es que los anuncios de alineaciones se cuentan entre el inventario de patrocinio más fiable y pueden renovarse de forma creativa. Los clubes podrían encargar a artistas aficionados para partidos destacados, vincular las imágenes a ubicaciones de desplazamientos como viajes fuera de casa, o dejar que el dispositivo de un socio tecnológico forme parte de la producción. Probar los pies de foto por diapositiva de Instagram en los carruseles es una forma sencilla de añadir contexto sin saturar la obra."
+      ],
+      "image_title": "",
+      "translated_at": "2026-10-26T22:00:41.435Z",
+      "source_changed": "2026-10-26T21:59:12.531209+00:00",
+      "meta_description": ""
+    }
+  },
+  {
+    "id": 15,
+    "url": "https://www.socialmediatoday.com/news/edits-comes-to-iphone-duo-and-desktop/833909/",
+    "source_name": "Social Media Today",
+    "platform": "instagram",
+    "title": "Meta's Edits app launches iPhone Duo version and tests desktop editor",
+    "paragraphs": [
+      "Meta has released a dedicated version of Edits, its short-form video editing app, built for Apple's folding iPhone Duo. The interface adapts to the device's larger screen, orientation and crease, letting users edit and preview their timeline side by side. Separately, a desktop version first announced in June is now in live testing with selected creators, according to a screenshot shared by creator Taylor Golub.",
+      "The desktop layout shows more editing elements on one screen, making it easier to move between the app's creation tools. Instagram chief Adam Mosseri commented that he sees the desktop version becoming a base for many future features, signalling continued investment in Edits as Meta's core creation tool for Reels.",
+      "For sports social teams, a desktop Edits could bridge the gap between quick phone edits on matchday and longer post-production sessions in the office, keeping Reels workflows inside Meta's ecosystem. Clubs and athletes already cutting highlights, player features or sponsor clips in Edits should watch for wider desktop access, while staff using folding phones gain a bigger mobile canvas for fast turnaround content from the stadium."
+    ],
+    "relevant": true,
+    "published_at": "2026-10-25T22:19:42+00:00",
+    "created_at": "2026-10-26T22:02:57.543682+00:00",
+    "edited_at": null,
+    "slug": "meta-s-edits-app-launches-iphone-duo-version-and-tests-desktop-editor-15",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/S0VUSfummVRu1I_VQ8ComYkps-aqceYddbNbJDGZxnw/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9lZGl0c19kdW8yLnBuZw==.webp",
+    "es": {
+      "title": "La app Edits de Meta lanza una versión para el iPhone Duo y prueba un editor de escritorio",
       "excerpt": "",
       "body_html": "",
       "meta_title": "",
@@ -31,18 +78,112 @@
       "image_alt": "",
       "image_title": "",
       "paragraphs": [
-        "El Manchester United ha encargado a Stanley Chow, ilustrador local y seguidor del club de toda la vida, que dibuje retratos personalizados del equipo titular para sus partidos de la Champions League esta temporada. Cada jugador aparece con la equipación de marca Snapdragon, y la obra se fotografía en teléfonos con tecnología Snapdragon frente a escenarios pintorescos en ciudades anfitrionas como Como y Madrid.",
-        "En Instagram, United combina el carrusel con la nueva función de pies de foto múltiples de la plataforma, etiquetando a cada jugador mientras los aficionados deslizan los retratos. El enfoque da a un recurso rutinario del día de partido un aire premium y coleccionable, a la vez que integra el producto del patrocinador en la historia en lugar de limitarse a estampar un logotipo en una plantilla.",
-        "Para los equipos de redes sociales, la conclusión es que los anuncios de alineaciones se cuentan entre el inventario de patrocinio más fiable y pueden renovarse de forma creativa. Los clubes podrían encargar a artistas aficionados para partidos destacados, vincular las imágenes a ubicaciones de desplazamientos como viajes fuera de casa, o dejar que el dispositivo de un socio tecnológico forme parte de la producción. Probar los pies de foto por diapositiva de Instagram en los carruseles es una forma sencilla de añadir contexto sin saturar la obra."
+        "Meta ha lanzado una versión específica de Edits, su app de edición de vídeo de formato corto, diseñada para el iPhone Duo plegable de Apple. La interfaz se adapta a la pantalla más grande del dispositivo, a su orientación y a su pliegue, lo que permite a los usuarios editar y previsualizar su línea de tiempo lado a lado. Por otro lado, una versión de escritorio anunciada por primera vez en junio está ahora en pruebas en directo con creadores seleccionados, según una captura de pantalla compartida por la creadora Taylor Golub.",
+        "El diseño de escritorio muestra más elementos de edición en una sola pantalla, lo que facilita moverse entre las herramientas de creación de la app. Adam Mosseri, responsable de Instagram, comentó que cree que la versión de escritorio se convertirá en la base de muchas funciones futuras, lo que indica que Meta seguirá invirtiendo en Edits como su herramienta principal de creación para Reels.",
+        "Para los equipos de redes sociales deportivos, un Edits de escritorio podría cerrar la brecha entre las ediciones rápidas desde el móvil en día de partido y las sesiones de posproducción más largas en la oficina, manteniendo los flujos de trabajo de Reels dentro del ecosistema de Meta. Los clubes y deportistas que ya cortan highlights, reportajes de jugadores o clips de patrocinadores en Edits deberían estar atentos a un acceso más amplio desde el escritorio, mientras que el personal que usa móviles plegables gana un lienzo móvil más grande para contenido de entrega rápida desde el estadio."
       ],
       "takeaways": [],
       "faq": [],
-      "source_changed": "2026-10-26T21:59:12.531209+00:00",
+      "source_changed": "2026-10-26T22:02:57.543682+00:00",
       "model": "claude-haiku-5-5",
-      "translated_at": "2026-10-26T22:00:41.435Z",
+      "translated_at": "2026-10-26T22:11:14.893Z",
       "tokens": {
-        "in": 1388,
-        "out": 629
+        "in": 1389,
+        "out": 691
+      }
+    }
+  },
+  {
+    "id": 16,
+    "url": "https://www.socialmediatoday.com/news/x-provides-holiday-campaign-tips/833908/",
+    "source_name": "Social Media Today",
+    "platform": "x",
+    "title": "X shares holiday ad guidance: short copy, natural tone and one clear call to action",
+    "paragraphs": [
+      "X hosted a webinar for marketers planning holiday campaigns, sharing audience insights and creative best practices. The platform says its top-performing ads run just 50 to 100 characters, roughly one sentence. It urges brands to sound like real people rather than overselling, to give users a reason to act now through limited-time or exclusive offers, and to finish with a single, clear call to action.",
+      "X also advised removing anything that distracts from the ad's goal: send users to one destination, avoid tagging other accounts, and skip hashtags and multiple emojis, which are not allowed in ads. On AI-driven shopping, it recommended describing plainly what a product does, who it is for and why it is better, so recommendation models can summarise it easily.",
+      "For clubs and leagues selling holiday merchandise, gift memberships or ticket packages, this is a practical checklist. Write one punchy line, point fans only to the store or app, and use deadlines like limited kit drops or festive ticket bundles to create urgency. Clear, plain product descriptions on e-commerce pages may also help club merchandise surface in AI-powered shopping recommendations."
+    ],
+    "relevant": true,
+    "published_at": "2026-10-25T22:17:34+00:00",
+    "created_at": "2026-10-26T22:03:05.490517+00:00",
+    "edited_at": null,
+    "slug": "x-shares-holiday-ad-guidance-short-copy-natural-tone-and-one-clear-16",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/ua2Hio8Dsltltak85FZHHNHCimzHIBvaiOtJBKzLUbI/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9ob2xpZGF5c19vbl9YLnBuZw==.webp",
+    "es": {
+      "title": "X comparte consejos para los anuncios navideños: textos cortos, tono natural y una única llamada a la acción clara",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "X organizó un webinar para profesionales del marketing que planifican campañas navideñas, en el que compartió datos sobre audiencias y buenas prácticas creativas. La plataforma asegura que sus anuncios con mejor rendimiento tienen entre 50 y 100 caracteres, aproximadamente una frase. Recomienda que las marcas suenen como personas reales en lugar de exagerar, que den a los usuarios un motivo para actuar ya mediante ofertas por tiempo limitado o exclusivas, y que terminen con una única llamada a la acción clara.",
+        "X también aconseja eliminar todo lo que distraiga del objetivo del anuncio: dirigir a los usuarios a un único destino, evitar mencionar otras cuentas y prescindir de los hashtags y de varios emojis, que no están permitidos en los anuncios. Sobre las compras impulsadas por IA, recomienda describir con claridad qué hace un producto, para quién es y por qué es mejor, de modo que los modelos de recomendación puedan resumirlo fácilmente.",
+        "Para clubes y ligas que venden merchandising navideño, membresías de regalo o paquetes de entradas, esta es una lista de comprobación práctica. Escribe una línea contundente, dirige a los aficionados únicamente a la tienda o a la app y utiliza plazos como lanzamientos limitados de equipaciones o paquetes festivos de entradas para generar urgencia. Las descripciones de producto claras y sencillas en las páginas de comercio electrónico también pueden ayudar a que el merchandising del club aparezca en las recomendaciones de compra impulsadas por IA."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-10-26T22:03:05.490517+00:00",
+      "model": "claude-haiku-5-5",
+      "translated_at": "2026-10-26T22:11:23.137Z",
+      "tokens": {
+        "in": 1391,
+        "out": 684
+      }
+    }
+  },
+  {
+    "id": 17,
+    "url": "https://www.socialmediatoday.com/news/tiktok-us-shares-second-quarter-account-enforcement-data/833907/",
+    "source_name": "Social Media Today",
+    "platform": "tiktok",
+    "title": "TikTok US removes over 14 million fake accounts in second-quarter enforcement report",
+    "paragraphs": [
+      "TikTok has released account enforcement data for its US operation covering the second quarter. The platform says it removed more than 14 million fake accounts during the period. It also says it blocked close to 65 million spam accounts before they could be created, stopping them at the sign-up stage.",
+      "For sports social teams, large fake-account purges can cause sudden dips in follower counts and engagement figures. Clubs, leagues and athletes should expect occasional drops and avoid treating them as a loss of real fans. Benchmarking against engaged metrics such as watch time, shares and comments gives a more reliable picture than raw follower totals.",
+      "The data is also useful when talking to sponsors. Partners want to know their activations reach genuine audiences, and platform-level cleanups support that case. Teams can audit their own comment sections and follower bases for bot activity, report spam that targets fan content, and show partners verified audience insights rather than headline follower numbers."
+    ],
+    "relevant": true,
+    "published_at": "2026-10-25T22:13:46+00:00",
+    "created_at": "2026-10-26T22:03:14.65779+00:00",
+    "edited_at": null,
+    "slug": "tiktok-us-removes-over-14-million-fake-accounts-in-second-quarter-17",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/12K6ogX9lcgDYYC0J9LHBG_Vz43JSghdwOStO8_Cc34/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS90aWt0b2tfdXNkc2p2LnBuZw==.webp",
+    "es": {
+      "title": "TikTok EE. UU. elimina más de 14 millones de cuentas falsas en su informe de moderación del segundo trimestre",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "TikTok ha publicado los datos de moderación de cuentas de su operación en EE. UU. correspondientes al segundo trimestre. La plataforma afirma que eliminó más de 14 millones de cuentas falsas durante el periodo. También asegura que bloqueó cerca de 65 millones de cuentas de spam antes de que pudieran crearse, frenándolas en la fase de registro.",
+        "Para los equipos de redes sociales del deporte, las grandes depuraciones de cuentas falsas pueden provocar caídas repentinas en el número de seguidores y en las cifras de interacción. Clubes, ligas y atletas deben esperar bajadas puntuales y evitar interpretarlas como una pérdida de aficionados reales. Comparar los datos con métricas de interacción real, como el tiempo de visualización, las veces compartido y los comentarios, ofrece una imagen más fiable que el total bruto de seguidores.",
+        "Estos datos también son útiles en las conversaciones con patrocinadores. Los socios quieren saber que sus activaciones llegan a audiencias genuinas, y las limpiezas a nivel de plataforma respaldan ese argumento. Los equipos pueden auditar sus propias secciones de comentarios y bases de seguidores en busca de actividad de bots, denunciar el spam que apunta al contenido de los aficionados y mostrar a los socios datos verificados de la audiencia en lugar de cifras totales de seguidores."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-10-26T22:03:14.65779+00:00",
+      "model": "claude-haiku-5-5",
+      "translated_at": "2026-10-26T22:11:27.862Z",
+      "tokens": {
+        "in": 1327,
+        "out": 623
       }
     }
   },

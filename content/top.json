@@ -78,12 +78,6 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547095.jpg"
   },
   {
-    "account": "espn",
-    "account_platform": "tiktok",
-    "views": 450500,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547232.jpg"
-  },
-  {
     "account": "spursofficial",
     "account_platform": "tiktok",
     "views": 392900,
@@ -178,5 +172,11 @@
     "account_platform": "tiktok",
     "views": 46200,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547221.png"
+  },
+  {
+    "account": "espn",
+    "account_platform": "tiktok",
+    "views": 45200,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547211.jpg"
   }
 ]
