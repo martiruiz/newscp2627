@@ -56,3 +56,14 @@ test-data.csv
 
 # skills lock
 skills-lock.json
+
+# local outputs
+pipeline/newsletter-preview.html
+
+# Video: sources and renders stay local (music is licensed, files are heavy)
+video/audio/*.mp3
+video/audio/*.wav
+video/out/
+video/real/
+video/me/
+video/laptop/
