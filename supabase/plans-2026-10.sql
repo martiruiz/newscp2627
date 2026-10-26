@@ -28,5 +28,5 @@ $$;
 revoke execute on function public.billing_plan_json(text) from public, anon, authenticated;
 
 update public.plans set compare_month = 14 where key = 'library';
-update public.plans set compare_month = 29 where key = 'library_planner';
+update public.plans set compare_month = 25 where key = 'library_planner';
 update public.plans set compare_month = null where key = 'all_access';
