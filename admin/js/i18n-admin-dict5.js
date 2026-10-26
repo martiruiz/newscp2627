@@ -523,4 +523,7 @@ window.SCPA_DICT = Object.assign(window.SCPA_DICT || {}, {
   "Reason": ["Motivo", "Motiu"],
   "No answers yet. They appear here when someone clicks a reason in the cancellation e-mail.": ["Aún no hay respuestas. Aparecen aquí cuando alguien hace clic en un motivo del correo de cancelación.", "Encara no hi ha respostes. Apareixen aquí quan algú fa clic en un motiu del correu de cancel·lació."],
   "Run supabase/email-improvements.sql in Supabase first.": ["Primero ejecuta supabase/email-improvements.sql en Supabase.", "Primer executa supabase/email-improvements.sql a Supabase."],
+  "Go": ["Adelante", "Endavant"],
+  "Recorded": ["Grabado", "Gravat"],
+  "Claude edits it and adds it to Metricool": ["Claude lo edita y lo sube a Metricool", "Claude l'edita i el puja a Metricool"],
 });

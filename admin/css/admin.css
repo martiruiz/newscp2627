@@ -1704,6 +1704,8 @@ select.cs-native { display: none !important; }
 .ch-net { white-space: nowrap; font-weight: 600; width: 1%; padding-right: 20px; }
 .ch-d { display: inline-block; min-width: 42px; color: var(--accent); font-variant-numeric: tabular-nums; }
 .ch-topic { max-width: 640px; }
+.ch-table .td-actions .btn + .btn { margin-left: 6px; }
+.ch-wait { font-size: 12px; }
 .ch-topic b { display: block; font-weight: 600; overflow-wrap: anywhere; }
 .ch-topic small { display: block; margin-top: 2px; }
 .ch-board { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(250px, 1fr); gap: 12px; overflow-x: auto; padding-bottom: 10px; align-items: start; }

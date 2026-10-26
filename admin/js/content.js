@@ -6,10 +6,11 @@
   const { $, esc, icon } = A;
   try { await A.boot("content"); } catch { return; }
   const main = $("[data-main]");
-  const STAGES = ["Per generar", "Esborrany fet", "Aprovat", "En producció", "Programat", "Publicat"];
-  const BLOCKED = ["Depèn de dades", "Cal confirmar"];
+  const STAGES = ["Per generar", "Esborrany fet", "Aprovat", "Gravat", "En producció", "Programat", "Publicat"];
+  const BLOCKED = ["Depèn de dades", "Cal confirmar", "Descartat"];
+  const RAW = "SSDMRG/SCP/XARXES SOCIALS/REELS/REELS PER EDITAR"; // where Martí drops the recorded video, named by the piece id (C216.mov)
   const ALL = STAGES.concat(BLOCKED);
-  const TONE = { "Per generar": "off", "Esborrany fet": "info", Aprovat: "ok", "En producció": "warn", Programat: "warn", Publicat: "ok", "Depèn de dades": "bad", "Cal confirmar": "bad" };
+  const TONE = { "Per generar": "off", "Esborrany fet": "info", Aprovat: "ok", "En producció": "warn", Gravat: "warn", Programat: "warn", Publicat: "ok", "Depèn de dades": "bad", "Cal confirmar": "bad", Descartat: "off" };
   const today = new Date().toISOString().slice(0, 10);
   const fmt = (d) => (d ? d.slice(8, 10) + "/" + d.slice(5, 7) : "");
   const natural = (a, b) => a.localeCompare(b, undefined, { numeric: true });
@@ -55,14 +56,24 @@
     $('[data-f="week"]').value = S.week;
   }
   const visible = () => items.filter((i) => (S.week === "all" || String(i.week) === S.week) && (!S.net || i.network === S.net) && (!S.vert || i.vertical === S.vert)
-    && (!S.stage || i.stage === S.stage) && (!S.owner || i.owner === S.owner) && (!S.q || `${i.topic} ${i.network} ${i.vertical}`.toLowerCase().includes(S.q.toLowerCase())));
+    && (S.stage ? i.stage === S.stage : i.stage !== "Descartat") && (!S.owner || i.owner === S.owner) && (!S.q || `${i.topic} ${i.network} ${i.vertical}`.toLowerCase().includes(S.q.toLowerCase())));
 
   const row = (i, withDate) => `<tr data-open="${esc(i.id)}" tabindex="0">
     <td class="ch-net">${withDate ? `<span class="ch-d">${fmt(i.pub_date)}</span>` : ""}${esc(i.network)}</td>
     <td class="ch-topic"><b>${esc(i.topic)}</b><small class="muted">${esc(i.vertical || "")}${i.vertical && i.production ? " · " : ""}${esc(i.production || "")}${i.script ? " · script" : ""}${i.comment ? " · comment" : ""}</small></td>
     <td>${badge(i.stage)}</td>
-    <td class="td-actions"><button class="btn btn-ghost btn-sm" type="button" data-next="${esc(i.id)}"${STAGES.indexOf(i.stage) === STAGES.length - 1 ? " disabled" : ""} title="Move to the next stage">Next stage</button>
+    <td class="td-actions">${actions(i)}
       <button class="btn btn-ghost btn-sm" type="button" data-edit="${esc(i.id)}" aria-label="Open">${icon("edit")}</button></td></tr>`;
+
+  // what Martí decides on each piece: go / discard while it is an idea, "recorded" once filmed (Claude then edits it and adds it to Metricool)
+  function actions(i) {
+    const b = (k, label, title, cls = "btn-ghost") => `<button class="btn ${cls} btn-sm" type="button" data-act="${k}" data-id="${esc(i.id)}" title="${title}">${label}</button>`;
+    if (i.stage === "Descartat") return b("restore", "Restore", "Bring it back to the plan");
+    if (["Per generar", "Esborrany fet", "Cal confirmar", "Depèn de dades"].includes(i.stage)) return b("go", "Go", "Approve it: worth recording", "btn-primary") + b("discard", "Discard", "Not worth it");
+    if (i.stage === "Aprovat") return b("recorded", "Recorded", `Drop the video in ${RAW} named ${i.id}`, "btn-primary") + b("discard", "Discard", "Not worth it");
+    if (i.stage === "Gravat") return `<span class="muted ch-wait">Claude edits it and adds it to Metricool</span>`;
+    return b("next", "Next stage", "Move to the next stage");
+  }
 
   function draw() {
     const counts = {}; items.forEach((i) => (counts[i.stage] = (counts[i.stage] || 0) + 1));
@@ -82,7 +93,7 @@
       body.innerHTML = Object.keys(g).sort().map((d) => `<section class="panel ch-day${d === today ? " is-today" : ""}"><header><h2>${esc(g[d][0].day_name || "")} ${fmt(d)}</h2><span class="muted">${g[d].length} pieces</span></header>
         <div class="table-wrap"><table class="data ch-table">${head}<tbody>${g[d].map((i) => row(i)).join("")}</tbody></table></div></section>`).join("");
     } else if (S.view === "board") {
-      body.innerHTML = `<div class="ch-board">` + ALL.map((s) => { const x = list.filter((i) => i.stage === s);
+      body.innerHTML = `<div class="ch-board">` + ALL.filter((s) => s !== "Descartat" || S.stage === s).map((s) => { const x = list.filter((i) => i.stage === s);
         return `<div class="ch-col" data-drop-stage="${esc(s)}"><h3>${esc(s)}<span>${x.length}</span></h3>${x.slice(0, 80).map((i) => `<button type="button" class="ch-card" draggable="true" data-edit="${esc(i.id)}"><small>${fmt(i.pub_date)} · ${esc(i.network)}</small><b>${esc(i.topic)}</b></button>`).join("") || `<p class="muted ch-none">Nothing here</p>`}${x.length > 80 ? `<p class="muted ch-none">Filter to see the rest</p>` : ""}</div>`; }).join("") + `</div>`;
     } else {
       const x = list.filter((i) => i.script || /càmera|Motion/i.test(i.production || ""));
@@ -125,9 +136,12 @@
   main.addEventListener("dragend", () => { dragId = null; main.querySelectorAll(".is-over").forEach((n) => n.classList.remove("is-over")); });
 
   main.addEventListener("click", (e) => {
-    const nx = e.target.closest("[data-next]");
-    if (nx) { e.stopPropagation(); const i = items.find((x) => x.id === nx.dataset.next); const k = STAGES.indexOf(i.stage);
-      return save(i.id, { stage: STAGES[k < 0 ? 1 : Math.min(k + 1, STAGES.length - 1)] }, `Moved to “${STAGES[k < 0 ? 1 : Math.min(k + 1, STAGES.length - 1)]}”.`); }
+    const ac = e.target.closest("[data-act]");
+    if (ac) { e.stopPropagation(); const i = items.find((x) => x.id === ac.dataset.id), k = STAGES.indexOf(i.stage);
+      const to = { go: ["Aprovat", "Approved. Record it when you can."], discard: ["Descartat", "Discarded. Filter by stage “Descartat” to see it again."],
+        restore: [i.script ? "Esborrany fet" : "Per generar", "Back in the plan."], recorded: ["Gravat", `Drop the video in ${RAW} as ${i.id}.mov (or .mp4) and tell Claude “processa el Content hub”.`],
+        next: [STAGES[Math.min(k + 1, STAGES.length - 1)], ""] }[ac.dataset.act];
+      return save(i.id, { stage: to[0] }, to[1] || `Moved to “${to[0]}”.`); }
     const ed = e.target.closest("[data-edit],[data-open]");
     if (ed) return editor(items.find((x) => x.id === (ed.dataset.edit || ed.dataset.open)));
     const vb = e.target.closest("[data-views] button");
