@@ -40,12 +40,13 @@ def cover():
 <div class="abs" style="left:80px;top:925px;width:900px;font-size:36px;color:#aab7d2;font-weight:500;line-height:1.3">With real examples from the SCP library, plus the key dates of the month.</div>
 <div class="abs" style="left:80px;top:1040px;display:flex;gap:14px">{tiles}</div>
 <div class="abs cap gd" style="left:80px;top:1290px;font-size:21px">Save it for your calendar · Swipe →</div>'''
-def pill(t): return f'<span style="display:inline-block;padding:14px 28px;border-radius:30px;background:rgba(184,122,12,.1);border:2px solid rgba(184,122,12,.28);color:#8a5a08;font-size:25px;font-weight:700">{t}</span>'
+CHK='<svg viewBox="0 0 256 256" width="100%" height="100%" fill="#f0b84a"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm45.66,85.66-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35a8,8,0,0,1,11.32,11.32Z"/></svg>'
+def pill(t): return f'<div style="display:flex;align-items:center;gap:14px;font-size:28px;font-weight:700;color:#121b33"><span style="width:36px;height:36px;flex:none">{CHK}</span>{t}</div>'
 def idea(k,d):
     cards=''.join(f'<div style="width:440px"><div style="width:440px;height:450px;border-radius:30px;overflow:hidden;background:#121b33;box-shadow:0 28px 60px rgba(18,27,51,.22);border:2px solid rgba(18,27,51,.08);position:relative"><img src="{cv(p["id"])}" style="width:100%;height:100%;object-fit:cover;object-position:50% 35%"><span style="position:absolute;left:16px;top:16px;width:48px;height:48px;border-radius:50%;background:#fff;padding:9px">{brand("instagram")}</span></div><div style="margin-top:16px;display:flex;align-items:baseline;gap:10px"><span style="font-size:34px;font-weight:800;letter-spacing:-.02em">{p["likes"]}</span><span class="cap mu" style="font-size:19px">likes</span></div></div>' for p in d['posts'])
     return 'light',f'''{hd()}{sg(k,False)}
-<div class="abs" style="right:70px;top:190px;font-size:190px;font-weight:900;line-height:.9;letter-spacing:-.06em;color:rgba(184,122,12,.16)">0{k}</div>
-<div class="abs" style="left:80px;top:360px;width:920px;display:flex;flex-direction:column;gap:26px"><div style="font-size:70px;font-weight:800;line-height:1.04;letter-spacing:-.03em">{d['title']}</div><div style="font-size:30px;font-weight:500;color:#55617a;line-height:1.32;width:880px">{d['desc']}</div><div style="display:flex;gap:16px;flex-wrap:wrap">{''.join(pill(t) for t in d['tags'])}</div></div>
+<div class="abs" style="left:80px;top:206px;right:80px;display:flex;align-items:center;gap:26px"><span class="gl" style="font-size:84px;font-weight:900;letter-spacing:-.04em;line-height:1">0{k}</span><span style="flex:1;height:2px;background:rgba(18,27,51,.14)"></span><span class="cap mu" style="font-size:22px">Idea {k} of {len(ID)}</span></div>
+<div class="abs" style="left:80px;top:340px;width:920px;display:flex;flex-direction:column;gap:26px"><div style="font-size:70px;font-weight:800;line-height:1.04;letter-spacing:-.03em">{d['title']}</div><div style="font-size:30px;font-weight:500;color:#55617a;line-height:1.32;width:880px">{d['desc']}</div><div style="display:flex;flex-direction:column;gap:16px;margin-top:6px">{''.join(pill(t) for t in d['tags'])}</div></div>
 <div class="abs" style="left:80px;top:830px;display:flex;gap:40px">{cards}</div>'''
 def dates():
     rows=''.join(f'<div style="display:flex;gap:30px;padding:20px 0;border-top:2px solid rgba(18,27,51,.14);align-items:baseline"><div class="cap gl" style="font-size:22px;width:200px;flex:none">{a}</div><div style="font-size:34px;font-weight:700;line-height:1.15">{b}</div></div>' for a,b in cfg['dates'])
@@ -55,13 +56,15 @@ def dates():
 <div class="abs" style="left:80px;right:80px;top:520px">{rows}<div style="border-top:2px solid rgba(18,27,51,.14)"></div></div>
 <div class="abs" style="left:80px;top:1250px;font-size:24px;color:#55617a;font-weight:500">Check your own league and federation calendar for local fixtures.</div>'''
 def cta():
+    W=M.upper()
     return 'dark',f'''<img class="abs" src="data:image/png;base64,{LOGO}" style="left:80px;top:62px;height:84px">
 <div class="abs" style="left:80px;top:170px;right:80px;height:2px;background:rgba(255,255,255,.14)"></div>
-<div class="abs cap gd" style="left:80px;top:330px">Sports Content Playbook</div>
-<div class="abs" style="left:80px;top:400px;width:920px;font-size:120px;font-weight:800;line-height:1;letter-spacing:-.035em">Find more <span class="gd">ideas like these.</span></div>
-<div class="abs" style="left:80px;top:850px;width:800px;font-size:36px;color:#aab7d2;font-weight:500;line-height:1.3">Real sports posts, organised by format, moment and angle.</div>
-<div class="abs" style="left:80px;right:80px;top:1040px;height:2px;background:rgba(240,184,74,.55)"></div>
-<div class="abs" style="left:80px;top:1100px;display:flex;align-items:center;gap:26px"><div style="font-size:50px;font-weight:700;letter-spacing:-.02em">sportscontentplaybook.com</div><div style="width:54px;height:54px;flex:none">{ARW('#f0b84a')}</div></div>'''
+<div class="abs cap gd" style="left:80px;top:300px">Free PDF · {M} ideas</div>
+<div class="abs" style="left:80px;top:380px;width:920px;font-size:104px;font-weight:800;line-height:1.02;letter-spacing:-.035em">Comment</div>
+<div class="abs gd" style="left:72px;top:490px;font-size:{min(215,int(1380/len(W)))}px;font-weight:900;line-height:1;letter-spacing:-.05em;white-space:nowrap">{W}</div>
+<div class="abs" style="left:80px;top:800px;width:860px;font-size:40px;color:#aab7d2;font-weight:500;line-height:1.3">and we'll send you the free PDF with all {len(ID)} ideas, the examples and the key dates.</div>
+<div class="abs" style="left:80px;right:80px;top:1080px;height:2px;background:rgba(240,184,74,.55)"></div>
+<div class="abs cap" style="left:80px;top:1120px;color:#8d9bb8;font-size:22px">@sportscontentplaybook</div>'''
 async def main():
     from playwright.async_api import async_playwright
     os.makedirs(OUT,exist_ok=True)
