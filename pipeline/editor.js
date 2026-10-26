@@ -43,6 +43,7 @@ const Story = z.object({
 const Result = z.object({ stories: z.array(Story).min(1) });
 
 const client = new Anthropic(); // reads ANTHROPIC_API_KEY
+const FOREIGN = /[\u0370-\u03FF\u0400-\u04FF\u0590-\u06FF\u0E00-\u0E7F\u3040-\u30FF\u3400-\u9FFF\uAC00-\uD7AF\uF900-\uFAFF]/;
 
 // Running token totals for the cost line at the end of each run (triage: the cheap first pass)
 export const usage = { input: 0, output: 0, triageInput: 0, triageOutput: 0 };
@@ -101,8 +102,9 @@ export async function editArticle(item, sourceName, stories = 1) {
     console.warn(`  ! invalid output for ${item.url}: ${parsed.error.message}`);
     return null;
   }
-  // A relevant story must have 2-3 paragraphs
+  // A relevant story must have 2-3 paragraphs, in English only (a character from another alphabet = not published)
   return parsed.data.stories.slice(0, stories).map((out) => {
+    if (FOREIGN.test(out.title + out.paragraphs.join(" "))) { console.warn(`  ! other alphabet in "${out.title}": not published`); out.relevant = false; }
     if (out.relevant && (out.paragraphs.length < 2 || out.paragraphs.length > 3)) {
       out.paragraphs = out.paragraphs.slice(0, 3);
       if (out.paragraphs.length < 2) out.relevant = false;
