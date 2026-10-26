@@ -47,7 +47,7 @@ insert into public.resources (slug, title, description, bullets, status, cover_u
  ('ai-prompts', 'Prompt Pack for Sports Social Managers', '14 ready-to-use prompts for hooks, captions, planning, sponsors and reporting, including how to turn a reference into your own post.',
   E'14 prompts to copy and paste\nA worked example from a real library post\nA fact-check step before you publish', 'live',
   'assets/resources/prompts-cover.webp', 'assets/resources/Prompt-Pack-Sports-Social-Managers.pdf', null, 30, true)
-on conflict (slug) do nothing,
+,
  ('content-ideas-november-2026', '6 Content Ideas for November 2026', 'Six content ideas for sports teams and brands, with real examples from the library, steps, hook templates and the key dates of the month.',
   E'6 ideas with steps and hook templates\n12 real examples from the SCP library, each with a link\nKey dates of November', 'live',
   'assets/resources/november-cover.webp', 'assets/resources/Content-Ideas-November-2026.pdf', null, 40, true)
