@@ -14,9 +14,9 @@ export const words = (locale) => WORDS[locale] || WORDS.en;
 
 // Plan names and what a plan unlocks, in the e-mail's language (the plans table holds the English names)
 const PLAN_NAMES = {
-  en: { library: "Starter", library_ai: "Library + AI", library_planner: "Content Creator", all_access: "Pro" },
-  ca: { library: "Starter", library_ai: "Biblioteca + IA", library_planner: "Content Creator", all_access: "Pro" },
-  es: { library: "Starter", library_ai: "Biblioteca + IA", library_planner: "Content Creator", all_access: "Pro" },
+  en: { library: "Starter", library_ai: "Library + AI", library_planner: "Plus", all_access: "Pro" },
+  ca: { library: "Starter", library_ai: "Biblioteca + IA", library_planner: "Plus", all_access: "Pro" },
+  es: { library: "Starter", library_ai: "Biblioteca + IA", library_planner: "Plus", all_access: "Pro" },
 };
 const PLAN_UNLOCKS = {
   en: { library: ["Content Library"], library_ai: ["AI analysis"], library_planner: ["Content Plan"], all_access: ["AI analysis", "Content Plan"] },

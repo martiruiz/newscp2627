@@ -106,11 +106,11 @@
   const kfmt = (n) => (n >= 1e6 ? `${(n / 1e6).toFixed(n < 1e7 ? 1 : 0).replace(".0", "")}M` : n >= 1e4 ? `${Math.round(n / 1e3)}k` : n >= 1e3 ? `${(n / 1e3).toFixed(1).replace(".0", "")}k` : String(n));
 
   let catalog = { byCat: {}, byId: new Map() };
-  // parts of the library that depend on the plan (supabase/plans-2026-10.sql): Content creators (Content Creator and up),
+  // parts of the library that depend on the plan (supabase/plans-2026-10.sql): Content creators (Plus and up),
   // Brands & sponsors (Pro); Match Day is in every plan. Unknown until the member's permissions load → open.
   let perms = null;   // { staff, list }
   const can = (k) => !perms || perms.staff || perms.list.includes(k);
-  const LOCK_MSG = { "library.creators": "Not in your plan: available from Content Creator", "library.matchday": "Not in your plan: available in every plan", "library.brands": "Not in your plan: available in Pro" };
+  const LOCK_MSG = { "library.creators": "Not in your plan: available from Plus", "library.matchday": "Not in your plan: available in every plan", "library.brands": "Not in your plan: available in Pro" };
   const lockedHtml = (k) => `<div class="lf-locked">${svg("lock")}<p>${esc(tx(LOCK_MSG[k]))}</p><a class="lf-locked-btn" href="pricing.html">${esc(tx("See plans"))}</a></div>`;
   const selected = Object.fromEntries(CATEGORIES.map((c) => [c.key, new Set()])); // category -> Set(value ids)
   let counts = null; // value id -> posts with the other filters applied (null = not counted: show catalog totals)
@@ -2396,7 +2396,7 @@
     if (!ai.ent) await loadAi().catch(() => {});
     if (!area()) return;
     if (!ai.ent?.has_ai) {
-      area().innerHTML = `<div class="ai-gate">${icon("lock")}<div><b>AI analyses are part of Pro</b>
+      area().innerHTML = `<div class="ai-gate">${icon("lock")}<div><b>AI analyses are part of every plan</b>
         <p>Hook, why it works, format, angle, visual breakdown and how to adapt it to your club, for any post in the library.</p>
         <button class="btn btn-gold" type="button" data-plans-picker="ai.analyze_posts" aria-expanded="false">${esc(tx("Get AI analyses"))}</button>
         <div class="pp-plans" data-plans-picker-list hidden></div></div></div>`;

@@ -14,6 +14,11 @@
   const SYM = { eur: "€", usd: "$" };
   const fmt = (n, cur) => { const v = Number(n); return new Intl.NumberFormat(window.SCP_LOC || "en-GB", { style: "currency", currency: String(cur || "eur").toUpperCase(), minimumFractionDigits: Number.isInteger(v) ? 0 : 2, maximumFractionDigits: 2 }).format(v); };
   const per = (iv) => tx(iv === "year" ? "year" : "month");
+  // Enterprise (the club plan) is custom: this is the starting price shown, so small clubs know where it begins
+  const ENTERPRISE_FROM = 99;
+  // launch offer: the monthly price of Starter and Plus until this day; after it, plans.compare_month is the price
+  const LAUNCH_END = "2026-12-31";
+  const launchDate = new Date(`${LAUNCH_END}T12:00:00`).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "long" });
   const tick = (t, on = true) => `<li class="${on ? "" : "is-off"}"><img src="assets/tick.svg" alt=""><span>${t}</span></li>`;
   const store = { get: (k) => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
 
@@ -23,7 +28,7 @@
   let seats = Math.min(MAX_SEATS, Math.max(1, Number(store.get("scp-seats")) || 1));
   let mine = null;          // my_membership() for signed-in members
   let privateToken = null, privatePlan = null;
-  // "Individual plans" (Library, Content Creator, the full plan) or "Business plans" (My Club, custom, with a demo)
+  // "Individual plans" (Starter, Plus, Pro) or "Business plans" (My Club, custom, with a demo)
   let audience = /[?&]for=(clubs|business)/.test(location.search) || store.get("scp-audience") === "business" ? "business" : "individual";
 
   const priceOf = (p, cur = currency, iv = interval) => p.prices.find((x) => x.currency === cur && x.interval === iv);
@@ -65,7 +70,10 @@
     // (with more users, "VAT incl." moves next to the price so the saving for all of them fits)
     // the yearly price / saving, "All included" and the bulk-AI note are no longer shown on the cards (kept short)
     // yearly: the saving is said once, in the switch ("2 months free"); the card shows what it comes to per month and the yearly charge
-    const was = iv === "month" && price && Number(p.compare_month) > price.amount && currency === "eur" ? Number(p.compare_month) : 0;
+    // launch offer (until LAUNCH_END): compare_month is the regular price from then on, not a crossed-out "was" price
+    // (it was never charged); whoever joins before keeps the launch price
+    const was = iv === "month" && price && Number(p.compare_month) > price.amount && currency === "eur" && new Date() < new Date(`${LAUNCH_END}T23:59:59`) ? Number(p.compare_month) : 0;
+    const launch = !!was;
     const big = !price ? 0 : iv === "year" ? Math.round(price.amount * seats / 12 * 100) / 100 : Math.round(price.amount * seats);
     // one user, monthly: nothing under the price; more users or yearly: the breakdown and "VAT incl."
     const parts = !price ? [] : [
@@ -90,21 +98,20 @@
       adds("library.creators") && tx("Content creators: posts by sports creators and their filters"),
       adds("planner.access") && tx("Content Plan: weekly and monthly calendar"),
       adds("library.brands") && tx("Brands & sponsors: sponsor and brand content"),
-      adds("ai.analyze_posts") && tx("{n} AI analyses a month per user: hook, why it works, how to adapt it", { n: units }),
+      hasAi && (adds("ai.analyze_posts") || (p.ai_monthly_units || 0) > (prev?.ai_monthly_units || 0)) && tx("{n} AI analyses a month per user: hook, why it works, how to adapt it", { n: units }),
     ].filter(Boolean);
     // card layout: name + discount pill, who it's for, a highlight box, price, button (+ a line under it), what's included
-    const off = was && price ? Math.round((1 - price.amount / was) * 100) : 0;
     // the step this plan adds, in one line (the list underneath says how)
-    const hero = tx(hasAi ? "Find out why content works and adapt it to your club with AI" : cp ? "Find ideas and organise what to publish" : "Find sports content ideas");
-    const forWho = tx(hasAi ? "For social media teams and agencies" : has("library.creators") ? "For creators who post every day" : "To find ideas every week");
-    const under = note || (was && price ? tx("You save {x} a month, for good", { x: fmt((was - price.amount) * seats, currency) }) : trial ? tx("{n}-day free trial · cancel anytime", { n: trial }) : "");
-    const tone = p.highlighted ? "is-best" : has("library.creators") ? "tone-blue" : "tone-slate";
+    const hero = tx(has("library.brands") ? "Find out why content works and adapt it to your club with AI" : cp ? "Find ideas and organise what to publish" : "Find sports content ideas");
+    const forWho = tx(has("library.brands") ? "For clubs and agencies that want to know why content works" : cp ? "For teams that plan what they post every week" : "For club social media managers who need ideas every week");
+    const under = note || (launch ? tx("Join before {date} and keep this price for good", { date: launchDate }) : trial ? tx("{n}-day free trial · cancel anytime", { n: trial }) : "");
+    const tone = p.highlighted ? "is-best" : cp ? "tone-blue" : "tone-slate";
     return `<article class="plan-card v2 ${tone}${isCurrent ? " is-current" : ""}${p.key === wanted ? " is-wanted" : ""}" data-plan-key="${esc(p.key)}">
       ${isCurrent ? flag : ""}
-      <header class="plan-head"><h3>${esc(p.name)}</h3>${off > 0 ? `<span class="plan-off">-${off}%</span>` : ""}${p.highlighted && !isCurrent ? `<span class="plan-pick">${tx("Recommended")}</span>` : ""}</header>
+      <header class="plan-head"><h3>${esc(p.name)}</h3>${launch ? `<span class="plan-off">${tx("Launch offer")}</span>` : ""}${p.highlighted && !isCurrent ? `<span class="plan-pick">${tx("Recommended")}</span>` : ""}</header>
       <p class="plan-for">${forWho}</p>
-      <div class="plan-hero">${pic(hasAi ? "all" : "lib")}<div><b>${hero}</b></div></div>
-      <p class="plan-price">${seats > 1 && price ? `<em class="plan-total">${tx("Total")}</em>` : ""}${was ? `<s class="plan-was">${fmt(was * seats, currency)}</s>` : ""}${price ? `<b data-price="${big}" data-cur="${currency}">${fmt(big, currency)}</b><span>${seats > 1 ? `/ ${per("month")}` : tx("/ {per} per user", { per: per("month") })}</span>` : `<b>—</b>`}</p>
+      <div class="plan-hero">${pic(has("library.brands") ? "all" : "lib")}<div><b>${hero}</b></div></div>
+      <p class="plan-price">${seats > 1 && price ? `<em class="plan-total">${tx("Total")}</em>` : ""}${price ? `<b data-price="${big}" data-cur="${currency}">${fmt(big, currency)}</b><span>${seats > 1 ? `/ ${per("month")}` : tx("/ {per} per user", { per: per("month") })}</span>${launch ? `<small class="plan-launch">${tx("Launch price until {date}, then {price}/month", { date: launchDate, price: fmt(was * seats, currency) })}</small>` : ""}` : `<b>—</b>`}</p>
       <p class="plan-sub">${sub}</p>
       <div class="plan-ctabox">${cta}<p class="plan-note">${under}</p></div>
       <div class="plan-incl"><h4>${prev ? tx("Everything in {plan}, plus:", { plan: esc(prev.name) }) : tx("What's included")}</h4><ul class="plan-gets">${gets.map(keyPoint).join("")}</ul></div>
@@ -129,8 +136,8 @@
       <header class="plan-head"><h3>${tx("Enterprise")}</h3><span class="plan-pick">${tx("For clubs")}</span></header>
       <p class="plan-for">${tx("Your club's own private library")}</p>
       <div class="plan-hero">${pic("club")}<div><b>${tx("All your players', sections' and sponsors' content in one place")}</b></div></div>
-      <p class="plan-price"><b class="plan-price-text">${tx("Custom plan")}</b></p>
-      <p class="plan-sub"></p>
+      <p class="plan-price"><em class="plan-total">${tx("From")}</em><b>${fmt(ENTERPRISE_FROM, "eur")}</b><span>/ ${per("month")}</span></p>
+      <p class="plan-sub">${tx("Custom plan, priced for the size of your club")}</p>
       <div class="plan-ctabox"><a class="btn btn-outline plan-cta" href="book-a-call.html?for=clubs" data-cta="pricing-my-club"><span>${tx("Book a demo")}</span><i class="plan-cta-arrow" aria-hidden="true">→</i></a><p class="plan-note">${tx("We show you your club's library in 30 minutes")}</p></div>
       <div class="plan-incl"><h4>${tx("Everything in {plan}, plus:", { plan: "Pro" })}</h4><ul class="plan-gets">${gets.map(keyPoint).join("")}</ul></div>
     </article>`;
@@ -155,7 +162,7 @@
       row("Your players' and sponsors' posts", "In one place, with their own filters", () => no),
       row("We upload your club's posts every day", "", () => no),
     ].join("");
-    const price = `<tr class="cmp-price"><th scope="row">${tx("Price")}</th>${plans.map((p) => { const x = priceOf(p); return `<td>${x ? `${fmt(x.amount * seats, currency)}<small>/ ${per(x.interval)}${seats > 1 ? "" : ` ${tx("per user")}`}</small>` : "–"}</td>`; }).join("")}${club ? `<td class="is-club"><span class="cmp-custom">${tx("Custom plan")}</span></td>` : ""}</tr>`;
+    const price = `<tr class="cmp-price"><th scope="row">${tx("Price")}</th>${plans.map((p) => { const x = priceOf(p); return `<td>${x ? `${fmt(x.amount * seats, currency)}<small>/ ${per(x.interval)}${seats > 1 ? "" : ` ${tx("per user")}`}</small>` : "–"}</td>`; }).join("")}${club ? `<td class="is-club"><span class="cmp-custom">${tx("From {price}", { price: fmt(ENTERPRISE_FROM, "eur") })}</span><small>/ ${per("month")}</small></td>` : ""}</tr>`;
     const cta = club ? `<tr class="cmp-cta"><th scope="row"></th>${plans.map(() => "<td></td>").join("")}<td class="is-club"><a class="cmp-club-btn" href="book-a-call.html?for=clubs" data-cta="pricing-compare-club">${tx("Book a demo")}</a></td></tr>` : "";
     const trialDays = Math.min(...plans.map((p) => p.trial_days || 0));
     const note = trialDays > 0 ? `<p class="cmp-note">${tx("{n}-day free trial on every plan · card required · cancel anytime", { n: trialDays })}</p>` : "";

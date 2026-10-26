@@ -314,7 +314,7 @@
     keepPlace();
     if (!S.open) return;
     if (!allowed()) {
-      panel.innerHTML = `${headHtml()}<div class="pp-gate">${icon("lock")}<b>The Content Plan is part of Pro</b>
+      panel.innerHTML = `${headHtml()}<div class="pp-gate">${icon("lock")}<b>The Content Plan is part of Plus and Pro</b>
         <p>Drag posts from the library onto the days of your week, keep ideas for later and track every post from idea to published.</p>
         <button class="btn btn-gold" type="button" data-plans-picker aria-expanded="false">${tx("Get the Content Plan")}</button>
         <div class="pp-plans" data-plans-picker-list hidden></div></div>`;

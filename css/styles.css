@@ -8873,3 +8873,6 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .cmp-details[open] .cmp-toggle::after { transform: rotate(-135deg) translateY(-2px); }
 .cmp-details[open] > summary { margin-bottom: 24px; }
 .plan-hero { align-items: center; }
+/* launch offer: the price after the end date, under the price */
+.plan-card.v2 .plan-price { flex-wrap: wrap; }
+.plan-launch { flex-basis: 100%; margin-top: 4px; color: var(--muted); font-size: 12.5px; }

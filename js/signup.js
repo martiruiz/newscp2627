@@ -3,7 +3,7 @@
   const auth = window.SCP_AUTH;
   const mode = document.body.dataset.authMode || "signup"; // "signup" | "login"
   const params = new URLSearchParams(location.search);
-  const PLAN_NAMES = { library: "Starter", library_planner: "Content Creator", library_ai: "Library + AI", all_access: "Pro" };
+  const PLAN_NAMES = { library: "Starter", library_planner: "Plus", library_ai: "Library + AI", all_access: "Pro" };
   const plan = PLAN_NAMES[params.get("plan")] ? params.get("plan") : "";
   const users = Math.min(Math.max(parseInt(params.get("users"), 10) || 1, 1), 8);
   const status = document.querySelector("[data-auth-status]");

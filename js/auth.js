@@ -5,10 +5,10 @@
 // member's entitlements through SCP_entitlements(), which then answers as that plan would. Only for staff; the data the
 // database lets them read doesn't change, only what the pages show and lock.
 const VIEW_AS_PLANS = {
-  // the plans on sale now (pricing): Starter, Content Creator and Pro; Library + AI is gone
+  // the plans on sale now (pricing): Starter, Plus and Pro (AI in all three: 5, 10, 30 a month); Library + AI is gone
   none: { name: "No plan (not a client)", ai: false, planner: false, units: 0, library: false },   // signed up, never paid / trial over
-  library: { name: "Starter", ai: false, planner: false, units: 0, perms: ["library.matchday"] },
-  library_planner: { name: "Content Creator", ai: false, planner: true, units: 0, perms: ["library.creators", "library.matchday"] },
+  library: { name: "Starter", ai: true, planner: false, units: 5, perms: ["library.matchday"] },
+  library_planner: { name: "Plus", ai: true, planner: true, units: 10, perms: ["library.creators", "library.matchday"] },
   all_access: { name: "Pro", ai: true, planner: true, units: 30, perms: ["library.creators", "library.matchday", "library.brands"] },
 };
 window.SCP_VIEW_AS_PLANS = VIEW_AS_PLANS;
