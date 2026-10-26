@@ -1,0 +1,56 @@
+{
+ "label": "TikTok update",
+ "slides": [
+  {
+   "type": "cover",
+   "kicker": "TikTok update",
+   "title": "On TikTok, a single comment can now be a <span class='g'>post.</span>"
+  },
+  {
+   "type": "point",
+   "kicker": "The feature",
+   "title": "Repost one <span class='g'>comment.</span>",
+   "body": "Users can repost a single comment without sharing the original video.",
+   "icon": "chats-circle",
+   "tip": null
+  },
+  {
+   "type": "point",
+   "kicker": "Reach",
+   "title": "Replies travel <span class='g'>on their own.</span>",
+   "body": "They can be discovered outside the thread where they first appeared.",
+   "icon": "share-network",
+   "tip": null
+  },
+  {
+   "type": "point",
+   "kicker": "For a club",
+   "title": "Community management is a <span class='g'>growth lever.</span>",
+   "body": "A sharp reply, a witty player reaction or a great fan comment can reach people who never saw the clip.",
+   "icon": "users-three",
+   "tip": null
+  },
+  {
+   "type": "club",
+   "title": "Ask <span class='g'>questions,</span> predictions or debates in captions, then amplify the best fan answers."
+  },
+  {
+   "type": "club",
+   "title": "Have fast, on-brand <span class='g'>responders</span> ready for matches and key moments."
+  },
+  {
+   "type": "point",
+   "kicker": "Careful",
+   "title": "Keep <span class='g'>moderation</span> tight.",
+   "body": "A careless reply can now spread beyond its thread.",
+   "icon": "shield-check",
+   "tip": null
+  },
+  {
+   "type": "cta",
+   "kicker": "Weekly digest",
+   "big": "Platform changes for <span class='g'>sports teams.</span>",
+   "sub": "Newsletter at sportscontentplaybook.com"
+  }
+ ]
+}

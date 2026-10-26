@@ -1,0 +1,57 @@
+{
+ "label": "Instagram update",
+ "slides": [
+  {
+   "type": "cover",
+   "kicker": "Instagram test",
+   "title": "Instagram may open on <span class='g'>Reels,</span> not on your feed.",
+   "sub": "A test, not an announced launch."
+  },
+  {
+   "type": "point",
+   "kicker": "What is tested",
+   "title": "Reels fill the <span class='g'>first tab.</span>",
+   "body": "Stories sit above them and sound plays by default.",
+   "icon": "film-reel",
+   "tip": null
+  },
+  {
+   "type": "point",
+   "kicker": "Your feed",
+   "title": "Your feed is <span class='g'>one swipe</span> away.",
+   "body": "Users can switch back to the old layout in Settings.",
+   "icon": "arrows-left-right",
+   "tip": null
+  },
+  {
+   "type": "point",
+   "kicker": "Why it matters",
+   "title": "Short video keeps <span class='g'>winning.</span>",
+   "body": "Meta keeps pushing short video and recommended content over posts from followed accounts.",
+   "icon": "trend-up",
+   "tip": null
+  },
+  {
+   "type": "club",
+   "title": "Plan a <span class='g'>vertical video</span> version of lineups, final scores and sponsor cards, built for discovery."
+  },
+  {
+   "type": "club",
+   "title": "Strong <span class='g'>first seconds.</span> Audio designed to be heard."
+  },
+  {
+   "type": "point",
+   "kicker": "Also in test",
+   "title": "A <span class='g'>read-only</span> mode.",
+   "body": "No likes, comments or follows. Don't judge content only by likes: watch reach, plays and shares.",
+   "icon": "eye",
+   "tip": null
+  },
+  {
+   "type": "cta",
+   "kicker": "Social News",
+   "big": "Full breakdown for <span class='g'>sports teams.</span>",
+   "sub": "sportscontentplaybook.com/news"
+  }
+ ]
+}

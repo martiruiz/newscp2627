@@ -1,0 +1,56 @@
+{
+ "label": "Sports content trends",
+ "slides": [
+  {
+   "type": "cover",
+   "kicker": "Format shift",
+   "title": "Sports teams are making <span class='g'>series,</span> not just clips."
+  },
+  {
+   "type": "point",
+   "kicker": "The shift",
+   "title": "Short video, published like <span class='g'>TV shows.</span>",
+   "body": "Episodes, recurring characters, a reason to come back.",
+   "icon": "television",
+   "tip": null
+  },
+  {
+   "type": "point",
+   "kicker": "Chicago Cubs",
+   "title": "<span class='g'>Nine Innings to Love</span>",
+   "body": "A 17-episode rom-com on TikTok, set in the Wrigley Field bleachers.",
+   "icon": "baseball",
+   "tip": null
+  },
+  {
+   "type": "point",
+   "kicker": "Kansas City Chiefs",
+   "title": "<span class='g'>El Offseason</span>",
+   "body": "A nine-episode Spanish-language comedy series, plus the Hallmark-style trailer Falling for Football.",
+   "icon": "football",
+   "tip": null
+  },
+  {
+   "type": "point",
+   "kicker": "Observed pattern",
+   "title": "Why it <span class='g'>may work.</span>",
+   "body": "A highlight is quickly forgotten; an episode ends with a question whose answer is on your profile. A pattern, not proof of causation.",
+   "icon": "question",
+   "tip": null
+  },
+  {
+   "type": "club",
+   "title": "Turn a recurring post, like a kit-man diary or an academy player's season, into a <span class='g'>numbered series</span> with a fixed release day."
+  },
+  {
+   "type": "club",
+   "title": "Or write a <span class='g'>three-episode</span> mini-drama at your ground, filmed on a phone with staff or local actors."
+  },
+  {
+   "type": "cta",
+   "kicker": "@sportscontentplaybook",
+   "big": "One idea like this <span class='g'>every week.</span>",
+   "sub": "Follow for more."
+  }
+ ]
+}

@@ -1,0 +1,57 @@
+{
+ "label": "Instagram algorithm",
+ "slides": [
+  {
+   "type": "cover",
+   "kicker": "Adam Mosseri",
+   "title": "Instagram's algorithm, in <span class='g'>4 signals.</span>",
+   "sub": "And what to change at your club."
+  },
+  {
+   "type": "point",
+   "kicker": "Signal 1",
+   "title": "<span class='g'>Interaction</span> rates",
+   "body": "They matter more than raw views or likes.",
+   "icon": "chart-line-up",
+   "tip": "Judge posts by engagement rate."
+  },
+  {
+   "type": "point",
+   "kicker": "Signal 2",
+   "title": "<span class='g'>Timing</span>",
+   "body": "The feed stays roughly chronological.",
+   "icon": "clock",
+   "tip": "Post when fans are online: kick-off, half-time, full-time."
+  },
+  {
+   "type": "point",
+   "kicker": "Signal 3",
+   "title": "<span class='g'>Originality</span>",
+   "body": "Original content is prioritised over reposts.",
+   "icon": "camera",
+   "tip": "Training, tunnel and dressing-room footage should weigh more than rebroadcast clips."
+  },
+  {
+   "type": "point",
+   "kicker": "Signal 4",
+   "title": "<span class='g'>Testing</span>",
+   "body": "Small accounts can be shown to non-followers.",
+   "icon": "flask",
+   "tip": "Use Trial Reels to test formats without risking your main feed."
+  },
+  {
+   "type": "point",
+   "kicker": "Keep in mind",
+   "title": "Keep <span class='g'>experimenting.</span>",
+   "body": "What works one week may not work the next.",
+   "icon": "arrows-clockwise",
+   "tip": null
+  },
+  {
+   "type": "cta",
+   "kicker": "Content Library",
+   "big": "See real club posts and <span class='g'>why they worked.</span>",
+   "sub": "Book a demo at sportscontentplaybook.com/book-a-call"
+  }
+ ]
+}

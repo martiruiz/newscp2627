@@ -1,0 +1,56 @@
+{
+ "label": "Free resource",
+ "slides": [
+  {
+   "type": "cover",
+   "kicker": "Free calendar · Nov 2026 – Jun 2027",
+   "title": "<span class='g'>28</span> dates that matter for sports social media."
+  },
+  {
+   "type": "point",
+   "kicker": "The range",
+   "title": "From the Women's EURO to the <span class='g'>Champions League final</span> in Madrid.",
+   "body": "28 dates, eight months, nine sports.",
+   "icon": "calendar-dots",
+   "tip": null
+  },
+  {
+   "type": "point",
+   "kicker": "Each date",
+   "title": "A content angle you can <span class='g'>adapt.</span>",
+   "body": "Every date comes with a suggestion for your club.",
+   "icon": "lightbulb",
+   "tip": null
+  },
+  {
+   "type": "point",
+   "kicker": "Plan the moment",
+   "title": "Plan the <span class='g'>countdown,</span> the day and the recap.",
+   "body": "Not just the match.",
+   "icon": "timer",
+   "tip": null
+  },
+  {
+   "type": "point",
+   "kicker": "Use what you have",
+   "title": "Use your <span class='g'>own footage</span> first.",
+   "body": "Training, tunnel and fan moments beat generic graphics.",
+   "icon": "camera",
+   "tip": null
+  },
+  {
+   "type": "point",
+   "kicker": "Stay accurate",
+   "title": "Dates are <span class='g'>checked and labelled.</span>",
+   "body": "So you know which ones to verify before scheduling.",
+   "icon": "seal-check",
+   "tip": null
+  },
+  {
+   "type": "cta",
+   "kicker": "Free PDF",
+   "big": "Comment <span class='g'>CALENDAR</span>",
+   "sub": "and we'll send you the calendar."
+  }
+ ]
+}
