@@ -25,7 +25,7 @@ const Job = z.object({
 
 const today = new Date().toISOString().slice(0, 10);
 const PROMPT = `Today is ${today}. Find up to ${MAX} job offers that are open right now in sports digital marketing: social media, content, design, video, marketing or partnerships/sponsorship roles at sports clubs, leagues, federations, athletes' agencies, sports brands or sports media.
-Priority: Spain, then the rest of Europe, then remote roles. Only offers published in the last 3 weeks, each with a direct link to the offer (the club's or company's careers page, or the job board page of that offer). Never invent an offer, a company or a link: if you can't confirm it in a search result, leave it out.
+Priority: Spain, then the rest of Europe, then remote roles. Look in sports job boards and careers pages, for example Jobs in Football, Teamwork Online, Work in Sports, Global Sports Jobs, InfoJobs and LinkedIn job pages, and the careers pages of clubs, leagues and sports brands. Only offers that are still open (published in the last 6 weeks), each with a direct link to the offer. Never invent an offer, a company or a link: if you can't confirm it in a search result, leave it out.
 Answer only with JSON: {"jobs": [{"title", "company", "location" ("City, Country" or null), "work_mode" (onsite|hybrid|remote), "job_type" (full-time|part-time|internship|freelance), "area" (social|content|design|video|marketing|partnerships|other), "summary" (two sentences in English: what the job is and what they ask for), "apply_url"}]}`;
 
 async function search() {
@@ -35,7 +35,7 @@ async function search() {
     res = await client.messages.create({
       model: "claude-sonnet-5-5",
       max_tokens: 16000,
-      tools: [{ type: "web_search_20260209", name: "web_search", max_uses: 20 }],
+      tools: [{ type: "web_search_20260209", name: "web_search", max_uses: 12 }],
       messages,
     });
     usage.input += res.usage.input_tokens ?? 0;
