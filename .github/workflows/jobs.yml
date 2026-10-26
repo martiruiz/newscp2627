@@ -1,10 +1,10 @@
 name: Jobs search
 
-# Every Monday (07:30 UTC) Claude searches the web for open roles in sports digital marketing and adds them hidden to the
-# "jobs" table (pipeline/jobs.js). Review and publish them in Admin → Jobs.
+# Every day (07:30 UTC) the newest offers on Jobs In Football are screened by Claude Haiku and the sports digital marketing
+# roles are added hidden to the "jobs" table (pipeline/jobs.js). Review and publish them in Admin → Jobs.
 on:
   schedule:
-    - cron: "30 7 * * 1"
+    - cron: "30 7 * * *"
   workflow_dispatch: {}
 
 concurrency:
