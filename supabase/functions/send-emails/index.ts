@@ -5,7 +5,7 @@
 // Without RESEND_API_KEY nothing is sent: messages stay queued (sent later if still recent, otherwise marked skipped).
 // Secrets: RESEND_API_KEY, CRON_SECRET, SITE_URL. Sender, reply-to and time zone: Memberships → Settings.
 import { CORS, cronAllowed, env, json, rest, setting, superadmin } from "../_shared/stripe.ts";
-import { day, money, render, words } from "../_shared/email-render.js";
+import { day, money, planName, planUnlocks, render, words } from "../_shared/email-render.js";
 
 const site = () => (env("SITE_URL").split(",")[0] || "https://sportscontentplaybook.com").replace(/\/$/, "");
 const MAX_AGE_H = 48;   // a billing e-mail older than this isn't sent any more (it would be confusing)
@@ -26,16 +26,18 @@ async function varsFor(row: { user_id: string | null; to_email: string; template
     : row.template === "subscription_confirmed" && monthly && sub?.current_period_end ? w.payNote(day(sub.current_period_end, locale, tz), "", true) : "";
   return {
     name: profile?.first_name || row.to_email.split("@")[0],
-    plan: (v.plan as string) || plan?.name || "SCP",
-    from_plan: (v.from_plan as string) || "",
+    plan: planName((v.plan as string) || sub?.plan_key || plan?.name, locale) || "SCP",
+    from_plan: planName((v.from_plan as string) || "", locale),
     price, interval: sub ? (monthly ? w.month : w.year) : "",
     next_charge_date: day(sub?.status === "trialing" ? trialEnd : sub?.current_period_end, locale, tz),
     next_charge_amount: sub?.status === "trialing" ? (firstAmount || price) : price,
     trial_end: day(trialEnd, locale, tz),
     first_charge_amount: firstAmount, first_charge_note: firstNote,
+    // the "next charge" line only when the first-charge note above doesn't already say it
+    next_charge_line: firstNote ? "" : w.next(sub?.status === "trialing" ? (firstAmount || price) : price, day(sub?.status === "trialing" ? trialEnd : sub?.current_period_end, locale, tz)),
     access_until: day((v.access_until as string) || sub?.cancel_at || sub?.current_period_end, locale, tz),
     amount: v.amount != null ? money(v.amount, cur, locale) : "",
-    features_lost: Array.isArray(plan?.features) ? plan.features.join(", ") : "",
+    features_lost: planUnlocks(sub?.plan_key, locale),
     account_url: `${site()}/profile.html#billing`, site_url: site(),
     update_payment_url: (v.invoice_url as string) || `${site()}/profile.html#billing`,
   };
@@ -73,7 +75,7 @@ async function sendQueue() {
     try {
       const t = await template(row.template, row.locale);
       if (!t) throw new Error(`No template ${row.template}`);
-      const msg = render(t, await varsFor(row, row.locale, tz), row.locale);
+      const msg = render(t, await varsFor(row, row.locale, tz), row.locale, row.template === "newsletter_welcome" ? "newsletter" : "");
       const id = await deliver(row.to_email, msg, `scp-email-${row.id}`);
       await rest(`email_delivery_logs?id=eq.${row.id}`, { method: "PATCH", body: JSON.stringify({ status: "sent", provider_id: id, subject: msg.subject, sent_at: new Date().toISOString(), error: null }) });
       sent++;
@@ -85,7 +87,7 @@ async function sendQueue() {
   return { sent, failed };
 }
 
-const SAMPLE = { plan: "All Access", from_plan: "Library", amount: 39.99, currency: "eur", first_charge_amount: 18.71, trial_end: new Date(Date.now() + 3 * 864e5).toISOString(),
+const SAMPLE = { plan: "all_access", from_plan: "library", amount: 39.99, currency: "eur", first_charge_amount: 18.71, trial_end: new Date(Date.now() + 3 * 864e5).toISOString(),
   access_until: new Date(Date.now() + 3 * 864e5).toISOString(), invoice_url: "https://invoice.stripe.com/example" };
 
 Deno.serve(async (req) => {
@@ -102,12 +104,13 @@ Deno.serve(async (req) => {
     const t = body.subject || body.body ? { subject: body.subject || "", body: body.body || "" } : await template(body.template, locale);
     if (!t) return json({ error: "Template not found" }, 404);
     const w = words(locale);
-    const vars = { name: "Marta", plan: SAMPLE.plan, from_plan: SAMPLE.from_plan, price: money(39.99, "eur", locale), interval: w.month,
+    const vars = { name: "Marta", plan: planName(SAMPLE.plan, locale), from_plan: planName(SAMPLE.from_plan, locale), price: money(39.99, "eur", locale), interval: w.month,
       next_charge_date: day(SAMPLE.trial_end, locale, tz), next_charge_amount: money(18.71, "eur", locale), trial_end: day(SAMPLE.trial_end, locale, tz),
       first_charge_amount: money(18.71, "eur", locale), first_charge_note: w.trialNote(day(SAMPLE.trial_end, locale, tz), money(18.71, "eur", locale), money(39.99, "eur", locale), true),
-      access_until: day(SAMPLE.access_until, locale, tz), amount: money(39.99, "eur", locale), features_lost: "AI analysis, Content Plan",
+      next_charge_line: "",
+      access_until: day(SAMPLE.access_until, locale, tz), amount: money(39.99, "eur", locale), features_lost: planUnlocks(SAMPLE.plan, locale),
       account_url: `${site()}/profile.html#billing`, site_url: site(), update_payment_url: SAMPLE.invoice_url };
-    const msg = render(t, vars, locale);
+    const msg = render(t, vars, locale, body.template === "newsletter_welcome" ? "newsletter" : "");
     if (body.action === "preview") return json(msg);
     if (body.action === "test") {
       if (!env("RESEND_API_KEY")) return json({ error: "Add RESEND_API_KEY to the Supabase secrets to send e-mails." }, 409);

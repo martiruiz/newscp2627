@@ -423,7 +423,7 @@
       <section class="panel table-wrap" style="margin-top:16px"><div class="values-head"><h2 style="font-size:16px">Delivery log</h2><button class="btn btn-sm" type="button" data-send-queue>Send queued now</button></div>
       <table class="data"><thead><tr><th>When</th><th>Template</th><th>To</th><th>Status</th><th>Error</th></tr></thead><tbody data-log></tbody></table></section>`;
     let data;
-    const VARS = "{{name}} {{plan}} {{price}} {{interval}} {{next_charge_date}} {{next_charge_amount}} {{trial_end}} {{first_charge_amount}} {{first_charge_note}} {{access_until}} {{amount}} {{features_lost}} {{account_url}} {{site_url}} {{update_payment_url}} {{from_plan}}";
+    const VARS = "{{name}} {{plan}} {{price}} {{interval}} {{next_charge_date}} {{next_charge_amount}} {{trial_end}} {{first_charge_amount}} {{first_charge_note}} {{next_charge_line}} {{access_until}} {{amount}} {{features_lost}} {{account_url}} {{site_url}} {{update_payment_url}} {{from_plan}}";
     const load = async () => {
       data = await rpc("admin_email_templates");
       const keys = [...new Set(data.templates.map((t) => t.key))];
@@ -441,7 +441,7 @@
         <iframe class="ms-preview" title="Preview" data-frame hidden></iframe>`;
       const f = $("[data-tf]");
       f.onsubmit = async (e) => { e.preventDefault(); try { await rpc("admin_save_email_template", { p_key: key, p_locale: locale, p_subject: f.subject.value, p_body: f.body.value, p_enabled: f.enabled.checked }); A.toast("Template saved."); await load(); } catch (err) { fail(err); } };
-      $("[data-preview]").onclick = async (e) => { try { const r = await busy(e.target, () => fn("send-emails", { action: "preview", locale, subject: f.subject.value, body: f.body.value })); const fr = $("[data-frame]"); fr.hidden = false; fr.srcdoc = r.html; } catch (err) { fail(err); } };
+      $("[data-preview]").onclick = async (e) => { try { const r = await busy(e.target, () => fn("send-emails", { action: "preview", template: key, locale, subject: f.subject.value, body: f.body.value })); const fr = $("[data-frame]"); fr.hidden = false; fr.srcdoc = r.html; } catch (err) { fail(err); } };
       $("[data-test]").onclick = async (e) => { try { const r = await busy(e.target, () => fn("send-emails", { action: "test", template: key, locale })); A.toast(`Test sent to ${r.to}.`); await load(); } catch (err) { fail(err); } };
       $$("[data-loc]").forEach((b) => (b.onclick = () => edit(key, b.dataset.loc)));
     };

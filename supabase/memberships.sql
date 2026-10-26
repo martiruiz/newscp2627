@@ -1523,7 +1523,7 @@ revoke execute on function public.stripe_apply_subscription(uuid, text, text, te
 -- ============================================================================================
 -- E-mail templates (en / ca / es). Edit them in Super Admin → Memberships → Emails; re-running keeps your edits.
 -- Variables: {{name}} {{plan}} {{price}} {{interval}} {{next_charge_date}} {{next_charge_amount}} {{trial_end}}
--- {{first_charge_amount}} {{first_charge_note}} {{access_until}} {{amount}} {{features_lost}} {{account_url}} {{site_url}}
+-- {{first_charge_amount}} {{first_charge_note}} {{next_charge_line}} {{access_until}} {{amount}} {{features_lost}} {{account_url}} {{site_url}}
 -- {{update_payment_url}} {{from_plan}}. [Label](url) becomes a button.
 -- ============================================================================================
 insert into public.email_templates (key, locale, subject, body, required, description) values
@@ -1533,7 +1533,7 @@ Your {{plan}} membership is ready. Thank you for joining Sports Content Playbook
 
 Plan: {{plan}} · {{price}} {{interval}}
 {{first_charge_note}}
-Next charge: {{next_charge_amount}} on {{next_charge_date}}.
+{{next_charge_line}}
 
 You can change or cancel your plan any time from your account.
 
@@ -1544,7 +1544,7 @@ La teva membresia {{plan}} ja està activa. Gràcies per unir-te a Sports Conten
 
 Pla: {{plan}} · {{price}} {{interval}}
 {{first_charge_note}}
-Pròxim cobrament: {{next_charge_amount}} el {{next_charge_date}}.
+{{next_charge_line}}
 
 Pots canviar o cancel·lar el pla quan vulguis des del teu compte.
 
@@ -1555,7 +1555,7 @@ Tu membresía {{plan}} ya está activa. Gracias por unirte a Sports Content Play
 
 Plan: {{plan}} · {{price}} {{interval}}
 {{first_charge_note}}
-Próximo cobro: {{next_charge_amount}} el {{next_charge_date}}.
+{{next_charge_line}}
 
 Puedes cambiar o cancelar tu plan cuando quieras desde tu cuenta.
 
@@ -1594,7 +1594,7 @@ Mantienes el acceso completo hasta el {{access_until}}. Tus tableros y planes de
 Your free trial of {{plan}} ends on {{trial_end}}.
 
 {{first_charge_note}}
-After that you''ll pay {{price}} {{interval}}. Nothing to do if you want to keep going.
+Nothing to do if you want to keep going.
 
 Don''t want to continue? Cancel before {{trial_end}} and you won''t be charged.
 
@@ -1604,7 +1604,7 @@ Don''t want to continue? Cancel before {{trial_end}} and you won''t be charged.
 La teva prova gratuïta de {{plan}} acaba el {{trial_end}}.
 
 {{first_charge_note}}
-Després pagaràs {{price}} {{interval}}. Si vols continuar, no cal que facis res.
+Si vols continuar, no cal que facis res.
 
 No vols continuar? Cancel·la abans del {{trial_end}} i no et cobrarem res.
 
@@ -1614,7 +1614,7 @@ No vols continuar? Cancel·la abans del {{trial_end}} i no et cobrarem res.
 Tu prueba gratuita de {{plan}} termina el {{trial_end}}.
 
 {{first_charge_note}}
-Después pagarás {{price}} {{interval}}. Si quieres continuar, no tienes que hacer nada.
+Si quieres continuar, no tienes que hacer nada.
 
 ¿No quieres continuar? Cancela antes del {{trial_end}} y no te cobraremos nada.
 

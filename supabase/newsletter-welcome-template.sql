@@ -9,7 +9,7 @@ Gracias por apuntarte. Cada lunes recibirás lo último en marketing digital dep
 
 Mientras llega el lunes, explora miles de posts de clubes, ligas y marcas, filtrados por deporte, formato y competición, en la Biblioteca de contenido.
 
-[Abrir la Biblioteca](https://martiruiz.github.io/newscp2627/content-library.html)', true, false, 'Newsletter: welcome email after signing up'),
+[Abrir la Biblioteca](https://sportscontentplaybook.com/content-library.html)', true, false, 'Newsletter: welcome email after signing up'),
 ('newsletter_welcome', 'en', 'Welcome to the SCP newsletter',
 'Hi {{name}}, you''re in.
 
@@ -17,5 +17,5 @@ Thanks for joining. Every Monday you''ll get the latest in sports digital market
 
 While you wait for Monday, browse thousands of posts from clubs, leagues and brands, filtered by sport, format and competition, in the Content Library.
 
-[Open the Content Library](https://martiruiz.github.io/newscp2627/content-library.html)', true, false, 'Newsletter: welcome email after signing up')
+[Open the Content Library](https://sportscontentplaybook.com/content-library.html)', true, false, 'Newsletter: welcome email after signing up')
 on conflict (key, locale) do nothing;
