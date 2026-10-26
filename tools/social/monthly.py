@@ -65,6 +65,52 @@ def cta():
 <div class="abs" style="left:80px;top:800px;width:860px;font-size:40px;color:#aab7d2;font-weight:500;line-height:1.3">and we'll send you the free PDF with all {len(ID)} ideas, the examples and the key dates.</div>
 <div class="abs" style="left:80px;right:80px;top:1080px;height:2px;background:rgba(240,184,74,.55)"></div>
 <div class="abs cap" style="left:80px;top:1120px;color:#8d9bb8;font-size:22px">@sportscontentplaybook</div>'''
+
+def step_rows(d):
+    return ''.join(f'<div style="display:flex;gap:28px;align-items:baseline;padding:16px 0;border-top:2px solid rgba(18,27,51,.14)"><span class="gl" style="font-size:36px;font-weight:900;width:56px;flex:none">{i}</span><span style="font-size:29px;font-weight:600;line-height:1.25">{t}</span></div>' for i,t in enumerate(d['steps'],1))
+def pdf_a(k,d):
+    hooks=''.join(f'<div style="font-size:30px;font-weight:600;line-height:1.25;padding:4px 0">“{h}”</div>' for h in d['hooks'])
+    return 'light',f'''{hd()}
+<div class="abs" style="left:80px;top:206px;right:80px;display:flex;align-items:center;gap:26px"><span class="gl" style="font-size:84px;font-weight:900;letter-spacing:-.04em;line-height:1">0{k}</span><span style="flex:1;height:2px;background:rgba(18,27,51,.14)"></span><span class="cap mu" style="font-size:22px">Idea {k} of {len(ID)}</span></div>
+<div class="abs" style="left:80px;top:340px;width:920px;display:flex;flex-direction:column;gap:26px"><div style="font-size:70px;font-weight:800;line-height:1.04;letter-spacing:-.03em">{d['title']}</div><div style="font-size:30px;font-weight:500;color:#55617a;line-height:1.32;width:880px">{d['desc']}</div><div style="display:flex;flex-direction:column;gap:16px;margin-top:6px">{''.join(pill(t) for t in d['tags'])}</div></div>
+<div class="abs" style="left:80px;right:80px;top:765px"><div class="cap gl" style="font-size:22px;margin-bottom:14px">How to do it</div>{step_rows(d)}<div style="border-top:2px solid rgba(18,27,51,.14)"></div></div>
+<div class="abs" style="left:80px;right:80px;top:1170px;padding:6px 0 6px 30px;border-left:6px solid #f0b84a"><div class="cap mu" style="font-size:20px;margin-bottom:10px">Hook templates to adapt</div>{hooks}</div>'''
+def pdf_b(k,d):
+    cards=''.join(f'<a href="{p["url"]}" style="display:block;width:440px;color:inherit;text-decoration:none"><div style="width:440px;height:600px;border-radius:30px;overflow:hidden;background:#121b33;box-shadow:0 28px 60px rgba(18,27,51,.22);border:2px solid rgba(18,27,51,.08);position:relative"><img src="{cv(p["id"])}" style="width:100%;height:100%;object-fit:cover;object-position:50% 35%"><span style="position:absolute;left:16px;top:16px;width:48px;height:48px;border-radius:50%;background:#fff;padding:9px">{brand("instagram")}</span></div><div style="margin-top:18px;display:flex;align-items:baseline;gap:10px"><span style="font-size:38px;font-weight:800;letter-spacing:-.02em">{p["likes"]}</span><span class="cap mu" style="font-size:20px">likes</span></div><div class="cap gl" style="font-size:20px;margin-top:8px">View the post ↗</div></a>' for p in d['posts'])
+    return 'light',f'''{hd()}
+<div class="abs" style="left:80px;top:206px;right:80px;display:flex;align-items:center;gap:26px"><span class="gl" style="font-size:84px;font-weight:900;letter-spacing:-.04em;line-height:1">0{k}</span><span style="flex:1;height:2px;background:rgba(18,27,51,.14)"></span><span class="cap mu" style="font-size:22px">Examples from the SCP library</span></div>
+<div class="abs" style="left:80px;top:330px;width:920px;font-size:50px;font-weight:800;line-height:1.08;letter-spacing:-.03em">{d['title']}</div>
+<div class="abs" style="left:80px;top:500px;display:flex;gap:40px">{cards}</div>
+<div class="abs" style="left:80px;right:80px;top:1230px"><div style="font-size:25px;line-height:1.35;color:#55617a;font-weight:500"><b style="color:#121b33">Observed:</b> public like counts when the posts were added to SCP. <b style="color:#121b33">{d['why']}</b></div></div>'''
+def cover_a4():
+    tiles=''.join(f'<div style="width:150px;height:215px;border-radius:22px;overflow:hidden;border:2px solid rgba(255,255,255,.16);box-shadow:0 18px 40px rgba(0,0,0,.35)"><img src="{cv(i["posts"][0]["id"])}" style="width:100%;height:100%;object-fit:cover"></div>' for i in ID)
+    return f'''<div class="abs" style="left:0;top:0;width:1080px;height:1527px">
+<img class="abs" src="data:image/png;base64,{SM}" style="left:80px;top:62px;height:72px"><div class="abs cap" style="right:80px;top:84px;color:#aab7d2">Free PDF · {M} {cfg["year"]}</div>
+<div class="abs" style="left:80px;top:170px;right:80px;height:2px;background:rgba(255,255,255,.14)"></div>
+<div class="abs gd" style="left:56px;top:200px;font-size:560px;font-weight:900;line-height:.9;letter-spacing:-.06em">{len(ID)}</div>
+<div class="abs" style="left:80px;top:760px;width:920px;font-size:104px;font-weight:800;line-height:1.02;letter-spacing:-.03em">content ideas for <span class="gd">{M}.</span></div>
+<div class="abs" style="left:80px;top:1010px;width:900px;font-size:36px;color:#aab7d2;font-weight:500;line-height:1.3">With real examples from the SCP library, steps, hooks and the key dates of the month.</div>
+<div class="abs" style="left:80px;top:1200px;display:flex;gap:14px">{tiles}</div></div>'''
+async def make_pdf(pg,b,OUT):
+    pages=[('dark',cover()[1].replace('Save it for your calendar · Swipe →','Free PDF · Plan your month'))]
+    for k,d in enumerate(ID,1): pages+= [pdf_a(k,d),pdf_b(k,d)]
+    pages+=[dates(),pdf_cta()]
+    html=''.join(f'<section class="{th}" style="position:relative;width:1080px;height:1350px;overflow:hidden;page-break-after:always;break-after:page">{inner}</section>' for th,inner in pages)
+    pg2=await b.new_page(viewport={'width':1080,'height':1350})
+    await pg2.set_content(f'<!doctype html><meta charset=utf8><style>{CSS}body{{height:auto!important;overflow:visible!important;width:1080px}} .seg{{display:none}} @page{{size:1080px 1350px;margin:0}}</style><body>{html}')
+    await pg2.wait_for_timeout(800)
+    await pg2.pdf(path=f'{OUT}/{cfg["slug_res"]}.pdf',width='1080px',height='1350px',print_background=True)
+    pg3=await b.new_page(viewport={'width':1080,'height':1527})
+    await pg3.set_content(f'<!doctype html><meta charset=utf8><style>{CSS}body{{height:1527px!important}}</style><body class="dark">{cover_a4()}')
+    await pg3.wait_for_timeout(500); await pg3.screenshot(path=f'{OUT}/resource-cover.png')
+def pdf_cta():
+    return 'dark',f'''<img class="abs" src="data:image/png;base64,{LOGO}" style="left:80px;top:62px;height:84px">
+<div class="abs" style="left:80px;top:170px;right:80px;height:2px;background:rgba(255,255,255,.14)"></div>
+<div class="abs cap gd" style="left:80px;top:330px">Sports Content Playbook</div>
+<div class="abs" style="left:80px;top:400px;width:920px;font-size:120px;font-weight:800;line-height:1;letter-spacing:-.035em">Find more <span class="gd">ideas like these.</span></div>
+<div class="abs" style="left:80px;top:850px;width:800px;font-size:36px;color:#aab7d2;font-weight:500;line-height:1.3">Real sports posts, organised by format, moment and angle.</div>
+<div class="abs" style="left:80px;right:80px;top:1040px;height:2px;background:rgba(240,184,74,.55)"></div>
+<a href="https://sportscontentplaybook.com/" style="color:#fff;text-decoration:none"><div class="abs" style="left:80px;top:1100px;display:flex;align-items:center;gap:26px"><div style="font-size:50px;font-weight:700;letter-spacing:-.02em">sportscontentplaybook.com</div><div style="width:54px;height:54px;flex:none">{ARW('#f0b84a')}</div></div></a>'''
 async def main():
     from playwright.async_api import async_playwright
     os.makedirs(OUT,exist_ok=True)
@@ -74,5 +120,6 @@ async def main():
         for n,(th,inner) in enumerate(sl,1):
             await pg.set_content(f'<!doctype html><meta charset=utf8><style>{CSS}</style><body class="{th}">{inner}'); await pg.wait_for_timeout(400)
             await pg.screenshot(path=f'{OUT}/monthly-{n:02d}.png')
+        if len(sys.argv)>4 and sys.argv[4]=='pdf': await make_pdf(pg,b,OUT)
         await b.close()
 asyncio.run(main())
