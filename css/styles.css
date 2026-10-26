@@ -8785,3 +8785,39 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .lf-locked p { margin: 0; }
 .lf-locked-btn { display: inline-flex; padding: 7px 14px; border-radius: 999px; background: var(--gold); color: #1a1205; font-weight: 700; font-size: 13px; text-decoration: none; }
 .lfp-locked { padding: 22px; max-width: 420px; }
+
+/* Pricing cards (26/10): one tint per plan, name + discount pill, a highlight box, button with a line under it, "What's included" box */
+.plan-card.v2 { --tint: rgba(255, 255, 255, 0.05); --tint-line: rgba(255, 255, 255, 0.12); --box: rgba(255, 255, 255, 0.045); --box-line: rgba(255, 255, 255, 0.08);
+  --tint-soft: transparent; padding: 22px 18px 18px; border-radius: 20px; border: 1px solid var(--tint-line);
+  background: linear-gradient(180deg, var(--tint), transparent 75%), linear-gradient(var(--tint-soft), var(--tint-soft)), var(--surface); }
+.plan-card.v2.tone-blue { --tint: rgba(84, 128, 255, 0.34); --tint-soft: rgba(84, 128, 255, 0.1); --tint-line: rgba(126, 166, 255, 0.5); }
+.plan-card.v2.is-best { --tint: rgba(240, 184, 74, 0.34); --tint-soft: rgba(240, 184, 74, 0.1); --tint-line: rgba(240, 184, 74, 0.7); }
+.plan-card.v2.is-club { --tint: rgba(28, 44, 92, 0.9); --tint-line: rgba(240, 184, 74, 0.45); }
+.plan-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; align-self: end; }
+.plan-card.v2 .plan-head h3 { font-size: 22px; font-weight: 800; letter-spacing: -0.01em; text-transform: uppercase; }
+.plan-off { padding: 2px 7px; border-radius: 6px; background: #ff4d5e; color: #fff; font-size: 12px; font-weight: 800; font-style: italic; }
+.plan-pick { padding: 3px 8px; border-radius: 6px; background: linear-gradient(180deg, var(--gold-light), var(--gold)); color: var(--on-gold); font-size: 11px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; }
+.plan-pick.is-club { background: transparent; color: var(--gold); box-shadow: inset 0 0 0 1px rgba(240, 184, 74, 0.7); }
+.plan-for { margin: 4px 0 14px; color: var(--muted); font-size: 13px; }
+.plan-hero { display: flex; gap: 12px; align-items: flex-start; padding: 14px; border-radius: 14px; background: var(--box); border: 1px solid var(--box-line); }
+.plan-hero b { display: block; font-size: 15px; line-height: 1.3; }
+.plan-hero small { display: block; margin-top: 3px; color: var(--muted); font-size: 12.5px; line-height: 1.4; }
+.plan-card.v2 .plan-price { margin-top: 18px; align-items: center; }
+.plan-card.v2 .plan-was { margin-right: 4px; color: #ff4d5e; font-family: var(--font-display); font-size: 24px; font-weight: 700; text-decoration-color: #ff4d5e; }
+.plan-card.v2 .plan-sub { margin: 2px 0 12px; }
+.plan-ctabox { align-self: start; padding-bottom: 10px; border-radius: 18px; background: var(--box); border: 1px solid var(--box-line); }
+.plan-card.v2 .plan-ctabox .plan-cta { margin: 0; }
+.plan-card.v2 .plan-ctabox .plan-note { margin: 9px 10px 0; color: var(--text); font-size: 12.5px; }
+.plan-card.v2 .plan-ctabox .plan-note:empty { display: none; }
+.plan-card.v2.tone-slate .plan-cta { background: #fff; color: #101828; border-color: #fff; }
+.plan-card.v2.tone-blue .plan-cta { background: linear-gradient(180deg, #7ea6ff, #3f6ff0); color: #fff; border-color: transparent; }
+.plan-incl { margin-top: 14px; padding: 14px; border-radius: 16px; background: var(--box); border: 1px solid var(--box-line); align-self: start; }
+.plan-card.v2.is-best .plan-incl { background: rgba(240, 184, 74, 0.08); border-color: rgba(240, 184, 74, 0.35); }
+.plan-incl h4 { margin: 0 0 12px; font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.plan-card.v2 .plan-incl .plan-gets { margin: 0; padding: 0; border: 0; gap: 10px; }
+.plan-card.v2 .plan-incl .plan-gets li { font-size: 14px; }
+:root[data-theme="light"] .plan-card.v2 { --box: rgba(16, 24, 40, 0.035); --box-line: rgba(16, 24, 40, 0.08); --tint-line: rgba(16, 24, 40, 0.12); }
+:root[data-theme="light"] .plan-card.v2.tone-blue { --tint: rgba(84, 128, 255, 0.16); --tint-line: rgba(63, 111, 240, 0.4); }
+:root[data-theme="light"] .plan-card.v2.is-best { --tint: rgba(240, 184, 74, 0.22); --tint-line: rgba(184, 122, 12, 0.6); }
+:root[data-theme="light"] .plan-card.v2.is-club { --tint: rgba(240, 184, 74, 0.14); }
+:root[data-theme="light"] .plan-card.v2.tone-slate .plan-cta { background: #101828; color: #fff; border-color: #101828; }

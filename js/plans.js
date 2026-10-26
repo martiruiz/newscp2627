@@ -43,9 +43,6 @@
     const trial = p.trial_days > 0 && (!mine || mine.trial_eligible) ? p.trial_days : 0;
     const has = (k) => (p.entitlements || []).includes(k);
     const hasAi = has("ai.analyze_posts"), lib = has("library.access"), cp = has("planner.access");
-    // the plan with the most AI analyses says how many times more it has than the next one
-    const otherAi = Math.max(0, ...(data?.plans || []).filter((x) => x.key !== p.key && (x.entitlements || []).includes("ai.analyze_posts")).map((x) => x.ai_monthly_units || 0));
-    const times = hasAi && !p.ai_unlimited && otherAi > 0 && p.ai_monthly_units > otherAi ? Math.floor(p.ai_monthly_units / otherAi) : 0;
     let cta;
     const btn = p.highlighted || solo ? "btn-gold" : "btn-outline";   // the main plan stands out; green is only the trial's state
     if (isCurrent) cta = `<a class="btn ${btn} plan-cta" href="profile.html#billing">${tx("Manage your plan")}</a>`;
@@ -54,8 +51,7 @@
     else if (!price.ready) cta = `<a class="btn ${btn} plan-cta" href="signup.html?plan=${encodeURIComponent(p.key)}&interval=${iv}"><span>${trial ? tx("Start {n}-day free trial", { n: trial }) : tx("Get {plan}", { plan: esc(p.name) })}</span><i class="plan-cta-arrow" aria-hidden="true">→</i></a>`;
     else if (cur) cta = `<a class="btn ${btn} plan-cta" href="profile.html?change=${encodeURIComponent(p.key)}&interval=${iv}#billing">${tx("Choose {plan}", { plan: esc(p.name) })}</a>`;
     else cta = `<button class="btn ${btn} plan-cta" type="button" data-checkout-plan="${esc(p.key)}" data-interval="${iv}" data-currency="${currency}" data-seats="${seats}"${privateToken && p.key === privatePlan?.key ? ` data-link="${esc(privateToken)}"` : ""}><span>${trial ? tx("Start {n}-day free trial", { n: trial }) : tx("Get {plan}", { plan: esc(p.name) })}</span><i class="plan-cta-arrow" aria-hidden="true">→</i></button>`;
-    const flag = isCurrent ? `<span class="plan-flag is-current">${tx(cur.status === "trialing" ? "Your trial" : "Your plan")}</span>`
-      : p.highlighted ? `<span class="plan-flag">${tx("Recommended")}${times > 1 ? ` · ${tx("{n}× more AI", { n: times })}` : ""}</span>` : "";
+    const flag = `<span class="plan-flag is-current">${tx(cur?.status === "trialing" ? "Your trial" : "Your plan")}</span>`;
     // the trial / billing note only where it isn't said below the cards: your current plan, or a private plan on its own
     const note = isCurrent
       ? (cur.status === "trialing" && cur.trial_end
@@ -94,16 +90,23 @@
       cp && tx("Content Plan: weekly and monthly calendar"),
       hasAi && tx("{n} AI analyses a month per user: hook, why it works, how to adapt it", { n: units }),
     ].filter(Boolean);
-    const tool = (on, cls, label, extra = "") => `<li class="pt ${cls}${on ? "" : " is-off"}"><i></i><span>${label}</span>${extra ? `<em>${extra}</em>` : ""}</li>`;
-    return `<article class="plan-card v2${p.highlighted ? " is-best" : ""}${isCurrent ? " is-current" : ""}${p.key === wanted ? " is-wanted" : ""}" data-plan-key="${esc(p.key)}">
-      ${flag}
-      <h3>${pic(p.highlighted ? "all" : "lib")}${esc(p.name)}</h3>
+    // card layout: name + discount pill, who it's for, a highlight box, price, button (+ a line under it), what's included
+    const off = was && price ? Math.round((1 - price.amount / was) * 100) : 0;
+    const hero = hasAi ? [tx("{n} AI analyses a month", { n: units }), tx("Hook, why it works and how to adapt it"), tx("Plus everything in the library and the Content Plan")]
+      : has("library.creators") ? [tx("Library + Content creators"), tx("Posts by sports creators and their filters"), tx("Plan your week with the Content Plan")]
+      : [tx("Content Library"), tx("Every sport, club and competition"), tx("Filters and saved boards")];
+    const forWho = tx(hasAi ? "For social media teams and agencies" : has("library.creators") ? "For creators who post every day" : "To find ideas every week");
+    const under = note || (was && price ? tx("You save {x} a month, for good", { x: fmt((was - price.amount) * seats, currency) }) : trial ? tx("{n}-day free trial · cancel anytime", { n: trial }) : "");
+    const tone = p.highlighted ? "is-best" : has("library.creators") ? "tone-blue" : "tone-slate";
+    return `<article class="plan-card v2 ${tone}${isCurrent ? " is-current" : ""}${p.key === wanted ? " is-wanted" : ""}" data-plan-key="${esc(p.key)}">
+      ${isCurrent ? flag : ""}
+      <header class="plan-head"><h3>${esc(p.name)}</h3>${off > 0 ? `<span class="plan-off">-${off}%</span>` : ""}${p.highlighted && !isCurrent ? `<span class="plan-pick">${tx("Recommended")}</span>` : ""}</header>
+      <p class="plan-for">${forWho}</p>
+      <div class="plan-hero">${pic(hasAi ? "all" : "lib")}<div><b>${hero[0]}</b><small>${hero[1]}</small><small>${hero[2]}</small></div></div>
       <p class="plan-price">${seats > 1 && price ? `<em class="plan-total">${tx("Total")}</em>` : ""}${was ? `<s class="plan-was">${fmt(was * seats, currency)}</s>` : ""}${price ? `<b data-price="${big}" data-cur="${currency}"${tip ? ` class="has-tip" tabindex="0" data-tip="${esc(tip)}"` : ""}>${fmt(big, currency)}</b><span>${iv === "year" ? `/ ${per("year")}` : seats > 1 ? `/ ${per("month")}` : tx("/ {per} per user", { per: per("month") })}</span>` : `<b>—</b>`}</p>
       <p class="plan-sub">${sub}</p>
-      <div class="plan-extras"></div>
-      <ul class="plan-gets">${gets.map(keyPoint).join("")}</ul>
-      <p class="plan-note">${note}</p>
-      ${cta}
+      <div class="plan-ctabox">${cta}<p class="plan-note">${under}</p></div>
+      <div class="plan-incl"><h4>${tx("What's included")}</h4><ul class="plan-gets">${gets.map(keyPoint).join("")}</ul></div>
     </article>`;
   }
 
@@ -122,14 +125,13 @@
   function clubCard() {
     const gets = [tx("Your club's own library: first team, sections and academy"), tx("Your players' and sponsors' posts, in one place"), tx("We upload your club's posts every day"), tx("Private: only your marketing and communications team can see it"), tx("Everything in Library + AI + Content Plan")];
     return `<article class="plan-card v2 is-custom is-club" data-plan-key="my-club">
-      <span class="plan-flag is-club">${tx("For clubs")}</span>
-      <h3>${pic("club")}${tx("My Club")}</h3>
+      <header class="plan-head"><h3>${tx("My Club")}</h3><span class="plan-pick is-club">${tx("For clubs")}</span></header>
+      <p class="plan-for">${tx("Your club's own private library")}</p>
+      <div class="plan-hero">${pic("club")}<div><b>${tx("Your club, every day")}</b><small>${tx("First team, sections and academy")}</small><small>${tx("We upload your club's posts every day")}</small></div></div>
       <p class="plan-price"><b class="plan-price-text">${tx("Custom plan")}</b></p>
       <p class="plan-sub"></p>
-      <div class="plan-extras"></div>
-      <ul class="plan-gets">${gets.map(keyPoint).join("")}</ul>
-      <p class="plan-note"></p>
-      <a class="btn btn-outline plan-cta" href="book-a-call.html?for=clubs" data-cta="pricing-my-club"><span>${tx("Book a demo")}</span><i class="plan-cta-arrow" aria-hidden="true">→</i></a>
+      <div class="plan-ctabox"><a class="btn btn-outline plan-cta" href="book-a-call.html?for=clubs" data-cta="pricing-my-club"><span>${tx("Book a demo")}</span><i class="plan-cta-arrow" aria-hidden="true">→</i></a><p class="plan-note">${tx("We show you your club's library in 30 minutes")}</p></div>
+      <div class="plan-incl"><h4>${tx("What's included")}</h4><ul class="plan-gets">${gets.map(keyPoint).join("")}</ul></div>
     </article>`;
   }
 
