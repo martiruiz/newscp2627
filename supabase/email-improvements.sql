@@ -99,7 +99,7 @@ Hola {{name}}, tres dreceres per anar més de pressa amb SCP:
 
 Dubtes o idees? Respon aquest correu, ho llegim tot.$b$, true, false, 'Trial: tips on day 2'),
 ('trial_tips', 'en', 'Three shortcuts to find ideas in 2 minutes', $b$^ Day 2 of your trial
-# What the best post, in 2 minutes
+# What the best clubs post, in 2 minutes
 
 Hi {{name}}, three shortcuts to move faster with SCP:
 
