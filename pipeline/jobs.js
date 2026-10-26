@@ -1,6 +1,6 @@
 // SCP Jobs: every day the newest offers on Jobs In Football (RSS, ~50 a day) are screened by Claude Haiku; the roles in
-// sports digital marketing (social, content, design, video, marketing, partnerships) go to the "jobs" table HIDDEN
-// (published = false). Martí reviews them in Admin → Jobs and publishes the good ones.
+// sports digital marketing (social, content, design, video, marketing, partnerships) are published straight away on the
+// Jobs page (Martí, 26/10: no review needed); they can still be hidden or edited in Admin → Jobs.
 //   node jobs.js            → screen and save
 //   node jobs.js --dry-run  → screen and list (no Supabase writes)
 // Env: ANTHROPIC_API_KEY, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
@@ -68,11 +68,11 @@ for (const item of items.filter((i) => !known.has(i.url))) {
   if (!r.keep) { out++; continue; }
   if (DRY) { console.log(`  · ${item.title} · ${r.company} · ${r.location} · ${r.area}`); continue; }
   const expires = new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10);
-  const { error } = await db.from("jobs").insert({ title: item.title, company: r.company, location: r.location || null, work_mode: r.work_mode, job_type: r.job_type, area: r.area, summary: r.summary, apply_url: item.url, published: false, expires_at: expires });
+  const { error } = await db.from("jobs").insert({ title: item.title, company: r.company, location: r.location || null, work_mode: r.work_mode, job_type: r.job_type, area: r.area, summary: r.summary, apply_url: item.url, published: true, expires_at: expires });
   if (error) { console.warn(`  ! ${item.title}: ${error.message}`); continue; }
-  console.log(`  + ${item.title} · ${r.company} (hidden until reviewed)`);
+  console.log(`  + ${item.title} · ${r.company}`);
   added++;
 }
 // list price: Claude Haiku 5.5 $1 / $5 per MTok
-console.log(`\nDone. ${items.length} in the feed, ${added} added for review in Admin → Jobs, ${out} not about marketing.`);
+console.log(`\nDone. ${items.length} in the feed, ${added} published, ${out} not about marketing.`);
 console.log(`Claude: ${usage.input} + ${usage.output} tokens ≈ $${((usage.input * 1 + usage.output * 5) / 1e6).toFixed(2)}`);

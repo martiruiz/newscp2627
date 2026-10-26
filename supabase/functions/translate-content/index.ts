@@ -2,7 +2,8 @@
 // POST { kind: "blog", slug } | { kind: "news", id } → translates the fields readers see, saves them in the row's "es"
 // column (supabase/translations.sql) with the source's last-change date, and returns them. Called by the publish job
 // (blog-tools/sync-db.mjs, service role) for what's new or edited, or by an admin.
-// Secrets: ANTHROPIC_API_KEY (same as ai-analyze); optional TRANSLATE_MODEL (default: the cheapest, claude-haiku-5-5).
+// Secrets: ANTHROPIC_API_KEY (same as ai-analyze); optional TRANSLATE_MODEL (default claude-sonnet-5-5: Haiku left Chinese characters
+// and agreement mistakes in published news, 26/10). Every translation is checked before it's saved (check() below).
 import Anthropic from "npm:@anthropic-ai/sdk@0.129.0";
 
 const env = (k: string) => Deno.env.get(k) ?? "";
@@ -17,6 +18,7 @@ Rules:
 - Keep HTML exactly: same tags, attributes, links (href / src unchanged) and structure; translate only the visible text. Never touch embed code, URLs or [placeholders].
 - Keep names of clubs, players, leagues, brands, platforms and features as they are (Instagram, TikTok, Reels, Shorts, X…). Keep numbers and dates.
 - Common English terms used by Spanish social media teams can stay (engagement, hook, reach, post), but translate everything else.
+- Spanish only: never a word or character from another language or alphabet. Check gender and number agreement (los carruseles, la app) and that every sentence says what the English says.
 - Return every field you get, translated; empty fields stay empty.`;
 
 const str = { type: "string" };
@@ -25,6 +27,17 @@ const SCHEMA = { type: "object", additionalProperties: false, properties: {
   paragraphs: { type: "array", items: str }, takeaways: { type: "array", items: str },
   faq: { type: "array", items: { type: "object", additionalProperties: false, properties: { q: str, a: str }, required: ["q", "a"] } },
 }, required: ["title", "excerpt", "body_html", "meta_title", "meta_description", "cta_title", "cta_text", "image_alt", "image_title", "paragraphs", "takeaways", "faq"] };
+
+// a translation is only saved if it passes these checks; otherwise it's asked again once, then the job reports the error
+// (the page keeps the English text): characters from other alphabets (Chinese, Cyrillic, Arabic…), lost paragraphs or Q&As
+const FOREIGN = /[\u0370-\u03FF\u0400-\u04FF\u0590-\u06FF\u0E00-\u0E7F\u3040-\u30FF\u3400-\u9FFF\uAC00-\uD7AF\uF900-\uFAFF]/;
+function check(src: Record<string, unknown>, es: Record<string, unknown>): string {
+  const bad = JSON.stringify(es).match(FOREIGN);
+  if (bad && !FOREIGN.test(JSON.stringify(src))) return `it contains "${bad[0]}", a character from another alphabet`;
+  for (const k of ["paragraphs", "takeaways", "faq"]) if ((src[k] as unknown[]).length !== ((es[k] as unknown[]) || []).length) return `${k} has a different number of items`;
+  if (String(src.title || "") && !String(es.title || "").trim()) return "the title is empty";
+  return "";
+}
 
 const list = (v: unknown) => (Array.isArray(v) ? v : String(v || "").split("\n")).map((x) => String(x).trim()).filter(Boolean);
 
@@ -54,20 +67,26 @@ Deno.serve(async (req) => {
     } else return json({ error: "Send { kind: 'blog', slug } or { kind: 'news', id }" }, 400);
 
     for (const k of Object.keys(src)) if (src[k] == null) src[k] = "";
-    const model = env("TRANSLATE_MODEL") || "claude-haiku-5-5";
+    const model = env("TRANSLATE_MODEL") || "claude-sonnet-5-5";
     const claude = new Anthropic({ apiKey: env("ANTHROPIC_API_KEY") });
-    const response = await claude.beta.messages.create({
-      model, max_tokens: 16000,
-      betas: ["server-side-fallback-2026-07-01"], fallbacks: "default",
-      output_config: { effort: "low", format: { type: "json_schema", schema: SCHEMA } },
-      system: SYSTEM,
-      messages: [{ role: "user", content: `Translate into Spanish:\n${JSON.stringify(src)}` }],
-    } as never);
-    // deno-lint-ignore no-explicit-any
-    const res = response as any;
-    if (res.stop_reason === "refusal" || res.stop_reason === "max_tokens") throw new Error(`Model stopped: ${res.stop_reason}`);
-    const es = { ...JSON.parse(res.content.find((b: { type: string }) => b.type === "text")?.text || "{}"), source_changed: changed, model: res.model || model,
-      translated_at: new Date().toISOString(), tokens: { in: res.usage?.input_tokens ?? 0, out: res.usage?.output_tokens ?? 0 } };
+    let es: Record<string, unknown> = {}, problem = "";
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const response = await claude.beta.messages.create({
+        model, max_tokens: 16000,
+        betas: ["server-side-fallback-2026-07-01"], fallbacks: "default",
+        output_config: { effort: "low", format: { type: "json_schema", schema: SCHEMA } },
+        system: SYSTEM,
+        messages: [{ role: "user", content: `Translate into Spanish:\n${JSON.stringify(src)}${problem ? `\n\nA previous translation was rejected because ${problem}. Avoid that.` : ""}` }],
+      } as never);
+      // deno-lint-ignore no-explicit-any
+      const res = response as any;
+      if (res.stop_reason === "refusal" || res.stop_reason === "max_tokens") throw new Error(`Model stopped: ${res.stop_reason}`);
+      es = { ...JSON.parse(res.content.find((b: { type: string }) => b.type === "text")?.text || "{}"), source_changed: changed, model: res.model || model,
+        translated_at: new Date().toISOString(), tokens: { in: res.usage?.input_tokens ?? 0, out: res.usage?.output_tokens ?? 0 } };
+      problem = check(src, es);
+      if (!problem) break;
+    }
+    if (problem) throw new Error(`Translation rejected: ${problem}`);
     const saved = await rest(where, { method: "PATCH", body: JSON.stringify({ es }), headers: { Prefer: "return=minimal" } });
     if (!saved.ok) throw new Error(`Couldn't save the translation: ${saved.status} ${await saved.text()}`);
     return json(es);

@@ -1,7 +1,7 @@
 name: Jobs search
 
 # Every day (07:30 UTC) the newest offers on Jobs In Football are screened by Claude Haiku and the sports digital marketing
-# roles are added hidden to the "jobs" table (pipeline/jobs.js). Review and publish them in Admin → Jobs.
+# roles are published on the Jobs page (pipeline/jobs.js); hide or edit them in Admin → Jobs.
 on:
   schedule:
     - cron: "30 7 * * *"
