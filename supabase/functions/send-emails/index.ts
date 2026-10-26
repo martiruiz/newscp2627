@@ -5,12 +5,26 @@
 // Without RESEND_API_KEY nothing is sent: messages stay queued (sent later if still recent, otherwise marked skipped).
 // Secrets: RESEND_API_KEY, CRON_SECRET, SITE_URL. Sender, reply-to and time zone: Memberships → Settings.
 import { CORS, cronAllowed, env, json, rest, setting, superadmin } from "../_shared/stripe.ts";
-import { day, money, planName, planUnlocks, render, words } from "../_shared/email-render.js";
+import { day, money, monthsOf, planIncludes, planName, planUnlocks, render, weekday, words } from "../_shared/email-render.js";
 
 const site = () => (env("SITE_URL").split(",")[0] || "https://sportscontentplaybook.com").replace(/\/$/, "");
 const MAX_AGE_H = 48;   // a billing e-mail older than this isn't sent any more (it would be confusing)
 
-async function varsFor(row: { user_id: string | null; to_email: string; template: string; vars: Record<string, unknown> }, locale: string, tz: string) {
+// how many rows a member has in a table (capped: it's for a friendly sentence, not accounting)
+async function count(table: string, filter: string) {
+  const rows = await rest(`${table}?select=user_id&${filter}&limit=500`).catch(() => []);
+  return Array.isArray(rows) ? rows.length : 0;
+}
+// one-click answers to "why are you leaving?" (cancel_feedback, supabase/email-improvements.sql)
+const REASONS = ["price", "unused", "missing", "other"];
+async function feedbackLinks(userId: string | null, locale: string) {
+  if (!userId) return {};
+  const [row] = await rest("cancel_feedback", { method: "POST", headers: { Prefer: "return=representation" }, body: JSON.stringify({ user_id: userId }) }).catch(() => [null]);
+  if (!row?.token) return {};
+  return Object.fromEntries(REASONS.map((r) => [`fb_${r}`, `${site()}/feedback.html?t=${row.token}&r=${r}&l=${locale}`]));
+}
+
+async function varsFor(row: { id?: number; user_id: string | null; to_email: string; template: string; vars: Record<string, unknown> }, locale: string, tz: string) {
   const v = row.vars || {};
   const [profile] = row.user_id ? await rest(`profiles?select=first_name&id=eq.${row.user_id}`) : [null];
   const [sub] = row.user_id ? await rest(`subscriptions?select=plan_key,billing_interval,currency,amount,current_period_end,trial_end,cancel_at,status&user_id=eq.${row.user_id}`) : [null];
@@ -21,8 +35,10 @@ async function varsFor(row: { user_id: string | null; to_email: string; template
   const price = sub?.amount != null ? money(sub.amount, cur, locale) : "";
   const trialEnd = (v.trial_end as string) || sub?.trial_end || null;
   const firstAmount = v.first_charge_amount != null ? money(v.first_charge_amount, (v.first_charge_currency as string) || cur, locale) : "";
-  const firstNote = row.template === "trial_ending" || (row.template === "subscription_confirmed" && sub?.status === "trialing")
-    ? w.trialNote(day(trialEnd, locale, tz), firstAmount, price, monthly)
+  const [m1, m2] = monthsOf(trialEnd, locale, tz);
+  const trialish = ["trial_ending", "trial_welcome"].includes(row.template) || (row.template === "subscription_confirmed" && sub?.status === "trialing");
+  const firstNote = trialish
+    ? w.trialNote(day(trialEnd, locale, tz), firstAmount || price, price, monthly, firstAmount && firstAmount !== price ? m1 : "", m2)
     : row.template === "subscription_confirmed" && monthly && sub?.current_period_end ? w.payNote(day(sub.current_period_end, locale, tz), "", true) : "";
   return {
     name: profile?.first_name || row.to_email.split("@")[0],
@@ -38,6 +54,13 @@ async function varsFor(row: { user_id: string | null; to_email: string; template
     access_until: day((v.access_until as string) || sub?.cancel_at || sub?.current_period_end, locale, tz),
     amount: v.amount != null ? money(v.amount, cur, locale) : "",
     features_lost: planUnlocks(sub?.plan_key, locale),
+    plan_includes: planIncludes(sub?.plan_key, locale),
+    trial_end_day: weekday(trialEnd, locale, tz),
+    next_attempt: w.retry(v.next_attempt ? day(typeof v.next_attempt === "number" ? new Date((v.next_attempt as number) * 1000).toISOString() : String(v.next_attempt), locale, tz) : ""),
+    usage_line: row.template === "trial_ending" && row.user_id
+      ? w.usage(await count("folder_items", `user_id=eq.${row.user_id}`), await count("user_ai_unlocks", `user_id=eq.${row.user_id}&status=eq.completed`), await count("org_entries", `user_id=eq.${row.user_id}`))
+      : "",
+    ...(row.template === "cancellation_confirmed" ? await feedbackLinks(row.user_id, locale) : {}),
     account_url: `${site()}/profile.html#billing`, site_url: site(),
     update_payment_url: (v.invoice_url as string) || `${site()}/profile.html#billing`,
   };
@@ -73,9 +96,14 @@ async function sendQueue() {
     const claimed = await rest(`email_delivery_logs?id=eq.${row.id}&status=eq.queued`, { method: "PATCH", headers: { Prefer: "return=representation" }, body: JSON.stringify({ status: "sending", attempts: row.attempts + 1 }) });
     if (!claimed?.length) continue;
     try {
-      const t = await template(row.template, row.locale);
-      if (!t) throw new Error(`No template ${row.template}`);
-      const msg = render(t, await varsFor(row, row.locale, tz), row.locale, row.template === "newsletter_welcome" ? "newsletter" : "");
+      let key = row.template;
+      if (key === "subscription_confirmed" && row.user_id) {
+        const [s0] = await rest(`subscriptions?select=status&user_id=eq.${row.user_id}`);
+        if (s0?.status === "trialing") key = "trial_welcome";
+      }
+      const t = await template(key, row.locale);
+      if (!t) throw new Error(`No template ${key}`);
+      const msg = render(t, await varsFor({ ...row, template: key }, row.locale, tz), row.locale, key === "newsletter_welcome" ? "newsletter" : "");
       const id = await deliver(row.to_email, msg, `scp-email-${row.id}`);
       await rest(`email_delivery_logs?id=eq.${row.id}`, { method: "PATCH", body: JSON.stringify({ status: "sent", provider_id: id, subject: msg.subject, sent_at: new Date().toISOString(), error: null }) });
       sent++;
@@ -106,8 +134,10 @@ Deno.serve(async (req) => {
     const w = words(locale);
     const vars = { name: "Marta", plan: planName(SAMPLE.plan, locale), from_plan: planName(SAMPLE.from_plan, locale), price: money(39.99, "eur", locale), interval: w.month,
       next_charge_date: day(SAMPLE.trial_end, locale, tz), next_charge_amount: money(18.71, "eur", locale), trial_end: day(SAMPLE.trial_end, locale, tz),
-      first_charge_amount: money(18.71, "eur", locale), first_charge_note: w.trialNote(day(SAMPLE.trial_end, locale, tz), money(18.71, "eur", locale), money(39.99, "eur", locale), true),
-      next_charge_line: "",
+      first_charge_amount: money(18.71, "eur", locale), first_charge_note: w.trialNote(day(SAMPLE.trial_end, locale, tz), money(18.71, "eur", locale), money(39.99, "eur", locale), true, ...monthsOf(SAMPLE.trial_end, locale, tz)),
+      next_charge_line: "", plan_includes: planIncludes(SAMPLE.plan, locale), trial_end_day: weekday(SAMPLE.trial_end, locale, tz),
+      next_attempt: w.retry(day(new Date(Date.now() + 2 * 864e5).toISOString(), locale, tz)), usage_line: w.usage(12, 4, 6),
+      ...Object.fromEntries(REASONS.map((r) => [`fb_${r}`, `${site()}/feedback.html?t=example&r=${r}&l=${locale}`])),
       access_until: day(SAMPLE.access_until, locale, tz), amount: money(39.99, "eur", locale), features_lost: planUnlocks(SAMPLE.plan, locale),
       account_url: `${site()}/profile.html#billing`, site_url: site(), update_payment_url: SAMPLE.invoice_url };
     const msg = render(t, vars, locale, body.template === "newsletter_welcome" ? "newsletter" : "");

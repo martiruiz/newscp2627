@@ -1,6 +1,7 @@
 // Supabase Edge Function "billing-cron": daily memberships housekeeping (GitHub Actions "billing-daily", or a superadmin
 // from Memberships → Billing events). Header x-cron-secret = CRON_SECRET.
 //   1. "access ending" e-mails ~3 days before a cancelled membership ends (setting emails.access_end_reminder_days)
+//   1b. "trial tips" e-mails on day 2 of a free trial
 //   2. "card expiring" e-mails for active members whose card expires this month (once per card and month)
 //   3. reconciliation with Stripe (fixes anything a lost webhook left behind, reports differences)
 //   4. sends the e-mail queue
@@ -24,6 +25,16 @@ Deno.serve(async (req) => {
       if (id) reminders++;
     }
     out.access_ending = reminders;
+
+    // trial day 2: tips to get more out of the trial (day 0 = the welcome, day 4 = "trial ending" from Stripe)
+    const from = new Date(Date.now() - 3 * 864e5).toISOString(), to = new Date(Date.now() - 2 * 864e5).toISOString();
+    const trials = await rest(`subscriptions?select=user_id,stripe_subscription_id,trial_start&status=eq.trialing&trial_start=gte.${from}&trial_start=lt.${to}`);
+    let tips = 0;
+    for (const s of trials) {
+      const id = await rpc("billing_enqueue_email", { p_template: "trial_tips", p_user: s.user_id, p_vars: {}, p_dedupe: `trial_tips:${s.stripe_subscription_id || s.user_id}` });
+      if (id) tips++;
+    }
+    out.trial_tips = tips;
 
     if (env("STRIPE_SECRET_KEY").startsWith("sk_")) {
       const active = await rest(`subscriptions?select=user_id,stripe_subscription_id&source=eq.stripe&status=in.(active,trialing)&cancel_at_period_end=eq.false`);
