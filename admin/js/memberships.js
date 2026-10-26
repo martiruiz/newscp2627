@@ -39,7 +39,7 @@
 
   const TABS = [
     ["dashboard", "Dashboard"], ["plans", "Plans"], ["subscribers", "Subscribers"], ["discounts", "Discounts"],
-    ["hidden", "Hidden memberships"], ["emails", "Emails"], ["events", "Billing events"], ["migration", "Migration"], ["requests", "Requests"], ["settings", "Settings"],
+    ["hidden", "Hidden memberships"], ["emails", "Emails"], ["cancellations", "Cancellation reasons"], ["events", "Billing events"], ["migration", "Migration"], ["requests", "Requests"], ["settings", "Settings"],
   ];
   main.innerHTML = `
     <div class="page-head"><div><h1>Memberships</h1><p>Plans, prices, subscribers, discounts, private links, e-mails and the MemberPress migration. Stripe is the source of truth for payments.</p></div>
@@ -643,6 +643,36 @@
   // ---------- Router ----------
   // ============================================================================================ Requests
   // Contact, demo and custom-plan requests from the website (supabase/contact-requests.sql)
+  // ============================================================================================ Cancellation reasons
+  async function cancellations() {
+    const REASON = { price: "It's too expensive", unused: "I don't use it enough", missing: "Something's missing", other: "Another reason" };
+    const PLAN = { library: "Library", library_ai: "Library + AI", library_planner: "Library + Content Plan", all_access: "Library + AI + Content Plan" };
+    view.innerHTML = `<div class="ms-row"><select class="select" data-cf-days><option value="30">Last 30 days</option><option value="90" selected>Last 90 days</option><option value="365">Last 12 months</option></select></div><div data-cf>Loading…</div>`;
+    const draw = async () => {
+      let d;
+      try { d = await A.db.rpc("admin_cancel_feedback", { p_days: Number($("[data-cf-days]").value) }).then((r) => { if (r.error) throw r.error; return r.data; }); }
+      catch (e) { $("[data-cf]").innerHTML = `<p class="panel-sub">${esc(/does not exist|schema cache|Could not find/i.test(e.message) ? "Run supabase/email-improvements.sql in Supabase first." : e.message)}</p>`; return; }
+      const kpi = (l, v, h = "") => `<div class="panel panel-pad bill-kpi"><span>${l}</span><b>${v}</b>${h ? `<small>${h}</small>` : ""}</div>`;
+      const rate = d.asked ? Math.round((d.answered / d.asked) * 100) : null;
+      const max = Math.max(1, ...Object.values(d.by_reason || {}));
+      $("[data-cf]").innerHTML = `<div class="bill-kpis">
+          ${kpi("Cancellation e-mails", num(d.asked), "with the one-click question")}
+          ${kpi("Answers", num(d.answered), rate == null ? "" : `${rate}% answered`)}
+        </div>
+        <section class="panel panel-pad cf-reasons"><h3>Why they leave</h3>
+          ${Object.entries(REASON).map(([k, l]) => { const n = d.by_reason?.[k] || 0; const pct = d.answered ? Math.round((n / d.answered) * 100) : 0;
+            return `<div class="cf-row"><span>${l}</span><div class="cf-bar"><i style="width:${(n / max) * 100}%"></i></div><b>${num(n)}</b><small>${d.answered ? `${pct}%` : ""}</small></div>`; }).join("")}
+        </section>
+        <section class="panel panel-pad"><h3>Latest answers</h3>
+          ${d.recent.length ? `<table class="data"><thead><tr><th>Date</th><th>Member</th><th>Plan</th><th>Reason</th></tr></thead><tbody>
+            ${d.recent.map((r) => `<tr><td>${dt(r.answered_at)}</td><td>${r.email ? `<a href="mailto:${esc(r.email)}">${esc(r.email)}</a>` : "—"}</td><td>${esc(PLAN[r.plan_key] || r.plan_key || "—")}</td><td>${esc(REASON[r.reason] || r.reason)}</td></tr>`).join("")}</tbody></table>`
+          : `<p class="panel-sub">No answers yet. They appear here when someone clicks a reason in the cancellation e-mail.</p>`}
+        </section>`;
+    };
+    $("[data-cf-days]").addEventListener("change", draw);
+    draw();
+  }
+
   async function requests() {
     view.innerHTML = `<div class="ms-row"><select class="select" data-req-status><option value="new">New</option><option value="">All</option><option value="done">Done</option></select></div><div data-req>Loading…</div>`;
     const KIND = { custom_plan: "Custom plan", demo: "Demo", contact: "Contact" };
@@ -676,6 +706,7 @@
     discounts: "Discount codes (Stripe coupons and promotion codes): amount, plans they apply to, uses, dates and state.",
     hidden: "Private links to plans that aren't on the pricing page: anyone with the link can see and subscribe to that plan.",
     emails: "The automatic e-mails (welcome, renewal, payment problems…) in each language, and the log of every e-mail sent.",
+    cancellations: "Why members leave: the one-click answers from the cancellation e-mail (it’s too expensive, I don’t use it enough, something’s missing, another reason).",
     events: "Every webhook event Stripe sent and how it was processed. Reconciliation compares the database with Stripe.",
     migration: "Bringing the old MemberPress members over: upload their CSV, map each membership to an SCP plan and migrate.",
     requests: "Requests sent from the website forms: custom plans, demos and contact messages.",
@@ -730,7 +761,7 @@
   };
   new MutationObserver(decorate).observe(view, { childList: true, subtree: true });
 
-  const VIEWS = { dashboard, plans, subscribers, discounts, hidden, emails, events, migration, requests, settings };
+  const VIEWS = { dashboard, plans, subscribers, discounts, hidden, emails, cancellations, events, migration, requests, settings };
   async function route() {
     const [tab, qs] = (location.hash.slice(1) || "dashboard").split("?");
     const k = VIEWS[tab] ? tab : "dashboard";

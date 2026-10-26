@@ -422,3 +422,22 @@ Your saved content stays in your account and comes back if you subscribe again.
 
 on conflict (key, locale) do update set subject = excluded.subject, body = excluded.body, updated_at = now(),
   description = coalesce(t.description, excluded.description);
+
+-- 4. Admin → Memberships → Cancellation reasons: totals per reason and the latest answers (superadmin only)
+create or replace function public.admin_cancel_feedback(p_days int default 90)
+returns jsonb language plpgsql stable security definer set search_path = public as $$
+declare since timestamptz := now() - make_interval(days => greatest(coalesce(p_days, 90), 1));
+begin
+  perform public.billing_require_admin();
+  return jsonb_build_object(
+    'asked', (select count(*) from public.cancel_feedback where created_at >= since),
+    'answered', (select count(*) from public.cancel_feedback where created_at >= since and reason is not null),
+    'by_reason', coalesce((select jsonb_object_agg(reason, n) from (select reason, count(*) n from public.cancel_feedback
+      where created_at >= since and reason is not null group by reason) x), '{}'::jsonb),
+    'recent', coalesce((select jsonb_agg(r order by r.answered_at desc) from (
+      select f.answered_at, f.reason, u.email, (select s.plan_key from public.subscriptions s where s.user_id = f.user_id) as plan_key
+      from public.cancel_feedback f left join auth.users u on u.id = f.user_id
+      where f.created_at >= since and f.reason is not null order by f.answered_at desc limit 100) r), '[]'::jsonb));
+end $$;
+revoke execute on function public.admin_cancel_feedback(int) from public, anon;
+grant execute on function public.admin_cancel_feedback(int) to authenticated;
