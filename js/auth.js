@@ -7,8 +7,8 @@
 const VIEW_AS_PLANS = {
   // the plans on sale now (pricing): Starter, Content Creator and Pro; Library + AI is gone
   none: { name: "No plan (not a client)", ai: false, planner: false, units: 0, library: false },   // signed up, never paid / trial over
-  library: { name: "Starter", ai: false, planner: false, units: 0, perms: [] },
-  library_planner: { name: "Content Creator", ai: false, planner: true, units: 0, perms: ["library.creators"] },
+  library: { name: "Starter", ai: false, planner: false, units: 0, perms: ["library.matchday"] },
+  library_planner: { name: "Content Creator", ai: false, planner: true, units: 0, perms: ["library.creators", "library.matchday"] },
   all_access: { name: "Pro", ai: true, planner: true, units: 30, perms: ["library.creators", "library.matchday", "library.brands"] },
 };
 window.SCP_VIEW_AS_PLANS = VIEW_AS_PLANS;

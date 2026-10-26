@@ -107,10 +107,10 @@
 
   let catalog = { byCat: {}, byId: new Map() };
   // parts of the library that depend on the plan (supabase/plans-2026-10.sql): Content creators (Content Creator and up),
-  // Match Day and Brands & sponsors (Pro). Unknown until the member's permissions load → open.
+  // Brands & sponsors (Pro); Match Day is in every plan. Unknown until the member's permissions load → open.
   let perms = null;   // { staff, list }
   const can = (k) => !perms || perms.staff || perms.list.includes(k);
-  const LOCK_MSG = { "library.creators": "Not in your plan: available from Content Creator", "library.matchday": "Not in your plan: available in Pro", "library.brands": "Not in your plan: available in Pro" };
+  const LOCK_MSG = { "library.creators": "Not in your plan: available from Content Creator", "library.matchday": "Not in your plan: available in every plan", "library.brands": "Not in your plan: available in Pro" };
   const lockedHtml = (k) => `<div class="lf-locked">${svg("lock")}<p>${esc(tx(LOCK_MSG[k]))}</p><a class="lf-locked-btn" href="pricing.html">${esc(tx("See plans"))}</a></div>`;
   const selected = Object.fromEntries(CATEGORIES.map((c) => [c.key, new Set()])); // category -> Set(value ids)
   let counts = null; // value id -> posts with the other filters applied (null = not counted: show catalog totals)

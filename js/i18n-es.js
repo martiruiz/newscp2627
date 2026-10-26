@@ -2618,4 +2618,9 @@ window.SCP_ES = {
   "Find sports content ideas": "Encuentra ideas de contenido deportivo",
   "All your players', sections' and sponsors' content in one place": "Todo el contenido de tus jugadores, secciones y patrocinadores en un solo lugar",
   "See every detail": "Ver todos los detalles",
+  "Match Day: before, during and after the match": "Match Day: antes, durante y después del partido",
+  "Brands & sponsors: sponsor and brand content": "Marcas y patrocinadores: contenido de marcas y patrocinadores",
+  "Before, during and after the match": "Antes, durante y después del partido",
+  "Sponsor and brand content": "Contenido de marcas y patrocinadores",
+  "Not in your plan: available in every plan": "No está en tu plan: disponible en todos los planes",
 };

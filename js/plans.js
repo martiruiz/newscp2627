@@ -85,10 +85,11 @@
     const gets = [
       adds("library.access") && tx("The library: every sport, club and competition"),
       adds("library.access") && tx("Filters by sport, competition, format and goal"),
+      adds("library.matchday") && tx("Match Day: before, during and after the match"),
       adds("library.save_posts") && tx("Saved boards to keep your ideas"),
       adds("library.creators") && tx("Content creators: posts by sports creators and their filters"),
       adds("planner.access") && tx("Content Plan: weekly and monthly calendar"),
-      adds("library.matchday") && tx("Match Day and Brands & sponsors filters"),
+      adds("library.brands") && tx("Brands & sponsors: sponsor and brand content"),
       adds("ai.analyze_posts") && tx("{n} AI analyses a month per user: hook, why it works, how to adapt it", { n: units }),
     ].filter(Boolean);
     // card layout: name + discount pill, who it's for, a highlight box, price, button (+ a line under it), what's included
@@ -146,7 +147,8 @@
       row("Content Library", "Every sport, club and competition, updated daily", (p) => (has(p, "library.access") ? yes : no)),
       row("Save posts to boards", "", (p) => (has(p, "library.save_posts") ? yes : no)),
       row("Content creators filter", "Posts by sports content creators", (p) => (has(p, "library.creators") ? yes : no)),
-      row("Match Day and Brands & sponsors", "Before, during and after the match; sponsor and brand content", (p) => (has(p, "library.matchday") ? yes : no)),
+      row("Match Day", "Before, during and after the match", (p) => (has(p, "library.matchday") ? yes : no)),
+      row("Brands & sponsors", "Sponsor and brand content", (p) => (has(p, "library.brands") ? yes : no)),
       row("Content Plan", "Weekly and monthly calendars, drag and drop, PDF / Excel / calendar export", (p) => (has(p, "planner.access") ? yes : no)),
       row("AI analyses per month", "Hook, why it works, format and how to adapt it", (p) => (!has(p, "ai.analyze_posts") ? no : p.ai_unlimited ? tx("Unlimited") : `<b>${p.ai_monthly_units || "–"}</b>`), `<b>${tx("Tailored")}</b>`),
       row("Your club's own library", "First team, sections and academy, private to your club", () => no),

@@ -3,13 +3,13 @@
 -- existing subscribers: they keep their current price. After running it: Admin → Memberships → Plans →
 -- "Sync with Stripe" on Library and Content Creator, so the new prices can be paid.
 
--- Library: 9 €/month (monthly only), library without Content creators / Match Day / Brands, no Content Plan, no AI
+-- Library: 9 €/month, library with Match Day (27/10: Match Day is in every plan), without Content creators / Brands, no Content Plan, no AI
 select public.admin_save_plan(jsonb_build_object(
   'key', 'library', 'name', 'Library', 'visibility', 'public', 'active', true, 'sort', 1, 'highlighted', false,
   'description', 'The sports content library: clubs, leagues and competitions, with search and saved boards.',
   'features', jsonb_build_array('Content Library: clubs, leagues and competitions', 'Search and smart filters', 'Save posts to boards'),
   'trial_enabled', true, 'trial_days', 7, 'trial_ai_units', 5, 'ai_monthly_units', 0, 'ai_unlimited', false,
-  'entitlements', jsonb_build_array('library.access', 'library.save_posts')));
+  'entitlements', jsonb_build_array('library.access', 'library.save_posts', 'library.matchday')));
 select public.admin_set_price('library', 'eur', 'month', 9);
 select public.admin_remove_price('library', 'eur', 'year');
 
@@ -19,7 +19,7 @@ select public.admin_save_plan(jsonb_build_object(
   'description', 'The library plus posts by content creators and the Content Plan.',
   'features', jsonb_build_array('Everything in Library', 'Content creators filter', 'Content Plan: weekly and monthly calendars', 'Drag saved posts into your plan'),
   'trial_enabled', true, 'trial_days', 7, 'trial_ai_units', 5, 'ai_monthly_units', 0, 'ai_unlimited', false,
-  'entitlements', jsonb_build_array('library.access', 'library.save_posts', 'library.creators', 'planner.access', 'planner.create_calendars', 'planner.drag_drop')));
+  'entitlements', jsonb_build_array('library.access', 'library.save_posts', 'library.creators', 'library.matchday', 'planner.access', 'planner.create_calendars', 'planner.drag_drop')));
 select public.admin_set_price('library_planner', 'eur', 'month', 19);
 select public.admin_remove_price('library_planner', 'eur', 'year');
 update public.plans set archived_at = null, compare_month = 25, updated_at = now() where key = 'library_planner'; -- it was archived on 23/10
