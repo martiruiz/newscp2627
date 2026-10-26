@@ -45,6 +45,12 @@ def cover(s):
 def point(k,s):
     t=len(_re.sub('<[^>]+>','',s['title'])); fs=104 if t<28 else 88
     tip=f'<div class="abs" style="left:80px;right:80px;bottom:150px;border-radius:36px;background:#121b33;color:#fff;padding:40px 48px"><div class="cap gd" style="font-size:20px;margin-bottom:14px">What to change</div><div style="font-size:38px;font-weight:700;line-height:1.2">{s["tip"]}</div></div>' if s.get('tip') else ''
+    if s.get('img'):
+        im=b64(os.path.join(R,s['img'])); fs=64 if t<34 else 56
+        return 'light',f'''{hd(False)}{sg(k,False)}
+<div class="abs" style="left:80px;top:270px;width:470px;display:flex;flex-direction:column;gap:26px"><div class="cap gl">{s['kicker']}</div><div style="font-size:{fs}px;font-weight:800;line-height:1.05;letter-spacing:-.03em">{s['title']}</div><div style="font-size:32px;font-weight:500;color:#55617a;line-height:1.32">{s['body']}</div></div>
+<div class="abs" style="left:600px;top:270px;width:400px;display:flex;flex-direction:column;align-items:flex-end;gap:16px"><img src="data:image/png;base64,{im}" style="height:540px;max-width:400px;object-fit:cover;border-radius:26px;border:2px solid rgba(18,27,51,.14);box-shadow:0 18px 40px rgba(18,27,51,.18)"><div class="cap mu" style="font-size:18px">{s['handle']} · Instagram</div></div>{tip}
+<div class="abs cap gl" style="right:80px;bottom:70px;font-size:20px">Swipe →</div>'''
     return 'light',f'''{hd(False)}{sg(k,False)}
 <div class="abs" style="left:80px;top:290px;width:150px;height:150px;border-radius:44px;border:2px solid #b87a0c;padding:34px;color:#b87a0c">{icon(s['icon'])}</div>
 <div class="abs" style="left:80px;top:500px;width:920px;display:flex;flex-direction:column;gap:30px"><div class="cap gl">{s['kicker']}</div><div style="font-size:{fs}px;font-weight:800;line-height:1.04;letter-spacing:-.03em">{s['title']}</div><div style="font-size:40px;font-weight:500;color:#55617a;line-height:1.32;width:880px">{s['body']}</div></div>{tip}

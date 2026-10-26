@@ -1,14 +1,71 @@
 {
  "label": "El Clásico",
  "slides": [
-  {"type":"cover","kicker":"Barça 1–2 Real Madrid","title":"El Clásico on Instagram: <span class='g'>who won</span> the content game?","sub":"What both clubs posted, and what stood out."},
-  {"type":"point","kicker":"Barça's top post","title":"<span class='g'>~2M likes</span> on the full-time post","body":"“Full time at home.” Over 87k comments, and tagged as a Spotify paid partnership.","icon":"trophy","tip":null},
-  {"type":"point","kicker":"Madrid's top post","title":"<span class='g'>~1.4M likes</span> with no caption","body":"A single 🥶 emoji and a tagged player, Mbappé, posted the day after.","icon":"snowflake","tip":"Hypothesis: when the image carries the moment, fewer words can travel further."},
-  {"type":"point","kicker":"Volume","title":"<span class='g'>18+ posts</span> vs 9+","body":"Real Madrid published at least 18 #ElClásico posts. Barça, at least 9 in the same window, as visible on each grid.","icon":"stack","tip":"Plan a full match-night grid, not one post."},
-  {"type":"point","kicker":"Format","title":"Feed posts beat <span class='g'>reels</span>","body":"At both clubs the top post was a feed post. Reels reached ~145k–230k likes at Madrid and ~520k–1M at Barça. Views aren't public, so reach is unknown.","icon":"film-strip","tip":null},
-  {"type":"point","kicker":"Comments","title":"A highlight reel, a <span class='g'>referee debate</span>","body":"Under Barça's Fermín highlight, several of the top comments were about a Madrid player's missing yellow card, not about Fermín.","icon":"chats-circle","tip":"Before posting match clips, check what the comments will be about."},
-  {"type":"club","title":"Pre-plan <span class='g'>match-night templates</span> for win, draw and defeat."},
-  {"type":"club","title":"Give each key player a <span class='g'>quote or portrait</span> post. Madrid did it for Lunin, Valverde and Mbappé."},
-  {"type":"cta","kicker":"Content Library","big":"See real club posts and <span class='g'>why they worked.</span>","sub":"Book a demo at sportscontentplaybook.com/book-a-call"}
+  {
+   "type": "cover",
+   "kicker": "Barça 1–2 Real Madrid",
+   "title": "El Clásico on Instagram: <span class='g'>who won</span> the content game?",
+   "sub": "What both clubs posted, and what stood out."
+  },
+  {
+   "type": "point",
+   "kicker": "Barça's top post",
+   "title": "<span class='g'>~2M likes</span> on the full-time post",
+   "body": "“Full time at home.” Over 87k comments, and tagged as a Spotify paid partnership.",
+   "icon": "trophy",
+   "tip": null,
+   "img": "assets/social/2026-10-27/src/bar-fulltime.png",
+   "handle": "@fcbarcelona"
+  },
+  {
+   "type": "point",
+   "kicker": "Madrid's top post",
+   "title": "<span class='g'>~1.4M likes</span> with no caption",
+   "body": "A single 🥶 emoji and a tagged player, Mbappé, posted the day after.",
+   "icon": "snowflake",
+   "tip": "Hypothesis: when the image carries the moment, fewer words can travel further.",
+   "img": "assets/social/2026-10-27/src/rma-mbappe.png",
+   "handle": "@realmadrid"
+  },
+  {
+   "type": "point",
+   "kicker": "Volume",
+   "title": "<span class='g'>18+ posts</span> vs 9+",
+   "body": "Real Madrid published at least 18 #ElClásico posts. Barça, at least 9 in the same window, as visible on each grid.",
+   "icon": "stack",
+   "tip": "Plan a full match-night grid, not one post."
+  },
+  {
+   "type": "point",
+   "kicker": "Format",
+   "title": "Feed posts beat <span class='g'>reels</span>",
+   "body": "At both clubs the top post was a feed post. Reels reached ~145k–230k likes at Madrid and ~520k–1M at Barça. Views aren't public, so reach is unknown.",
+   "icon": "film-strip",
+   "tip": null
+  },
+  {
+   "type": "point",
+   "kicker": "Comments",
+   "title": "A highlight reel, a <span class='g'>referee debate</span>",
+   "body": "Under Barça's Fermín highlight, several of the top comments were about a Madrid player's missing yellow card, not about Fermín.",
+   "icon": "chats-circle",
+   "tip": "Before posting match clips, check what the comments will be about.",
+   "img": "assets/social/2026-10-27/src/bar-fermin.png",
+   "handle": "@fcbarcelona"
+  },
+  {
+   "type": "club",
+   "title": "Pre-plan <span class='g'>match-night templates</span> for win, draw and defeat."
+  },
+  {
+   "type": "club",
+   "title": "Give each key player a <span class='g'>quote or portrait</span> post. Madrid did it for Lunin, Valverde and Mbappé."
+  },
+  {
+   "type": "cta",
+   "kicker": "Content Library",
+   "big": "See real club posts and <span class='g'>why they worked.</span>",
+   "sub": "Book a demo at sportscontentplaybook.com/book-a-call"
+  }
  ]
 }
