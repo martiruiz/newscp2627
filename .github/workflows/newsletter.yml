@@ -2,7 +2,8 @@ name: Weekly newsletter
 
 # Every Monday at 08:00 Barcelona time: builds the SCP newsletter and creates a DRAFT in Resend,
 # then emails a preview. Nothing reaches subscribers until someone presses Send in Resend.
-# Cron runs in UTC, so it wakes at 06:00 and 07:00 UTC and only works when it's 08:00 in Madrid (summer / winter time).
+# Cron runs in UTC (06:00 and 07:00) and GitHub often delays scheduled runs by hours, so the gate checks for Monday in Madrid, not the exact hour;
+# weekly.mjs creates one issue per week, so the second run (or a late one) does nothing.
 on:
   schedule:
     - cron: "0 6,7 * * 1"
@@ -17,10 +18,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - name: 08:00 in Barcelona?
+      - name: Monday in Barcelona?
         id: gate
         run: |
-          if [ "${{ github.event_name }}" != "schedule" ] || [ "$(TZ=Europe/Madrid date +%H)" = "08" ]; then echo "run=true" >> "$GITHUB_OUTPUT"; else echo "run=false" >> "$GITHUB_OUTPUT"; echo "Not 08:00 in Madrid — skipping."; fi
+          if [ "${{ github.event_name }}" != "schedule" ] || [ "$(TZ=Europe/Madrid date +%u)" = "1" ]; then echo "run=true" >> "$GITHUB_OUTPUT"; else echo "run=false" >> "$GITHUB_OUTPUT"; echo "Not Monday in Madrid — skipping."; fi
       - uses: actions/checkout@v4
         if: steps.gate.outputs.run == 'true'
       - uses: actions/setup-node@v4
