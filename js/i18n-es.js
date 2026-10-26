@@ -2610,4 +2610,5 @@ window.SCP_ES = {
   "Your club's own private library": "La biblioteca privada de tu club",
   "Your club, every day": "Tu club, cada día",
   "We show you your club's library in 30 minutes": "Te enseñamos la biblioteca de tu club en 30 minutos",
+  "Tell us about your team and we'll recommend the right plan.": "Cuéntanos cómo es tu equipo y te recomendamos el plan que encaja.",
 };
