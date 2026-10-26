@@ -38,7 +38,7 @@
       "paragraphs": [
         "El Manchester United ha encargado a Stanley Chow, ilustrador local y seguidor del club de toda la vida, que dibuje retratos personalizados del equipo titular para sus partidos de la Champions League esta temporada. Cada jugador aparece con la equipación de marca Snapdragon, y la obra se fotografía en teléfonos con tecnología Snapdragon frente a escenarios pintorescos en ciudades anfitrionas como Como y Madrid.",
         "En Instagram, United combina el carrusel con la nueva función de pies de foto múltiples de la plataforma, etiquetando a cada jugador mientras los aficionados deslizan los retratos. El enfoque da a un recurso rutinario del día de partido un aire premium y coleccionable, a la vez que integra el producto del patrocinador en la historia en lugar de limitarse a estampar un logotipo en una plantilla.",
-        "Para los equipos de redes sociales, la conclusión es que los anuncios de alineaciones se cuentan entre el inventario de patrocinio más fiable y pueden renovarse de forma creativa. Los clubes podrían encargar a artistas aficionados para partidos destacados, vincular las imágenes a ubicaciones de desplazamientos como viajes fuera de casa, o dejar que el dispositivo de un socio tecnológico forme parte de la producción. Probar los pies de foto por diapositiva de Instagram en los carruseles es una forma sencilla de añadir contexto sin saturar la obra."
+        "Para los equipos de redes sociales, la conclusión es que los anuncios de alineaciones se cuentan entre el inventario de patrocinio más fiable y pueden renovarse de forma creativa. Los clubes podrían encargar a artistas aficionados para partidos destacados, vincular las imágenes a las ciudades de los partidos fuera de casa, o dejar que el dispositivo de un socio tecnológico forme parte de la producción. Probar los pies de foto por diapositiva de Instagram en los carruseles es una forma sencilla de añadir contexto sin saturar la obra."
       ],
       "image_title": "",
       "translated_at": "2026-10-26T22:00:41.435Z",
@@ -68,29 +68,29 @@
     "faq": [],
     "image_url": "https://imgproxy.divecdn.com/S0VUSfummVRu1I_VQ8ComYkps-aqceYddbNbJDGZxnw/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9lZGl0c19kdW8yLnBuZw==.webp",
     "es": {
+      "faq": [],
+      "model": "claude-haiku-5-5",
       "title": "La app Edits de Meta lanza una versión para el iPhone Duo y prueba un editor de escritorio",
+      "tokens": {
+        "in": 1389,
+        "out": 691
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "Meta ha lanzado una versión específica de Edits, su app de edición de vídeo de formato corto, diseñada para el iPhone Duo plegable de Apple. La interfaz se adapta a la pantalla más grande del dispositivo, a su orientación y a su pliegue, lo que permite a los usuarios editar y previsualizar su línea de tiempo lado a lado. Por otro lado, una versión de escritorio anunciada por primera vez en junio está ahora en pruebas en directo con creadores seleccionados, según una captura de pantalla compartida por la creadora Taylor Golub.",
         "El diseño de escritorio muestra más elementos de edición en una sola pantalla, lo que facilita moverse entre las herramientas de creación de la app. Adam Mosseri, responsable de Instagram, comentó que cree que la versión de escritorio se convertirá en la base de muchas funciones futuras, lo que indica que Meta seguirá invirtiendo en Edits como su herramienta principal de creación para Reels.",
         "Para los equipos de redes sociales deportivos, un Edits de escritorio podría cerrar la brecha entre las ediciones rápidas desde el móvil en día de partido y las sesiones de posproducción más largas en la oficina, manteniendo los flujos de trabajo de Reels dentro del ecosistema de Meta. Los clubes y deportistas que ya cortan highlights, reportajes de jugadores o clips de patrocinadores en Edits deberían estar atentos a un acceso más amplio desde el escritorio, mientras que el personal que usa móviles plegables gana un lienzo móvil más grande para contenido de entrega rápida desde el estadio."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-10-26T22:02:57.543682+00:00",
-      "model": "claude-haiku-5-5",
+      "image_title": "",
       "translated_at": "2026-10-26T22:11:14.893Z",
-      "tokens": {
-        "in": 1389,
-        "out": 691
-      }
+      "source_changed": "2026-10-26T22:02:57.543682+00:00",
+      "meta_description": ""
     }
   },
   {
@@ -115,29 +115,29 @@
     "faq": [],
     "image_url": "https://imgproxy.divecdn.com/ua2Hio8Dsltltak85FZHHNHCimzHIBvaiOtJBKzLUbI/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9ob2xpZGF5c19vbl9YLnBuZw==.webp",
     "es": {
+      "faq": [],
+      "model": "claude-haiku-5-5",
       "title": "X comparte consejos para los anuncios navideños: textos cortos, tono natural y una única llamada a la acción clara",
+      "tokens": {
+        "in": 1391,
+        "out": 684
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "X organizó un webinar para profesionales del marketing que planifican campañas navideñas, en el que compartió datos sobre audiencias y buenas prácticas creativas. La plataforma asegura que sus anuncios con mejor rendimiento tienen entre 50 y 100 caracteres, aproximadamente una frase. Recomienda que las marcas suenen como personas reales en lugar de exagerar, que den a los usuarios un motivo para actuar ya mediante ofertas por tiempo limitado o exclusivas, y que terminen con una única llamada a la acción clara.",
         "X también aconseja eliminar todo lo que distraiga del objetivo del anuncio: dirigir a los usuarios a un único destino, evitar mencionar otras cuentas y prescindir de los hashtags y de varios emojis, que no están permitidos en los anuncios. Sobre las compras impulsadas por IA, recomienda describir con claridad qué hace un producto, para quién es y por qué es mejor, de modo que los modelos de recomendación puedan resumirlo fácilmente.",
         "Para clubes y ligas que venden merchandising navideño, membresías de regalo o paquetes de entradas, esta es una lista de comprobación práctica. Escribe una línea contundente, dirige a los aficionados únicamente a la tienda o a la app y utiliza plazos como lanzamientos limitados de equipaciones o paquetes festivos de entradas para generar urgencia. Las descripciones de producto claras y sencillas en las páginas de comercio electrónico también pueden ayudar a que el merchandising del club aparezca en las recomendaciones de compra impulsadas por IA."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-10-26T22:03:05.490517+00:00",
-      "model": "claude-haiku-5-5",
+      "image_title": "",
       "translated_at": "2026-10-26T22:11:23.137Z",
-      "tokens": {
-        "in": 1391,
-        "out": 684
-      }
+      "source_changed": "2026-10-26T22:03:05.490517+00:00",
+      "meta_description": ""
     }
   },
   {
@@ -162,29 +162,29 @@
     "faq": [],
     "image_url": "https://imgproxy.divecdn.com/12K6ogX9lcgDYYC0J9LHBG_Vz43JSghdwOStO8_Cc34/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS90aWt0b2tfdXNkc2p2LnBuZw==.webp",
     "es": {
+      "faq": [],
+      "model": "claude-haiku-5-5",
       "title": "TikTok EE. UU. elimina más de 14 millones de cuentas falsas en su informe de moderación del segundo trimestre",
+      "tokens": {
+        "in": 1327,
+        "out": 623
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "TikTok ha publicado los datos de moderación de cuentas de su operación en EE. UU. correspondientes al segundo trimestre. La plataforma afirma que eliminó más de 14 millones de cuentas falsas durante el periodo. También asegura que bloqueó cerca de 65 millones de cuentas de spam antes de que pudieran crearse, frenándolas en la fase de registro.",
         "Para los equipos de redes sociales del deporte, las grandes depuraciones de cuentas falsas pueden provocar caídas repentinas en el número de seguidores y en las cifras de interacción. Clubes, ligas y atletas deben esperar bajadas puntuales y evitar interpretarlas como una pérdida de aficionados reales. Comparar los datos con métricas de interacción real, como el tiempo de visualización, las veces compartido y los comentarios, ofrece una imagen más fiable que el total bruto de seguidores.",
         "Estos datos también son útiles en las conversaciones con patrocinadores. Los socios quieren saber que sus activaciones llegan a audiencias genuinas, y las limpiezas a nivel de plataforma respaldan ese argumento. Los equipos pueden auditar sus propias secciones de comentarios y bases de seguidores en busca de actividad de bots, denunciar el spam que apunta al contenido de los aficionados y mostrar a los socios datos verificados de la audiencia en lugar de cifras totales de seguidores."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-10-26T22:03:14.65779+00:00",
-      "model": "claude-haiku-5-5",
+      "image_title": "",
       "translated_at": "2026-10-26T22:11:27.862Z",
-      "tokens": {
-        "in": 1327,
-        "out": 623
-      }
+      "source_changed": "2026-10-26T22:03:14.65779+00:00",
+      "meta_description": ""
     }
   },
   {
@@ -242,7 +242,7 @@
           "q": "¿Cómo usa el FC Barcelona Google Gemini en Instagram?"
         },
         {
-          "a": "Las carruseles del feed del PSG promediaron 30,8K interacciones en tres publicaciones revisadas, una cifra modesta para un club con más de 60M de seguidores. El análisis señala las diapositivas con mucho texto como una debilidad, y destaca que la jerarquía visual y los gráficos de datos ganan a los muros de texto.",
+          "a": "Los carruseles del feed del PSG promediaron 30,8K interacciones en tres publicaciones revisadas, una cifra modesta para un club con más de 60M de seguidores. El análisis señala las diapositivas con mucho texto como una debilidad, y destaca que la jerarquía visual y los gráficos de datos ganan a los muros de texto.",
           "q": "¿Por qué las publicaciones de Gemini del PSG tuvieron una interacción modesta?"
         },
         {
@@ -263,7 +263,7 @@
       "image_alt": "",
       "takeaways": [
         "El FC Barcelona emite una serie de Instagram Stories antes de cada partido patrocinada por Google Gemini, que muestra un uso práctico del producto y no solo resultados de IA.",
-        "Las diapositivas con mucho texto limitan los resultados: las carruseles del feed del PSG promediaron 30,8K interacciones en tres publicaciones, una cifra modesta para un club con más de 60M de seguidores.",
+        "Las diapositivas con mucho texto limitan los resultados: los carruseles del feed del PSG promediaron 30,8K interacciones en tres publicaciones, una cifra modesta para un club con más de 60M de seguidores.",
         "Entre las activaciones de Gemini más sólidas están la presentación de nuevos fichajes y los quizzes de aficionados del Liverpool, y la previa de partido de octubre del Barcelona, que superó los 482K me gusta.",
         "El contenido de asociaciones de IA funciona mejor cuando se construye en torno a lo que quieren los aficionados, como previas, explicaciones de nuevos fichajes, quizzes o historia del club.",
         "Integrar a un patrocinador en una serie recurrente ya establecida mantiene la activación natural y puede crear un inventario de patrocinio predecible."
@@ -271,7 +271,7 @@
       "meta_title": "Acuerdos con Google Gemini: cómo los clubes crean contenido útil para aficionados",
       "paragraphs": [
         "El FC Barcelona está lanzando una serie de Instagram Stories antes de cada partido, patrocinada por Google Gemini. Una secuencia de cuatro fotogramas abre con un prompt simulado de Gemini que pide datos sobre el próximo rival, seguido de tres fotogramas con respuestas acompañadas de imágenes de jugadores. La serie forma parte de las asociaciones de Gemini y Pixel que Google anunció en agosto con Barcelona, PSG, Arsenal, Liverpool y Bayern Múnich. Un análisis de SponCon Sports la elogia por mostrar una forma práctica de usar el producto en lugar de limitarse a mostrar resultados de IA.",
-        "El análisis también señala límites. Las diapositivas tienen mucho texto, y las carruseles del feed similares del PSG promediaron 30,8K interacciones en tres publicaciones revisadas, una cifra modesta para un club con más de 60M de seguidores. Otras activaciones han dado mejores resultados. Liverpool usó Gemini para presentar al nuevo fichaje Bradley Barcola y para lanzar preguntas a los aficionados, y recordó una victoria ante el Brentford con clips de YouTube enlazados. La previa de partido de octubre del Barcelona superó los 482K me gusta, y sus jugadores ahora hacen una pregunta a Gemini durante los Q&A de los miembros de su canal de YouTube.",
+        "El análisis también señala límites. Las diapositivas tienen mucho texto, y los carruseles del feed similares del PSG promediaron 30,8K interacciones en tres publicaciones revisadas, una cifra modesta para un club con más de 60M de seguidores. Otras activaciones han dado mejores resultados. Liverpool usó Gemini para presentar al nuevo fichaje Bradley Barcola y para lanzar preguntas a los aficionados, y recordó una victoria ante el Brentford con clips de YouTube enlazados. La previa de partido de octubre del Barcelona superó los 482K me gusta, y sus jugadores ahora hacen una pregunta a Gemini durante los Q&A de los miembros de su canal de YouTube.",
         "Para los equipos que venden o activan asociaciones de IA, la conclusión es crear contenido en torno a algo que los aficionados realmente quieren, como previas, explicaciones de nuevos fichajes, preguntas o historia del club, y mostrar cómo la herramienta del patrocinador lo ofrece. La jerarquía visual y los gráficos de datos ganan a los muros de texto. Las Stories recurrentes con stickers interactivos pueden convertirse en un inventario de patrocinio predecible, porque llegan sobre todo a seguidores existentes. Integrar a un partner en una serie ya establecida, en lugar de lanzar una nueva, mantiene la activación natural."
       ],
       "image_title": "",
@@ -317,7 +317,7 @@
       "takeaways": [],
       "meta_title": "",
       "paragraphs": [
-        "TikTok está lanzando una función que permite a los usuarios repostear un único comentario sin compartir el vídeo original. Los comentarios divertidos, útiles o interesantes ahora pueden生成 alcance por sí solos, y las respuestas también pueden descubrirse fuera del hilo en el que aparecieron por primera vez. La sección de comentarios se convierte, en la práctica, en un formato de contenido propio en lugar de un espacio secundario debajo del vídeo.",
+        "TikTok está lanzando una función que permite a los usuarios repostear un único comentario sin compartir el vídeo original. Los comentarios divertidos, útiles o interesantes ahora pueden ganar alcance por sí solos, y las respuestas también pueden descubrirse fuera del hilo en el que aparecieron por primera vez. La sección de comentarios se convierte, en la práctica, en un formato de contenido propio en lugar de un espacio secundario debajo del vídeo.",
         "Para los equipos de redes sociales deportivos, esto convierte la gestión de la comunidad en una palanca directa de crecimiento. Una respuesta ingeniosa de la cuenta del club, una reacción divertida de un jugador o un comentario destacado de un aficionado tras un gran resultado ahora pueden viajar por su cuenta y llegar a audiencias que nunca vieron el clip original. Esto aumenta el valor de contar con responsables rápidos y alineados con la marca durante los partidos y los momentos clave.",
         "Los clubes y las ligas podrían fomentar deliberadamente la conversación con preguntas, predicciones o debates en los textos de sus publicaciones, y después amplificar las mejores respuestas de los aficionados para premiar a los seguidores e impulsar el engagement. Los patrocinadores también podrían integrarse en formatos recurrentes basados en comentarios. Del mismo modo, los equipos deben mantener una moderación estricta, ya que una respuesta descuidada o polémica ahora podría extenderse mucho más allá de su hilo."
       ],
@@ -620,7 +620,7 @@
           "q": "¿Qué activaciones de patrocinadores funcionaron mejor para los equipos de la NHL?"
         },
         {
-          "a": "Evita etiquetar a los patrocinadores en los pies de foto mientras permaneces invisible en el propio vídeo. No dependas sobre todo de publicaciones orgánicas para los sorteos, ya que el correo electrónico, las apps, los SMS o la publicidad de pago suelen convertir mejor, y reedita los segmentos grabados en el pabellón para los feeds en lugar de publicarlos sin editar.",
+          "a": "Evita etiquetar a los patrocinadores en los pies de foto si luego no aparecen en el propio vídeo. No dependas sobre todo de publicaciones orgánicas para los sorteos, ya que el correo electrónico, las apps, los SMS o la publicidad de pago suelen convertir mejor, y reedita los segmentos grabados en el pabellón para los feeds en lugar de publicarlos sin editar.",
           "q": "¿Qué errores deben evitar los equipos de redes sociales de los clubes con el contenido patrocinado?"
         }
       ],
@@ -786,7 +786,7 @@
       "meta_title": "",
       "paragraphs": [
         "Akron Football invitó a un abonado a ayudar a diseñar la primera serie ofensiva de su partido inaugural en casa. El anuncio de agosto logró 23 millones de visualizaciones en X, agotó los palcos por primera vez en la historia del programa y atrajo participaciones de personalidades como Big Cat y Jon Gruden. Tras revelarse al ganador, Arby's Steak Nuggets se incorporó como patrocinador principal, coincidiendo con el regreso nacional del producto como oferta por tiempo limitado.",
-        "Según Mondo Metrics, las publicaciones de la campaña promediaron un 2,9 veces el engagement habitual de Akron durante más de un mes, mientras que la prensa ganada en medios como House of Highlights y SportsCenter aportó unos 13,5 millones de visualizaciones. El día de partido se convirtió en un takeover de Arby's, con la marca en la carpeta de jugadas, en las manos de fans con dedos de espuma, en la comida de la rueda de prensa e incluso en los highlights habituales. Una crítica: un Reel tras bambalinas que empezó en un Arby's tuvo un rendimiento inferior, lo que demuestra que las peticiones de los patrocinadores no deberían imponerse a lo que los aficionados vinieron a ver.",
+        "Según Mondo Metrics, las publicaciones de la campaña promediaron 2,9 veces el engagement habitual de Akron durante más de un mes, mientras que la prensa ganada en medios como House of Highlights y SportsCenter aportó unos 13,5 millones de visualizaciones. El día de partido se convirtió en un takeover de Arby's, con la marca en la carpeta de jugadas, en las manos de espuma, en la comida de la rueda de prensa e incluso en los highlights habituales. Una crítica: un Reel tras bambalinas que empezó en un Arby's tuvo un rendimiento inferior, lo que demuestra que las peticiones de los patrocinadores no deberían imponerse a lo que los aficionados vinieron a ver.",
         "La lección para los equipos de redes sociales deportivos es tratar el contenido que despega como prueba para las alianzas. Cuando una serie, una promoción o una campaña sin patrocinio triunfa, comparte los datos con ventas cuanto antes, porque un rendimiento demostrado se vende mejor que un concepto. Empaqueta los momentos estelares como takeovers completos en el prepartido, los highlights y el pospartido, mantén la historia viva por capítulos y considera emitir en directo los sorteos junto a creadores para impulsar el alcance y la credibilidad."
       ],
       "image_title": "",

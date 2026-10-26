@@ -36,12 +36,6 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547096.jpg"
   },
   {
-    "account": "juegodedoce",
-    "account_platform": "tiktok",
-    "views": 1200000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/544/544817.jpg"
-  },
-  {
     "account": "espn",
     "account_platform": "tiktok",
     "views": 829800,
@@ -162,12 +156,6 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547231.jpg"
   },
   {
-    "account": "nfl",
-    "account_platform": "tiktok",
-    "views": 55700,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547257.jpg"
-  },
-  {
     "account": "espn",
     "account_platform": "tiktok",
     "views": 46200,
@@ -178,5 +166,17 @@
     "account_platform": "tiktok",
     "views": 45200,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547211.jpg"
+  },
+  {
+    "account": "celtics",
+    "account_platform": "tiktok",
+    "views": 43900,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547128.jpg"
+  },
+  {
+    "account": "wash_wizards",
+    "account_platform": "tiktok",
+    "views": 41100,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/547/547169.jpg"
   }
 ]
