@@ -2637,7 +2637,7 @@ window.SCP_ES = {
   "For club social media managers who need ideas every week": "Para quien lleva las redes de un club y necesita ideas cada semana",
   "Launch offer": "Oferta de lanzamiento",
   "Launch price until {date}, then {price}/month": "Precio de lanzamiento hasta el {date}; después, {price}/mes",
-  "Join before {date} and keep this price for good": "Apúntate antes del {date} y mantén este precio para siempre",
+  "Join now and keep this price for good": "Apúntate y mantén este precio para siempre",
   "From {price}": "Desde {price}",
   "Custom plan, priced for the size of your club": "Plan a medida, con un precio según el tamaño de tu club",
 };

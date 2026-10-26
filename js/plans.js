@@ -104,7 +104,7 @@
     // the step this plan adds, in one line (the list underneath says how)
     const hero = tx(has("library.brands") ? "Find out why content works and adapt it to your club with AI" : cp ? "Find ideas and organise what to publish" : "Find sports content ideas");
     const forWho = tx(has("library.brands") ? "For clubs and agencies that want to know why content works" : cp ? "For teams that plan what they post every week" : "For club social media managers who need ideas every week");
-    const under = note || (launch ? tx("Join before {date} and keep this price for good", { date: launchDate }) : trial ? tx("{n}-day free trial · cancel anytime", { n: trial }) : "");
+    const under = note || (launch ? tx("Join now and keep this price for good") : trial ? tx("{n}-day free trial · cancel anytime", { n: trial }) : "");
     const tone = p.highlighted ? "is-best" : cp ? "tone-blue" : "tone-slate";
     return `<article class="plan-card v2 ${tone}${isCurrent ? " is-current" : ""}${p.key === wanted ? " is-wanted" : ""}" data-plan-key="${esc(p.key)}">
       ${isCurrent ? flag : ""}
