@@ -3,7 +3,6 @@ name: Publish blog
 # The blog posts edited in Admin → Blog (Supabase, table blog_posts) → content/blog/*.json → blog-tools/build.mjs (its
 # checks) → static pages committed to main (GitHub Pages publishes them). Every hour, or "Run workflow" to publish now.
 # Also the published Social News (one page each in news/), robots.txt / llms.txt and the home's schema (Admin → SEO).
-# Once a day (the first run from 08:00 UTC) the newest draft is published with that day's date (sync-db.mjs daily).
 on:
   schedule:
     - cron: "17 * * * *"
@@ -30,9 +29,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Today's post (one draft a day, from 08:00 UTC)
-        if: github.event_name == 'schedule'
-        run: if [ "$(date -u +%H)" -ge 8 ]; then node blog-tools/sync-db.mjs daily; else echo "Before 08:00 UTC."; fi
       - name: Posts from the admin → content/blog
         run: node blog-tools/sync-db.mjs export
       - name: Build the blog (checks every post)
