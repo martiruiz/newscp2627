@@ -496,10 +496,26 @@
         // an e-mail still used by a flow (its draft or a version contacts may be walking) can't go: take it out of the flow first
         const { data: vers } = await A.db.from("automation_versions").select("flow_id,definition");
         const uses = (def) => Object.values(def?.steps || {}).some((st) => st.type === "email" && Number(st.email_id) === x.id);
-        const inUse = flows.filter((f) => f.status !== "archived" && (uses(f.definition) || (vers || []).some((v) => v.flow_id === f.id && uses(v.definition))));
-        if (inUse.length) return A.toast(`This e-mail is used in: ${inUse.map((f) => f.name).join(", ")}. Remove it from the flow first (and publish the change if the flow is active).`, "err");
-        if (!(await A.confirmDialog({ title: "Delete this e-mail?", text: "It disappears for good. E-mails already sent keep their history.", confirm: "Delete", danger: true }))) return;
-        return busy(b, async () => { const { error } = await A.db.from("automation_emails").delete().eq("id", x.id); if (error) throw new Error(error.message); emails = emails.filter((y) => y.id !== x.id); A.toast("E-mail deleted."); draw(); });
+        const live = flows.filter((f) => ["active", "paused"].includes(f.status) && (vers || []).some((v) => v.flow_id === f.id && uses(v.definition)));
+        if (live.length) return A.toast(`This e-mail is used in: ${live.map((f) => f.name).join(", ")}. Remove it from the flow first (and publish the change if the flow is active).`, "err");
+        const drafts = flows.filter((f) => f.status !== "archived" && uses(f.definition));
+        if (!(await A.confirmDialog({ title: "Delete this e-mail?", text: drafts.length ? `It's a step in: ${drafts.map((f) => f.name).join(", ")}. The step is removed from the flow and the rest of the flow stays as it is. E-mails already sent keep their history.` : "It disappears for good. E-mails already sent keep their history.", confirm: "Delete", danger: true }))) return;
+        return busy(b, async () => {
+          // take its steps out of the draft flows: whatever pointed to the step now points to the step after it
+          for (const f of drafts) {
+            const def = structuredClone(f.definition), steps = def.steps || {};
+            for (const [id, st] of Object.entries(steps)) {
+              if (st.type !== "email" || Number(st.email_id) !== x.id) continue;
+              for (const o of [def, ...Object.values(steps)]) for (const k of ["start", "next", "yes", "no"]) if (o[k] === id) o[k] = st.next ?? null;
+              delete steps[id];
+            }
+            const { error } = await A.db.from("automation_flows").update({ definition: def, updated_at: new Date().toISOString() }).eq("id", f.id);
+            if (error) throw new Error(error.message);
+            f.definition = def;
+          }
+          const { error } = await A.db.from("automation_emails").delete().eq("id", x.id); if (error) throw new Error(error.message);
+          emails = emails.filter((y) => y.id !== x.id); A.toast("E-mail deleted."); draw();
+        });
       }
       busy(b, async () => { const { data, error } = await A.db.from("automation_emails").insert({ name: `${x.name} (copy)`, category: x.category, content: x.content, fallback_locale: x.fallback_locale }).select().single(); if (error) throw error; emails.push(data); draw(); });
     };

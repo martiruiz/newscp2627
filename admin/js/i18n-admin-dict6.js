@@ -53,6 +53,7 @@ window.SCPA_DICT = Object.assign(window.SCPA_DICT || {}, {
   "It disappears for good. E-mails already sent keep their history.": ["Desaparece definitivamente. Los correos ya enviados conservan su historial.", "Desapareix definitivament. Els correus ja enviats conserven l'historial."],
   "E-mail deleted.": ["Correo eliminado.", "Correu esborrat."],
   "This e-mail is used in: {a}. Remove it from the flow first (and publish the change if the flow is active).": ["Este correo se usa en: {a}. Quítalo primero del flujo (y publica el cambio si el flujo está activo).", "Aquest correu s'utilitza a: {a}. Treu-lo primer del flux (i publica el canvi si el flux és actiu)."],
+  "It's a step in: {a}. The step is removed from the flow and the rest of the flow stays as it is. E-mails already sent keep their history.": ["Es un paso de: {a}. Se quita del flujo y el resto del flujo queda igual. Los correos ya enviados conservan su historial.", "És un pas de: {a}. Es treu del flux i la resta del flux queda igual. Els correus ja enviats conserven l'historial."],
   // page, status, tabs
   "Automations": ["Automatizaciones", "Automatitzacions"],
   "E-mails that go out on their own at the right moment: during the trial, after sign-up, after the trial and for new customers.": ["Correos que salen solos en el momento adecuado: durante la prueba, tras el registro, después de la prueba y para nuevos clientes.", "Correus que surten sols en el moment adequat: durant la prova, després del registre, després de la prova i per a clients nous."],
