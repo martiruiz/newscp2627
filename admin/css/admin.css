@@ -1805,7 +1805,7 @@ select.cs-native { display: none !important; }
 .ch-rcard header small { color: var(--muted); }
 .ch-rcard h3 { margin: 0; font: 700 14px/1.35 var(--display); }
 .ch-rscript { padding: 12px 14px; border-radius: 12px; background: var(--panel-2); max-height: 420px; overflow: auto; }
-.ch-rscript p { margin: 0 0 6px; font-size: 14px; line-height: 1.45; }
+.ch-rscript p { margin: 0 0 12px; font-size: 14px; line-height: 1.55; }
 .ch-rscript p:first-child { font-weight: 700; color: var(--accent); }
 .ch-rcard footer { display: flex; flex-wrap: wrap; gap: 6px; }
 
