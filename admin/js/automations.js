@@ -42,45 +42,78 @@
   const VARS = ["first_name", "org_name", "trial_end_date", "trial_days_left", "plan_name", "platform_url", "pricing_url", "account_url", "unsubscribe_url"];
   const LOCALES = { en: "English", es: "Spanish", ca: "Catalan" };
   const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-  const STATUS_TONE = { draft: "st-mute", active: "st-ok", paused: "st-wait", archived: "st-mute" };
 
-  let flows = [], emails = [], plans = [], stats = null, settings = null, tab = A.store.get("au-tab", "overview");
-  const range = { from: new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10), to: new Date().toISOString().slice(0, 10), flow: "" };
+  // small line icons of this page (the shared set lives in core.js)
+  const SVG = {
+    flow: '<circle cx="6" cy="5" r="2.2"/><circle cx="18" cy="12" r="2.2"/><circle cx="6" cy="19" r="2.2"/><path d="M8.2 5H12a3 3 0 0 1 3 3v1.8M15 14.2V16a3 3 0 0 1-3 3H8.2"/>',
+    send: '<path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/>',
+    users: '<circle cx="9" cy="8" r="3.2"/><path d="M3 20a6 6 0 0 1 12 0"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.2a5 5 0 0 1 6 4.8"/>',
+    target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    bolt: '<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
+    split: '<path d="M6 3v6a6 6 0 0 0 6 6h0a6 6 0 0 1 6 6"/><path d="M18 3v6a6 6 0 0 1-6 6"/>',
+    gear: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
+    more: '<circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/>',
+    pause: '<rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/>',
+    play: '<path d="M7 4v16l13-8z"/>',
+    history: '<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/>',
+  };
+  const ic = (k) => (SVG[k] ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${SVG[k]}</svg>` : icon(k));
 
-  main.innerHTML = `<div class="page-head"><div><h1>Automations</h1><p>E-mail flows that run on their own: trial activation and conversion, activation, win-back, customer welcome.</p></div>
-    <div class="head-actions"><a class="btn" href="audience.html">${icon("mail")}Newsletter</a></div></div>
-    <div class="au-banner" data-banner hidden></div>
-    <nav class="au-tabs" data-tabs>${[["overview", "Overview"], ["flows", "Flows"], ["emails", "E-mails"], ["segments", "Segments"], ["contacts", "Contacts"], ["settings", "Settings"]]
-      .map(([k, l]) => `<button type="button" data-tab="${k}">${l}</button>`).join("")}</nav>
+  let flows = [], emails = [], plans = [], stats = null, settings = null, tests = 0, tab = A.store.get("au-tab", "overview");
+  const range = { days: A.store.get("au-days", 30), flow: "" };
+
+  main.innerHTML = `<div class="page-head"><div><h1>Automations</h1><p>E-mails that go out on their own at the right moment: during the trial, after sign-up, after the trial and for new customers.</p></div>
+    <div class="head-actions"><a class="btn" href="audience.html">${icon("mail")}Newsletter</a><button class="btn btn-primary" type="button" data-new-flow>${icon("plus")}New flow</button></div></div>
+    <section class="au-hero" data-hero></section>
+    <nav class="au-tabs" data-tabs></nav>
     <div data-view></div>`;
   const view = $("[data-view]");
+  const TABS = [["overview", "Overview", "audience"], ["flows", "Flows", "flow"], ["emails", "E-mails", "mail"], ["segments", "Segments", "filters"], ["contacts", "Contacts", "history"], ["settings", "Settings", "gear"]];
 
   async function load() {
-    const [f, e, p, st] = await Promise.all([
+    const [f, e, p, st, t] = await Promise.all([
       A.db.from("automation_flows").select("*").order("priority").order("id"),
       A.db.from("automation_emails").select("*").order("id"),
       A.db.from("plans").select("key,name").order("sort"),
       rpc("automation_settings"),
+      A.db.from("automation_sends").select("id", { count: "exact", head: true }).eq("is_test", true).eq("status", "sent"),
     ]);
     if (f.error) { view.innerHTML = `<p class="aud-empty panel-pad">${esc(/does not exist|schema cache/i.test(f.error.message) ? "Run supabase/automations.sql in Supabase first." : f.error.message)}</p>`; throw f.error; }
-    flows = f.data || []; emails = e.data || []; plans = p.data || []; settings = st;
-    stats = await rpc("automation_stats", { p_from: `${range.from}T00:00:00Z`, p_to: `${range.to}T23:59:59Z`, p_flow: range.flow ? Number(range.flow) : null });
-    const on = settings?.automations?.sending_enabled;
-    const b = $("[data-banner]");
-    b.hidden = false;
-    b.className = `au-banner ${on ? "is-on" : ""}`;
-    b.innerHTML = on ? `${icon("check")}<span><b>Sending is on.</b> Active flows send real e-mails to contacts.</span>`
-      : `${icon("alert")}<span><b>Sending is off.</b> Flows can be built, simulated and tested; no e-mail reaches a contact until you switch sending on in Settings.</span>`;
+    flows = f.data || []; emails = e.data || []; plans = p.data || []; settings = st; tests = t.count || 0;
+    const to = new Date(), from = new Date(Date.now() - range.days * 864e5);
+    stats = await rpc("automation_stats", { p_from: from.toISOString(), p_to: to.toISOString(), p_flow: range.flow ? Number(range.flow) : null });
+    hero();
   }
+  // the one thing to know first: are e-mails going out?
+  function hero() {
+    const on = settings?.automations?.sending_enabled, active = flows.filter((f) => f.status === "active").length;
+    $("[data-hero]").className = `au-hero ${on ? "is-on" : "is-off"}`;
+    $("[data-hero]").innerHTML = `<span class="au-hero-ic">${ic(on ? "send" : "pause")}</span>
+      <div class="au-hero-t"><b>${on ? "Sending is on" : "Sending is off"}</b>
+        <span>${on ? `${num(active)} active flow${active === 1 ? "" : "s"} e-mail contacts automatically. The engine checks every 5 minutes.` : "Build, simulate and test safely: no e-mail reaches a contact until you switch sending on."}</span></div>
+      <button class="btn${on ? "" : " btn-primary"}" type="button" data-go-settings>${on ? "Sending settings" : "Review & switch on"}</button>`;
+    $("[data-go-settings]").onclick = () => go("settings");
+  }
+  function tabs() {
+    const count = { flows: flows.filter((f) => f.status !== "archived").length, emails: emails.length };
+    $("[data-tabs]").innerHTML = TABS.map(([k, l, i]) => `<button type="button" data-tab="${k}" class="${k === tab ? "is-on" : ""}">${ic(i)}<span>${l}</span>${count[k] != null ? `<em>${count[k]}</em>` : ""}</button>`).join("");
+  }
+  const go = (t) => { tab = t; A.store.set("au-tab", tab); draw(); window.scrollTo({ top: 0, behavior: "smooth" }); };
   function draw() {
-    view.onclick = null;
-    $$("[data-tab]").forEach((b) => b.classList.toggle("is-on", b.dataset.tab === tab));
+    view.onclick = null; view.onchange = null;
+    tabs();
     ({ overview, flows: flowsView, emails: emailsView, segments: segmentsView, contacts: contactsView, settings: settingsView })[tab]();
   }
-  $("[data-tabs]").addEventListener("click", (e) => { const b = e.target.closest("[data-tab]"); if (!b) return; tab = b.dataset.tab; A.store.set("au-tab", tab); draw(); });
+  $("[data-tabs]").addEventListener("click", (e) => { const b = e.target.closest("[data-tab]"); if (b) go(b.dataset.tab); });
+  $("[data-new-flow]").onclick = () => newFlow();
+  async function newFlow() {
+    const { data, error } = await A.db.from("automation_flows").insert({ name: "New flow", definition: { trigger: { type: "signup" }, entry: { mode: "once" }, exit: { on_paid: true }, start: null, steps: {} } }).select().single();
+    if (error) return A.toast(error.message, "err");
+    flows.push(data); editor(data);
+  }
 
   // ---------- helpers: human summaries ----------
-  const emailName = (id) => emails.find((x) => x.id === Number(id))?.name || "No e-mail chosen";
   const ruleText = (r) => {
     const f = FIELD[r.field]; if (!f) return "?";
     if (f[2] === "bool") return `${f[1]}: ${r.value === false || r.value === "false" ? "no" : "yes"}`;
@@ -109,72 +142,76 @@
     if (s.type === "end") return s.reason || "sequence finished";
     return "";
   };
-  const pill = (status) => `<span class="imp-st ${STATUS_TONE[status] || ""}"><i></i>${esc(status[0].toUpperCase() + status.slice(1))}</span>`;
-  const kpi = (label, value, tip, warn) => `<div class="au-kpi${warn ? " is-warn" : ""}"><span>${label}${tip ? A.info(tip) : ""}</span><b>${value}</b></div>`;
+  const STATUS_NAME = { draft: "Draft", active: "Active", paused: "Paused", archived: "Archived" };
+  const pill = (status) => `<span class="au-pill s-${status}"><i></i>${STATUS_NAME[status] || status}</span>`;
+  const flowStats = (f) => { const steps = Object.values(f.definition?.steps || {}); return { steps: steps.length, mails: steps.filter((s) => s.type === "email").length, branches: steps.filter((s) => s.type === "condition").length }; };
 
   // ---------- Overview ----------
   function overview() {
     const s = stats || {};
-    view.innerHTML = `<section class="panel panel-pad">
-      <div class="au-filters">
-        <label>From <input class="input input-sm" type="date" data-r="from" value="${range.from}"></label>
-        <label>To <input class="input input-sm" type="date" data-r="to" value="${range.to}"></label>
-        <label>Flow <select class="select input-sm" data-r="flow"><option value="">All flows</option>${flows.map((f) => `<option value="${f.id}"${String(f.id) === range.flow ? " selected" : ""}>${esc(f.name)}</option>`).join("")}</select></label>
-      </div>
-      <div class="au-kpis">
-        ${kpi("Active flows", num(s.active_flows || 0))}
-        ${kpi("Contacts in a flow now", num(s.in_progress || 0))}
-        ${kpi("Entries", num(s.entries || 0), "Contacts who entered a flow in these dates.")}
-        ${kpi("E-mails sent", num(s.sent || 0))}
-        ${kpi("Queued", num(s.queued || 0), "Waiting for their moment, for the frequency cap, or for sending to be switched on.")}
-        ${kpi("Skipped or cancelled", num(s.skipped || 0), "Not sent on purpose: converted, no consent, unsubscribed, too late to be relevant… The contact's history says why.")}
-        ${kpi("Errors", num(s.failed || 0), "Failed after 3 attempts. Retry them from Contacts.", (s.failed || 0) > 0)}
-        ${kpi("Conversions to paid", num(s.conversions || 0), "Last touch, 7-day window: a contact who started paying within 7 days after a commercial e-mail counts once, for the flow of the last e-mail. It's a correlation, not proof the e-mail caused the purchase.")}
-        ${kpi("Unsubscribes", num(s.unsubscribed || 0))}
-        ${kpi("Bounces & complaints", num(s.bounced || 0))}
-      </div>
-      <p class="au-note">${icon("alert")}Delivered, opens and clicks need Resend's webhook (phase 2). Until then they aren't shown, and no flow decides anything based on them.</p>
-    </section>`;
-    view.addEventListener("change", onRange);
-  }
-  async function onRange(e) {
-    const k = e.target.dataset?.r; if (!k) return;
-    range[k] = e.target.value; view.removeEventListener("change", onRange);
-    try { await load(); } catch {} draw();
+    const active = flows.filter((f) => f.status === "active").length, on = settings?.automations?.sending_enabled;
+    const edited = emails.some((x) => new Date(x.updated_at) - new Date(x.created_at) > 60e3);
+    const steps = [
+      ["Review the e-mails", "Read the sample texts and adapt them to your voice.", edited, "Open e-mails", "emails"],
+      ["Send yourself a test", "Check how they look in your inbox, on mobile and desktop.", tests > 0, "Open e-mails", "emails"],
+      ["Simulate and activate a flow", "Run it with a real contact (nothing is sent), then activate it.", active > 0, "Open flows", "flows"],
+      ["Switch sending on", "From then on, active flows e-mail contacts automatically.", !!on, "Open settings", "settings"],
+    ];
+    const doneN = steps.filter((x) => x[2]).length;
+    const group = (title, icn, items) => `<div class="au-group"><p class="au-group-h">${ic(icn)}${title}</p><div class="au-group-g">${items.map(([l, v, tip, tone]) => `<div class="au-stat${tone ? ` t-${tone}` : ""}"><b>${v}</b><span>${l}${tip ? A.info(tip) : ""}</span></div>`).join("")}</div></div>`;
+    view.innerHTML = `
+      ${doneN < 4 ? `<section class="panel au-start"><div class="au-start-h"><div><h2>Get your automations running</h2><p>${doneN} of 4 steps done</p></div><div class="au-prog"><i style="width:${doneN * 25}%"></i></div></div>
+        <ol class="au-steps">${steps.map(([t, d, done, cta, to], i) => `<li class="${done ? "is-done" : ""}"><span class="au-step-n">${done ? icon("check") : i + 1}</span><div><b>${t}</b><span>${d}</span></div>${done ? "" : `<button class="btn btn-sm" type="button" data-to="${to}">${cta}</button>`}</li>`).join("")}</ol></section>` : ""}
+      <section class="panel au-board">
+        <header class="au-board-h"><h2>Performance</h2><span class="spacer"></span>
+          <span class="au-seg">${[7, 30, 90].map((d) => `<button type="button" data-days="${d}" class="${range.days === d ? "is-on" : ""}">${d} days</button>`).join("")}</span>
+          <select class="select input-sm au-flowsel" data-r="flow"><option value="">All flows</option>${flows.map((f) => `<option value="${f.id}"${String(f.id) === range.flow ? " selected" : ""}>${esc(f.name)}</option>`).join("")}</select></header>
+        <div class="au-groups">
+          ${group("Journeys", "users", [["Active flows", num(s.active_flows || 0)], ["Contacts in a flow now", num(s.in_progress || 0)], ["Entries", num(s.entries || 0), "Contacts who entered a flow in this period."]])}
+          ${group("Delivery", "send", [["Sent", num(s.sent || 0)], ["Queued", num(s.queued || 0), "Waiting for their moment, for the frequency cap, or for sending to be switched on."], ["Skipped", num(s.skipped || 0), "Not sent on purpose: converted, no consent, unsubscribed, too late to be relevant… The contact's history says why."], ["Errors", num(s.failed || 0), "Failed after 3 attempts. Retry them from Contacts.", (s.failed || 0) > 0 ? "bad" : ""]])}
+          ${group("Results", "target", [["Conversions to paid", num(s.conversions || 0), "Last touch, 7-day window: a contact who started paying within 7 days after a commercial e-mail counts once, for the flow of the last e-mail. It's a correlation, not proof the e-mail caused the purchase.", (s.conversions || 0) > 0 ? "good" : ""], ["Unsubscribes", num(s.unsubscribed || 0)], ["Bounces & complaints", num(s.bounced || 0)]])}
+        </div>
+        <p class="au-note">${icon("alert")}Delivered, opens and clicks will appear once Resend's webhook is connected (phase 2). No flow decides anything based on them.</p>
+      </section>
+      <section class="panel au-mini"><header class="au-board-h"><h2>Your flows</h2><span class="spacer"></span><button class="btn btn-sm" type="button" data-to="flows">See all</button></header>
+        ${flows.filter((f) => f.status !== "archived").map((f) => { const p = stats?.per_flow?.[f.id] || {}; return `<button type="button" class="au-mini-row" data-open="${f.id}">${pill(f.status)}<b>${esc(f.name)}</b><span class="au-chip">${ic("bolt")}${esc(triggerText(f.definition?.trigger))}</span><span class="spacer"></span><span class="au-mini-n"><b>${num(p.in_progress || 0)}</b> in flow</span><span class="au-mini-n"><b>${num(p.sent || 0)}</b> sent</span></button>`; }).join("") || `<p class="aud-empty">No flows yet.</p>`}
+      </section>`;
+    view.onclick = async (e) => {
+      const t = e.target.closest("[data-to]"); if (t) return go(t.dataset.to);
+      const o = e.target.closest("[data-open]"); if (o) return editor(flows.find((f) => f.id === Number(o.dataset.open)));
+      const d = e.target.closest("[data-days]"); if (d) { range.days = Number(d.dataset.days); A.store.set("au-days", range.days); try { await load(); } catch {} draw(); }
+    };
+    view.onchange = async (e) => { if (e.target.dataset?.r === "flow") { range.flow = e.target.value; try { await load(); } catch {} draw(); } };
   }
 
-  // ---------- Flows list ----------
+  // ---------- Flows: one card each, the next sensible action first ----------
   function flowsView() {
     const per = stats?.per_flow || {};
-    view.innerHTML = `<section class="panel">
-      <header class="au-h"><h2>Flows</h2><span class="spacer"></span><button class="btn btn-primary btn-sm" type="button" data-new>${icon("plus")}New flow</button></header>
-      <div class="table-wrap"><table class="au-table">
-        <thead><tr><th>Flow</th><th>Status</th><th>Entry trigger</th><th class="num">In progress</th><th class="num">Sent</th><th class="num">Conversions</th><th>Modified</th><th></th></tr></thead>
-        <tbody>${flows.filter((f) => f.status !== "archived").concat(flows.filter((f) => f.status === "archived")).map((f) => {
-          const p = per[f.id] || {};
-          return `<tr data-id="${f.id}"${f.status === "archived" ? ' class="is-archived"' : ""}>
-            <td><b>${esc(f.name)}</b><small>${esc(f.goal || "")}</small></td>
-            <td>${pill(f.status)}</td>
-            <td>${esc(triggerText(f.definition?.trigger))}</td>
-            <td class="num">${num(p.in_progress || 0)}</td><td class="num">${num(p.sent || 0)}</td><td class="num">${num(p.conversions || 0)}</td>
-            <td>${dt(f.updated_at)}</td>
-            <td class="au-acts">
-              <button class="btn btn-sm" type="button" data-act="edit">${icon("edit")}Edit</button>
-              <button class="btn btn-sm" type="button" data-act="sim">${icon("eye")}Preview</button>
-              ${f.status === "active" ? `<button class="btn btn-sm" type="button" data-act="pause">Pause</button><button class="btn btn-sm" type="button" data-act="backfill">Include existing…</button>`
-                : f.status === "paused" ? `<button class="btn btn-sm" type="button" data-act="resume">Resume</button>`
-                : f.status === "draft" ? `<button class="btn btn-sm btn-primary" type="button" data-act="activate">Activate…</button>` : ""}
-              <button class="btn btn-sm" type="button" data-act="dup">${icon("copy")}</button>
-              ${f.status !== "archived" ? `<button class="btn btn-sm btn-danger" type="button" data-act="archive" title="Archive">${icon("trash")}</button>` : ""}
-            </td></tr>`;
-        }).join("") || `<tr><td colspan="8" class="aud-empty">No flows yet.</td></tr>`}</tbody></table></div>
-    </section>`;
-    $("[data-new]", view).onclick = async () => {
-      const { data, error } = await A.db.from("automation_flows").insert({ name: "New flow", definition: { trigger: { type: "signup" }, entry: { mode: "once" }, exit: { on_paid: true }, start: null, steps: {} } }).select().single();
-      if (error) return A.toast(error.message, "err");
-      flows.push(data); editor(data);
+    const live = flows.filter((f) => f.status !== "archived"), old = flows.filter((f) => f.status === "archived");
+    const card = (f) => {
+      const p = per[f.id] || {}, k = flowStats(f);
+      const primary = f.status === "draft" ? `<button class="btn btn-primary btn-sm" type="button" data-act="activate">${ic("play")}Activate…</button>`
+        : f.status === "active" ? `<button class="btn btn-sm" type="button" data-act="pause">${ic("pause")}Pause</button>`
+        : f.status === "paused" ? `<button class="btn btn-primary btn-sm" type="button" data-act="resume">${ic("play")}Resume</button>` : "";
+      return `<article class="au-card s-${f.status}" data-id="${f.id}">
+        <div class="au-card-top">${pill(f.status)}<span class="au-prio" title="Priority">P${f.priority}</span><span class="spacer"></span>
+          <div class="au-more"><button class="icon-btn" type="button" data-more aria-label="More actions">${ic("more")}</button>
+            <div class="au-more-m" hidden><button type="button" data-act="sim">${icon("eye")}Simulate with a contact</button><button type="button" data-act="dup">${icon("copy")}Duplicate</button>
+              ${f.status === "active" ? `<button type="button" data-act="backfill">${ic("users")}Include existing contacts…</button>` : ""}
+              ${f.status !== "archived" ? `<button type="button" data-act="archive" class="is-danger">${icon("trash")}Archive</button>` : ""}</div></div></div>
+        <h3>${esc(f.name)}</h3><p class="au-card-goal">${esc(f.goal || "No goal written yet.")}</p>
+        <div class="au-chips"><span class="au-chip">${ic("bolt")}${esc(triggerText(f.definition?.trigger))}</span><span class="au-chip">${icon("mail")}${k.mails} e-mail${k.mails === 1 ? "" : "s"}</span>${k.branches ? `<span class="au-chip">${ic("split")}${k.branches} branch${k.branches === 1 ? "" : "es"}</span>` : ""}${f.definition?.exit?.on_paid ? `<span class="au-chip">${ic("target")}Stops when they pay</span>` : ""}</div>
+        <div class="au-card-stats"><div><b>${num(p.in_progress || 0)}</b><span>In flow now</span></div><div><b>${num(p.sent || 0)}</b><span>E-mails sent</span></div><div><b>${num(p.conversions || 0)}</b><span>Conversions</span></div></div>
+        <footer><span class="au-card-date">Edited ${A.fmtDate(f.updated_at, false)}</span><span class="spacer"></span><button class="btn btn-sm" type="button" data-act="edit">${icon("edit")}Edit flow</button>${primary}</footer>
+      </article>`;
     };
+    view.innerHTML = `<div class="au-cards">${live.map(card).join("")}<button type="button" class="au-card au-card-new" data-new>${icon("plus")}<b>New flow</b><span>Start from scratch with a trigger and add steps.</span></button></div>
+      ${old.length ? `<details class="au-archived"><summary>Archived (${old.length})</summary><div class="au-cards">${old.map(card).join("")}</div></details>` : ""}`;
     view.onclick = async (e) => {
+      if (e.target.closest("[data-new]")) return newFlow();
+      const more = e.target.closest("[data-more]");
+      $$(".au-more-m", view).forEach((m) => { if (!more || m !== more.nextElementSibling) m.hidden = true; });
+      if (more) { more.nextElementSibling.hidden = !more.nextElementSibling.hidden; return; }
       const b = e.target.closest("[data-act]"); if (!b) return;
       const f = flows.find((x) => x.id === Number(b.closest("[data-id]").dataset.id));
       const act = b.dataset.act;
@@ -436,13 +473,17 @@
   // ---------- E-mails ----------
   function emailsView() {
     const per = stats?.per_email || {};
-    const used = (id) => flows.filter((f) => Object.values(f.definition?.steps || {}).some((s) => s.type === "email" && Number(s.email_id) === id)).map((f) => f.name);
-    view.innerHTML = `<section class="panel"><header class="au-h"><h2>E-mails</h2>${A.info("Commercial e-mails need the contact's consent to marketing e-mails and count towards the frequency cap. Service e-mails (onboarding, help with the product) don't, but still respect unsubscribes and bounces. Essential transactional e-mails (billing, trial ending) live in Memberships and are separate.")}<span class="spacer"></span><button class="btn btn-primary btn-sm" type="button" data-new>${icon("plus")}New e-mail</button></header>
-      <div class="table-wrap"><table class="au-table"><thead><tr><th>E-mail</th><th>Type</th><th>Languages</th><th>Used in</th><th class="num">Sent</th><th class="num">Errors</th><th></th></tr></thead>
-      <tbody>${emails.map((x) => { const p = per[x.id] || {}; return `<tr data-id="${x.id}"><td><b>${esc(x.name)}</b><small>${esc(x.content?.[x.fallback_locale]?.subject || "")}</small></td>
-        <td>${x.category === "commercial" ? "Commercial" : "Service"}</td><td>${Object.keys(x.content || {}).map((l) => (l === x.fallback_locale ? `<b>${l}</b>` : l)).join(" · ")}</td>
-        <td>${esc(used(x.id).join(", ") || "—")}</td><td class="num">${num(p.sent || 0)}</td><td class="num">${num(p.failed || 0)}</td>
-        <td class="au-acts"><button class="btn btn-sm" type="button" data-act="edit">${icon("edit")}Edit</button><button class="btn btn-sm" type="button" data-act="dup">${icon("copy")}</button></td></tr>`; }).join("") || `<tr><td colspan="7" class="aud-empty">No e-mails yet.</td></tr>`}</tbody></table></div></section>`;
+    const card = (x) => { const p = per[x.id] || {}, c = x.content?.[x.fallback_locale] || {}; return `<article class="au-mcard" data-id="${x.id}">
+        <div class="au-card-top"><span class="au-type t-${x.category}">${x.category === "commercial" ? "Commercial" : "Service"}</span><span class="au-langs">${Object.keys(x.content || {}).map((l) => `<i class="${l === x.fallback_locale ? "is-fb" : ""}">${l.toUpperCase()}</i>`).join("")}</span></div>
+        <p class="au-mcard-name">${esc(x.name)}</p><h3>${esc(c.subject || "No subject")}</h3><p class="au-card-goal">${esc(c.preheader || "")}</p>
+        <footer><span class="au-card-date">${num(p.sent || 0)} sent${p.failed ? ` · <span class="bad">${num(p.failed)} errors</span>` : ""}</span><span class="spacer"></span>
+          <button class="icon-btn" type="button" data-act="dup" title="Duplicate">${icon("copy")}</button><button class="btn btn-sm" type="button" data-act="edit">${icon("edit")}Edit</button></footer></article>`; };
+    const order = (f) => [...new Set(Object.values(f.definition?.steps || {}).filter((s) => s.type === "email").map((s) => Number(s.email_id)))].map((id) => emails.find((x) => x.id === id)).filter(Boolean);
+    const inFlows = new Set(flows.flatMap((f) => order(f).map((x) => x.id)));
+    const loose = emails.filter((x) => !inFlows.has(x.id));
+    view.innerHTML = `<div class="au-mhead"><p>${icon("mail")}<span><b>Commercial</b> e-mails only reach contacts who accepted marketing e-mails and count towards the frequency cap. <b>Service</b> e-mails (onboarding, product help) don't, but respect unsubscribes. Billing and trial-ending e-mails live in Memberships.</span></p><button class="btn btn-primary btn-sm" type="button" data-new>${icon("plus")}New e-mail</button></div>
+      ${flows.filter((f) => f.status !== "archived" && order(f).length).map((f) => `<section class="au-mgroup"><h2>${pill(f.status)}${esc(f.name)}<em>${order(f).length} e-mail${order(f).length === 1 ? "" : "s"}</em></h2><div class="au-mcards">${order(f).map(card).join("")}</div></section>`).join("")}
+      ${loose.length ? `<section class="au-mgroup"><h2>Not used in any flow<em>${loose.length}</em></h2><div class="au-mcards">${loose.map(card).join("")}</div></section>` : ""}`;
     $("[data-new]", view).onclick = () => emailEditor(null, () => draw());
     view.onclick = async (e) => {
       const b = e.target.closest("[data-act]"); if (!b) return;
