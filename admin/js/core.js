@@ -176,6 +176,7 @@
     { href: "my-club.html", label: "My Club", icon: "crown", key: "myclub", group: "super" },
     { href: "memberships.html", label: "Memberships", icon: "billing", key: "memberships", group: "super" },
     { href: "audience.html", label: "Newsletter", icon: "mail", key: "audience", group: "super" },
+    { href: "automations.html", label: "Automations", icon: "sparkles", key: "automations", group: "super" },
     { href: "crm.html", label: "CRM", icon: "columns", key: "crm", group: "super" },
     { href: "leads.html", label: "Leads & Demos", icon: "inbox", key: "leads", group: "super" },
     { href: "promo-codes.html", label: "Promo codes", icon: "tag", key: "promo", group: "super" },

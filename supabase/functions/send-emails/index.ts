@@ -101,7 +101,13 @@ async function sendQueue() {
         const [s0] = await rest(`subscriptions?select=status&user_id=eq.${row.user_id}`);
         if (s0?.status === "trialing") key = "trial_welcome";
       }
-      const t = await template(key, row.locale);
+      let t = await template(key, row.locale);
+      // an optional e-mail switched off (an active automation flow replaces it, supabase/automations.sql): the trial
+      // welcome falls back to the plain confirmation (it carries the billing date); any other is not sent
+      if (t && t.enabled === false && !t.required) {
+        if (key === "trial_welcome") { key = "subscription_confirmed"; t = await template(key, row.locale); }
+        else { await rest(`email_delivery_logs?id=eq.${row.id}`, { method: "PATCH", body: JSON.stringify({ status: "skipped", error: "switched off (replaced by an automation flow)" }) }); continue; }
+      }
       if (!t) throw new Error(`No template ${key}`);
       const msg = render(t, await varsFor({ ...row, template: key }, row.locale, tz), row.locale, key === "newsletter_welcome" ? "newsletter" : "");
       const id = await deliver(row.to_email, msg, `scp-email-${row.id}`);

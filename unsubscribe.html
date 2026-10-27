@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Unsubscribe — Sports Content Playbook</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-s-32.png">
+  <link rel="stylesheet" href="css/fonts.css?v=1">
+  <style>
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 24px 16px; box-sizing: border-box; background: radial-gradient(ellipse at 50% 0%, #1e2a4d, #121b33 60%); color: #f3f5f9; font-family: Inter, Arial, sans-serif; }
+    .card { width: 100%; max-width: 520px; padding: 36px 32px; background: #17213b; border: 1px solid rgba(240, 184, 74, .35); border-radius: 20px; box-sizing: border-box; }
+    img { width: 150px; height: auto; display: block; margin-bottom: 26px; }
+    p.eyebrow { margin: 0 0 10px; color: #f0b84a; font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+    h1 { margin: 0 0 14px; font-family: "Host Grotesk", Inter, sans-serif; font-size: 28px; line-height: 1.2; }
+    p { margin: 0 0 16px; color: #c9d1e0; font-size: 15px; line-height: 1.6; }
+    button { margin-top: 8px; padding: 13px 24px; border: 0; border-radius: 999px; background: linear-gradient(180deg, #ffe7ad, #f4c463 45%, #d79a2b); color: #1a1205; font: 700 15px Inter, Arial, sans-serif; cursor: pointer; }
+    button:disabled { opacity: .6; cursor: default; }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <img src="assets/logo-scp.png" alt="Sports Content Playbook">
+    <p class="eyebrow" data-t="eyebrow"></p>
+    <h1 data-t="title"></h1>
+    <p data-t="text"></p>
+    <button type="button" data-t="cta" data-go></button>
+  </main>
+  <script src="js/config.js?v=20261020lf"></script>
+  <script>
+    // The link in every automation e-mail: ?t=<token>. It asks before unsubscribing (link scanners open links on their own).
+    // Unsubscribing stops automation and newsletter e-mails; essential account and billing e-mails still arrive.
+    (() => {
+      const q = new URLSearchParams(location.search);
+      const nav = (navigator.language || "en").slice(0, 2);
+      const lang = ["es", "ca", "en"].includes(q.get("l")) ? q.get("l") : ["es", "ca"].includes(nav) ? nav : "en";
+      const T = {
+        en: { eyebrow: "E-mail preferences", title: "Stop these e-mails?", text: "You won't get our tips, automated e-mails or the newsletter any more. Essential e-mails about your account and billing will still arrive.", cta: "Unsubscribe", done: "Done: you won't get these e-mails any more.", bad: "This link isn't valid. Reply to any of our e-mails and we'll take you off the list." },
+        es: { eyebrow: "Preferencias de correo", title: "¿Dejar de recibir estos correos?", text: "Ya no recibirás nuestros consejos, correos automáticos ni la newsletter. Los correos esenciales sobre tu cuenta y la facturación seguirán llegando.", cta: "Darme de baja", done: "Hecho: ya no recibirás estos correos.", bad: "Este enlace no es válido. Responde a cualquiera de nuestros correos y te daremos de baja." },
+        ca: { eyebrow: "Preferències de correu", title: "Vols deixar de rebre aquests correus?", text: "Ja no rebràs els nostres consells, els correus automàtics ni la newsletter. Els correus essencials sobre el teu compte i la facturació continuaran arribant.", cta: "Donar-me de baixa", done: "Fet: ja no rebràs aquests correus.", bad: "Aquest enllaç no és vàlid. Respon qualsevol dels nostres correus i et donarem de baixa." },
+      }[lang];
+      document.documentElement.lang = lang;
+      document.querySelectorAll("[data-t]").forEach((el) => { el.textContent = T[el.dataset.t]; });
+      const cfg = window.SCP_CONFIG || {}, token = q.get("t"), btn = document.querySelector("[data-go]"), text = document.querySelector('[data-t="text"]');
+      if (!token || !/^[0-9a-f-]{36}$/i.test(token)) { btn.hidden = true; text.textContent = T.bad; return; }
+      btn.onclick = () => {
+        btn.disabled = true;
+        fetch(`${cfg.supabaseUrl}/rest/v1/rpc/email_unsubscribe`, { method: "POST", headers: { apikey: cfg.supabaseAnonKey, "Content-Type": "application/json" }, body: JSON.stringify({ p_token: token }) })
+          .then((r) => r.json()).then((em) => { text.textContent = em ? T.done : T.bad; btn.hidden = true; }).catch(() => { btn.disabled = false; });
+      };
+    })();
+  </script>
+</body>
+</html>
