@@ -137,7 +137,7 @@
       return `Until ${(s.days || []).map((d) => DAYS[d - 1]).join(", ")} ${s.from_hour ?? 9}:00–${s.to_hour ?? 18}:00`;
     }
     if (s.type === "condition") return condText(s);
-    if (s.type === "email") { const em = emails.find((x) => x.id === Number(s.email_id)); return em ? `${em.name}${em.category === "commercial" ? " · commercial" : " · service"}` : "No e-mail chosen"; }
+    if (s.type === "email") return emails.find((x) => x.id === Number(s.email_id))?.name || "No e-mail chosen";
     if (s.type === "tag") return [(s.add || []).length ? `+ ${(s.add || []).join(", ")}` : "", (s.remove || []).length ? `− ${(s.remove || []).join(", ")}` : ""].filter(Boolean).join(" · ") || "No tags";
     if (s.type === "end") return s.reason || "sequence finished";
     return "";
@@ -473,7 +473,7 @@
   // ---------- E-mails ----------
   function emailsView() {
     const per = stats?.per_email || {};
-    const card = (x) => { const p = per[x.id] || {}, c = x.content?.[x.fallback_locale] || {}; return `<article class="au-mcard" data-id="${x.id}">
+    const card = (x) => { const p = per[x.id] || {}, c = x.content?.[window.SCPA_LANG]?.subject ? x.content[window.SCPA_LANG] : x.content?.[x.fallback_locale] || {}; return `<article class="au-mcard" data-id="${x.id}">
         <div class="au-card-top"><span class="au-type t-${x.category}">${x.category === "commercial" ? "Commercial" : "Service"}</span><span class="au-langs">${Object.keys(x.content || {}).map((l) => `<i class="${l === x.fallback_locale ? "is-fb" : ""}">${l.toUpperCase()}</i>`).join("")}</span></div>
         <p class="au-mcard-name">${esc(x.name)}</p><h3>${esc(c.subject || "No subject")}</h3><p class="au-card-goal">${esc(c.preheader || "")}</p>
         <footer><span class="au-card-date">${num(p.sent || 0)} sent${p.failed ? ` · <span class="bad">${num(p.failed)} errors</span>` : ""}</span><span class="spacer"></span>
@@ -495,7 +495,7 @@
 
   function emailEditor(orig, done) {
     const em = orig ? structuredClone(orig) : { name: "New e-mail", category: "commercial", fallback_locale: "en", content: { en: { subject: "", preheader: "", blocks: [{ type: "text", text: "Hi {{first_name|there}},\n\n" }, { type: "button", label: "Open SCP", url: "{{platform_url}}" }] } } };
-    let loc = em.fallback_locale, mobile = false, lastField = null, timer = 0;
+    let loc = em.content[window.SCPA_LANG] ? window.SCPA_LANG : em.fallback_locale, mobile = false, lastField = null, timer = 0;
     const live = flows.some((f) => f.status === "active" && Object.values(f.definition?.steps || {}).some((s) => s.type === "email" && Number(s.email_id) === em.id));
     const sender = settings?.emails || {};
     const m = A.modal({ title: orig ? "Edit e-mail" : "New e-mail", body: `<div class="au-mail"><div class="au-mail-form" data-form></div>
