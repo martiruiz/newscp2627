@@ -183,6 +183,10 @@ for (const p of libPosts) {
   });
 }
 
+// The closing "Your next idea is already in the library" card shows 3 other posts: never the ones featured above
+const libraryTeaser = libPosts.filter((p) => !posts.some((x) => x.url === p.url)).slice(0, 3)
+  .map((p) => ({ image: p.cover_url, url: p.url, library: `${SITE}/content-library.html#post=${p.id}` }));
+
 const TYPE = { news: "News & updates", trends: "Social media trends", ideas: "Sports content ideas" };
 const teasers = new Map(out.blogs.map((b) => [b.slug, b.teaser.slice(0, 2)]));
 const blogs = blogPosts.map((b) => ({
@@ -194,7 +198,7 @@ const blogs = blogPosts.map((b) => ({
 
 const { count: pastIssues } = await db.from("newsletter_issues").select("id", { count: "exact", head: true });
 // everything the email shows, saved with the issue so it can be edited in Admin → Audience → Newsletter (and re-rendered)
-const content = { subject: out.subject, preheader: out.preheader, intro: out.intro, topStory, news, posts, blogs, dateLabel, issue: (pastIssues || 0) + 1 };
+const content = { subject: out.subject, preheader: out.preheader, intro: out.intro, topStory, news, posts, libraryTeaser, blogs, dateLabel, issue: (pastIssues || 0) + 1 };
 const html = renderWeekly(content);
 
 if (DRY) {

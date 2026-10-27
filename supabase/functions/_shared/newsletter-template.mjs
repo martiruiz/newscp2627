@@ -78,11 +78,12 @@ function blogRow(b, i) {
   </td></tr>${space(22)}`;
 }
 
-export function renderWeekly({ subject, preheader, intro, topStory, news, posts = [], blogs, dateLabel, issue, edit = false }) {
+export function renderWeekly({ subject, preheader, intro, topStory, news, posts = [], libraryTeaser = [], blogs, dateLabel, issue, edit = false }) {
   ED = !!edit;
   const socials = Object.entries(SOCIAL).filter(([, url]) => url);
   const [lead, ...more] = blogs;
-  const cover = posts.filter((p) => p && p.image).slice(0, 3); // a taste of the library in the closing card
+  // a taste of the library in the closing card: always posts other than the featured ones
+  const cover = libraryTeaser.filter((p) => p && p.image && !posts.some((x) => x && x.url === p.url)).slice(0, 3);
   let n = 0;
   const num = () => String(++n).padStart(2, "0");
 
