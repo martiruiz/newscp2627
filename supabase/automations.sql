@@ -18,7 +18,7 @@
 create table if not exists public.automation_emails (
   id bigint generated always as identity primary key,
   name text not null,
-  category text not null default 'commercial' check (category in ('commercial', 'service')),
+  category text not null default 'commercial' check (category in ('commercial', 'educational', 'transactional')),
   content jsonb not null default '{}'::jsonb,         -- { en: { subject, preheader, blocks: [...], html, text }, es: {...} }
   fallback_locale text not null default 'en',
   created_at timestamptz not null default now(),
@@ -158,9 +158,16 @@ returns jsonb language sql stable security definer set search_path = public as $
     'consent', coalesce(p.newsletter, false)
                and not exists (select 1 from public.newsletter_signups n where lower(n.email) = lower(p.email) and n.unsubscribed_at is not null),
     'suppressed', exists (select 1 from public.email_suppressions x where x.email = lower(coalesce(p.email, u.email))),
+    'suppressed_hard', exists (select 1 from public.email_suppressions x where x.email = lower(coalesce(p.email, u.email)) and x.reason in ('bounced', 'complained')),
     'plan_key', s.plan_key,
     'plan_name', pl.name,
     'sub_status', s.status,
+    'billing_interval', s.billing_interval,
+    'amount', s.amount,
+    'currency', s.currency,
+    'stripe_subscription_id', s.stripe_subscription_id,
+    'last_payment', (select jsonb_build_object('amount', i.amount_paid, 'currency', i.currency, 'at', i.paid_at) from public.billing_invoices i
+                     where i.user_id = p.id and i.status = 'paid' and i.amount_paid > 0 order by i.paid_at desc nulls last limit 1),
     'trial_start', s.trial_start,
     'trial_end', s.trial_end,
     'in_trial', coalesce(s.status = 'trialing' and s.trial_end > now(), false),
@@ -188,6 +195,7 @@ begin
   b := case fld
     when 'has_paid' then (f ->> 'has_paid')::boolean
     when 'in_trial' then (f ->> 'in_trial')::boolean
+    when 'had_trial' then (f ->> 'trial_start') is not null
     when 'trial_ended_unpaid' then (f ->> 'trial_end') is not null and (f ->> 'trial_end')::timestamptz < now() and not (f ->> 'has_paid')::boolean
     when 'cancel_scheduled' then (f ->> 'cancel_scheduled')::boolean
     when 'logged_in_since_entry' then (f ->> 'last_sign_in_at') is not null and (f ->> 'last_sign_in_at')::timestamptz > coalesce(p_entered, now())
@@ -202,7 +210,7 @@ begin
     when 'org_type_is' then (f ->> 'org_type') = (v #>> '{}')
     else null end;
   if fld in ('has_tag', 'plan_is', 'locale_is', 'org_type_is') then return case when op = 'is_not' then not coalesce(b, false) else coalesce(b, false) end; end if;
-  if b is not null or fld in ('has_paid', 'in_trial', 'trial_ended_unpaid', 'cancel_scheduled', 'logged_in_since_entry', 'saved_idea', 'saved_search', 'used_ai', 'used_planner', 'consent') then
+  if b is not null or fld in ('has_paid', 'in_trial', 'had_trial', 'trial_ended_unpaid', 'cancel_scheduled', 'logged_in_since_entry', 'saved_idea', 'saved_search', 'used_ai', 'used_planner', 'consent') then
     return coalesce(b, false) = coalesce((v #>> '{}')::boolean, true);
   end if;
   n := case fld
@@ -262,7 +270,7 @@ begin
   elsif t = 'paid_started' then
     -- first paid subscription: the trial converted (paid from trial_end) or a direct purchase (from started_at)
     return query select s.user_id, 'paid'::text, case when s.trial_end is not null and s.trial_end <= now() then s.trial_end else s.started_at end
-      from public.subscriptions s where s.status in ('active', 'past_due')
+      from public.subscriptions s where s.status = 'active'
         and case when s.trial_end is not null and s.trial_end <= now() then s.trial_end else s.started_at end between p_since and now();
   elsif t = 'cancel_scheduled' then
     return query select s.user_id, 'cancel:' || s.canceled_at, s.canceled_at from public.subscriptions s
@@ -279,6 +287,16 @@ returns void language sql security definer set search_path = public as $$
 $$;
 revoke execute on function public.automation_log_add(bigint, bigint, uuid, text, text, jsonb) from public, anon, authenticated;
 
+-- why a contact must leave a flow now (null = stay): it paid (flows that sell the first subscription) or it cancelled
+-- (flows for trial users or customers who keep their subscription)
+create or replace function public.automation_exit_reason(p_def jsonb, f jsonb)
+returns text language sql stable as $$
+  select case
+    when coalesce((p_def #>> '{exit,on_paid}')::boolean, false) and coalesce((f ->> 'has_paid')::boolean, false) then 'converted'
+    when coalesce((p_def #>> '{exit,on_cancel}')::boolean, false) and (coalesce((f ->> 'cancel_scheduled')::boolean, false) or coalesce((f ->> 'access_ended')::boolean, false)) then 'cancelled'
+  end
+$$;
+
 -- enrol one contact (rules: re-entry, global exit, entry conditions). Returns the enrollment id, or null with the reason logged nowhere.
 create or replace function public.automation_enrol(p_flow bigint, p_user uuid, p_ref text, p_event timestamptz)
 returns bigint language plpgsql security definer set search_path = public as $$
@@ -289,7 +307,7 @@ begin
   select definition into d from public.automation_versions where id = fl.published_version_id;
   f := public.automation_facts(p_user);
   if f is null or f ->> 'email' is null then return null; end if;
-  if coalesce((d #>> '{exit,on_paid}')::boolean, false) and (f ->> 'has_paid')::boolean then return null; end if;
+  if public.automation_exit_reason(d, f) is not null then return null; end if;
   if not public.automation_check(d #> '{trigger,conditions}', f, now()) then return null; end if;
   -- re-entry: once per contact, or again after a cooling-off period (never while a journey in this flow is active)
   if exists (select 1 from public.automation_enrollments e where e.flow_id = p_flow and e.user_id = p_user and e.status = 'active') then return null; end if;
@@ -371,7 +389,7 @@ begin
     f := public.automation_facts(e.user_id);
     if f is null then perform public.automation_finish(e.id, 'exited', 'contact deleted'); return; end if;
     -- global exit: a customer stops getting the e-mails meant to sell them the first subscription
-    if coalesce((d #>> '{exit,on_paid}')::boolean, false) and (f ->> 'has_paid')::boolean then perform public.automation_finish(e.id, 'exited', 'converted'); return; end if;
+    if public.automation_exit_reason(d, f) is not null then perform public.automation_finish(e.id, 'exited', public.automation_exit_reason(d, f)); return; end if;
     -- the end of a Yes/No branch continues after its condition
     if sid is null and cardinality(stk) > 0 then sid := stk[cardinality(stk)]; stk := stk[1:cardinality(stk) - 1]; continue; end if;
     if sid is null then perform public.automation_finish(e.id, 'completed', 'sequence finished'); return; end if;
@@ -451,10 +469,10 @@ begin
     end loop;
   end loop;
   -- a contact who became a customer leaves every flow that sells the first subscription, right away
-  for r in select e.id from public.automation_enrollments e join public.automation_versions v on v.id = e.version_id
-           join public.subscriptions s on s.user_id = e.user_id
-           where e.status = 'active' and coalesce((v.definition #>> '{exit,on_paid}')::boolean, false) and s.status in ('active', 'past_due') loop
-    perform public.automation_finish(r.id, 'exited', 'converted');
+  for r in select e.id, public.automation_exit_reason(v.definition, public.automation_facts(e.user_id)) reason
+           from public.automation_enrollments e join public.automation_versions v on v.id = e.version_id
+           where e.status = 'active' and (coalesce((v.definition #>> '{exit,on_paid}')::boolean, false) or coalesce((v.definition #>> '{exit,on_cancel}')::boolean, false)) loop
+    if r.reason is not null then perform public.automation_finish(r.id, 'exited', r.reason); end if;
   end loop;
   for r in select e.id from public.automation_enrollments e join public.automation_flows f on f.id = e.flow_id
            where e.status = 'active' and f.status = 'active' and e.next_run_at <= now() order by e.next_run_at limit 500 loop
@@ -494,20 +512,27 @@ begin
     elsif em.id is null then reason := 'e-mail deleted';
     elsif e.status = 'exited' then reason := 'journey ended: ' || coalesce(e.exit_reason, e.status);
     elsif f is null then reason := 'contact deleted';
-    elsif coalesce((d #>> '{exit,on_paid}')::boolean, false) and (f ->> 'has_paid')::boolean then reason := 'converted';
-    elsif (f ->> 'suppressed')::boolean then reason := 'suppressed (unsubscribed, bounced or complained)';
+    elsif public.automation_exit_reason(d, f) is not null then reason := public.automation_exit_reason(d, f);
+    elsif s.category = 'transactional' and (f ->> 'suppressed_hard')::boolean then reason := 'address bounced or complained';
+    elsif s.category <> 'transactional' and (f ->> 'suppressed')::boolean then reason := 'suppressed (unsubscribed, bounced or complained)';
     elsif s.category = 'commercial' and not (f ->> 'consent')::boolean then reason := 'no consent to commercial e-mails';
     elsif s.scheduled_at < now() - make_interval(hours => coalesce((cfg ->> 'max_delay_hours')::int, 72)) then reason := 'too late to be relevant';
     end if;
     if reason is not null then
-      update public.automation_sends set status = case when reason = 'converted' or reason like 'journey ended%' or reason = 'flow archived' then 'cancelled' else 'skipped' end, error = reason where id = s.id;
+      update public.automation_sends set status = case when reason in ('converted', 'cancelled', 'flow archived') or reason like 'journey ended%' then 'cancelled' else 'skipped' end, error = reason where id = s.id;
       perform public.automation_log_add(s.enrollment_id, s.flow_id, s.user_id, s.step_id, 'skipped', jsonb_build_object('reason', reason, 'send_id', s.id));
       continue;
     end if;
-    if s.category = 'commercial' then
-      -- one commercial e-mail per contact per gap, shared with the newsletter
+    -- the contact asked for help (tag needs_help): tips wait until someone removes the tag (account notices still go)
+    if s.category <> 'transactional' and (f -> 'tags') ? 'needs_help' then
+      update public.automation_sends set scheduled_at = now() + interval '1 day' where id = s.id;
+      perform public.automation_log_add(s.enrollment_id, s.flow_id, s.user_id, s.step_id, 'deferred', jsonb_build_object('reason', 'waiting for a reply to their question (tag needs_help)', 'send_id', s.id));
+      continue;
+    end if;
+    if s.category in ('commercial', 'educational') then
+      -- one commercial or educational e-mail per contact per gap, shared with the newsletter
       select greatest(
-        (select max(x.sent_at) from public.automation_sends x where x.user_id = s.user_id and x.category = 'commercial' and x.status = 'sent' and not x.is_test),
+        (select max(x.sent_at) from public.automation_sends x where x.user_id = s.user_id and x.category in ('commercial', 'educational') and x.status = 'sent' and not x.is_test),
         case when (f ->> 'consent')::boolean then (select max(i.sent_at) from public.newsletter_issues i) end) into last_c;
       if s.user_id = any (claimed) or (last_c is not null and last_c > now() - gap) then
         if coalesce(cfg ->> 'on_cap', 'defer') = 'skip' then
@@ -560,7 +585,7 @@ begin
   insert into public.email_suppressions (email, reason, source) values (em, 'unsubscribed', 'automation link') on conflict (email) do nothing;
   update public.profiles set newsletter = false where lower(email) = em;
   update public.newsletter_signups set unsubscribed_at = coalesce(unsubscribed_at, now()) where lower(email) = em;
-  update public.automation_sends set status = 'skipped', error = 'unsubscribed' where lower(to_email) = em and status = 'queued' and not is_test;
+  update public.automation_sends set status = 'skipped', error = 'unsubscribed' where lower(to_email) = em and status = 'queued' and not is_test and category <> 'transactional';
   return em;
 end $$;
 grant execute on function public.email_unsubscribe(uuid) to anon, authenticated;
@@ -600,7 +625,7 @@ begin
           for b in select * from jsonb_array_elements(coalesce(c -> 'blocks', '[]'::jsonb)) loop
             if b ->> 'type' = 'button' and coalesce(b ->> 'url', '') !~ '^(https://|\{\{)' then errs := errs || to_jsonb(format('E-mail "%s" (%s): a button link must start with https:// or be a variable.', em.name, loc)); end if;
           end loop;
-          if c::text ~ '\{\{\s*(?!(first_name|org_name|trial_end_date|trial_days_left|plan_name|platform_url|pricing_url|account_url|unsubscribe_url)\W)[a-z_]+' then
+          if c::text ~ '\{\{\s*(?!(first_name|org_name|trial_end_date|trial_days_left|plan_name|first_charge_amount|last_payment_amount|billing_period|platform_url|pricing_url|account_url|subscription_url|unsubscribe_url)\W)[a-z_]+' then
             errs := errs || to_jsonb(format('E-mail "%s" (%s) uses an unknown variable.', em.name, loc)); end if;
         end loop;
       end if;
@@ -690,8 +715,8 @@ begin
   if not public.is_admin() then raise exception 'Not allowed'; end if;
   f := public.automation_facts(p_user);
   if f is null then return jsonb_build_array(jsonb_build_object('kind', 'error', 'text', 'Contact not found')); end if;
-  if coalesce((p_def #>> '{exit,on_paid}')::boolean, false) and (f ->> 'has_paid')::boolean then
-    return jsonb_build_array(jsonb_build_object('kind', 'exit', 'text', 'Would not enter: already a paying customer')); end if;
+  if public.automation_exit_reason(p_def, f) is not null then
+    return jsonb_build_array(jsonb_build_object('kind', 'exit', 'text', 'Would not enter: ' || case public.automation_exit_reason(p_def, f) when 'converted' then 'already a paying customer' else 'has cancelled' end)); end if;
   if not public.automation_check(p_def #> '{trigger,conditions}', f, now()) then
     return jsonb_build_array(jsonb_build_object('kind', 'exit', 'text', 'Would not enter: the entry conditions are not met')); end if;
   out := out || jsonb_build_array(jsonb_build_object('kind', 'entered', 'at', clock));
@@ -719,7 +744,8 @@ begin
       select * into em from public.automation_emails where id = (st ->> 'email_id')::bigint;
       out := out || jsonb_build_array(jsonb_build_object('kind', case when skip then 'skipped' else 'email' end, 'step', sid, 'at', clock, 'text', coalesce(em.name, 'No e-mail chosen'),
         'note', case when em.category = 'commercial' and not (f ->> 'consent')::boolean then 'would be skipped: no consent to commercial e-mails'
-                     when (f ->> 'suppressed')::boolean then 'would be skipped: address suppressed' end));
+                     when em.category <> 'transactional' and (f ->> 'suppressed')::boolean then 'would be skipped: unsubscribed or address suppressed'
+                     when em.category = 'transactional' and (f ->> 'suppressed_hard')::boolean then 'would be skipped: address bounced' end));
       skip := false; sid := st ->> 'next';
     elsif st ->> 'type' = 'tag' then
       out := out || jsonb_build_array(jsonb_build_object('kind', 'tag', 'step', sid, 'at', clock, 'add', st -> 'add', 'remove', st -> 'remove'));

@@ -6,7 +6,7 @@
 //   anyone POST ?u=<token> → one-click unsubscribe (List-Unsubscribe-Post from mail clients)
 // Nothing is sent to contacts while billing_settings.automations.sending_enabled is false (tests still go out).
 // Secrets: RESEND_API_KEY, CRON_SECRET, SITE_URL. Sender and reply-to: Memberships → Settings → E-mails.
-import { CORS, cronAllowed, env, json, rest, rpc, setting, superadmin } from "../_shared/stripe.ts";
+import { CORS, cronAllowed, env, json, rest, rpc, setting, stripe, superadmin } from "../_shared/stripe.ts";
 import { pickLocale, renderEmail, varsOf } from "../_shared/automation-render.js";
 
 const site = () => (env("SITE_URL").split(",")[0] || "https://sportscontentplaybook.com").replace(/\/$/, "");
@@ -26,8 +26,18 @@ async function deliver(to: string, msg: { subject: string; html: string; text: s
   return d.id as string;
 }
 
+// the real first charge after the trial (Stripe's upcoming invoice; read only). Only looked up when the e-mail uses it.
+async function firstCharge(email: { content?: Record<string, unknown> }, facts: { stripe_subscription_id?: string; in_trial?: boolean } | null) {
+  if (!facts?.stripe_subscription_id || !facts.in_trial || !JSON.stringify(email?.content || {}).includes("first_charge_amount")) return null;
+  try {
+    // deno-lint-ignore no-explicit-any
+    const inv: any = await (stripe.invoices as any).retrieveUpcoming({ subscription: facts.stripe_subscription_id });
+    return { amount: inv.amount_due / 100, currency: inv.currency };
+  } catch { return null; }
+}
+
 // sample values for previews without a chosen contact
-const SAMPLE = { first_name: "Alex", org_name: "FC Example", trial_end: new Date(Date.now() + 3 * 864e5).toISOString(), plan_key: "library_planner", plan_name: "Plus" };
+const SAMPLE = { first_name: "Alex", org_name: "FC Example", trial_end: new Date(Date.now() + 3 * 864e5).toISOString(), plan_key: "library_planner", plan_name: "Plus", billing_interval: "month" };
 
 async function factsOf(userId?: string) {
   if (!userId) return null;
@@ -54,10 +64,10 @@ Deno.serve(async (req) => {
         let subject = "";
         try {
           const locale = pickLocale(s.email, s.facts?.locale || "en");
-          const vars = varsOf(s.facts, locale, site(), s.token);
-          const msg = renderEmail(s.email.content[locale], vars, locale);
+          const vars = varsOf(s.facts, locale, site(), s.token, await firstCharge(s.email, s.facts));
+          const msg = renderEmail(s.email.content[locale], vars, locale, s.category);
           subject = msg.subject;
-          const id = await deliver(s.to, msg, `scp-auto-${s.id}`, s.token);
+          const id = await deliver(s.to, msg, `scp-auto-${s.id}`, s.category === "transactional" ? null : s.token);
           await rpc("automation_send_result", { p_id: s.id, p_ok: true, p_provider: id, p_subject: subject, p_error: null });
           sent++;
         } catch (e) {
@@ -76,8 +86,8 @@ Deno.serve(async (req) => {
     const email = body.email || {};
     const facts = (await factsOf(body.user_id)) || SAMPLE;
     const locale = pickLocale(email, body.locale || facts.locale || "en");
-    const vars = varsOf(facts, locale, site(), null);
-    const msg = renderEmail(email.content?.[locale], vars, locale);
+    const vars = varsOf(facts, locale, site(), null, body.user_id ? await firstCharge(email, facts) : { amount: 12.4, currency: "eur" });
+    const msg = renderEmail(email.content?.[locale], vars, locale, email.category);
     if (body.action === "preview") return json({ ...msg, locale });
     if (body.action === "test") {
       const to = String(body.to || admin.email || "").trim().toLowerCase();

@@ -29,7 +29,7 @@
   };
   const FEATURES = { search: "Saved search", ai: "AI analysis", planner: "Content Plan" };
   const FIELDS = [
-    ["has_paid", "Has an active paid subscription", "bool"], ["in_trial", "Is in the free trial", "bool"], ["trial_ended_unpaid", "Trial ended without subscribing", "bool"],
+    ["has_paid", "Has an active paid subscription", "bool"], ["in_trial", "Is in the free trial", "bool"], ["had_trial", "Has had a free trial", "bool"], ["trial_ended_unpaid", "Trial ended without subscribing", "bool"],
     ["cancel_scheduled", "Has scheduled a cancellation", "bool"], ["logged_in_since_entry", "Signed in since entering the flow", "bool"],
     ["saved_idea", "Has saved an idea", "bool"], ["saved_search", "Has saved a search", "bool"], ["used_ai", "Has used AI analysis", "bool"],
     ["used_planner", "Has used the Content Plan", "bool"], ["consent", "Accepts commercial e-mails", "bool"], ["has_tag", "Has the tag", "text"],
@@ -37,9 +37,11 @@
     ["days_since_signup", "Days since sign-up", "num"], ["days_since_login", "Days since last sign-in", "num"], ["trial_days_left", "Trial days left", "num"],
   ];
   const FIELD = Object.fromEntries(FIELDS.map((f) => [f[0], f]));
+  const CATEGORY = { commercial: "Commercial", educational: "Educational", transactional: "Account notice" };
+  const CATEGORY_LONG = { commercial: "Commercial (needs consent, frequency cap)", educational: "Educational (tips and product help, frequency cap)", transactional: "Account notice (always sent, no unsubscribe link)" };
   const STEP_LABEL = { wait: "Wait", condition: "Condition", email: "Send e-mail", tag: "Update contact", end: "End flow" };
   const END_REASONS = ["sequence finished", "goal met", "converted", "unsubscribed"];
-  const VARS = ["first_name", "org_name", "trial_end_date", "trial_days_left", "plan_name", "platform_url", "pricing_url", "account_url", "unsubscribe_url"];
+  const VARS = ["first_name", "org_name", "trial_end_date", "trial_days_left", "plan_name", "first_charge_amount", "last_payment_amount", "billing_period", "platform_url", "pricing_url", "account_url", "subscription_url", "unsubscribe_url"];
   const LOCALES = { en: "English", es: "Spanish", ca: "Catalan" };
   const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
@@ -200,7 +202,7 @@
               ${f.status === "active" ? `<button type="button" data-act="backfill">${ic("users")}Include existing contacts…</button>` : ""}
               ${f.status !== "archived" ? `<button type="button" data-act="archive" class="is-danger">${icon("trash")}Archive</button>` : ""}</div></div></div>
         <h3>${esc(f.name)}</h3><p class="au-card-goal">${esc(f.goal || "No goal written yet.")}</p>
-        <div class="au-chips"><span class="au-chip">${ic("bolt")}${esc(triggerText(f.definition?.trigger))}</span><span class="au-chip">${icon("mail")}${k.mails} e-mail${k.mails === 1 ? "" : "s"}</span>${k.branches ? `<span class="au-chip">${ic("split")}${k.branches} branch${k.branches === 1 ? "" : "es"}</span>` : ""}${f.definition?.exit?.on_paid ? `<span class="au-chip">${ic("target")}Stops when they pay</span>` : ""}</div>
+        <div class="au-chips"><span class="au-chip">${ic("bolt")}${esc(triggerText(f.definition?.trigger))}</span><span class="au-chip">${icon("mail")}${k.mails} e-mail${k.mails === 1 ? "" : "s"}</span>${k.branches ? `<span class="au-chip">${ic("split")}${k.branches} branch${k.branches === 1 ? "" : "es"}</span>` : ""}${f.definition?.exit?.on_paid ? `<span class="au-chip">${ic("target")}Stops when they pay</span>` : ""}${f.definition?.exit?.on_cancel ? `<span class="au-chip">${ic("target")}Stops if they cancel</span>` : ""}</div>
         <div class="au-card-stats"><div><b>${num(p.in_progress || 0)}</b><span>In flow now</span></div><div><b>${num(p.sent || 0)}</b><span>E-mails sent</span></div><div><b>${num(p.conversions || 0)}</b><span>Conversions</span></div></div>
         <footer><span class="au-card-date">Edited ${A.fmtDate(f.updated_at, false)}</span><span class="spacer"></span><button class="btn btn-sm" type="button" data-act="edit">${icon("edit")}Edit flow</button>${primary}</footer>
       </article>`;
@@ -242,7 +244,7 @@
       ? `<p class="au-err-h">${icon("alert")}Fix these before publishing:</p><ul class="au-errs">${errs.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`
       : `<dl class="au-sum"><dt>Entry</dt><dd>${esc(triggerText(def.trigger))}${def.trigger?.conditions?.rules?.length ? ` · only if ${esc(condText(def.trigger.conditions))}` : ""}</dd>
           <dt>Re-entry</dt><dd>${def.entry?.mode === "again" ? `Again after ${def.entry.cooldown_days || 30} days` : "Once per contact"}</dd>
-          <dt>Exit</dt><dd>${def.exit?.on_paid ? "Leaves as soon as the contact pays" : "Stays after paying"}</dd>
+          <dt>Exit</dt><dd>${[def.exit?.on_paid ? "Leaves as soon as the contact pays" : "Stays after paying", def.exit?.on_cancel ? "Leaves if the contact cancels" : ""].filter(Boolean).join(" · ")}</dd>
           <dt>Steps</dt><dd>${steps.length} · ${mails.length} e-mail${mails.length === 1 ? "" : "s"} (${mails.filter((x) => x.category === "commercial").length} commercial)</dd>
           <dt>Who</dt><dd>${live ? "Contacts already in the flow keep their current version; new entries use the new one." : "Only contacts whose event happens <b>from now on</b>. Existing contacts can be added later, separately, with a preview."}</dd>
           <dt>Sending</dt><dd>${settings?.automations?.sending_enabled ? "On: e-mails go out." : "<b>Off</b>: journeys advance but e-mails wait in the queue (and are skipped if they wait too long)."}</dd>
@@ -338,7 +340,7 @@
     };
     function render() {
       canvas.innerHTML = `<div class="au-node t-trigger${sel === "trigger" ? " is-sel" : ""}" data-sel="trigger"><span class="au-node-k">Entry trigger</span><span class="au-node-t">${esc(triggerText(def.trigger))}</span>
-          <span class="au-node-m">${def.entry?.mode === "again" ? `re-entry after ${def.entry.cooldown_days || 30} d` : "once per contact"}${def.exit?.on_paid ? " · exits when the contact pays" : ""}</span></div>
+          <span class="au-node-m">${def.entry?.mode === "again" ? `re-entry after ${def.entry.cooldown_days || 30} d` : "once per contact"}${def.exit?.on_paid ? " · exits when the contact pays" : ""}${def.exit?.on_cancel ? " · exits if the contact cancels" : ""}</span></div>
         ${chain(def.start, def, "start")}<div class="au-node t-endcap">End of the flow</div>`;
       sideRender();
     }
@@ -394,6 +396,7 @@
           <label class="au-f"><span>Can a contact enter again?</span><select class="select" data-e="mode"><option value="once"${def.entry?.mode !== "again" ? " selected" : ""}>Only once</option><option value="again"${def.entry?.mode === "again" ? " selected" : ""}>Again, after a waiting period</option></select></label>
           ${def.entry?.mode === "again" ? `<label class="au-f"><span>Waiting period (days)</span><input class="input" type="number" min="1" data-e="cooldown_days" value="${def.entry.cooldown_days || 30}"></label>` : ""}
           <label class="au-check"><input type="checkbox" data-x="on_paid"${def.exit?.on_paid ? " checked" : ""}> Leave the flow as soon as the contact pays (stops e-mails that sell the first subscription)</label>
+          <label class="au-check"><input type="checkbox" data-x="on_cancel"${def.exit?.on_cancel ? " checked" : ""}> Leave the flow if the contact cancels (during the trial or after paying)</label>
           <p class="au-side-h">Built-in e-mails it replaces</p>
           ${["trial_welcome", "trial_tips"].map((k) => `<label class="au-check"><input type="checkbox" data-rep="${k}"${(f.replaces || []).includes(k) ? " checked" : ""}> <code>${k}</code></label>`).join("")}`;
       } else {
@@ -432,7 +435,7 @@
         if (el.dataset.k) f[el.dataset.k] = el.dataset.k === "priority" ? Number(el.value) : el.value;
         if (el.dataset.t) def.trigger[el.dataset.t] = ["hours", "days"].includes(el.dataset.t) ? Number(el.value) : el.value;
         if (el.dataset.e) { def.entry = def.entry || {}; def.entry[el.dataset.e] = el.dataset.e === "cooldown_days" ? Number(el.value) : el.value; }
-        if (el.dataset.x) { def.exit = def.exit || {}; def.exit.on_paid = el.checked; }
+        if (el.dataset.x) { def.exit = def.exit || {}; def.exit[el.dataset.x] = el.checked; }
         if (el.dataset.rep) f.replaces = $$("[data-rep]", side).filter((x) => x.checked).map((x) => x.dataset.rep);
         if (el.closest("[data-rules]")) readRules(el.closest("[data-rules]"), def.trigger.conditions);
       } else {
@@ -474,14 +477,14 @@
   function emailsView() {
     const per = stats?.per_email || {};
     const card = (x) => { const p = per[x.id] || {}, c = x.content?.[window.SCPA_LANG]?.subject ? x.content[window.SCPA_LANG] : x.content?.[x.fallback_locale] || {}; return `<article class="au-mcard" data-id="${x.id}">
-        <div class="au-card-top"><span class="au-type t-${x.category}">${x.category === "commercial" ? "Commercial" : "Service"}</span><span class="au-langs">${Object.keys(x.content || {}).map((l) => `<i class="${l === x.fallback_locale ? "is-fb" : ""}">${l.toUpperCase()}</i>`).join("")}</span></div>
+        <div class="au-card-top"><span class="au-type t-${x.category}">${CATEGORY[x.category] || x.category}</span><span class="au-langs">${Object.keys(x.content || {}).map((l) => `<i class="${l === x.fallback_locale ? "is-fb" : ""}">${l.toUpperCase()}</i>`).join("")}</span></div>
         <p class="au-mcard-name">${esc(x.name)}</p><h3>${esc(c.subject || "No subject")}</h3><p class="au-card-goal">${esc(c.preheader || "")}</p>
         <footer><span class="au-card-date">${num(p.sent || 0)} sent${p.failed ? ` · <span class="bad">${num(p.failed)} errors</span>` : ""}</span><span class="spacer"></span>
-          <button class="icon-btn" type="button" data-act="dup" title="Duplicate">${icon("copy")}</button><button class="btn btn-sm" type="button" data-act="edit">${icon("edit")}Edit</button></footer></article>`; };
+          <button class="icon-btn au-del" type="button" data-act="del" title="Delete">${icon("trash")}</button><button class="icon-btn" type="button" data-act="dup" title="Duplicate">${icon("copy")}</button><button class="btn btn-sm" type="button" data-act="edit">${icon("edit")}Edit</button></footer></article>`; };
     const order = (f) => [...new Set(Object.values(f.definition?.steps || {}).filter((s) => s.type === "email").map((s) => Number(s.email_id)))].map((id) => emails.find((x) => x.id === id)).filter(Boolean);
     const inFlows = new Set(flows.flatMap((f) => order(f).map((x) => x.id)));
     const loose = emails.filter((x) => !inFlows.has(x.id));
-    view.innerHTML = `<div class="au-mhead"><p>${icon("mail")}<span><b>Commercial</b> e-mails only reach contacts who accepted marketing e-mails and count towards the frequency cap. <b>Service</b> e-mails (onboarding, product help) don't, but respect unsubscribes. Billing and trial-ending e-mails live in Memberships.</span></p><button class="btn btn-primary btn-sm" type="button" data-new>${icon("plus")}New e-mail</button></div>
+    view.innerHTML = `<div class="au-mhead"><p>${icon("mail")}<span><b>Commercial</b> e-mails only reach contacts who accepted marketing e-mails. <b>Educational</b> e-mails (tips, help with the product) don't need that consent. Both respect unsubscribes and the frequency cap. <b>Account notices</b> (trial ending, payment) always arrive and have no unsubscribe link.</span></p><button class="btn btn-primary btn-sm" type="button" data-new>${icon("plus")}New e-mail</button></div>
       ${flows.filter((f) => f.status !== "archived" && order(f).length).map((f) => `<section class="au-mgroup"><h2>${pill(f.status)}${esc(f.name)}<em>${order(f).length} e-mail${order(f).length === 1 ? "" : "s"}</em></h2><div class="au-mcards">${order(f).map(card).join("")}</div></section>`).join("")}
       ${loose.length ? `<section class="au-mgroup"><h2>Not used in any flow<em>${loose.length}</em></h2><div class="au-mcards">${loose.map(card).join("")}</div></section>` : ""}`;
     $("[data-new]", view).onclick = () => emailEditor(null, () => draw());
@@ -489,6 +492,15 @@
       const b = e.target.closest("[data-act]"); if (!b) return;
       const x = emails.find((y) => y.id === Number(b.closest("[data-id]").dataset.id));
       if (b.dataset.act === "edit") return emailEditor(x, () => draw());
+      if (b.dataset.act === "del") {
+        // an e-mail still used by a flow (its draft or a version contacts may be walking) can't go: take it out of the flow first
+        const { data: vers } = await A.db.from("automation_versions").select("flow_id,definition");
+        const uses = (def) => Object.values(def?.steps || {}).some((st) => st.type === "email" && Number(st.email_id) === x.id);
+        const inUse = flows.filter((f) => f.status !== "archived" && (uses(f.definition) || (vers || []).some((v) => v.flow_id === f.id && uses(v.definition))));
+        if (inUse.length) return A.toast(`This e-mail is used in: ${inUse.map((f) => f.name).join(", ")}. Remove it from the flow first (and publish the change if the flow is active).`, "err");
+        if (!(await A.confirmDialog({ title: "Delete this e-mail?", text: "It disappears for good. E-mails already sent keep their history.", confirm: "Delete", danger: true }))) return;
+        return busy(b, async () => { const { error } = await A.db.from("automation_emails").delete().eq("id", x.id); if (error) throw new Error(error.message); emails = emails.filter((y) => y.id !== x.id); A.toast("E-mail deleted."); draw(); });
+      }
       busy(b, async () => { const { data, error } = await A.db.from("automation_emails").insert({ name: `${x.name} (copy)`, category: x.category, content: x.content, fallback_locale: x.fallback_locale }).select().single(); if (error) throw error; emails.push(data); draw(); });
     };
   }
@@ -518,7 +530,7 @@
     function renderForm() {
       const c = v();
       form.innerHTML = `<div class="au-row"><label class="au-f"><span>Internal name</span><input class="input" data-m="name" value="${esc(em.name)}"></label>
-          <label class="au-f"><span>Type</span><select class="select" data-m="category"><option value="commercial"${em.category === "commercial" ? " selected" : ""}>Commercial (needs consent, counts for the cap)</option><option value="service"${em.category === "service" ? " selected" : ""}>Service (onboarding / product help)</option></select></label></div>
+          <label class="au-f"><span>Type</span><select class="select" data-m="category">${Object.entries(CATEGORY_LONG).map(([k, l]) => `<option value="${k}"${em.category === k ? " selected" : ""}>${l}</option>`).join("")}</select></label></div>
         <p class="au-help">From <b>${esc(sender.from_name || "Sports Content Playbook")} &lt;${esc(sender.from_email || "—")}&gt;</b> · replies to <b>${esc(sender.reply_to || sender.from_email || "—")}</b> (Memberships → Settings → E-mails). Unsubscribe link added to every e-mail.</p>
         <div class="au-locs">${Object.keys(LOCALES).map((l) => `<button type="button" class="${l === loc ? "is-on" : ""}${em.content[l] ? "" : " is-empty"}" data-loc="${l}">${LOCALES[l]}${l === em.fallback_locale ? " · fallback" : ""}</button>`).join("")}
           <label class="au-fb">Fallback <select class="select input-sm" data-m="fallback_locale">${Object.keys(em.content).map((l) => `<option value="${l}"${l === em.fallback_locale ? " selected" : ""}>${LOCALES[l] || l}</option>`).join("")}</select></label></div>
