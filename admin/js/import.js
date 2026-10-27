@@ -1,7 +1,8 @@
 // SCP Admin — Import: CSV wizard (1. Upload → 2. Analysis → 3. Results) and import history (download / errors / revert /
 // delete one or several imports — undoing them too, or keeping their posts).
 // CSV format (same as the previous back-end):
-//   external_id,published_at,embed,url,format,title,sport,competition,club,platform,entity[,trend,campaign]
+//   external_id,published_at,embed,url,format,title,sport,competition,club,platform,entity[,trend,campaign,cover]
+//   cover (optional): the post's image link from the scraping (Bright Data's image_url) → its cover, without asking Instagram
 //   Several values in one cell are separated by commas, e.g. "LaLiga,Champions League".
 (async () => {
   const A = window.SCPA;
@@ -17,6 +18,8 @@
     { key: "title", required: false, aliases: ["title", "caption", "text"] },
     // the profile that published the post (Admin → Scraped profiles); Instagram /p/ links don't carry it
     { key: "account", required: false, aliases: ["account", "username", "user_posted", "profile", "profile_url", "handle", "author", "owner_username"] },
+    // the post's image from the scraping (Bright Data: image_url); the covers step copies it (supabase/import-cover-source.sql)
+    { key: "cover", required: false, aliases: ["cover", "cover_url", "image_url", "thumbnail", "display_url"] },
     ...A.CATEGORIES.map((c) => ({ key: c.key, required: false, aliases: [c.key, `${c.key}s`] })),
   ];
   // Admin → My Club → "Import posts": the same import, for one club (?club=id). Its players' and sponsors' posts go to its
@@ -157,7 +160,7 @@
     parsed.data.forEach((raw, i) => {
       const line = i + 2; // header is line 1
       const get = (k) => (map[k] ? String(raw[map[k]] ?? "").trim() : "");
-      const row = { _row: line, external_id: get("external_id"), embed: get("embed"), url: get("url"), title: get("title"), account: get("account") };
+      const row = { _row: line, external_id: get("external_id"), embed: get("embed"), url: get("url"), title: get("title"), account: get("account"), cover: get("cover") };
       for (const c of A.CATEGORIES) row[c.key] = splitValues(get(c.key)).join(",");
       // Formats: Post → Images, carousel → Carousel, only Instagram can be "Reel" (supabase/smart-filters.sql)
       row.format = splitValues(row.format).map((f) => normFormat(f, row.platform)).join(",");
@@ -523,7 +526,7 @@
           <b>${wizard.file ? esc(wizard.file.name) : "Drop your CSV file here"}</b>
           <span class="muted">${wizard.file ? `${num(Math.round(wizard.file.size / 1024))} KB · click to choose another file` : "or click to browse"}</span>
         </label>
-        <p class="hint" style="margin-top:12px">Columns: <span class="mono">external_id, published_at, embed, url, format, title, sport, competition, club, platform, entity</span> (optional: <span class="mono">trend, campaign, account</span> — the profile that published it). Put several values in one cell separated by commas.</p>
+        <p class="hint" style="margin-top:12px">Columns: <span class="mono">external_id, published_at, embed, url, format, title, sport, competition, club, platform, entity</span> (optional: <span class="mono">trend, campaign, account</span> — the profile that published it — and <span class="mono">cover</span>, the post's image link from the scraping). Put several values in one cell separated by commas.</p>
         <p class="error-text" data-err ${errorText ? "" : "hidden"}>${esc(errorText)}</p>
         <div class="wizard-actions"><button class="btn btn-primary" type="button" data-go ${wizard.file ? "" : "disabled"}>Upload &amp; Analyze</button></div>
       </section>`);
@@ -643,7 +646,7 @@
     const term = terminal($(".big-spinner").parentElement, "scp@import:~$ import --commit");
     const rows = T.importable;
     const total = { created: 0, replaced: 0, errors: [], new_values_created: {} };
-    let noAccounts = false;
+    let noAccounts = false, noCovers = false;
     try {
       await A.db.from("idea_imports").update({ status: "importing" }).eq("id", wizard.importId);
       const batches = A.chunk(rows, BATCH);
@@ -653,6 +656,8 @@
         const res = await rpc("import_content_ideas_batch", { p_import_id: wizard.importId, p_rows: batches[i] });
         const accts = batches[i].filter((r) => r.account).map((r) => ({ external_id: r.external_id, account: r.account }));
         if (accts.length && !noAccounts) await rpc("set_idea_accounts", { p_rows: accts }).catch(() => { noAccounts = true; term.log("warn", "Accounts not saved: run supabase/scraped-profiles.sql in Supabase"); });
+        const covers = batches[i].filter((r) => r.cover).map((r) => ({ external_id: r.external_id, cover: r.cover }));
+        if (covers.length && !noCovers) await rpc("set_idea_cover_sources", { p_rows: covers }).catch(() => { noCovers = true; term.log("warn", "Cover links not saved: run supabase/import-cover-source.sql in Supabase (covers are loaded from the platforms)"); });
         const doneRows = Math.min((i + 1) * BATCH, rows.length);
         const rate = doneRows / Math.max(term.elapsed(), 0.001);
         term.log(res.errors?.length ? "warn" : "ok", `INSERT batch ${i + 1}/${batches.length} · +${res.created} created · ${res.replaced} replaced${res.errors?.length ? ` · ${res.errors.length} errors` : ""} · ${Math.round(performance.now() - b0)} ms`);

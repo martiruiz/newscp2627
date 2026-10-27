@@ -2,6 +2,9 @@
 // POST { ids: [content idea ids] } (up to 12 per call; superadmins only) → for each post: the image from its platform
 // (same rules as pipeline/library/covers.mjs), copied to Storage (bucket "covers", public) → content_ideas.cover_url.
 // A post with no image available gets cover_at (tried) and no cover; a removed post gets unavailable_at.
+// A post imported with its image link from the scraping (content_ideas.cover_source, supabase/import-cover-source.sql)
+// takes that image first, without asking the platform; the platform's page is then only tried for Instagram's extra data
+// (type, size, length, views), and only when that fails it's used for the cover too.
 // SUPABASE_URL, SUPABASE_ANON_KEY and SUPABASE_SERVICE_ROLE_KEY are provided by Supabase.
 const env = (k: string) => Deno.env.get(k) ?? "";
 const CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, apikey, content-type", "Access-Control-Allow-Methods": "POST, OPTIONS" };
@@ -152,12 +155,28 @@ Deno.serve(async (req) => {
   const { ids } = await req.json().catch(() => ({ ids: [] }));
   const list = (Array.isArray(ids) ? ids : []).map(Number).filter(Boolean).slice(0, 12);
   if (!list.length) return json({ done: 0, no_image: 0, removed: 0 });
-  const rows = await rest(`content_ideas?select=id,url&id=in.(${list.join(",")})`);
+  let rows;
+  try { rows = await rest(`content_ideas?select=id,url,cover_source&id=in.(${list.join(",")})`); }
+  catch (_) { rows = await rest(`content_ideas?select=id,url&id=in.(${list.join(",")})`); }   // import-cover-source.sql not run yet
   let done = 0, noImage = 0, removed = 0;
   for (const p of rows) {
     const ig = /instagram\.com/.test(p.url || "");
     const now = new Date().toISOString();
     try {
+      // the image from the scraping: copied straight away; its shape from the image itself
+      const src = p.cover_source ? await store(p.id, p.cover_source).catch(() => null) : null;
+      if (src?.url) {
+        await rest(`content_ideas?id=eq.${p.id}`, { method: "PATCH", body: JSON.stringify({ cover_url: `${src.url}?v=${Date.now().toString(36)}`, cover_at: now }) });
+        if (src.size) await rest("rpc/apply_media_shape", { method: "POST", body: JSON.stringify({ p_rows: [{ id: p.id, ...src.size }] }) }).catch(() => {});
+        // Instagram's own data (reel / carousel, length, views) when its page answers; not needed for the cover
+        if (ig) {
+          const c = await coverFor(p.url || "").catch(() => null);
+          if (c && !c.broken && c.media_type && c.width && c.height) await rest("rpc/apply_ig_meta", { method: "POST", body: JSON.stringify({ p_rows: [{ id: p.id, media_type: c.media_type, width: c.width, height: c.height, duration: c.duration, views: c.views }] }) }).catch(() => {});
+        }
+        done++;
+        await sleep(ig ? 700 : 0);
+        continue;
+      }
       const c = await coverFor(p.url || "");
       if (c?.broken) { removed++; await rest(`content_ideas?id=eq.${p.id}`, { method: "PATCH", body: JSON.stringify({ unavailable_at: now, cover_at: now }) }); continue; }
       const st = c?.image ? await store(p.id, c.image) : null;
