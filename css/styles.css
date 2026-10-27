@@ -6285,8 +6285,14 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 /* Filter search: a team as club and as opponent in one row, "as opponent" beside it */
 .lf-hit-wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 6px; }
 .lf-hit-wrap .lf-hit { flex: 1 1 100%; min-width: 0; }
-/* "as opponent": its own line under the club (the filters column is too narrow for both side by side) */
-.lf-hit-wrap .lf-hit-alt { margin: 0 0 4px 34px; }
+/* "as opponent": a sub-row of the club, like a subfolder (└ connector, same row style, count on the right) */
+.lf-hit-wrap .lf-hit-alt { position: relative; flex: 1 1 100%; display: flex; align-items: center; gap: 8px; height: 32px; margin: 0 0 2px 16px; padding: 0 8px 0 26px;
+  border: 0; border-radius: 8px; background: none; color: var(--muted); font: 500 12.5px var(--font-body); text-align: left; }
+.lf-hit-wrap .lf-hit-alt::before { content: ""; position: absolute; left: 8px; top: -8px; width: 12px; height: 24px; border-left: 1.5px solid var(--line); border-bottom: 1.5px solid var(--line); border-bottom-left-radius: 7px; }
+.lf-hit-wrap .lf-hit-alt em { margin-left: auto; min-width: 24px; height: 20px; padding: 0 7px; border-radius: 100px; background: var(--surface-3); color: var(--muted); font-size: 11px; font-weight: 500; display: grid; place-items: center; opacity: 1; }
+.lf-hit-wrap .lf-hit-alt:hover { background: rgba(var(--fg), 0.06); color: var(--text); }
+.lf-hit-wrap .lf-hit-alt.is-on { color: var(--gold); }
+.lf-hit-wrap .lf-hit-alt.is-on::before { border-color: rgba(240, 184, 74, 0.6); }
 .lf-hit-alt { flex: none; height: 26px; padding: 0 9px; border-radius: 100px; border: 0.5px solid var(--line); background: none; color: var(--muted); font: 600 11.5px var(--font-body); white-space: nowrap; cursor: pointer; }
 .lf-hit-alt:hover, .lf-hit-alt.is-on { color: var(--gold); border-color: rgba(240, 184, 74, 0.6); }
 .lf-hit-alt em { font-style: normal; opacity: 0.7; margin-left: 2px; }
