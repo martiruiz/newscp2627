@@ -164,9 +164,38 @@
     };
     await loadRecipients().catch(() => {});
     if (!host._nlImport) { host._nlImport = true; host.addEventListener("change", (e) => { const f = e.target.closest("[data-nl-import]")?.files?.[0]; if (f) { e.target.value = ""; importDialog(f); } }); }
-    const { data: issues, error } = await A.db.from("newsletter_issues").select("*").order("week_start", { ascending: false }).limit(12);
+    // "New newsletter": an issue from the base template (one block of each kind with placeholder texts and the newest library
+    // posts), edited here like the weekly one (supabase/newsletter-custom.sql)
+    const baseIssue = async () => {
+      const SITE = "https://sportscontentplaybook.com", L = `${SITE}/content-library.html#post=`;
+      const { data: lib } = await A.db.from("content_ideas").select("id,url,cover_url,content_idea_tags(idea_catalog(category,name))")
+        .is("unavailable_at", null).not("cover_url", "is", null).order("analyzed_at", { ascending: false, nullsFirst: false }).limit(7);
+      const tag = (p, c) => (p.content_idea_tags || []).map((t) => t.idea_catalog).find((v) => v && v.category === c)?.name || "";
+      const { count } = await A.db.from("newsletter_issues").select("id", { count: "exact", head: true });
+      const news = { title: "Write a headline", link: `${SITE}/news.html`, image: "", platform: "" };
+      const blog = { title: "Article title", type: "Blog", date: new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long" }), link: `${SITE}/blog/`, image: "", teaser: ["A short summary of the article."] };
+      return {
+        subject: "New newsletter", preheader: "", intro: "Write the intro: what this edition is about.",
+        dateLabel: new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }), issue: (count || 0) + 1,
+        topStory: { title: "Top story headline", take: "Why it matters for clubs, and what to do about it.", link: `${SITE}/news.html`, image: "", platform: "" },
+        news: [news, news, news],
+        posts: (lib || []).slice(0, 4).map((p) => ({ who: tag(p, "club") || tag(p, "entity") || "Post", format: tag(p, "format") || "Post", sport: tag(p, "sport"),
+          reel: /reel|video|short/i.test(tag(p, "format")) || /\/reel\//.test(p.url || ""), description: "Why this post is worth studying and how a club could adapt the idea.",
+          image: p.cover_url, url: p.url, library: L + p.id })),
+        libraryTeaser: (lib || []).slice(4, 7).map((p) => ({ image: p.cover_url, url: p.url, library: L + p.id })),
+        blogs: [blog, blog, blog],
+      };
+    };
+    if (!host._nlNew) { host._nlNew = true; host.addEventListener("click", (e) => { const b = e.target.closest("[data-nl-new]"); if (b) busy(b, async () => {
+      const { data: id, error: err } = await A.db.rpc("admin_create_newsletter_issue", { p_items: await baseIssue() });
+      if (err) throw new Error(/does not exist|schema cache|Could not find/i.test(err.message) ? "Run supabase/newsletter-custom.sql in Supabase first." : err.message);
+      const { data: row } = await A.db.from("newsletter_issues").select("*").eq("id", id).single();
+      A.toast("New newsletter created. Click any text to write it."); host._nlAdd(row);
+    }); }); }
+    const newBtn = `<button class="btn btn-sm" type="button" data-nl-new>${icon("plus")}New newsletter</button>`;
+    const { data: issues, error } = await A.db.from("newsletter_issues").select("*").order("week_start", { ascending: false }).order("id", { ascending: false }).limit(12);
     if (error) { host.innerHTML = `${head()}${subsHtml()}<p class="aud-empty panel-pad">${esc(/does not exist|schema cache/i.test(error.message) ? "Run supabase/newsletter.sql in Supabase first." : A.errMsg(error))}</p>`; return; }
-    const empty = () => { host.innerHTML = `${head()}${subsHtml()}<p class="aud-empty panel-pad">No issue yet. The weekly script (<span class="mono">node newsletter/weekly.mjs</span> in the pipeline) writes it and leaves the draft in Resend; then it shows here to edit.</p>`; };
+    const empty = () => { host._nlAdd = () => newsletter(); host.innerHTML = `${head(`<span class="spacer"></span>${newBtn}`)}${subsHtml()}<p class="aud-empty panel-pad">No issue yet. The weekly script (<span class="mono">node newsletter/weekly.mjs</span> in the pipeline) writes it and leaves the draft in Resend; then it shows here to edit.</p>`; };
     const refresh = () => (issues.length ? draw() : empty());
     if (!issues.length) return empty();
     let cur = issues[0];
@@ -250,7 +279,7 @@
       if (!work || workId !== cur.id) { work = structuredClone(cur.items || {}); workId = cur.id; undo = []; sel = null; scrollY = 0; }
       const it = work;
       host.innerHTML = `${head(`<span class="spacer"></span>
-          <select class="select" data-nl-week aria-label="Issue">${issues.map((x) => `<option value="${x.id}"${x.id === cur.id ? " selected" : ""}>Week of ${esc(x.week_start)} · ${esc(x.subject)}</option>`).join("")}</select>`)}
+          ${newBtn}<select class="select" data-nl-week aria-label="Issue">${issues.map((x) => `<option value="${x.id}"${x.id === cur.id ? " selected" : ""}>${x.custom ? "Created" : "Week of"} ${esc(x.custom ? A.fmtDateTime(x.created_at) : x.week_start)} · ${esc(x.subject)}</option>`).join("")}</select>`)}
         ${subsHtml()}
         <div class="nl-body">
           <p class="nl-status">${cur.sent_at ? `<span class="imp-st st-ok"><i></i>Sent ${A.fmtDateTime(cur.sent_at)} to ${num(cur.sent_to || 0)}</span>` : cur.broadcast_id ? `<span class="imp-st st-wait"><i></i>Draft in Resend</span>` : `<span class="imp-st st-mute"><i></i>No Resend draft</span>`}
@@ -302,6 +331,7 @@
         try { A.toast("Uploading…"); const url = await upload(f); const b = blockInfo(sel); change(() => { b.o[b.image] = url; }); } catch (err) { A.toast(err.message, "err"); }
       }
     });
+    host._nlAdd = (row) => { issues.unshift(row); cur = row; draw(); };
     host.addEventListener("click", (e) => {
       const w = e.target.closest("[data-nl-w]");
       if (w) { mobile = w.dataset.nlW === "m"; host.querySelector(".nl-ed").classList.toggle("nl-m", mobile); host.querySelectorAll("[data-nl-w]").forEach((x) => x.classList.toggle("is-on", x === w)); return; }

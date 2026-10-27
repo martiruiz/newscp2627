@@ -37,7 +37,7 @@ const since = new Date(Date.now() - 7 * 864e5).toISOString();
 const dateLabel = today.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
 
 if (!DRY) {
-  const { data: existing } = await db.from("newsletter_issues").select("id").eq("week_start", weekStart).maybeSingle();
+  const { data: existing } = await db.from("newsletter_issues").select("id").eq("week_start", weekStart).eq("custom", false).maybeSingle(); // hand-made issues (Admin → New newsletter) don't count
   if (existing) { console.log(`Issue for the week of ${weekStart} already exists — nothing to do.`); process.exit(0); }
 }
 
