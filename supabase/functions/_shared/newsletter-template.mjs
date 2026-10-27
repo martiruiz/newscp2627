@@ -82,6 +82,7 @@ export function renderWeekly({ subject, preheader, intro, topStory, news, posts 
   ED = !!edit;
   const socials = Object.entries(SOCIAL).filter(([, url]) => url);
   const [lead, ...more] = blogs;
+  const cover = posts.filter((p) => p && p.image).slice(0, 3); // a taste of the library in the closing card
   let n = 0;
   const num = () => String(++n).padStart(2, "0");
 
@@ -166,11 +167,12 @@ export function renderWeekly({ subject, preheader, intro, topStory, news, posts 
   `) : ""}
 
   <!-- CTA -->
-  <tr><td class="pad" align="center" style="padding:38px 36px;border-radius:24px;background:${GOLD};background-image:linear-gradient(135deg,#ffe0a0 0%,#f8cc75 45%,#f0b84a 100%)">
-    <p style="margin:0;${SANS};font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#5c4512">Sports Content Playbook</p>
-    <p style="margin:10px 0 0;${SANS};font-size:26px;line-height:1.2;font-weight:700;letter-spacing:-0.5px;color:#121b33">Your next idea is already in the library</p>
-    <p style="margin:10px 0 0;${BODY};font-size:15px;line-height:1.6;color:#3d3220">Thousands of posts from clubs, leagues and brands, filtered by sport, format and competition.</p>
-    <p style="margin:22px 0 0"><a href="${SITE}/content-library.html" style="display:inline-block;padding:15px 28px;border-radius:100px;background:#121b33;${SANS};font-size:15px;font-weight:700;color:#ffffff;text-decoration:none">Explore the Content Library &rarr;</a></p>
+  <tr><td class="pad" align="center" style="padding:42px 36px 40px;border-radius:24px;background:#121b33;background-image:linear-gradient(160deg,#1f2e55 0%,#121b33 62%);border:1px solid rgba(240,184,74,0.45)">
+    <p style="margin:0;${SANS};font-size:12px;font-weight:700;letter-spacing:2.4px;text-transform:uppercase;color:${GOLD}">Sports Content Playbook</p>
+    <p style="margin:14px 0 0;${SANS};font-size:30px;line-height:1.15;font-weight:700;letter-spacing:-0.7px;color:#ffffff">Your next idea is<br><span style="color:${GOLD}">already in the library</span></p>
+    <p style="margin:14px auto 0;max-width:440px;${BODY};font-size:15px;line-height:1.65;color:#b4c0d3">Posts from clubs, leagues and brands, filtered by sport, format and competition. Each one with why it works and how to adapt it to your club.</p>
+    ${cover.length >= 3 ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:26px 0 0"><tr>${cover.map((p) => `<td width="33%" valign="top" style="padding:0 5px"><a href="${esc(p.library || p.url)}"><img src="${esc(p.image)}" width="150" alt="" style="display:block;width:100%;max-width:150px;height:180px;object-fit:cover;margin:0 auto;border-radius:12px;border:1px solid rgba(240,184,74,0.3)"></a></td>`).join("")}</tr></table>` : ""}
+    <p style="margin:28px 0 0"><a href="${SITE}/content-library.html" style="display:inline-block;padding:16px 32px;border-radius:100px;background:${GOLD};background-image:linear-gradient(135deg,#ffe0a0 0%,#f8cc75 45%,#f0b84a 100%);${SANS};font-size:15px;font-weight:700;color:#121b33;text-decoration:none">Explore the Content Library &rarr;</a></p>
   </td></tr>
 
   <!-- Footer -->
