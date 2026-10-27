@@ -19,9 +19,9 @@ const PLAN_NAMES = {
   es: { library: "Starter", library_ai: "Biblioteca + IA", library_planner: "Plus", all_access: "Pro" },
 };
 const PLAN_UNLOCKS = {
-  en: { library: ["Content Library"], library_ai: ["AI analysis"], library_planner: ["Content Plan"], all_access: ["AI analysis", "Content Plan"] },
-  ca: { library: ["Biblioteca de contingut"], library_ai: ["Anàlisi amb IA"], library_planner: ["Pla de contingut"], all_access: ["Anàlisi amb IA", "Pla de contingut"] },
-  es: { library: ["Biblioteca de contenido"], library_ai: ["Análisis con IA"], library_planner: ["Plan de contenido"], all_access: ["Análisis con IA", "Plan de contenido"] },
+  en: { library: ["Content Library", "Match Day", "AI analysis"], library_ai: ["AI analysis"], library_planner: ["Content creators", "Content Plan", "AI analysis"], all_access: ["Content creators", "Content Plan", "Brands & sponsors", "AI analysis"] },
+  ca: { library: ["Biblioteca de contingut", "Match Day", "Anàlisi amb IA"], library_ai: ["Anàlisi amb IA"], library_planner: ["Creadors de contingut", "Pla de contingut", "Anàlisi amb IA"], all_access: ["Creadors de contingut", "Pla de contingut", "Marques i patrocinadors", "Anàlisi amb IA"] },
+  es: { library: ["Biblioteca de contenido", "Match Day", "Análisis con IA"], library_ai: ["Análisis con IA"], library_planner: ["Creadores de contenido", "Plan de contenido", "Análisis con IA"], all_access: ["Creadores de contenido", "Plan de contenido", "Marcas y patrocinadores", "Análisis con IA"] },
 };
 // a plan key or its English name -> the name in this language (anything else is left as it is)
 export function planName(keyOrName, locale = "en") {
