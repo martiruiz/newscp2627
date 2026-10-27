@@ -43,7 +43,7 @@ function featured(p, i) {
   const lib = p.library || p.analysis || p.url; // the library page plays the post (embed); e-mail clients can't run embeds
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0"${ba(`posts.${i}`)} style="background:#121b33;border-radius:18px;border:1px solid rgba(240,184,74,0.18)">
     <tr><td style="padding:10px 10px 0">
-      ${p.image ? `<a href="${esc(lib)}"><img src="${esc(p.image)}" width="236" alt="${esc(p.who)} on Instagram" style="display:block;width:100%;max-width:236px;height:auto;border-radius:12px;border:0"></a>` : ""}
+      ${p.image ? `<a href="${esc(lib)}"><img src="${esc(p.image)}" width="236" alt="${esc(p.who)}" style="display:block;width:100%;max-width:236px;height:auto;border-radius:12px;border:0"></a>` : ""}
     </td></tr>
     <tr><td style="padding:14px 14px 16px">
       <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="background:rgba(240,184,74,0.14);border-radius:100px;padding:4px 10px;${SANS};font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:${GOLD}">${p.reel ? "&#9654;&nbsp;" : ""}${esc(p.format || "Post")}</td></tr></table>
