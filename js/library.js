@@ -2208,6 +2208,29 @@
     cols[i].appendChild(el);
     colH[i] += ratio + 0.25; // + caption / button area
   }
+  // Facebook's embed doesn't tell its height: the Edge Function fb-shape reads the post's image size (12 posts per call)
+  // and stores it, so the card takes the embed's real shape (no empty space under a landscape photo, no cut video)
+  const fbWait = new Map(); let fbTimer = 0;
+  function fbShapeQueue(row, el, pe) {
+    fbWait.set(String(row.id), { row, el, pe });
+    clearTimeout(fbTimer); fbTimer = setTimeout(fbShapeFlush, 400);
+  }
+  async function fbShapeFlush() {
+    const cfg = window.SCP_CONFIG || {};
+    while (fbWait.size) {
+      const batch = [...fbWait.keys()].slice(0, 12);
+      const r = await fetch(`${cfg.supabaseUrl}/functions/v1/fb-shape`, { method: "POST", headers: { "Content-Type": "application/json", apikey: cfg.supabaseAnonKey, Authorization: `Bearer ${cfg.supabaseAnonKey}` }, body: JSON.stringify({ ids: batch.map(Number) }) }).then((x) => (x.ok ? x.json() : {})).catch(() => ({}));
+      batch.forEach((id) => {
+        const w = fbWait.get(id); fbWait.delete(id);
+        const ratio = Number(r?.[id]);
+        if (!w || !ratio) return;
+        const k = Math.min(16 / 9, Math.max(9 / 16, ratio));
+        w.row.media_ratio = k; w.pe.ratio = k;
+        const m = w.el.querySelector(".lib-media");
+        if (m) m.style.aspectRatio = `1 / ${k.toFixed(4)}`;
+      });
+    }
+  }
   function resetGrid() { placed = []; buildColumns(columnCount()); }
   function addCards(rows) {
     const tpl = document.createElement("template");
@@ -2219,6 +2242,8 @@
       const pe = { el, ratio };
       placed.push(pe);
       place(el, ratio);
+      // Facebook without a stored cover or shape: its real shape is looked up once (fb-shape) and saved for everyone
+      if (pfi === "facebook" && !rows[i].cover_url && !Number(rows[i].media_ratio)) fbShapeQueue(rows[i], el, pe);
       // Facebook doesn't say a video's shape: its stored cover does (a horizontal video gets a horizontal card)
       if (pfi === "facebook" && rows[i].cover_url && !Number(rows[i].media_ratio)) {
         const img = new Image();
