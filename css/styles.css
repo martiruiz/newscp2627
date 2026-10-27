@@ -6283,8 +6283,10 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 .lf-tone-tx small { font-size: 11px; color: var(--muted); }
 .lfb-body .lf-tones { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
 /* Filter search: a team as club and as opponent in one row, "as opponent" beside it */
-.lf-hit-wrap { display: flex; align-items: center; gap: 6px; }
-.lf-hit-wrap .lf-hit { flex: 1; min-width: 0; }
+.lf-hit-wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 6px; }
+.lf-hit-wrap .lf-hit { flex: 1 1 100%; min-width: 0; }
+/* "as opponent": its own line under the club (the filters column is too narrow for both side by side) */
+.lf-hit-wrap .lf-hit-alt { margin: 0 0 4px 34px; }
 .lf-hit-alt { flex: none; height: 26px; padding: 0 9px; border-radius: 100px; border: 0.5px solid var(--line); background: none; color: var(--muted); font: 600 11.5px var(--font-body); white-space: nowrap; cursor: pointer; }
 .lf-hit-alt:hover, .lf-hit-alt.is-on { color: var(--gold); border-color: rgba(240, 184, 74, 0.6); }
 .lf-hit-alt em { font-style: normal; opacity: 0.7; margin-left: 2px; }
