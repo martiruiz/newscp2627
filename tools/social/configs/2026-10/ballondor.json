@@ -1,0 +1,71 @@
+{
+ "label": "Ballon d'Or 2026",
+ "slides": [
+  {
+   "type": "cover",
+   "kicker": "London · 26 Oct 2026",
+   "title": "Ballon d'Or night on Instagram: <span class='g'>who won</span> the content game?",
+   "sub": "What Bayern, Barça and the award itself posted, and what stood out."
+  },
+  {
+   "type": "point",
+   "kicker": "Bayern's winner post",
+   "title": "<span class='g'>781.6k likes</span> on the Kane graphic",
+   "body": "8.9k comments. Bayern also changed its bio to “Club of 2026 Ballon d'Or winner Harry Kane”. Its biggest post, a reel, had 2.2M likes.",
+   "icon": "trophy",
+   "tip": null,
+   "img": "assets/social/2026-10-27/src/bayern-winner.png",
+   "handle": "@fcbayern"
+  },
+  {
+   "type": "point",
+   "kicker": "Barça's award post",
+   "title": "<span class='g'>980.9k likes</span> on Yamal's trophy",
+   "body": "Young Talent of the Year, 2.6k comments. Barça's biggest gala post was a “Happy couples” carousel with 1.9M likes.",
+   "icon": "medal",
+   "tip": null,
+   "img": "assets/social/2026-10-27/src/barca-yamal.png",
+   "handle": "@fcbarcelona"
+  },
+  {
+   "type": "point",
+   "kicker": "The award's own account",
+   "title": "<span class='g'>546k likes</span> on a ranking list",
+   "body": "The men's top 30 got 5.4k comments. Top comments asked “Where's CR7?” and “Where is the points?”",
+   "icon": "ranking",
+   "tip": "Hypothesis: a list invites debate about who is missing.",
+   "img": "assets/social/2026-10-27/src/bdor-ranking.png",
+   "handle": "@ballondorofficial"
+  },
+  {
+   "type": "point",
+   "kicker": "Volume and format",
+   "title": "<span class='g'>9+ posts</span> vs 8+, reels and feed",
+   "body": "Bayern posted 9+ Kane or gala posts, Barça 8+, as visible on each grid. Bayern's top was a reel (2.2M likes); Barça's, a feed carousel (1.9M). Reach is unknown.",
+   "icon": "stack",
+   "tip": "Plan a full gala-night grid, not one post."
+  },
+  {
+   "type": "point",
+   "kicker": "Comments",
+   "title": "The club <span class='g'>commented first</span>",
+   "body": "Under the winner graphic, Bayern's own comment “Just updated our bio 😏” got 2.2k likes and 32 replies.",
+   "icon": "chats-circle",
+   "tip": "Hypothesis: a small inside joke gives fans something to reply to."
+  },
+  {
+   "type": "club",
+   "title": "Turn the trophy into <span class='g'>a bio, a grid and a reel</span>. Bayern did all three the same night."
+  },
+  {
+   "type": "club",
+   "title": "Mix the <span class='g'>headline graphic with the human moments</span>: arrival, couples, the award."
+  },
+  {
+   "type": "cta",
+   "kicker": "Content Library",
+   "big": "See real club posts and <span class='g'>why they worked.</span>",
+   "sub": "Book a demo at sportscontentplaybook.com/book-a-call"
+  }
+ ]
+}
