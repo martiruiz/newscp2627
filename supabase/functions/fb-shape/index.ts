@@ -3,7 +3,8 @@
 // posts have no stored cover (the cover is what gave the shape until now).
 // POST { ids: [content idea ids] } (up to 12) → for each Facebook post with no media_ratio yet: the image of its embed,
 // its width / height read from the first bytes → public.apply_media_shape (media_width, media_height, media_ratio).
-// Returns { [id]: ratio }. Public (the library calls it as cards load): it only reads ids, only touches Facebook posts
+// A post Facebook no longer shows (deleted or private) gets unavailable_at, like the covers function does: it leaves the
+// library and waits in Content ideas to be reviewed or deleted. Returns { [id]: ratio }, -1 for those. Public (the library calls it as cards load): it only reads ids, only touches Facebook posts
 // that have no shape yet, and every answer is stored, so each post is fetched once.
 // SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are provided by Supabase.
 const env = (k: string) => Deno.env.get(k) ?? "";
@@ -44,6 +45,12 @@ async function shapeOf(url: string) {
   const video = /\/(reel|videos?)\//.test(url);
   const r = await fetch(`https://www.facebook.com/plugins/${video ? "video" : "post"}.php?href=${encodeURIComponent(url)}&show_text=false&width=500`, { headers: IFRAME }).catch(() => null);
   const html = r?.ok ? await r.text() : "";
+  // deleted or made private: Facebook's embed says so instead of showing the post
+  if (/This Facebook post is no longer available|Video Unavailable/.test(html)) return { gone: true };
+  // photo and link posts: the embed draws its image at the size written on it (link previews are always a 1.91:1 crop)
+  const tag = html.match(/<img class="scaledImageFit[^"]*"[^>]*>/)?.[0] || "";
+  const w = Number(tag.match(/ width="(\d+)"/)?.[1]), h = Number(tag.match(/ height="(\d+)"/)?.[1]);
+  if (w > 0 && h > 0) return { width: w, height: h };
   const img = [...html.matchAll(/(?:src|content)="(https:\/\/scontent[^"]+)"/g)].map((x) => x[1].replace(/&amp;/g, "&")).filter((u) => !/\/t39\.30808-1\/|s\d{2,3}x\d{2,3}[&_]/.test(u))[0];
   if (!img) return null;
   const ir = await fetch(img, { headers: { "User-Agent": UA, Range: "bytes=0-65535" } }).catch(() => null);
@@ -59,12 +66,14 @@ Deno.serve(async (req) => {
   if (!ids.length) return json({});
   try {
     const rows = await rest(`content_ideas?select=id,url&id=in.(${ids.join(",")})&media_ratio=is.null&url=ilike.*facebook.com*`);
-    const out: Record<string, number> = {}, sizes: { id: number; width: number; height: number }[] = [];
+    const out: Record<string, number> = {}, sizes: { id: number; width: number; height: number }[] = [], gone: number[] = [];
     await Promise.all((rows || []).map(async (p: { id: number; url: string }) => {
       const s = await shapeOf(p.url);
+      if (s && "gone" in s) { gone.push(p.id); out[p.id] = -1; return; }
       if (s?.width && s?.height) { sizes.push({ id: p.id, ...s }); out[p.id] = Math.round((s.height / s.width) * 10000) / 10000; }
     }));
     if (sizes.length) await rest("rpc/apply_media_shape", { method: "POST", body: JSON.stringify({ p_rows: sizes }) });
+    if (gone.length) await rest(`content_ideas?id=in.(${gone.join(",")})`, { method: "PATCH", body: JSON.stringify({ unavailable_at: new Date().toISOString() }) });
     return json(out);
   } catch (e) {
     return json({ error: String((e as Error)?.message || e) }, 500);

@@ -2224,6 +2224,7 @@
         const w = fbWait.get(id); fbWait.delete(id);
         const ratio = Number(r?.[id]);
         if (!w || !ratio) return;
+        if (ratio < 0) return w.el.remove();   // no longer on Facebook: marked unavailable, out of the library
         const k = Math.min(16 / 9, Math.max(9 / 16, ratio));
         w.row.media_ratio = k; w.pe.ratio = k;
         const m = w.el.querySelector(".lib-media");

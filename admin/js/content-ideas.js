@@ -236,14 +236,34 @@
     } catch (e) { A.toast(A.errMsg(e), "err"); }
   });
 
-  // ---------- Posts that no longer exist on Instagram (marked by pipeline/library/check-embeds.mjs) ----------
+  // ---------- Posts that no longer exist on Instagram or Facebook (marked by check-embeds.mjs, covers, views-cron, fb-shape) ----------
   async function loadBroken() {
     const box = $("[data-broken]");
     const { count, error } = await A.db.from("content_ideas").select("id", { count: "exact", head: true }).not("unavailable_at", "is", null);
     if (error || !count) { box.hidden = true; return; }
     box.hidden = false;
-    box.innerHTML = `<span><b>${num(count)} post${count === 1 ? "" : "s"}</b> no longer exist${count === 1 ? "s" : ""} on Instagram (deleted or made private). They're already hidden from the Content Library.</span>
-      <button class="btn btn-danger btn-sm" type="button" data-delete-broken>${icon("trash")}Delete them</button>`;
+    box.innerHTML = `<span><b>${num(count)} post${count === 1 ? "" : "s"}</b> no longer exist${count === 1 ? "s" : ""} on Instagram or Facebook (deleted or made private). They're already hidden from the Content Library.</span>
+      <span class="brk-btns"><button class="btn btn-sm" type="button" data-review-broken>Review</button>
+      <button class="btn btn-danger btn-sm" type="button" data-delete-broken>${icon("trash")}Delete them</button></span>
+      <div class="brk-list" hidden data-broken-list></div>`;
+    // review: each post with its link, to keep it (back to the library) or delete it
+    $("[data-review-broken]", box).addEventListener("click", async () => {
+      const list = $("[data-broken-list]", box);
+      if (!list.hidden) { list.hidden = true; return; }
+      const { data } = await A.db.from("content_ideas").select("id,title,url,account,unavailable_at").not("unavailable_at", "is", null).order("unavailable_at", { ascending: false }).limit(300);
+      list.innerHTML = (data || []).map((p) => `<div class="brk-row" data-id="${p.id}"><a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.title || p.url)}</a><small>${esc(p.account || "")}</small>
+        <button class="btn btn-sm" type="button" data-keep>Keep</button><button class="btn btn-danger btn-sm" type="button" data-del>${icon("trash")}</button></div>`).join("")
+        + (count > 300 ? `<small>Showing the latest 300 of ${num(count)}.</small>` : "");
+      list.hidden = false;
+    });
+    $("[data-broken-list]", box).addEventListener("click", async (e) => {
+      const b = e.target.closest("[data-keep],[data-del]"), row = b?.closest("[data-id]");
+      if (!row) return;
+      const q = A.db.from("content_ideas"), id = Number(row.dataset.id);
+      const { error: e2 } = b.matches("[data-keep]") ? await q.update({ unavailable_at: null }).eq("id", id) : await q.delete().eq("id", id);
+      if (e2) return A.toast(A.errMsg(e2), "err");
+      row.remove(); A.resetCatalog();
+    });
     $("[data-delete-broken]", box).addEventListener("click", async () => {
       const ok = await A.confirmDialog({
         title: `Delete ${num(count)} unavailable post${count === 1 ? "" : "s"}?`,
