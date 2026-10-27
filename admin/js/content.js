@@ -25,7 +25,7 @@
 
   main.innerHTML = `<div class="page-head"><div><h1>Content hub</h1><p>The whole content plan in one place: what goes out each day on every network and on the website, its script and where it is in production. 26/10 – 30/11/2026.</p></div>
     <div class="head-actions"><div class="seg" data-views>
-      <button type="button" data-v="grid">Week grid</button><button type="button" data-v="week">Calendar</button><button type="button" data-v="board">Pipeline</button><button type="button" data-v="scripts">Scripts &amp; video</button></div>
+      <button type="button" data-v="grid">Week grid</button><button type="button" data-v="week">Calendar</button><button type="button" data-v="board">Pipeline</button><button type="button" data-v="scripts">Scripts &amp; video</button><button type="button" data-v="read">Read scripts</button><button type="button" data-v="feed">Feed</button></div>
       <button class="btn btn-ghost" type="button" data-copy>${icon("copy")}Copy status for Claude</button></div></div>
     <div class="ch-stats" data-stats></div>
     <section class="panel ch-filters"><div class="ch-filter-row">
@@ -92,6 +92,26 @@
       const g = {}; list.forEach((i) => (g[i.pub_date] = g[i.pub_date] || []).push(i));
       body.innerHTML = Object.keys(g).sort().map((d) => `<section class="panel ch-day${d === today ? " is-today" : ""}"><header><h2>${esc(g[d][0].day_name || "")} ${fmt(d)}</h2><span class="muted">${g[d].length} pieces</span></header>
         <div class="table-wrap"><table class="data ch-table">${head}<tbody>${g[d].map((i) => row(i)).join("")}</tbody></table></div></section>`).join("");
+    } else if (S.view === "read") {
+      // every script in full, side by side, one line per sentence (the filters above apply)
+      const x = list.filter((i) => i.script);
+      body.innerHTML = x.length ? `<div class="ch-read">${x.map((i) => `<article class="ch-rcard">
+        <header><small>${fmt(i.pub_date)} · ${esc(i.network)}</small>${badge(i.stage)}</header>
+        <h3>${esc(i.topic)}</h3>
+        <div class="ch-rscript">${esc(i.script).split("\n").map((l) => (l.trim() ? `<p>${l}</p>` : "")).join("")}</div>
+        <footer><button class="btn btn-ghost btn-sm" type="button" data-edit="${esc(i.id)}">${icon("edit")}Edit</button>${actions(i)}</footer></article>`).join("")}</div>` : `<div class="panel table-empty">No scripts with these filters.</div>`;
+    } else if (S.view === "feed") {
+      // how the profile will look once everything is out: newest first, 3 across, the account's own crop (4:5 Instagram, 9:16 TikTok)
+      const nets = [...new Set(items.filter((i) => /^(Instagram|TikTok)/.test(i.network) && !/Stories/.test(i.network)).map((i) => i.network))].sort(natural);
+      const net = nets.includes(S.feed) ? S.feed : nets[0];
+      const posts = items.filter((i) => i.network === net && i.stage !== "Descartat").sort((a, b) => b.pub_date.localeCompare(a.pub_date) || natural(b.id, a.id));
+      const tile = (i) => { const video = /reel|v[ií]deo|video/i.test(i.format || ""), carousel = /carrusel|carousel/i.test(i.format || "");
+        return `<button type="button" class="ch-ig${i.pub_date <= today ? " is-live" : ""}" data-edit="${esc(i.id)}" title="${esc(`${fmt(i.pub_date)} · ${i.topic}`)}">${thumb(i) || `<span class="ch-ig-ph"><small>${fmt(i.pub_date)}</small><b>${esc(i.topic)}</b></span>`}${video || carousel ? `<i class="ch-ig-type">${video ? "▶" : "❐"}</i>` : ""}<em class="ch-ig-stage is-${TONE[i.stage] || "off"}">${esc(i.stage)}</em></button>`; };
+      body.innerHTML = nets.length ? `<div class="ch-feed"><div class="ch-phone${/TikTok/.test(net) ? " is-tiktok" : ""}">
+        <header class="ch-ig-head"><img src="../assets/favicon-s-192.png" alt=""><div><b>${esc(posts[0]?.account || net)}</b><small>${posts.length} posts in the plan</small></div>
+          <select class="select" data-feed>${nets.map((n) => `<option${n === net ? " selected" : ""}>${esc(n)}</option>`).join("")}</select></header>
+        <div class="ch-ig-grid">${posts.map(tile).join("") || `<p class="muted ch-none">Nothing planned for this account</p>`}</div></div>
+        <p class="muted ch-none">The profile as it will look with every piece published, newest first. Faded tiles are not out yet. Paste the image URL of a carousel or cover in "Audio, video or document" to see it here. Click a tile to edit it.</p></div>` : `<div class="panel table-empty">No Instagram or TikTok pieces yet.</div>`;
     } else if (S.view === "board") {
       body.innerHTML = `<div class="ch-board">` + ALL.filter((s) => s !== "Descartat" || S.stage === s).map((s) => { const x = list.filter((i) => i.stage === s);
         return `<div class="ch-col" data-drop-stage="${esc(s)}"><h3>${esc(s)}<span>${x.length}</span></h3>${x.slice(0, 80).map((i) => `<button type="button" class="ch-card" draggable="true" data-edit="${esc(i.id)}"><small>${fmt(i.pub_date)} · ${esc(i.network)}</small><b>${esc(i.topic)}</b></button>`).join("") || `<p class="muted ch-none">Nothing here</p>`}${x.length > 80 ? `<p class="muted ch-none">Filter to see the rest</p>` : ""}</div>`; }).join("") + `</div>`;
@@ -153,7 +173,7 @@
     }
   });
   main.addEventListener("keydown", (e) => { const r = e.target.closest?.("tr[data-open]"); if (r && e.key === "Enter" && e.target === r) editor(items.find((x) => x.id === r.dataset.open)); });
-  main.addEventListener("input", (e) => { const f = e.target.dataset.f; if (!f) return; S[f] = e.target.value; if (f === "week") A.store?.set?.("ch-state", { view: S.view, week: S.week }); draw(); });
+  main.addEventListener("input", (e) => { if (e.target.matches("[data-feed]")) { S.feed = e.target.value; return draw(); } const f = e.target.dataset.f; if (!f) return; S[f] = e.target.value; if (f === "week") A.store?.set?.("ch-state", { view: S.view, week: S.week }); draw(); });
 
   load();
 })();
