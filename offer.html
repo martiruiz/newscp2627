@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Your offer — Sports Content Playbook</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-s-32.png">
+  <link rel="stylesheet" href="css/fonts.css?v=1">
+  <link rel="stylesheet" href="css/styles.css?v=20261028a">
+  <style>
+    body.of { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 24px 16px; box-sizing: border-box; background: radial-gradient(ellipse at 50% 0%, #1e2a4d, #121b33 60%); color: #f3f5f9; font-family: Inter, Arial, sans-serif; }
+    .of-card { width: 100%; max-width: 560px; padding: 36px 32px; background: #17213b; border: 1px solid rgba(240, 184, 74, .35); border-radius: 20px; box-sizing: border-box; }
+    .of-card > img { width: 150px; height: auto; display: block; margin-bottom: 26px; }
+    .of-eyebrow { margin: 0 0 10px; color: #f0b84a; font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+    .of-card h1 { margin: 0 0 14px; font-family: "Host Grotesk", Inter, sans-serif; font-size: 27px; line-height: 1.2; }
+    .of-card p { margin: 0 0 14px; color: #c9d1e0; font-size: 15px; line-height: 1.6; }
+    .of-terms { margin: 18px 0; padding: 16px 18px; border-radius: 14px; background: #1d2845; display: grid; grid-template-columns: auto 1fr; gap: 10px 16px; font-size: 14px; }
+    .of-terms dt { color: #9aa6bd; }
+    .of-terms dd { margin: 0; color: #fff; }
+    .of-btn { display: inline-block; margin-top: 8px; padding: 13px 24px; border: 0; border-radius: 999px; background: linear-gradient(180deg, #ffe7ad, #f4c463 45%, #d79a2b); color: #1a1205; font: 700 15px Inter, Arial, sans-serif; text-decoration: none; cursor: pointer; }
+    .of-btn:disabled { opacity: .6; cursor: default; }
+    .of-form label { display: block; margin: 12px 0 0; color: #9aa6bd; font-size: 13px; }
+    .of-form input[type=text], .of-form textarea { display: block; width: 100%; margin-top: 6px; padding: 11px 12px; box-sizing: border-box; border-radius: 10px; border: 1px solid rgba(255,255,255,.12); background: #1d2845; color: #fff; font: 14px Inter, Arial, sans-serif; }
+    .of-check { display: flex; gap: 8px; align-items: center; color: #c9d1e0 !important; font-size: 14px !important; }
+    .of-small { color: #8b98ae !important; font-size: 13px !important; }
+    @media (max-width: 480px) { .of-card { padding: 28px 20px; } .of-terms { grid-template-columns: 1fr; gap: 2px 0; } .of-terms dd { margin-bottom: 8px; } }
+  </style>
+</head>
+<body class="of">
+  <main class="of-card"><img src="assets/logo-scp.png" alt="Sports Content Playbook"><div data-of><p>…</p></div></main>
+  <script src="js/vendor/supabase-2.117.0.min.js"></script>
+  <script src="js/config.js?v=20261020lf"></script>
+  <script src="js/i18n.js?v=20261028a"></script>
+  <script src="js/auth.js?v=20261028a"></script>
+  <script src="js/checkout.js?v=20261024w"></script>
+  <script>
+    // A recovery offer (supabase/automations-lifecycle.sql): ?t=<token> from the e-mail.
+    // Discount / 7 more days: only for the signed-in member it belongs to; accepting leads to the normal checkout, which
+    // shows the exact terms again and asks for the card — nothing is charged or reactivated on this page.
+    // Content help / feature request: a short form that becomes an internal task.
+    (async () => {
+      const box = document.querySelector("[data-of]");
+      const db = window.SCP_AUTH?.client;
+      const lang = ["es", "ca"].includes(window.SCP_LANG) ? window.SCP_LANG : "en";
+      const T = {
+        en: { eyebrow: "Your offer", signin: "Sign in to see your offer", signinText: "This offer belongs to your account.", signinBtn: "Sign in", missing: "This link isn't valid.", expired: "This offer has expired.", used: "You've already used this offer.", soon: "This offer isn't available yet. Reply to our e-mail and we'll help you.", live: "You already have an active membership.",
+          dTitle: "{pct} off your first {months} months", dText: "A one-off offer to come back to SCP with a monthly plan.", plan: "Plan", price: "Price", during: "First {months} months", after: "Then", expires: "Offer valid until", perMonth: "/ month", renews: "Renews monthly until you cancel. The next step shows the exact first charge (billing runs on the 1st of each month) before you pay.", dBtn: "Accept the offer and continue",
+          xTitle: "{days} more days to try SCP", xText: "Use them for one task: prepare a real post with SCP.", newEnd: "Trial ends", card: "Card", cardText: "Required; nothing is charged during the trial", afterTrial: "After the trial", cancel: "Cancel", cancelText: "Any time from Account → Billing before the trial ends, and you pay nothing", xBtn: "Accept and start the {days} days",
+          cTitle: "Help us find content for you", cText: "Tell us what you're looking for. We'll review it and get back to you; we can't promise to add specific accounts or content.", sport: "Sport", project: "Type of project (club, league, brand, agency…)", refs: "References or accounts you're looking for", send: "Send", thanks: "Thank you! We'll get back to you by e-mail.",
+          fTitle: "Which feature is missing?", fText: "Tell us what you need. We log every request; we can't promise dates.", feature: "The feature you need", notify: "Let me know if it becomes available" },
+        es: { eyebrow: "Tu oferta", signin: "Inicia sesión para ver tu oferta", signinText: "Esta oferta es de tu cuenta.", signinBtn: "Iniciar sesión", missing: "Este enlace no es válido.", expired: "Esta oferta ha caducado.", used: "Ya has utilizado esta oferta.", soon: "Esta oferta todavía no está disponible. Responde a nuestro correo y te ayudamos.", live: "Ya tienes una membresía activa.",
+          dTitle: "{pct} de descuento en tus {months} primeros meses", dText: "Una oferta única para volver a SCP con un plan mensual.", plan: "Plan", price: "Precio", during: "Primeros {months} meses", after: "Después", expires: "Oferta válida hasta", perMonth: "/ mes", renews: "Se renueva cada mes hasta que canceles. En el siguiente paso verás el primer cobro exacto (la facturación es el día 1 de cada mes) antes de pagar.", dBtn: "Aceptar la oferta y continuar",
+          xTitle: "{days} días más para probar SCP", xText: "Úsalos para una tarea: prepara una publicación real con SCP.", newEnd: "La prueba termina", card: "Tarjeta", cardText: "Necesaria; no se cobra nada durante la prueba", afterTrial: "Después de la prueba", cancel: "Cancelar", cancelText: "Cuando quieras desde Cuenta → Facturación antes de que acabe la prueba, y no pagas nada", xBtn: "Aceptar y empezar los {days} días",
+          cTitle: "Ayúdanos a encontrar contenido para ti", cText: "Cuéntanos qué buscas. Lo revisaremos y te responderemos; no podemos prometer añadir cuentas o contenidos concretos.", sport: "Deporte", project: "Tipo de proyecto (club, liga, marca, agencia…)", refs: "Referencias o cuentas que buscas", send: "Enviar", thanks: "¡Gracias! Te responderemos por correo.",
+          fTitle: "¿Qué funcionalidad te falta?", fText: "Cuéntanos qué necesitas. Registramos cada petición; no podemos prometer fechas.", feature: "La funcionalidad que necesitas", notify: "Avisadme si llega a estar disponible" },
+      };
+      const L = T[lang] || T.en;
+      const f = (s, v) => s.replace(/\{(\w+)\}/g, (_, k) => v[k] ?? "");
+      const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+      const loc = { en: "en-GB", es: "es-ES", ca: "ca-ES" }[lang];
+      const money = (n) => new Intl.NumberFormat(loc, { style: "currency", currency: "EUR" }).format(n);
+      const day = (d) => new Date(d).toLocaleDateString(loc, { day: "numeric", month: "long", year: "numeric" });
+      const show = (title, text, extra = "") => { box.innerHTML = `<p class="of-eyebrow">${L.eyebrow}</p><h1>${esc(title)}</h1>${text ? `<p>${esc(text)}</p>` : ""}${extra}`; };
+
+      const q = new URLSearchParams(location.search);
+      let token = q.get("t");
+      try { if (token) sessionStorage.setItem("scp-offer", token); else token = sessionStorage.getItem("scp-offer"); } catch {}
+      if (!db || !token || !/^[0-9a-f-]{36}$/i.test(token)) return show(L.missing, "");
+      const { data: o } = await db.rpc("offer_view", { p_token: token });
+      if (!o || o.error === "not_found") return show(L.missing, "");
+      if (o.error === "sign_in") return show(L.signin, L.signinText, `<a class="of-btn" href="login.html?next=offer.html">${L.signinBtn}</a>`);
+      if (o.expired) return show(L.expired, "");
+
+      if (o.kind === "content" || o.kind === "feature") {
+        if (o.answered) return show(L.thanks, "");
+        const c = o.kind === "content";
+        show(c ? L.cTitle : L.fTitle, c ? L.cText : L.fText, `<form class="of-form" data-form>
+          ${c ? `<label>${L.sport}<input type="text" name="sport" maxlength="200"></label><label>${L.project}<input type="text" name="project" maxlength="200"></label><label>${L.refs}<textarea name="references" rows="3" maxlength="1000"></textarea></label>`
+              : `<label>${L.feature}<textarea name="feature" rows="3" maxlength="1000" required></textarea></label><label class="of-check"><input type="checkbox" name="notify"> ${L.notify}</label>`}
+          <button class="of-btn" type="submit">${L.send}</button></form>`);
+        box.querySelector("[data-form]").addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const b = e.target.querySelector("button"); b.disabled = true;
+          const fd = new FormData(e.target);
+          const { data: ok } = await db.rpc("offer_answer", { p_token: token, p_answer: { sport: fd.get("sport"), project: fd.get("project"), references: fd.get("references"), feature: fd.get("feature"), notify: fd.get("notify") === "on" } });
+          if (ok) show(L.thanks, ""); else b.disabled = false;
+        });
+        return;
+      }
+
+      if (o.status !== "offered" && o.status !== "accepted") return show(L.used, "");
+      if (o.has_live_subscription) return show(L.live, "", `<a class="of-btn" href="profile.html#billing">OK</a>`);
+      if (!o.enabled) return show(f(o.kind === "discount" ? L.dTitle : L.xTitle, { pct: `${o.discount_percent}%`, months: o.discount_months, days: o.extension_days }), L.soon);
+      const price = Number(o.price_month || 0);
+      if (o.kind === "discount") {
+        const disc = Math.round(price * (100 - Number(o.discount_percent))) / 100;
+        show(f(L.dTitle, { pct: `${o.discount_percent}%`, months: o.discount_months }), L.dText, `<dl class="of-terms">
+          <dt>${L.plan}</dt><dd>${esc(o.plan_name)}</dd>
+          <dt>${f(L.during, { months: o.discount_months })}</dt><dd>${money(disc)} ${L.perMonth} <span class="of-small">(${money(price)} − ${o.discount_percent}%)</span></dd>
+          <dt>${L.after}</dt><dd>${money(price)} ${L.perMonth}</dd>
+          ${o.expires_at ? `<dt>${L.expires}</dt><dd>${day(o.expires_at)}</dd>` : ""}</dl>
+          <p class="of-small">${L.renews}</p><button class="of-btn" type="button" data-accept>${L.dBtn}</button>`);
+      } else {
+        const end = new Date(Date.now() + Number(o.extension_days) * 864e5);
+        show(f(L.xTitle, { days: o.extension_days }), L.xText, `<dl class="of-terms">
+          <dt>${L.plan}</dt><dd>${esc(o.plan_name)}</dd>
+          <dt>${L.newEnd}</dt><dd>${day(end)}</dd>
+          <dt>${L.card}</dt><dd>${L.cardText}</dd>
+          <dt>${L.afterTrial}</dt><dd>${money(price)} ${L.perMonth}</dd>
+          <dt>${L.cancel}</dt><dd>${L.cancelText}</dd>
+          ${o.expires_at ? `<dt>${L.expires}</dt><dd>${day(o.expires_at)}</dd>` : ""}</dl>
+          <p class="of-small">${L.renews}</p><button class="of-btn" type="button" data-accept>${f(L.xBtn, { days: o.extension_days })}</button>`);
+      }
+      box.querySelector("[data-accept]").addEventListener("click", async (e) => {
+        const b = e.currentTarget; b.disabled = true;
+        const { data: r } = await db.rpc("offer_accept", { p_token: token });
+        if (!r?.ok) { b.disabled = false; return show(r?.error || L.soon, ""); }
+        // the normal checkout: terms preview first, then Stripe
+        window.SCP_CHECKOUT.plan(r.plan, "month", b, r.code ? { code: r.code, currency: "eur" } : { currency: "eur" });
+      });
+    })();
+  </script>
+</body>
+</html>

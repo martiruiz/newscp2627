@@ -35,13 +35,27 @@
     ["used_planner", "Has used the Content Plan", "bool"], ["consent", "Accepts commercial e-mails", "bool"], ["has_tag", "Has the tag", "text"],
     ["plan_is", "Plan", "plan"], ["locale_is", "Language", "locale"], ["org_type_is", "Organisation type", "text"],
     ["days_since_signup", "Days since sign-up", "num"], ["days_since_login", "Days since last sign-in", "num"], ["trial_days_left", "Trial days left", "num"],
+    ["renewal_on", "Renewal is on (trial or paid, not cancelled)", "bool"], ["never_charged", "Has never been charged", "bool"], ["created_folder", "Has created a folder", "bool"],
+    ["days_visited", "Days with a visit", "num"], ["cancel_reason_known", "Cancellation reason known", "bool"], ["cancel_reason_is", "Cancellation reason", "reason"],
+    ["offer_used", "Has had a recovery offer", "bool"], ["offer_accepted_is", "Accepted the offer", "offerkind"],
   ];
+  const REASONS = { price: "The price", unused: "No time to try it", content: "No relevant content", missing: "A feature is missing", other: "Another reason" };
+  const OFFER_KINDS = { discount: "Discount", extension: "7 more days", content: "Content help", feature: "Feature request" };
+  const TASK_KINDS = { help: "Asked for help", content_help: "Content help", feature_request: "Feature request" };
+  // the value picker of a rule (selects for the fields with a fixed list)
+  const optHtml = (t, r) => {
+    const list = t === "plan" ? Object.fromEntries(plans.map((p) => [p.key, p.name])) : t === "locale" ? LOCALES : t === "reason" ? REASONS : t === "offerkind" ? OFFER_KINDS : null;
+    return list ? `<select class="select input-sm" data-rv>${Object.entries(list).map(([k, l]) => `<option value="${k}"${k === r.value ? " selected" : ""}>${esc(l)}</option>`).join("")}</select>` : `<input class="input input-sm" data-rv value="${esc(r.value || "")}">`;
+  };
+  const defaultFor = (t) => (t === "bool" ? true : t === "num" ? 1 : t === "plan" ? plans[0]?.key : t === "locale" ? "en" : t === "reason" ? "price" : t === "offerkind" ? "discount" : "");
   const FIELD = Object.fromEntries(FIELDS.map((f) => [f[0], f]));
   const CATEGORY = { commercial: "Commercial", educational: "Educational", transactional: "Account notice" };
   const CATEGORY_LONG = { commercial: "Commercial (needs consent, frequency cap)", educational: "Educational (tips and product help, frequency cap)", transactional: "Account notice (always sent, no unsubscribe link)" };
-  const STEP_LABEL = { wait: "Wait", condition: "Condition", email: "Send e-mail", tag: "Update contact", end: "End flow" };
+  const STEP_LABEL = { wait: "Wait", condition: "Condition", email: "Send e-mail", tag: "Update contact", offer: "Create recovery offer", task: "Create internal task", end: "End flow" };
   const END_REASONS = ["sequence finished", "goal met", "converted", "unsubscribed"];
-  const VARS = ["first_name", "org_name", "trial_end_date", "trial_days_left", "plan_name", "first_charge_amount", "last_payment_amount", "billing_period", "platform_url", "pricing_url", "account_url", "subscription_url", "unsubscribe_url"];
+  const VARS = ["first_name", "org_name", "sport", "trial_end_date", "trial_days_left", "plan_name", "first_charge_amount", "last_payment_amount", "billing_period", "next_charge_date",
+    "platform_url", "pricing_url", "account_url", "subscription_url", "folders_url", "unsubscribe_url", "reason_price_url", "reason_time_url", "reason_content_url", "reason_feature_url", "reason_other_url",
+    "offer_url", "offer_expires_date", "offer_plan_name", "offer_price", "offer_discounted_price", "offer_discount_percent", "offer_months", "offer_days"];
   const LOCALES = { en: "English", es: "Spanish", ca: "Catalan" };
   const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
@@ -71,7 +85,7 @@
     <nav class="au-tabs" data-tabs></nav>
     <div data-view></div>`;
   const view = $("[data-view]");
-  const TABS = [["overview", "Overview", "audience"], ["flows", "Flows", "flow"], ["emails", "E-mails", "mail"], ["segments", "Segments", "filters"], ["contacts", "Contacts", "history"], ["settings", "Settings", "gear"]];
+  const TABS = [["overview", "Overview", "audience"], ["flows", "Flows", "flow"], ["emails", "E-mails", "mail"], ["segments", "Segments", "filters"], ["contacts", "Contacts", "history"], ["metrics", "Metrics", "target"], ["tasks", "Tasks & offers", "users"], ["settings", "Settings", "gear"]];
 
   async function load() {
     const [f, e, p, st, t] = await Promise.all([
@@ -105,7 +119,7 @@
   function draw() {
     view.onclick = null; view.onchange = null;
     tabs();
-    ({ overview, flows: flowsView, emails: emailsView, segments: segmentsView, contacts: contactsView, settings: settingsView })[tab]();
+    ({ overview, flows: flowsView, emails: emailsView, segments: segmentsView, contacts: contactsView, metrics: metricsView, tasks: tasksView, settings: settingsView })[tab]();
   }
   $("[data-tabs]").addEventListener("click", (e) => { const b = e.target.closest("[data-tab]"); if (b) go(b.dataset.tab); });
   $("[data-new-flow]").onclick = () => newFlow();
@@ -120,7 +134,8 @@
     const f = FIELD[r.field]; if (!f) return "?";
     if (f[2] === "bool") return `${f[1]}: ${r.value === false || r.value === "false" ? "no" : "yes"}`;
     if (f[2] === "num") return `${f[1]} ${r.op === "lte" ? "≤" : "≥"} ${r.value}`;
-    return `${f[1]} ${r.op === "is_not" ? "is not" : "is"} ${r.value || "—"}`;
+    const shown = f[2] === "reason" ? REASONS[r.value] : f[2] === "offerkind" ? OFFER_KINDS[r.value] : f[2] === "plan" ? plans.find((p) => p.key === r.value)?.name : r.value;
+    return `${f[1]} ${r.op === "is_not" ? "is not" : "is"} ${shown || "—"}`;
   };
   const condText = (c) => (c?.rules?.length ? c.rules.map(ruleText).join(c.logic === "or" ? " OR " : " AND ") : "No rules");
   const triggerText = (t = {}) => {
@@ -142,6 +157,8 @@
     if (s.type === "email") return emails.find((x) => x.id === Number(s.email_id))?.name || "No e-mail chosen";
     if (s.type === "tag") return [(s.add || []).length ? `+ ${(s.add || []).join(", ")}` : "", (s.remove || []).length ? `− ${(s.remove || []).join(", ")}` : ""].filter(Boolean).join(" · ") || "No tags";
     if (s.type === "end") return s.reason || "sequence finished";
+    if (s.type === "offer") return `${OFFER_KINDS[s.kind] || "?"} · one per account`;
+    if (s.type === "task") return s.title || TASK_KINDS[s.kind] || "Task";
     return "";
   };
   const STATUS_NAME = { draft: "Draft", active: "Active", paused: "Paused", archived: "Archived" };
@@ -287,10 +304,18 @@
     const f = structuredClone(flow);
     f.definition = Object.assign({ trigger: { type: "signup" }, entry: { mode: "once" }, exit: { on_paid: true }, start: null, steps: {} }, f.definition || {});
     const def = f.definition;
-    let sel = "trigger", dirty = false;
+    let sel = "trigger", dirty = false, act = null;
+    // what has happened at each step (published versions): shown on the blocks
+    rpc("automation_step_stats", { p_flow: f.id }).then((r) => { act = r; render(); }).catch(() => {});
+    const badge = (id) => {
+      const st = act?.steps?.[id] || {}, se = act?.sends?.[id] || {};
+      const bits = [se.sent && `${num(se.sent)} sent`, (se.queued || se.sending) && `${num((se.queued || 0) + (se.sending || 0))} queued`, (se.skipped || se.cancelled) && `${num((se.skipped || 0) + (se.cancelled || 0))} skipped`,
+        se.failed && `${num(se.failed)} failed`, st.condition_true && `${num(st.condition_true)} yes`, st.condition_false && `${num(st.condition_false)} no`, st.wait && `${num(st.wait)} waited`].filter(Boolean);
+      return bits.length ? `<span class="au-node-s">${bits.join(" · ")}</span>` : "";
+    };
     const m = A.modal({ title: "Flow editor", sub: esc(f.name), body: `<div class="au-ed"><div class="au-canvas" data-canvas></div><aside class="au-side" data-side></aside></div>`,
       foot: `<span class="au-dirty" data-dirty hidden>Unsaved changes</span><span class="spacer"></span>
-        <button class="btn" type="button" data-sim>${icon("eye")}Simulate</button><button class="btn" type="button" data-val>Validate</button>
+        <button class="btn" type="button" data-people>Contacts in this flow</button><button class="btn" type="button" data-sim>${icon("eye")}Simulate</button><button class="btn" type="button" data-val>Validate</button>
         <button class="btn" type="button" data-save>Save draft</button><button class="btn btn-primary" type="button" data-pub>${f.status === "active" ? "Publish changes…" : "Activate…"}</button>`,
       onClose: () => { if (dirty) A.toast("Unsaved changes were discarded.", "err"); } });
     m.el.querySelector(".modal").classList.add("au-modal");
@@ -306,6 +331,8 @@
       if (type === "condition") Object.assign(s, { logic: "and", rules: [{ field: "saved_idea", op: "is", value: true }], yes: null, no: null });
       if (type === "tag") Object.assign(s, { add: [], remove: [] });
       if (type === "end") Object.assign(s, { reason: "sequence finished" });
+      if (type === "offer") Object.assign(s, { kind: "discount" });
+      if (type === "task") Object.assign(s, { kind: "help", title: "" });
       if (type !== "end") s.next = old; // an End step finishes the journey: what followed is dropped
       def.steps[id] = s; owner[key] = id;
       if (type === "end" && old) dropChain(old);
@@ -331,7 +358,7 @@
       let html = slot(owner, key), id = startId; const seen = new Set();
       while (id && def.steps[id] && !seen.has(id)) {
         seen.add(id); const s = def.steps[id];
-        html += `<div class="au-node t-${s.type}${sel === id ? " is-sel" : ""}" data-sel="${id}"><span class="au-node-k">${STEP_LABEL[s.type]}</span><span class="au-node-t">${esc(stepText(s))}</span></div>`;
+        html += `<div class="au-node t-${s.type}${sel === id ? " is-sel" : ""}" data-sel="${id}"><span class="au-node-k">${STEP_LABEL[s.type]}</span><span class="au-node-t">${esc(stepText(s))}</span>${badge(id)}</div>`;
         if (s.type === "condition") html += `<div class="au-branches"><div class="au-br"><span class="au-br-l yes">Yes</span>${chain(s.yes, s, "yes")}</div><div class="au-br"><span class="au-br-l no">No</span>${chain(s.no, s, "no")}</div></div><p class="au-join">then continue</p>`;
         if (s.type === "end") return html;
         html += slot(s, "next"); id = s.next;
@@ -364,7 +391,7 @@
         <select class="select input-sm" data-rf>${FIELDS.map(([k, l]) => `<option value="${k}"${k === r.field ? " selected" : ""}>${l}</option>`).join("")}</select>
         ${t === "bool" ? `<select class="select input-sm" data-rv><option value="true"${r.value !== false ? " selected" : ""}>Yes</option><option value="false"${r.value === false ? " selected" : ""}>No</option></select>`
           : t === "num" ? `<select class="select input-sm" data-ro><option value="gte"${r.op !== "lte" ? " selected" : ""}>≥</option><option value="lte"${r.op === "lte" ? " selected" : ""}>≤</option></select><input class="input input-sm" type="number" data-rv value="${esc(r.value ?? 0)}">`
-          : `<select class="select input-sm" data-ro><option value="is"${r.op !== "is_not" ? " selected" : ""}>is</option><option value="is_not"${r.op === "is_not" ? " selected" : ""}>is not</option></select>${t === "plan" ? `<select class="select input-sm" data-rv>${plans.map((p) => `<option value="${p.key}"${p.key === r.value ? " selected" : ""}>${esc(p.name)}</option>`).join("")}</select>` : t === "locale" ? `<select class="select input-sm" data-rv>${Object.entries(LOCALES).map(([k, l]) => `<option value="${k}"${k === r.value ? " selected" : ""}>${l}</option>`).join("")}</select>` : `<input class="input input-sm" data-rv value="${esc(r.value || "")}">`}`}
+          : `<select class="select input-sm" data-ro><option value="is"${r.op !== "is_not" ? " selected" : ""}>is</option><option value="is_not"${r.op === "is_not" ? " selected" : ""}>is not</option></select>${optHtml(t, r)}`}
         <button class="icon-btn" type="button" data-rx aria-label="Remove rule">×</button></div>`; }).join("")}
       <button class="btn btn-sm" type="button" data-radd>${icon("plus")}Add rule</button></div>`;
     const readRules = (box, c) => {
@@ -372,7 +399,7 @@
       c.rules = $$(".au-rule", box).map((row) => {
         const field = $("[data-rf]", row).value, t = FIELD[field][2], v = $("[data-rv]", row)?.value, o = $("[data-ro]", row)?.value;
         const prev = c.rules[Number(row.dataset.i)] || {};
-        if (prev.field !== field) return { field, op: FIELD[field][2] === "num" ? "gte" : "is", value: t === "bool" ? true : t === "num" ? 1 : t === "plan" ? plans[0]?.key : t === "locale" ? "en" : "" };
+        if (prev.field !== field) return { field, op: FIELD[field][2] === "num" ? "gte" : "is", value: defaultFor(t) };
         return { field, op: o || "is", value: t === "bool" ? v === "true" : t === "num" ? Number(v) : v };
       });
     };
@@ -422,6 +449,13 @@
           body = `<label class="au-f"><span>Add tags (comma-separated)</span><input class="input" data-s="add" value="${esc((s.add || []).join(", "))}"></label>
             <label class="au-f"><span>Remove tags</span><input class="input" data-s="remove" value="${esc((s.remove || []).join(", "))}"></label>
             <p class="au-help">Internal tags only: they never change the contact's subscription or consent.</p>`;
+        } else if (s.type === "offer") {
+          body = `<label class="au-f"><span>Offer</span><select class="select" data-s="kind">${Object.entries(OFFER_KINDS).map(([k, l]) => `<option value="${k}"${k === s.kind ? " selected" : ""}>${l}</option>`).join("")}</select></label>
+            <p class="au-help">Creates the contact's recovery offer (one per account: if they already had one, the next e-mail is skipped). The next e-mail can use {{offer_url}}, {{offer_expires_date}} and the offer's prices. Discount and extension stay unavailable until offers are switched on in Settings.</p>`;
+        } else if (s.type === "task") {
+          body = `<label class="au-f"><span>Kind</span><select class="select" data-s="kind">${Object.entries(TASK_KINDS).map(([k, l]) => `<option value="${k}"${k === s.kind ? " selected" : ""}>${l}</option>`).join("")}</select></label>
+            <label class="au-f"><span>Title</span><input class="input" data-s="title" value="${esc(s.title || "")}"></label>
+            <p class="au-help">Adds a task to Tasks &amp; offers with the contact's details.</p>`;
         } else if (s.type === "end") {
           body = `<label class="au-f"><span>Reason</span><select class="select" data-s="reason">${END_REASONS.map((r) => `<option${r === s.reason ? " selected" : ""}>${r}</option>`).join("")}</select></label>`;
         }
@@ -469,6 +503,13 @@
     $("[data-save]", m.el).onclick = (e) => busy(e.currentTarget, async () => { await save(); A.toast(f.status === "active" ? "Draft saved. The active version doesn't change until you publish." : "Draft saved."); });
     $("[data-val]", m.el).onclick = (e) => busy(e.currentTarget, async () => { const errs = await rpc("automation_validate", { p_def: def }); errs.length ? A.toast(errs.join(" · "), "err") : A.toast("Everything checks out."); });
     $("[data-sim]", m.el).onclick = () => simulateDialog(def, f.name);
+    // who is in the flow, where, and why they left
+    $("[data-people]", m.el).onclick = () => {
+      const j = act?.journeys || [], ex = act?.exits || {};
+      A.modal({ title: `Contacts · ${f.name}`, body: `${Object.keys(ex).length ? `<p class="au-help">Left the flow: ${Object.entries(ex).map(([k, n]) => `${esc(k)} <b>${num(n)}</b>`).join(" · ")}</p>` : ""}
+        ${j.length ? `<div class="table-wrap"><table class="au-table"><thead><tr><th>Contact</th><th>Status</th><th>Step</th><th>Next</th><th>Entered</th><th>Exit</th></tr></thead><tbody>${j.map((x) => `<tr><td>${esc(x.email)}</td><td>${esc(x.status)}</td><td>${esc(x.step ? STEP_LABEL[def.steps[x.step]?.type] || x.step : "—")}</td><td>${x.status === "active" ? dt(x.next_run_at) : "—"}</td><td>${dt(x.entered_at)}</td><td>${esc(x.exit_reason || "")}</td></tr>`).join("")}</tbody></table></div>` : `<p class="aud-empty">Nobody has entered this flow yet.</p>`}
+        <p class="au-help">The full story of each contact (every step, wait, e-mail and why) is in Contacts.</p>` });
+    };
     $("[data-pub]", m.el).onclick = (e) => busy(e.currentTarget, async () => { await save(); await activateDialog(flows.find((x) => x.id === f.id), () => m.close()); });
     render();
   }
@@ -624,14 +665,14 @@
         ${c.rules.map((r, i) => { const t = FIELD[r.field]?.[2]; return `<div class="au-rule" data-i="${i}"><select class="select input-sm" data-rf>${FIELDS.map(([k, l]) => `<option value="${k}"${k === r.field ? " selected" : ""}>${l}</option>`).join("")}</select>
           ${t === "bool" ? `<select class="select input-sm" data-rv><option value="true"${r.value !== false ? " selected" : ""}>Yes</option><option value="false"${r.value === false ? " selected" : ""}>No</option></select>`
             : t === "num" ? `<select class="select input-sm" data-ro><option value="gte"${r.op !== "lte" ? " selected" : ""}>≥</option><option value="lte"${r.op === "lte" ? " selected" : ""}>≤</option></select><input class="input input-sm" type="number" data-rv value="${esc(r.value ?? 0)}">`
-            : `<select class="select input-sm" data-ro><option value="is"${r.op !== "is_not" ? " selected" : ""}>is</option><option value="is_not"${r.op === "is_not" ? " selected" : ""}>is not</option></select>${t === "plan" ? `<select class="select input-sm" data-rv>${plans.map((p) => `<option value="${p.key}"${p.key === r.value ? " selected" : ""}>${esc(p.name)}</option>`).join("")}</select>` : t === "locale" ? `<select class="select input-sm" data-rv>${Object.entries(LOCALES).map(([k, l]) => `<option value="${k}"${k === r.value ? " selected" : ""}>${l}</option>`).join("")}</select>` : `<input class="input input-sm" data-rv value="${esc(r.value || "")}">`}`}
+            : `<select class="select input-sm" data-ro><option value="is"${r.op !== "is_not" ? " selected" : ""}>is</option><option value="is_not"${r.op === "is_not" ? " selected" : ""}>is not</option></select>${optHtml(t, r)}`}
           <button class="icon-btn" type="button" data-rx>×</button></div>`; }).join("")}
         <div class="au-row"><button class="btn btn-sm" type="button" data-radd>${icon("plus")}Add rule</button><span class="spacer"></span><button class="btn btn-primary btn-sm" type="button" data-count>Count contacts</button></div></div>`;
     };
     const read = () => {
       c.logic = $("[data-logic]", box).value;
       c.rules = $$(".au-rule", box).map((row) => { const field = $("[data-rf]", row).value, t = FIELD[field][2], prev = c.rules[Number(row.dataset.i)] || {}, val = $("[data-rv]", row)?.value, op = $("[data-ro]", row)?.value;
-        if (prev.field !== field) return { field, op: t === "num" ? "gte" : "is", value: t === "bool" ? true : t === "num" ? 1 : t === "plan" ? plans[0]?.key : t === "locale" ? "en" : "" };
+        if (prev.field !== field) return { field, op: t === "num" ? "gte" : "is", value: defaultFor(t) };
         return { field, op: op || "is", value: t === "bool" ? val === "true" : t === "num" ? Number(val) : val }; });
       A.store.set("au-seg", c);
     };
@@ -674,27 +715,94 @@
     if ($("[data-q]", view).value) go($("[data-go]", view));
   }
 
+  // ---------- Metrics: the lifecycle, with clear denominators ----------
+  function metricsView() {
+    const days = range.days;
+    view.innerHTML = `<section class="panel au-board"><header class="au-board-h"><h2>Lifecycle</h2><span class="spacer"></span>
+      <span class="au-seg">${[30, 90, 365].map((d) => `<button type="button" data-mdays="${d}" class="${days === d ? "is-on" : ""}">${d} days</button>`).join("")}</span></header><div data-m><p class="aud-empty">Loading…</p></div></section>`;
+    view.onclick = (e) => { const b = e.target.closest("[data-mdays]"); if (b) { range.days = Number(b.dataset.mdays); A.store.set("au-days", range.days); metricsView(); } };
+    const pct = (a, b) => (b ? `${Math.round((a / b) * 100)}%` : "—");
+    const row = (label, a, b, note) => `<div class="au-mrow"><span>${label}${note ? A.info(note) : ""}</span><b>${num(a)}</b><em>${b != null ? `of ${num(b)} · ${pct(a, b)}` : ""}</em></div>`;
+    rpc("lifecycle_metrics", { p_from: new Date(Date.now() - days * 864e5).toISOString(), p_to: new Date().toISOString() }).then((m) => {
+      const t = m.trials || {}, c = m.cancellations || {}, o = m.offers || {}, r = m.retention || {}, ad = m.after_discount || {}, em = m.email || {};
+      $("[data-m]", view).innerHTML = `<div class="au-groups">
+        <div class="au-group"><p class="au-group-h">${ic("users")}Trials started in the period</p>
+          ${row("Trials started", t.started || 0)}${row("Saved a first idea (first 7 days)", t.saved_first_idea || 0, t.started || 0)}
+          ${row("Came back another day (first 7 days)", t.returned_another_day || 0, t.started || 0, `Needs the daily visit log, recorded since ${m.visits_tracked_since ? A.fmtDate(m.visits_tracked_since, false) : "today"}; earlier trials count fewer visits.`)}
+          ${row("Converted to a first payment", t.converted || 0, t.started || 0)}</div>
+        <div class="au-group"><p class="au-group-h">${ic("target")}Cancellations and offers</p>
+          ${row("Cancellations scheduled", c.scheduled || 0)}${row("Reason given", c.answered || 0, c.scheduled || null)}
+          <p class="au-reasons">${Object.entries(c.reasons || {}).map(([k, n]) => `<span>${esc(REASONS[k] || k)} <b>${num(n)}</b></span>`).join("") || "—"}</p>
+          ${Object.entries(OFFER_KINDS).map(([k, l]) => { const x = o[k] || {}; return row(`${l}: sent · accepted · converted`, x.accepted || 0, x.sent || 0, `${num(x.sent || 0)} sent, ${num(x.accepted || 0)} accepted, ${num(x.converted || 0)} paid.`); }).join("")}
+          ${row("Revenue after an accepted offer (€)", Math.round(m.recovered_revenue || 0), null, "Payments after accepting an offer, in the period. It happened after the offer; it doesn't prove the offer caused it.")}</div>
+        <div class="au-group"><p class="au-group-h">${ic("clock")}Continuity and e-mail</p>
+          ${[30, 60, 90].map((n) => row(`Still subscribed after ${n} days`, r[n]?.kept || 0, r[n]?.base || 0, `Of the members whose first payment was in the period and at least ${n} days ago.`)).join("")}
+          ${row("Still subscribed after the 3 discounted months", ad.kept || 0, ad.base || 0)}
+          ${row("Automation e-mails sent", em.sent || 0)}${row("Delivered", em.delivered || 0, em.sent || 0, "Needs Resend's webhook.")}
+          ${row("Bounces", em.bounced || 0)}${row("Spam complaints", em.complaints || 0)}${row("Unsubscribes", em.unsubscribes || 0)}</div></div>
+        <p class="au-note">${icon("alert")}These are counts, not causes: a contact who pays after an e-mail may have paid anyway.</p>`;
+    }).catch((e) => { $("[data-m]", view).innerHTML = `<p class="aud-empty">${esc(e.message)}</p>`; });
+  }
+
+  // ---------- Tasks & offers ----------
+  async function tasksView() {
+    view.innerHTML = `<section class="panel au-board"><header class="au-board-h"><h2>Internal tasks</h2>${A.info("Created by flows (content help, feature requests) or by the contact's answers on the offer page. Contacts tagged needs_help don't get tips until the tag is removed (Contacts).")}</header><div data-tasks><p class="aud-empty">Loading…</p></div></section>
+      <section class="panel au-board"><header class="au-board-h"><h2>Recovery offers</h2></header><div data-offers><p class="aud-empty">Loading…</p></div></section>`;
+    const [{ data: tasks }, { data: offers }] = await Promise.all([
+      A.db.from("support_tasks").select("*").order("status").order("created_at", { ascending: false }).limit(200),
+      A.db.from("lifecycle_offers").select("*").order("offered_at", { ascending: false }).limit(200),
+    ]);
+    const emailOf = new Map();
+    const ids = [...new Set([...(tasks || []), ...(offers || [])].map((x) => x.user_id).filter(Boolean))];
+    if (ids.length) { const { data: ps } = await A.db.from("profiles").select("id,email").in("id", ids); (ps || []).forEach((p) => emailOf.set(p.id, p.email)); }
+    $("[data-tasks]", view).innerHTML = (tasks || []).length ? `<div class="table-wrap"><table class="au-table"><thead><tr><th>Task</th><th>Contact</th><th>Details</th><th>Created</th><th></th></tr></thead><tbody>${tasks.map((t) => `<tr data-task="${t.id}"${t.status === "done" ? ' class="is-archived"' : ""}>
+        <td><b>${esc(t.title)}</b><small>${esc(TASK_KINDS[t.kind] || t.kind)}</small></td><td>${esc(emailOf.get(t.user_id) || t.detail?.email || "—")}</td>
+        <td class="au-why">${Object.entries({ ...(t.detail?.answer || {}), sport: t.detail?.answer?.sport || t.detail?.sport, reason: t.detail?.cancel_reason }).filter(([k, v]) => v && !["at"].includes(k)).map(([k, v]) => `<span>${esc(k)}: ${esc(String(v))}</span>`).join("") || "—"}</td>
+        <td>${dt(t.created_at)}</td><td>${t.status === "open" ? `<button class="btn btn-sm" type="button" data-done>${icon("check")}Done</button>` : "Done"}</td></tr>`).join("")}</tbody></table></div>` : `<p class="aud-empty">No tasks.</p>`;
+    $("[data-offers]", view).innerHTML = (offers || []).length ? `<div class="table-wrap"><table class="au-table"><thead><tr><th>Contact</th><th>Offer</th><th>Status</th><th>Created</th><th>Valid until</th><th>Accepted</th></tr></thead><tbody>${offers.map((o) => `<tr>
+        <td>${esc(emailOf.get(o.user_id) || "—")}</td><td>${esc(OFFER_KINDS[o.kind] || o.kind)}</td><td>${esc(o.status)}</td><td>${dt(o.offered_at)}</td><td>${o.expires_at ? dt(o.expires_at) : "—"}</td><td>${o.accepted_at ? dt(o.accepted_at) : "—"}</td></tr>`).join("")}</tbody></table></div>` : `<p class="aud-empty">No offers yet.</p>`;
+    view.onclick = (e) => { const b = e.target.closest("[data-done]"); if (!b) return; busy(b, async () => { const { error } = await A.db.from("support_tasks").update({ status: "done", done_at: new Date().toISOString() }).eq("id", Number(b.closest("[data-task]").dataset.task)); if (error) throw new Error(error.message); tasksView(); }); };
+  }
+
   // ---------- Settings ----------
   function settingsView() {
-    const a = settings?.automations || {}, e = settings?.emails || {};
+    const a = settings?.automations || {}, e = settings?.emails || {}, o = settings?.offers || {};
     view.innerHTML = `<section class="panel panel-pad au-settings">
       <label class="au-switch"><input type="checkbox" data-k="sending_enabled"${a.sending_enabled ? " checked" : ""}><span><b>Send e-mails to contacts</b><small>Master switch. Off: flows advance and queue e-mails, but nothing is sent (tests still are).</small></span></label>
       <div class="au-row"><label class="au-f"><span>Max. one commercial e-mail every (hours) ${A.info("Shared with the newsletter: a contact who got the newsletter counts as having received a commercial e-mail that day.")}</span><input class="input" type="number" min="1" data-k="commercial_gap_hours" value="${a.commercial_gap_hours ?? 24}"></label>
         <label class="au-f"><span>When an e-mail hits the cap</span><select class="select" data-k="on_cap"><option value="defer"${a.on_cap !== "skip" ? " selected" : ""}>Postpone it (checked again before sending)</option><option value="skip"${a.on_cap === "skip" ? " selected" : ""}>Skip it</option></select></label>
         <label class="au-f"><span>Skip e-mails delayed more than (hours) ${A.info("After a pause, a long frequency-cap wait or sending switched off, an e-mail older than this is skipped instead of sent late.")}</span><input class="input" type="number" min="1" data-k="max_delay_hours" value="${a.max_delay_hours ?? 72}"></label></div>
+      <h3 class="au-h3">Sender</h3>
+      <div class="au-row"><label class="au-f"><span>Name</span><input class="input" data-k="from_name" value="${esc(a.from_name || e.from_name || "")}"></label>
+        <label class="au-f"><span>Replies go to</span><input class="input" type="email" data-k="reply_to" value="${esc(a.reply_to || "")}" placeholder="${esc(e.reply_to || "")}"></label></div>
+      <p class="au-help">Sent from ${esc(e.from_email || "—")} (Memberships → Settings → E-mails; the domain must be verified in Resend). Use a reply address someone reads: replies are how contacts ask for help.</p>
       <button class="btn btn-primary" type="button" data-save>Save settings</button>
-      <h3 class="au-h3">Sender</h3><p class="au-help">${esc(e.from_name || "—")} &lt;${esc(e.from_email || "—")}&gt; · reply-to ${esc(e.reply_to || "—")} — change it in Memberships → Settings → E-mails. The domain must be verified in Resend.</p>
+      <h3 class="au-h3">Recovery offers</h3>
+      <label class="au-switch"><input type="checkbox" data-o="enabled"${o.enabled ? " checked" : ""}><span><b>Offers can be accepted</b><small>Off: offer pages show the offer but can't be accepted. Discount and extension go through the normal checkout, which shows the final terms and asks for the card.</small></span></label>
+      <div class="au-row"><label class="au-f"><span>Discount code (Promo codes) ${A.info("Create it in Promo codes: 30% off, repeating 3 months, monthly plans only, 1 use per customer, not shown on the site. Here the code only works for whoever has a valid discount offer.")}</span><input class="input" data-o="discount_code" value="${esc(o.discount_code || "")}" placeholder="e.g. VUELVE30"></label>
+        <label class="au-f"><span>Discount valid for (days after the e-mail)</span><input class="input" type="number" min="1" data-o="discount_valid_days" value="${o.discount_valid_days ?? 5}"></label>
+        <label class="au-f"><span>Extension valid for (days after the e-mail)</span><input class="input" type="number" min="1" data-o="extension_valid_days" value="${o.extension_valid_days ?? 5}"></label></div>
+      ${!o.discount_code ? `<p class="au-warn">${icon("alert")}Blocked: the 30% discount needs a promo code (it creates a coupon in Stripe). Not created yet.</p>` : ""}
+      <button class="btn" type="button" data-save-offers>Save offers</button>
       <h3 class="au-h3">Integrations</h3><ul class="au-int">
         <li class="ok">${icon("check")}Engine: runs every 5 minutes on the server (pg_cron), whether the admin is open or not.</li>
         <li class="ok">${icon("check")}Payment status: from Stripe's webhook (verified, idempotent) into subscriptions — contacts leave sales flows the moment they pay.</li>
         <li class="ok">${icon("check")}Unsubscribe: link and one-click header in every e-mail; unsubscribed addresses are never e-mailed by automations again.</li>
-        <li class="todo">${icon("alert")}Resend webhook (delivered, clicks, bounces, spam complaints): pending (phase 2). Bounces and complaints can't be suppressed automatically until then.</li></ul>
+        <li class="${settings?.webhook_seen ? "ok" : "todo"}">${icon(settings?.webhook_seen ? "check" : "alert")}Resend webhook (delivered, clicks, bounces, spam complaints, newsletter unsubscribes): ${settings?.webhook_seen ? "receiving events." : "not connected yet. Add it in Resend → Webhooks (URL: …/functions/v1/resend-webhook) and save its signing secret in Supabase as RESEND_WEBHOOK_SECRET."}</li>
+        <li class="ok">${icon("check")}Product activity: daily visits, saved ideas, folders, AI analyses and planner entries are recorded for conditions and metrics.</li></ul>
     </section>`;
     $("[data-save]", view).onclick = (ev) => busy(ev.currentTarget, async () => {
       const val = (k) => $(`[data-k="${k}"]`, view);
-      const next = { sending_enabled: val("sending_enabled").checked, commercial_gap_hours: Number(val("commercial_gap_hours").value), on_cap: val("on_cap").value, max_delay_hours: Number(val("max_delay_hours").value) };
+      const next = { sending_enabled: val("sending_enabled").checked, commercial_gap_hours: Number(val("commercial_gap_hours").value), on_cap: val("on_cap").value, max_delay_hours: Number(val("max_delay_hours").value),
+        from_name: val("from_name").value, reply_to: val("reply_to").value };
       if (next.sending_enabled && !a.sending_enabled && !(await A.confirmDialog({ title: "Switch sending on?", text: "Active flows will start sending real e-mails to contacts within 5 minutes.", confirm: "Switch on", danger: true }))) return;
       settings = await rpc("automation_settings", { p_save: next }); A.toast("Settings saved."); await load(); draw();
+    });
+    $("[data-save-offers]", view).onclick = (ev) => busy(ev.currentTarget, async () => {
+      const v = (k) => $(`[data-o="${k}"]`, view);
+      const next = { enabled: v("enabled").checked, discount_code: v("discount_code").value, discount_valid_days: Number(v("discount_valid_days").value), extension_valid_days: Number(v("extension_valid_days").value) };
+      if (next.enabled && !o.enabled && !(await A.confirmDialog({ title: "Let contacts accept offers?", text: "Contacts with an offer will be able to start a discounted subscription or a new 7-day trial through the normal checkout.", confirm: "Allow", danger: true }))) return;
+      await rpc("automation_offer_settings", { p_save: next }); A.toast("Offers saved."); await load(); draw();
     });
   }
 

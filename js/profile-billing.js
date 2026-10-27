@@ -270,7 +270,10 @@
     panel.innerHTML = `<div class="pf-change pf-cancel-box">
       <b>Cancel your membership?</b>
       <p class="pf-billing-note">${tx(sub.status === "trialing" ? "Your trial ends on <b>{date}</b> and you won't be charged." : "You keep full access until <b>{date}</b> and won't be charged again.", { date: day(until) })} Your saved boards and content plans stay in your account. You can change your mind before that date.</p>
-      <label class="pf-cancel-why">Anything we could do better? <span>(optional)</span><textarea rows="2" maxlength="500" data-why></textarea></label>
+      <fieldset class="pf-cancel-why"><legend>What's the main reason? <span>(optional)</span></legend>
+        ${[["price", "The price"], ["unused", "I haven't had time to try it"], ["content", "I can't find relevant content"], ["missing", "A feature is missing"], ["other", "Another reason"]]
+          .map(([k, l]) => `<label class="pf-reason"><input type="radio" name="pf-reason" value="${k}" data-reason> ${tx(l)}</label>`).join("")}
+        <textarea rows="2" maxlength="500" data-why placeholder="${tx("Tell us more (optional)")}"></textarea></fieldset>
       <div class="pf-billing-actions"><button class="btn btn-outline" type="button" data-bill="close">Keep my membership</button><button class="btn pf-danger" type="button" data-bill="confirm-cancel">Cancel membership</button></div></div>`;
     panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
@@ -285,7 +288,12 @@
       if (a === "yearly") return changePanel(null, "year");
       if (a === "cancel") return cancelPanel();
       if (a === "close") { box.querySelector("[data-bill-panel]").innerHTML = ""; return; }
-      if (a === "confirm-cancel") { b.disabled = true; await manage({ action: "cancel", reason: box.querySelector("[data-why]")?.value || "" }); notify(tx("Your membership is cancelled. You keep access until the end of the period."), "is-ok"); return load(); }
+      if (a === "confirm-cancel") {
+        b.disabled = true;
+        // the reason is optional and never blocks the cancellation (supabase/automations-lifecycle.sql)
+        const why = box.querySelector("[data-why]")?.value || "", code = box.querySelector("[data-reason]:checked")?.value;
+        if (code) try { await db?.rpc("cancel_reason_record", { p_reason: code, p_detail: why }); } catch {}
+        await manage({ action: "cancel", reason: [code, why].filter(Boolean).join(": ") }); notify(tx("Your membership is cancelled. You keep access until the end of the period."), "is-ok"); return load(); }
       if (a === "reactivate") { b.disabled = true; await manage({ action: "reactivate" }); notify(tx("Great — your membership continues as usual."), "is-ok"); return load(); }
       if (a === "undo") { b.disabled = true; await manage({ action: "undo_change" }); notify(tx("The scheduled change was removed."), "is-ok"); return load(); }
     } catch (err) { b.disabled = false; notify(err.message, "is-err"); }

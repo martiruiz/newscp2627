@@ -9,12 +9,14 @@ const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "
 const ascii = (h) => h.replace(/[^\x00-\x7f]/gu, (c) => `&#${c.codePointAt(0)};`);
 const LOGO = "https://sportscontentplaybook.com/assets/logo-scp.png";
 
-export const VARIABLES = ["first_name", "org_name", "trial_end_date", "trial_days_left", "plan_name", "first_charge_amount", "last_payment_amount", "billing_period", "platform_url", "pricing_url", "account_url", "subscription_url", "unsubscribe_url"];
+export const VARIABLES = ["first_name", "org_name", "sport", "trial_end_date", "trial_days_left", "plan_name", "first_charge_amount", "last_payment_amount", "billing_period", "next_charge_date", "platform_url", "pricing_url", "account_url", "subscription_url", "folders_url", "unsubscribe_url",
+  "reason_price_url", "reason_time_url", "reason_content_url", "reason_feature_url", "reason_other_url",
+  "offer_url", "offer_expires_date", "offer_plan_name", "offer_price", "offer_discounted_price", "offer_discount_percent", "offer_months", "offer_days"];
 // what a variable becomes when the contact has no value (an author's {{x|fallback}} wins)
 const FALLBACK = {
-  en: { first_name: "there", org_name: "your club", trial_end_date: "the end of your trial", trial_days_left: "a few", plan_name: "your plan", first_charge_amount: "your plan's price", last_payment_amount: "your plan", billing_period: "" },
-  ca: { first_name: "", org_name: "el teu club", trial_end_date: "el final de la prova", trial_days_left: "uns quants", plan_name: "el teu pla", first_charge_amount: "el preu del teu pla", last_payment_amount: "el teu pla", billing_period: "" },
-  es: { first_name: "", org_name: "tu club", trial_end_date: "el final de tu prueba", trial_days_left: "unos", plan_name: "tu plan", first_charge_amount: "el precio de tu plan", last_payment_amount: "tu plan", billing_period: "" },
+  en: { first_name: "there", org_name: "your club", sport: "your sport", next_charge_date: "your next renewal date", trial_end_date: "the end of your trial", trial_days_left: "a few", plan_name: "your plan", first_charge_amount: "your plan's price", last_payment_amount: "your plan", billing_period: "" },
+  ca: { first_name: "", org_name: "el teu club", sport: "el teu esport", next_charge_date: "la pròxima renovació", trial_end_date: "el final de la prova", trial_days_left: "uns quants", plan_name: "el teu pla", first_charge_amount: "el preu del teu pla", last_payment_amount: "el teu pla", billing_period: "" },
+  es: { first_name: "", org_name: "tu club", sport: "tu deporte", next_charge_date: "la próxima renovación", trial_end_date: "el final de tu prueba", trial_days_left: "unos", plan_name: "tu plan", first_charge_amount: "el precio de tu plan", last_payment_amount: "tu plan", billing_period: "" },
 };
 const FOOT = {
   en: { why: "You're receiving this because you have a Sports Content Playbook account.", unsub: "Unsubscribe from these e-mails", notice: "This is a notice about your account and subscription." },
@@ -25,18 +27,39 @@ const FOOT = {
 const PERIOD = { en: { month: "monthly", year: "yearly" }, ca: { month: "mensual", year: "anual" }, es: { month: "mensual", year: "anual" } };
 // the contact's values (facts from public.automation_facts). firstCharge: the real first charge after the trial, from
 // Stripe's upcoming invoice (billing on the 1st makes it proportional, so it isn't the plan price)
-export function varsOf(facts, locale, site, token, firstCharge = null) {
+export function varsOf(facts, locale, site, token, firstCharge = null, offers = {}, reasonToken = null) {
   const f = facts || {};
   const left = f.trial_end ? Math.max(0, Math.ceil((new Date(f.trial_end).getTime() - Date.now()) / 864e5)) : null;
   return {
-    first_name: f.first_name || "", org_name: f.org_name || "",
+    first_name: f.first_name || "", org_name: f.org_name || "", sport: f.sport || "",
     trial_end_date: f.trial_end ? day(f.trial_end, locale) : "", trial_days_left: left == null ? "" : String(left),
     plan_name: f.plan_key ? planName(f.plan_key, locale) || f.plan_name || "" : "",
     first_charge_amount: firstCharge ? money(firstCharge.amount, firstCharge.currency, locale) : "",
     last_payment_amount: f.last_payment ? money(f.last_payment.amount, f.last_payment.currency, locale) : "",
     billing_period: (PERIOD[locale] || PERIOD.en)[f.billing_interval] || "",
-    platform_url: `${site}/content-library.html`, pricing_url: `${site}/pricing.html`, account_url: `${site}/profile.html`, subscription_url: `${site}/profile.html#billing`,
+    next_charge_date: f.sub_status === "trialing" && f.trial_end ? day(f.trial_end, locale) : f.current_period_end ? day(f.current_period_end, locale) : "",
+    ...offerVars(f, locale, site, offers),
+    // one click = the reason (feedback.html → cancel_feedback_answer); unused = "I haven't had time to try it"
+    ...Object.fromEntries([["price", "price"], ["time", "unused"], ["content", "content"], ["feature", "missing"], ["other", "other"]]
+      .map(([k, r]) => [`reason_${k}_url`, reasonToken ? `${site}/feedback.html?t=${reasonToken}&r=${r}&l=${locale}&e=1` : `${site}/profile.html#billing`])),
+    platform_url: `${site}/content-library.html`, pricing_url: `${site}/pricing.html`, account_url: `${site}/profile.html`, subscription_url: `${site}/profile.html#billing`, folders_url: `${site}/saved.html`,
     unsubscribe_url: token ? `${site}/unsubscribe.html?t=${token}` : `${site}/unsubscribe.html`,
+  };
+}
+
+// the recovery offer (lifecycle_offers): link, validity (it starts when the e-mail goes out) and the plan's prices
+function offerVars(f, locale, site, cfg) {
+  const o = f.offer;
+  if (!o || typeof o !== "object") return {};
+  const pct = Number(cfg.discount_percent ?? 30), months = Number(cfg.discount_months ?? 3), price = Number(f.plan_price_month || 0);
+  const valid = Number(o.kind === "discount" ? cfg.discount_valid_days ?? 5 : cfg.extension_valid_days ?? 5);
+  return {
+    offer_url: `${site}/offer.html?t=${o.token}`,
+    offer_expires_date: day(o.expires_at || new Date(Date.now() + valid * 864e5).toISOString(), locale),
+    offer_plan_name: f.plan_key ? planName(f.plan_key, locale) || f.plan_name || "" : "",
+    offer_price: price ? money(price, f.currency || "eur", locale) : "",
+    offer_discounted_price: price ? money(Math.round(price * (100 - pct)) / 100, f.currency || "eur", locale) : "",
+    offer_discount_percent: `${pct}%`, offer_months: String(months), offer_days: String(cfg.extension_days ?? 7),
   };
 }
 

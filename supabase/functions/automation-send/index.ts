@@ -13,7 +13,11 @@ const site = () => (env("SITE_URL").split(",")[0] || "https://sportscontentplayb
 const fnUrl = () => `${env("SUPABASE_URL")}/functions/v1/automation-send`;
 
 async function deliver(to: string, msg: { subject: string; html: string; text: string }, idem: string, token: string | null) {
-  const cfg = (await setting("emails")) || {};
+  // sender: the automations' own name and reply-to (Settings), on the verified address of Memberships → Settings → E-mails
+  const cfg = { ...((await setting("emails")) || {}) };
+  const auto = (await setting("automations")) || {};
+  if (auto.from_name) cfg.from_name = auto.from_name;
+  if (auto.reply_to) cfg.reply_to = auto.reply_to;
   if (!env("RESEND_API_KEY")) throw new Error("RESEND_API_KEY is not set");
   const headers: Record<string, string> = {};
   if (token) { headers["List-Unsubscribe"] = `<${fnUrl()}?u=${token}>`; headers["List-Unsubscribe-Post"] = "List-Unsubscribe=One-Click"; }
@@ -36,8 +40,16 @@ async function firstCharge(email: { content?: Record<string, unknown> }, facts: 
   } catch { return null; }
 }
 
+// a one-click token for "why did you leave?" links, only when the e-mail uses them (table cancel_feedback)
+async function reasonToken(email: { content?: Record<string, unknown> }, userId?: string) {
+  if (!userId || !JSON.stringify(email?.content || {}).includes("reason_")) return null;
+  const [row] = await rest("cancel_feedback", { method: "POST", headers: { Prefer: "return=representation" }, body: JSON.stringify({ user_id: userId, source: "automation e-mail" }) }).catch(() => [null]);
+  return row?.token || null;
+}
+
 // sample values for previews without a chosen contact
-const SAMPLE = { first_name: "Alex", org_name: "FC Example", trial_end: new Date(Date.now() + 3 * 864e5).toISOString(), plan_key: "library_planner", plan_name: "Plus", billing_interval: "month" };
+const SAMPLE = { first_name: "Alex", org_name: "FC Example", sport: "Fútbol", trial_end: new Date(Date.now() + 3 * 864e5).toISOString(), plan_key: "library_planner", plan_name: "Plus",
+  plan_price_month: 19, currency: "eur", billing_interval: "month", sub_status: "trialing", offer: { kind: "discount", status: "offered", token: "00000000-0000-0000-0000-000000000000" } };
 
 async function factsOf(userId?: string) {
   if (!userId) return null;
@@ -57,6 +69,7 @@ Deno.serve(async (req) => {
 
   if (cronAllowed(req)) {
     let sent = 0, failed = 0;
+    const offers = (await setting("offers")) || {};
     for (let round = 0; round < 5; round++) {
       const batch = (await rpc("automation_claim_sends", { p_limit: 40 })) || [];
       if (!batch.length) break;
@@ -64,7 +77,7 @@ Deno.serve(async (req) => {
         let subject = "";
         try {
           const locale = pickLocale(s.email, s.facts?.locale || "en");
-          const vars = varsOf(s.facts, locale, site(), s.token, await firstCharge(s.email, s.facts));
+          const vars = varsOf(s.facts, locale, site(), s.token, await firstCharge(s.email, s.facts), offers, await reasonToken(s.email, s.facts?.user_id));
           const msg = renderEmail(s.email.content[locale], vars, locale, s.category);
           subject = msg.subject;
           const id = await deliver(s.to, msg, `scp-auto-${s.id}`, s.category === "transactional" ? null : s.token);
@@ -86,7 +99,7 @@ Deno.serve(async (req) => {
     const email = body.email || {};
     const facts = (await factsOf(body.user_id)) || SAMPLE;
     const locale = pickLocale(email, body.locale || facts.locale || "en");
-    const vars = varsOf(facts, locale, site(), null, body.user_id ? await firstCharge(email, facts) : { amount: 12.4, currency: "eur" });
+    const vars = varsOf(facts, locale, site(), null, body.user_id ? await firstCharge(email, facts) : { amount: 12.4, currency: "eur" }, (await setting("offers")) || {});
     const msg = renderEmail(email.content?.[locale], vars, locale, email.category);
     if (body.action === "preview") return json({ ...msg, locale });
     if (body.action === "test") {

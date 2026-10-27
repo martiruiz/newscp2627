@@ -12,7 +12,10 @@
 -- The engine: public.automation_tick() (pg_cron every 5 min) enrols and advances journeys in the database, then the Edge
 -- Function automation-send claims the due e-mails (automation_claim_sends: last eligibility check, frequency cap) and sends
 -- them with Resend. Nothing is sent while billing_settings.automations.sending_enabled is false.
--- Run once in Supabase > SQL editor. Safe to run again.
+-- Run once in Supabase > SQL editor, then supabase/automations-lifecycle.sql. Safe to run again.
+
+-- functions below use tables created in automations-lifecycle.sql: don't check bodies at creation
+set check_function_bodies = off;
 
 -- ---------- tables ----------
 create table if not exists public.automation_emails (
@@ -130,7 +133,7 @@ create table if not exists public.email_pref_tokens (
 
 -- settings (sending switch, frequency cap) next to the other e-mail settings
 insert into public.billing_settings (key, value)
-values ('automations', '{"sending_enabled": false, "commercial_gap_hours": 24, "on_cap": "defer", "max_delay_hours": 72}'::jsonb)
+values ('automations', '{"sending_enabled": false, "commercial_gap_hours": 24, "on_cap": "defer", "max_delay_hours": 72, "from_name": "Martí | Sports Content Playbook"}'::jsonb)
 on conflict (key) do nothing;
 
 -- ---------- access: superadmins only (the engine runs as the owner / service role) ----------
@@ -152,29 +155,38 @@ returns jsonb language sql stable security definer set search_path = public as $
     'first_name', nullif(trim(p.first_name), ''),
     'org_name', coalesce((select c.name from public.club_members m join public.clubs c on c.id = m.club_id where m.user_id = p.id limit 1), nullif(p.preferences ->> 'organization', '')),
     'org_type', p.preferences ->> 'orgType',
+    'sport', (select c.name from public.idea_catalog c where c.category = 'sport' and c.id = (p.preferences -> 'sports' ->> 0)::bigint),
     'locale', coalesce(nullif(p.preferences ->> 'ui_language', ''), nullif(p.preferences ->> 'language', ''), 'en'),
     'signed_up_at', p.created_at,
     'last_sign_in_at', u.last_sign_in_at,
+    'last_visit_at', (select max(x.at) from public.product_events x where x.user_id = p.id and x.kind = 'visit'),
+    'days_visited', (select count(*) from public.product_events x where x.user_id = p.id and x.kind = 'visit'),
     'consent', coalesce(p.newsletter, false)
                and not exists (select 1 from public.newsletter_signups n where lower(n.email) = lower(p.email) and n.unsubscribed_at is not null),
     'suppressed', exists (select 1 from public.email_suppressions x where x.email = lower(coalesce(p.email, u.email))),
     'suppressed_hard', exists (select 1 from public.email_suppressions x where x.email = lower(coalesce(p.email, u.email)) and x.reason in ('bounced', 'complained')),
     'plan_key', s.plan_key,
     'plan_name', pl.name,
+    'plan_price_month', pl.price_month,
     'sub_status', s.status,
     'billing_interval', s.billing_interval,
     'amount', s.amount,
     'currency', s.currency,
     'stripe_subscription_id', s.stripe_subscription_id,
+    'current_period_end', s.current_period_end,
     'last_payment', (select jsonb_build_object('amount', i.amount_paid, 'currency', i.currency, 'at', i.paid_at) from public.billing_invoices i
                      where i.user_id = p.id and i.status = 'paid' and i.amount_paid > 0 order by i.paid_at desc nulls last limit 1),
+    'never_charged', not exists (select 1 from public.billing_invoices i where i.user_id = p.id and i.status = 'paid' and i.amount_paid > 0),
     'trial_start', s.trial_start,
     'trial_end', s.trial_end,
     'in_trial', coalesce(s.status = 'trialing' and s.trial_end > now(), false),
     'has_paid', coalesce(s.status in ('active', 'past_due'), false),
     'cancel_scheduled', coalesce(s.cancel_at_period_end, false),
     'access_ended', s.ended_at is not null,
+    'cancel_reason', (select f.reason from public.cancel_feedback f where f.user_id = p.id and f.reason is not null order by f.answered_at desc nulls last limit 1),
+    'offer', (select jsonb_build_object('kind', o.kind, 'status', o.status, 'token', o.token, 'plan_key', o.plan_key, 'expires_at', o.expires_at) from public.lifecycle_offers o where o.user_id = p.id),
     'saved_ideas', (select count(*) from public.folder_items f where f.user_id = p.id),
+    'folders', (select count(*) from public.folders f where f.user_id = p.id),
     'saved_searches', (select count(*) from public.saved_searches f where f.user_id = p.id),
     'ai_analyses', (select count(*) from public.user_ai_unlocks f where f.user_id = p.id),
     'planner_entries', (select count(*) from public.org_entries f where f.user_id = p.id),
@@ -191,6 +203,7 @@ revoke execute on function public.automation_facts(uuid) from public, anon, auth
 create or replace function public.automation_rule(p_rule jsonb, f jsonb, p_entered timestamptz)
 returns boolean language plpgsql stable set search_path = public as $$
 declare fld text := p_rule ->> 'field'; v jsonb := p_rule -> 'value'; op text := coalesce(p_rule ->> 'op', 'is'); b boolean; n numeric;
+  seen timestamptz := greatest((f ->> 'last_sign_in_at')::timestamptz, (f ->> 'last_visit_at')::timestamptz);
 begin
   b := case fld
     when 'has_paid' then (f ->> 'has_paid')::boolean
@@ -198,25 +211,33 @@ begin
     when 'had_trial' then (f ->> 'trial_start') is not null
     when 'trial_ended_unpaid' then (f ->> 'trial_end') is not null and (f ->> 'trial_end')::timestamptz < now() and not (f ->> 'has_paid')::boolean
     when 'cancel_scheduled' then (f ->> 'cancel_scheduled')::boolean
-    when 'logged_in_since_entry' then (f ->> 'last_sign_in_at') is not null and (f ->> 'last_sign_in_at')::timestamptz > coalesce(p_entered, now())
+    when 'renewal_on' then coalesce(f ->> 'sub_status', '') in ('trialing', 'active') and not (f ->> 'cancel_scheduled')::boolean
+    when 'never_charged' then (f ->> 'never_charged')::boolean
+    when 'logged_in_since_entry' then seen is not null and seen > coalesce(p_entered, now())
     when 'saved_idea' then (f ->> 'saved_ideas')::int > 0
+    when 'created_folder' then (f ->> 'folders')::int > 0
     when 'saved_search' then (f ->> 'saved_searches')::int > 0
     when 'used_ai' then (f ->> 'ai_analyses')::int > 0
     when 'used_planner' then (f ->> 'planner_entries')::int > 0
     when 'consent' then (f ->> 'consent')::boolean
+    when 'cancel_reason_known' then (f ->> 'cancel_reason') is not null
+    when 'offer_used' then (f -> 'offer') is not null and jsonb_typeof(f -> 'offer') = 'object'
     when 'has_tag' then (f -> 'tags') ? (v #>> '{}')
     when 'plan_is' then (f ->> 'plan_key') = (v #>> '{}')
     when 'locale_is' then (f ->> 'locale') = (v #>> '{}')
     when 'org_type_is' then (f ->> 'org_type') = (v #>> '{}')
+    when 'cancel_reason_is' then (f ->> 'cancel_reason') = (v #>> '{}')
+    when 'offer_accepted_is' then (f #>> '{offer,kind}') = (v #>> '{}') and (f #>> '{offer,status}') in ('accepted', 'converted')
     else null end;
-  if fld in ('has_tag', 'plan_is', 'locale_is', 'org_type_is') then return case when op = 'is_not' then not coalesce(b, false) else coalesce(b, false) end; end if;
-  if b is not null or fld in ('has_paid', 'in_trial', 'had_trial', 'trial_ended_unpaid', 'cancel_scheduled', 'logged_in_since_entry', 'saved_idea', 'saved_search', 'used_ai', 'used_planner', 'consent') then
+  if fld in ('has_tag', 'plan_is', 'locale_is', 'org_type_is', 'cancel_reason_is', 'offer_accepted_is') then return case when op = 'is_not' then not coalesce(b, false) else coalesce(b, false) end; end if;
+  if b is not null or fld in ('has_paid', 'in_trial', 'had_trial', 'trial_ended_unpaid', 'cancel_scheduled', 'renewal_on', 'never_charged', 'logged_in_since_entry', 'saved_idea', 'created_folder', 'saved_search', 'used_ai', 'used_planner', 'consent', 'cancel_reason_known', 'offer_used') then
     return coalesce(b, false) = coalesce((v #>> '{}')::boolean, true);
   end if;
   n := case fld
     when 'days_since_signup' then extract(epoch from now() - (f ->> 'signed_up_at')::timestamptz) / 86400
-    when 'days_since_login' then extract(epoch from now() - coalesce((f ->> 'last_sign_in_at')::timestamptz, (f ->> 'signed_up_at')::timestamptz)) / 86400
+    when 'days_since_login' then extract(epoch from now() - coalesce(seen, (f ->> 'signed_up_at')::timestamptz)) / 86400
     when 'trial_days_left' then extract(epoch from (f ->> 'trial_end')::timestamptz - now()) / 86400
+    when 'days_visited' then (f ->> 'days_visited')::numeric
     else null end;
   if n is null then return false; end if;
   return case op when 'gte' then n >= (v #>> '{}')::numeric when 'lte' then n <= (v #>> '{}')::numeric else false end;
@@ -446,6 +467,25 @@ begin
       perform public.automation_log_add(e.id, e.flow_id, e.user_id, sid, 'tag', jsonb_build_object('add', st -> 'add', 'remove', st -> 'remove'));
       sid := st ->> 'next'; continue;
 
+    elsif st ->> 'type' = 'offer' then
+      -- one recovery offer per account: if there was already one, the e-mail that presents this one is skipped
+      if exists (select 1 from public.lifecycle_offers o where o.user_id = e.user_id) then
+        update public.automation_enrollments set skip_next_email = true where id = e.id;
+        perform public.automation_log_add(e.id, e.flow_id, e.user_id, sid, 'skipped', jsonb_build_object('reason', 'already had a recovery offer'));
+      else
+        insert into public.lifecycle_offers (user_id, kind, plan_key, details) values (e.user_id, st ->> 'kind', f ->> 'plan_key', jsonb_build_object('flow_id', e.flow_id, 'step', sid))
+          on conflict (user_id) do nothing;
+        perform public.automation_log_add(e.id, e.flow_id, e.user_id, sid, 'offer', jsonb_build_object('kind', st ->> 'kind'));
+      end if;
+      sid := st ->> 'next'; continue;
+
+    elsif st ->> 'type' = 'task' then
+      insert into public.support_tasks (user_id, kind, title, detail)
+        values (e.user_id, coalesce(st ->> 'kind', 'help'), coalesce(nullif(st ->> 'title', ''), 'Follow up with ' || (f ->> 'email')),
+          jsonb_build_object('email', f ->> 'email', 'flow_id', e.flow_id, 'step', sid, 'cancel_reason', f ->> 'cancel_reason', 'sport', f ->> 'sport', 'plan', f ->> 'plan_key'));
+      perform public.automation_log_add(e.id, e.flow_id, e.user_id, sid, 'task', jsonb_build_object('kind', st ->> 'kind'));
+      sid := st ->> 'next'; continue;
+
     elsif st ->> 'type' = 'end' then
       perform public.automation_finish(e.id, case when coalesce(st ->> 'reason', 'sequence finished') in ('converted', 'unsubscribed') then 'exited' else 'completed' end, coalesce(st ->> 'reason', 'sequence finished'));
       return;
@@ -459,7 +499,7 @@ revoke execute on function public.automation_advance(bigint) from public, anon, 
 -- ---------- the 5-minute job: enrol new events, advance due journeys ----------
 create or replace function public.automation_tick()
 returns jsonb language plpgsql security definer set search_path = public as $$
-declare fl record; d jsonb; c record; entered int := 0; advanced int := 0; r record;
+declare fl record; d jsonb; c record; entered int := 0; advanced int := 0; r record; t timestamptz;
 begin
   if not pg_try_advisory_xact_lock(hashtext('automation_tick')) then return '{"skipped": "already running"}'; end if;
   for fl in select * from public.automation_flows where status = 'active' and published_version_id is not null order by priority loop
@@ -468,12 +508,26 @@ begin
       if public.automation_enrol(fl.id, c.user_id, c.ref, c.event_at) is not null then entered := entered + 1; end if;
     end loop;
   end loop;
-  -- a contact who became a customer leaves every flow that sells the first subscription, right away
+  -- leave flows on payment / cancellation right away
   for r in select e.id, public.automation_exit_reason(v.definition, public.automation_facts(e.user_id)) reason
            from public.automation_enrollments e join public.automation_versions v on v.id = e.version_id
            where e.status = 'active' and (coalesce((v.definition #>> '{exit,on_paid}')::boolean, false) or coalesce((v.definition #>> '{exit,on_cancel}')::boolean, false)) loop
     if r.reason is not null then perform public.automation_finish(r.id, 'exited', r.reason); end if;
   end loop;
+  -- waits tied to a date (e.g. 48 h before the trial ends) follow that date if it changes
+  for r in select e.id, e.entered_at, e.user_id, e.next_run_at, v.definition -> 'steps' -> e.step_id st
+           from public.automation_enrollments e join public.automation_versions v on v.id = e.version_id
+           where e.status = 'active' and e.waiting and v.definition -> 'steps' -> e.step_id ->> 'mode' = 'until_event' loop
+    t := public.automation_wait_until(r.st, r.entered_at, public.automation_facts(r.user_id));
+    if t is not null and t is distinct from r.next_run_at then
+      update public.automation_enrollments set next_run_at = greatest(t, now()) where id = r.id;
+      perform public.automation_log_add(r.id, null, r.user_id, null, 'rescheduled', jsonb_build_object('from', r.next_run_at, 'to', t));
+    end if;
+  end loop;
+  -- offers: expire, and mark the ones that became a paid subscription
+  update public.lifecycle_offers set status = 'expired' where status = 'offered' and expires_at < now();
+  update public.lifecycle_offers o set status = 'converted', converted_at = now() from public.subscriptions s
+    where o.status = 'accepted' and s.user_id = o.user_id and s.status = 'active' and exists (select 1 from public.billing_invoices i where i.user_id = o.user_id and i.status = 'paid' and i.amount_paid > 0 and i.paid_at > o.accepted_at);
   for r in select e.id from public.automation_enrollments e join public.automation_flows f on f.id = e.flow_id
            where e.status = 'active' and f.status = 'active' and e.next_run_at <= now() order by e.next_run_at limit 500 loop
     perform public.automation_advance(r.id); advanced := advanced + 1;
@@ -565,6 +619,11 @@ begin
   if p_ok then
     update public.automation_sends set status = 'sent', sent_at = now(), provider_id = p_provider, subject = p_subject, error = null, locked_at = null where id = p_id;
     if not s.is_test then perform public.automation_log_add(s.enrollment_id, s.flow_id, s.user_id, s.step_id, 'sent', jsonb_build_object('send_id', p_id, 'subject', p_subject)); end if;
+    -- an offer's validity starts when the e-mail that presents it goes out
+    if not s.is_test and exists (select 1 from public.automation_emails m where m.id = s.email_id and m.content::text like '%{{offer_%') then
+      update public.lifecycle_offers o set expires_at = now() + make_interval(days => coalesce((select (value ->> case when o.kind = 'discount' then 'discount_valid_days' else 'extension_valid_days' end)::int from public.billing_settings where key = 'offers'), 5))
+        where o.user_id = s.user_id and o.expires_at is null and o.status = 'offered' and o.kind in ('discount', 'extension');
+    end if;
   elsif s.attempts < 3 then
     update public.automation_sends set status = 'queued', locked_at = null, error = left(p_error, 300), scheduled_at = now() + make_interval(mins => 15 * s.attempts) where id = p_id;
     perform public.automation_log_add(s.enrollment_id, s.flow_id, s.user_id, s.step_id, 'retry', jsonb_build_object('send_id', p_id, 'error', left(p_error, 300), 'attempt', s.attempts));
@@ -613,6 +672,8 @@ begin
       if coalesce(st ->> 'mode', 'duration') = 'duration' and coalesce((st ->> 'amount')::numeric, 0) <= 0 then errs := errs || '"A wait needs a duration above 0."'; end if;
       if st ->> 'mode' = 'until_event' and st ->> 'anchor' is null then errs := errs || '"A relative wait needs its reference date."'; end if;
       if st ->> 'mode' = 'window' and jsonb_array_length(coalesce(st -> 'days', '[]'::jsonb)) = 0 then errs := errs || '"A time-window wait needs at least one day."'; end if;
+    elsif st ->> 'type' = 'offer' and coalesce(st ->> 'kind', '') not in ('discount', 'extension', 'content', 'feature') then
+      errs := errs || '"An offer step needs its kind."';
     elsif st ->> 'type' = 'condition' then
       if jsonb_array_length(coalesce(st -> 'rules', '[]'::jsonb)) = 0 then errs := errs || '"A condition has no rules."'; end if;
     elsif st ->> 'type' = 'email' then
@@ -625,7 +686,7 @@ begin
           for b in select * from jsonb_array_elements(coalesce(c -> 'blocks', '[]'::jsonb)) loop
             if b ->> 'type' = 'button' and coalesce(b ->> 'url', '') !~ '^(https://|\{\{)' then errs := errs || to_jsonb(format('E-mail "%s" (%s): a button link must start with https:// or be a variable.', em.name, loc)); end if;
           end loop;
-          if c::text ~ '\{\{\s*(?!(first_name|org_name|trial_end_date|trial_days_left|plan_name|first_charge_amount|last_payment_amount|billing_period|platform_url|pricing_url|account_url|subscription_url|unsubscribe_url)\W)[a-z_]+' then
+          if c::text ~ '\{\{\s*(?!(first_name|org_name|sport|trial_end_date|trial_days_left|plan_name|first_charge_amount|last_payment_amount|billing_period|next_charge_date|platform_url|pricing_url|account_url|subscription_url|folders_url|unsubscribe_url|reason_price_url|reason_time_url|reason_content_url|reason_feature_url|reason_other_url|offer_url|offer_expires_date|offer_plan_name|offer_price|offer_discounted_price|offer_discount_percent|offer_months|offer_days)\W)[a-z_]+' then
             errs := errs || to_jsonb(format('E-mail "%s" (%s) uses an unknown variable.', em.name, loc)); end if;
         end loop;
       end if;
@@ -750,6 +811,14 @@ begin
     elsif st ->> 'type' = 'tag' then
       out := out || jsonb_build_array(jsonb_build_object('kind', 'tag', 'step', sid, 'at', clock, 'add', st -> 'add', 'remove', st -> 'remove'));
       sid := st ->> 'next';
+    elsif st ->> 'type' = 'offer' then
+      out := out || jsonb_build_array(jsonb_build_object('kind', 'offer', 'step', sid, 'at', clock, 'text', 'Recovery offer: ' || coalesce(st ->> 'kind', '?'),
+        'note', case when jsonb_typeof(f -> 'offer') = 'object' then 'already had an offer: the next e-mail would be skipped' end));
+      if jsonb_typeof(f -> 'offer') = 'object' then skip := true; end if;
+      sid := st ->> 'next';
+    elsif st ->> 'type' = 'task' then
+      out := out || jsonb_build_array(jsonb_build_object('kind', 'task', 'step', sid, 'at', clock, 'text', 'Internal task: ' || coalesce(nullif(st ->> 'title', ''), st ->> 'kind')));
+      sid := st ->> 'next';
     elsif st ->> 'type' = 'end' then
       out := out || jsonb_build_array(jsonb_build_object('kind', 'exit', 'step', sid, 'at', clock, 'text', coalesce(st ->> 'reason', 'sequence finished'))); return out;
     else exit; end if;
@@ -858,12 +927,15 @@ begin
         'sending_enabled', coalesce((p_save ->> 'sending_enabled')::boolean, false),
         'commercial_gap_hours', greatest(1, least(coalesce((p_save ->> 'commercial_gap_hours')::int, 24), 720)),
         'on_cap', case when p_save ->> 'on_cap' = 'skip' then 'skip' else 'defer' end,
-        'max_delay_hours', greatest(1, least(coalesce((p_save ->> 'max_delay_hours')::int, 72), 720)))
+        'max_delay_hours', greatest(1, least(coalesce((p_save ->> 'max_delay_hours')::int, 72), 720)),
+        'from_name', left(coalesce(nullif(trim(p_save ->> 'from_name'), ''), 'Sports Content Playbook'), 80),
+        'reply_to', nullif(lower(trim(coalesce(p_save ->> 'reply_to', ''))), ''))
       where key = 'automations';
   end if;
   return jsonb_build_object('automations', (select value from public.billing_settings where key = 'automations'),
     'emails', (select value from public.billing_settings where key = 'emails'),
-    'resend_webhook', false);
+    'offers', (select value from public.billing_settings where key = 'offers'),
+    'webhook_seen', exists (select 1 from public.email_events));
 end $$;
 grant execute on function public.automation_settings(jsonb) to authenticated;
 

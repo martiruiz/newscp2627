@@ -40,6 +40,16 @@ window.SCP_AUTH = (() => {
     await client.rpc("update_my_preferences", { p_preferences: { ...(p.preferences || {}), ui_language: lang }, p_newsletter: p.newsletter, p_frequency: p.newsletter_frequency || "weekly" });
   };
 
+  // one "visit" a day for the lifecycle e-mails (did they come back?): supabase/automations-lifecycle.sql
+  if (client) setTimeout(async () => {
+    const today = new Date().toISOString().slice(0, 10);
+    try { if (localStorage.getItem("scp-visit") === today) return; } catch {}
+    const { data: { session } } = await client.auth.getSession();
+    if (!session) return;
+    const { error } = await client.rpc("track_visit");
+    if (!error) try { localStorage.setItem("scp-visit", today); } catch {}
+  }, 1500);
+
   return {
     ready,
     client,

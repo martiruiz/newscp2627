@@ -27,7 +27,7 @@
   </main>
   <script src="js/config.js?v=20261020lf"></script>
   <script>
-    // One-click answer from the cancellation e-mail: ?t=<token>&r=price|unused|missing|other&l=es|ca|en
+    // One-click answer from the cancellation e-mail: ?t=<token>&r=price|unused|content|missing|other&l=es|ca|en
     (() => {
       const q = new URLSearchParams(location.search);
       const lang = ["es", "ca", "en"].includes(q.get("l")) ? q.get("l") : "es";
@@ -36,6 +36,8 @@
         ca: { eyebrow: "Gràcies", title: "Gràcies per explicar-nos-ho", text: "La teva resposta ens ajuda a millorar SCP. Si canvies d'opinió, pots reactivar la membresia des del teu compte abans que acabi.", cta: "Anar al meu compte", bad: "Aquest enllaç ja no és vàlid, però gràcies igualment." },
         en: { eyebrow: "Thank you", title: "Thanks for telling us", text: "Your answer helps us improve SCP. If you change your mind, you can reactivate your membership from your account before it ends.", cta: "Go to my account", bad: "This link has expired, but thank you anyway." },
       }[lang];
+      // e=1: from the "your trial has ended" e-mail (no membership left to reactivate)
+      if (q.get("e") === "1") T.text = { es: "Tu respuesta nos ayuda a mejorar SCP.", ca: "La teva resposta ens ajuda a millorar SCP.", en: "Your answer helps us improve SCP." }[lang];
       document.documentElement.lang = lang;
       document.querySelectorAll("[data-t]").forEach((el) => { el.textContent = T[el.dataset.t]; });
       const cfg = window.SCP_CONFIG || {};
