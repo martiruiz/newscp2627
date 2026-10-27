@@ -124,6 +124,7 @@ export function renderWeekly({ subject, preheader, intro, topStory, news, posts 
     ${topStory ? `<tr><td style="padding:0 0 6px">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0"${ba("topStory")} style="background:#121b33;border-radius:16px;border-left:4px solid ${GOLD}">
         <tr><td style="padding:20px 22px">
+          ${topStory.image ? `<a href="${esc(topStory.link)}"><img src="${esc(topStory.image)}" width="468" alt="${esc(topStory.title)}" style="display:block;width:100%;max-width:468px;height:auto;margin:0 0 16px;border-radius:12px;border:0"></a>` : ""}
           <p style="margin:0;${SANS};font-size:11px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:${GOLD}">Top story${topStory.platform ? `&nbsp;&nbsp;<span style="color:#56647e">·</span>&nbsp;&nbsp;<span style="color:#8b98ae">${esc(PLATFORM[topStory.platform] || "")}</span>` : ""}</p>
           <a href="${esc(topStory.link)}"${ea("topStory.title", topStory.title)} style="display:block;margin-top:8px;${SANS};font-size:20px;line-height:1.3;font-weight:700;color:#ffffff;text-decoration:none">${esc(topStory.title)}</a>
           <p${ea("topStory.take", topStory.take)} style="margin:10px 0 0;${BODY};font-size:14px;line-height:1.65;color:#b4c0d3">${rich(topStory.take)}</p>
@@ -135,6 +136,7 @@ export function renderWeekly({ subject, preheader, intro, topStory, news, posts 
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
       ${news.map((item, i) => `<tr${ba(`news.${i}`)}><td style="padding:14px 0;${i ? "border-top:1px solid rgba(255,255,255,0.07);" : ""}">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+          ${item.image ? `<td width="102" valign="top" style="padding:0 14px 0 0"><a href="${esc(item.link)}"><img src="${esc(item.image)}" width="88" height="60" alt="" style="display:block;width:88px;height:60px;object-fit:cover;border-radius:8px;border:0"></a></td>` : ""}
           <td width="34" valign="top" style="${SANS};font-size:15px;font-weight:700;color:${GOLD}">${String(i + 1).padStart(2, "0")}</td>
           <td valign="top">
             <a href="${esc(item.link)}"${ea(`news.${i}.title`, item.title)} style="${SANS};font-size:15px;line-height:1.4;font-weight:700;color:#ffffff;text-decoration:none">${esc(item.title)}</a>

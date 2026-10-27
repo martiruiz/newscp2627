@@ -206,8 +206,8 @@
     };
     const blockInfo = (path) => {
       const [k, i] = path.split("."); const o = getAt(work, path); if (!o) return null;
-      if (k === "topStory") return { label: "Top story", o, link: "link", movable: false };
-      if (k === "news") return { label: `Headline ${Number(i) + 1}`, o, link: "link", arr: work.news, i: Number(i), movable: true };
+      if (k === "topStory") return { label: "Top story", o, link: "link", image: "image", movable: false };
+      if (k === "news") return { label: `Headline ${Number(i) + 1}`, o, link: "link", image: "image", arr: work.news, i: Number(i), movable: true };
       if (k === "posts") return { label: `Post ${Number(i) + 1} · ${o.who || ""}`, o, link: "url", image: "image", arr: work.posts, i: Number(i), movable: true };
       return { label: `Article ${Number(i) + 1}`, o, link: "link", image: "image", arr: work.blogs, i: Number(i), movable: true };
     };

@@ -19,6 +19,7 @@ import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { loadEnv } from "../library/env.mjs";
 import { igEmbed } from "../library/instagram.mjs";
+import { articleImage } from "./news-image.mjs";
 import { renderWeekly, SITE } from "./template.mjs";
 
 loadEnv();
@@ -130,9 +131,16 @@ console.log(`Claude: "${out.subject}" (${response.usage.input_tokens} in / ${res
 const newsById = new Map(newsRows.map((n) => [n.id, n]));
 const newsLink = (n) => `${SITE}/news.html#news-${n.id}`;
 const top = out.topStory && newsById.get(out.topStory.id);
-const topStory = top ? { title: top.title, take: out.topStory.take, platform: top.platform, link: newsLink(top) } : null;
-const news = out.news.filter((id) => id !== top?.id).map((id) => newsById.get(id)).filter(Boolean).slice(0, 6)
-  .map((n) => ({ title: n.title, platform: n.platform, link: newsLink(n) }));
+// each news item gets its article's cover image, copied to our public bucket
+const newsImage = (n) => articleImage(n.url, async (buf, ext, type) => {
+  if (DRY) return `data:${type};base64,${buf.toString("base64")}`;
+  const file = `${weekStart}/news-${n.id}.${ext}`;
+  const { error } = await db.storage.from("newsletter").upload(file, buf, { contentType: type, upsert: true });
+  return error ? null : db.storage.from("newsletter").getPublicUrl(file).data.publicUrl;
+});
+const topStory = top ? { title: top.title, take: out.topStory.take, platform: top.platform, link: newsLink(top), image: await newsImage(top) } : null;
+const news = await Promise.all(out.news.filter((id) => id !== top?.id).map((id) => newsById.get(id)).filter(Boolean).slice(0, 6)
+  .map(async (n) => ({ title: n.title, platform: n.platform, link: newsLink(n), image: await newsImage(n) })));
 // Featured posts: copy each cover image to our public bucket (Instagram image links expire)
 async function stableImage(post) {
   try {
