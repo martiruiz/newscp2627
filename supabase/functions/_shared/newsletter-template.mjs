@@ -6,8 +6,8 @@
 export const SITE = "https://sportscontentplaybook.com";
 // Social profiles in the footer (empty = hidden)
 export const SOCIAL = {
-  Instagram: "",
-  TikTok: "",
+  Instagram: "https://www.instagram.com/sportscontentplaybook",
+  TikTok: "https://www.tiktok.com/@sportscontentplaybook",
   LinkedIn: "https://www.linkedin.com/company/sportscontentplaybook",
 };
 
