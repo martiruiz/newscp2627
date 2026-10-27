@@ -170,35 +170,103 @@
     const refresh = () => (issues.length ? draw() : empty());
     if (!issues.length) return empty();
     let cur = issues[0];
+    // ---- visual editor: the real e-mail in a frame (the Edge Function renders it with edit:true), click a text to type, click a block for its link / image / position
+    let work = null, workId = null, undo = [], sel = null, scrollY = 0, seq = 0, timer = null, mobile = false;
+    const FRAME_JS = (selPath, y) => `<script>(function(){var P=parent,SEL=${JSON.stringify(selPath)},Y=${Number(y) || 0};
+      var st=document.createElement('style');st.textContent='[data-e]{cursor:text;outline:1px dashed transparent;border-radius:3px}[data-e]:hover{outline-color:rgba(240,184,74,.7)}[data-e]:focus{outline:2px solid #f0b84a;background:rgba(240,184,74,.1)}[data-b]{cursor:pointer}[data-b]:hover,tr[data-b]:hover>td{box-shadow:inset 0 0 0 2px rgba(240,184,74,.4)}[data-b].nl-sel,tr[data-b].nl-sel>td{box-shadow:inset 0 0 0 3px #f0b84a}';document.head.appendChild(st);
+      var mark=function(p){[].forEach.call(document.querySelectorAll('[data-b]'),function(b){b.classList.toggle('nl-sel',b.dataset.b===p)})};mark(SEL);
+      var rich=function(p){return /^intro$|take$|description$|teaser/.test(p)};
+      [].forEach.call(document.querySelectorAll('[data-e]'),function(el){el.setAttribute('contenteditable','plaintext-only');
+        el.addEventListener('focus',function(){el.dataset.disp=el.innerHTML;el.textContent=el.dataset.raw});
+        el.addEventListener('blur',function(){var v=el.textContent.replace(/\\u00a0/g,' ').replace(/\\s*\\n\\s*/g,' ').trim();if(v!==el.dataset.raw)P.postMessage({nl:'text',path:el.dataset.e,value:v},'*');else el.innerHTML=el.dataset.disp});
+        el.addEventListener('keydown',function(ev){if(ev.key==='Enter'){ev.preventDefault();el.blur()}
+          if(ev.key==='Escape'){ev.preventDefault();el.textContent=el.dataset.raw;el.blur()}
+          if((ev.metaKey||ev.ctrlKey)&&ev.key.toLowerCase()==='b'&&rich(el.dataset.e)){ev.preventDefault();var s=getSelection();if(s.rangeCount&&!s.isCollapsed){var r=s.getRangeAt(0),t=r.toString();r.deleteContents();r.insertNode(document.createTextNode('**'+t+'**'))}}})});
+      document.addEventListener('click',function(ev){ev.preventDefault();var b=ev.target.closest('[data-b]');if(b){mark(b.dataset.b);P.postMessage({nl:'select',path:b.dataset.b},'*')}},true);
+      addEventListener('message',function(ev){if(ev.data&&ev.data.nl==='hl')mark(ev.data.path)});
+      var t;addEventListener('scroll',function(){clearTimeout(t);t=setTimeout(function(){P.postMessage({nl:'scroll',y:scrollY},'*')},150)});
+      var go=function(){scrollTo(0,Y)};document.addEventListener('DOMContentLoaded',go);addEventListener('load',go);
+    })()<\/script>`;
+    const getAt = (o, path) => path.split(".").reduce((a, k) => (a == null ? a : a[k]), o);
+    const setAt = (o, path, v) => { const ks = path.split("."); const last = ks.pop(); const t = ks.reduce((a, k) => a[k], o); t[last] = v; };
+    const pushUndo = () => { undo.push(JSON.stringify(work)); if (undo.length > 40) undo.shift(); };
+    const dirty = () => JSON.stringify(read()) !== JSON.stringify(cur.items || {});
+    const touch = () => { const d = host.querySelector("[data-nl-dirty]"); if (d) d.hidden = !dirty(); const u = host.querySelector("[data-nl-undo]"); if (u) u.disabled = !undo.length; };
+    const frame = () => host.querySelector(".nl-frame");
+    const renderFrame = (now) => {
+      clearTimeout(timer);
+      timer = setTimeout(async () => {
+        const my = ++seq; const f = frame(); if (!f) return;
+        try {
+          const { html } = await fn({ action: "preview", edit: true, id: cur.id, items: read() });
+          if (my !== seq || !frame()) return;
+          f.srcdoc = html.replace("</body>", FRAME_JS(sel, scrollY) + "</body>");
+        } catch (e) { if (my === seq && frame()) f.srcdoc = `<body style="font:14px sans-serif;padding:24px;color:#b4c0d3;background:#0b1122">${esc(e.message)}</body>`; }
+      }, now ? 0 : 250);
+    };
+    const blockInfo = (path) => {
+      const [k, i] = path.split("."); const o = getAt(work, path); if (!o) return null;
+      if (k === "topStory") return { label: "Top story", o, link: "link", movable: false };
+      if (k === "news") return { label: `Headline ${Number(i) + 1}`, o, link: "link", arr: work.news, i: Number(i), movable: true };
+      if (k === "posts") return { label: `Post ${Number(i) + 1} · ${o.who || ""}`, o, link: "url", image: "image", arr: work.posts, i: Number(i), movable: true };
+      return { label: `Article ${Number(i) + 1}`, o, link: "link", image: "image", arr: work.blogs, i: Number(i), movable: true };
+    };
+    const panel = () => {
+      const box = host.querySelector(".nl-side"); if (!box) return;
+      const b = sel && blockInfo(sel);
+      if (!b) { box.innerHTML = `<p class="nl-help"><b>How it works</b><br>Click any text in the e-mail to edit it (Enter to finish, Esc to cancel, Ctrl/⌘+B for <b>bold</b> in paragraphs).<br><br>Click a block (headline, post, article) to change its link or image, move it up or down, or remove it.</p>`; return; }
+      box.innerHTML = `<p class="nl-h">${esc(b.label)}</p>
+        <label class="nl-f"><span>Link</span><input class="input" data-side-k="${b.link}" value="${esc(b.o[b.link] || "")}" placeholder="https://…"></label>
+        ${b.image ? `<div class="nl-f"><span>Image</span>${b.o[b.image] ? `<img class="nl-side-img" src="${esc(b.o[b.image])}" alt="">` : ""}
+          <input class="input" data-side-k="${b.image}" value="${esc(b.o[b.image] || "")}" placeholder="https://…">
+          <label class="btn btn-sm">${icon("import")}Upload an image<input type="file" accept="image/jpeg,image/png,image/webp" hidden data-side-up></label></div>` : ""}
+        ${b.movable ? `<div class="nl-side-btns"><button class="btn btn-sm" type="button" data-side-mv="-1"${b.i === 0 ? " disabled" : ""}>↑ Move up</button><button class="btn btn-sm" type="button" data-side-mv="1"${b.i === b.arr.length - 1 ? " disabled" : ""}>↓ Move down</button>
+          <button class="btn btn-sm btn-danger" type="button" data-side-rm>${icon("trash")}Remove</button></div>` : ""}`;
+    };
+    const select = (path) => { sel = path; panel(); frame()?.contentWindow?.postMessage({ nl: "hl", path }, "*"); };
+    if (!window._nlMsg) window._nlMsg = true, window.addEventListener("message", (e) => {
+      const f = frame(); if (!f || e.source !== f.contentWindow || !e.data || !e.data.nl) return;
+      const d = e.data;
+      if (d.nl === "scroll") scrollY = d.y;
+      else if (d.nl === "select") select(d.path);
+      else if (d.nl === "text") {
+        pushUndo(); setAt(work, d.path, d.value);
+        if (d.path === "subject") { const s = host.querySelector('[data-k="subject"]'); if (s) s.value = d.value; }
+        touch(); renderFrame(true);
+      }
+    });
+    const upload = async (file) => {
+      if (!/^image\/(jpeg|png|webp)$/.test(file.type)) throw new Error("Use a JPG, PNG or WebP image.");
+      if (file.size > 5 * 1024 * 1024) throw new Error("The image is over 5 MB.");
+      const path = `${cur.week_start}/${Date.now()}.${file.type.split("/")[1].replace("jpeg", "jpg")}`;
+      const { error: err } = await A.db.storage.from("newsletter").upload(path, file, { contentType: file.type });
+      if (err) throw new Error(err.message);
+      return A.db.storage.from("newsletter").getPublicUrl(path).data.publicUrl;
+    };
+    const change = (fn2) => { pushUndo(); fn2(); touch(); panel(); renderFrame(true); };
+
     const draw = () => {
-      const it = cur.items || {};
-      const t = it.topStory || null;
-      const field = (k, label, v, tip, area) => `<label class="nl-f"><span>${label} ${A.info(tip)}</span>${area ? `<textarea class="input" rows="${area}" data-k="${k}">${esc(v || "")}</textarea>` : `<input class="input" data-k="${k}" value="${esc(v || "")}">`}</label>`;
+      if (!work || workId !== cur.id) { work = structuredClone(cur.items || {}); workId = cur.id; undo = []; sel = null; scrollY = 0; }
+      const it = work;
       host.innerHTML = `${head(`<span class="spacer"></span>
           <select class="select" data-nl-week aria-label="Issue">${issues.map((x) => `<option value="${x.id}"${x.id === cur.id ? " selected" : ""}>Week of ${esc(x.week_start)} · ${esc(x.subject)}</option>`).join("")}</select>`)}
         ${subsHtml()}
         <div class="nl-body">
           <p class="nl-status">${cur.sent_at ? `<span class="imp-st st-ok"><i></i>Sent ${A.fmtDateTime(cur.sent_at)} to ${num(cur.sent_to || 0)}</span>` : cur.broadcast_id ? `<span class="imp-st st-wait"><i></i>Draft in Resend</span>` : `<span class="imp-st st-mute"><i></i>No Resend draft</span>`}
             ${cur.edited_at ? `<span>Edited ${A.fmtDateTime(cur.edited_at)}</span>` : ""}${cur.draft_synced_at ? `<span>Draft updated ${A.fmtDateTime(cur.draft_synced_at)}</span>` : ""}
-            ${cur.edited_at && (!cur.draft_synced_at || cur.draft_synced_at < cur.edited_at) ? `<span class="nl-warn">Saved changes aren't in the Resend draft yet</span>` : ""}</p>
+            ${cur.edited_at && (!cur.draft_synced_at || cur.draft_synced_at < cur.edited_at) ? `<span class="nl-warn">Saved changes aren't in the Resend draft yet</span>` : ""}
+            <span class="nl-warn" data-nl-dirty hidden>Unsaved changes</span></p>
           <div class="nl-grid">
-            ${field("subject", "Subject", it.subject || cur.subject, "The e-mail's subject line: what subscribers see in their inbox.")}
-            ${field("preheader", "Preheader", it.preheader, "The grey line shown after the subject in most inboxes.")}
+            <label class="nl-f"><span>Subject ${A.info("The e-mail's subject line: what subscribers see in their inbox. It is also the big title of the e-mail.")}</span><input class="input" data-k="subject" value="${esc(it.subject || cur.subject)}"></label>
+            <label class="nl-f"><span>Preheader ${A.info("The grey line shown after the subject in most inboxes.")}</span><input class="input" data-k="preheader" value="${esc(it.preheader || "")}"></label>
           </div>
-          ${field("intro", "Intro", it.intro, "The opening paragraph under the header. **Words between double asterisks** show in bold.", 4)}
-          ${t ? `<div class="nl-block"><p class="nl-h">01 · Social News — top story ${A.info("The main news of the week (from Social News) and SCP's take on it.")}</p>
-            ${field("top.title", "Title", t.title, "The headline of the top story.")}${field("top.take", "Our take", t.take, "Why it matters for sports social media teams.", 3)}</div>` : ""}
-          ${(it.news || []).length ? `<div class="nl-block"><p class="nl-h">Other headlines ${A.info("The other Social News items listed under the top story. Edit the titles or remove one.")}</p>
-            ${it.news.map((n, i) => `<div class="nl-row"><input class="input" data-news="${i}" value="${esc(n.title)}"><span class="nl-tag">${esc(n.platform || "")}</span><button class="icon-btn danger" type="button" data-rm="news:${i}" title="Remove" aria-label="Remove">${icon("trash")}</button></div>`).join("")}</div>` : ""}
-          ${(it.posts || []).length ? `<div class="nl-block"><p class="nl-h">02 · Featured content ${A.info("The posts from the Content Library shown with their cover. Edit the short description of each or remove one.")}</p>
-            <div class="nl-posts">${it.posts.map((x, i) => `<div class="nl-post">${x.image ? `<span class="nl-img" style="background-image:url('${esc(x.image)}')"></span>` : `<span class="nl-img"></span>`}
-              <div><b>${esc(x.who || "Post")}</b><small>${esc([x.format, x.sport].filter(Boolean).join(" · "))}</small><textarea class="input" rows="3" data-post="${i}">${esc(x.description || "")}</textarea></div>
-              <button class="icon-btn danger" type="button" data-rm="posts:${i}" title="Remove" aria-label="Remove">${icon("trash")}</button></div>`).join("")}</div></div>` : ""}
-          ${(it.blogs || []).length ? `<div class="nl-block"><p class="nl-h">03 · From the blog ${A.info("The blog articles of the week. Edit the teaser (one line per paragraph) or remove one.")}</p>
-            ${it.blogs.map((b, i) => `<div class="nl-row nl-blog"><div><b>${esc(b.title)}</b><small>${esc(b.type || "")} · ${esc(b.date || "")}</small><textarea class="input" rows="2" data-blog="${i}">${esc((b.teaser || []).join("\n"))}</textarea></div>
-              <button class="icon-btn danger" type="button" data-rm="blogs:${i}" title="Remove" aria-label="Remove">${icon("trash")}</button></div>`).join("")}</div>` : ""}
+          <div class="nl-bar">
+            <button class="btn btn-sm" type="button" data-nl-undo disabled>↶ Undo</button>
+            <span class="nl-seg"><button class="btn btn-sm${mobile ? "" : " is-on"}" type="button" data-nl-w="d">Desktop</button><button class="btn btn-sm${mobile ? " is-on" : ""}" type="button" data-nl-w="m">Mobile</button></span>
+            <span class="nl-hint">Click a text to edit it · click a block for its link, image and position</span>
+          </div>
+          <div class="nl-ed${mobile ? " nl-m" : ""}"><iframe class="nl-frame" title="Newsletter editor" sandbox="allow-scripts"></iframe><aside class="nl-side"></aside></div>
           <div class="nl-actions">
-            <button class="btn" type="button" data-nl-preview>${icon("eye")}Preview</button>
             <span class="spacer"></span>
             <button class="btn" type="button" data-nl-test>Send me a test</button>
             <button class="btn" type="button" data-nl-save>Save</button>
@@ -206,16 +274,14 @@
               <button class="btn btn-danger nl-send" type="button" data-nl-send>Send to subscribers</button>` : `<button class="btn btn-primary" type="button" data-nl-draft>${icon("plus")}Save &amp; create the Resend draft</button>`}
           </div>
         </div>`;
+      panel(); touch(); renderFrame(true);
     };
-    // the edited content, from the form
+    // the edited content (the working copy + the subject / preheader fields)
     const read = () => {
-      const it = structuredClone(cur.items || {});
+      const it = structuredClone(work || cur.items || {});
       const val = (k) => host.querySelector(`[data-k="${k}"]`)?.value.trim();
-      it.subject = val("subject") || cur.subject; it.preheader = val("preheader") || ""; it.intro = val("intro") || "";
-      if (it.topStory) { it.topStory.title = val("top.title") || it.topStory.title; it.topStory.take = val("top.take") || ""; }
-      host.querySelectorAll("[data-news]").forEach((x) => { it.news[x.dataset.news].title = x.value.trim(); });
-      host.querySelectorAll("[data-post]").forEach((x) => { it.posts[x.dataset.post].description = x.value.trim(); });
-      host.querySelectorAll("[data-blog]").forEach((x) => { it.blogs[x.dataset.blog].teaser = x.value.split("\n").map((l) => l.trim()).filter(Boolean); });
+      const s = val("subject"); it.subject = (s === undefined ? it.subject : s) || cur.subject;
+      const p = val("preheader"); if (p !== undefined) it.preheader = p;
       return it;
     };
     const save = async () => {
@@ -223,17 +289,26 @@
       const { error: err } = await A.db.rpc("admin_save_newsletter_issue", { p_id: cur.id, p_items: items });
       if (err) throw new Error(/does not exist|schema cache|Could not find/i.test(err.message) ? "Run supabase/newsletter-editor.sql in Supabase first." : err.message);
       Object.assign(cur, { items, subject: items.subject, edited_at: new Date().toISOString() });
+      work = structuredClone(items);
     };
-    host.addEventListener("change", (e) => { if (e.target.matches("[data-nl-week]")) { cur = issues.find((x) => x.id === Number(e.target.value)); draw(); } });
+    host.addEventListener("change", async (e) => {
+      if (e.target.matches("[data-nl-week]")) { cur = issues.find((x) => x.id === Number(e.target.value)); return draw(); }
+      if (e.target.matches('[data-k]')) { pushUndo(); setAt(work, e.target.dataset.k, e.target.value.trim()); touch(); return e.target.dataset.k === "subject" ? renderFrame(true) : undefined; }
+      const k = e.target.dataset?.sideK;
+      if (k && sel) return change(() => { getAt(work, sel)[k] = e.target.value.trim(); });
+      if (e.target.matches("[data-side-up]")) {
+        const f = e.target.files[0]; e.target.value = ""; if (!f || !sel) return;
+        try { A.toast("Uploading…"); const url = await upload(f); const b = blockInfo(sel); change(() => { b.o[b.image] = url; }); } catch (err) { A.toast(err.message, "err"); }
+      }
+    });
     host.addEventListener("click", (e) => {
-      const rm = e.target.closest("[data-rm]");
-      if (rm) { const [k, i] = rm.dataset.rm.split(":"); cur.items = read(); cur.items[k].splice(Number(i), 1); return draw(); }
+      const w = e.target.closest("[data-nl-w]");
+      if (w) { mobile = w.dataset.nlW === "m"; host.querySelector(".nl-ed").classList.toggle("nl-m", mobile); host.querySelectorAll("[data-nl-w]").forEach((x) => x.classList.toggle("is-on", x === w)); return; }
+      if (e.target.closest("[data-nl-undo]")) { if (!undo.length) return; work = JSON.parse(undo.pop()); const s = host.querySelector('[data-k="subject"]'); if (s) s.value = work.subject || cur.subject; const p = host.querySelector('[data-k="preheader"]'); if (p) p.value = work.preheader || ""; if (sel && !getAt(work, sel)) sel = null; touch(); panel(); return renderFrame(true); }
+      const mv = e.target.closest("[data-side-mv]");
+      if (mv && sel) { const b = blockInfo(sel); const j = b.i + Number(mv.dataset.sideMv); return change(() => { [b.arr[b.i], b.arr[j]] = [b.arr[j], b.arr[b.i]]; sel = sel.replace(/\d+$/, String(j)); }); }
+      if (e.target.closest("[data-side-rm]") && sel) { const b = blockInfo(sel); return change(() => { b.arr.splice(b.i, 1); sel = null; }); }
       const b = e.target.closest("button"); if (!b) return;
-      if (b.matches("[data-nl-preview]")) return busy(b, async () => {
-        const { html } = await fn({ action: "preview", id: cur.id, items: read() });
-        const m = A.modal({ title: "Preview", sub: "As subscribers will see it (unsaved edits included)", body: `<iframe class="nl-frame" title="Newsletter preview"></iframe>` });
-        $(".nl-frame", m.el).srcdoc = html;
-      });
       if (b.matches("[data-nl-save]")) return busy(b, async () => { await save(); A.toast("Newsletter saved."); draw(); });
       if (b.matches("[data-nl-push]")) return busy(b, async () => { await save(); await fn({ action: "push", id: cur.id }); cur.draft_synced_at = new Date().toISOString(); A.toast("Saved and the Resend draft is updated. Send it from Resend → Broadcasts."); draw(); });
       if (b.matches("[data-nl-test]")) return busy(b, async () => { if (!cur.sent_at) await save(); const r = await fn({ action: "test", id: cur.id }); A.toast(`Test sent to ${r.to}.`); draw(); });

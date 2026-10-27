@@ -18,6 +18,11 @@ const BODY = "font-family:'Inter','Helvetica Neue',Helvetica,Arial,sans-serif";
 const PLATFORM = { instagram: "Instagram", tiktok: "TikTok", x: "X", youtube: "YouTube", facebook: "Facebook", linkedin: "LinkedIn", snapchat: "Snapchat", whatsapp: "WhatsApp", pinterest: "Pinterest", threads: "Threads", ai: "AI", other: "Industry" };
 
 const GOLD = "#f0b84a";
+// Edit mode (admin visual editor only): marks texts (data-e) and blocks (data-b) so they can be clicked. Real e-mails get nothing extra.
+let ED = false;
+const ea = (path, raw) => (ED ? ` data-e="${path}" data-raw="${esc(raw)}"` : "");
+const ew = (path, raw, inner) => (ED ? `<span data-e="${path}" data-raw="${esc(raw)}">${inner}</span>` : inner);
+const ba = (path) => (ED ? ` data-b="${path}"` : "");
 const space = (h) => `<tr><td style="height:${h}px;line-height:${h}px;font-size:0">&nbsp;</td></tr>`;
 
 // Section opener: number + eyebrow, big title, short gold rule
@@ -33,9 +38,9 @@ function heading(num, eyebrow, title, sub = "") {
 const section = (bg, inner) => `<tr><td class="pad" style="padding:36px 36px 38px;background:${bg};border-radius:24px;border:1px solid rgba(255,255,255,0.07)">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0">${inner}</table></td></tr>${space(18)}`;
 
-function featured(p) {
+function featured(p, i) {
   if (!p) return "";
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#121b33;border-radius:18px;border:1px solid rgba(240,184,74,0.18)">
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0"${ba(`posts.${i}`)} style="background:#121b33;border-radius:18px;border:1px solid rgba(240,184,74,0.18)">
     <tr><td style="padding:10px 10px 0">
       ${p.image ? `<a href="${esc(p.url)}"><img src="${esc(p.image)}" width="236" alt="${esc(p.who)} on Instagram" style="display:block;width:100%;max-width:236px;height:auto;border-radius:12px;border:0"></a>` : ""}
     </td></tr>
@@ -43,35 +48,36 @@ function featured(p) {
       <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="background:rgba(240,184,74,0.14);border-radius:100px;padding:4px 10px;${SANS};font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:${GOLD}">${p.reel ? "&#9654;&nbsp;" : ""}${esc(p.format || "Post")}</td></tr></table>
       <p style="margin:10px 0 0;${SANS};font-size:16px;font-weight:700;line-height:1.3;color:#ffffff">${esc(p.who)}</p>
       ${p.sport ? `<p style="margin:2px 0 0;${BODY};font-size:12px;color:#8b98ae">${esc(p.sport)}</p>` : ""}
-      <p style="margin:10px 0 0;${BODY};font-size:13px;line-height:1.6;color:#b4c0d3">${rich(p.description)}</p>
+      <p${ea(`posts.${i}.description`, p.description)} style="margin:10px 0 0;${BODY};font-size:13px;line-height:1.6;color:#b4c0d3">${rich(p.description)}</p>
       <p style="margin:12px 0 0;${BODY};font-size:13px"><a href="${esc(p.url)}" style="color:${GOLD};font-weight:700;text-decoration:none">${p.reel ? "Watch it" : "See the post"} &rarr;</a>${p.analysis ? `&nbsp;&nbsp;<a href="${esc(p.analysis)}" style="color:#8b98ae;text-decoration:none">Breakdown</a>` : ""}</p>
     </td></tr></table>`;
 }
 
-function blogLead(b) {
-  return `<tr><td>
+function blogLead(b, i = 0) {
+  return `<tr${ba(`blogs.${i}`)}><td>
     <a href="${esc(b.link)}"><img src="${esc(b.image)}" width="528" alt="${esc(b.title)}" style="display:block;width:100%;max-width:528px;height:auto;border-radius:16px;border:0"></a>
     <p style="margin:18px 0 0;${SANS};font-size:11px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:${GOLD}">${esc(b.type)}&nbsp;&nbsp;<span style="color:#56647e">·</span>&nbsp;&nbsp;<span style="color:#8b98ae">${esc(b.date)}</span></p>
-    <a href="${esc(b.link)}" style="display:block;margin-top:8px;${SANS};font-size:24px;line-height:1.25;font-weight:700;letter-spacing:-0.4px;color:#ffffff;text-decoration:none">${esc(b.title)}</a>
-    ${b.teaser.map((p) => `<p style="margin:12px 0 0;${BODY};font-size:15px;line-height:1.7;color:#b4c0d3">${rich(p)}</p>`).join("")}
+    <a href="${esc(b.link)}"${ea(`blogs.${i}.title`, b.title)} style="display:block;margin-top:8px;${SANS};font-size:24px;line-height:1.25;font-weight:700;letter-spacing:-0.4px;color:#ffffff;text-decoration:none">${esc(b.title)}</a>
+    ${b.teaser.map((p, j) => `<p${ea(`blogs.${i}.teaser.${j}`, p)} style="margin:12px 0 0;${BODY};font-size:15px;line-height:1.7;color:#b4c0d3">${rich(p)}</p>`).join("")}
     <p style="margin:18px 0 0"><a href="${esc(b.link)}" style="display:inline-block;padding:12px 22px;border-radius:100px;border:1px solid rgba(240,184,74,0.55);${SANS};font-size:14px;font-weight:700;color:${GOLD};text-decoration:none">Read the article &rarr;</a></p>
   </td></tr>`;
 }
-function blogRow(b) {
-  return `<tr><td style="padding-top:22px;border-top:1px solid rgba(255,255,255,0.08)">
+function blogRow(b, i) {
+  return `<tr${ba(`blogs.${i}`)}><td style="padding-top:22px;border-top:1px solid rgba(255,255,255,0.08)">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
       <td class="col" width="168" valign="top" style="padding:0 18px 0 0"><a href="${esc(b.link)}"><img src="${esc(b.image)}" width="168" alt="${esc(b.title)}" style="display:block;width:100%;max-width:168px;height:auto;border-radius:12px;border:0"></a></td>
       <td class="col" valign="top">
         <p style="margin:0;${SANS};font-size:11px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:${GOLD}">${esc(b.type)}</p>
-        <a href="${esc(b.link)}" style="display:block;margin-top:6px;${SANS};font-size:17px;line-height:1.3;font-weight:700;color:#ffffff;text-decoration:none">${esc(b.title)}</a>
-        <p style="margin:8px 0 0;${BODY};font-size:13px;line-height:1.6;color:#b4c0d3">${rich(b.teaser[0] || "")}</p>
+        <a href="${esc(b.link)}"${ea(`blogs.${i}.title`, b.title)} style="display:block;margin-top:6px;${SANS};font-size:17px;line-height:1.3;font-weight:700;color:#ffffff;text-decoration:none">${esc(b.title)}</a>
+        <p${ea(`blogs.${i}.teaser.0`, b.teaser[0] || "")} style="margin:8px 0 0;${BODY};font-size:13px;line-height:1.6;color:#b4c0d3">${rich(b.teaser[0] || "")}</p>
         <p style="margin:8px 0 0;${BODY};font-size:13px"><a href="${esc(b.link)}" style="color:${GOLD};font-weight:700;text-decoration:none">Read &rarr;</a></p>
       </td>
     </tr></table>
   </td></tr>${space(22)}`;
 }
 
-export function renderWeekly({ subject, preheader, intro, topStory, news, posts = [], blogs, dateLabel, issue }) {
+export function renderWeekly({ subject, preheader, intro, topStory, news, posts = [], blogs, dateLabel, issue, edit = false }) {
+  ED = !!edit;
   const socials = Object.entries(SOCIAL).filter(([, url]) => url);
   const [lead, ...more] = blogs;
   let n = 0;
@@ -106,8 +112,8 @@ export function renderWeekly({ subject, preheader, intro, topStory, news, posts 
       <tr><td class="pad" align="center" style="padding:6px 40px 36px">
         <img src="${SITE}/assets/logo-scp.png" width="140" height="57" alt="Sports Content Playbook" style="display:block;margin:0 auto 14px;border:0">
         <p style="margin:0;${SANS};font-size:12px;font-weight:700;letter-spacing:2.4px;text-transform:uppercase;color:${GOLD}">${issue ? `Issue #${esc(issue)}&nbsp;&nbsp;·&nbsp;&nbsp;` : ""}${esc(dateLabel)}</p>
-        <p class="hero-title" style="margin:12px 0 0;${SANS};font-size:34px;line-height:1.15;font-weight:700;letter-spacing:-0.8px;color:#ffffff">${esc(subject)}</p>
-        <p style="margin:18px 0 0;${BODY};font-size:16px;line-height:1.7;color:#c9d2e0">Hi {{{contact.first_name|there}}}, welcome to this week's SCP. ${rich(intro)}</p>
+        <p class="hero-title"${ea("subject", subject)} style="margin:12px 0 0;${SANS};font-size:34px;line-height:1.15;font-weight:700;letter-spacing:-0.8px;color:#ffffff">${esc(subject)}</p>
+        <p style="margin:18px 0 0;${BODY};font-size:16px;line-height:1.7;color:#c9d2e0">Hi {{{contact.first_name|there}}}, welcome to this week's SCP. ${ew("intro", intro, rich(intro))}</p>
       </td></tr>
     </table>
   </td></tr>
@@ -116,22 +122,22 @@ export function renderWeekly({ subject, preheader, intro, topStory, news, posts 
   ${topStory || news.length ? section("#17213b", `
     ${heading(num(), "Social News", "This week on SCP", "What changed in sports digital marketing, and what it means for your club.")}
     ${topStory ? `<tr><td style="padding:0 0 6px">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#121b33;border-radius:16px;border-left:4px solid ${GOLD}">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0"${ba("topStory")} style="background:#121b33;border-radius:16px;border-left:4px solid ${GOLD}">
         <tr><td style="padding:20px 22px">
           <p style="margin:0;${SANS};font-size:11px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:${GOLD}">Top story${topStory.platform ? `&nbsp;&nbsp;<span style="color:#56647e">·</span>&nbsp;&nbsp;<span style="color:#8b98ae">${esc(PLATFORM[topStory.platform] || "")}</span>` : ""}</p>
-          <a href="${esc(topStory.link)}" style="display:block;margin-top:8px;${SANS};font-size:20px;line-height:1.3;font-weight:700;color:#ffffff;text-decoration:none">${esc(topStory.title)}</a>
-          <p style="margin:10px 0 0;${BODY};font-size:14px;line-height:1.65;color:#b4c0d3">${rich(topStory.take)}</p>
+          <a href="${esc(topStory.link)}"${ea("topStory.title", topStory.title)} style="display:block;margin-top:8px;${SANS};font-size:20px;line-height:1.3;font-weight:700;color:#ffffff;text-decoration:none">${esc(topStory.title)}</a>
+          <p${ea("topStory.take", topStory.take)} style="margin:10px 0 0;${BODY};font-size:14px;line-height:1.65;color:#b4c0d3">${rich(topStory.take)}</p>
           <p style="margin:12px 0 0;${BODY};font-size:13px"><a href="${esc(topStory.link)}" style="color:${GOLD};font-weight:700;text-decoration:none">Read the story &rarr;</a></p>
         </td></tr></table>
     </td></tr>` : ""}
     ${news.length ? `<tr><td style="padding:18px 0 0">
       <p style="margin:0 0 6px;${SANS};font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#8b98ae">Also this week</p>
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-      ${news.map((item, i) => `<tr><td style="padding:14px 0;${i ? "border-top:1px solid rgba(255,255,255,0.07);" : ""}">
+      ${news.map((item, i) => `<tr${ba(`news.${i}`)}><td style="padding:14px 0;${i ? "border-top:1px solid rgba(255,255,255,0.07);" : ""}">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
           <td width="34" valign="top" style="${SANS};font-size:15px;font-weight:700;color:${GOLD}">${String(i + 1).padStart(2, "0")}</td>
           <td valign="top">
-            <a href="${esc(item.link)}" style="${SANS};font-size:15px;line-height:1.4;font-weight:700;color:#ffffff;text-decoration:none">${esc(item.title)}</a>
+            <a href="${esc(item.link)}"${ea(`news.${i}.title`, item.title)} style="${SANS};font-size:15px;line-height:1.4;font-weight:700;color:#ffffff;text-decoration:none">${esc(item.title)}</a>
             ${item.platform ? `<p style="margin:4px 0 0;${BODY};font-size:12px;color:#8b98ae">${esc(PLATFORM[item.platform] || "")}</p>` : ""}
           </td>
           <td width="24" align="right" valign="top"><a href="${esc(item.link)}" style="color:${GOLD};font-size:16px;text-decoration:none">&rarr;</a></td>
@@ -144,15 +150,15 @@ export function renderWeekly({ subject, preheader, intro, topStory, news, posts 
     ${heading(num(), "Featured content", "Posts worth stealing this week", "Hand-picked from the SCP Content Library, with why they work.")}
     <tr><td><table role="presentation" width="100%" cellpadding="0" cellspacing="0">
       ${[0, 2].filter((i) => posts[i]).map((i) => `<tr>
-        <td class="col" width="50%" valign="top" style="padding:0 7px 14px 0">${featured(posts[i])}</td>
-        <td class="col" width="50%" valign="top" style="padding:0 0 14px 7px">${featured(posts[i + 1])}</td></tr>`).join("")}
+        <td class="col" width="50%" valign="top" style="padding:0 7px 14px 0">${featured(posts[i], i)}</td>
+        <td class="col" width="50%" valign="top" style="padding:0 0 14px 7px">${featured(posts[i + 1], i + 1)}</td></tr>`).join("")}
     </table></td></tr>
   `) : ""}
 
   ${lead ? section("#17213b", `
     ${heading(num(), "From the blog", "Read this week")}
     ${blogLead(lead)}
-    ${more.length ? `${space(26)}${more.map(blogRow).join("")}` : ""}
+    ${more.length ? `${space(26)}${more.map((b, k) => blogRow(b, k + 1)).join("")}` : ""}
   `) : ""}
 
   <!-- CTA -->

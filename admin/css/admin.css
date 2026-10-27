@@ -951,6 +951,18 @@ select.cs-native { display: none !important; }
 .nl-actions .spacer { flex: 1; }
 .nl-frame { display: block; width: 100%; height: min(78vh, 900px); border: 0; border-radius: 12px; background: #0b1122; }
 @media (max-width: 900px) { .nl-grid, .nl-posts { grid-template-columns: 1fr; } }
+/* Newsletter visual editor: the e-mail in a frame + a side panel for the selected block */
+.nl-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+.nl-seg { display: inline-flex; gap: 4px; } .nl-seg .btn.is-on { background: var(--accent-soft); color: var(--accent-light); box-shadow: inset 0 0 0 1px rgba(240, 184, 74, 0.4); }
+.nl-hint { font-size: 12px; color: var(--dim); }
+.nl-ed { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 14px; align-items: start; }
+.nl-ed .nl-frame { height: min(78vh, 900px); }
+.nl-ed.nl-m .nl-frame { width: 390px; max-width: 100%; margin: 0 auto; }
+.nl-side { position: sticky; top: 12px; display: grid; gap: 12px; padding: 14px; border-radius: 14px; border: 1px solid var(--border); background: rgba(255, 255, 255, 0.015); }
+.nl-help { margin: 0; font-size: 12.5px; line-height: 1.55; color: var(--muted); } .nl-help b { color: var(--text); }
+.nl-side-img { width: 100%; max-height: 140px; object-fit: cover; border-radius: 10px; border: 1px solid var(--border); }
+.nl-side-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+@media (max-width: 900px) { .nl-ed { grid-template-columns: 1fr; } .nl-side { position: static; } }
 /* Sidebar: admin language (EN · ES · CA, js/i18n-admin.js) */
 .side-lang { display: inline-flex; gap: 2px; margin-top: 10px; padding: 3px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--border-2); }
 .side-lang button { min-width: 36px; height: 28px; padding: 0 10px; border: 0; border-radius: 999px; background: transparent; color: var(--muted); font: 600 11.5px var(--font); letter-spacing: 0.06em; cursor: pointer; }

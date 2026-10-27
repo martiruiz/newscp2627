@@ -1,6 +1,6 @@
 // Supabase Edge Function "newsletter-draft": Admin → Audience → Newsletter (superadmins only).
 // POST { action, id, items? }
-//   preview  → { html } of the issue (items sent = unsaved edits; otherwise the saved ones), same template as the weekly script
+//   preview  → { html } of the issue (items sent = unsaved edits; otherwise the saved ones), same template as the weekly script; edit:true marks texts/blocks for the visual editor
 //   push     → re-renders the saved issue and updates its Resend broadcast draft (still a draft: it's sent from Resend)
 //   test     → e-mails the saved issue to the superadmin who asks, marked "Preview — not sent to subscribers"
 //   create_draft → creates the Resend broadcast draft for an issue that has none
@@ -56,11 +56,11 @@ Deno.serve(async (req) => {
   const me = await superadmin(req);
   if (!me) return json({ error: "Only superadmins" }, 403);
   try {
-    const { action, id, items, confirm } = await req.json();
+    const { action, id, items, confirm, edit } = await req.json();
     const [issue] = await rest(`newsletter_issues?select=id,subject,broadcast_id,items,week_start,sent_at&id=eq.${Number(id)}`);
     if (!issue) return json({ error: "Issue not found" }, 404);
     const content = action === "preview" && items ? items : issue.items;
-    const html = renderWeekly({ ...content, subject: content.subject || issue.subject, posts: content.posts || [], blogs: content.blogs || [], news: content.news || [] });
+    const html = renderWeekly({ ...content, subject: content.subject || issue.subject, posts: content.posts || [], blogs: content.blogs || [], news: content.news || [], edit: action === "preview" && !!edit });
     const personal = (h: string) => h.replaceAll("{{{contact.first_name|there}}}", "there").replaceAll("{{{RESEND_UNSUBSCRIBE_URL}}}", "#");
 
     if (action === "preview") return json({ html: personal(html) });
