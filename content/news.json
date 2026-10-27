@@ -1,5 +1,146 @@
 [
   {
+    "id": 34,
+    "url": "https://www.socialmediatoday.com/news/australias-proposed-algorithmic-opt-out-gets-pushback/872830/",
+    "source_name": "Social Media Today",
+    "platform": "instagram",
+    "title": "Australia weighs algorithm opt-out rule as Instagram's Mosseri warns of shrinking reach",
+    "paragraphs": [
+      "Australia's government has started early consultation on rules that would require social platforms to offer a switch to turn off algorithmic recommendations, with a non-algorithmic, following-only feed as the default. Communications Minister Annika Wells argues engagement-driven feeds reward attention over well-being, and says platforms must respect a user's choice rather than burying it. Nothing has been formally tabled yet, and the proposal is still open for community input.",
+      "Instagram chief Adam Mosseri has pushed back, saying on Threads that a following-only feed would mean a smaller Instagram and less reach for everyone, including creators. Separately, commentator Michael Shellenberger has framed the plan as a speech-control measure, though key provisions he criticised have been removed or are being revised during consultation.",
+      "For sports social teams, the debate is a reminder that discovery reach from recommendations is not guaranteed. If follow-based feeds become the default in some markets, growth will depend more on converting casual viewers into followers now. Clubs, leagues and athletes should prioritise follow prompts, strengthen owned channels like newsletters and broadcast channels, and track how much of their current reach comes from non-followers."
+    ],
+    "relevant": true,
+    "published_at": "2026-10-27T00:43:56+00:00",
+    "created_at": "2026-10-27T12:04:11.495426+00:00",
+    "edited_at": null,
+    "slug": "australia-weighs-algorithm-opt-out-rule-as-instagram-s-mosseri-warns-34",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/XYyOZueFkFqsZIJ1YWQw105mDx8nSm8A__F5har4U1M/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9HZXR0eUltYWdlcy0xMjc2NjExNzMyXzEuanBn.webp",
+    "es": {
+      "title": "Australia estudia una norma para desactivar el algoritmo mientras Mosseri, de Instagram, advierte de una reducción del alcance",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "El Gobierno de Australia ha iniciado una consulta previa sobre unas normas que obligarían a las plataformas sociales a ofrecer un interruptor para desactivar las recomendaciones algorítmicas, con un feed no algorítmico, solo de cuentas seguidas, como opción por defecto. La ministra de Comunicaciones, Annika Wells, sostiene que los feeds basados en el engagement premian la atención por encima del bienestar, y afirma que las plataformas deben respetar la decisión del usuario en lugar de esconderla. Todavía no se ha presentado nada formalmente y la propuesta sigue abierta a las aportaciones de la ciudadanía.",
+        "El responsable de Instagram, Adam Mosseri, ha respondido en Threads que un feed solo de cuentas seguidas supondría una Instagram más pequeña y menos alcance para todos, incluidos los creadores. Por otro lado, el comentarista Michael Shellenberger ha presentado el plan como una medida de control de la libertad de expresión, aunque las disposiciones clave que criticaba se han eliminado o se están revisando durante la consulta.",
+        "Para los equipos de redes sociales deportivas, el debate es un recordatorio de que el alcance de descubrimiento que generan las recomendaciones no está garantizado. Si los feeds basados en seguidos se convierten en la opción por defecto en algunos mercados, el crecimiento dependerá más de convertir ahora a los espectadores ocasionales en seguidores. Clubes, ligas y deportistas deberían priorizar las llamadas a seguir la cuenta, reforzar los canales propios, como las newsletters y los canales de difusión, y medir qué parte de su alcance actual procede de personas que no les siguen."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-10-27T12:04:11.495426+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-10-27T13:14:45.285Z",
+      "tokens": {
+        "in": 1472,
+        "out": 732
+      }
+    }
+  },
+  {
+    "id": 35,
+    "url": "https://www.socialmediatoday.com/news/more-than-half-of-us-adults-use-social-media-to-get-their-news/872828/",
+    "source_name": "Social Media Today",
+    "platform": "other",
+    "title": "Pew survey: 58% of US adults now rely on social media for news",
+    "paragraphs": [
+      "A Pew Research report released on Oct. 23, based on a June survey of more than 3,500 US adults, found that 58% consider social media an important way to follow current events. Another 13% name social apps as their single most important source of information. In Pew's 2022 edition of the same study, those figures were 43% and 5%.",
+      "For sports social teams, this confirms that club and league accounts increasingly act as primary newsrooms rather than secondary channels. Many fans will first hear about signings, injuries, lineups or ticket news in their feeds, not on a website or through traditional media. Official accounts should prioritize speed, accuracy and clear, native-format announcements so they become the trusted first source.",
+      "The report also notes that platform algorithms tend to amplify controversial content and that moderation is loosening. Clubs and athletes should plan for rumors spreading quickly by publishing verified updates early, pinning key information and coordinating messaging across platforms. Being consistently reliable is a brand asset that also strengthens value for sponsors attached to official content."
+    ],
+    "relevant": true,
+    "published_at": "2026-10-26T22:56:55+00:00",
+    "created_at": "2026-10-27T12:04:22.668608+00:00",
+    "edited_at": null,
+    "slug": "pew-survey-58-of-us-adults-now-rely-on-social-media-for-news-35",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/STqU9pLrfwTxkZcDtCJBnQgboBr3_tXrtRlklRWt_0U/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9wZXdfbmV3c19yZXBvcnRzMi5wbmc=.webp",
+    "es": {
+      "title": "Encuesta de Pew: el 58 % de los adultos en EE. UU. ya depende de las redes sociales para informarse",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "Un informe de Pew Research publicado el 23 de oct., basado en una encuesta de junio a más de 3.500 adultos en EE. UU., concluyó que el 58 % considera las redes sociales una forma importante de seguir la actualidad. Otro 13 % señala las apps sociales como su fuente de información más importante. En la edición de 2022 del mismo estudio, esas cifras eran del 43 % y del 5 %.",
+        "Para los equipos sociales deportivos, esto confirma que las cuentas de clubes y ligas actúan cada vez más como redacciones principales y no como canales secundarios. Muchos aficionados se enterarán primero de fichajes, lesiones, alineaciones o novedades de entradas en sus feeds, no en una web ni a través de los medios tradicionales. Las cuentas oficiales deben priorizar la rapidez, la precisión y los anuncios claros en formato nativo para convertirse en la primera fuente de confianza.",
+        "El informe también señala que los algoritmos de las plataformas tienden a amplificar el contenido polémico y que la moderación se está relajando. Los clubes y los deportistas deben prever que los rumores se propaguen rápido publicando pronto actualizaciones verificadas, fijando la información clave y coordinando el mensaje entre plataformas. Ser fiable de forma constante es un activo de marca que, además, refuerza el valor para los patrocinadores asociados al contenido oficial."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-10-27T12:04:22.668608+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-10-27T13:14:51.107Z",
+      "tokens": {
+        "in": 1407,
+        "out": 616
+      }
+    }
+  },
+  {
+    "id": 38,
+    "url": "https://www.socialmediatoday.com/news/instagram-rolls-out-limited-features-test-in-the-us/872825/",
+    "source_name": "Social Media Today",
+    "platform": "instagram",
+    "title": "Instagram tests 90-minute Features videos, Clips as Reels and Series for creators",
+    "paragraphs": [
+      "Instagram has started testing a set of long-form video tools. Features lets selected creators publish videos of up to 90 minutes, suited to podcasts, vlogs and interviews, and is expanding from Brazil to select US creators from October 26. Clips as Reels lets creators link up to eight Reels back to a longer video, while Series groups episodic Reels under a single theme. Phone-as-remote control is also coming to Instagram's connected TV app.",
+      "For sports teams, this opens the door to hosting full press conferences, behind-the-scenes documentaries, club podcasts or extended player interviews directly on Instagram, where fan communities already live. Clips as Reels is a natural fit for cutting short highlights that funnel fans into a full matchday film, and Series can package recurring formats like weekly training diaries or a season-long docuseries.",
+      "There are caveats: Instagram's earlier long-form effort, IGTV, was shut down in 2022, and the platform pays creators far less per view than YouTube, so monetization will rely mainly on sponsorship. Clubs and athletes should treat Features as a branded-content opportunity, building partner-presented long-form shows, while keeping YouTube as the main home for ad-revenue video."
+    ],
+    "relevant": true,
+    "published_at": "2026-10-26T19:05:40+00:00",
+    "created_at": "2026-10-27T12:04:37.374188+00:00",
+    "edited_at": null,
+    "slug": "instagram-tests-90-minute-features-videos-clips-as-reels-and-series-38",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/Fnl-3ZX5_izgfhnB-ftLsecfo9z06J5IaTJc92SFUJk/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9pbnN0YWdyYW1fZmVhdHVyZXMucG5n.webp",
+    "es": {
+      "title": "Instagram prueba vídeos de 90 minutos en Features, Clips as Reels y Series para creadores",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "Instagram ha empezado a probar un conjunto de herramientas de vídeo de formato largo. Features permite a creadores seleccionados publicar vídeos de hasta 90 minutos, ideales para pódcast, vlogs y entrevistas, y se amplía desde Brasil a algunos creadores de EE. UU. a partir del 26 de octubre. Clips as Reels permite a los creadores enlazar hasta ocho Reels con un vídeo más largo, mientras que Series agrupa Reels episódicos bajo una misma temática. Además, el control del teléfono como mando a distancia llegará también a la app de Instagram para televisores conectados.",
+        "Para los equipos deportivos, esto abre la puerta a emitir directamente en Instagram, donde ya viven las comunidades de aficionados, ruedas de prensa completas, documentales del detrás de las cámaras, pódcast del club o entrevistas largas a jugadores. Clips as Reels encaja de forma natural para recortar resúmenes cortos que lleven a los aficionados a una película completa del día de partido, y Series puede dar forma a formatos recurrentes como diarios de entrenamiento semanales o una docuserie que abarque toda la temporada.",
+        "Hay matices: el anterior intento de Instagram con el formato largo, IGTV, se cerró en 2022, y la plataforma paga a los creadores mucho menos por visualización que YouTube, por lo que la monetización dependerá sobre todo del patrocinio. Los clubes y los deportistas deberían ver Features como una oportunidad de contenido de marca, creando programas largos presentados por patrocinadores, y mantener YouTube como el principal hogar del vídeo que genera ingresos publicitarios."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-10-27T12:04:37.374188+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-10-27T13:14:57.572Z",
+      "tokens": {
+        "in": 1482,
+        "out": 708
+      }
+    }
+  },
+  {
     "id": 14,
     "url": "https://www.sponconsports.com/p/manchester-united-turns-starting-xi-graphics-into-art-with-snapdragon",
     "source_name": "SponCon Sports",
@@ -138,6 +279,53 @@
       "translated_at": "2026-10-26T22:11:23.137Z",
       "source_changed": "2026-10-26T22:03:05.490517+00:00",
       "meta_description": ""
+    }
+  },
+  {
+    "id": 39,
+    "url": "https://www.socialmediatoday.com/news/tiktok-us-shares-q2-account-enforcement-data/833907/",
+    "source_name": "Social Media Today",
+    "platform": "tiktok",
+    "title": "TikTok US removes 14.6 million fake accounts and 781 million fake followers in Q2",
+    "paragraphs": [
+      "TikTok USDS, the US-based group running the app's American operations since January, released its second enforcement report, covering April to June. It removed 14.6 million fake accounts, blocked 64.8 million spam accounts at sign-up, stripped 781.4 million fake followers and stopped 403.2 million fake follow requests, a clear jump on the first quarter. Video removals and livestream warnings or demonetizations also rose.",
+      "Most video takedowns fell under regulated goods and services, a broad category covering gambling, alcohol, counterfeit products and services selling fake likes, views and followers. TikTok also said it disrupted 30 covert networks trying to manipulate engagement, removing more than 76,000 accounts and 4.8 million posts, as it ramps up integrity efforts ahead of the US midterms.",
+      "For sports social teams, larger fake-follower sweeps can cause sudden drops in follower counts, so expect some fluctuation and report engagement rate rather than raw totals to sponsors. Clubs working with betting or alcohol partners should review branded content carefully against TikTok's regulated-goods rules, and anyone tempted by bought growth should note that these services are a prime enforcement target."
+    ],
+    "relevant": true,
+    "published_at": "2026-10-25T22:13:46+00:00",
+    "created_at": "2026-10-27T12:04:45.467727+00:00",
+    "edited_at": null,
+    "slug": "tiktok-us-removes-14-6-million-fake-accounts-and-781-million-fake-39",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/12K6ogX9lcgDYYC0J9LHBG_Vz43JSghdwOStO8_Cc34/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS90aWt0b2tfdXNkc2p2LnBuZw==.webp",
+    "es": {
+      "title": "TikTok EE. UU. elimina 14,6 millones de cuentas falsas y 781 millones de seguidores falsos en el segundo trimestre",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "TikTok USDS, el grupo con sede en EE. UU. que gestiona las operaciones estadounidenses de la app desde enero, ha publicado su segundo informe de cumplimiento, que abarca de abril a junio. Eliminó 14,6 millones de cuentas falsas, bloqueó 64,8 millones de cuentas de spam en el registro, retiró 781,4 millones de seguidores falsos y detuvo 403,2 millones de solicitudes de seguimiento falsas, un claro aumento respecto al primer trimestre. También aumentaron las eliminaciones de vídeos y las advertencias o desmonetizaciones en directos.",
+        "La mayoría de las retiradas de vídeos correspondieron a bienes y servicios regulados, una categoría amplia que incluye apuestas, alcohol, productos falsificados y servicios que venden likes, visualizaciones y seguidores falsos. TikTok también explicó que desarticuló 30 redes encubiertas que intentaban manipular el engagement, eliminando más de 76.000 cuentas y 4,8 millones de publicaciones, mientras intensifica sus esfuerzos de integridad de cara a las elecciones de mitad de mandato de EE. UU.",
+        "Para los equipos de redes sociales deportivas, las limpiezas más amplias de seguidores falsos pueden provocar caídas repentinas en el número de seguidores, así que espera cierta fluctuación e informa a los patrocinadores de la tasa de engagement en lugar de los totales brutos. Los clubes que trabajan con socios de apuestas o alcohol deben revisar con cuidado el contenido de marca según las normas de TikTok sobre bienes regulados, y quien se sienta tentado por el crecimiento comprado debe tener en cuenta que estos servicios son un objetivo prioritario de las medidas de cumplimiento."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-10-27T12:04:45.467727+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-10-27T13:15:03.983Z",
+      "tokens": {
+        "in": 1476,
+        "out": 773
+      }
     }
   },
   {
