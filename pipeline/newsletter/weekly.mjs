@@ -79,7 +79,7 @@ Return:
 - intro: 1–2 sentences, "In this edition: …" summarising the most interesting things inside. Do not greet (the greeting is added for you). You may bold 1–3 key names with **double asterisks**.
 - topStory: the single most important news item for sports social teams (by id) and "take": 2 sentences on what happened and what it means for a club.
 - news: up to 6 other useful news item ids, most relevant first (not the top story).
-- posts: pick 4 featured posts (by id) from the Content Library material, varied in sport, format and account, preferring ones with an analysis. For each, "description": 1–2 sentences (max 35 words) on why it's worth studying and how a club could use the idea. You may bold one key idea with **double asterisks**.
+- posts: pick EXACTLY 4 featured posts (by id) from the Content Library material, varied in sport, format and account, preferring ones with an analysis. For each, "description": 1–2 sentences (max 35 words) on why it's worth studying and how a club could use the idea. You may bold one key idea with **double asterisks**.
 - blogs: for EACH blog article given (by slug), "teaser": 2 short paragraphs (35–60 words each) that make people want to read it. Bold key names or figures that appear in the article with **double asterisks** (max 3 per paragraph).
 Only use facts present in the material. Never invent numbers, results or quotes.`;
 
@@ -166,6 +166,20 @@ for (const pick of out.posts) {
     description: pick.description, image: await stableImage(p), url: p.url,
     library: `${SITE}/content-library.html#post=${p.id}`, // opens the post (with its embed) in the Content Library
     analysis: p.analysis ? `${SITE}/content-library.html#post=${p.id}` : null,
+  });
+}
+
+// The newsletter always carries 4 posts: top up from the remaining candidates (all have a cover) if Claude returned fewer
+for (const p of libPosts) {
+  if (posts.length >= 4) break;
+  if (posts.some((x) => x.url === p.url)) continue;
+  const format = p.tags.format?.[0] || "";
+  const text = p.analysis?.replicable?.howToAdapt || p.analysis?.summary || (p.title || "").replace(/#\S+/g, "").replace(/\s+/g, " ").trim();
+  posts.push({
+    who: p.tags.club?.[0] || p.tags.entity?.[0] || "Post", format, sport: p.tags.sport?.[0] || "",
+    reel: /reel|video|short/i.test(format) || /\/reel\//.test(p.url || ""),
+    description: text.slice(0, 220), image: await stableImage(p), url: p.url,
+    library: `${SITE}/content-library.html#post=${p.id}`, analysis: p.analysis ? `${SITE}/content-library.html#post=${p.id}` : null,
   });
 }
 
