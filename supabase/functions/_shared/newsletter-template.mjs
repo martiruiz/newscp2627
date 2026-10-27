@@ -40,16 +40,18 @@ const section = (bg, inner) => `<tr><td class="pad" style="padding:36px 36px 38p
 
 function featured(p, i) {
   if (!p) return "";
+  const lib = p.library || p.analysis || p.url; // the library page plays the post (embed); e-mail clients can't run embeds
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0"${ba(`posts.${i}`)} style="background:#121b33;border-radius:18px;border:1px solid rgba(240,184,74,0.18)">
     <tr><td style="padding:10px 10px 0">
-      ${p.image ? `<a href="${esc(p.url)}"><img src="${esc(p.image)}" width="236" alt="${esc(p.who)} on Instagram" style="display:block;width:100%;max-width:236px;height:auto;border-radius:12px;border:0"></a>` : ""}
+      ${p.image ? `<a href="${esc(lib)}"><img src="${esc(p.image)}" width="236" alt="${esc(p.who)} on Instagram" style="display:block;width:100%;max-width:236px;height:auto;border-radius:12px;border:0"></a>` : ""}
     </td></tr>
     <tr><td style="padding:14px 14px 16px">
       <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="background:rgba(240,184,74,0.14);border-radius:100px;padding:4px 10px;${SANS};font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:${GOLD}">${p.reel ? "&#9654;&nbsp;" : ""}${esc(p.format || "Post")}</td></tr></table>
       <p style="margin:10px 0 0;${SANS};font-size:16px;font-weight:700;line-height:1.3;color:#ffffff">${esc(p.who)}</p>
       ${p.sport ? `<p style="margin:2px 0 0;${BODY};font-size:12px;color:#8b98ae">${esc(p.sport)}</p>` : ""}
       <p${ea(`posts.${i}.description`, p.description)} style="margin:10px 0 0;${BODY};font-size:13px;line-height:1.6;color:#b4c0d3">${rich(p.description)}</p>
-      <p style="margin:12px 0 0;${BODY};font-size:13px"><a href="${esc(p.url)}" style="color:${GOLD};font-weight:700;text-decoration:none">${p.reel ? "Watch it" : "See the post"} &rarr;</a>${p.analysis ? `&nbsp;&nbsp;<a href="${esc(p.analysis)}" style="color:#8b98ae;text-decoration:none">Breakdown</a>` : ""}</p>
+      <p style="margin:12px 0 0;${BODY};font-size:13px"><a href="${esc(lib)}" style="color:${GOLD};font-weight:700;text-decoration:none">${p.reel ? "Watch it &amp; see why it works" : "See it &amp; why it works"} &rarr;</a></p>
+      <p style="margin:6px 0 0;${BODY};font-size:12px"><a href="${esc(p.url)}" style="color:#8b98ae;text-decoration:none">Original post</a></p>
     </td></tr></table>`;
 }
 
@@ -149,7 +151,7 @@ export function renderWeekly({ subject, preheader, intro, topStory, news, posts 
   `) : ""}
 
   ${posts.length ? section("#1a2542", `
-    ${heading(num(), "Featured content", "Posts worth stealing this week", "Hand-picked from the SCP Content Library, with why they work.")}
+    ${heading(num(), "Inspiration", "Ideas worth stealing this week", "Real posts from clubs, leagues and creators. Open one to watch it in the library and see how to adapt it to your club.")}
     <tr><td><table role="presentation" width="100%" cellpadding="0" cellspacing="0">
       ${[0, 2].filter((i) => posts[i]).map((i) => `<tr>
         <td class="col" width="50%" valign="top" style="padding:0 7px 14px 0">${featured(posts[i], i)}</td>

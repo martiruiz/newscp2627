@@ -198,6 +198,8 @@ window.SCPA_DICT = Object.assign(window.SCPA_DICT || {}, {
   "Other headlines": ["Otros titulares", "Altres titulars"],
   "Preview": ["Vista previa", "Vista prèvia"],
   "Send me a test": ["Enviarme una prueba", "Envia'm una prova"],
+  "Library link (plays the post)": ["Enlace a la biblioteca (reproduce el post)", "Enllaç a la biblioteca (reprodueix el post)"],
+  "Original post link": ["Enlace al post original", "Enllaç al post original"],
   "Unsaved changes": ["Cambios sin guardar", "Canvis sense desar"],
   "Undo": ["Deshacer", "Desfés"],
   "Desktop": ["Escritorio", "Escriptori"],

@@ -208,7 +208,7 @@
       const [k, i] = path.split("."); const o = getAt(work, path); if (!o) return null;
       if (k === "topStory") return { label: "Top story", o, link: "link", image: "image", movable: false };
       if (k === "news") return { label: `Headline ${Number(i) + 1}`, o, link: "link", image: "image", arr: work.news, i: Number(i), movable: true };
-      if (k === "posts") return { label: `Post ${Number(i) + 1} · ${o.who || ""}`, o, link: "url", image: "image", arr: work.posts, i: Number(i), movable: true };
+      if (k === "posts") return { label: `Post ${Number(i) + 1} · ${o.who || ""}`, o, link: "library", linkLabel: "Library link (plays the post)", link2: "url", link2Label: "Original post link", image: "image", arr: work.posts, i: Number(i), movable: true };
       return { label: `Article ${Number(i) + 1}`, o, link: "link", image: "image", arr: work.blogs, i: Number(i), movable: true };
     };
     const panel = () => {
@@ -216,7 +216,8 @@
       const b = sel && blockInfo(sel);
       if (!b) { box.innerHTML = `<p class="nl-help"><b>How it works</b><br>Click any text in the e-mail to edit it (Enter to finish, Esc to cancel, Ctrl/⌘+B for <b>bold</b> in paragraphs).<br><br>Click a block (headline, post, article) to change its link or image, move it up or down, or remove it.</p>`; return; }
       box.innerHTML = `<p class="nl-h">${esc(b.label)}</p>
-        <label class="nl-f"><span>Link</span><input class="input" data-side-k="${b.link}" value="${esc(b.o[b.link] || "")}" placeholder="https://…"></label>
+        <label class="nl-f"><span>${b.linkLabel || "Link"}</span><input class="input" data-side-k="${b.link}" value="${esc(b.o[b.link] || "")}" placeholder="https://…"></label>
+        ${b.link2 ? `<label class="nl-f"><span>${b.link2Label}</span><input class="input" data-side-k="${b.link2}" value="${esc(b.o[b.link2] || "")}" placeholder="https://…"></label>` : ""}
         ${b.image ? `<div class="nl-f"><span>Image</span>${b.o[b.image] ? `<img class="nl-side-img" src="${esc(b.o[b.image])}" alt="">` : ""}
           <input class="input" data-side-k="${b.image}" value="${esc(b.o[b.image] || "")}" placeholder="https://…">
           <label class="btn btn-sm">${icon("import")}Upload an image<input type="file" accept="image/jpeg,image/png,image/webp" hidden data-side-up></label></div>` : ""}

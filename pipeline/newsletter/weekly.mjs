@@ -49,7 +49,7 @@ const newsRows = newsData || [];
 // Featured posts: newest imports (analysed ones first); fallback to the newest overall
 // Posts a superadmin removed from the library (supabase/quality.sql) never go out
 const removedPosts = new Set(((await db.from("content_removals").select("external_id")).data || []).map((r) => r.external_id));
-const postSelect = "id,external_id,url,title,published_at,ai_analyses(result),content_idea_tags(idea_catalog(category,name))";
+const postSelect = "id,external_id,url,title,cover_url,published_at,ai_analyses(result),content_idea_tags(idea_catalog(category,name))";
 let { data: postRows } = await db.from("content_ideas").select(postSelect)
   .is("unavailable_at", null).gte("created_at", since).order("analyzed_at", { ascending: false, nullsFirst: false }).limit(16);
 if ((postRows || []).length < 4) {
@@ -79,7 +79,7 @@ Return:
 - intro: 1–2 sentences, "In this edition: …" summarising the most interesting things inside. Do not greet (the greeting is added for you). You may bold 1–3 key names with **double asterisks**.
 - topStory: the single most important news item for sports social teams (by id) and "take": 2 sentences on what happened and what it means for a club.
 - news: up to 6 other useful news item ids, most relevant first (not the top story).
-- posts: pick 4 featured posts (by id) from the Content Library material, varied in sport, format and account, preferring ones with an analysis. For each, "description": 1–2 sentences (max 35 words) on why it's worth studying and how a club could use the idea. You may bold one key idea with **double asterisks**.
+- posts: pick 4 featured posts (by id) from the Content Library material, varied in sport, format and account, preferring ones with hasCover true (the e-mail shows their image) and ones with an analysis. For each, "description": 1–2 sentences (max 35 words) on why it's worth studying and how a club could use the idea. You may bold one key idea with **double asterisks**.
 - blogs: for EACH blog article given (by slug), "teaser": 2 short paragraphs (35–60 words each) that make people want to read it. Bold key names or figures that appear in the article with **double asterisks** (max 3 per paragraph).
 Only use facts present in the material. Never invent numbers, results or quotes.`;
 
@@ -107,7 +107,7 @@ const material = {
   news: newsRows.map((n) => ({ id: n.id, platform: n.platform, title: n.title, summary: (n.paragraphs || []).join(" ").slice(0, 900) })),
   posts: libPosts.map((p) => ({
     id: p.id, account: p.tags.club?.[0] || p.tags.entity?.[0] || "", sport: p.tags.sport?.[0] || "", format: p.tags.format?.[0] || "",
-    caption: (p.title || "").slice(0, 400),
+    hasCover: !!p.cover_url, caption: (p.title || "").slice(0, 400),
     analysis: p.analysis ? { summary: p.analysis.summary, hook: p.analysis.hook?.text, whyItWorks: p.analysis.whyItWorks, howToAdapt: p.analysis.replicable?.howToAdapt } : null,
   })),
   blogs: blogPosts.map((b) => ({ slug: b.slug, title: b.title, excerpt: b.excerpt, text: plain(b.body_html).slice(0, 2500) })),
@@ -143,6 +143,7 @@ const news = await Promise.all(out.news.filter((id) => id !== top?.id).map((id) 
   .map(async (n) => ({ title: n.title, platform: n.platform, link: newsLink(n), image: await newsImage(n) })));
 // Featured posts: copy each cover image to our public bucket (Instagram image links expire)
 async function stableImage(post) {
+  if (post.cover_url) return post.cover_url; // library cover, already in our public "covers" bucket
   try {
     const { image } = await igEmbed(post.url);
     if (!image) return null;
@@ -163,6 +164,7 @@ for (const pick of out.posts) {
     who: p.tags.club?.[0] || p.tags.entity?.[0] || "Post", format, sport: p.tags.sport?.[0] || "",
     reel: /reel|video|short/i.test(format) || /\/reel\//.test(p.url || ""),
     description: pick.description, image: await stableImage(p), url: p.url,
+    library: `${SITE}/content-library.html#post=${p.id}`, // opens the post (with its embed) in the Content Library
     analysis: p.analysis ? `${SITE}/content-library.html#post=${p.id}` : null,
   });
 }
