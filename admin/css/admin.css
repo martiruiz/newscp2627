@@ -401,7 +401,7 @@ details.acc summary span:last-of-type { margin-left: auto; font-weight: 500; }
 
 
 /* ---------- Website look (colours, type, glows) ---------- */
-body { background: radial-gradient(60% 40% at 50% 0%, rgba(240, 184, 74, 0.06), transparent 70%), var(--bg); }
+body { background: radial-gradient(60% 40% at 50% 0%, rgba(240, 184, 74, 0.06), transparent 70%) no-repeat, var(--bg); }
 .side { box-shadow: var(--inset-glow); }
 .side-brand { display: flex; align-items: center; gap: 12px; }
 .side-brand img { width: 34px; height: 32px; flex-shrink: 0; }
