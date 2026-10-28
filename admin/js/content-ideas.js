@@ -237,9 +237,10 @@
   });
 
   // ---------- Posts that no longer exist on Instagram or Facebook (marked by check-embeds.mjs, covers, views-cron, fb-shape) ----------
+  // LinkedIn posts are hidden on purpose with the same mark (supabase/hide-linkedin.sql): never listed or deleted here
   async function loadBroken() {
     const box = $("[data-broken]");
-    const { count, error } = await A.db.from("content_ideas").select("id", { count: "exact", head: true }).not("unavailable_at", "is", null);
+    const { count, error } = await A.db.from("content_ideas").select("id", { count: "exact", head: true }).not("unavailable_at", "is", null).not("url", "ilike", "%linkedin.com%");
     if (error || !count) { box.hidden = true; return; }
     box.hidden = false;
     box.innerHTML = `<span><b>${num(count)} post${count === 1 ? "" : "s"}</b> no longer exist${count === 1 ? "s" : ""} on Instagram or Facebook (deleted or made private). They're already hidden from the Content Library.</span>
@@ -250,7 +251,7 @@
     $("[data-review-broken]", box).addEventListener("click", async () => {
       const list = $("[data-broken-list]", box);
       if (!list.hidden) { list.hidden = true; return; }
-      const { data } = await A.db.from("content_ideas").select("id,title,url,account,unavailable_at").not("unavailable_at", "is", null).order("unavailable_at", { ascending: false }).limit(300);
+      const { data } = await A.db.from("content_ideas").select("id,title,url,account,unavailable_at").not("unavailable_at", "is", null).not("url", "ilike", "%linkedin.com%").order("unavailable_at", { ascending: false }).limit(300);
       list.innerHTML = (data || []).map((p) => `<div class="brk-row" data-id="${p.id}"><a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.title || p.url)}</a><small>${esc(p.account || "")}</small>
         <button class="btn btn-sm" type="button" data-keep>Keep</button><button class="btn btn-danger btn-sm" type="button" data-del>${icon("trash")}</button></div>`).join("")
         + (count > 300 ? `<small>Showing the latest 300 of ${num(count)}.</small>` : "");
@@ -271,7 +272,7 @@
         confirm: "Delete", danger: true,
       });
       if (!ok) return;
-      const { error: e } = await A.db.from("content_ideas").delete().not("unavailable_at", "is", null);
+      const { error: e } = await A.db.from("content_ideas").delete().not("unavailable_at", "is", null).not("url", "ilike", "%linkedin.com%");
       if (e) return A.toast(A.errMsg(e), "err");
       A.toast(`${num(count)} unavailable post${count === 1 ? "" : "s"} deleted.`);
       A.resetCatalog(); loadBroken(); load();
