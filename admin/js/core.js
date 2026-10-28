@@ -612,14 +612,15 @@
     const isNew = !idea;
     const m = modal({
       title: isNew ? "Create Content Idea" : "Edit Content Idea",
-      sub: isNew ? "Add a new content idea manually" : `ID: ${esc(idea.external_id)}`,
+      sub: isNew ? "Paste the post's link: everything else fills in by itself" : `ID: ${esc(idea.external_id)}`,
       body: `
+        ${isNew ? `<label class="field ci-fill"><span class="label">Post link</span><input class="input" name="url" placeholder="https://www.instagram.com/reel/… · TikTok · X · YouTube · Facebook" autocomplete="off"><span class="hint" data-fill-st>Paste it and the title, ID, date, embed and tags are filled in.</span></label>` : ""}
         <div class="grid-2">
           <label class="field"><span class="label">Title</span><input class="input" name="title" value="${esc(idea?.title || "")}"></label>
           <label class="field"><span class="label">External ID</span><input class="input mono" name="external_id" value="${esc(idea?.external_id || "")}" required>${isNew ? '<span class="hint">Required — must be unique</span>' : ""}</label>
         </div>
         <label class="field" style="max-width:330px"><span class="label">Published At (UTC)</span><input class="input" type="datetime-local" name="published_at" value="${esc(toLocalInput(idea?.published_at))}"></label>
-        <label class="field"><span class="label">URL</span><input class="input" name="url" placeholder="https://..." value="${esc(idea?.url || "")}"></label>
+        ${isNew ? "" : `<label class="field"><span class="label">URL</span><input class="input" name="url" placeholder="https://..." value="${esc(idea?.url || "")}"></label>`}
         <label class="field"><span class="label">Embed</span><textarea class="textarea" name="embed" rows="5" placeholder="Paste the social embed HTML here...">${esc(idea?.embed || "")}</textarea></label>
         <p class="modal-section">Filter values</p>
         <div class="grid-2">${CATEGORIES.map((c) => `<div class="field" data-ed="${c.key}"><span class="label">${c.label}</span><div data-ms></div><div class="chips" data-chips></div></div>`).join("")}</div>
@@ -641,20 +642,59 @@
         },
       });
     }
+    // New idea: the post's link fills the rest (supabase/functions/idea-from-url + admin_account_tags)
+    let account = null, filled = "";
+    const fillSt = $("[data-fill-st]", m.el);
+    const fill = async () => {
+      const link = $('[name="url"]', m.el).value.trim();
+      if (!link || link === filled) return;
+      filled = link;
+      fillSt.className = "hint"; fillSt.textContent = "Reading the post…";
+      const { data: d, error } = await db.functions.invoke("idea-from-url", { body: { url: link } });
+      if (link !== filled) return;
+      if (error || !d || d.error) {
+        let msg = d?.error;
+        try { msg = msg || (await error?.context?.json())?.error; } catch {}
+        fillSt.className = "error-text"; fillSt.textContent = msg || "Couldn't read that link. Fill in the fields by hand."; return;
+      }
+      const set = (n, v) => { if (v) $(`[name="${n}"]`, m.el).value = v; };
+      set("url", d.url); filled = d.url; set("title", d.title); set("external_id", d.external_id); set("published_at", toLocalInput(d.published_at)); set("embed", d.embed);
+      account = d.account ? { account: d.account, account_platform: d.account_platform } : null;
+      const byName = (cat, name) => catalog.byCat[cat].find((v) => v.name.toLowerCase() === String(name || "").toLowerCase())?.id;
+      const add = (cat, ids) => { const ok = ids.filter(Boolean); if (ok.length) selects[cat].setSelected([...new Set([...selects[cat].value(), ...ok])]); };
+      add("platform", [byName("platform", d.platform)]);
+      add("format", [byName("format", d.format)]);
+      const tags = d.account ? await rpc("admin_account_tags", { p_platform: d.account_platform, p_account: d.account }).catch(() => ({})) : {};
+      for (const [cat, ids] of Object.entries(tags || {})) if (selects[cat]) add(cat, ids);
+      const { data: dup } = await db.from("content_ideas").select("id").eq("external_id", d.external_id).maybeSingle();
+      const n = Object.values(tags || {}).flat().length;
+      fillSt.className = dup ? "error-text" : "hint";
+      // one span per part, so the admin dictionary translates each one
+      fillSt.innerHTML = (dup ? ["This post is already in Content ideas"] : [`Filled from ${d.platform}`, d.account && `@${d.account}`,
+        n ? `${n} tags from the account's other posts` : d.account && "New account: add its tags", !d.title && "No caption", !d.published_at && "Add the date"])
+        .filter(Boolean).map((t) => `<span>${esc(t)}</span>`).join(" · ");
+    };
+    if (isNew) {
+      const urlIn = $('[name="url"]', m.el);
+      urlIn.addEventListener("paste", () => setTimeout(fill));
+      urlIn.addEventListener("change", fill);
+      urlIn.focus();
+    }
     $("[data-cancel]", m.el).addEventListener("click", m.close);
     $("[data-save]", m.el).addEventListener("click", async (e) => {
       const btn = e.currentTarget;
       const err = $("[data-err]", m.el);
       const val = (n) => $(`[name="${n}"]`, m.el).value;
-      const data = { title: val("title").trim(), external_id: val("external_id").trim(), published_at: fromLocalInput(val("published_at")), embed: val("embed").trim(), url: val("url").trim() };
+      const data = { title: val("title").trim(), external_id: val("external_id").trim(), published_at: fromLocalInput(val("published_at")), embed: val("embed").trim(), url: val("url").trim(), ...(isNew && account ? account : {}) };
       if (!data.external_id) { err.textContent = "External ID is required."; err.hidden = false; return; }
       if (data.published_at && new Date(data.published_at) > new Date()) { err.textContent = "Published at can't be in the future."; err.hidden = false; return; }
       const ids = CATEGORIES.flatMap((c) => selects[c.key].value());
       btn.disabled = true;
       try {
-        await rpc("save_content_idea", { p_id: idea?.id ?? null, p_data: data, p_value_ids: ids });
+        const newId = await rpc("save_content_idea", { p_id: idea?.id ?? null, p_data: data, p_value_ids: ids });
         m.close();
         toast(isNew ? "Content idea created." : "Changes saved.");
+        if (isNew && newId) db.functions.invoke("covers", { body: { ids: [Number(newId)] } }).catch(() => {});   // its cover, shape and length, as after an import
         catalogCache = null;
         onSaved?.();
       } catch (e2) {
