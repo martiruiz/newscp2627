@@ -107,7 +107,6 @@
 
   // a soft dark shade over the top (sky and trees) so the graphics read; it never reaches the face
   const shade = mk(stage, "abs", "", { left: 0, right: 0, top: 0, height: "980px", background: "linear-gradient(180deg, rgba(6,10,20,.62) 0%, rgba(6,10,20,.42) 55%, rgba(6,10,20,0) 100%)" });
-  ticks.push((t) => { shade.style.display = t >= at("necesitas") - .05 && t < at("la", 1) - .05 ? "none" : ""; });
 
   // ===== 0–2.8 hook: big title over the top + three of the best creators' posts =====
   {
@@ -202,15 +201,23 @@
   search(at("quieres") - .05, at("quieres", 1) - .05, "Creadores de fútbol", [pick.football[4], pick.football[0], pick.football[2]], at("lo", 1));
   search(at("quieres", 1) - .05, at("necesitas") - .05, "Ideas de baloncesto", [pick.basket[0], pick.basket[3], pick.basket[2]], at("las"), IG);
 
-  // ===== 21.6–23.9 full-screen cut: the real Content Plan on a laptop =====
+  // ===== 21.6–23.9 a content plan: a week card above the head, real posts dropping into the days =====
   {
     const a = at("necesitas") - .05, b = at("la", 1) - .05;
     const s = block(a, b);
-    const ph = mk(s, "abs", `<img src="laptop/c-home3-shot-plan.jpg" style="width:100%;height:100%;object-fit:cover">`, { inset: 0, transformOrigin: "540px 1150px" });
-    A(ph, [{ opacity: 0, transform: "scale(1.08)" }, { opacity: 1, transform: "scale(1)" }], a, .2, E.out);
-    A(ph, [{ transform: "scale(1)" }, { transform: "scale(1.22)" }], a + .2, b - a, E.soft);
-    const lab = mk(s, "label", "Plan de contenido", { top: "300px" });
-    popIn(lab, a + .25, "translateY(-30px) scale(.9)", "translateX(-50%)");
+    const lab = mk(s, "label", "Plan de contenido", { top: "270px" });
+    popIn(lab, a + .02, "translateY(-30px) scale(.9)", "translateX(-50%)");
+    const pnl = mk(s, "glass", "", { left: "70px", right: "70px", top: "350px", height: "420px", padding: "24px", boxSizing: "border-box", display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "10px" });
+    popIn(pnl, a + .08);
+    const days = ["LUN", "MAR", "MIÉ", "JUE", "VIE", "SÁB", "DOM"], posts = [pick.football[0], pick.basket[0], pick.kit[2], pick.football[4], pick.views[0], pick.lineup[2], pick.basket[3]];
+    days.forEach((d, k) => {
+      const col = mk(pnl, "", `<div style="font:700 22px Inter;color:#8b98ae;text-align:center;letter-spacing:.06em">${d}</div><div style="font:800 34px 'Host Grotesk';text-align:center;margin:2px 0 12px">${20 + k}</div>`, { borderRadius: "16px", background: "rgba(255,255,255,.04)", padding: "12px 8px", position: "relative" });
+      const c = mk(col, "card", `<img src="real/${posts[k].f}">`, { position: "relative", width: "100%", height: "190px", borderRadius: "12px", borderWidth: "1px" });
+      A(c, [{ opacity: 0, transform: "translateY(-60px) scale(.8)" }, { opacity: 1, transform: "translateY(0) scale(1)" }], at("plan") - .35 + k * .09, .35, E.slam);
+      const tag = mk(col, "", "Idea", { marginTop: "10px", textAlign: "center", font: "700 18px Inter", color: "#1a1206", background: "#f0b84a", borderRadius: "100px", padding: "5px 0" });
+      A(tag, [{ opacity: 0 }, { opacity: 1 }], at("plan") - .1 + k * .09, .2, E.soft);
+    });
+    fadeOut([lab, pnl], b - .12);
   }
   // "La tienes": back on the face with a gold stamp
   {
