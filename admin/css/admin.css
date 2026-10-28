@@ -2006,3 +2006,9 @@ body.ci-side-open .main { margin-right: min(460px, 100vw); transition: margin .2
 tr[data-row].is-open td { background: var(--accent-soft, rgba(240, 184, 74, .1)); }
 tr[data-row].is-open td:first-child { box-shadow: inset 3px 0 0 var(--accent, #f0b84a); }
 @media (max-width: 860px) { body.ci-side-open .main { margin-right: 0; } .ci-side { width: 100vw; } }
+
+/* Admin → My Club: the club's colours */
+.mcl-colors { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+.mcl-colors .mcl-accs-h { flex-basis: 100%; display: flex; align-items: center; gap: 6px; }
+.mcl-color { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+.mcl-color input[type="color"] { width: 42px; height: 32px; padding: 2px; border-radius: 8px; border: 1px solid var(--border-2); background: var(--panel-2); cursor: pointer; }

@@ -8063,6 +8063,7 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 /* My Club: the club picker's list opens over everything (the club card no longer clips it) */
 .mc-card:has(.mc-cp-list:not([hidden])) { overflow: visible; z-index: 20; }
 .mc-cp-list { z-index: 60; }
+.mc:has(.mc-cp-list:not([hidden])) { z-index: 5; }   /* above the post grid (also z 1, later in the page) while the club list is open */
 /* day colours — the contact / demo flow: a bright frosted backdrop, black logo and progress, white bubbles, chosen one in black */
 :root[data-theme="light"] .lead-modal { background: rgba(247, 246, 243, 0.78); }
 :root[data-theme="light"] .lead-modal.is-quick { background: rgba(247, 246, 243, 0.86); }
@@ -8596,6 +8597,7 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
   .mcb-row .lfb-btn.is-open { background: rgba(var(--fg), .08); }
   .mcb-pan { left: 12px; right: 12px; }
   .mc-strip .mc-profiles { display: none; }
+  .mc-strip .mc-cp-list { left: 0; right: auto; min-width: max(100%, 220px); }   /* the picker sits on the left here: open under it, not off screen */
 }
 /* Menu "Saved boards": the bookmark filled, as on the saved boards page (the thin outline looked broken at this size) */
 .mm-rrow-gold .mm-ic { box-shadow: inset 0 1px 0 rgba(255,255,255,.45), 0 6px 14px -8px rgba(240,184,74,.8); }
@@ -9037,3 +9039,11 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 
 /* Enterprise: "Custom price" in place of an amount, the same weight, a size that fits the card */
 .plan-price-custom b { font-size: clamp(26px, 2.4vw, 34px) !important; letter-spacing: -0.02em; }
+
+/* My Club in the club's colours (js/my-club.js clubTheme): the accent is the club's (--gold is swapped), its header
+   card and the top of the page carry both colours */
+body.club-themed { background: radial-gradient(120% 60% at 50% -10%, color-mix(in srgb, var(--club-1) 26%, transparent), transparent 60%), radial-gradient(80% 50% at 100% 0%, color-mix(in srgb, var(--club-2) 22%, transparent), transparent 55%), var(--bg); background-attachment: fixed; }
+body.club-themed .mc-strip { background: linear-gradient(110deg, color-mix(in srgb, var(--club-1) 38%, var(--surface)) 0%, color-mix(in srgb, var(--club-2) 30%, var(--surface)) 100%) !important;
+  border-color: color-mix(in srgb, var(--club-1) 60%, transparent) !important; box-shadow: 0 18px 46px -26px color-mix(in srgb, var(--club-1) 80%, transparent); }
+body.club-themed .mc-strip { position: relative; }
+body.club-themed .mc-strip::after { content: ""; position: absolute; left: 18px; right: 18px; bottom: -1px; height: 3px; border-radius: 3px; background: linear-gradient(90deg, var(--club-1), var(--club-2)); pointer-events: none; }

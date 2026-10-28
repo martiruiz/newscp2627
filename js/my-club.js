@@ -96,11 +96,76 @@
     requestAnimationFrame(draw);
   }
 
+  // ---------- The page in the club's colours: clubs.colors (Admin → My Club) or, when empty, the two main colours of
+  // its crest. The primary one takes the place of the gold accent (readable on the dark or light page); both colour the
+  // club's header and the top of the page ----------
+  const hexRgb = (h) => { const m = /^#?([0-9a-f]{6})$/i.exec(h || ""); return m ? [0, 2, 4].map((i) => parseInt(m[1].slice(i, i + 2), 16)) : null; };
+  const rgbHex = (c) => "#" + c.map((v) => Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2, "0")).join("");
+  const lum = ([r, g, b]) => { const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }; return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b); };
+  const mix = (a, b, k) => a.map((v, i) => v + (b[i] - v) * k);
+  // brighten (dark page) or darken (light page) a colour until it reads as an accent, keeping its hue and saturation
+  const toHsl = ([r, g, b]) => { r /= 255; g /= 255; b /= 255; const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2, d = mx - mn;
+    if (!d) return [0, 0, l]; const s = d / (1 - Math.abs(2 * l - 1)); const h = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; return [(h * 60 + 360) % 360, s, l]; };
+  const fromHsl = ([h, s, l]) => { const c = (1 - Math.abs(2 * l - 1)) * s, x = c * (1 - Math.abs((h / 60) % 2 - 1)), m = l - c / 2;
+    const [r, g, b] = h < 60 ? [c, x, 0] : h < 120 ? [x, c, 0] : h < 180 ? [0, c, x] : h < 240 ? [0, x, c] : h < 300 ? [x, 0, c] : [c, 0, x]; return [r, g, b].map((v) => (v + m) * 255); };
+  const readable = (c, light) => { let [h, s, l] = toHsl(c); s = Math.max(s, 0.55);
+    for (let i = 0; i < 20; i++) { const y = lum(fromHsl([h, s, l])); if (light ? y <= 0.3 : y >= 0.26) break; l = Math.max(0, Math.min(1, l + (light ? -0.03 : 0.03))); }
+    return fromHsl([h, s, l]); };
+  // the two main colours of an image: saturated pixels only (no white, black or greys), grouped by hue
+  function crestColours(url) {
+    return new Promise((res) => {
+      const im = new Image(); im.crossOrigin = "anonymous";
+      im.onload = () => {
+        try {
+          const c = document.createElement("canvas"); c.width = c.height = 48;
+          const g = c.getContext("2d"); g.drawImage(im, 0, 0, 48, 48);
+          const px = g.getImageData(0, 0, 48, 48).data, bins = new Map();
+          for (let i = 0; i < px.length; i += 4) {
+            const [r, gg, b, a] = [px[i], px[i + 1], px[i + 2], px[i + 3]];
+            const mx = Math.max(r, gg, b), mn = Math.min(r, gg, b);
+            if (a < 200 || mx - mn < 40 || mx < 40) continue;
+            const k = `${r >> 5},${gg >> 5},${b >> 5}`, e = bins.get(k) || { n: 0, s: [0, 0, 0] };
+            e.n++; e.s[0] += r; e.s[1] += gg; e.s[2] += b; bins.set(k, e);
+          }
+          const top = [...bins.values()].sort((x, y) => y.n - x.n).map((e) => e.s.map((v) => v / e.n));
+          const first = top[0], second = top.find((x) => first && Math.abs(x[0] - first[0]) + Math.abs(x[1] - first[1]) + Math.abs(x[2] - first[2]) > 120);
+          res(first ? [rgbHex(first), rgbHex(second || first)] : null);
+        } catch { res(null); }   // a crest from a server without CORS: no colours
+      };
+      im.onerror = () => res(null);
+      im.src = url;
+    });
+  }
+  let themeColours = null;
+  function paintTheme() {
+    const root = document.documentElement;
+    if (!themeColours) { ["--club-1", "--club-2", "--gold", "--gold-light", "--gold-mid", "--gold-tint", "--gold-dim", "--on-gold"].forEach((v) => root.style.removeProperty(v)); document.body.classList.remove("club-themed"); return; }
+    const light = root.dataset.theme === "light";
+    const [c1, c2] = themeColours.map(hexRgb);
+    const acc = readable(c1, light), accL = readable(mix(acc, light ? [0, 0, 0] : [255, 255, 255], 0.25), light);
+    root.style.setProperty("--club-1", rgbHex(c1));
+    root.style.setProperty("--club-2", rgbHex(c2));
+    root.style.setProperty("--gold", rgbHex(acc));
+    root.style.setProperty("--gold-light", rgbHex(accL));
+    root.style.setProperty("--gold-mid", rgbHex(acc));
+    root.style.setProperty("--gold-tint", `rgba(${acc.map(Math.round).join(",")},.16)`);
+    root.style.setProperty("--gold-dim", `rgba(${acc.map(Math.round).join(",")},.45)`);
+    root.style.setProperty("--on-gold", lum(acc) > 0.45 ? "#121b33" : "#ffffff");
+    document.body.classList.add("club-themed");
+  }
+  async function clubTheme(club) {
+    const own = club?.colors?.primary ? [club.colors.primary, club.colors.secondary || club.colors.primary] : null;
+    themeColours = own || (club?.logo_url ? await crestColours(club.logo_url) : null);
+    paintTheme();
+  }
+  new MutationObserver(paintTheme).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
   async function openClub(saved = {}) {
     box.innerHTML = `<div class="mc-loading"><span class="lead-spin"></span>${esc(t("Loading your club…"))}</div>`;
     const { data, error } = await db.rpc("club_space", { p_club: st.club.id });
     if (error || !data?.ok) return fail(data?.error || "Couldn't load your club right now. Try again in a moment.");
     st.space = data;
+    clubTheme(data.club);
     // the club's own profiles ("Club" tab), with their posts in SCP (supabase/my-club-daily.sql)
     const pr = await db.rpc("club_profiles", { p_club: st.club.id });
     st.profiles = pr.error ? [] : (pr.data || []).map((a) => ({ id: `${a.platform}:${a.handle}`, name: `@${a.handle}`, platform: a.platform, section_id: a.section_id, posts: a.posts }));

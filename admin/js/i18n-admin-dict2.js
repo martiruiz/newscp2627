@@ -323,4 +323,11 @@ window.SCPA_DICT = Object.assign(window.SCPA_DICT || {}, {
   "Previous": ["Anterior", "Anterior"],
   "Next": ["Siguiente", "Següent"],
   "Close": ["Cerrar", "Tanca"],
+  "Club colours": ["Colores del club", "Colors del club"],
+  "Primary": ["Principal", "Principal"],
+  "Secondary": ["Secundario", "Secundari"],
+  "Use the crest's colours": ["Usar los colores del escudo", "Fes servir els colors de l'escut"],
+  "From the crest (no colours set)": ["Del escudo (sin colores definidos)", "De l'escut (sense colors definits)"],
+  "From the crest (save to apply)": ["Del escudo (guarda para aplicarlo)", "De l'escut (desa per aplicar-ho)"],
+  "The club's page takes these colours (buttons, tabs, the club's header). Empty: they are taken from the crest.": ["La página del club usa estos colores (botones, pestañas, cabecera del club). Si están vacíos, se toman del escudo.", "La pàgina del club fa servir aquests colors (botons, pestanyes, capçalera del club). Si són buits, es prenen de l'escut."],
 });

@@ -87,6 +87,10 @@
             </div>
           </div>
           <label>Name<input class="input" name="name" value="${esc(c.name)}" required></label>
+          <div class="mcl-colors"><span class="mcl-accs-h">Club colours ${info("The club's page takes these colours (buttons, tabs, the club's header). Empty: they are taken from the crest.")}</span>
+            <label class="mcl-color">Primary<input type="color" name="color1" value="${esc(c.colors?.primary || "#f0b84a")}" data-color-set="${c.colors?.primary ? 1 : ""}"></label>
+            <label class="mcl-color">Secondary<input type="color" name="color2" value="${esc(c.colors?.secondary || "#121b33")}" data-color-set="${c.colors?.secondary ? 1 : ""}"></label>
+            <button class="btn btn-ghost btn-sm" type="button" data-colors-clear>${c.colors ? "Use the crest's colours" : "From the crest (no colours set)"}</button></div>
           <div class="mcl-accs"><span class="mcl-accs-h">Club profiles</span>
             <div data-accs>${(c.accounts?.length ? c.accounts : [{ platform: "instagram", handle: "" }]).map(accRow).join("")}</div>
             <button class="btn btn-ghost btn-sm" type="button" data-acc-add>${icon("plus")}Add profile</button></div>
@@ -280,7 +284,16 @@
         : `<p class="mcl-acc-dd-msg">No ${esc(PF[platform] || platform)} accounts with that name. You can still type it by hand.</p>`;
     }, 220);
   }
-  main.addEventListener("input", (e) => { if (e.target.matches("[name=acc_handle]")) accLookup(e.target); });
+  main.addEventListener("input", (e) => {
+    if (e.target.matches("[name=acc_handle]")) accLookup(e.target);
+    if (e.target.matches("[name=color1], [name=color2]")) { const f = e.target.form; f.color1.dataset.colorSet = f.color2.dataset.colorSet = "1"; }   // chosen by hand: saved
+  });
+  // back to the crest's colours: nothing is saved, the page works them out
+  main.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-colors-clear]"); if (!b) return;
+    const f = b.form; f.color1.dataset.colorSet = f.color2.dataset.colorSet = ""; f.color1.value = "#f0b84a"; f.color2.value = "#121b33";
+    b.textContent = "From the crest (save to apply)";
+  });
   main.addEventListener("focusin", (e) => { if (e.target.matches("[name=acc_handle]") && e.target.value.trim().length >= 2 && ddOf(e.target).hidden) accLookup(e.target); });
   main.addEventListener("focusout", (e) => { if (e.target.matches("[name=acc_handle]")) setTimeout(() => { if (document.activeElement !== e.target) ddClose(e.target); }, 150); });
   // mousedown so the pick happens before the input loses focus
@@ -319,7 +332,8 @@
     try {
       if (f.matches("[data-form]")) {
         const accounts = [...f.querySelectorAll(".mcl-acc-row")].map((r) => ({ platform: r.querySelector("[name=acc_platform]").value, handle: r.querySelector("[name=acc_handle]").value.trim(), section_id: r.querySelector("[name=acc_section]").value || null })).filter((a) => a.handle);
-        await rpc("admin_club_save", { p: { id: cur, name: f.name.value, logo_url: f.logo_url.value, accounts, active: f.active.checked } });
+        const colors = f.color1.dataset.colorSet || f.color2.dataset.colorSet ? { primary: f.color1.value, secondary: f.color2.value } : {};
+        await rpc("admin_club_save", { p: { id: cur, name: f.name.value, logo_url: f.logo_url.value, accounts, active: f.active.checked, colors } });
         A.toast("Saved"); return loadClubs(cur);
       }
       if (f.matches("[data-member]")) {
