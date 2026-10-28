@@ -256,6 +256,7 @@
     const byId = new Map();
     for (const r of data || []) {
       if (!CAT[r.category]) continue;
+      if (r.category === "platform" && /^linkedin$/i.test(r.name)) continue;   // LinkedIn is no longer offered as a filter
       const v = { id: Number(r.id), category: r.category, name: fixText(r.name), total: Number(r.ideas), logo: logo.get(Number(r.id)) || (r.category === "language" || r.category === "creator_language" ? flagOf(r.name) : null), ig: igHandle.get(Number(r.id)) || null };
       if (!v.total) continue;
       (byCat[v.category] ||= []).push(v);
@@ -1293,7 +1294,7 @@
   // Values of one filter are combined with "or", different filters with "and" (like clicking them).
   const SYN = [
     ["format", "Reel", "reels?"], ["format", "Carousel", "carrusel(s|es)?|carousels?"], ["format", "Shorts", "shorts?"], ["format", "Image", "fotos?|imatges?|imagen(es)?|images?|photos?"], ["format", "Video", "videos?"],
-    ["platform", "Instagram", "instagram|insta"], ["platform", "TikTok", "tiktok"], ["platform", "YouTube", "youtube"], ["platform", "X", "twitter"], ["platform", "LinkedIn", "linkedin"], ["platform", "Facebook", "facebook"],
+    ["platform", "Instagram", "instagram|insta"], ["platform", "TikTok", "tiktok"], ["platform", "YouTube", "youtube"], ["platform", "X", "twitter"], ["platform", "Facebook", "facebook"],
     ["trend", "Overperforming", "(hagin |han |que )?funciona(t|n|do|ron)?|worked|work well|virals?|virales|exit(o|os)?|overperform\\w*|took off"],
     ["trend", "Top Picks", "millors|mejores|best|top picks?"],
     ["trend", "Replicable ideas", "facils?|faciles|easy|pocs recursos|pocos recursos|low budget|sense produccio|sin produccion|replicables?"],
