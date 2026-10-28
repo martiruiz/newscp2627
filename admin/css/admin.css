@@ -1961,3 +1961,27 @@ select.cs-native { display: none !important; }
 .notice-broken .brk-pv a svg, .notice-broken .brk-row svg { width: 15px; height: 15px; }
 .notice-broken .brk-pv-acts { display: flex; flex-wrap: wrap; gap: 8px; }
 @media (max-width: 700px) { .notice-broken .brk-pv { grid-template-columns: minmax(0, 1fr); } .notice-broken .brk-row { grid-template-columns: 40px minmax(0, 1fr); } .notice-broken .brk-acts { grid-column: 2; } }
+
+/* Content ideas: a row opens the post's preview; Bulk edit = tags to add / remove, picked from a search or from the
+   tags the selected posts already have */
+.ci-table tbody tr[data-row], [data-tbody] tr[data-row] { cursor: pointer; }
+.bk-sec { display: grid; gap: 8px; padding: 4px 0 14px; position: relative; }
+.bk-sec + .bk-sec { border-top: 1px solid var(--border); padding-top: 14px; }
+.bk-h { display: flex; align-items: center; gap: 8px; margin: 0; font-weight: 600; }
+.bk-h svg { width: 16px; height: 16px; }
+.bk-sugg { display: grid; gap: 2px; max-height: 260px; overflow: auto; padding: 4px; border-radius: 10px; border: 1px solid var(--border-2); background: var(--panel-2); }
+.bk-sugg button { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 7px 10px; border-radius: 8px; text-align: left; color: var(--text); }
+.bk-sugg button:hover { background: var(--panel-3); }
+.bk-sugg small { color: var(--muted); font-size: 12px; white-space: nowrap; }
+.bk-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.bk-chips:empty { display: none; }
+.bk-chip { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--border-2); background: var(--panel-2); color: var(--text); font-size: 13px; }
+.bk-chip small { color: var(--muted); font-size: 11px; }
+.bk-chip em { font-style: normal; color: var(--muted); font-size: 12px; }
+.bk-chip i { font-style: normal; color: var(--muted); }
+.bk-chip.is-add { border-color: rgba(0, 216, 91, .45); background: rgba(0, 216, 91, .1); }
+.bk-chip.is-add i { color: var(--green); }
+.bk-chip.is-remove { border-color: rgba(255, 104, 92, .5); background: rgba(255, 104, 92, .1); text-decoration: line-through; }
+.bk-chip.is-remove i { color: var(--red); }
+.bk-chip.is-have:hover { border-color: rgba(255, 104, 92, .5); }
+.bk-sum { margin-right: auto; color: var(--muted); font-size: 13px; }

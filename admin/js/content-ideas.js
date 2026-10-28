@@ -407,66 +407,93 @@
   }
   loadRemoved();
 
-  // ---------- Bulk edit (queue of add / remove operations) ----------
+  // ---------- Bulk edit: tags to add (search any filter value) and tags to take away (the ones the selected posts have,
+  // or any value searched), one Apply ----------
+  const catLabel = (k) => A.CAT_LABEL[k] || k.replace(/_/g, " ").replace(/^./, (c) => c.toUpperCase());
+  const allValues = () => [...catalog.byId.values()];
+  const fold = (t) => String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
   $("[data-bulk-edit]").addEventListener("click", () => {
     const ids = selectionIds();
-    const queue = [];
+    const add = new Map(), remove = new Map();   // value id → value
+    // the tags the selected posts on this page already have, with how many of them have each
+    const have = new Map();
+    rows.filter((r) => allFiltered ? allFiltered.includes(r.id) : selected.has(r.id)).forEach((r) => Object.values(r.tags || {}).flat().forEach((t) => {
+      const v = catalog.byId.get(Number(t.id)) || { id: Number(t.id), name: t.name, category: "" };
+      have.set(v.id, { v, n: (have.get(v.id)?.n || 0) + 1 });
+    }));
     const m = A.modal({
       title: "Bulk Edit",
       sub: `${num(ids.length)} content idea${ids.length === 1 ? "" : "s"} selected`,
       body: `
-        <p class="modal-section" style="border:0;padding:0">Add operation</p>
-        <div class="grid-2">
-          <label class="field"><span class="label">Action</span>
-            <select class="select" data-action><option value="add">Add value to selected</option><option value="remove">Remove value from selected</option></select></label>
-          <label class="field"><span class="label">Category</span>
-            <select class="select" data-cat>${A.CATEGORIES.map((c) => `<option value="${c.key}">${c.label}</option>`).join("")}</select></label>
-        </div>
-        <div class="field"><span class="label">Value</span><div data-value></div></div>
-        <div><button class="btn btn-sm" type="button" data-queue-add>+ Add to queue</button></div>
-        <div data-queue></div>`,
-      foot: `<button class="btn btn-ghost" type="button" data-cancel>Cancel</button><button class="btn btn-primary" type="button" data-apply disabled>Apply</button>`,
+        <div class="bk-sec"><p class="bk-h">${icon("plus")}Add tags</p>
+          <input class="input" type="search" placeholder="Search a club, sport, sponsor, moment…" autocomplete="off" data-bk-q="add">
+          <div class="bk-sugg" data-bk-sugg="add" hidden></div><div class="bk-chips" data-bk-list="add"></div></div>
+        <div class="bk-sec"><p class="bk-h">${icon("trash")}Remove tags</p>
+          ${have.size ? `<p class="hint">Tags the selected posts on this page have. Click one to remove it from all of them.</p><div class="bk-chips" data-bk-have></div>` : ""}
+          <input class="input" type="search" placeholder="Or search any tag to remove…" autocomplete="off" data-bk-q="remove">
+          <div class="bk-sugg" data-bk-sugg="remove" hidden></div><div class="bk-chips" data-bk-list="remove"></div></div>`,
+      foot: `<span class="bk-sum" data-bk-sum></span><button class="btn btn-ghost" type="button" data-cancel>Cancel</button><button class="btn btn-primary" type="button" data-apply disabled>Apply changes</button>`,
     });
-    let valueSel;
-    const buildValue = () => {
-      const cat = $("[data-cat]", m.el).value;
-      valueSel = new A.MultiSelect($("[data-value]", m.el), {
-        options: catalog.byCat[cat].map((v) => ({ id: v.id, name: v.name, count: v.ideas })),
-        single: true,
-      });
+    const chip = (v, kind, extra = "") => `<button type="button" class="bk-chip is-${kind}" data-bk-x="${kind}" data-id="${v.id}"><small>${esc(catLabel(v.category))}</small>${esc(v.name)}${extra}<i aria-hidden="true">${kind === "have" ? "−" : "×"}</i></button>`;
+    const draw = () => {
+      $("[data-bk-list=add]", m.el).innerHTML = [...add.values()].map((v) => chip(v, "add")).join("");
+      $("[data-bk-list=remove]", m.el).innerHTML = [...remove.values()].filter((v) => !have.has(v.id)).map((v) => chip(v, "remove")).join("");
+      const hv = $("[data-bk-have]", m.el);
+      if (hv) hv.innerHTML = [...have.values()].sort((a, b) => b.n - a.n).map(({ v, n }) => chip(v, remove.has(v.id) ? "remove" : "have", ` <em>${num(n)}</em>`)).join("");
+      const n = add.size + remove.size;
+      $("[data-bk-sum]", m.el).textContent = n ? `${add.size ? `+${add.size}` : ""}${add.size && remove.size ? " · " : ""}${remove.size ? `−${remove.size}` : ""}` : "";
+      $("[data-apply]", m.el).disabled = n === 0;
     };
-    buildValue();
-    $("[data-cat]", m.el).addEventListener("change", buildValue);
-    const renderQueue = () => {
-      $("[data-queue]", m.el).innerHTML = queue.length
-        ? `<div class="chips">${queue.map((q, i) => `<span class="chip">${q.action === "add" ? "+ Add" : "− Remove"} <b>${A.CAT_LABEL[q.category]}:</b> ${esc(q.name)}<button type="button" data-rmq="${i}" aria-label="Remove operation">×</button></span>`).join("")}</div>`
-        : `<p class="hint">No operations queued yet.</p>`;
-      $("[data-apply]", m.el).disabled = queue.length === 0;
-      $$("[data-rmq]", m.el).forEach((b) => b.addEventListener("click", () => { queue.splice(Number(b.dataset.rmq), 1); renderQueue(); }));
+    const suggest = (kind) => {
+      const box = $(`[data-bk-sugg=${kind}]`, m.el), q = fold($(`[data-bk-q=${kind}]`, m.el).value.trim());
+      if (q.length < 2) { box.hidden = true; return; }
+      const hits = allValues().filter((v) => fold(v.name).includes(q)).sort((a, b) => (fold(a.name).startsWith(q) ? 0 : 1) - (fold(b.name).startsWith(q) ? 0 : 1) || b.ideas - a.ideas).slice(0, 12);
+      box.innerHTML = hits.length ? hits.map((v) => `<button type="button" data-bk-pick="${kind}" data-id="${v.id}"><span>${esc(v.name)}</span><small>${esc(catLabel(v.category))} · ${num(v.ideas)}</small></button>`).join("") : `<p class="hint">No tag found</p>`;
+      box.hidden = false;
     };
-    renderQueue();
-    $("[data-queue-add]", m.el).addEventListener("click", () => {
-      const id = valueSel.value()[0];
-      if (!id) return A.toast("Choose a value first.", "err");
-      const category = $("[data-cat]", m.el).value;
-      queue.push({ action: $("[data-action]", m.el).value, category, value_id: id, name: catalog.byId.get(id)?.name || id });
-      valueSel.setSelected([]);
-      renderQueue();
+    $$("[data-bk-q]", m.el).forEach((inp) => inp.addEventListener("input", () => suggest(inp.dataset.bkQ)));
+    m.el.addEventListener("click", (e) => {
+      const pick = e.target.closest("[data-bk-pick]");
+      if (pick) {
+        const v = catalog.byId.get(Number(pick.dataset.id)), kind = pick.dataset.bkPick;
+        (kind === "add" ? add : remove).set(v.id, v);
+        (kind === "add" ? remove : add).delete(v.id);
+        $(`[data-bk-q=${kind}]`, m.el).value = ""; $(`[data-bk-sugg=${kind}]`, m.el).hidden = true;
+        return draw();
+      }
+      const x = e.target.closest("[data-bk-x]");
+      if (x) {
+        const id = Number(x.dataset.id), kind = x.dataset.bkX;
+        if (kind === "add") add.delete(id);
+        else if (kind === "have") { remove.set(id, have.get(id).v); add.delete(id); }
+        else remove.delete(id);
+        return draw();
+      }
     });
+    draw();
     $("[data-cancel]", m.el).addEventListener("click", m.close);
-    $("[data-apply]", m.el).addEventListener("click", async (e) => {
-      e.currentTarget.disabled = true;
+    const applyBtn = $("[data-apply]", m.el);
+    applyBtn.addEventListener("click", async () => {
+      const ops = [...[...add.keys()].map((value_id) => ({ action: "add", value_id })), ...[...remove.keys()].map((value_id) => ({ action: "remove", value_id }))];
+      applyBtn.disabled = true; applyBtn.textContent = "Applying…";
       try {
         let added = 0, removed = 0;
         for (const part of A.chunk(ids, 1000)) {
-          const r = await rpc("bulk_edit_content_ideas", { p_ids: part, p_operations: queue.map(({ action, value_id }) => ({ action, value_id })) });
+          const r = await rpc("bulk_edit_content_ideas", { p_ids: part, p_operations: ops });
           added += r.links_added; removed += r.links_removed;
         }
         m.close();
         A.toast(`Bulk edit done: ${num(added)} links added, ${num(removed)} removed.`);
         A.resetCatalog(); load();
-      } catch (err) { A.toast(A.errMsg(err), "err"); e.currentTarget.disabled = false; }
+      } catch (err) { A.toast(A.errMsg(err), "err"); applyBtn.disabled = false; applyBtn.textContent = "Apply changes"; }
     });
+  });
+
+  // a click on a row (not on its checkbox, buttons or links) opens the post's preview
+  $("[data-tbody]").addEventListener("click", (e) => {
+    if (e.target.closest("input, button, a, label")) return;
+    const tr = e.target.closest("tr[data-row]");
+    if (tr) A.openIdeaPreview(rows.find((r) => r.id === Number(tr.dataset.row)));
   });
 
   load();

@@ -308,4 +308,12 @@ window.SCPA_DICT = Object.assign(window.SCPA_DICT || {}, {
   "Post deleted.": ["Post eliminado.", "Post eliminat."],
   "no longer exist on Instagram or Facebook (deleted or made private). They're already hidden from the Content Library.": ["ya no existen en Instagram o Facebook (eliminados o privados). Ya están ocultos en la biblioteca.", "ja no existeixen a Instagram o Facebook (eliminats o privats). Ja estan amagats de la biblioteca."],
   "no longer exists on Instagram or Facebook (deleted or made private). They're already hidden from the Content Library.": ["ya no existe en Instagram o Facebook (eliminado o privado). Ya está oculto en la biblioteca.", "ja no existeix a Instagram o Facebook (eliminat o privat). Ja està amagat de la biblioteca."],
+  "Add tags": ["Añadir etiquetas", "Afegeix etiquetes"],
+  "Remove tags": ["Quitar etiquetas", "Treu etiquetes"],
+  "Search a club, sport, sponsor, moment…": ["Busca un club, deporte, patrocinador, momento…", "Busca un club, esport, patrocinador, moment…"],
+  "Or search any tag to remove…": ["O busca cualquier etiqueta para quitarla…", "O busca qualsevol etiqueta per treure-la…"],
+  "Tags the selected posts on this page have. Click one to remove it from all of them.": ["Etiquetas que tienen los posts seleccionados de esta página. Haz clic en una para quitarla de todos.", "Etiquetes que tenen els posts seleccionats d'aquesta pàgina. Fes clic en una per treure-la de tots."],
+  "Apply changes": ["Aplicar cambios", "Aplica els canvis"],
+  "Applying…": ["Aplicando…", "Aplicant…"],
+  "No tag found": ["No se ha encontrado ninguna etiqueta", "No s'ha trobat cap etiqueta"],
 });
