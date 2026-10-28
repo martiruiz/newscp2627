@@ -9034,3 +9034,6 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .pp-pick.is-best { border-color: color-mix(in srgb, var(--gold) 60%, transparent); box-shadow: 0 0 0 1px color-mix(in srgb, var(--gold) 25%, transparent), 0 14px 34px -18px color-mix(in srgb, var(--gold) 45%, transparent); }
 /* the tabs fill the bar, evenly spread and centred (the underline stays under each name) */
 .lfb-row.lfb-glass { display: flex; justify-content: space-evenly; width: 100%; }
+
+/* Enterprise: "Custom price" in place of an amount, the same weight, a size that fits the card */
+.plan-price-custom b { font-size: clamp(26px, 2.4vw, 34px) !important; letter-spacing: -0.02em; }

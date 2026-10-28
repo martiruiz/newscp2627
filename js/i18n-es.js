@@ -1188,6 +1188,7 @@ window.SCP_ES = {
   "Pro": "Pro",
   "Start with the Content Library or get everything: AI analyses and the Content Plan. Cancel anytime.": "Empieza con la Biblioteca de contenido o tenlo todo: análisis con IA y Plan de contenido. Cancela cuando quieras.",
   "Custom plan": "Plan personalizado",
+  "Custom price": "Personalizado",
   "Price to be agreed": "Precio a convenir",
   "Clubs, leagues, federations and agencies": "Clubes, ligas, federaciones y agencias",
   "Everything in Pro": "Todo lo de Pro",

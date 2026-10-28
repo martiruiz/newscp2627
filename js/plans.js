@@ -14,8 +14,7 @@
   const SYM = { eur: "€", usd: "$" };
   const fmt = (n, cur) => { const v = Number(n); return new Intl.NumberFormat(window.SCP_LOC || "en-GB", { style: "currency", currency: String(cur || "eur").toUpperCase(), minimumFractionDigits: Number.isInteger(v) ? 0 : 2, maximumFractionDigits: 2 }).format(v); };
   const per = (iv) => tx(iv === "year" ? "year" : "month");
-  // Enterprise (the club plan) is custom: this is the starting price shown, so small clubs know where it begins
-  const ENTERPRISE_FROM = 99;
+  // Enterprise (the club plan) is custom: no price on the page ("Custom price"); it starts at 99 €/month, said in the demo
   // launch offer: the monthly price of Starter and Plus until this day; after it, plans.compare_month is the price
   const LAUNCH_END = "2026-12-31";
   const launchDate = new Date(`${LAUNCH_END}T12:00:00`).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "long" });
@@ -131,7 +130,7 @@
       <header class="plan-head"><h3>${tx("Enterprise")}</h3><span class="plan-pick">${tx("For clubs")}</span></header>
       <p class="plan-for">${tx("Your club's own private library")}</p>
       <div class="plan-hero">${pic("club")}<div><b>${tx("All your players', sections' and sponsors' content in one place")}</b></div></div>
-      <p class="plan-price"><em class="plan-total">${tx("From")}</em><b>${fmt(ENTERPRISE_FROM, "eur")}</b><span>/ ${per("month")}</span></p>
+      <p class="plan-price plan-price-custom"><b>${tx("Custom price")}</b></p>
       <p class="plan-sub">${tx("Custom plan, priced for the size of your club")}</p>
       <div class="plan-ctabox"><a class="btn btn-outline plan-cta" href="book-a-call.html?for=clubs" data-cta="pricing-my-club"><span>${tx("Book a demo")}</span><i class="plan-cta-arrow" aria-hidden="true">→</i></a><p class="plan-note">${tx("We show you your club's library in 30 minutes")}</p></div>
       <div class="plan-incl"><h4>${tx("What's included")}</h4><ul class="plan-gets">${gets.map(keyPoint).join("")}</ul></div>
@@ -157,7 +156,7 @@
       row("Your players' and sponsors' posts", "In one place, with their own filters", () => no),
       row("We upload your club's posts every day", "", () => no),
     ].join("");
-    const price = `<tr class="cmp-price"><th scope="row">${tx("Price")}</th>${plans.map((p) => { const x = priceOf(p); return `<td>${x ? `${fmt(x.amount * seats, currency)}<small>/ ${per(x.interval)}${seats > 1 ? "" : ` ${tx("per user")}`}</small>` : "–"}</td>`; }).join("")}${club ? `<td class="is-club"><span class="cmp-custom">${tx("From {price}", { price: fmt(ENTERPRISE_FROM, "eur") })}</span><small>/ ${per("month")}</small></td>` : ""}</tr>`;
+    const price = `<tr class="cmp-price"><th scope="row">${tx("Price")}</th>${plans.map((p) => { const x = priceOf(p); return `<td>${x ? `${fmt(x.amount * seats, currency)}<small>/ ${per(x.interval)}${seats > 1 ? "" : ` ${tx("per user")}`}</small>` : "–"}</td>`; }).join("")}${club ? `<td class="is-club"><span class="cmp-custom">${tx("Custom price")}</span></td>` : ""}</tr>`;
     const cta = club ? `<tr class="cmp-cta"><th scope="row"></th>${plans.map(() => "<td></td>").join("")}<td class="is-club"><a class="cmp-club-btn" href="book-a-call.html?for=clubs" data-cta="pricing-compare-club">${tx("Book a demo")}</a></td></tr>` : "";
     const trialDays = Math.min(...plans.map((p) => p.trial_days || 0));
     const note = trialDays > 0 ? `<p class="cmp-note">${tx("{n}-day free trial on every plan · card required · cancel anytime", { n: trialDays })}</p>` : "";
