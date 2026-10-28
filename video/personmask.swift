@@ -1,6 +1,6 @@
 // The person's mask of a talking-head video (Apple Vision person segmentation): white = person, black = background.
 //   swift video/personmask.swift in.mp4 mask.mp4
-// Edges softened a little and smoothed over time (no flicker). Used to cut the presenter out over platform screens.
+// Raw mask, no blur and no smoothing over time (that made the cut-out lag behind the hands); cutout.py refines it.
 import AVFoundation
 import CoreImage
 import Vision
@@ -31,7 +31,6 @@ let ctx = CIContext(options: [.useSoftwareRenderer: false])
 let req = VNGeneratePersonSegmentationRequest()
 req.qualityLevel = .accurate
 req.outputPixelFormat = kCVPixelFormatType_OneComponent8
-var prevMask: CIImage? = nil
 var n = 0
 let extent = CGRect(origin: .zero, size: size)
 
@@ -42,14 +41,6 @@ while let sample = rOut.copyNextSampleBuffer() {
   try VNImageRequestHandler(cvPixelBuffer: pb, options: [:]).perform([req])
   var mask = CIImage(cvPixelBuffer: req.results![0].pixelBuffer)
   mask = mask.transformed(by: CGAffineTransform(scaleX: size.width / mask.extent.width, y: size.height / mask.extent.height))
-  // soften the edge a little and smooth over time (65 % this frame, 35 % the previous one)
-  mask = mask.clampedToExtent().applyingGaussianBlur(sigma: 2.5).cropped(to: extent)
-  if let p = prevMask {
-    let a = mask.applyingFilter("CIColorMatrix", parameters: ["inputRVector": CIVector(x: 0.65, y: 0, z: 0, w: 0), "inputGVector": CIVector(x: 0, y: 0.65, z: 0, w: 0), "inputBVector": CIVector(x: 0, y: 0, z: 0.65, w: 0)])
-    let b = p.applyingFilter("CIColorMatrix", parameters: ["inputRVector": CIVector(x: 0.35, y: 0, z: 0, w: 0), "inputGVector": CIVector(x: 0, y: 0.35, z: 0, w: 0), "inputBVector": CIVector(x: 0, y: 0, z: 0.35, w: 0)])
-    mask = a.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: b]).cropped(to: extent)
-  }
-  prevMask = mask
   let out = mask.applyingFilter("CIColorMatrix", parameters: ["inputRVector": CIVector(x: 1, y: 0, z: 0, w: 0), "inputGVector": CIVector(x: 1, y: 0, z: 0, w: 0), "inputBVector": CIVector(x: 1, y: 0, z: 0, w: 0), "inputAVector": CIVector(x: 0, y: 0, z: 0, w: 1)])
 
   while !wIn.isReadyForMoreMediaData { usleep(2000) }
