@@ -199,12 +199,16 @@ window.SCP_CHECKOUT = (() => {
     const list = (await plansP).filter((p) => (p.entitlements || []).includes(btn.dataset.plansPicker || "planner.access"));
     box.dataset.done = list.length ? "1" : "";
     const label = (p) => (p.trial_days > 0 ? tx("Start {n}-day free trial", { n: p.trial_days }) : tx("Get {plan}", { plan: esc(p.name) }));
+    // what sets each plan apart (from what it includes), its AI analyses, and the highlighted plan as the recommended one
+    const what = (p) => { const e = p.entitlements || []; return e.includes("library.brands") ? "Everything, plus the Brands & sponsors filters" : e.includes("planner.access") ? "Library, content creators and the Content Plan" : "The library, Match Day and saved boards"; };
     box.innerHTML = list.map((p) => {
       const m = p.prices?.find((x) => x.currency === "eur" && x.interval === "month");
-      const cta = m?.ready ? `<button class="btn btn-gold" type="button" data-checkout-plan="${esc(p.key)}" data-interval="month" data-currency="eur">${label(p)}</button>`
-        : `<a class="btn btn-gold" href="signup.html?plan=${encodeURIComponent(p.key)}&interval=month">${label(p)}</a>`;
-      return `<div class="pp-pick"><div class="pp-pick-top"><b>${esc(p.name)}</b>${m ? `<span><strong>${money(m.amount, "eur").replace(/[.,]00(?=\D|$)/, "")}</strong> / ${tx("month")}</span>` : ""}</div>
-        <p>${tx((p.entitlements || []).includes("ai.analyze_posts") ? "Library, AI analyses and Content Plan" : "The whole content library")}</p>${cta}</div>`;
+      const cls = p.highlighted ? "btn-gold" : "btn-outline";
+      const cta = m?.ready ? `<button class="btn ${cls}" type="button" data-checkout-plan="${esc(p.key)}" data-interval="month" data-currency="eur">${label(p)}</button>`
+        : `<a class="btn ${cls}" href="signup.html?plan=${encodeURIComponent(p.key)}&interval=month">${label(p)}</a>`;
+      const ai = p.ai_unlimited ? tx("Unlimited AI analyses") : p.ai_monthly_units ? tx("{n} AI analyses a month", { n: p.ai_monthly_units }) : "";
+      return `<div class="pp-pick${p.highlighted ? " is-best" : ""}"><div class="pp-pick-top"><b>${esc(p.name)}${p.highlighted ? `<em class="pp-pick-flag">${tx("Recommended")}</em>` : ""}</b>${m ? `<span><strong>${money(m.amount, "eur").replace(/[.,]00(?=\D|$)/, "")}</strong> / ${tx("month")}</span>` : ""}</div>
+        <p>${tx(what(p))}${ai ? `<small class="pp-pick-ai">${ai}</small>` : ""}</p>${cta}</div>`;
     }).join("") + `<div class="pp-pick is-club"><div class="pp-pick-top"><b>${tx("My Club")}</b><span>${tx("Custom plan")}</span></div>
         <p>${tx("Your club's own library: first team, sections and academy")}</p><a class="btn btn-outline" href="book-a-call.html?for=clubs">${tx("Book a demo")}</a></div>
       <a class="pp-plans-all" href="pricing.html">${tx("Compare all plans")} →</a>`;

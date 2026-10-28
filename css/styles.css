@@ -9026,3 +9026,11 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 :root[data-theme="light"] .lfb-glass .lfb-btn.is-open .lfb-tx b, :root[data-theme="light"] .lfb-glass .lfb-btn:hover .lfb-tx b { color: #121b33; }
 :root[data-theme="light"] .lfb-ic { background: none; box-shadow: none; }
 :root[data-theme="light"] .lfb-ic svg { stroke: var(--gold); }
+
+/* Plans picker (a locked feature → its plans): each plan says what sets it apart and its AI analyses; the recommended
+   one (Pro) stands out with a gold rim, a "Recommended" flag and the gold button — the rest outline buttons */
+.pp-pick-ai { display: block; margin-top: 3px; color: var(--gold); font-size: 12px; font-weight: 600; }
+.pp-pick-flag { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 999px; background: var(--gold); color: var(--on-gold, #1a1206); font: 700 10.5px var(--font-body); font-style: normal; letter-spacing: .04em; text-transform: uppercase; vertical-align: 2px; }
+.pp-pick.is-best { border-color: color-mix(in srgb, var(--gold) 60%, transparent); box-shadow: 0 0 0 1px color-mix(in srgb, var(--gold) 25%, transparent), 0 14px 34px -18px color-mix(in srgb, var(--gold) 45%, transparent); }
+/* the tabs fill the bar, evenly spread and centred (the underline stays under each name) */
+.lfb-row.lfb-glass { display: flex; justify-content: space-evenly; width: 100%; }
