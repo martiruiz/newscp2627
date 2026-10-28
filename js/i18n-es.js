@@ -5,6 +5,8 @@ window.SCP_ES = {
   // ---------- Navigation, footer, shared ----------
   "Main": "Principal",
   "Open menu": "Abrir menú",
+  "Menu": "Menú",
+  "Shortcuts": "Accesos directos",
   "Close menu": "Cerrar menú",
   "How it works": "Cómo funciona",
   "Content Library": "Biblioteca de contenido",

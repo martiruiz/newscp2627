@@ -1905,3 +1905,22 @@ select.cs-native { display: none !important; }
   .side-open .side-prefs { grid-column: 1 / -1; justify-content: space-between; margin-top: 6px; }
 }
 
+
+/* ===== Admin on phones and tablets: review ===== */
+@media (max-width: 1180px) {
+  /* the "i" tips open as a bar at the bottom also on tablets, so a hidden tip never widens the page */
+  .info-i::after, .info-i:hover::after, .info-i:focus-visible::after { position: fixed; left: 16px; right: 16px; top: auto; bottom: 16px; width: auto; max-width: 520px; margin-inline: auto; transform: none; }
+  .aud-kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  /* tables that sit straight in a panel scroll sideways inside it */
+  .panel:has(> table.data) { overflow-x: auto; }
+}
+@media (max-width: 860px) {
+  .aud-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .imp-file { min-width: 220px; }
+}
+@media (max-width: 700px) {
+  /* Smart review: the action bar wraps; keyboard shortcuts are of no use on a phone */
+  .sr-bar { flex-wrap: wrap; gap: 8px; }
+  .sr-bar .sr-keys { display: none; }
+  .sr-bar .btn-primary { flex: 1 1 100%; }
+}

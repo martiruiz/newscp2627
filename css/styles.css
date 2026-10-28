@@ -8942,3 +8942,31 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
   .lf-sugg-b { height: 34px; padding: 0 13px; }
   .lf-clear { height: 34px; }
 }
+
+/* Phones: tab bar at the bottom (js/nav-menu.js) — Library · Plan · My Club (raised gold button with the crown) · Boards · Menu.
+   It replaces the menu button at the top (shown again as the close button while the menu is open) and the home dock. */
+.tabbar { display: none; }
+@media (max-width: 760px) {
+  .tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); align-items: end;
+    padding: 6px 6px calc(6px + env(safe-area-inset-bottom)); background: color-mix(in srgb, var(--bg) 86%, transparent); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+    box-shadow: inset 0 1px 0 var(--line); }
+  body.has-tabbar { padding-bottom: calc(66px + env(safe-area-inset-bottom)); }
+  .tb-item { display: grid; justify-items: center; gap: 4px; min-height: 52px; padding: 6px 2px 2px; border: 0; background: none; color: var(--muted); font: 600 10.5px/1.1 var(--font-body);
+    text-align: center; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: color 0.2s; }
+  .tb-item span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tb-item > svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .tb-item[aria-current="page"], .tb-item[aria-expanded="true"] { color: var(--gold); }
+  .tb-item:active > svg { transform: scale(0.9); }
+  /* My Club: raised above the bar, gold, with the crown */
+  .tb-club { position: relative; color: var(--gold); }
+  .tb-crown { display: grid; place-items: center; width: 54px; height: 54px; margin-top: -26px; border-radius: 50%;
+    background: linear-gradient(135deg, #f7d27a, #f0b84a 45%, #d99a2b); box-shadow: 0 0 0 5px var(--bg), 0 10px 26px -8px rgba(240, 184, 74, 0.85); transition: transform 0.2s; }
+  .tb-crown svg { width: 25px; height: 25px; fill: #1a1206; stroke: none; }
+  .tb-club:active .tb-crown { transform: scale(0.94); }
+  .tb-club[aria-current="page"] .tb-crown { box-shadow: 0 0 0 5px var(--bg), 0 0 0 7px rgba(240, 184, 74, 0.55), 0 10px 26px -8px rgba(240, 184, 74, 0.85); }
+  /* the top menu button only closes the open menu; the dock of the home page gives way to the bar */
+  .site-nav:not(.is-open) .nav-toggle { display: none; }
+  .dock { display: none !important; }
+  /* bottom sheets with their own action button (Library filters) cover the bar */
+  body:has(.library.sheet-open) .tabbar { display: none; }
+}
