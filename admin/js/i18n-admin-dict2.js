@@ -316,4 +316,11 @@ window.SCPA_DICT = Object.assign(window.SCPA_DICT || {}, {
   "Apply changes": ["Aplicar cambios", "Aplica els canvis"],
   "Applying…": ["Aplicando…", "Aplicant…"],
   "No tag found": ["No se ha encontrado ninguna etiqueta", "No s'ha trobat cap etiqueta"],
+  "Tags": ["Etiquetas", "Etiquetes"],
+  "Add a tag: club, sport, sponsor, moment…": ["Añade una etiqueta: club, deporte, patrocinador, momento…", "Afegeix una etiqueta: club, esport, patrocinador, moment…"],
+  "Edit all": ["Editar todo", "Edita-ho tot"],
+  "No tags yet.": ["Aún no tiene etiquetas.", "Encara no té etiquetes."],
+  "Previous": ["Anterior", "Anterior"],
+  "Next": ["Siguiente", "Següent"],
+  "Close": ["Cerrar", "Tanca"],
 });

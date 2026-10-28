@@ -1985,3 +1985,24 @@ select.cs-native { display: none !important; }
 .bk-chip.is-remove i { color: var(--red); }
 .bk-chip.is-have:hover { border-color: rgba(255, 104, 92, .5); }
 .bk-sum { margin-right: auto; color: var(--muted); font-size: 13px; }
+
+/* Content ideas: the post opens in a column on the right (preview, tags to add / remove, previous / next) and the table
+   makes room for it */
+.ci-side { position: fixed; top: 0; right: 0; bottom: 0; z-index: 60; width: min(460px, 100vw); display: grid; grid-template-rows: auto minmax(0, 1fr) auto;
+  background: var(--panel); border-left: 1px solid var(--border-2); box-shadow: -24px 0 60px -30px rgba(0, 0, 0, .7); animation: ciSideIn .22s ease; }
+@keyframes ciSideIn { from { transform: translateX(24px); opacity: 0; } }
+body.ci-side-open .main { margin-right: min(460px, 100vw); transition: margin .22s ease; }
+.ci-side-h { display: flex; gap: 12px; align-items: flex-start; padding: 16px 16px 12px 20px; border-bottom: 1px solid var(--border); }
+.ci-side-h > div { flex: 1; min-width: 0; }
+.ci-side-t { margin: 0; font: 600 15px/1.35 var(--display); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.ci-side-s { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+.ci-side-nav { display: flex; gap: 4px; flex: none; }
+.ci-side-nav .icon-btn { font-size: 16px; }
+.ci-side-b { overflow: auto; padding: 16px 20px; display: grid; align-content: start; gap: 12px; }
+.ci-side-b .embed-preview { max-height: 56vh; overflow: auto; border-radius: 10px; }
+.ci-side-k { margin: 6px 0 0; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.ci-side-b .bk-chip.is-have:hover { border-color: rgba(255, 104, 92, .55); background: rgba(255, 104, 92, .1); }
+.ci-side-f { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 20px; border-top: 1px solid var(--border); }
+tr[data-row].is-open td { background: var(--accent-soft, rgba(240, 184, 74, .1)); }
+tr[data-row].is-open td:first-child { box-shadow: inset 3px 0 0 var(--accent, #f0b84a); }
+@media (max-width: 860px) { body.ci-side-open .main { margin-right: 0; } .ci-side { width: 100vw; } }

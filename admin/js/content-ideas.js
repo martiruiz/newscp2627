@@ -26,6 +26,7 @@
   let total = 0;
   let token = 0;
   const selected = new Set();   // ids on screen that are ticked
+  let sideId = null;            // the post open in the side panel
   let allFiltered = null;       // array of every filtered id when "select all" is used
 
   main.innerHTML = `
@@ -140,6 +141,8 @@
       }).join("");
     }
     renderSelbar();
+    // the post open in the side panel stays marked; gone from this page (another page, a filter) → the panel closes
+    if (sideId !== null) { const tr = document.querySelector(`tr[data-row="${sideId}"]`); if (tr) tr.classList.add("is-open"); else closeSide(); }
   }
 
   // ---------- Selection ----------
@@ -182,7 +185,7 @@
     const edit = e.target.closest("[data-edit]");
     const view = e.target.closest("[data-view]");
     if (edit) A.openIdeaEditor({ idea: rows.find((r) => r.id === Number(edit.dataset.edit)), onSaved: load });
-    if (view) A.openIdeaPreview(rows.find((r) => r.id === Number(view.dataset.view)));
+    if (view) openSide(Number(view.dataset.view));
   });
   $("[data-add]").addEventListener("click", () => A.openIdeaEditor({ onSaved: () => { page = 1; load(); } }));
   $("[data-clear]").addEventListener("click", () => panel.clear());
@@ -489,11 +492,77 @@
     });
   });
 
-  // a click on a row (not on its checkbox, buttons or links) opens the post's preview
+  // ---------- Side panel: a click on a row (not on its checkbox, buttons or links) opens the post in a column on the
+  // right — preview, link, its tags to remove (×) or add (search any value), ↑ / ↓ to the previous / next post ----------
+  const side = document.createElement("aside");
+  side.className = "ci-side"; side.hidden = true; side.setAttribute("aria-label", "Post");
+  document.body.append(side);
+  const sideRow = () => rows.find((r) => r.id === sideId);
+  const tagsOf = (r) => Object.entries(r.tags || {}).flatMap(([cat, list]) => (list || []).map((t) => ({ id: Number(t.id), name: t.name, category: cat })));
+  function openSide(id) {
+    const r = rows.find((x) => x.id === id); if (!r) return;
+    sideId = id; side.hidden = false; document.body.classList.add("ci-side-open");
+    $$("tr[data-row].is-open").forEach((tr) => tr.classList.remove("is-open"));
+    document.querySelector(`tr[data-row="${id}"]`)?.classList.add("is-open");
+    const url = A.postUrl(r), i = rows.indexOf(r);
+    side.innerHTML = `
+      <header class="ci-side-h"><div><p class="ci-side-t">${esc(r.title || "(no title)")}</p><p class="ci-side-s">${A.fmtDate(r.published_at)} · <span class="mono">${esc(r.external_id)}</span></p></div>
+        <span class="ci-side-nav"><button class="icon-btn" type="button" data-side-step="-1" aria-label="Previous" ${i <= 0 ? "disabled" : ""}>↑</button><button class="icon-btn" type="button" data-side-step="1" aria-label="Next" ${i >= rows.length - 1 ? "disabled" : ""}>↓</button><button class="icon-btn" type="button" data-side-close aria-label="Close">×</button></span></header>
+      <div class="ci-side-b">
+        <div class="embed-preview" data-embed>${r.embed ? A.cleanEmbed(r.embed) : '<p class="muted">No embed.</p>'}</div>
+        ${url ? `<a class="link" href="${esc(url)}" target="_blank" rel="noopener">Open on ${esc(A.platformOfUrl(url))} ↗</a>` : ""}
+        <p class="ci-side-k">Tags</p>
+        <div class="bk-chips" data-side-tags>${tagsOf(r).map((t) => `<button type="button" class="bk-chip is-have" data-side-rm="${t.id}" title="Remove"><small>${esc(catLabel(t.category))}</small>${esc(t.name)}<i aria-hidden="true">×</i></button>`).join("") || '<span class="muted">No tags yet.</span>'}</div>
+        <input class="input" type="search" placeholder="Add a tag: club, sport, sponsor, moment…" autocomplete="off" data-side-q>
+        <div class="bk-sugg" data-side-sugg hidden></div>
+      </div>
+      <footer class="ci-side-f"><button class="btn btn-sm" type="button" data-side-edit>${icon("edit")}Edit all</button></footer>`;
+    A.activateEmbeds($("[data-embed]", side));
+  }
+  function closeSide() {
+    sideId = null; side.hidden = true; side.innerHTML = ""; document.body.classList.remove("ci-side-open");
+    $$("tr[data-row].is-open").forEach((tr) => tr.classList.remove("is-open"));
+  }
+  // one tag on / off for the open post, saved at once; the row and the panel show it straight away
+  async function sideTag(action, valueId) {
+    const r = sideRow(); if (!r) return;
+    try {
+      await rpc("bulk_edit_content_ideas", { p_ids: [r.id], p_operations: [{ action, value_id: valueId }] });
+      const v = catalog.byId.get(valueId); const cat = v?.category;
+      r.tags ||= {};
+      if (action === "add" && cat) r.tags[cat] = [...(r.tags[cat] || []).filter((t) => Number(t.id) !== valueId), { id: valueId, name: v.name }];
+      if (action === "remove") for (const k in r.tags) r.tags[k] = r.tags[k].filter((t) => Number(t.id) !== valueId);
+      A.resetCatalog();
+      const keep = sideId; render(); openSide(keep);
+      if (action === "add") $("[data-side-q]", side)?.focus();
+    } catch (err) { A.toast(A.errMsg(err), "err"); }
+  }
+  side.addEventListener("click", (e) => {
+    if (e.target.closest("[data-side-close]")) return closeSide();
+    const st = e.target.closest("[data-side-step]");
+    if (st) { const i = rows.findIndex((r) => r.id === sideId) + Number(st.dataset.sideStep); if (rows[i]) openSide(rows[i].id); return; }
+    const rm = e.target.closest("[data-side-rm]"); if (rm) return sideTag("remove", Number(rm.dataset.sideRm));
+    const pick = e.target.closest("[data-side-pick]"); if (pick) return sideTag("add", Number(pick.dataset.sidePick));
+    if (e.target.closest("[data-side-edit]")) A.openIdeaEditor({ idea: sideRow(), onSaved: () => { const keep = sideId; load().then?.(() => openSide(keep)); } });
+  });
+  side.addEventListener("input", (e) => {
+    if (!e.target.matches("[data-side-q]")) return;
+    const box = $("[data-side-sugg]", side), q = fold(e.target.value.trim());
+    if (q.length < 2) { box.hidden = true; return; }
+    const has = new Set(tagsOf(sideRow() || {}).map((t) => t.id));
+    const hits = allValues().filter((v) => !has.has(v.id) && fold(v.name).includes(q)).sort((a, b) => (fold(a.name).startsWith(q) ? 0 : 1) - (fold(b.name).startsWith(q) ? 0 : 1) || b.ideas - a.ideas).slice(0, 10);
+    box.innerHTML = hits.length ? hits.map((v) => `<button type="button" data-side-pick="${v.id}"><span>${esc(v.name)}</span><small>${esc(catLabel(v.category))} · ${num(v.ideas)}</small></button>`).join("") : '<p class="hint">No tag found</p>';
+    box.hidden = false;
+  });
+  document.addEventListener("keydown", (e) => {
+    if (sideId === null || e.target.closest?.("input, textarea, select, .modal")) return;
+    if (e.key === "Escape") closeSide();
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); const i = rows.findIndex((r) => r.id === sideId) + (e.key === "ArrowDown" ? 1 : -1); if (rows[i]) openSide(rows[i].id); }
+  });
   $("[data-tbody]").addEventListener("click", (e) => {
     if (e.target.closest("input, button, a, label")) return;
     const tr = e.target.closest("tr[data-row]");
-    if (tr) A.openIdeaPreview(rows.find((r) => r.id === Number(tr.dataset.row)));
+    if (tr) Number(tr.dataset.row) === sideId ? closeSide() : openSide(Number(tr.dataset.row));
   });
 
   load();
