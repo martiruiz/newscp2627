@@ -49,7 +49,8 @@ async function instagram(kind: string, code: string): Promise<Idea> {
   const format = /Sidecar/.test(typename) ? "Carousel" : kind === "reel" || (video && (product === "clips" || !product)) ? "Reel" : video ? "Video" : html ? "Images" : null;
   // the caption: the page's caption block, or the post's data in the page (escaped JSON)
   const cap = /class="Caption">([\s\S]*?)<\/div>/.exec(html)?.[1];
-  let title = cap ? unhtml(cap.replace(/<a class="CaptionUsername"[\s\S]*?<\/a>/, "")) : null;
+  let title = cap ? unhtml(cap.replace(/<a class="CaptionUsername"[\s\S]*?<\/a>/, "").replace(/<div class="CaptionComments"[\s\S]*$/, ""))
+    .replace(/\s*View all( [\d,.]+)? comments?$/i, "").trim() || null : null;
   const raw = !title && /edge_media_to_caption\\*"\s*:\s*\{\\*"edges\\*"\s*:\s*\[\{\\*"node\\*"\s*:\s*\{\\*"text\\*"\s*:\s*\\*"(.*?)\\*"\}/.exec(html)?.[1];
   if (raw) { let t = raw; while (/\\\\/.test(t)) t = t.replace(/\\\\/g, "\\"); try { title = JSON.parse(`"${t}"`); } catch { title = null; } }
   const account = /class="CaptionUsername"[^>]*>([^<]+)</.exec(html)?.[1]?.trim()
@@ -67,9 +68,15 @@ async function tiktok(url: string): Promise<Idea | null> {
   if (!m) return null;
   const [, handle, id] = m, link = `https://www.tiktok.com/@${handle}/video/${id}`;
   const o = await getJson(`https://www.tiktok.com/oembed?url=${encodeURIComponent(link)}`);
+  let title: string | null = o?.title || null;
+  if (!title) {   // oEmbed refused (rate limit): the caption from the video's own page
+    const html = await page(link, { "User-Agent": UA, "Accept-Language": "en-US,en;q=0.9" });
+    const d = new RegExp(`"id":"${id}","desc":"((?:[^"\\\\]|\\\\.)*)"`).exec(html)?.[1];
+    if (d) try { title = JSON.parse(`"${d}"`) || null; } catch { title = null; }
+  }
   return { url: link, external_id: id, platform: "TikTok", format: "Video",
     embed: `<blockquote class="tiktok-embed" cite="${link}" data-video-id="${id}"><section><a href="${link}"></a></section></blockquote><script async src="https://www.tiktok.com/embed.js"></script>`,
-    title: o?.title || null, published_at: iso(Number(BigInt(id) >> 32n) * 1000), account: (o?.author_unique_id || handle).toLowerCase(), account_platform: "tiktok" };
+    title, published_at: iso(Number(BigInt(id) >> 32n) * 1000), account: (o?.author_unique_id || handle).toLowerCase(), account_platform: "tiktok" };
 }
 async function x(handle: string, id: string): Promise<Idea> {
   const token = ((Number(id) / 1e15) * Math.PI).toString(36).replace(/(0+|\.)/g, "");
