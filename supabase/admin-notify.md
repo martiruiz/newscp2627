@@ -4,7 +4,7 @@
 Nothing goes to the user. It uses the secrets contact-notify already has (`RESEND_API_KEY`, `CONTACT_FROM`, `NOTIFY_TO`,
 `WEBHOOK_SECRET`), so there is nothing new to set.
 
-1. Deploy: `supabase functions deploy admin-notify --no-verify-jwt`
+1. Deploy: `npx supabase functions deploy admin-notify --no-verify-jwt --project-ref wppdbomtiliutpxsimtp`
 2. Supabase → Database → Webhooks → Create a new hook, twice:
 
 | Name | Table | Events | Type | URL | Header |
