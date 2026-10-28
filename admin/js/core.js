@@ -213,10 +213,12 @@
     if (!side) return;
     side.innerHTML = `
       <div class="side-brand"><img class="side-wordmark" src="../assets/logo-scp.png" alt="Sports Content Playbook"><img class="side-mark" src="../assets/favicon-s-192.png" alt="SCP"><b>Admin</b></div>
+      <div class="side-bar-m"><span class="side-here">${esc((NAV.find((n) => n.key === pageKey) || { label: pageKey === "account" ? "Account" : "" }).label)}</span>
+        <button class="side-menu-btn" type="button" data-side-toggle aria-expanded="false" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path class="m-open" d="M4 7h16M4 12h16M4 17h16"/><path class="m-close" d="M6 6l12 12M18 6 6 18"/></svg></button></div>
       <label class="side-search" data-tip="Go to… ( / )">${icon("search")}<input type="search" placeholder="Go to…" aria-label="Go to a section" autocomplete="off" data-side-search><kbd>/</kbd></label>
       <nav aria-label="Admin">${[["Platform content", NAV.filter((n) => !n.group)], ["Superadmin", NAV.filter((n) => n.group === "super")]].map(([t, list]) => `<p class="side-group">${t}</p>${list.map((n) => `<a href="${n.href}" data-tip="${esc(n.label)}"${n.key === pageKey ? ' aria-current="page"' : ""}>${icon(n.icon)}<span class="side-label">${n.label}</span></a>`).join("")}`).join("")}<p class="side-none" hidden>No section matches</p></nav>
-      <div class="side-jump"><a class="side-cta" href="../content-library.html" data-tip="Open Content Library" title="Open Content Library" aria-label="Open Content Library">${icon("library")}</a>
-      <a class="side-home" href="../index.html" data-tip="Home page" title="Home page" aria-label="Home page">${icon("home")}</a></div>
+      <div class="side-jump"><a class="side-cta" href="../content-library.html" data-tip="Open Content Library" title="Open Content Library" aria-label="Open Content Library">${icon("library")}<span class="side-jump-label">Content Library</span></a>
+      <a class="side-home" href="../index.html" data-tip="Home page" title="Home page" aria-label="Home page">${icon("home")}<span class="side-jump-label">Home page</span></a></div>
       <div class="side-foot">
         <p class="side-user" title="${esc(session.user.email)}">${esc(session.user.email)}${profile?.role ? ` · ${esc(profile.role)}` : ""}</p>
         <a href="account.html" data-tip="Account"${pageKey === "account" ? ' aria-current="page"' : ""}>${icon("account")}<span class="side-label">Account</span></a>
@@ -231,8 +233,19 @@
       try { localStorage.setItem("scpa-side-mini", on ? "1" : ""); } catch {}
     };
     mini(document.documentElement.classList.contains("side-mini"));
-    // a click on the logo / "Admin" header, folds or unfolds the column
-    $(".side-brand", side).addEventListener("click", () => mini(!document.documentElement.classList.contains("side-mini")));
+    // a click on the logo / "Admin" header, folds or unfolds the column (desktop; on phones the menu button opens the menu)
+    const phone = () => matchMedia("(max-width: 860px)").matches;
+    $(".side-brand", side).addEventListener("click", () => { if (!phone()) mini(!document.documentElement.classList.contains("side-mini")); });
+    // phones: a top bar; the menu opens full screen
+    const open = (on) => {
+      document.documentElement.classList.toggle("side-open", on);
+      $("[data-side-toggle]", side).setAttribute("aria-expanded", String(on));
+      document.body.style.overflow = on ? "hidden" : "";
+      if (on) side.scrollTop = 0;
+    };
+    $("[data-side-toggle]", side).addEventListener("click", () => open(!document.documentElement.classList.contains("side-open")));
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && document.documentElement.classList.contains("side-open")) open(false); });
+    matchMedia("(max-width: 860px)").addEventListener("change", (e) => { if (!e.matches) open(false); });
     // the tooltip says what the link says, in the admin's language
     side.addEventListener("pointerover", (e) => { const a = e.target.closest("[data-tip]"); const t = a?.querySelector(".side-label")?.textContent.trim(); if (t) a.dataset.tip = t; });
     const find = $("[data-side-search]", side), links = [...side.querySelectorAll("nav a")];
