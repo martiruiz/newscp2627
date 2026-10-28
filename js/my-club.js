@@ -153,6 +153,8 @@
     deal: '<path d="m11 17 2 2a1 1 0 1 0 3-3"/><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.9-3.9a3 3 0 0 0-4.2 0l-.9.9a1 1 0 1 1-3-3l2.8-2.8a5.8 5.8 0 0 1 7.1-.9l.5.3a2 2 0 0 0 1.4.3L21 4"/><path d="m21 3 1 11h-2M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3M3 4h8"/>',
     check: '<path d="M5 12.5 10 17l9-10"/>',
     shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+    user: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+    shirt: '<path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/>',
   };
   // how many people of the current tab a section / team has (globals not counted: they're everywhere)
   const countIn = (secId, teamId) => st.tab === "club" ? (teamId ? null : (st.profiles || []).filter((p) => p.section_id === secId).length) : st.space.people.filter((p) => p.kind === kind() && !p.global && (teamId ? p.teams.includes(teamId)
@@ -182,6 +184,7 @@
   // the filters, in the Content Library's glass bar: Club · Players · Sponsors (whose posts) and Section · Team, each
   // opening its panel under the bar (my-club.html .mc-crumb, where the library has its own bar)
   const BAR = [["club", "Club"], ["players", "Players"], ["sponsors", "Sponsors"], ["section", "Section"], ["team", "Team"]];
+  const BAR_ICON = { club: "shield", players: "user", sponsors: "deal", section: "grid", team: "shirt" };
   function bar() {
     const el = document.querySelector("[data-mc-crumb]"); if (!el || !st.space) return;
     const sec = section(), team = sec?.teams.find((x) => x.id === st.team);
@@ -189,7 +192,7 @@
     const oi = BAR.findIndex(([k]) => k === st.open);
     let row = el.querySelector(".mcb-row");
     if (!row) {
-      el.innerHTML = `<div class="mcb"><div class="lfb-row lfb-glass mcb-row" role="toolbar" aria-label="${esc(t("Filters"))}" style="--n:${BAR.length}"><span class="lfb-lens"></span>${BAR.map(([k, l]) => `<button type="button" class="lfb-btn" data-mcb="${k}" aria-expanded="false"><span class="lfb-tx"><b>${esc(t(l))}</b></span><em hidden></em></button>`).join("")}</div></div><div data-mcb-host></div>`;
+      el.innerHTML = `<div class="mcb"><div class="lfb-row lfb-glass mcb-row" role="toolbar" aria-label="${esc(t("Filters"))}" style="--n:${BAR.length}"><span class="lfb-lens"></span>${BAR.map(([k, l]) => `<button type="button" class="lfb-btn" data-mcb="${k}" aria-expanded="false"><span class="lfb-ic">${svg(ICON[BAR_ICON[k]])}</span><span class="lfb-tx"><b>${esc(t(l))}</b></span><em hidden></em></button>`).join("")}</div></div><div data-mcb-host></div>`;
       row = el.querySelector(".mcb-row");
     }
     BAR.forEach(([k, l], i) => {

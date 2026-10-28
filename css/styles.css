@@ -8970,3 +8970,42 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
   /* bottom sheets with their own action button (Library filters) cover the bar */
   body:has(.library.sheet-open) .tabbar { display: none; }
 }
+
+/* Filter bars (Content Library: Inspiration from · Match Day · Brands…; My Club: Club · Players · Sponsors · Section · Team):
+   separate raised buttons like the "My space" ones — same neutral colours, a gold icon tile, a hairline of light;
+   hover lifts, the open one gets a gold rim and a soft glow */
+.lfb-row.lfb-glass { gap: 10px; padding: 0; border-radius: 0; box-shadow: none; }
+.lfb-glass .lfb-lens { display: none; }
+.lfb-glass .lfb-btn { gap: 10px; height: 46px; padding: 0 16px 0 7px; border-radius: 14px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--surface-2) 92%, #fff 8%), var(--surface-2) 55%, var(--surface));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.09), inset 0 0 0 1px rgba(var(--fg), 0.14), 0 12px 26px -16px rgba(0, 0, 0, 0.85);
+  transition: transform 0.2s cubic-bezier(.2, .8, .2, 1), box-shadow 0.25s, background 0.25s; }
+.lfb-glass .lfb-btn:hover { transform: translateY(-1px); background: linear-gradient(180deg, color-mix(in srgb, var(--surface-2) 86%, #fff 14%), var(--surface-2) 60%, var(--surface));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), inset 0 0 0 1px rgba(240, 184, 74, 0.38), 0 14px 30px -16px rgba(0, 0, 0, 0.9); }
+.lfb-glass .lfb-btn.is-open, .lfb-glass .lfb-btn.is-open:hover { background: linear-gradient(180deg, color-mix(in srgb, var(--surface-2) 84%, #fff 16%), var(--surface-2));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), inset 0 0 0 1.5px rgba(240, 184, 74, 0.8), 0 0 0 4px rgba(240, 184, 74, 0.12), 0 14px 32px -14px rgba(240, 184, 74, 0.45); }
+.lfb-ic { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px;
+  background: linear-gradient(135deg, rgba(240, 184, 74, 0.26), rgba(240, 184, 74, 0.08)); box-shadow: inset 0 0 0 1px rgba(240, 184, 74, 0.38); }
+.lfb-ic svg { width: 17px !important; height: 17px !important; fill: none; stroke: var(--gold); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.lfb-glass .lfb-btn.is-open .lfb-ic { background: linear-gradient(135deg, #f7d27a, #f0b84a 50%, #d99a2b); box-shadow: 0 4px 12px -4px rgba(240, 184, 74, 0.8); }
+.lfb-glass .lfb-btn.is-open .lfb-ic svg { stroke: #1a1206; }
+.lfb-glass .lfb-tx b { font: 700 15px var(--font-display); letter-spacing: -0.01em; color: var(--text); }
+.lfb-glass .lfb-btn em { background: linear-gradient(90deg, #d99a2b, #f0b84a); color: #1a1206; }
+/* My Club: the filter in use, in gold (rim + text), no dot */
+.mcb-row .lfb-btn.is-cur { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 0 0 1px rgba(240, 184, 74, 0.5), 0 12px 26px -16px rgba(0, 0, 0, 0.85); }
+.mcb-row .lfb-btn.is-cur::after { display: none; }
+@media (max-width: 760px) { .mcb-row { gap: 8px; } .mcb-row .lfb-btn { height: 42px; } }
+:root[data-theme="light"] .lfb-glass .lfb-btn { background: linear-gradient(180deg, #fff, #f6f7fa); box-shadow: inset 0 0 0 1px rgba(18, 27, 51, 0.12), 0 8px 20px -14px rgba(18, 27, 51, 0.35); }
+:root[data-theme="light"] .lfb-ic { background: rgba(184, 122, 12, 0.1); box-shadow: inset 0 0 0 1px rgba(184, 122, 12, 0.3); }
+/* each button as wide as its name needs; in a narrow bar the icon tile gives way so the full name always fits */
+.lfb, [data-mc-crumb] { container-type: inline-size; }
+.lfb-row.lfb-glass:not(.mcb-row) { display: flex; }
+.lfb-row.lfb-glass:not(.mcb-row) .lfb-btn { flex: 1 1 auto; }
+@container (max-width: 560px) {
+  .lfb-glass .lfb-ic { display: none; }
+  .lfb-glass .lfb-btn { padding: 0 14px; }
+}
+/* My Club's bar: whole names; when they don't all fit, it slides sideways (as on phones) */
+.mcb-row.lfb-glass { display: flex; overflow-x: auto; scrollbar-width: none; padding: 4px; margin: -4px; }
+.mcb-row.lfb-glass::-webkit-scrollbar { display: none; }
+.mcb-row.lfb-glass .lfb-btn { flex: 1 0 auto; }

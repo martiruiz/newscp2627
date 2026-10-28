@@ -916,6 +916,7 @@
 
   // ---------- Bar above the posts (wide screens): one button per section, its filters in a wide panel ----------
   const secOf = (c) => (c.key === "angle" || c.key === "campaign" ? "occasion" : ["format", "platform"].includes(c.sec) ? "where" : c.sec);
+  const BAR_ICON = { benchmark: "shield", occasion: "flag", goal: "tag", discover: "trend", where: "grid" };
   function renderBar(list, parts) {
     const bar = $("[data-lf-bar]");
     if (!list.length) { bar.hidden = true; bar.innerHTML = ""; ui.bar = null; return; }
@@ -930,7 +931,7 @@
     const keys = items.map((it) => it.key).join();
     let row = $(".lfb-row", bar);
     if (!row || row.dataset.keys !== keys) {
-      bar.innerHTML = `<div class="lfb-row lfb-glass" role="toolbar" aria-label="${esc(tx("Filters"))}" style="--n:${items.length}" data-keys="${keys}"><span class="lfb-lens"></span>${items.map((it) => `<button type="button" class="lfb-btn" data-lfb="${it.key}"><span class="lfb-tx"><b>${esc(it.label)}</b></span><em hidden></em></button>`).join("")}</div><div data-lfb-host></div>`;
+      bar.innerHTML = `<div class="lfb-row lfb-glass" role="toolbar" aria-label="${esc(tx("Filters"))}" style="--n:${items.length}" data-keys="${keys}"><span class="lfb-lens"></span>${items.map((it) => `<button type="button" class="lfb-btn" data-lfb="${it.key}"><span class="lfb-ic">${svg(BAR_ICON[it.key] || "dots")}</span><span class="lfb-tx"><b>${esc(it.label)}</b></span><em hidden></em></button>`).join("")}</div><div data-lfb-host></div>`;
       row = $(".lfb-row", bar);
     }
     items.forEach((it, k) => {
