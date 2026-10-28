@@ -227,9 +227,10 @@
     const plansList = await loadPlans().catch(() => []);
     view.innerHTML = `<div class="ms-row">
         <input class="input" type="search" placeholder="Name or e-mail" data-q value="">
-        <select class="select" data-st><option value="">Any status</option>${["active", "trialing", "past_due", "unpaid", "canceling", "canceled", "paused", "incomplete"].map((s) => `<option value="${s}">${s.replace("_", " ")}</option>`).join("")}</select>
+        <select class="select" data-st><option value="">Any status</option>${["active", "trialing", "granted", "past_due", "unpaid", "canceling", "canceled", "paused", "incomplete"].map((s) => `<option value="${s}">${s.replace("_", " ")}</option>`).join("")}</select>
         <select class="select" data-pl><option value="">Any plan</option>${plansList.map((p) => `<option value="${esc(p.key)}"${params.get("plan") === p.key ? " selected" : ""}>${esc(p.name)}</option>`).join("")}</select>
-        <button class="btn" type="button" data-csv>${icon("download")}CSV</button><span class="muted" data-count></span></div>
+        <button class="btn" type="button" data-csv>${icon("download")}CSV</button><span class="muted" data-count></span>
+        <button class="btn btn-primary ms-row-end" type="button" data-new-client>${icon("plus")}New client</button></div>
       <div class="panel table-wrap"><table class="data"><thead><tr><th>Member</th><th>Plan</th><th>Status</th><th>Price</th><th>Since</th><th>Next renewal</th><th>Origin</th></tr></thead><tbody data-rows><tr><td colspan="7">Loading…</td></tr></tbody></table></div>`;
     let rows = [];
     const draw = async () => {
@@ -239,7 +240,7 @@
         <td><b>${esc(r.name || r.email)}</b><br><small class="muted">${esc(r.email)}</small></td><td>${esc(r.plan_name || r.plan)}</td>
         <td>${badge(r.status)}${r.cancel_at_period_end ? ` <span class="ms-badge is-warn">ends ${day(r.cancel_at || r.current_period_end)}</span>` : ""}</td>
         <td>${r.amount != null ? `${money(r.amount, r.currency)} / ${r.interval === "year" ? "yr" : "mo"}` : "—"}</td><td>${day(r.started_at)}</td>
-        <td>${r.status === "trialing" ? `trial ends ${day(r.trial_end)}` : day(r.current_period_end)}</td><td>${esc(r.origin)}${r.private_link ? " · private link" : ""}${r.discount_code ? ` · ${esc(r.discount_code)}` : ""}</td></tr>`).join("") || `<tr><td colspan="7" class="muted">No subscribers match.</td></tr>`;
+        <td>${r.status === "trialing" ? `trial ends ${day(r.trial_end)}` : day(r.current_period_end)}</td><td>${esc(r.origin)}${r.reason ? ` · ${esc(r.reason)}` : ""}${r.private_link ? " · private link" : ""}${r.discount_code ? ` · ${esc(r.discount_code)}` : ""}</td></tr>`).join("") || `<tr><td colspan="7" class="muted">No subscribers match.</td></tr>`;
     };
     $("[data-q]").addEventListener("input", A.debounce(() => draw().catch(fail), 350));
     $("[data-st]").onchange = $("[data-pl]").onchange = () => draw().catch(fail);
@@ -247,8 +248,114 @@
       const cols = ["name", "email", "plan", "status", "currency", "amount", "interval", "started_at", "current_period_end", "trial_end", "cancel_at_period_end", "cancel_at", "origin", "stripe_customer_id", "stripe_subscription_id"];
       A.downloadBlob(new Blob([[cols.join(","), ...rows.map((r) => cols.map((c) => A.csvCell(r[c] ?? "")).join(","))].join("\n")], { type: "text/csv" }), `scp-subscribers-${new Date().toISOString().slice(0, 10)}.csv`);
     };
-    view.onclick = (e) => { const tr = e.target.closest("[data-user]"); if (tr) subscriberCard(tr.dataset.user, draw); };
+    view.onclick = (e) => {
+      if (e.target.closest("[data-new-client]")) return newClient(plansList, draw);
+      const tr = e.target.closest("[data-user]"); if (tr) subscriberCard(tr.dataset.user, draw);
+    };
     await draw();
+  }
+
+  // ---------- New client: sign a client up by hand (supabase/admin-new-client.sql) ----------
+  // Access now (no card): their SCP account (created here: Supabase sends them a sign-in e-mail) + the plan granted by hand
+  // until a date (or no end), with the reason. Payment link: a single-use private link they open to pay by card (Stripe).
+  function newClient(plansList, refresh) {
+    const sale = plansList.filter((p) => !p.archived_at);
+    const inDays = (n) => new Date(Date.now() + n * 864e5).toISOString().slice(0, 10);
+    const m = A.modal({ title: "New client", sub: "Create the client's account and give them a plan, or send them a link to pay by card.", body: `
+      <form class="ms-form ms-client" data-f>
+        <div class="ms-grid2 ms-client-top">
+          <label>First name<input class="input" name="first" autocomplete="off"></label>
+          <label>Last name<input class="input" name="last" autocomplete="off"></label>
+          <label>E-mail<input class="input" type="email" name="email" required autocomplete="off" placeholder="client@club.com"></label>
+          <label>Club / organisation<input class="input" name="org" autocomplete="off" placeholder="Optional"></label>
+        </div>
+        <p class="ms-client-found" data-found hidden></p>
+        <div class="ms-client-ways" role="radiogroup" aria-label="How">
+          <label class="ms-client-way"><input type="radio" name="way" value="grant" checked><span><b>Access now</b><small>No card. They get the plan straight away and a sign-in e-mail. For bank transfers, invoices, partners or trials by hand.</small></span></label>
+          <label class="ms-client-way"><input type="radio" name="way" value="link"><span><b>Payment link</b><small>They pay by card (Stripe) from a link for this plan only. Nothing is created until they pay.</small></span></label>
+        </div>
+        <div class="ms-grid2">
+          <label>Plan<select class="select" name="plan" required>${sale.map((p) => `<option value="${esc(p.key)}"${p.highlighted ? " selected" : ""}>${esc(p.name)}</option>`).join("")}</select></label>
+          <label data-w="grant">Access until<input class="input" type="date" name="ends" min="${inDays(1)}" value="${inDays(365)}"><small class="muted">Empty = no end date</small></label>
+          <label data-w="link" hidden>Link valid until<input class="input" type="date" name="expires" min="${inDays(1)}" value="${inDays(14)}"></label>
+        </div>
+        <div data-w="grant" class="ms-grid2">
+          <label>Reason<input class="input" name="reason" placeholder="e.g. Paid by bank transfer · invoice 2026-031" minlength="3"></label>
+          <label>E-mail language<select class="select" name="lang"><option value="es">Spanish</option><option value="en">English</option></select></label>
+        </div>
+        <label data-w="grant" class="ms-check"><input type="checkbox" name="send" checked> Send them the sign-in e-mail now</label>
+        <label data-w="grant">Internal note<input class="input" name="note" placeholder="Optional · only the team sees it"></label>
+        <div data-out></div>
+      </form>`,
+      foot: `<button class="btn btn-ghost" type="button" data-x>Cancel</button><button class="btn btn-primary" type="button" data-go>Create client</button>` });
+    const f = $("[data-f]", m.el), go = $("[data-go]", m.el), out = $("[data-out]", m.el);
+    // rpc() says "run memberships.sql" for any missing function: these ones are in admin-new-client.sql
+    const notInstalled = (err) => (/^Run supabase\/memberships\.sql/.test(err.message) ? new Error("Run supabase/admin-new-client.sql in Supabase first.") : err);
+    const way = () => f.way.value;
+    const sync = () => {
+      $$("[data-w]", f).forEach((x) => { x.hidden = x.dataset.w !== way(); });
+      f.reason.required = way() === "grant";
+      go.textContent = way() === "grant" ? "Create client" : "Create payment link";
+    };
+    let found = null;
+    const lookup = async () => {
+      const email = f.email.value.trim();
+      found = null; $("[data-found]", f).hidden = true;
+      if (!/^\S+@\S+\.\S+$/.test(email)) return;
+      try { found = await rpc("admin_client_lookup", { p_email: email }); } catch (err) { return fail(notInstalled(err)); }
+      if (!found.exists) return;
+      const sub = found.subscription, gr = found.grants || [];
+      $("[data-found]", f).hidden = false;
+      $("[data-found]", f).innerHTML = `${icon("alert")}<span>There's already an account with this e-mail${found.name ? ` (<b>${esc(found.name)}</b>)` : ""}.
+        ${sub ? `It has a subscription: <b>${esc(sub.plan)}</b> ${badge(sub.status)}.` : gr.length ? `It already has a plan by hand: <b>${esc(gr.map((g) => g.plan).join(", "))}</b>.` : "No plan yet: the plan will be added to that account."}</span>`;
+    };
+    f.addEventListener("change", (e) => { if (e.target.name === "way") sync(); if (e.target.name === "email") lookup(); });
+    $("[data-x]", m.el).onclick = () => m.close();
+    sync();
+
+    // the account: Supabase sends the sign-in e-mail and creates the account when it doesn't exist (own client: the admin stays signed in)
+    const signInMail = async (v, create) => {
+      const cfg = window.SCP_CONFIG || {};
+      const c = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false, storageKey: "scp-new-client" } });
+      const { error } = await c.auth.signInWithOtp({ email: v.email, options: { shouldCreateUser: create, emailRedirectTo: new URL("../content-library.html", location.href).href,
+        data: create ? { first_name: v.first || null, last_name: v.last || null, lang: v.lang } : undefined } });
+      if (error) throw new Error(/rate|limit|seconds/i.test(error.message) ? "Supabase's e-mail limit was reached: wait a few minutes and try again." : error.message);
+    };
+
+    go.onclick = async () => {
+      if (!f.reportValidity()) return;
+      const v = Object.fromEntries(new FormData(f));
+      v.email = v.email.trim().toLowerCase();
+      const note = [v.org && `Organisation: ${v.org.trim()}`, v.note?.trim()].filter(Boolean).join(" · ");
+      const planName = sale.find((p) => p.key === v.plan)?.name || v.plan;
+      await busy(go, async () => {
+        try {
+          if (way() === "link") {
+            const label = [[v.first, v.last].filter(Boolean).join(" ").trim(), v.org, v.email].filter(Boolean).join(" · ");
+            const r = await rpc("admin_create_private_link", { p_plan: v.plan, p_label: label, p_expires: v.expires ? new Date(`${v.expires}T23:59:59`).toISOString() : null, p_max_uses: 1 });
+            const site = location.origin + location.pathname.replace(/admin\/[^/]*$/, "");
+            const url = `${site}pricing.html#private=${r.token}`;
+            const mail = `mailto:${encodeURIComponent(v.email)}?subject=${encodeURIComponent("Sports Content Playbook · " + planName)}&body=${encodeURIComponent(`${v.first ? `Hola ${v.first.trim()},` : "Hola,"}\n\nAquí tienes el enlace para activar tu plan ${planName} en Sports Content Playbook:\n${url}\n\nUn saludo`)}`;
+            out.innerHTML = `<div class="ms-newlink"><p><b>Payment link for ${esc(planName)}</b> — single use${v.expires ? `, valid until ${day(v.expires)}` : ""}. Copy it now: it can't be shown again (it's also in Hidden memberships).</p>
+              <input class="input" readonly value="${esc(url)}"><div class="ms-row"><button class="btn btn-sm" type="button" data-copy="${esc(url)}">Copy link</button><a class="btn btn-sm" href="${esc(mail)}">${icon("mail")}Write the e-mail</a></div></div>`;
+            out.onclick = async (e) => { const b = e.target.closest("[data-copy]"); if (b) { await navigator.clipboard.writeText(b.dataset.copy); A.toast("Link copied."); } };
+            go.hidden = true; $("[data-x]", m.el).textContent = "Close";
+            return;
+          }
+          if (found?.subscription && !(await A.confirmDialog({ title: "This client already pays a subscription", text: `Give ${planName} by hand as well? Their Stripe subscription isn't changed.`, confirm: "Give access" }))) return;
+          // 1. the account (new: created by the sign-in e-mail; existing: the e-mail only if ticked)
+          if (!found?.exists) await signInMail(v, true);
+          else if (v.send) await signInMail(v, false);
+          // 2. the plan by hand + note
+          const user = await rpc("admin_onboard_client", { p_email: v.email, p_first: v.first || null, p_last: v.last || null, p_plan: v.plan,
+            p_ends: v.ends ? new Date(`${v.ends}T23:59:59`).toISOString() : null, p_reason: v.reason.trim(), p_note: note || null });
+          m.close();
+          A.toast(`${v.email} has ${planName}${v.ends ? ` until ${day(v.ends)}` : ""}.${!found?.exists || v.send ? " Sign-in e-mail sent." : ""}`);
+          await refresh?.();
+          subscriberCard(user, refresh);
+        } catch (err) { fail(notInstalled(err)); }
+      });
+    };
   }
 
   async function subscriberCard(user, refresh) {

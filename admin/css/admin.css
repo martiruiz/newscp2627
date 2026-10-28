@@ -1924,3 +1924,17 @@ select.cs-native { display: none !important; }
   .sr-bar .sr-keys { display: none; }
   .sr-bar .btn-primary { flex: 1 1 100%; }
 }
+/* Memberships → Subscribers → New client */
+.ms-row-end { margin-left: auto; }
+.ms-client .ms-grid2 { margin-top: 0; }
+.ms-client-ways { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.ms-client-way { display: flex !important; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border-2); background: var(--panel-2); cursor: pointer; color: var(--text) !important; }
+.ms-client-way:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.ms-client-way input { margin-top: 3px; accent-color: var(--accent); }
+.ms-client-way span { display: grid; gap: 3px; }
+.ms-client-way b { font-size: 14px; }
+.ms-client-way small { font-size: 12.5px; line-height: 1.4; color: var(--muted); }
+.ms-client-found { display: flex; gap: 8px; align-items: flex-start; margin: 0; padding: 10px 12px; border-radius: 10px; background: rgba(240, 184, 74, 0.1); border: 1px solid rgba(240, 184, 74, 0.4); font-size: 13px; }
+.ms-client-found svg { width: 16px; height: 16px; flex: none; margin-top: 1px; }
+.ms-client [hidden] { display: none !important; }
+@media (max-width: 700px) { .ms-client-ways { grid-template-columns: 1fr; } }
