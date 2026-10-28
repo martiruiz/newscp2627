@@ -365,13 +365,13 @@
       MultiSelect.closeAll();
       this.pop = document.createElement("div");
       this.pop.className = "ms-pop";
-      this.pop.innerHTML = `<input class="input" type="search" placeholder="Search..." aria-label="Search values"><div class="ms-list" role="listbox" aria-multiselectable="true"></div>`;
+      this.pop.innerHTML = `<input class="input" type="search" placeholder="${this.opts.onCreate ? "Search or create…" : "Search..."}" aria-label="Search values"><div class="ms-list" role="listbox" aria-multiselectable="true"></div>`;
       this.el.append(this.pop);
       this.trigger.setAttribute("aria-expanded", "true");
       this.search = $("input", this.pop);
       this.search.addEventListener("input", () => this.renderList());
       this.search.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") { e.preventDefault(); $(".ms-opt", this.pop)?.click(); }
+        if (e.key === "Enter") { e.preventDefault(); ($("[data-create]", this.pop) || $(".ms-opt[data-id]", this.pop))?.click(); }   // create shows only when no value has that exact name
         if (e.key === "ArrowDown") { e.preventDefault(); $(".ms-opt", this.pop)?.focus(); }
       });
       this.pop.addEventListener("click", (e) => e.stopPropagation());
@@ -396,10 +396,11 @@
       const count = (o) => (this.counts ? this.counts.get(o.id) || 0 : o.count);
       let html = shown.map((o) => `<button class="ms-opt" type="button" role="option" data-id="${o.id}" aria-checked="${this.selected.has(o.id)}"><span class="box"></span><span class="name">${esc(o.name)}</span>${count(o) != null ? `<span class="count">(${num(count(o))})</span>` : ""}</button>`).join("");
       if (list.length > shown.length) html += `<p class="ms-empty">${list.length - shown.length} more — type to narrow down</p>`;
-      if (!list.length) html = `<p class="ms-empty">No results</p>`;
+      if (!list.length) html = this.opts.onCreate && !q ? "" : `<p class="ms-empty">No results</p>`;
+      // a new value: first in the list, so it's in sight even with many partial matches
       if (this.opts.onCreate && q && !this.options.some((o) => o.name.toLowerCase() === q)) {
-        html += `<button class="ms-opt ms-create" type="button" data-create>+ Create “${esc(this.search.value.trim())}”</button>`;
-      }
+        html = `<button class="ms-opt ms-create" type="button" data-create>+ Create “${esc(this.search.value.trim())}”</button>` + html.replace(/<p class="ms-empty">No results<\/p>/, "");
+      } else if (this.opts.onCreate && !q) html = `<p class="ms-empty ms-hint">Type a name to find it or create a new one</p>` + html;
       const box = $(".ms-list", this.pop);
       box.innerHTML = html;
       $$(".ms-opt[data-id]", box).forEach((b) => b.addEventListener("click", () => this.toggle(Number(b.dataset.id))));
