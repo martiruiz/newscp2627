@@ -8915,3 +8915,30 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
   .my-space-btns .pill .lf-hide-sm { font-size: 11.5px; line-height: 1.15; white-space: normal; text-align: center; }
   .my-space-btns .pill b { position: absolute; top: 6px; right: 6px; }
 }
+
+/* ===== Phones and tablets: review of buttons and menus ===== */
+/* the header (logo + menu button) gets a frosted background of the page colour, so it never sits unreadable over the content
+   while scrolling (at the top it blends with the page) */
+@media (max-width: 1180px) {
+  .site-nav:not(.is-open) { background: color-mix(in srgb, var(--bg) 82%, transparent); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+}
+.site-nav.is-tight:not(.is-open) { background: color-mix(in srgb, var(--bg) 82%, transparent); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+/* long button labels wrap instead of being cut (final call to action, hero buttons, packs) */
+@media (max-width: 600px) {
+  .cta-main { height: auto; min-height: 44px; padding-block: 10px; white-space: normal; text-align: center; line-height: 1.2; }
+  .hero-actions .btn { padding-inline: 10px; }
+}
+.pack-card .btn { padding-inline: 10px; }
+/* Content Plan, day view on phones: the chosen day takes the whole width (the folded-hours rows span 7 columns) */
+@media (max-width: 760px) {
+  .org-grid thead th:not(.m-hide):not(.org-time-h) { width: 100%; }
+  .org-nav-btn { flex: none; }
+  .org-week { gap: 4px; }
+  .org-week-label { flex: 1; min-width: 0; }
+  .org-add { width: 32px; height: 32px; }
+}
+/* touch screens: small chips and buttons get a finger-sized target */
+@media (pointer: coarse) {
+  .lf-sugg-b { height: 34px; padding: 0 13px; }
+  .lf-clear { height: 34px; }
+}

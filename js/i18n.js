@@ -42,11 +42,16 @@
       const key = norm(k);
       if (/\{\w+\}/.test(key)) {
         const names = [];
-        const src = escRe(key).replace(/\\\{(\w+)\\\}/g, (_, n) => { names.push(n); return "(.+?)"; });
-        patterns.push({ re: new RegExp(`^${src}$`), names, out: v });
+        // numbers, prices and dates must hold a digit and plan names start with a capital, so a sentence like
+        // "From one-off clips to series" or "Get it free" isn't taken for "From {price}" / "Get {plan}"
+        const src = escRe(key).replace(/\\\{(\w+)\\\}/g, (_, n) => { names.push(n);
+          return /^(n|price|amount|date)$/.test(n) ? "([^\\d]{0,6}\\d.{0,20}?)" : n === "plan" ? "([A-Z0-9].*?)" : "(.+?)"; });
+        patterns.push({ re: new RegExp(`^${src}$`), names, out: v, fixed: key.replace(/\{\w+\}/g, "").length });
       }
       exact.set(key, v);
     }
+    // the most specific pattern first: "Show {n} results" before "Show {n}"
+    patterns.sort((a, b) => b.fixed - a.fixed);
   }
   const fill = (s, vars) => (vars ? s.replace(/\{(\w+)\}/g, (m, n) => (n in vars ? vars[n] : m)) : s);
   function lookup(text) {
