@@ -376,12 +376,13 @@ details.acc .note { margin-bottom: 10px; color: var(--muted); font-size: 13px; }
   .filter-grid, .filter-extra { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 860px) {
-  .app { grid-template-columns: 1fr; }
+  /* minmax(0, …): the content column never grows to the widest table (tables scroll inside .table-wrap) */
+  .app { grid-template-columns: minmax(0, 1fr); }
   .side { position: static; height: auto; padding: 14px 12px; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 6px; }
   .side-brand { padding: 0 8px; margin-right: auto; }
   .side nav { display: flex; flex-wrap: wrap; gap: 4px; width: 100%; order: 3; }
   .side a, .side .side-btn { width: auto; height: 36px; padding: 0 10px; }
-  .side-foot { margin: 0; padding: 0; border: 0; display: flex; }
+  .side-foot { margin: 0; padding: 0; border: 0; display: flex; flex-wrap: wrap; max-width: 100%; }
   .side-user { display: none; }
   .main { padding: 20px 16px 48px; }
   .catalog { grid-template-columns: 1fr; }
@@ -1844,3 +1845,16 @@ select.cs-native { display: none !important; }
 .ch-ig-ph b { color: #fff; font-size: 11px; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
 .ch-ig-type { position: absolute; top: 6px; right: 7px; color: #fff; font-style: normal; font-size: 12px; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6); }
 .ch-ig-stage { position: absolute; left: 6px; bottom: 6px; padding: 2px 6px; border-radius: 6px; background: rgba(0, 0, 0, 0.55); color: #fff; font-size: 9px; font-style: normal; }
+
+/* phones: headers wrap, filters stack, numbers in two columns (last, so it wins over the section rules above) */
+@media (max-width: 700px) {
+  .page-head, .head-actions, .aud-h { flex-wrap: wrap; }
+  .aud-filters { grid-template-columns: minmax(0, 1fr); }
+  .aud-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ms-grid2, .ms-grid-side { grid-template-columns: minmax(0, 1fr); }
+  .head-actions { min-width: 0; max-width: 100%; }
+  .head-actions .seg { max-width: 100%; overflow-x: auto; scrollbar-width: none; }   /* view switch: scrolls sideways */
+  .head-actions .seg button { flex: none; white-space: nowrap; }
+  /* the "i" tips open as a bar at the bottom of the screen: fixed, so a hidden tip never widens the page */
+  .info-i::after, .info-i:hover::after, .info-i:focus-visible::after { position: fixed; left: 16px; right: 16px; top: auto; bottom: 16px; width: auto; max-width: none; transform: none; }
+}
