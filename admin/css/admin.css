@@ -689,7 +689,7 @@ body { background: radial-gradient(60% 40% at 50% 0%, rgba(240, 184, 74, 0.06), 
 .ms-sim { margin: 10px 0; padding: 10px 12px; border-radius: 10px; background: var(--panel-2); font-size: 13px; }
 .ms-settings .panel { margin-bottom: 14px; }
 .ms-settings .ms-check { margin-top: 8px; }
-.side-brand .side-wordmark { display: block; width: auto; height: 46px; margin-bottom: 8px; }
+.side-brand .side-wordmark { display: block; width: auto; height: 40px; }
 
 /* Leads & Demos (js/leads.js) */
 .select-sm { height: 32px; padding: 0 8px; font-size: 13px; }
@@ -1573,10 +1573,10 @@ select.cs-native { display: none !important; }
 :root[data-theme="light"] .side-ask { background: #fff; border-color: rgba(18,27,51,.12); box-shadow: 0 18px 40px -18px rgba(18,27,51,.35); }
 
 /* Sidebar: "Admin" as a small modern badge next to the wordmark (gold dot + caps in a soft gold pill) */
-.side-brand > div b { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px 5px 8px; border-radius: 999px; background: var(--accent-soft); box-shadow: inset 0 0 0 1px rgba(240, 184, 74, 0.45);
+.side-brand > b, .side-brand > div b { display: inline-flex; flex: none; align-items: center; gap: 6px; padding: 5px 10px 5px 8px; border-radius: 999px; background: var(--accent-soft); box-shadow: inset 0 0 0 1px rgba(240, 184, 74, 0.45);
   color: var(--accent-light); font: 700 10.5px/1 var(--font); letter-spacing: 0.14em; text-transform: uppercase; }
-.side-brand > div b::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px rgba(240, 184, 74, 0.9); }
-:root[data-theme="light"] .side-brand > div b { background: #0c0c0d; color: #fff; box-shadow: none; }
+.side-brand > b::before, .side-brand > div b::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px rgba(240, 184, 74, 0.9); }
+:root[data-theme="light"] .side-brand > b, :root[data-theme="light"] .side-brand > div b { background: #0c0c0d; color: #fff; box-shadow: none; }
 .ac-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
 /* Sidebar: "Home page" under "Open Content Library" — a quiet outline pill to the site's home */
