@@ -16,3 +16,8 @@ Logos: download `jobs.logo_url` to `<logos_dir>/<job id>.img`. Source: Supabase 
 `python3 tools/social/news_weekly.py <config.json> <out_dir>` -> news-01..(2N+2).png. Config: see configs/news-2026-10-26.json
 (label + items [img, brand (simple-icons slug), platform, title with <span class='g'>, para, tip, date]). `img` = one of tiktok|reels|mosseri|facebook|meta, otherwise a generic brand tile is used.
 Source: Supabase `news` (relevant, last 14 days). Only facts from the news item; no invented data.
+
+## Anàlisi de contingut d'una gran cita (teardown)
+`python3 tools/social/teardown.py <config.json> <out_dir> <prefix>` -> prefix-01..09.png (disseny "post teardown": fons blau amb quadrícula, captures amb cantonades arrodonides i marcadors numerats).
+Config: veure configs/2026-10/ballondor-teardown.json (cover amb `imgs` [1-2], point amb `img`+`handle`+`callouts` [{v,l}] màx. 3 i `body`/`tip`, point sense img, club, cta).
+Les captures van a assets/social/<data>/src/ i s'arrodoneixen automàticament; després exporta a JPG a assets/social/<data>/.
