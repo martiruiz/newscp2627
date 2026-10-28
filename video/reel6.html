@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>SCP reel 6 — overlay</title>
+<link rel="stylesheet" href="../css/fonts.css?v=1">
+<style>
+  /* Transparent overlay drawn over the talking-head clip (1080×1920), in the style of the reference reels:
+     glassy dark UI cards above the head, toggles switching on, red / green flags, % bars, word-by-word captions
+     under the chin with the key word in gold. ?bg shows a grey stand-in. */
+  :root { --gold: #f0b84a; --green: #2fe07a; --red: #ff4d4d; }
+  html, body { margin: 0; background: transparent; }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; color: #fff; font-family: Inter, system-ui, sans-serif; }
+  .abs { position: absolute; }
+  .big { font-family: "Host Grotesk", Inter, sans-serif; font-weight: 800; letter-spacing: -0.035em; line-height: .95; text-transform: uppercase; white-space: nowrap; }
+  .gold { color: var(--gold); }
+  .shadow { filter: drop-shadow(0 6px 20px rgba(0,0,0,.85)); }
+  .glass { position: absolute; border-radius: 30px; background: linear-gradient(180deg, rgba(22,28,46,.92), rgba(10,14,26,.94)); border: 1.5px solid rgba(255,255,255,.16);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 30px 70px -24px rgba(0,0,0,.9); }
+  .card { position: absolute; border-radius: 22px; overflow: hidden; background: #17213b; border: 2px solid rgba(255,255,255,.18); box-shadow: 0 24px 50px -16px rgba(0,0,0,.9); }
+  .card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .card .vw { position: absolute; left: 10px; bottom: 10px; padding: 6px 12px; border-radius: 100px; background: rgba(8,12,24,.85); font: 700 22px Inter; }
+  .card .vw b { color: var(--gold); }
+  .label { position: absolute; left: 50%; transform: translateX(-50%); padding: 14px 26px; background: #fff; color: #0b0f1c; font: 800 40px/1 "Host Grotesk"; letter-spacing: .01em; text-transform: uppercase; white-space: nowrap; border-radius: 10px; box-shadow: 0 16px 40px rgba(0,0,0,.5); }
+  .row { display: flex; align-items: center; gap: 22px; height: 112px; padding: 0 30px; border-radius: 24px; font: 700 40px "Host Grotesk"; }
+  .flag { width: 54px; height: 54px; flex: none; }
+  .tg { display: flex; align-items: center; gap: 20px; height: 62px; font: 600 34px Inter; color: #dfe5f1; }
+  .tg i { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: rgba(255,255,255,.08); flex: none; }
+  .tg i svg { width: 24px; height: 24px; fill: none; stroke: #c9d2e3; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .tg .sw { margin-left: auto; width: 92px; height: 50px; border-radius: 100px; background: rgba(255,255,255,.16); position: relative; flex: none; }
+  .tg .sw b { position: absolute; top: 5px; left: 5px; width: 40px; height: 40px; border-radius: 50%; background: #fff; box-shadow: 0 3px 8px rgba(0,0,0,.4); }
+  .sbox { display: flex; align-items: center; gap: 18px; height: 112px; padding: 0 32px; border-radius: 100px; border: 3px solid rgba(240,184,74,.8); background: rgba(12,16,28,.95); font: 600 42px Inter; box-shadow: 0 0 0 10px rgba(240,184,74,.12), 0 30px 60px -20px rgba(0,0,0,.9); white-space: nowrap; }
+  .sbox svg { width: 44px; height: 44px; fill: none; stroke: var(--gold); stroke-width: 2.6; flex: none; }
+  .ibox { position: absolute; width: 270px; height: 330px; }
+  .ibox .im { position: absolute; inset: 16px 16px 70px; border-radius: 16px; overflow: hidden; }
+  .ibox .im img { width: 100%; height: 100%; object-fit: cover; }
+  .ibox .br { position: absolute; width: 44px; height: 44px; border: 5px solid var(--gold); filter: drop-shadow(0 0 10px rgba(240,184,74,.9)); }
+  .ibox p { position: absolute; left: 0; right: 0; bottom: 6px; margin: 0; text-align: center; font: 800 38px "Host Grotesk"; color: #fff; text-shadow: 0 4px 16px rgba(0,0,0,.9); }
+  .bar { position: relative; height: 92px; border-radius: 22px; background: rgba(255,255,255,.08); overflow: hidden; }
+  .bar b { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 22px; }
+  .bar span { position: absolute; left: 28px; top: 50%; transform: translateY(-50%); font: 800 40px "Host Grotesk"; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,.6); white-space: nowrap; }
+  .bar em { position: absolute; right: 26px; top: 50%; transform: translateY(-50%); font: 800 42px "Host Grotesk"; font-style: normal; }
+  /* captions */
+  #cap { position: absolute; left: 70px; right: 70px; top: 1300px; text-align: center; z-index: 40; }
+  #cap span { display: inline-block; margin: 0 8px; font: 800 66px/1.1 "Host Grotesk", Inter; letter-spacing: -0.02em; color: #fff;
+    text-shadow: 0 0 2px #000, 0 4px 0 rgba(0,0,0,.5), 0 10px 28px rgba(0,0,0,.65); -webkit-text-stroke: 2px rgba(0,0,0,.5); paint-order: stroke fill; }
+  #cap span.hl { color: var(--gold); }
+  #cap span.pop { animation: none; }
+  .scr { position: absolute; inset: 0; overflow: hidden; background: #0b1020; }
+  .scr img { position: absolute; left: 0; top: 0; width: 1080px; display: block; }
+  .tap { position: absolute; width: 90px; height: 90px; margin: -45px 0 0 -45px; border-radius: 50%; border: 5px solid #fff; background: rgba(255,255,255,.28); box-shadow: 0 0 30px rgba(0,0,0,.5); }
+  .ring { position: absolute; border-radius: 50%; border: 7px solid var(--gold); box-shadow: 0 0 0 6px rgba(11,16,32,.85), 0 20px 50px rgba(0,0,0,.6); }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script>
+(async () => {
+  const Q = new URLSearchParams(location.search);
+  const W = 1080, H = 1920;
+  const stage = document.getElementById("stage");
+  if (Q.has("bg")) stage.style.background = "#3a4152";
+  const pick = await (await fetch("real/pick.json")).json();
+  const words = await (await fetch("me/words6.json")).json();
+  const TOTAL = words[words.length - 1][1] + 0.25;
+  await document.fonts.load('800 100px "Host Grotesk"'); await document.fonts.load('700 40px "Host Grotesk"'); await document.fonts.load('600 40px Inter'); await document.fonts.load('700 20px Inter'); await document.fonts.ready;
+
+  const anims = [], ticks = [], seen = new WeakMap();
+  const E = { out: "cubic-bezier(.16,1,.3,1)", slam: "cubic-bezier(.2,1.5,.35,1)", soft: "cubic-bezier(.4,0,.2,1)", lin: "linear" };
+  function A(el, kf, t, dur, ease = E.out) {
+    const n = seen.get(el) || 0; seen.set(el, n + 1);
+    const a = el.animate(kf, { delay: t * 1000, duration: Math.max(1, dur * 1000), easing: ease, fill: n ? "forwards" : "both" });
+    a.pause(); anims.push(a); return a;
+  }
+  const mk = (p, cls = "", html = "", css = {}) => { const e = document.createElement("div"); e.className = cls; e.innerHTML = html; Object.assign(e.style, css); p.append(e); return e; };
+  const px = (v) => v + "px";
+  const centred = "translate(-50%,-50%)";
+  const C = (x, y) => ({ left: px(x), top: px(y), transform: centred });
+  const norm = (s) => s.toLowerCase().replace(/[¿?¡!.,]/g, "");
+  const at = (key, n = 0) => { const ex = words.filter((x) => norm(x[2]) === key); return (ex.length ? ex : words.filter((x) => norm(x[2]).startsWith(key)))[n]?.[0] ?? 0; };
+  function block(a, b) { const s = mk(stage, "abs", "", { inset: 0 }); ticks.push((t) => { s.style.display = t >= a - .05 && t < b + .05 ? "" : "none"; }); return s; }
+  const popIn = (el, t, from = "translateY(50px) scale(.85)", base = "") => A(el, [{ opacity: 0, transform: `${base} ${from}` }, { opacity: 1, transform: `${base} translateY(0) scale(1)` }], t, .4, E.slam);
+  const fadeOut = (els, t, d = .18) => els.forEach((e) => A(e, [{ opacity: 1 }, { opacity: 0 }], t, d, E.soft));
+  const drift = (el, t, d, dy = -14) => A(el, [{ translate: "0 0" }, { translate: `0 ${dy}px` }], t, d, E.lin);
+  const fmtV = (n) => n >= 1e6 ? `${(n / 1e6).toFixed(1).replace(".", ",")}M` : `${Math.round(n / 1e3)}K`;
+  const IC = {
+    search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+    ball: '<circle cx="12" cy="12" r="9"/><path d="M12 3v4l4 3-1.5 5h-5L8 10l4-3M3.5 9.5 8 10M20.5 9.5 16 10M9.5 15l-2 4.5M14.5 15l2 4.5"/>',
+    trophy: '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 15v2.5c0 .6-.5 1-1 1.2C7.8 19.3 7 20.6 7 22M14 15v2.5c0 .6.5 1 1 1.2 1.2.6 2 1.9 2 3.3M18 2H6v7a6 6 0 0 0 12 0Z"/>',
+    phone: '<rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/>',
+    grid: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+    brush: '<path d="m9.06 11.9 8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02Z"/>',
+    hook: '<path d="M14 4v9a5 5 0 0 1-10 0v-2l3 2"/><circle cx="14" cy="3" r="1.5"/>',
+    user: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+    check: '<path d="M20 6 9 17l-5-5"/>',
+    x: '<path d="M18 6 6 18M6 6l12 12"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  };
+  const svg = (k, st = "") => `<svg viewBox="0 0 24 24" style="${st}">${IC[k]}</svg>`;
+  const FLAG = (c) => `<svg class="flag" viewBox="0 0 24 24"><path d="M5 22V3" stroke="#e6ebf5" stroke-width="2" stroke-linecap="round"/><path d="M5 4c4-2 7 2 14 0v9c-7 2-10-2-14 0z" fill="${c}" style="filter:drop-shadow(0 0 8px ${c})"/></svg>`;
+  const IG = `<span style="width:52px;height:52px;border-radius:14px;flex:none;background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fd5949 45%,#d6249f 60%,#285AEB 90%);display:grid;place-items:center"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:none;stroke:#fff;stroke-width:2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="#fff"/></svg></span>`;
+  function card(parent, p, x, y, w, h, views) {
+    const c = mk(parent, "card", `<img src="real/${p.f}">`, { left: px(x), top: px(y), width: px(w), height: px(h) });
+    if (views && p.v) mk(c, "vw", `<b>${fmtV(p.v)}</b> views`);
+    return c;
+  }
+  function cardsRow(parent, list, y, t0, h = 340, views = false) {
+    const w = 290, gap = 26, x0 = (W - (w * 3 + gap * 2)) / 2;
+    return list.map((p, k) => { const c = card(parent, p, x0 + k * (w + gap), y, w, h, views); popIn(c, t0 + k * .07); drift(c, t0 + .4, 2.2, k % 2 ? -12 : 10); return c; });
+  }
+
+  const K = 1080 / 800;
+  const SCREENS = [[0, 5.02], [7.6, 15.2], [19.74, 21.9]];
+  const onScreen = (t) => SCREENS.some(([a, b]) => t >= a && t < b);
+  const HOLE = "path(evenodd, 'M0 0H1080V1920H0Z M710 1340 A170 170 0 1 0 370 1340 A170 170 0 1 0 710 1340 Z')";
+  // a platform screen: full frame with a round hole where the face (base video) shows through, a gold ring around it
+  function screen(a, b) {
+    const s = block(a, b);
+    const sc = mk(s, "scr", "", { clipPath: HOLE });
+    A(sc, [{ transform: "translateY(100%)" }, { transform: "translateY(0)" }], a - .02, .28, E.out);
+    const ring = mk(s, "ring", "", { left: "363px", top: "1163px", width: "354px", height: "354px", boxSizing: "border-box" });
+    A(ring, [{ opacity: 0, transform: "scale(.6)" }, { opacity: 1, transform: "scale(1)" }], a + .1, .3, E.slam);
+    return { s, sc };
+  }
+  // one screenshot shown from t0 to t1 inside a screen; optional scroll (px in screenshot units) and push-in
+  function shot(sc, file, t0, t1, opt = {}) {
+    const im = mk(sc, "abs", `<img src="reel6/${file}">`, { inset: 0 });
+    ticks.push((t) => { im.style.display = t >= t0 && t < t1 ? "" : "none"; });
+    const img = im.querySelector("img");
+    if (opt.scroll) A(img, [{ transform: "translateY(0)" }, { transform: `translateY(${-opt.scroll * K}px)` }], opt.s0 ?? t0, (opt.s1 ?? t1) - (opt.s0 ?? t0), opt.ease || "cubic-bezier(.45,0,.2,1)");
+    if (opt.push) { im.style.transformOrigin = opt.origin || "540px 700px"; A(im, [{ transform: "scale(1)" }, { transform: `scale(${opt.push})` }], t0, t1 - t0, E.soft); }
+    return im;
+  }
+  function tap(sc, x, y, t) {
+    const d = mk(sc, "tap", "", { left: px(x * K), top: px(y * K), zIndex: 5 });
+    A(d, [{ opacity: 0, transform: "scale(1.6)" }, { opacity: 1, transform: "scale(1)", offset: .45 }, { opacity: 0, transform: "scale(.8)" }], t, .45, E.soft);
+  }
+  function label(s, txt, t, top = 270) { const l = mk(s, "label", txt, { top: px(top), zIndex: 6 }); popIn(l, t, "translateY(-30px) scale(.9)", "translateX(-50%)"); return l; }
+
+  // ===== 0–5 the library, infinite scroll, with the hook title =====
+  {
+    const { s, sc } = screen(0, 5.02);
+    shot(sc, "lib-strip.jpg", 0, 5.02, { scroll: 3900, s0: .35, s1: 4.9, ease: "cubic-bezier(.5,0,.3,1)" });
+    const band = mk(s, "abs", "", { left: 0, right: 0, top: 0, height: "640px", background: "linear-gradient(180deg, rgba(6,10,20,.92) 0%, rgba(6,10,20,.75) 60%, rgba(6,10,20,0) 100%)", zIndex: 4 });
+    const t1 = mk(s, "big abs shadow", "DEJA DE PERDER HORAS", { ...C(W / 2, 340), fontSize: "84px", zIndex: 5 });
+    const t2 = mk(s, "big abs gold shadow", "BUSCANDO IDEAS", { ...C(W / 2, 440), fontSize: "100px", zIndex: 5 });
+    A(t1, [{ opacity: 0, transform: `${centred} scale(1.35)` }, { opacity: 1, transform: `${centred} scale(1)` }], 0, .3, E.out);
+    A(t2, [{ opacity: 0, transform: `${centred} scale(1.35)` }, { opacity: 1, transform: `${centred} scale(1)` }], at("buscando") - .1, .3, E.out);
+    const l = mk(s, "label", "Biblioteca de contenido", { top: "520px", zIndex: 5 });
+    popIn(l, at("tenemos") - .1, "translateY(-20px) scale(.9)", "translateX(-50%)");
+  }
+
+  // ===== 5–7.6 face: half a million contents that already work =====
+  {
+    const a = 5.02, b = 7.6;
+    const s = block(a, b);
+    const num = mk(s, "big abs gold shadow", "+0", { ...C(W / 2, 560), fontSize: "170px" });
+    const t0 = a + .02;
+    A(num, [{ opacity: 0, transform: `${centred} scale(.6)` }, { opacity: 1, transform: `${centred} scale(1)` }], t0, .35, E.slam);
+    ticks.push((t) => { const k = Math.min(1, Math.max(0, (t - t0) / .8)); num.textContent = "+" + (Math.round((1 - Math.pow(1 - k, 3)) * 500) * 1000).toLocaleString("es-ES"); });
+    const sub = mk(s, "big abs shadow", "CONTENIDOS", { ...C(W / 2, 680), fontSize: "60px" });
+    A(sub, [{ opacity: 0 }, { opacity: 1 }], at("contenidos", 1) - .1, .25, E.soft);
+    const ok = mk(s, "glass row", `${FLAG("#2fe07a")}<span>Que ya están funcionando</span>`, { position: "absolute", left: "50%", top: "770px", transform: "translateX(-50%)", whiteSpace: "nowrap", boxShadow: "0 0 0 2px rgba(47,224,122,.6), 0 0 40px -6px rgba(47,224,122,.6)" });
+    popIn(ok, at("están") - .15, "translateY(30px) scale(.9)", "translateX(-50%)");
+    const cs = cardsRow(s, [pick.views[0], pick.football[4], pick.basket[0]], 250, a + .1, 200, false);
+    cs.forEach((c) => { c.style.height = "200px"; });
+    fadeOut([num, sub, ok, ...cs], b - .12);
+  }
+
+  // ===== 7.6–15.2 the platform: PSG search, my AI analyses, replicable ideas =====
+  {
+    const a = 7.6, b = 15.2;
+    const { s, sc } = screen(a, b);
+    // search PSG
+    const tS = a, tType = a + .25, tDrop = at("competiciones") + .45, tPick = tDrop + .8, tRes = tPick + .9, tAI = at("ideas", 1) - .1;
+    shot(sc, "search-0.jpg", tS, tDrop);
+    const inp = mk(sc, "abs", `<span class="q"></span><span class="c" style="color:#f0b84a">|</span>`, { left: px(58 * K), top: px(211 * K), width: px(700 * K), height: px(34 * K), background: "#18213a", font: `400 ${15 * K}px Inter`, color: "#fff", display: "flex", alignItems: "center", zIndex: 3 });
+    ticks.push((t) => { inp.style.display = t >= tType && t < tDrop ? "flex" : "none"; const k = Math.max(0, Math.min(1, (t - tType) / .6)); inp.querySelector(".q").textContent = "PSG".slice(0, Math.round(k * 3)); inp.querySelector(".c").style.opacity = Math.floor(t * 2.6) % 2 ? 0 : 1; });
+    shot(sc, "search-psg.jpg", tDrop, tPick);
+    tap(sc, 120, 280, tPick - .25);
+    shot(sc, "search-picked.jpg", tPick, tRes);
+    tap(sc, 400, 1386, tRes - .3);
+    shot(sc, "psg-results.jpg", tRes, tAI, { push: 1.06, origin: "540px 600px" });
+    const l1 = label(s, "Busca cualquier club", tS + .1, 1720);
+    fadeOut([l1], tAI - .1, .1);
+    // my AI analyses
+    const tMine = tAI + .35, tOpen = at("adaptar") - .35, tRep = at("y", 1) - .05;
+    shot(sc, "lib-0000.jpg", tAI, tMine);
+    tap(sc, 216, 189, tAI + .05);
+    shot(sc, "ai-mine.jpg", tMine, tOpen);
+    tap(sc, 592, 1110, tOpen - .25);
+    shot(sc, "ai-strip.jpg", tOpen, tRep, { scroll: 1300, s0: tOpen + .15, s1: tRep });
+    const l2 = label(s, "Mis análisis IA", tAI, 1720);
+    fadeOut([l2], tRep - .1, .1);
+    // replicable ideas
+    const tOn = tRep + .3;
+    shot(sc, "lib-0000.jpg", tRep, tOn);
+    tap(sc, 94, 296, tRep + .02);
+    shot(sc, "replicables.jpg", tOn, b, { push: 1.05, origin: "540px 900px" });
+    label(s, "Ideas replicables", tRep, 1720);
+  }
+
+  // ===== 15.2–17.9 face: the best creators of every sport =====
+  {
+    const a = 15.2, b = at("si") - .05;
+    const s = block(a, b);
+    const l = label(s, "Los mejores creadores", a + .02);
+    const list = [[pick.views[0], "⚽ Fútbol"], [pick.basket[0], "🏀 Baloncesto"], [pick.views[4], "🏀 NBA"]];
+    const w = 290, gap = 26, x0 = (W - (w * 3 + gap * 2)) / 2;
+    const els = list.map(([p, sp], k) => {
+      const c = card(s, p, x0 + k * (w + gap), 350, w, 380, true);
+      mk(c, "", sp, { position: "absolute", top: "10px", left: "10px", padding: "6px 14px", borderRadius: "100px", background: "#f0b84a", color: "#1a1206", font: "800 22px Inter" });
+      popIn(c, at("creadores", 1) - .2 + k * .12); drift(c, at("creadores", 1) + .3, 2, k % 2 ? -12 : 10);
+      return c;
+    });
+    fadeOut([l, ...els], b - .12);
+  }
+
+  // ===== 17.9–19.7 face: content that works =====
+  {
+    const a = at("si") - .05, b = 19.74;
+    const s = block(a, b);
+    const r = mk(s, "glass row", `${FLAG("#2fe07a")}<span>Contenido que funciona</span>${svg("check", "width:46px;height:46px;margin-left:24px;fill:none;stroke:#2fe07a;stroke-width:3")}`, { position: "absolute", left: "50%", top: "520px", transform: "translateX(-50%)", whiteSpace: "nowrap", boxShadow: "0 0 0 2px rgba(47,224,122,.6), 0 0 40px -6px rgba(47,224,122,.6)" });
+    popIn(r, at("funcione") - .2, "translateY(30px) scale(.9)", "translateX(-50%)");
+    fadeOut([r], b - .1);
+  }
+
+  // ===== 19.7–21.9 the content plan =====
+  {
+    const { s, sc } = screen(19.74, 21.9);
+    shot(sc, "plan-month.jpg", 19.74, 21.9, { push: 1.12, origin: "540px 1250px" });
+    const l = label(s, "Plan de contenido", 19.8, 1720);
+    const r = mk(s, "abs", `${svg("clock", "width:48px;height:48px;fill:none;stroke:#1a1206;stroke-width:2.6")}<span>Mucho más rápido</span>`, { ...C(W / 2, 330), display: "flex", alignItems: "center", gap: "14px", padding: "20px 36px", borderRadius: "100px", background: "linear-gradient(135deg,#f7d27a,#f0b84a 45%,#d99a2b)", color: "#1a1206", font: "800 52px 'Host Grotesk'", boxShadow: "0 20px 60px -10px rgba(0,0,0,.6)", whiteSpace: "nowrap", zIndex: 6 });
+    A(r, [{ opacity: 0, transform: `${centred} scale(1.6) rotate(-6deg)` }, { opacity: 1, transform: `${centred} scale(1) rotate(-2deg)` }], at("mucho") - .05, .3, E.slam);
+  }
+
+  // ===== 21.9–24.4 face: access to the database =====
+  {
+    const a = 21.9, b = at("comenta") - .05;
+    const s = block(a, b);
+    const c = mk(s, "glass", `<img src="../assets/logo-scp.png" style="height:84px;display:block;margin:0 auto 22px">
+      <div style="display:flex;align-items:center;justify-content:center;gap:16px;font:800 46px 'Host Grotesk'"><span class="lk" style="font-size:52px">🔒</span><span>Acceso a la base de datos</span></div>`, { left: "90px", right: "90px", top: "330px", padding: "40px 30px", boxSizing: "border-box" });
+    popIn(c, a + .05);
+    const lk = c.querySelector(".lk"); const tl = at("acceso") - .05;
+    ticks.push((t) => { lk.textContent = t >= tl ? "🔓" : "🔒"; });
+    A(c, [{ boxShadow: "inset 0 1px 0 rgba(255,255,255,.18), 0 30px 70px -24px rgba(0,0,0,.9)" }, { boxShadow: "inset 0 1px 0 rgba(255,255,255,.18), 0 0 0 3px #f0b84a, 0 0 60px -6px rgba(240,184,74,.7)" }], tl, .3, E.soft);
+    fadeOut([c], b - .12);
+  }
+
+  // ===== 24.4–end CTA: comment REEL (said twice) =====
+  {
+    const a = at("comenta") - .05;
+    const s = block(a, TOTAL);
+    const lab = mk(s, "label", "Comenta REEL", { top: "270px" });
+    popIn(lab, a, "translateY(-30px) scale(.9)", "translateX(-50%)");
+    const c1 = mk(s, "glass", "", { left: "90px", right: "90px", top: "370px", padding: "30px 34px", boxSizing: "border-box" });
+    mk(c1, "", `<div style="display:flex;align-items:center;gap:18px"><span style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#f58529,#dd2a7b,#8134af);flex:none"></span><div><b style="font:700 30px Inter">tu.cuenta</b><div style="font:500 24px Inter;color:#8b98ae">Añade un comentario…</div></div></div>`);
+    const inp = mk(c1, "", `<span class="q" style="font:800 60px 'Host Grotesk';color:var(--gold);letter-spacing:.06em"></span><span class="c" style="font:400 56px Inter">|</span><span style="margin-left:auto;width:70px;height:70px;border-radius:50%;background:var(--gold);display:grid;place-items:center;font:700 32px Inter;color:#1a1206">➤</span>`,
+      { display: "flex", alignItems: "center", gap: "8px", marginTop: "26px", height: "108px", padding: "0 16px 0 28px", borderRadius: "100px", border: "2px solid rgba(255,255,255,.18)", background: "rgba(255,255,255,.05)" });
+    const qEl = inp.querySelector(".q"), cEl = inp.querySelector(".c"), tq = at("ril") - .05;
+    ticks.push((t) => { const k = Math.max(0, Math.min(1, (t - tq) / .3)); qEl.textContent = "REEL".slice(0, Math.round(k * 4)); cEl.style.opacity = Math.floor(t * 2.6) % 2 ? 0 : 1; });
+    popIn(c1, a + .08);
+    A(inp, [{ transform: "scale(1)" }, { transform: "scale(1.06)" }, { transform: "scale(1)" }], at("ril", 1) - .05, .35, E.soft);
+    const dm = mk(s, "glass", `📩 <span>Te mando el link</span>`, { left: "50%", top: "690px", transform: "translateX(-50%)", padding: "22px 34px", font: "700 38px Inter", whiteSpace: "nowrap", borderRadius: "100px" });
+    popIn(dm, at("mando") - .1, "translateY(30px) scale(.9)", "translateX(-50%)");
+    const dn = mk(s, "big abs shadow", "👇 AQUÍ ABAJO", { ...C(W / 2, 860), fontSize: "64px" });
+    A(dn, [{ opacity: 0, transform: `${centred} translateY(-20px)` }, { opacity: 1, transform: `${centred} translateY(0)` }], at("aquí") - .1, .25, E.out);
+  }
+
+  // soft dark shade over the top on the face shots (sky and trees) so the graphics read
+  const shade = mk(stage, "abs", "", { left: 0, right: 0, top: 0, height: "980px", background: "linear-gradient(180deg, rgba(6,10,20,.62) 0%, rgba(6,10,20,.42) 55%, rgba(6,10,20,0) 100%)" });
+  stage.prepend(shade);
+  ticks.push((t) => { shade.style.display = onScreen(t) ? "none" : ""; });
+
+  // ===== captions: 1–3 words, key words in gold =====
+  const cap = mk(stage, "", "", {}); cap.id = "cap";
+  const fix = (w) => w.replace(/^(real|ril)$/i, "REEL");
+  const chunks = []; let g = [];
+  words.forEach((w, i) => { g.push(w); const nx = words[i + 1]; if (g.length >= 3 || /[.?,!]$/.test(w[2]) || (nx && nx[0] - w[1] > .2)) { chunks.push(g); g = []; } });
+  if (g.length) chunks.push(g);
+  // never end a chunk on an article / preposition: move it to the next chunk
+  for (let i = 0; i < chunks.length - 1; i++) { const l = chunks[i][chunks[i].length - 1]; if (chunks[i].length > 1 && /^(de|la|el|los|las|un|una|y|o|por|para|con|en|que|lo)$/i.test(l[2])) chunks[i + 1].unshift(chunks[i].pop()); }
+  const HL = /^(mejores|creadores|inspiración|funciona|base|datos|millón|medio|clubes|competiciones|deporte|competición|plataforma|formatos|estilo|hook|creador|fútbol|instagram|baloncesto|plan|menos|más|creando|real|ril|horas|ideas|clubes|hooks|diseños|analizar|adaptar|rápido|acceso)/i;
+  ticks.push((t) => {
+    const i = chunks.findIndex((x, k) => t >= x[0][0] - .05 && t < (chunks[k + 1] ? chunks[k + 1][0][0] - .05 : x[x.length - 1][1] + .6));
+    if (i < 0) { cap.innerHTML = ""; return; }
+    cap.style.top = onScreen(t) ? "1050px" : "1300px";
+    const grp = chunks[i];
+    cap.innerHTML = grp.filter((w) => t >= w[0] - .06).map((w) => `<span class="${HL.test(norm(w[2])) ? "hl" : ""}" style="transform:scale(${t - w[0] < .1 ? .85 + (t - w[0] + .06) * .9 : 1})">${fix(w[2])}</span>`).join(" ");
+  });
+
+  await Promise.all([...document.images].map((im) => im.complete ? 0 : new Promise((r) => { im.onload = im.onerror = r; })));
+  window.VIDEO = { W, H, TOTAL };
+  window.renderAt = (t) => { for (const f of ticks) f(t); for (const an of anims) an.currentTime = t * 1000; };
+  window.renderAt(Number(Q.get("t") || 0));
+  window.READY = true;
+})();
+</script>
+</body>
+</html>
