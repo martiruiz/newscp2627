@@ -3,9 +3,9 @@ name: Library logos (missing)
 # On demand ("Run workflow" in GitHub → Actions): fills the logos the Content Library filters are missing
 # (idea_catalog values of club / competition / sponsor with no logo_url). Only values WITHOUT a logo are touched,
 # in this order (the first that finds one wins):
-#   1. profile-logos.mjs   the club's / competition's / brand's own Instagram profile (scraped_profiles)
-#   2. ig-avatars.mjs      the account that posts most of the value's Instagram posts (--only-missing)
-#   3. football-logos.mjs  football-logos.cc (agreed 2026-10-20)
+#   1. football-logos.mjs  football-logos.cc (agreed 2026-10-20)
+#   2. profile-logos.mjs   the club's / competition's / brand's own Instagram profile (scraped_profiles)
+#   3. ig-avatars.mjs      the account that posts most of the value's Instagram posts (--only-missing)
 #   4. logos.mjs           Wikimedia Commons
 # "apply" off = dry run: lists what is missing and what scripts 1-3 would pick (Wikimedia only runs with apply), writes nothing.
 on:
@@ -49,27 +49,27 @@ jobs:
               console.log(`${cat}: ${count} without a logo`);
               for (const r of data || []) console.log(`   - ${r.name}`);
             }' | tee out.txt
-          echo "::notice title=Missing logos::$(sed ':a;N;$!ba;s/\n/%0A/g' out.txt | cut -c1-60000)"
-      - name: 1. Instagram profile (scraped profiles)
-        run: |
-          node library/profile-logos.mjs $DRY | tee out.txt
-          echo "::notice::$(grep -E '✓|Done|stored|found|without' out.txt | sed ':a;N;$!ba;s/\n/%0A/g' | cut -c1-60000)"
-        continue-on-error: true
-      - name: 2. Instagram account that posts them
-        run: |
-          node library/ig-avatars.mjs --only-missing $DRY | tee out.txt
-          echo "::notice::$(grep -E '✓|Done|stored|found|without' out.txt | sed ':a;N;$!ba;s/\n/%0A/g' | cut -c1-60000)"
-        continue-on-error: true
-      - name: 3. football-logos.cc
+          split -C 3900 out.txt part_; for f in part_*; do echo "::notice title=Missing logos::$(sed ':a;N;$!ba;s/\n/%0A/g' $f)"; done; rm -f part_*
+      - name: 1. football-logos.cc
         run: |
           node library/football-logos.mjs $DRY | tee out.txt
-          echo "::notice::$(grep -E '✓|Done|stored|found|without' out.txt | sed ':a;N;$!ba;s/\n/%0A/g' | cut -c1-60000)"
+          grep -E '✓|Done|stored|found|without' out.txt > rep.txt || true; split -C 3900 rep.txt part_; for f in part_*; do echo "::notice::$(sed ':a;N;$!ba;s/\n/%0A/g' $f)"; done; rm -f part_*
+        continue-on-error: true
+      - name: 2. Instagram profile (scraped profiles)
+        run: |
+          node library/profile-logos.mjs $DRY | tee out.txt
+          grep -E '✓|Done|stored|found|without' out.txt > rep.txt || true; split -C 3900 rep.txt part_; for f in part_*; do echo "::notice::$(sed ':a;N;$!ba;s/\n/%0A/g' $f)"; done; rm -f part_*
+        continue-on-error: true
+      - name: 3. Instagram account that posts them
+        run: |
+          node library/ig-avatars.mjs --only-missing $DRY | tee out.txt
+          grep -E '✓|Done|stored|found|without' out.txt > rep.txt || true; split -C 3900 rep.txt part_; for f in part_*; do echo "::notice::$(sed ':a;N;$!ba;s/\n/%0A/g' $f)"; done; rm -f part_*
         continue-on-error: true
       - name: 4. Wikimedia Commons
         if: ${{ inputs.apply }}   # its dry run would list every value, not just the missing ones
         run: |
           for c in club competition sponsor; do node library/logos.mjs --category $c $DRY; done | tee out.txt
-          echo "::notice::$(grep -E '✓|stored|without' out.txt | sed ':a;N;$!ba;s/\n/%0A/g' | cut -c1-60000)"
+          grep -E '✓|stored|without' out.txt > rep.txt || true; split -C 3900 rep.txt part_; for f in part_*; do echo "::notice::$(sed ':a;N;$!ba;s/\n/%0A/g' $f)"; done; rm -f part_*
         continue-on-error: true
       - name: Missing logos (after)
         if: ${{ inputs.apply }}
@@ -82,4 +82,4 @@ jobs:
               console.log(`${cat}: ${count} without a logo`);
               for (const r of data || []) console.log(`   - ${r.name}`);
             }' | tee out.txt
-          echo "::notice title=Missing logos::$(sed ':a;N;$!ba;s/\n/%0A/g' out.txt | cut -c1-60000)"
+          split -C 3900 out.txt part_; for f in part_*; do echo "::notice title=Missing logos::$(sed ':a;N;$!ba;s/\n/%0A/g' $f)"; done; rm -f part_*
