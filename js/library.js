@@ -1914,7 +1914,7 @@
       if (!p) continue;
       p.likes = d.likes; p.comments = d.comments; p.account = d.account;
       if (d.likes) { const box = $(`[data-stats="${CSS.escape(String(d.id))}"]`); if (box) box.innerHTML = footStats(p); }
-      // a creator's post: its username instead of "Content Creators"
+      // a creator's or media outlet's post: its username instead of "Content Creators" / "Media"
       const foot = d.account && $(`.lib-foot[data-cc="${CSS.escape(String(d.id))}"]`);
       if (foot) { foot.querySelector(".lib-foot-who b").textContent = `@${d.account}`; foot.querySelector(".lib-crest").outerHTML = footCrest(null, d.account); }
     }
@@ -1938,8 +1938,8 @@
     let who = first(p, "club") || first(p, "competition") || first(p, "entity");
     const whoTag = (p.tags?.club || p.tags?.competition || p.tags?.entity || [])[0];
     let crest = whoTag ? catalog.byId.get(Number(whoTag.id)) : null;
-    // a creator's post shows its username, not "Content Creators" (the account comes with the likes, see loadLikes)
-    const isCC = /^content creators$/i.test(who || "");
+    // a creator's or a media outlet's post shows its username, not "Content Creators" / "Media" (the account comes with the likes, see loadLikes)
+    const isCC = /^(content creators|media)$/i.test(who || "");
     if (isCC && p.account) { who = `@${p.account}`; crest = null; }
     const owner = window.SCP_LIB_SCOPE?.who?.(p.id);   // My Club: the player's / sponsor's name
     if (owner) { who = owner; crest = null; }
