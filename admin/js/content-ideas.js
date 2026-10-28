@@ -254,7 +254,8 @@
     // its preview (bigger cover, full caption, dates, the original link)
     const posts = new Map();
     const when = (d) => (d ? new Date(d).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) : "");
-    const acts = `<span class="brk-acts"><button class="btn btn-sm" type="button" data-keep>${icon("undo")}Recover</button><button class="btn btn-danger btn-sm" type="button" data-del aria-label="Delete">${icon("trash")}</button></span>`;
+    const IMG = `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></svg>`;
+    const acts = `<span class="brk-acts"><button class="btn btn-sm" type="button" data-cover title="Add its cover">${IMG}Cover</button><button class="btn btn-sm" type="button" data-keep>${icon("undo")}Recover</button><button class="btn btn-danger btn-sm" type="button" data-del aria-label="Delete">${icon("trash")}</button></span>`;
     $("[data-review-broken]", box).addEventListener("click", async () => {
       const list = $("[data-broken-list]", box);
       if (!list.hidden) { list.hidden = true; return; }
@@ -268,7 +269,7 @@
     });
     const preview = (row) => {
       const open = row.nextElementSibling?.matches(".brk-pv");
-      $$(".brk-pv", box).forEach((el) => { el.previousElementSibling?.setAttribute("aria-expanded", "false"); el.remove(); });
+      $$(".brk-pv, .brk-cv", box).forEach((el) => { el.previousElementSibling?.setAttribute("aria-expanded", "false"); el.remove(); });
       if (open) return;
       const p = posts.get(row.dataset.id); if (!p) return;
       row.setAttribute("aria-expanded", "true");
@@ -280,7 +281,82 @@
             <a href="${esc(p.url)}" target="_blank" rel="noopener">${icon("external")}Open the original</a>
             <div class="brk-pv-acts"><button class="btn btn-sm" type="button" data-keep>${icon("undo")}Recover: show it in the library again</button><button class="btn btn-danger btn-sm" type="button" data-del>${icon("trash")}Delete</button></div></div></div>`);
     };
+    // ---------- Cover of a post: look for it again on the platform (Edge Function "covers"), or upload / paste / drop an image
+    // (e.g. a screenshot of the post) → Storage covers/{id/1000}/{id}-m.jpg (supabase/cover-upload.sql) ----------
+    const coverPanel = (row) => {
+      const open = row.nextElementSibling?.matches(".brk-cv");
+      $$(".brk-cv, .brk-pv", box).forEach((el) => { el.previousElementSibling?.setAttribute("aria-expanded", "false"); el.remove(); });
+      if (open) return;
+      const p = posts.get(row.dataset.id); if (!p) return;
+      row.insertAdjacentHTML("afterend", `<div class="brk-cv" data-id="${p.id}" tabindex="-1">
+          <button class="btn btn-sm" type="button" data-cv-find>${icon("search")}Look for it on ${esc(p.account_platform === "facebook" ? "Facebook" : "Instagram")}</button>
+          <label class="brk-cv-drop" data-cv-drop>${IMG}<span><b>Upload an image</b><small>Click, drop it here or paste it (Ctrl+V). A screenshot of the post works.</small></span>
+            <input type="file" accept="image/*" hidden data-cv-file></label>
+          <a href="${esc(p.url)}" target="_blank" rel="noopener">${icon("external")}Open the original</a>
+          <p class="brk-cv-msg" data-cv-msg></p></div>`);
+      $(".brk-cv", box).focus();
+    };
+    const setRowCover = (id, url) => {
+      const p = posts.get(String(id)); if (p) p.cover_url = url;
+      $$(`.brk-row[data-id="${id}"] .brk-th`, box).forEach((th) => { th.style.backgroundImage = `url('${url}')`; });
+    };
+    const cvMsg = (id, text, bad) => { const el = $(`.brk-cv[data-id="${id}"] [data-cv-msg]`, box); if (el) { el.textContent = text; el.classList.toggle("is-bad", !!bad); } };
+    // an image file → JPEG (max 1080 px wide) → Storage → the post's cover and shape
+    async function uploadCover(id, file) {
+      if (!file || !/^image\//.test(file.type)) return cvMsg(id, "That isn't an image.", true);
+      cvMsg(id, "Uploading…");
+      try {
+        const img = await new Promise((ok, ko) => { const i = new Image(); i.onload = () => ok(i); i.onerror = ko; i.src = URL.createObjectURL(file); });
+        const k = Math.min(1, 1080 / img.naturalWidth), cv = document.createElement("canvas");
+        cv.width = Math.round(img.naturalWidth * k); cv.height = Math.round(img.naturalHeight * k);
+        cv.getContext("2d").drawImage(img, 0, 0, cv.width, cv.height);
+        URL.revokeObjectURL(img.src);
+        const blob = await new Promise((ok) => cv.toBlob(ok, "image/jpeg", 0.85));
+        const path = `${Math.floor(id / 1000)}/${id}-m.jpg`;
+        const up = await A.db.storage.from("covers").upload(path, blob, { contentType: "image/jpeg", upsert: true, cacheControl: "31536000" });
+        if (up.error) throw new Error(/policy|row-level|not allowed|unauthorized/i.test(up.error.message) ? "Run supabase/cover-upload.sql in Supabase first (it lets admins upload covers)." : up.error.message);
+        const url = `${A.db.storage.from("covers").getPublicUrl(path).data.publicUrl}?v=${Date.now().toString(36)}`;
+        const { error } = await A.db.from("content_ideas").update({ cover_url: url, cover_at: new Date().toISOString() }).eq("id", id);
+        if (error) throw error;
+        await A.db.rpc("apply_media_shape", { p_rows: [{ id, width: cv.width, height: cv.height }] }).catch(() => {});
+        setRowCover(id, url);
+        cvMsg(id, "Cover added. Press Recover to show the post in the library again.");
+      } catch (err) { cvMsg(id, A.errMsg(err), true); }
+    }
+    // the platform again (same function as the import): found → cover saved; gone → stays hidden
+    async function findCover(id, btn) {
+      btn.disabled = true; cvMsg(id, "Looking for it…");
+      try {
+        const cfg = window.SCP_CONFIG || {};
+        const session = (await A.db.auth.getSession()).data.session;
+        const r = await fetch(`${cfg.supabaseUrl}/functions/v1/covers`, { method: "POST", headers: { "Content-Type": "application/json", apikey: cfg.supabaseAnonKey, Authorization: `Bearer ${session?.access_token}` }, body: JSON.stringify({ ids: [id] }) }).catch(() => null);
+        const d = r ? await r.json().catch(() => ({})) : {};
+        if (!r?.ok) throw new Error(d.error || "The covers function didn't answer.");
+        if (d.done) {
+          const { data } = await A.db.from("content_ideas").select("cover_url").eq("id", id).single();
+          if (data?.cover_url) setRowCover(id, data.cover_url);
+          cvMsg(id, "Found it: the post exists and its cover is saved. Press Recover to show it in the library again.");
+        } else cvMsg(id, d.removed ? "The platform says the post is gone or private. Upload an image if you know it's there." : "No image found on the platform (it may be blocking us). Upload an image instead.", true);
+      } catch (err) { cvMsg(id, A.errMsg(err), true); }
+      btn.disabled = false;
+    }
+    box.addEventListener("change", (e) => { if (e.target.matches("[data-cv-file]")) { const id = Number(e.target.closest(".brk-cv").dataset.id); uploadCover(id, e.target.files[0]); e.target.value = ""; } });
+    box.addEventListener("dragover", (e) => { const d = e.target.closest?.("[data-cv-drop]"); if (d) { e.preventDefault(); d.classList.add("is-over"); } });
+    box.addEventListener("dragleave", (e) => { e.target.closest?.("[data-cv-drop]")?.classList.remove("is-over"); });
+    box.addEventListener("drop", (e) => { const d = e.target.closest?.("[data-cv-drop]"); if (!d) return; e.preventDefault(); d.classList.remove("is-over"); uploadCover(Number(d.closest(".brk-cv").dataset.id), e.dataTransfer.files[0]); });
+    // paste anywhere on the page while a cover panel is open (one listener for the page, whatever the redraws)
+    if (!window.__brkPaste) window.__brkPaste = document.addEventListener("paste", (e) => window.__brkPasteFn?.(e)) || true;
+    window.__brkPasteFn = (e) => {
+      const cvBox = $(".brk-cv", box); if (!cvBox) return;
+      const f = [...(e.clipboardData?.files || [])].find((x) => /^image\//.test(x.type)); if (!f) return;
+      e.preventDefault(); uploadCover(Number(cvBox.dataset.id), f);
+    };
     $("[data-broken-list]", box).addEventListener("click", async (e) => {
+      const find = e.target.closest("[data-cv-find]");
+      if (find) return findCover(Number(find.closest(".brk-cv").dataset.id), find);
+      if (e.target.closest(".brk-cv")) return;
+      const cvb = e.target.closest("[data-cover]");
+      if (cvb) return coverPanel(cvb.closest(".brk-row") || cvb.closest(".brk-pv")?.previousElementSibling);
       const b = e.target.closest("[data-keep],[data-del]");
       if (!b) { const row = e.target.closest(".brk-row"); if (row && !e.target.closest("a")) preview(row); return; }
       const holder = b.closest("[data-id]"), id = holder.dataset.id;
