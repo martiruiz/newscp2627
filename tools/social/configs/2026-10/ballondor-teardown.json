@@ -70,9 +70,24 @@
     },
     {
       "type": "point",
-      "kicker": "Yamal · TikTok after the gala",
-      "title": "No statement. <span class='g'>83.8M views.</span>",
-      "body": "After finishing third, Yamal posted a dance video with his partner, captioned with a single pink heart. 14.4M likes, 170.4k comments, 443.6k shares.",
+      "handle": "@lamine.yamal",
+      "kicker": "TikTok after the gala",
+      "img": "assets/social/2026-10-27/src/yamal-tiktok.png",
+      "callouts": [
+        {
+          "v": "83.8M",
+          "l": "views"
+        },
+        {
+          "v": "14.4M",
+          "l": "likes"
+        },
+        {
+          "v": "170.4k",
+          "l": "comments"
+        }
+      ],
+      "body": "No statement after finishing third: a short video with his partner, captioned with one pink heart.",
       "tip": "Hypothesis: with no words, fans wrote the story themselves."
     },
     {
