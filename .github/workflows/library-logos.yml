@@ -48,20 +48,28 @@ jobs:
               const { data, count } = await db.from("idea_catalog").select("name", { count: "exact" }).eq("category", cat).is("logo_url", null).order("name").limit(1000);
               console.log(`${cat}: ${count} without a logo`);
               for (const r of data || []) console.log(`   - ${r.name}`);
-            }'
+            }' | tee out.txt
+          echo "::notice title=Missing logos::$(sed ':a;N;$!ba;s/\n/%0A/g' out.txt | cut -c1-60000)"
       - name: 1. Instagram profile (scraped profiles)
-        run: node library/profile-logos.mjs $DRY
+        run: |
+          node library/profile-logos.mjs $DRY | tee out.txt
+          echo "::notice::$(grep -E '✓|Done|stored|found|without' out.txt | sed ':a;N;$!ba;s/\n/%0A/g' | cut -c1-60000)"
         continue-on-error: true
       - name: 2. Instagram account that posts them
-        run: node library/ig-avatars.mjs --only-missing $DRY
+        run: |
+          node library/ig-avatars.mjs --only-missing $DRY | tee out.txt
+          echo "::notice::$(grep -E '✓|Done|stored|found|without' out.txt | sed ':a;N;$!ba;s/\n/%0A/g' | cut -c1-60000)"
         continue-on-error: true
       - name: 3. football-logos.cc
-        run: node library/football-logos.mjs $DRY
+        run: |
+          node library/football-logos.mjs $DRY | tee out.txt
+          echo "::notice::$(grep -E '✓|Done|stored|found|without' out.txt | sed ':a;N;$!ba;s/\n/%0A/g' | cut -c1-60000)"
         continue-on-error: true
       - name: 4. Wikimedia Commons
         if: ${{ inputs.apply }}   # its dry run would list every value, not just the missing ones
         run: |
-          for c in club competition sponsor; do node library/logos.mjs --category $c $DRY; done
+          for c in club competition sponsor; do node library/logos.mjs --category $c $DRY; done | tee out.txt
+          echo "::notice::$(grep -E '✓|stored|without' out.txt | sed ':a;N;$!ba;s/\n/%0A/g' | cut -c1-60000)"
         continue-on-error: true
       - name: Missing logos (after)
         if: ${{ inputs.apply }}
@@ -73,4 +81,5 @@ jobs:
               const { data, count } = await db.from("idea_catalog").select("name", { count: "exact" }).eq("category", cat).is("logo_url", null).order("name").limit(1000);
               console.log(`${cat}: ${count} without a logo`);
               for (const r of data || []) console.log(`   - ${r.name}`);
-            }'
+            }' | tee out.txt
+          echo "::notice title=Missing logos::$(sed ':a;N;$!ba;s/\n/%0A/g' out.txt | cut -c1-60000)"
