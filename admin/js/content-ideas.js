@@ -245,26 +245,50 @@
     box.hidden = false;
     box.innerHTML = `<span><b>${num(count)} post${count === 1 ? "" : "s"}</b> no longer exist${count === 1 ? "s" : ""} on Instagram or Facebook (deleted or made private). They're already hidden from the Content Library.</span>
       <span class="brk-btns"><button class="btn btn-sm" type="button" data-review-broken>Review</button>
-      <button class="btn btn-danger btn-sm" type="button" data-delete-broken>${icon("trash")}Delete them</button></span>
+      <button class="btn btn-danger btn-sm" type="button" data-delete-broken>${icon("trash")}Delete all</button></span>
       <div class="brk-list" hidden data-broken-list></div>`;
-    // review: each post with its link, to keep it (back to the library) or delete it
+    // review: each post (cover, text, account) to recover it (back to the library) or delete it; a click on a row opens
+    // its preview (bigger cover, full caption, dates, the original link)
+    const posts = new Map();
+    const when = (d) => (d ? new Date(d).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) : "");
+    const acts = `<span class="brk-acts"><button class="btn btn-sm" type="button" data-keep>${icon("undo")}Recover</button><button class="btn btn-danger btn-sm" type="button" data-del aria-label="Delete">${icon("trash")}</button></span>`;
     $("[data-review-broken]", box).addEventListener("click", async () => {
       const list = $("[data-broken-list]", box);
       if (!list.hidden) { list.hidden = true; return; }
-      const { data } = await A.db.from("content_ideas").select("id,title,url,account,unavailable_at").not("unavailable_at", "is", null).not("url", "ilike", "%linkedin.com%").order("unavailable_at", { ascending: false }).limit(300);
-      list.innerHTML = (data || []).map((p) => `<div class="brk-row" data-id="${p.id}"><a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.title || p.url)}</a><small>${esc(p.account || "")}</small>
-        <button class="btn btn-sm" type="button" data-keep>Keep</button><button class="btn btn-danger btn-sm" type="button" data-del>${icon("trash")}</button></div>`).join("")
+      const { data } = await A.db.from("content_ideas").select("id,title,url,account,account_platform,cover_url,published_at,unavailable_at").not("unavailable_at", "is", null).not("url", "ilike", "%linkedin.com%").order("unavailable_at", { ascending: false }).limit(300);
+      (data || []).forEach((p) => posts.set(String(p.id), p));
+      list.innerHTML = (data || []).map((p) => `<div class="brk-row" data-id="${p.id}" role="button" tabindex="0" aria-expanded="false">
+          <span class="brk-th"${p.cover_url ? ` style="background-image:url('${esc(p.cover_url)}')"` : ""}></span>
+          <span class="brk-tx"><b>${esc(p.title || p.url)}</b><small>${esc([p.account, p.account_platform, when(p.published_at)].filter(Boolean).join(" · "))}</small></span>${acts}</div>`).join("")
         + (count > 300 ? `<small>Showing the latest 300 of ${num(count)}.</small>` : "");
       list.hidden = false;
     });
+    const preview = (row) => {
+      const open = row.nextElementSibling?.matches(".brk-pv");
+      $$(".brk-pv", box).forEach((el) => { el.previousElementSibling?.setAttribute("aria-expanded", "false"); el.remove(); });
+      if (open) return;
+      const p = posts.get(row.dataset.id); if (!p) return;
+      row.setAttribute("aria-expanded", "true");
+      row.insertAdjacentHTML("afterend", `<div class="brk-pv" data-id="${p.id}">
+          <div class="brk-pv-img">${p.cover_url ? `<img src="${esc(p.cover_url)}" alt="" loading="lazy">` : `<span>No cover saved</span>`}</div>
+          <div class="brk-pv-body"><p class="brk-pv-acc">${esc([p.account, p.account_platform].filter(Boolean).join(" · "))}</p>
+            <p class="brk-pv-cap">${esc(p.title || "")}</p>
+            <dl><dt>Published</dt><dd>${esc(when(p.published_at) || "–")}</dd><dt>Marked unavailable</dt><dd>${esc(when(p.unavailable_at))}</dd></dl>
+            <a href="${esc(p.url)}" target="_blank" rel="noopener">${icon("external")}Open the original</a>
+            <div class="brk-pv-acts"><button class="btn btn-sm" type="button" data-keep>${icon("undo")}Recover: show it in the library again</button><button class="btn btn-danger btn-sm" type="button" data-del>${icon("trash")}Delete</button></div></div></div>`);
+    };
     $("[data-broken-list]", box).addEventListener("click", async (e) => {
-      const b = e.target.closest("[data-keep],[data-del]"), row = b?.closest("[data-id]");
-      if (!row) return;
-      const q = A.db.from("content_ideas"), id = Number(row.dataset.id);
-      const { error: e2 } = b.matches("[data-keep]") ? await q.update({ unavailable_at: null }).eq("id", id) : await q.delete().eq("id", id);
+      const b = e.target.closest("[data-keep],[data-del]");
+      if (!b) { const row = e.target.closest(".brk-row"); if (row && !e.target.closest("a")) preview(row); return; }
+      const holder = b.closest("[data-id]"), id = holder.dataset.id;
+      const q = A.db.from("content_ideas");
+      const { error: e2 } = b.matches("[data-keep]") ? await q.update({ unavailable_at: null }).eq("id", Number(id)) : await q.delete().eq("id", Number(id));
       if (e2) return A.toast(A.errMsg(e2), "err");
-      row.remove(); A.resetCatalog();
+      $$(`[data-id="${id}"]`, box).forEach((el) => el.remove());
+      A.toast(b.matches("[data-keep]") ? "Back in the Content Library." : "Post deleted.");
+      A.resetCatalog();
     });
+    $("[data-broken-list]", box).addEventListener("keydown", (e) => { const row = e.target.closest?.(".brk-row"); if (row && (e.key === "Enter" || e.key === " ") && e.target === row) { e.preventDefault(); preview(row); } });
     $("[data-delete-broken]", box).addEventListener("click", async () => {
       const ok = await A.confirmDialog({
         title: `Delete ${num(count)} unavailable post${count === 1 ? "" : "s"}?`,
