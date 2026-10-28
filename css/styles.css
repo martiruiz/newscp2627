@@ -9009,3 +9009,25 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
 .mcb-row.lfb-glass { display: flex; overflow-x: auto; scrollbar-width: none; padding: 4px; margin: -4px; }
 .mcb-row.lfb-glass::-webkit-scrollbar { display: none; }
 .mcb-row.lfb-glass .lfb-btn { flex: 1 0 auto; }
+
+/* Filter bars, chosen design (3): tabs — gold icon and white name, no box; a hairline under the row and the open
+   section underlined in gold (Library: Inspiration from · Match Day · Brands; My Club: Club · Players · …) */
+.lfb-row.lfb-glass { gap: 26px; padding: 0; border-radius: 0; box-shadow: inset 0 -1px 0 var(--line); }
+.lfb-glass .lfb-btn, .lfb-glass .lfb-btn:hover, .lfb-glass .lfb-btn.is-open, .lfb-glass .lfb-btn.is-open:hover {
+  flex: 0 0 auto; gap: 8px; height: 46px; padding: 0; border-radius: 0; background: none; box-shadow: none; transform: none; }
+.lfb-glass .lfb-btn::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; border-radius: 3px 3px 0 0; background: var(--gold); transform: scaleX(0); transition: transform 0.25s cubic-bezier(.2, .8, .2, 1); }
+.lfb-row.lfb-glass:not(.mcb-row) .lfb-btn, .mcb-row.lfb-glass .lfb-btn { flex: 0 0 auto; }
+.lfb-glass .lfb-btn:hover::before { transform: scaleX(0.35); opacity: 0.6; }
+.lfb-glass .lfb-btn.is-open::before { transform: scaleX(1); opacity: 1; }
+.lfb-ic, .lfb-glass .lfb-btn.is-open .lfb-ic { width: auto; height: auto; border-radius: 0; background: none; box-shadow: none; }
+.lfb-ic svg, .lfb-glass .lfb-btn.is-open .lfb-ic svg { width: 18px !important; height: 18px !important; stroke: var(--gold); }
+.lfb-glass .lfb-tx b { font: 600 15px var(--font-display); color: #dfe5f1; transition: color 0.2s; }
+.lfb-glass .lfb-btn:hover .lfb-tx b, .lfb-glass .lfb-btn.is-open .lfb-tx b { color: #fff; }
+.mcb-row .lfb-btn.is-cur, .mcb-row .lfb-btn.is-cur:hover { box-shadow: none; }
+.mcb-row .lfb-btn.is-cur .lfb-tx b { color: var(--gold); }
+@container (max-width: 560px) { .lfb-glass .lfb-ic { display: inline-grid; } .lfb-glass .lfb-btn { padding: 0; } .lfb-row.lfb-glass { gap: 18px; } }
+:root[data-theme="light"] .lfb-glass .lfb-btn { background: none; box-shadow: none; }
+:root[data-theme="light"] .lfb-glass .lfb-tx b { color: #3b3f47; }
+:root[data-theme="light"] .lfb-glass .lfb-btn.is-open .lfb-tx b, :root[data-theme="light"] .lfb-glass .lfb-btn:hover .lfb-tx b { color: #121b33; }
+:root[data-theme="light"] .lfb-ic { background: none; box-shadow: none; }
+:root[data-theme="light"] .lfb-ic svg { stroke: var(--gold); }
