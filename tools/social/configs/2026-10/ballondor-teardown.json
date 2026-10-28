@@ -1,108 +1,122 @@
 {
- "label": "Ballon d'Or 2026",
- "slides": [
-  {
-   "type": "cover",
-   "kicker": "Post teardown",
-   "title": "Ballon d'Or night, <span class='g'>taken apart.</span>",
-   "sub": "Bayern had one hero. Barça had twelve nominees. Two playbooks.",
-   "imgs": [
-    "assets/social/2026-10-27/src/bayern-winner.png",
-    "assets/social/2026-10-27/src/barca-yamal.png"
-   ]
-  },
-  {
-   "type": "point",
-   "kicker": "Bayern · the winner post",
-   "handle": "@fcbayern",
-   "img": "assets/social/2026-10-27/src/bayern-winner.png",
-   "callouts": [
+  "label": "Ballon d'Or 2026",
+  "slides": [
     {
-     "v": "781.6k",
-     "l": "likes"
+      "type": "cover",
+      "kicker": "Post teardown",
+      "title": "Ballon d'Or night, <span class='g'>taken apart.</span>",
+      "sub": "Bayern had one hero. Barça had twelve nominees. Two playbooks.",
+      "imgs": [
+        "assets/social/2026-10-27/src/bayern-winner.png",
+        "assets/social/2026-10-27/src/barca-yamal.png"
+      ]
     },
     {
-     "v": "8.9k",
-     "l": "comments"
+      "type": "point",
+      "kicker": "Bayern · the winner post",
+      "handle": "@fcbayern",
+      "img": "assets/social/2026-10-27/src/bayern-winner.png",
+      "callouts": [
+        {
+          "v": "781.6k",
+          "l": "likes"
+        },
+        {
+          "v": "8.9k",
+          "l": "comments"
+        },
+        {
+          "v": "New bio",
+          "l": "“Club of 2026 Ballon d'Or winner”"
+        }
+      ],
+      "body": "The profile itself became content: Bayern's own comment, “Just updated our bio 😏”, drew 2.2k likes.",
+      "tip": "Hypothesis: a small in-joke gives fans something to reply to."
     },
     {
-     "v": "New bio",
-     "l": "“Club of 2026 Ballon d'Or winner”"
+      "type": "point",
+      "kicker": "Bayern · one win, many formats",
+      "title": "One hero, <span class='g'>five surfaces</span>",
+      "body": "A winner graphic (781.6k likes), a reel (2.2M), a golden Allianz Arena collab (342k), a new bio and a day-after callback to “never win a trophy” (251k).",
+      "tip": "Hypothesis: the callback works because it answers a doubt fans already know."
+    },
+    {
+      "type": "point",
+      "kicker": "Barça · the award post",
+      "handle": "@fcbarcelona",
+      "img": "assets/social/2026-10-27/src/barca-yamal.png",
+      "callouts": [
+        {
+          "v": "980.9k",
+          "l": "likes"
+        },
+        {
+          "v": "2.6k",
+          "l": "comments"
+        },
+        {
+          "v": "696k",
+          "l": "likes on the “three years” stat post"
+        }
+      ],
+      "body": "Barça framed Yamal's award as a streak: “2024, 2025, 2026…” Here the plain award photo got more likes than the stat post."
+    },
+    {
+      "type": "point",
+      "kicker": "Barça · the 24-hour arc",
+      "title": "Twelve nominees, <span class='g'>one story</span>",
+      "body": "A nominees reel the day before (265k likes), a “Gala ready” reel (626k), then award-night posts up to 1.9M. Likes grew as the night got closer.",
+      "tip": "Hypothesis: the build-up warmed the audience for the night itself."
+    },
+    {
+      "type": "point",
+      "kicker": "Yamal · TikTok after the gala",
+      "title": "No statement. <span class='g'>83.8M views.</span>",
+      "body": "After finishing third, Yamal posted a dance video with his partner, captioned with a single pink heart. 14.4M likes, 170.4k comments, 443.6k shares.",
+      "tip": "Hypothesis: with no words, fans wrote the story themselves."
+    },
+    {
+      "type": "point",
+      "kicker": "Yamal · TikTok in context",
+      "title": "Viral, <span class='g'>not his record</span>",
+      "body": "It is 7th by views among his last 11 TikToks (top: 167.1M, 30 Sep), but more than double his two previous posts (37.7M and 33M).",
+      "tip": "Judge a viral moment against the account's own baseline, not in isolation."
+    },
+    {
+      "type": "point",
+      "kicker": "The ranking",
+      "handle": "@ballondorofficial",
+      "img": "assets/social/2026-10-27/src/bdor-ranking.png",
+      "callouts": [
+        {
+          "v": "546k",
+          "l": "likes"
+        },
+        {
+          "v": "5.4k",
+          "l": "comments"
+        },
+        {
+          "v": "Top 30",
+          "l": "men's ranking"
+        }
+      ],
+      "body": "Data as content: a ranking to argue about. Top comments: “Where's CR7?”, “Where is the points?”",
+      "tip": "Hypothesis: a list invites debate about who is missing."
+    },
+    {
+      "type": "club",
+      "title": "Match the story to your squad: <span class='g'>one hero</span> gets depth, <span class='g'>many nominees</span> get a shared identity."
+    },
+    {
+      "type": "club",
+      "title": "Use your own surfaces: a <span class='g'>bio change</span>, a collab post and a day-after callback cost almost nothing."
+    },
+    {
+      "type": "cta",
+      "kicker": "Content Library",
+      "big": "See real club posts and <span class='g'>why they worked.</span>",
+      "sub": "Book a demo at sportscontentplaybook.com/book-a-call"
     }
-   ],
-   "body": "The profile itself became content: Bayern's own comment, “Just updated our bio 😏”, drew 2.2k likes.",
-   "tip": "Hypothesis: a small in-joke gives fans something to reply to."
-  },
-  {
-   "type": "point",
-   "kicker": "Bayern · one win, many formats",
-   "title": "One hero, <span class='g'>five surfaces</span>",
-   "body": "A winner graphic (781.6k likes), a reel (2.2M), a golden Allianz Arena collab (342k), a new bio and a day-after callback to “never win a trophy” (251k).",
-   "tip": "Hypothesis: the callback works because it answers a doubt fans already know."
-  },
-  {
-   "type": "point",
-   "kicker": "Barça · the award post",
-   "handle": "@fcbarcelona",
-   "img": "assets/social/2026-10-27/src/barca-yamal.png",
-   "callouts": [
-    {
-     "v": "980.9k",
-     "l": "likes"
-    },
-    {
-     "v": "2.6k",
-     "l": "comments"
-    },
-    {
-     "v": "696k",
-     "l": "likes on the “three years” stat post"
-    }
-   ],
-   "body": "Barça framed Yamal's award as a streak: “2024, 2025, 2026…” Here the plain award photo got more likes than the stat post."
-  },
-  {
-   "type": "point",
-   "kicker": "Barça · the 24-hour arc",
-   "title": "Twelve nominees, <span class='g'>one story</span>",
-   "body": "A nominees reel the day before (265k likes), a “Gala ready” reel (626k), then award-night posts up to 1.9M. Likes grew as the night got closer.",
-   "tip": "Hypothesis: the build-up warmed the audience for the night itself."
-  },
-  {
-   "type": "point",
-   "kicker": "The ranking",
-   "handle": "@ballondorofficial",
-   "img": "assets/social/2026-10-27/src/bdor-ranking.png",
-   "callouts": [
-    {
-     "v": "546k",
-     "l": "likes"
-    },
-    {
-     "v": "5.4k",
-     "l": "comments"
-    },
-    {
-     "v": "Top 30",
-     "l": "men's ranking"
-    }
-   ],
-   "body": "Data as content: a ranking to argue about. Top comments: “Where's CR7?”, “Where is the points?”",
-   "tip": "Hypothesis: a list invites debate about who is missing."
-  },
-  {
-   "type": "club",
-   "title": "Match the story to your squad: <span class='g'>one hero</span> gets depth, <span class='g'>many nominees</span> get a shared identity."
-  },
-  {
-   "type": "club",
-   "title": "Use your own surfaces: a <span class='g'>bio change</span>, a collab post and a day-after callback cost almost nothing."
-  },
-  {
-   "type": "cta",
-   "kicker": "Content Library",
-   "big": "See real club posts and <span class='g'>why they worked.</span>",
-   "sub": "Book a demo at sportscontentplaybook.com/book-a-call"
-  }
- ]
+  ]
 }
