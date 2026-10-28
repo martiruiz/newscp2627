@@ -45,7 +45,7 @@ def point_img(k,s):
 <div class="abs frame" style="left:70px;top:{top}px;width:520px;height:{h}px"><img src="{src(s['img'])}"></div>
 <svg class="abs" style="left:0;top:0" width="1080" height="1350"><g stroke="#f0b84a" stroke-width="3" fill="none">{lines}</g></svg>{pins}
 <div class="abs" style="left:70px;top:1010px;width:940px;border-top:2px solid rgba(240,184,74,.5);padding-top:34px;font-size:40px;line-height:1.25;font-weight:700">{s['body']}{tip}</div>
-<div class="abs cap" style="left:70px;top:1270px;font-size:19px;color:#8d9bb8">Public data · no reach</div>'''
+<div class="abs cap" style="left:70px;top:1290px;font-size:19px;color:#8d9bb8">Public data · no reach</div>'''
 def point_txt(k,s):
     tp=s.get('tip') or ''; hy=tp.lower().startswith('hypothesis')
     if hy: tp=tp.split(':',1)[1].strip()
