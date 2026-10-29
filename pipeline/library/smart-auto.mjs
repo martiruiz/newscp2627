@@ -99,6 +99,15 @@ if (argv.includes("--eval")) {
     for (const k of ["tp", "fp", "fn"]) { T.b[k] += b[k]; T.a[k] += a[k]; }
     console.log(`${c.label.padEnd(24)} ${pct(b.tp, b.tp + b.fp)} → ${pct(a.tp, a.tp + a.fp)}           ${pct(b.tp, b.tp + b.fn)} → ${pct(a.tp, a.tp + a.fn)}        (${a.tp + a.fn})`);
   }
+  // the disagreements, to tune the prompt: post id, filter, the AI's answer → yours
+  if (argv.includes("--diff")) for (const g of gold) {
+    const a = after.get(g.post_id);
+    if (!a || !g.gold) continue;
+    const p = posts.find((x) => x.id === g.post_id);
+    const lines = AI_CATEGORIES.filter((c) => c.key in g.gold && [...S(a[c.key])].sort().join("|") !== [...S(g.gold[c.key])].sort().join("|"))
+      .map((c) => `   ${c.key}: AI ${JSON.stringify([...S(a[c.key])])} · you ${JSON.stringify([...S(g.gold[c.key])])}`);
+    if (lines.length) console.log(`\n#${g.post_id} ${p.url}\n   caption: ${(p.title || "").replace(/\s+/g, " ").slice(0, 300)}\n${lines.join("\n")}`);
+  }
   console.log(`${"All filters".padEnd(24)} ${pct(T.b.tp, T.b.tp + T.b.fp)} → ${pct(T.a.tp, T.a.tp + T.a.fp)}           ${pct(T.b.tp, T.b.tp + T.b.fn)} → ${pct(T.a.tp, T.a.tp + T.a.fn)}`);
   process.exit(0);
 }

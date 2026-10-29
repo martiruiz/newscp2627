@@ -42,7 +42,7 @@ jobs:
           FROM: ${{ github.event.inputs.from }}
         run: |
           case "$MODE" in
-            eval) node library/smart-auto.mjs --eval ;;
+            eval) node library/smart-auto.mjs --eval --diff ;;
             test) node library/smart-auto.mjs --test 100 ;;
             *)    node library/smart-auto.mjs --run ${FROM:+--from "$FROM"} ;;
           esac
