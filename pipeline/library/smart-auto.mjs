@@ -35,6 +35,9 @@ async function loadPosts(ids) {
   return out;
 }
 const request = async (p) => requestParams(p, await fetchImage(p.cover_url));
+// filters not written into the library yet (not reliable enough in the eval): the storytelling angle
+const HOLD = ["angle"];
+const applied = (labels) => Object.fromEntries(Object.entries(labels).filter(([k]) => !HOLD.includes(k)));
 const per1000 = (usd, n) => (n ? (usd / n) * 1000 : 0).toFixed(2);
 
 // the posts without AI labels, newest first (not removed, not already in a batch on its way)
@@ -151,7 +154,7 @@ if (argv.includes("--test")) {
   for (const p of posts) {
     const params = await request(p);
     if (params.messages[0].content.length > 1) withImg++;
-    try { const msg = await claude.messages.create(params); rows.push({ id: p.id, version: VERSION, labels: parseAnswer(msg, p.title) }); usd += cost(msg.usage); }
+    try { const msg = await claude.messages.create(params); rows.push({ id: p.id, version: VERSION, labels: applied(parseAnswer(msg, p.title)) }); usd += cost(msg.usage); }
     catch (e) { console.log(`  ✗ ${p.id}: ${e.message}`); }
   }
   const { error } = await db.rpc("apply_smart_labels", { p_rows: rows });
@@ -178,7 +181,7 @@ if (argv.includes("--run")) {
     }
     for await (const r of await claude.messages.batches.results(b.id)) {
       if (r.result.type !== "succeeded") continue;
-      try { rows.push({ id: Number(r.custom_id), version: VERSION, labels: parseAnswer(r.result.message, captions.get(Number(r.custom_id)) ?? "") }); usd += cost(r.result.message.usage, { batch: true }); } catch {}
+      try { rows.push({ id: Number(r.custom_id), version: VERSION, labels: applied(parseAnswer(r.result.message, captions.get(Number(r.custom_id)) ?? "")) }); usd += cost(r.result.message.usage, { batch: true }); } catch {}
     }
     for (let i = 0; i < rows.length; i += 200) { const { error: e } = await db.rpc("apply_smart_labels", { p_rows: rows.slice(i, i + 200) }); if (e) throw e; }
     await db.from("smart_batches").update({ collected_at: new Date().toISOString(), labelled: rows.length, usd }).eq("id", b.id);

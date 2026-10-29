@@ -4,8 +4,8 @@ name: Smart filters
 # into the library and the newly imported posts are sent (Batch API, Claude Haiku). "Run workflow" for a one-off:
 #   run (default) · eval (accuracy on the reviewed posts) · test (100 posts at once, real cost)
 on:
-  # schedule:                 # every 3 hours — switched on once the eval and the test are approved
-  #   - cron: "5 */3 * * *"
+  schedule:
+    - cron: "5 */3 * * *"
   workflow_dispatch:
     inputs:
       mode:
