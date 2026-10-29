@@ -166,7 +166,7 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
         </form></section>
       </div>`;
     renderLive();
-    for (const j of jobs.values()) if (!j.done && !j.error) { const b = $(`[data-scrape="${CSS.escape(j.id)}"]`, main); if (b) { b.disabled = true; b.innerHTML = `<span class="spinner sm"></span>Scraping…`; } }
+    for (const j of jobs.values()) if (!j.done && !j.error) { const b = $(`[data-scrape="${CSS.escape(j.id)}"]`, main); if (b) { b.disabled = true; b.classList.add("is-hacking"); b.innerHTML = `<span class="hk">&gt; scraping<i class="hk-cur"></i></span>`; } }
     resumeScrapes();
   }
 
@@ -196,10 +196,14 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
     XLSX.writeFile(wb, "scp-my-club-template.xlsx");
   }
   // collections started before a reload: pick them up (scrapeNow finds them in this browser)
+  // (one tab only: another tab polling it — a beat in the last 25 s — keeps it, so it's never imported twice)
+  const TAB = Math.random().toString(36).slice(2);
   function resumeScrapes() {
     for (const b of $$("[data-scrape]", main)) {
-      let on = false; try { on = !!localStorage.getItem(`scp-scrape:${cur}:${b.dataset.scrape}`); } catch {}
-      if (on && !b.disabled) scrapeNow(b.dataset.scrape, b);
+      let sv = null; try { sv = JSON.parse(localStorage.getItem(`scp-scrape:${cur}:${b.dataset.scrape}`) || "null"); } catch {}
+      if (!sv || b.disabled) continue;
+      if (sv.tab && sv.tab !== TAB && Date.now() - (sv.beat || 0) < 25000) { b.disabled = true; b.classList.add("is-hacking"); b.innerHTML = `<span class="hk">&gt; running in another tab<i class="hk-cur"></i></span>`; continue; }
+      scrapeNow(b.dataset.scrape, b);
     }
   }
 
@@ -274,9 +278,9 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
         ${list.some((j) => j.done || j.error) ? `<button class="btn btn-ghost btn-sm" type="button" data-live-clear>Clear finished</button>` : ""}</header>
       ${list.map((j) => `<article class="mcl-job${j.error ? " is-err" : j.done ? " is-done" : ""}">
         <div class="mcl-job-h"><b>${esc(PF[j.platform] || "")} @${esc(j.handle)}</b><span class="mono">${mmss((j.end || Date.now()) - j.t0)}</span>
-          <span class="mcl-job-st">${j.error ? `${icon("alert")}${esc(j.error)}` : j.done ? `${icon("check")}${num(j.n)} posts in My Club` : `<span class="spinner sm"></span>${esc(STEPS[j.step])}${j.step === 1 && j.records ? ` · ${num(j.records)} posts so far` : ""}`}</span></div>
+          <span class="mcl-job-st">${j.error ? `${icon("alert")}${esc(j.error)}` : j.done ? `${icon("check")}${num(j.n)} posts in My Club` : `<i class="hk-dot"></i>${esc(STEPS[j.step])}${j.step === 1 && j.records ? ` · ${num(j.records)} posts so far` : ""}`}</span></div>
         <ol class="mcl-steps">${STEPS.map((t, k) => `<li class="${k < j.step || j.done ? "is-ok" : k === j.step && !j.error ? "is-on" : k === j.step && j.error ? "is-err" : ""}">${esc(t)}</li>`).join("")}</ol>
-        <div class="mcl-job-log">${j.log.slice(-6).map(([t, k, x]) => `<p class="is-${k}"><span>${mmss(t - j.t0)}</span>${esc(x)}</p>`).join("")}</div>
+        <div class="mcl-job-log${j.done || j.error ? "" : " is-live"}"><p class="is-cmd">scp@myclub:~$ scrape --${esc(j.platform)} @${esc(j.handle)} --posts 10</p>${j.log.slice(-7).map(([t, k, x]) => `<p class="is-${k}${Date.now() - t < 900 ? " is-new" : ""}"><span>[${mmss(t - j.t0)}]</span>${esc(x)}</p>`).join("")}${j.done || j.error ? "" : `<p class="is-prompt">&gt; <i class="hk-cur"></i></p>`}</div>
       </article>`).join("")}` : "";
     clearInterval(liveTimer);
     if (list.some((j) => !j.done && !j.error)) liveTimer = setInterval(renderLive, 1000);
@@ -292,7 +296,8 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
     const log = (kind, text) => { job.log.push([Date.now(), kind, text]); renderLive(); };
     const step = (k, text) => { job.step = k; log("step", text); };
     const btns = () => { const l = $$(`[data-scrape="${CSS.escape(id)}"]`, main); return l.length ? l : [btn]; };   // the table's and the pending list's
-    const say = (t) => btns().forEach((b) => { b.disabled = true; b.innerHTML = `<span class="spinner sm"></span>${esc(t)}`; });
+    // while it runs the button is a tiny terminal: green monospace, a blinking cursor, a scanline (no spinner)
+    const say = (t) => btns().forEach((b) => { b.disabled = true; b.classList.add("is-hacking"); b.innerHTML = `<span class="hk">&gt; ${esc(String(t).toLowerCase().replace(/…$/, ""))}<i class="hk-cur"></i></span>`; });
     say("Starting…");
     const call = async (body) => {
       const { data, error } = await A.db.functions.invoke("club-scrape", { body });
@@ -316,6 +321,7 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
       let res, last = "";
       for (;;) {
         await new Promise((r) => setTimeout(r, 8000));
+        saved.tab = TAB; saved.beat = Date.now(); try { localStorage.setItem(key, JSON.stringify(saved)); } catch {}
         res = await call({ action: "status", platform, handle, snapshot_id: saved.snapshot_id });
         job.records = Number(res.bd?.records) || job.records;
         const st = `${res.bd?.status || res.status}${res.bd?.records ? ` · ${res.bd.records} posts` : ""}`;
@@ -358,10 +364,10 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
       job.n = out.created + out.replaced; job.step = 5; job.done = true; job.end = Date.now();
       log("ok", `Done: ${num(job.n)} posts in ${club.club.name}'s My Club`);
       A.toast(`@${handle}: ${num(job.n)} posts in ${club.club.name}'s My Club.`);
-      if (quiet) btns().forEach((b) => { b.innerHTML = `${icon("check")}${num(job.n)} posts`; b.classList.add("is-done"); }); else loadClub();
+      if (quiet) btns().forEach((b) => { b.classList.remove("is-hacking"); b.innerHTML = `${icon("check")}${num(job.n)} posts`; b.classList.add("is-done"); }); else loadClub();
     } catch (x) {
       job.error = x.message || String(x); job.end = Date.now(); log("err", job.error);
-      btns().forEach((b) => { b.disabled = false; b.innerHTML = label; });
+      btns().forEach((b) => { b.disabled = false; b.classList.remove("is-hacking"); b.innerHTML = label; });
       fail(x);
     }
   }
