@@ -6,7 +6,17 @@
     <atom:link href="https://sportscontentplaybook.com/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Sports social media content ideas, trends and analysis.</description>
     <language>en</language>
-    <lastBuildDate>Mon, 19 Oct 2026 08:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Thu, 29 Oct 2026 08:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Sports social media strategy: prepare the big-day content before the big day</title>
+      <link>https://sportscontentplaybook.com/blog/sports-social-media-strategy-big-day-content.html</link>
+      <guid isPermaLink="true">https://sportscontentplaybook.com/blog/sports-social-media-strategy-big-day-content.html</guid>
+      <pubDate>Thu, 29 Oct 2026 08:00:00 GMT</pubDate>
+      <dc:creator>Martí Ruiz</dc:creator>
+      <description>The sports profiles that stood out this week did not improvise. They had the result graphic, the special edition, the clips and the sponsor integration ready before the moment arrived. Here is the pattern and eight ideas to copy.</description>
+      <enclosure url="https://sportscontentplaybook.com/assets/blog/sports-social-media-strategy-big-day-content.jpg" length="71211" type="image/jpeg"/>
+      <media:content url="https://sportscontentplaybook.com/assets/blog/sports-social-media-strategy-big-day-content.jpg" medium="image" type="image/jpeg"/>
+    </item>
     <item>
       <title>From one-off clips to series: the episodic shift in sports social media trends</title>
       <link>https://sportscontentplaybook.com/blog/episodic-series-sports-social-media-trends.html</link>
@@ -296,16 +306,6 @@
       <description>Barça and Madrid’s Supercopa communication revealed how results shape digital storytelling, contrasting celebration and restraint, and offering key lessons for content creators navigating tone, volume, and strategy in elite football.</description>
       <enclosure url="https://sportscontentplaybook.com/assets/blog/two-finals-two-narratives-how-barca-and-madrid-communicated-the-supercopa.jpg" length="517365" type="image/jpeg"/>
       <media:content url="https://sportscontentplaybook.com/assets/blog/two-finals-two-narratives-how-barca-and-madrid-communicated-the-supercopa.jpg" medium="image" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>How the Dakar Rally has become a Social Media storytelling</title>
-      <link>https://sportscontentplaybook.com/blog/how-the-dakar-rally-has-become-a-social-media-storytelling.html</link>
-      <guid isPermaLink="true">https://sportscontentplaybook.com/blog/how-the-dakar-rally-has-become-a-social-media-storytelling.html</guid>
-      <pubDate>Mon, 12 Jan 2026 08:00:00 GMT</pubDate>
-      <dc:creator>Josep</dc:creator>
-      <description>The Dakar Rally excels on social media by blending extreme competition with emotion, creativity, and variety – offering a benchmark for content creators in sports storytelling and digital audience engagement.</description>
-      <enclosure url="https://sportscontentplaybook.com/assets/blog/how-the-dakar-rally-has-become-a-social-media-storytelling.jpg" length="561395" type="image/jpeg"/>
-      <media:content url="https://sportscontentplaybook.com/assets/blog/how-the-dakar-rally-has-become-a-social-media-storytelling.jpg" medium="image" type="image/jpeg"/>
     </item>
   </channel>
 </rss>
