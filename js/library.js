@@ -1774,6 +1774,7 @@
     rows.forEach((p) => cache.set(String(p.id), p));
     offset += rows.length;
     more.hidden = offset >= data.total;
+    if (ytGrid && more.hidden) ytFlush(true);   // the list has ended: the cards still waiting for a full row show too
     saveKeep();
     if (nearEnd && !more.hidden && !grid.hidden) load(false);   // the page is still short of the screen: the next ones
   }
@@ -2210,8 +2211,10 @@
   const GAP = 22;
   let cols = [], colH = [], placed = [];
   // YouTube only (or Facebook videos only): a grid like YouTube's own — a Short takes one lane, a horizontal video two,
-  // so two Shorts are as wide as one video. Each card spans as many 2px rows as it is tall (a masonry on CSS grid).
+  // so two Shorts are as wide as one video. Whole rows of one kind (a row of videos, a row of Shorts): every card in a
+  // row is as tall as the others, so no gaps. Cards wait in a queue until a row is full; the rest show at the end.
   let ytGrid = 0;   // the number of lanes when this layout is on, 0 otherwise
+  let ytQ = { v: [], s: [] }, ytSeq = 0;
   function columnCount() {
     const w = grid.clientWidth - parseFloat(getComputedStyle(grid).paddingLeft) - parseFloat(getComputedStyle(grid).paddingRight);
     // as many ~240px columns as fit (with or without the filters column), up to 6 on very wide screens
@@ -2219,7 +2222,7 @@
     const fmts = [...(selected.format || [])].map((id) => catalog.byId.get(id)?.name.toLowerCase());
     // horizontal videos (YouTube, Facebook videos) need wide cards: 3 columns at most
     const ytOnly = pfs.length === 1 && (pfs[0] === "youtube" || (pfs[0] === "facebook" && fmts.length === 1 && fmts[0] === "video"));
-    if (ytOnly) { const n = Math.min(8, Math.floor((w + GAP) / (150 + GAP))); return -Math.max(2, n - (n % 2)); }   // negative: lanes of the YouTube grid (even)
+    if (ytOnly) { const n = Math.min(6, Math.floor((w + GAP) / (150 + GAP))); return -Math.max(2, n - (n % 2)); }   // negative: lanes of the YouTube grid (even)
     return Math.max(1, Math.min(6, Math.floor((w + GAP) / (240 + GAP))));
   }
   function buildColumns(n) {
@@ -2228,16 +2231,26 @@
     grid.classList.toggle("masonry", !ytGrid);
     grid.classList.toggle("ytgrid", !!ytGrid);
     grid.style.gridTemplateColumns = ytGrid ? `repeat(${ytGrid}, minmax(0, 1fr))` : "";
+    ytQ = { v: [], s: [] };
     cols = ytGrid ? [] : Array.from({ length: n }, () => grid.appendChild(Object.assign(document.createElement("div"), { className: "mcol" })));
     colH = cols.map(() => 0);
   }
-  const ytSpan = (el) => { el.style.gridRowEnd = `span ${Math.max(1, Math.ceil((el.offsetHeight + GAP) / 2))}`; };
+  // the full rows waiting in the queues, in the order their first card came (all = the rest too: the list has ended)
+  function ytFlush(all = false) {
+    const per = { v: ytGrid / 2, s: ytGrid };
+    for (;;) {
+      const ready = ["v", "s"].filter((k) => ytQ[k].length >= per[k] || (all && ytQ[k].length)).sort((a, b) => ytQ[a][0].seq - ytQ[b][0].seq);
+      if (!ready.length) break;
+      ytQ[ready[0]].splice(0, per[ready[0]]).forEach(({ el }) => grid.appendChild(el));
+    }
+    window.SCP_COVERS?.observe(grid);
+  }
   function place(el, ratio) {
     if (ytGrid) {   // a horizontal video (shorter than wide) takes two lanes, a Short one
-      el.style.gridColumn = ratio < 1 ? "span 2" : "span 1";
-      el.classList.toggle("is-lane", ratio >= 1);   // one lane wide (a Short)
-      grid.appendChild(el);
-      requestAnimationFrame(() => ytSpan(el));
+      const short = ratio >= 1;
+      el.style.gridColumn = short ? "span 1" : "span 2";
+      el.classList.toggle("is-lane", short);   // one lane wide (a Short)
+      ytQ[short ? "s" : "v"].push({ el, seq: ytSeq++ });
       return;
     }
     const i = colH.indexOf(Math.min(...colH));
@@ -2338,6 +2351,7 @@
         img.src = rows[i].cover_url;
       }
     });
+    if (ytGrid) ytFlush();
     window.SCP_COVERS?.observe(grid);
     loadLikes(rows);
     loadGone(goneCheck);
@@ -2346,11 +2360,12 @@
   new ResizeObserver(() => {
     if (!cols.length && !ytGrid) return;
     const n = columnCount();
-    if (ytGrid && n === -ytGrid) return placed.forEach(({ el }) => ytSpan(el));   // same lanes: only the heights change
+    if (ytGrid && n === -ytGrid) return;   // same lanes: rows keep their shape
     if (n === cols.length) return;
     const keep = placed;
     buildColumns(n);
     keep.forEach(({ el, ratio }) => place(el, ratio));
+    if (ytGrid) ytFlush(more.hidden);
   }).observe(grid);
 
   // ---------- Detail drawer ----------
