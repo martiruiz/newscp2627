@@ -9061,3 +9061,6 @@ body.club-themed .mc-strip::after { content: ""; position: absolute; left: 18px;
   opacity: 0; visibility: hidden; transform: translateY(4px); transition: opacity 0.2s, transform 0.2s, visibility 0.2s; pointer-events: none; }
 .lib-card:hover .lib-igtip, .lib-ignote:focus-visible .lib-igtip { opacity: 1; visibility: visible; transform: none; }
 @media (hover: none) { .lib-igtip { display: none; } }
+/* Jobs: the company's logo whole, on white (crests and wordmarks), and the card without the summary */
+.job-logo.has-img { background: #fff; padding: 6px; }
+.job-logo.has-img img { object-fit: contain; }

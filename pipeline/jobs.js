@@ -60,6 +60,13 @@ if (db) {
   data.forEach((j) => known.add(j.apply_url));
 }
 
+// the company's logo, from the offer's page on Jobs In Football (<img class="profile__img profile__img-company">)
+async function companyLogo(url) {
+  const r = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0 (compatible; SCPJobsBot/1.0)" } }).catch(() => null);
+  const html = r?.ok ? await r.text() : "";
+  return /class="profile__img profile__img-company" src="(https:[^"]+)"/.exec(html)?.[1] || null;
+}
+
 let added = 0, out = 0;
 for (const item of items.filter((i) => !known.has(i.url))) {
   let r;
@@ -68,7 +75,8 @@ for (const item of items.filter((i) => !known.has(i.url))) {
   if (!r.keep) { out++; continue; }
   if (DRY) { console.log(`  · ${item.title} · ${r.company} · ${r.location} · ${r.area}`); continue; }
   const expires = new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10);
-  const { error } = await db.from("jobs").insert({ title: item.title, company: r.company, location: r.location || null, work_mode: r.work_mode, job_type: r.job_type, area: r.area, summary: r.summary, apply_url: item.url, published: true, expires_at: expires });
+  const logo = await companyLogo(item.url);
+  const { error } = await db.from("jobs").insert({ title: item.title, company: r.company, logo_url: logo, location: r.location || null, work_mode: r.work_mode, job_type: r.job_type, area: r.area, summary: r.summary, apply_url: item.url, published: true, expires_at: expires });
   if (error) { console.warn(`  ! ${item.title}: ${error.message}`); continue; }
   console.log(`  + ${item.title} · ${r.company}`);
   added++;

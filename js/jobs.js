@@ -24,11 +24,10 @@
     const shown = jobs.filter((j) => (!f.area || j.area === f.area)
       && words.every((w) => [j.title, j.company, j.location, j.summary].some((v) => String(v || "").toLowerCase().includes(w))));
     list.innerHTML = shown.map((j) => `<article class="job">
-        <span class="job-logo">${j.logo_url ? `<img src="${esc(j.logo_url)}" alt="" loading="lazy">` : esc(initials(j.company))}</span>
+        <span class="job-logo${j.logo_url ? " has-img" : ""}" data-ini="${esc(initials(j.company))}">${j.logo_url ? `<img src="${esc(j.logo_url)}" alt="${esc(j.company)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentNode.classList.remove('has-img');this.parentNode.textContent=this.parentNode.dataset.ini">` : esc(initials(j.company))}</span>
         <div class="job-body">
           <p class="job-co">${esc(j.company)}<span>${esc(ago(j.created_at))}</span></p>
           <h2>${esc(j.title)}</h2>
-          ${j.summary ? `<p class="job-sum">${esc(j.summary)}</p>` : ""}
           <p class="job-tags"><span class="is-area">${esc(t(AREA[j.area] || j.area))}</span>${j.location ? `<span>${esc(j.location)}</span>` : ""}<span>${esc(t(TYPE[j.job_type] || j.job_type))}</span></p>
         </div>
         <a class="btn btn-gold job-go" href="${esc(j.apply_url)}" target="_blank" rel="noopener nofollow">${esc(t("Apply"))} →</a>
