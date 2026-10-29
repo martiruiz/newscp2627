@@ -182,16 +182,17 @@
     };
     $("[data-x]", m.el).onclick = () => m.close();
     $("[data-rm]", m.el)?.addEventListener("click", () => set(null, null));
-    $("[data-save]", m.el).onclick = async (e) => {
+    const save = async () => {
+      const btn = $("[data-save]", m.el);
       const file = f.file.files[0], url = f.url.value.trim();
       if (file) {
         if (file.size > 1048576) return A.toast("The image is over 1 MB.", "err");
         const ext = ({ "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp", "image/svg+xml": "svg" })[file.type];
         if (!ext) return A.toast("Use a PNG, JPG, WebP or SVG image.", "err");
-        e.target.disabled = true;
+        btn.disabled = true;
         const path = `catalog/${v.id}-${Date.now()}.${ext}`;
         const { error } = await A.db.storage.from("logos").upload(path, file, { contentType: file.type, upsert: true });
-        e.target.disabled = false;
+        btn.disabled = false;
         if (error) return A.toast(/row-level|policy|unauthorized|403/i.test(error.message) ? "Run supabase/catalog-logos.sql in Supabase first (it lets admins upload logos)." : error.message, "err");
         return set(A.db.storage.from("logos").getPublicUrl(path).data.publicUrl, "admin upload");
       }
@@ -199,6 +200,16 @@
       if (!/^https:\/\//i.test(url)) return A.toast("The link has to start with https://", "err");
       set(url, "admin link");
     };
+    $("[data-save]", m.el).onclick = save;
+    // saved by itself: an uploaded image at once, a pasted link as soon as it loads as an image
+    f.file.addEventListener("change", () => { if (f.file.files[0]) save(); });
+    let linkTimer = 0;
+    f.url.addEventListener("input", () => {
+      clearTimeout(linkTimer);
+      const url = f.url.value.trim();
+      if (!/^https:\/\/\S+$/i.test(url) || url === cur) return;
+      linkTimer = setTimeout(() => { const img = new Image(); img.onload = () => { if (f.url.value.trim() === url && !f.file.files[0]) save(); }; img.src = url; }, 500);
+    });
   }
 
   load();

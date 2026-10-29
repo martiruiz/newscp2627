@@ -246,7 +246,15 @@
     };
     const [{ data, error }, logos] = await Promise.all([
       allCatalog(),
-      db.from("idea_catalog").select("id,logo_url,logo_source").not("logo_url", "is", null).then((r) => r.data || [], () => []),
+      // every logo, 1,000 at a time (one request stops at 1,000 and there are more: the rest showed no logo)
+      (async () => {
+        const out = [];
+        for (let from = 0; ; from += 1000) {
+          const r = await db.from("idea_catalog").select("id,logo_url,logo_source").not("logo_url", "is", null).order("id").range(from, from + 999).then((x) => x, () => ({ data: null }));
+          out.push(...(r.data || []));
+          if (!r.data || r.data.length < 1000) return out;
+        }
+      })(),
     ]);
     if (error) throw error;
     const logo = new Map(logos.map((l) => [Number(l.id), l.logo_url]));
@@ -1955,20 +1963,9 @@
           <span class="lib-foot-stats" data-stats="${esc(p.id)}">${footStats(p)}</span>
         </div>`;
 
-    // Instagram reel with licensed music: Instagram doesn't play it outside its app (ig-rights). The cover (or the drawn
-    // card), a link to watch it there, and why on hover
-    if (pf === "instagram" && p.ig_blocked) {
-      return `
-      <article class="lib-card is-igblock${p.cover_url ? " has-cover" : " is-poster"}" data-id="${esc(p.id)}">
-        <div class="lib-media" style="aspect-ratio: 1 / ${(p.cover_url ? mediaRatio(p) : shape(p).ratio).toFixed(4)}">
-          ${p.cover_url ? `<img class="lib-cover-img" src="${esc(p.cover_url)}" alt="${esc(who || "Post")}" loading="lazy" decoding="async">` : posterHtml(p, who)}
-          <button class="lib-hit" type="button" data-open="${esc(p.id)}" aria-label="Details${who ? ` · ${esc(who)}` : ""}"></button>
-          <a class="lib-igwatch" href="${esc(p.url || "")}" target="_blank" rel="noopener">${icon("play")}<span>${tx("Watch on Instagram")}</span></a>
-          <div class="lib-igwhy" role="note"><b>${icon("music")}${tx("Music with copyright")}</b><span>${tx("This reel uses licensed music, and Instagram only lets it play inside its app. That's why it can't be watched here: open it on Instagram.")}</span></div>
-          ${corner}${rail}
-        </div>${foot}${aiPeek(p.id)}
-      </article>`;
-    }
+    // Instagram reel with licensed music: Instagram only plays it in its app (ig-rights). The card stays as it is, with a
+    // strip at the bottom that says why (on hover) and opens the post on Instagram in a new window
+    const igNote = pf === "instagram" && p.ig_blocked ? `<a class="lib-ignote" href="${esc(p.url || "")}" target="_blank" rel="noopener">${icon("music")}<span>${tx("Music with copyright · Watch on Instagram")}</span>${icon("external-link")}<span class="lib-igtip" role="tooltip">${tx("This reel uses licensed music, and Instagram only lets it play inside its app. That's why it can't be watched here: it opens on Instagram in a new window.")}</span></a>` : "";
 
     // X, LinkedIn and Facebook: always the post itself, so the text can be read and videos played in place
     const asPosted = pf === "x" || pf === "linkedin" || pf === "facebook";
@@ -1981,7 +1978,7 @@
           ${video ? `<button class="lib-playbtn" type="button" data-play="${esc(p.id)}" aria-label="Play video">${icon("play")}</button>` : ""}
           ${!video && pf === "instagram" && (/carousel/i.test(fmt) || /carousel|sidecar/i.test(p.media_type || "")) ? `<button class="lib-carbtn" type="button" data-play="${esc(p.id)}" aria-label="${esc(tx("See the carousel"))}" title="${esc(tx("See the carousel"))}">${icon("chevron-right")}</button><span class="lib-cardots" aria-hidden="true"><i></i><i></i><i></i></span>` : ""}
           ${fmt || p.duration_s ? `<span class="lib-fmt">${video ? icon("play") : ""}${esc([fmt, p.duration_s ? mmss(p.duration_s) : ""].filter(Boolean).join(" · "))}</span>` : ""}
-          ${corner}${rail}
+          ${igNote}${corner}${rail}
         </div>${foot}${aiPeek(p.id)}
       </article>`;
     }
@@ -2001,7 +1998,7 @@
             // the tweet's own video / image stays clickable (plays in place); its header, text and bottom open the detail
             ? `<button class="lib-hit lib-hit-top" type="button" data-open="${esc(p.id)}" aria-label="Details${who ? ` · ${esc(who)}` : ""}"></button><button class="lib-hit lib-hit-bottom" type="button" data-open="${esc(p.id)}" tabindex="-1" aria-hidden="true"></button>`
             : `<button class="lib-hit" type="button" data-open="${esc(p.id)}" aria-label="Details${who ? ` · ${esc(who)}` : ""}"></button>`}
-          ${rail}
+          ${igNote}${rail}
         </div>${asPosted ? "" : foot}${aiPeek(p.id)}
       </article>`;
     }
@@ -2012,7 +2009,7 @@
           <button class="lib-hit" type="button" data-open="${esc(p.id)}" aria-label="Details${who ? ` · ${esc(who)}` : ""}"></button>
           ${playerSrc(p) ? `<button class="lib-playbtn${video ? "" : " is-view"}" type="button" data-play="${esc(p.id)}" aria-label="${esc(video ? tx("Play video") : tx("Show the post"))}">${icon(video ? "play" : "eye")}</button>` : ""}
           ${fmt || p.duration_s ? `<span class="lib-fmt">${video ? icon("play") : ""}${esc([fmt, p.duration_s ? mmss(p.duration_s) : ""].filter(Boolean).join(" · "))}</span>` : ""}
-          ${corner}${rail}
+          ${igNote}${corner}${rail}
         </div>${foot}${aiPeek(p.id)}
       </article>`;
   }
