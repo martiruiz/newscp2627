@@ -16,6 +16,8 @@ const rest = async (path: string, init: RequestInit = {}) => {
   return r.status === 204 ? null : r.json().catch(() => null);
 };
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+// a request to a platform gives up after 15 s (one post that never answers held its whole call up to the function's limit)
+const net = (url: string, init: RequestInit = {}) => fetch(url, { ...init, signal: AbortSignal.timeout(15000) });
 
 async function superadmin(req: Request) {
   const token = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
@@ -31,7 +33,7 @@ async function superadmin(req: Request) {
 const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36";
 const IFRAME = { "User-Agent": UA, Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", "Accept-Language": "en-US,en;q=0.9", "Sec-Fetch-Dest": "iframe", "Sec-Fetch-Mode": "navigate", "Sec-Fetch-Site": "cross-site" };
 const page = async (url: string, headers: Record<string, string> = IFRAME) => {
-  const r = await fetch(url, { headers }).catch(() => null);
+  const r = await net(url, { headers }).catch(() => null);
   return r?.ok ? await r.text() : "";
 };
 const amp = (s?: string | null) => s?.replace(/&amp;/g, "&");
@@ -59,7 +61,7 @@ async function instagram(url: string): Promise<Cover> {
   return image ? { image, media_type, width, height, duration: Number(field("video_duration")) || undefined, views: Number(field("video_view_count")) || Number(field("video_play_count")) || undefined } : null;
 }
 async function tiktok(url: string): Promise<Cover> {
-  const r = await fetch(`https://www.tiktok.com/oembed?url=${encodeURIComponent(url)}`).catch(() => null);
+  const r = await net(`https://www.tiktok.com/oembed?url=${encodeURIComponent(url)}`).catch(() => null);
   if (r?.status === 404 || r?.status === 400) return { broken: true };
   const j = r?.ok ? await r.json().catch(() => null) : null;
   if (j?.thumbnail_url) return { image: j.thumbnail_url, media_type: "video", width: j.thumbnail_width, height: j.thumbnail_height };
@@ -82,14 +84,14 @@ async function coverFor(url: string): Promise<Cover> {
   if ((m = /(?:shorts\/|v=|youtu\.be\/)([\w-]{11})/.exec(url))) {
     for (const q of ["maxresdefault", "hqdefault"]) {
       const img = `https://i.ytimg.com/vi/${m[1]}/${q}.jpg`;
-      const h = await fetch(img, { method: "HEAD" }).catch(() => null);
+      const h = await net(img, { method: "HEAD" }).catch(() => null);
       if (h?.ok) return { image: img, media_type: "video" };
     }
     return null;
   }
   if ((m = /(?:twitter|x)\.com\/[^/]+\/status\/(\d+)/.exec(url))) {
     const token = ((Number(m[1]) / 1e15) * Math.PI).toString(36).replace(/(0+|\.)/g, "");
-    const r = await fetch(`https://cdn.syndication.twimg.com/tweet-result?id=${m[1]}&token=${token}&lang=en`).catch(() => null);
+    const r = await net(`https://cdn.syndication.twimg.com/tweet-result?id=${m[1]}&token=${token}&lang=en`).catch(() => null);
     if (r?.status === 404) return { broken: true };
     const j = r?.ok ? await r.json().catch(() => null) : null;
     const md = (j?.mediaDetails || [])[0];
@@ -135,7 +137,7 @@ function imageSize(b: Uint8Array): { width: number; height: number } | null {
 
 // download → Storage "covers/{id/1000}/{id}.{ext}" → public URL (and its size)
 async function store(id: number, imageUrl: string) {
-  const r = await fetch(imageUrl, { headers: { "User-Agent": UA } }).catch(() => null);
+  const r = await net(imageUrl, { headers: { "User-Agent": UA } }).catch(() => null);
   if (!r?.ok) return null;
   const type = (r.headers.get("content-type") || "image/jpeg").split(";")[0];
   const ext = ({ "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "image/avif": "avif" } as Record<string, string>)[type];
@@ -190,7 +192,7 @@ Deno.serve(async (req) => {
     // A Short has a vertical still too (oardefault, only Shorts do): then it gets its /shorts/ link, that still as cover and
     // the Shorts format (imports bring every YouTube post with the plain watch?v= link)
     if (yt) {
-      const short = (await fetch(`https://i.ytimg.com/vi/${yt}/oardefault.jpg`, { method: "HEAD" }).catch(() => null))?.status === 200;
+      const short = (await net(`https://i.ytimg.com/vi/${yt}/oardefault.jpg`, { method: "HEAD" }).catch(() => null))?.status === 200;
       await rest(`content_ideas?id=eq.${p.id}`, { method: "PATCH", body: JSON.stringify(short
         ? { url: `https://www.youtube.com/shorts/${yt}`, cover_url: `https://i.ytimg.com/vi/${yt}/oardefault.jpg`, cover_at: now }
         : { cover_url: `https://i.ytimg.com/vi/${yt}/hqdefault.jpg`, cover_at: now }) });
