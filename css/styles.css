@@ -6795,17 +6795,9 @@ a.lf-sp-favs { text-decoration: none; }
 .lf-fol-box { padding: 2px 2px 0; }
 .lf-cc-sub > .lf-cc-chips { margin-top: 18px; }
 /* panel → right column: the count and 4 of the most viewed posts with the filters chosen, live */
-.lfp-body { grid-template-columns: 220px minmax(0, 1fr) 250px; }
-.lfp-res { display: flex; flex-direction: column; gap: 4px; padding: 20px 18px; border-left: 1px solid var(--line-soft); background: linear-gradient(180deg, rgba(240, 184, 74, 0.07), transparent 55%); overflow-y: auto; }
-.lfp-res small { font-size: 12.5px; color: var(--muted); }
-.lfp-res > b { font: 600 30px/1.1 var(--font-display); color: var(--text); letter-spacing: -0.01em; }
-.lfp-res-mini { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 12px 0 16px; }
-.lfp-res-mini span { position: relative; aspect-ratio: 4 / 5; border-radius: 10px; background: var(--surface-2) center / cover no-repeat; border: 1px solid var(--line-soft); }
-.lfp-res-mini span:not([style]) { background-image: linear-gradient(110deg, var(--surface-2) 30%, var(--surface-3) 50%, var(--surface-2) 70%); background-size: 200% 100%; animation: lfp-shimmer 1.4s linear infinite; }
-.lfp-res-mini em { position: absolute; left: 5px; bottom: 5px; padding: 1px 6px; border-radius: 999px; background: rgba(8, 12, 26, 0.78); color: #fff; font: 600 10px var(--font-body); font-style: normal; }
-.lfp-res .lfp-go { margin-top: auto; width: 100%; justify-content: center; }
-.lfp-go-foot { display: none; }
-@media (max-width: 1280px) { .lfp-body { grid-template-columns: 200px minmax(0, 1fr); } .lfp-res { display: none; } .lfp-go-foot { display: inline-flex; } }
+.lfp-body { grid-template-columns: 220px minmax(0, 1fr); }
+.lfp-go-foot { display: inline-flex; }
+@media (max-width: 1280px) { .lfp-body { grid-template-columns: 200px minmax(0, 1fr); } }
 /* panels: competitions / clubs / brands as small logo tiles (sports: .lfp-cards-sport, further down) */
 .lfp-cards.lfp-cards-logo { grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 8px; }
 /* panel chips the chosen filters leave without posts: switched off */

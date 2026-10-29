@@ -880,13 +880,11 @@
       ${sel.length ? `<button type="button" class="lfp-clear" data-lfb-clear="${sec}">${esc(tx("Clear"))}</button>` : ""}
       <button type="button" class="lfp-go lfp-go-foot" data-lfb-close>${esc(goLabel())}${icon("arrow-up-right")}</button>`;
   }
-  // the panel's right column: what the filters find, live — the count and 4 of the most viewed of the first page
-  const resHtml = () => `<small>${esc(tx("You'll find"))}</small><b>${ui.total == null ? "…" : Number(ui.total).toLocaleString(window.SCP_LOC || "en-GB")}</b><small>${esc(tx("posts · the most viewed:"))}</small>
-    <div class="lfp-res-mini">${(ui.peek || []).map((p) => `<span style="background-image:url('${esc(p.cover_url)}')">${p.views ? `<em>${kfmt(p.views)}</em>` : ""}</span>`).join("") || "<span></span><span></span><span></span><span></span>"}</div>
-    <button type="button" class="lfp-go" data-lfb-close><span data-lfb-go>${esc(goLabel())}</span>${icon("arrow-up-right")}</button>`;
+  // the "Show N posts" button at the foot of the panel, kept up to date with the count
+  const goFoot = () => { const b = $(".lfp-go-foot"); if (b) b.innerHTML = `${esc(goLabel())}${icon("arrow-up-right")}`; };
   const goLabel = () => (ui.total == null ? tx("Show posts") : ui.total ? tx("Show {n} posts", { n: Number(ui.total).toLocaleString(window.SCP_LOC || "en-GB") }) : tx("No posts — change the filters"));
   const SEC_PERM = { occasion: "library.matchday", goal: "library.brands" };
-  const lfpHtml = (sec) => SEC_PERM[sec] && !can(SEC_PERM[sec]) ? `<div class="lfp-locked">${lockedHtml(SEC_PERM[sec])}</div>` : `<div class="lfp-top">${lfpTop(sec)}</div><div class="lfp-body"><nav class="lfp-rail" aria-label="${esc(tx("Groups"))}">${lfpRail(sec)}</nav><div class="lfp-main" data-lfp-main>${lfpMain(sec)}</div><aside class="lfp-res" data-lfp-res>${resHtml()}</aside></div><div class="lfp-foot">${lfpFoot(sec)}</div>`;
+  const lfpHtml = (sec) => SEC_PERM[sec] && !can(SEC_PERM[sec]) ? `<div class="lfp-locked">${lockedHtml(SEC_PERM[sec])}</div>` : `<div class="lfp-top">${lfpTop(sec)}</div><div class="lfp-body"><nav class="lfp-rail" aria-label="${esc(tx("Groups"))}">${lfpRail(sec)}</nav><div class="lfp-main" data-lfp-main>${lfpMain(sec)}</div></div><div class="lfp-foot">${lfpFoot(sec)}</div>`;
   const coverAsked = new Set();
   const coverUsed = new Set();   // the photos already given to a card
   let noTopCovers = false;       // value_covers_top not in Supabase yet: the old function only
@@ -1752,8 +1750,7 @@
     const rows = data?.data || [];
     if (reset) {
       ui.total = data.total;
-      ui.peek = rows.filter((p) => p.cover_url).sort((a, b) => (Number(b.views) || 0) - (Number(a.views) || 0)).slice(0, 4);
-      const res = $("[data-lfp-res]"); if (res) res.innerHTML = resHtml();
+      goFoot();
       $("[data-lf-go]").textContent = data.total ? `Show ${Number(data.total).toLocaleString(window.SCP_LOC || "en-GB")} results` : "No results — change the filters";
     }
     if (!rows.length && offset === 0) {
@@ -1768,13 +1765,12 @@
     if (nearEnd && !more.hidden && !grid.hidden) load(false);   // the page is still short of the screen: the next ones
   }
 
-  // the filter panels' count and most viewed posts while the creators are shown (the grid isn't loaded then)
+  // the filter panels' count while the creators are shown (the grid isn't loaded then)
   async function panelCount(args, my) {
-    const { data } = await fetchIdeas({ ...args, p_order: "views", p_seed: "", p_ids: null, p_limit: 12, p_offset: 0 }).catch(() => ({}));
+    const { data } = await fetchIdeas({ ...args, p_order: "views", p_seed: "", p_ids: null, p_limit: 1, p_offset: 0 }).catch(() => ({}));
     if (my !== token || !data) return;
     ui.total = data.total;
-    ui.peek = (data.data || []).filter((p) => p.cover_url).slice(0, 4);
-    const res = $("[data-lfp-res]"); if (res) res.innerHTML = resHtml();
+    goFoot();
   }
 
   // ---------- Keep the place on refresh (this tab): filters, sort and its shuffle, posts loaded and scroll ----------
