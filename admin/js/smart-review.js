@@ -31,7 +31,7 @@
     items = all.filter((r) => (r.batch || "—") === batch);
     const ids = all.map((r) => r.post_id);
     for (const part of A.chunk(ids, 100)) {
-      const { data: ps } = await A.db.from("content_ideas").select("id,url,title,published_at,embed,content_idea_tags(idea_catalog(category,name))").in("id", part);
+      const { data: ps } = await A.db.from("content_ideas").select("id,url,title,published_at,embed,cover_url,content_idea_tags(idea_catalog(category,name))").in("id", part);
       for (const p of ps || []) {
         const tags = {};
         for (const { idea_catalog: v } of p.content_idea_tags || []) if (v) (tags[v.category] ||= []).push(v.name);
@@ -148,7 +148,6 @@
         <span class="muted">1 = A · 2 = B · 3 = both · 4 = neither (first open filter)</span>
         <button class="btn btn-primary" type="button" data-cmp-next>${icon("check")}Next post</button>
       </div>`;
-    $$("img[data-tt]").forEach((img) => fetch(`https://www.tiktok.com/oembed?url=${encodeURIComponent(img.dataset.tt)}`).then((x) => x.json()).then((j) => { if (j.thumbnail_url) img.src = j.thumbnail_url; }).catch(() => {}));
     const pick = async (row, side) => {
       const f = Number(row.dataset.flip);
       const choice = side === "a" ? (f ? "new" : "old") : side === "b" ? (f ? "old" : "new") : side;
@@ -202,12 +201,13 @@
   function preview(p) {
     const u = p.url || ""; let m;
     if ((m = /instagram\.com\/(?:[\w.]+\/)?(p|reel|tv)\/([\w-]+)/.exec(u))) return `<iframe class="sr-frame" src="https://www.instagram.com/${m[1]}/${m[2]}/embed/captioned/" loading="lazy" scrolling="yes"></iframe>`;
-    if (/tiktok\.com\//.test(u)) return `<div class="sr-cover"><img data-tt="${esc(u)}" alt=""></div>`;
     if ((m = /(?:shorts\/|v=|youtu\.be\/)([\w-]{11})/.exec(u))) return `<iframe class="sr-frame sr-wide" src="https://www.youtube-nocookie.com/embed/${m[1]}" allowfullscreen></iframe>`;
     if ((m = /(?:twitter|x)\.com\/[^/]+\/status\/(\d+)/.exec(u))) return `<iframe class="sr-frame" src="https://platform.twitter.com/embed/Tweet.html?id=${m[1]}&theme=dark&dnt=true"></iframe>`;
-    if (/facebook\.com\//.test(u)) return `<iframe class="sr-frame" src="https://www.facebook.com/plugins/post.php?href=${encodeURIComponent(u)}&width=500"></iframe>`;
+    // TikTok and Facebook limit or block their players: the saved cover and the post's link (below)
+    if (/facebook\.com\//.test(u) && !p.cover_url) return `<iframe class="sr-frame" src="https://www.facebook.com/plugins/post.php?href=${encodeURIComponent(u)}&width=500"></iframe>`;
     if ((m = /linkedin\.com\/feed\/update\/(urn:li:[\w:]+)/.exec(u))) return `<iframe class="sr-frame" src="https://www.linkedin.com/embed/feed/update/${m[1]}"></iframe>`;
-    return `<p class="muted">No preview</p>`;
+    // TikTok, Facebook or no player for this link: the saved cover and the post's link
+    return p.cover_url ? `<div class="sr-cover"><img src="${esc(p.cover_url)}" alt=""></div><a class="muted" href="${esc(u)}" target="_blank" rel="noopener">Open the post ↗</a>` : `<p class="muted">No preview</p>`;
   }
 
   // Verify mode (review sets named "… verify …"): every AI label must be confirmed (✓) or rejected (✗) before saving
@@ -263,7 +263,6 @@
         <button class="btn btn-primary" type="button" data-save>${icon("check")}Save &amp; next</button>
       </div>`;
     // TikTok cover
-    $$("img[data-tt]").forEach((img) => fetch(`https://www.tiktok.com/oembed?url=${encodeURIComponent(img.dataset.tt)}`).then((x) => x.json()).then((j) => { if (j.thumbnail_url) img.src = j.thumbnail_url; }).catch(() => {}));
     $$(".sr-cat[data-cat]").forEach((box) => box.addEventListener("click", (e) => {
       const b = e.target.closest(".sr-chip");
       if (!b) return;
