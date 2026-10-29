@@ -153,27 +153,37 @@
   }
 
   // one player or sponsor by hand: name, where, Instagram / TikTok, and its Instagram scraped right away
-  function personDialog(kind) {
-    const secs = club.sections.map((s) => s.name), teams = [...new Set(club.sections.flatMap((s) => s.teams.map((t) => t.name)))];
+  async function personDialog(kind) {
+    // Section: the platform's sports (the Sport filter) and the club's own sections; Team: the club's teams and the usual
+    // ones. Both searchable, and a name that isn't there can be created (it's created with the person)
+    const catalog = await A.loadCatalog();
+    const uniq = (names) => [...new Map(names.filter(Boolean).map((n) => [n.toLowerCase(), n])).values()];
+    const secNames = uniq([...club.sections.map((x) => x.name), ...catalog.byCat.sport.slice().sort((a, b) => (b.ideas || 0) - (a.ideas || 0)).map((v) => v.name)]);
+    const teamNames = uniq([...club.sections.flatMap((x) => x.teams.map((t) => t.name)), "First team (men)", "First team (women)", "B team", "Academy"]);
+    const opts = (names) => names.map((name, i) => ({ id: i + 1, name }));
     const m = A.modal({ title: kind === "player" ? "Add player" : "Add sponsor", size: "sm",
       body: `<form class="mcl-new mcl-person" data-person-form>
         <label>Name<input class="input" name="name" required maxlength="120" placeholder="${kind === "player" ? "Lamine Yamal" : "Spotify"}" autofocus></label>
-        <div class="mcl-person-2"><label>Section<input class="input" name="section" list="mcl-secs" placeholder="${kind === "player" ? "Football" : "Empty: the whole club"}"></label>
-          <label>Team<input class="input" name="team" list="mcl-teams" placeholder="First team (men)"></label></div>
-        <datalist id="mcl-secs">${secs.map((n) => `<option value="${esc(n)}">`).join("")}</datalist><datalist id="mcl-teams">${teams.map((n) => `<option value="${esc(n)}">`).join("")}</datalist>
+        <div class="mcl-person-2"><div class="field"><span class="label">Section${kind === "sponsor" ? " <small>(empty: the whole club)</small>" : ""}</span><div data-ms-sec></div></div>
+          <div class="field"><span class="label">Team</span><div data-ms-team></div></div></div>
         <div class="mcl-person-2"><label>Instagram<input class="input" name="instagram" placeholder="@lamineyamal" autocomplete="off"></label>
           <label>TikTok<input class="input" name="tiktok" placeholder="@handle (optional)" autocomplete="off"></label></div>
         <label class="check-inline mcl-person-scrape"><input type="checkbox" name="scrape" checked> Scrape its last 10 Instagram posts now (only in this club's My Club)</label>
       </form>`,
       foot: `<button class="btn btn-ghost" type="button" data-x>Cancel</button><button class="btn btn-primary" type="button" data-ok>${icon("plus")}Add</button>` });
     const f = $("[data-person-form]", m.el);
+    const pick = (box, names) => {
+      const ms = new A.MultiSelect($(box, m.el), { single: true, options: opts(names), onCreate: async (name) => ({ id: -Date.now(), name }) });
+      return () => (ms.value()[0] != null ? ms.nameOf(ms.value()[0]) : "");
+    };
+    const secOf = pick("[data-ms-sec]", secNames), teamOf = pick("[data-ms-team]", teamNames);
     $("[data-x]", m.el).onclick = () => m.close();
     const save = async () => {
       const v = (n) => f[n].value.trim();
       if (!v("name")) return f.name.focus();
       const handle = v("instagram").replace(/^@/, "").replace(/^https?:\/\/(www\.)?instagram\.com\//, "").replace(/\/.*$/, "").toLowerCase();
       try {
-        await rpc("admin_club_import", { p_club: cur, p_rows: [{ type: kind, name: v("name"), section: v("section"), team: v("section") ? v("team") : "", instagram: handle, tiktok: v("tiktok").replace(/^@/, "") }] });
+        await rpc("admin_club_import", { p_club: cur, p_rows: [{ type: kind, name: v("name"), section: secOf(), team: secOf() ? teamOf() : "", instagram: handle, tiktok: v("tiktok").replace(/^@/, "") }] });
         m.close();
         A.toast(`${v("name")} added`);
         await loadClub();

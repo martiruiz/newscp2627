@@ -140,6 +140,7 @@ window.SCPA_DICT = Object.assign(window.SCPA_DICT || {}, {
   "Required — must be unique": ["Obligatorio, debe ser único", "Obligatori, ha de ser únic"],
   "Paste the post's link: everything else fills in by itself": ["Pega el enlace del post: el resto se rellena solo", "Enganxa l'enllaç del post: la resta s'omple sola"],
   "Post link": ["Enlace del post", "Enllaç del post"],
+  "(empty: the whole club)": ["(vacío: todo el club)", "(buit: tot el club)"],
   "Scrape": ["Scrapear", "Scrapejar"],
   "Add player": ["Añadir jugador", "Afegir jugador"],
   "Add sponsor": ["Añadir patrocinador", "Afegir patrocinador"],

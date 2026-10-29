@@ -371,7 +371,12 @@
       this.search = $("input", this.pop);
       this.search.addEventListener("input", () => this.renderList());
       this.search.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") { e.preventDefault(); ($("[data-create]", this.pop) || $(".ms-opt[data-id]", this.pop))?.click(); }   // create shows only when no value has that exact name
+        if (e.key === "Enter") {   // a value that starts with what's typed ("foot" → Football), else create the new one, else the first match
+          e.preventDefault();
+          const q = this.search.value.trim().toLowerCase();
+          const starts = $$(".ms-opt[data-id]", this.pop).find((o) => q && this.nameOf(Number(o.dataset.id)).toLowerCase().startsWith(q));
+          (starts || $("[data-create]", this.pop) || $(".ms-opt[data-id]", this.pop))?.click();
+        }
         if (e.key === "ArrowDown") { e.preventDefault(); $(".ms-opt", this.pop)?.focus(); }
       });
       this.pop.addEventListener("click", (e) => e.stopPropagation());
