@@ -5,7 +5,7 @@
 // A post imported with its image link from the scraping (content_ideas.cover_source, supabase/import-cover-source.sql)
 // takes that image first, without asking the platform (6 at a time); the others ask their platform (3 at a time).
 // Instagram's extra data (type, size, length, views) from the post's page: POST { ids, meta: true }, a separate pass.
-// SUPABASE_URL, SUPABASE_ANON_KEY and SUPABASE_SERVICE_ROLE_KEY are provided by Supabase; CRON_SECRET (secret) lets the every-minute run in.
+// SUPABASE_URL, SUPABASE_ANON_KEY and SUPABASE_SERVICE_ROLE_KEY are provided by Supabase; the every-minute run carries the vault's cron_secret.
 const env = (k: string) => Deno.env.get(k) ?? "";
 const CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, apikey, content-type", "Access-Control-Allow-Methods": "POST, OPTIONS" };
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...CORS, "Content-Type": "application/json" } });
@@ -160,7 +160,8 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: CORS });
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
   // the every-minute run (pg_cron "scp-covers", supabase/covers-queue.sql) comes with the cron secret; anyone else is a superadmin
-  const cron = !!env("CRON_SECRET") && req.headers.get("x-cron-secret") === env("CRON_SECRET");
+  const secret = req.headers.get("x-cron-secret") || "";   // the vault secret "cron_secret", checked against the vault itself (as views-cron)
+  const cron = !!secret && (await rest("rpc/cron_secret_ok", { method: "POST", body: JSON.stringify({ p_secret: secret }) }).catch(() => false)) === true;
   if (!cron && !(await superadmin(req))) return json({ error: "Only superadmins" }, 403);
   const { ids, meta, queue } = await req.json().catch(() => ({ ids: [] }));
   const list = (Array.isArray(ids) ? ids : []).map(Number).filter(Boolean).slice(0, 12);
