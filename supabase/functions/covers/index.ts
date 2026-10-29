@@ -186,7 +186,21 @@ Deno.serve(async (req) => {
     const now = new Date().toISOString();
     // YouTube: its own still (i.ytimg.com) never expires, so it's linked as it is, not copied
     const yt = /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/|live\/)|youtu\.be\/)([\w-]{11})/.exec(p.url || "")?.[1];
-    if (yt) { await rest(`content_ideas?id=eq.${p.id}`, { method: "PATCH", body: JSON.stringify({ cover_url: `https://i.ytimg.com/vi/${yt}/hqdefault.jpg`, cover_at: now }) }); done++; return; }
+    // A Short has a vertical still too (oardefault, only Shorts do): then it gets its /shorts/ link, that still as cover and
+    // the Shorts format (imports bring every YouTube post with the plain watch?v= link)
+    if (yt) {
+      const short = (await fetch(`https://i.ytimg.com/vi/${yt}/oardefault.jpg`, { method: "HEAD" }).catch(() => null))?.status === 200;
+      await rest(`content_ideas?id=eq.${p.id}`, { method: "PATCH", body: JSON.stringify(short
+        ? { url: `https://www.youtube.com/shorts/${yt}`, cover_url: `https://i.ytimg.com/vi/${yt}/oardefault.jpg`, cover_at: now }
+        : { cover_url: `https://i.ytimg.com/vi/${yt}/hqdefault.jpg`, cover_at: now }) });
+      if (short) {
+        const fmt = await rest("idea_catalog?select=id,name&category=eq.format&name=in.(Shorts,Video)").catch(() => []);
+        const id = (n: string) => (fmt as { id: number; name: string }[]).find((f) => f.name === n)?.id;
+        if (id("Video")) await rest(`content_idea_tags?idea_id=eq.${p.id}&value_id=eq.${id("Video")}`, { method: "DELETE" }).catch(() => {});
+        if (id("Shorts")) await rest("content_idea_tags", { method: "POST", headers: { Prefer: "resolution=ignore-duplicates" }, body: JSON.stringify({ idea_id: p.id, value_id: id("Shorts") }) }).catch(() => {});
+      }
+      done++; return;
+    }
     try {
       const c = await coverFor(p.url || "");
       if (c?.broken) { removed++; await rest(`content_ideas?id=eq.${p.id}`, { method: "PATCH", body: JSON.stringify({ unavailable_at: now, cover_at: now }) }); return; }
