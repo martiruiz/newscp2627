@@ -163,15 +163,16 @@ Deno.serve(async (req) => {
   const secret = req.headers.get("x-cron-secret") || "";   // the vault secret "cron_secret", checked against the vault itself (as views-cron)
   const cron = !!secret && (await rest("rpc/cron_secret_ok", { method: "POST", body: JSON.stringify({ p_secret: secret }) }).catch(() => false)) === true;
   if (!cron && !(await superadmin(req))) return json({ error: "Only superadmins" }, 403);
-  const { ids, meta, queue } = await req.json().catch(() => ({ ids: [] }));
+  const { ids, meta, queue, backlog } = await req.json().catch(() => ({ ids: [] }));
   const list = (Array.isArray(ids) ? ids : []).map(Number).filter(Boolean).slice(0, 12);
-  if (!list.length && !queue) return json({ done: 0, no_image: 0, removed: 0 });
+  if (!list.length && !queue && !backlog) return json({ done: 0, no_image: 0, removed: 0 });
   let rows: { id: number; url: string; cover_source?: string }[] = [];
   if (list.length) {
     try { rows = await rest(`content_ideas?select=id,url,cover_source&id=in.(${list.join(",")})`); }
     catch (_) { rows = await rest(`content_ideas?select=id,url&id=in.(${list.join(",")})`); }   // import-cover-source.sql not run yet
   }
   let done = 0, noImage = 0, removed = 0;
+  const missed: number[] = [];   // posts left without an image in this call (the night backlog checks them for a block)
   const igMeta = (id: number, c: Cover) => (c && !c.broken && c.media_type && c.width && c.height
     ? rest("rpc/apply_ig_meta", { method: "POST", body: JSON.stringify({ p_rows: [{ id, media_type: c.media_type, width: c.width, height: c.height, duration: c.duration, views: c.views }] }) }).catch(() => {})
     : Promise.resolve());
@@ -214,14 +215,14 @@ Deno.serve(async (req) => {
       const c = await coverFor(p.url || "");
       if (c?.broken) { removed++; await rest(`content_ideas?id=eq.${p.id}`, { method: "PATCH", body: JSON.stringify({ unavailable_at: now, cover_at: now }) }); return; }
       const st = c?.image ? await store(p.id, c.image) : null;
-      if (!st?.url) { noImage++; await rest(`content_ideas?id=eq.${p.id}`, { method: "PATCH", body: JSON.stringify({ cover_at: now }) }); return; }
+      if (!st?.url) { noImage++; missed.push(p.id); await rest(`content_ideas?id=eq.${p.id}`, { method: "PATCH", body: JSON.stringify({ cover_at: now }) }); return; }
       const extra = !ig ? { ...(c!.media_type ? { media_type: c!.media_type } : {}), ...(c!.width && c!.height ? { media_width: c!.width, media_height: c!.height, media_ratio: Math.round((c!.height / c!.width) * 10000) / 10000 } : {}) } : {};
       await rest(`content_ideas?id=eq.${p.id}`, { method: "PATCH", body: JSON.stringify({ cover_url: `${st.url}?v=${Date.now().toString(36)}`, cover_at: now, ...extra }) });
       if (/facebook\.com/.test(p.url || "") && st.size) await rest("rpc/apply_media_shape", { method: "POST", body: JSON.stringify({ p_rows: [{ id: p.id, ...st.size }] }) }).catch(() => {});   // supabase/fb-shape.sql
       if (ig) await igMeta(p.id, c);
       done++;
     } catch (_) {
-      noImage++;
+      noImage++; missed.push(p.id);
       await rest(`content_ideas?id=eq.${p.id}`, { method: "PATCH", body: JSON.stringify({ cover_at: now }) }).catch(() => {});
     }
     await sleep(ig ? 300 : 100);
@@ -248,6 +249,32 @@ Deno.serve(async (req) => {
     const t0 = Date.now();
     await Promise.all([0, 1, 2].map(async () => { while (Date.now() - t0 < 50000) { const r = await claim(null); if (!r.length) break; await work(r); } }));
     return json({ done, no_image: noImage, removed, secs: Math.round((Date.now() - t0) / 1000) });
+  }
+  // backlog: the old posts of a platform with no cover (only TikTok: supabase/covers-backlog.sql), at night, one lane
+  // of 12 for ~50 s, most viewed first. A batch with more than half left without an image means the platform is
+  // holding us back: that batch is put back (to be tried again) and the backlog waits until the next night.
+  if (backlog) {
+    if (backlog !== "tiktok") return json({ error: "Only the TikTok backlog" }, 400);
+    const [st] = (await rest("cover_backlog?select=paused_until,done&platform=eq.tiktok").catch(() => [])) as { paused_until: string | null; done: number }[];
+    if (st?.paused_until && new Date(st.paused_until) > new Date()) return json({ paused_until: st.paused_until });
+    const t0 = Date.now();
+    let paused: string | null = null;
+    while (Date.now() - t0 < 50000) {
+      const r = ((await rest("rpc/claim_cover_backlog", { method: "POST", body: JSON.stringify({ p_platform: "tiktok", p_n: 12 }) }).catch(() => [])) || []) as typeof rows;
+      if (!r.length) break;
+      const before = missed.length;
+      await work(r);
+      const miss = missed.slice(before);
+      if (miss.length > r.length / 2) {
+        await rest(`content_ideas?id=in.(${miss.join(",")})`, { method: "PATCH", body: JSON.stringify({ cover_at: null }) }).catch(() => {});
+        noImage -= miss.length;
+        const next = new Date(); next.setUTCHours(24, 0, 0, 0);   // the next night's start (0:00 UTC = 1:00 in Spain)
+        paused = next.toISOString();
+        break;
+      }
+    }
+    await rest("cover_backlog?platform=eq.tiktok", { method: "PATCH", body: JSON.stringify({ done: (st?.done || 0) + done, last_run: new Date().toISOString(), ...(paused ? { paused_until: paused } : {}) }) }).catch(() => {});
+    return json({ done, no_image: noImage, removed, paused_until: paused, secs: Math.round((Date.now() - t0) / 1000) });
   }
   await work(await claim(list));
   return json({ done, no_image: noImage, removed });
