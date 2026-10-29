@@ -133,6 +133,13 @@ Deno.serve(async (req) => {
     return json({ status: "ready", rows, errors, avatar, fields: Object.keys(posts[0] || {}).slice(0, 60) });
   }
 
+  // diagnosis (superadmins): the latest collections of both datasets as Bright Data lists them, and the raw progress of one
+  if (b.action === "diag") {
+    const list = async (ds: string) => (await bd(`/snapshots?dataset_id=${ds}&limit=15`).then(async (x) => (x.ok ? x.json() : { http: x.status, body: (await x.text()).slice(0, 300) })).catch((e) => ({ error: String(e) })));
+    const raw = b.snapshot_id ? await bd(`/progress/${String(b.snapshot_id)}`).then(async (x) => ({ http: x.status, body: (await x.text()).slice(0, 800) })).catch((e) => ({ error: String(e) })) : null;
+    return json({ instagram: await list(IG_POSTS), tiktok: await list(TT_POSTS), progress: raw });
+  }
+
   // stop a collection at Bright Data (one stuck "running"): 400 = it wasn't running any more, also fine
   if (b.action === "cancel") {
     const id = String(b.snapshot_id || "");
