@@ -112,6 +112,34 @@ if (argv.includes("--eval")) {
   process.exit(0);
 }
 
+// ---------- --seed N: a new review set in Admin → Smart filters (the current AI's labels, to confirm or reject one by one),
+// from the pending imports and every platform ----------
+if (argv.includes("--seed")) {
+  const N = Number(arg("--seed")) || 30, BATCH = `${new Date().toISOString().slice(0, 10)} verify ${VERSION}`;
+  const MIX = { instagram: 0.6, tiktok: 0.17, facebook: 0.13, youtube: 0.1 };
+  const { data: taken } = await db.from("smart_review").select("post_id");
+  const skip = new Set((taken || []).map((r) => r.post_id));
+  const ids = [];
+  for (const [pf, share] of Object.entries(MIX)) {
+    const want = Math.max(1, Math.round(N * share));
+    const { data, error } = await db.from("content_ideas").select("id,title").is("smart_at", null).is("unavailable_at", null)
+      .not("cover_url", "is", null).ilike("url", `%${pf === "youtube" ? "youtu" : pf}%`).gte("created_at", "2026-10-19").limit(2000);
+    if (error) throw error;
+    const pool = data.filter((r) => !skip.has(r.id) && (r.title || "").trim().length > 15).sort(() => Math.random() - 0.5);
+    ids.push(...pool.slice(0, want).map((r) => r.id));
+  }
+  const rows = [];
+  let usd = 0;
+  for (const p of await loadPosts(ids.slice(0, N))) {
+    try { const msg = await claude.messages.create(await request(p)); rows.push({ post_id: p.id, ai: parseAnswer(msg, p.title), batch: BATCH, status: "todo" }); usd += cost(msg.usage); }
+    catch (e) { console.log(`  ✗ ${p.id}: ${e.message}`); }
+  }
+  const { error } = await db.from("smart_review").insert(rows);
+  if (error) throw error;
+  console.log(`Review set "${BATCH}": ${rows.length} posts labelled by ${VERSION} · $${usd.toFixed(4)} → Admin → Smart filters`);
+  process.exit(0);
+}
+
 // ---------- --test N: labelled right away, real cost ----------
 if (argv.includes("--test")) {
   const N = Number(arg("--test")) || 100;

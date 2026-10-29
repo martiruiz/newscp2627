@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "run, eval or test"
+        description: "run, eval, test or seed (30 posts to review in Admin → Smart filters)"
         default: "run"
       from:
         description: "run: posts imported since this day (YYYY-MM-DD; empty = last 7 days)"
@@ -48,5 +48,6 @@ jobs:
           case "$MODE" in
             eval) node library/smart-auto.mjs --eval --diff ;;
             test) node library/smart-auto.mjs --test 100 ;;
+            seed) node library/smart-auto.mjs --seed 30 ;;
             *)    node library/smart-auto.mjs --run ${FROM:+--from "$FROM"} ;;
           esac
