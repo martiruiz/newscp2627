@@ -6,7 +6,7 @@
 // Data: supabase/my-club.sql.
 (async () => {
   const A = window.SCPA;
-  const { $, esc, icon, num, info } = A;
+  const { $, $$, esc, icon, num, info } = A;
   try { await A.boot("myclub"); } catch { return; }
   const main = $("[data-main]");
   const fail = (e) => A.toast(e.message || String(e), "err");
@@ -60,16 +60,17 @@
     const c = club.club, people = club.people;
     const secName = new Map(club.sections.map((s) => [s.id, s.name]));
     const teamName = new Map(club.sections.flatMap((s) => s.teams.map((t) => [t.id, `${s.name} · ${t.name}`])));
-    const pending = people.flatMap((p) => p.accounts.filter((a) => !a.posts)).length;
+    const pendingAcc = people.flatMap((p) => p.accounts.filter((a) => !a.posts));
+    const pending = pendingAcc.length, pendingIg = pendingAcc.filter((a) => a.platform === "instagram").length;
     const linkLabel = (l) => l.team_id ? teamName.get(l.team_id) : l.section_id ? `${secName.get(l.section_id)} · all teams` : "Whole club (global)";
     const table = (kind) => {
       const list = people.filter((p) => p.kind === kind);
-      if (!list.length) return `<p class="panel-pad muted">No ${kind === "player" ? "players" : "sponsors"} yet. Upload the Excel above.</p>`;
+      if (!list.length) return `<p class="panel-pad muted">No ${kind === "player" ? "players" : "sponsors"} yet. Add one with “${kind === "player" ? "Add player" : "Add sponsor"}” or upload the Excel above.</p>`;
       return `<div class="table-wrap"><table class="data mcl-table"><thead><tr><th>${kind === "player" ? "Player" : "Sponsor"}</th><th>Where</th><th>Accounts</th><th>Active</th><th></th></tr></thead><tbody>
         ${list.map((p) => `<tr${p.active ? "" : ' class="is-off"'}>
           <td><div class="ld-person">${p.photo_url ? `<img class="mcl-ph" src="${esc(p.photo_url)}" alt="">` : `<span class="ld-av">${esc(p.name.charAt(0).toUpperCase())}</span>`}<span><b>${esc(p.name)}</b></span></div></td>
           <td>${p.links.map((l) => `<span class="mcl-link${l.live ? "" : " is-ended"}" title="${esc([l.starts_on && `from ${l.starts_on}`, l.ends_on && `until ${l.ends_on}`].filter(Boolean).join(" ") || "no dates")}">${esc(linkLabel(l))}${l.live ? `<button type="button" title="End this link today (keeps the history)" data-end="${l.id}">✕</button>` : ` <small>ended</small><button type="button" title="Active again" data-relink="${l.id}">↺</button>`}</span>`).join("")}</td>
-          <td>${p.accounts.length ? p.accounts.map((a) => `<span class="mcl-acc${a.posts ? "" : " is-zero"}">${esc(PF[a.platform] || a.platform)} @${esc(a.handle)} · <b title="${esc(last.get(`${a.platform}|${a.handle}`) ? `Last post imported ${age(last.get(`${a.platform}|${a.handle}`))}` : "")}">${a.posts ? num(a.posts) + " posts" : "not scraped yet"}</b>${!a.posts && a.platform === "instagram" ? `<button class="btn btn-sm mcl-scrape" type="button" data-scrape="${esc(a.handle)}" title="Bright Data collects its last 10 posts: only in this club's My Club">${icon("download")}Scrape now (10)</button>` : ""}</span>`).join("") : `<span class="muted">—</span>`}</td>
+          <td>${p.accounts.length ? p.accounts.map((a) => `<span class="mcl-acc${a.posts ? "" : " is-zero"}">${esc(PF[a.platform] || a.platform)} @${esc(a.handle)} · <b title="${esc(last.get(`${a.platform}|${a.handle}`) ? `Last post imported ${age(last.get(`${a.platform}|${a.handle}`))}` : "")}">${a.posts ? num(a.posts) + " posts" : "not scraped yet"}</b>${!a.posts && a.platform === "instagram" ? `<button class="mcl-scrape" type="button" data-scrape="${esc(a.handle)}" title="Bright Data collects its last 10 posts: only in this club's My Club">${icon("download")}Scrape</button>` : ""}</span>`).join("") : `<span class="muted">—</span>`}</td>
           <td><input class="check" type="checkbox" aria-label="Active" data-active="${p.id}"${p.active ? " checked" : ""}></td>
           <td class="td-actions"><button class="icon-btn" type="button" title="Delete" aria-label="Delete" data-del="${p.id}">${icon("trash")}</button></td></tr>`).join("")}
         </tbody></table></div>`;
@@ -103,12 +104,15 @@
       <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Players &amp; sponsors</h2>${info("Upload an Excel with one row per person and team: Type (player / sponsor), Name, Photo, Section, Team, Instagram, TikTok, X, YouTube, Facebook, LinkedIn, Active, From, To. The same name again adds a link, it never duplicates the person. A sponsor with no section is a global sponsor.")}<span class="spacer"></span>
           <a class="btn" href="import.html?club=${cur}" title="The daily scraping CSV (same as Admin → Import): its players' and sponsors' posts go to this club's My Club">${icon("import")}Import posts (CSV)</a>
           <button class="btn" type="button" data-template>${icon("download")}Excel template</button>
-          <label class="btn btn-primary">${icon("import")}Upload Excel<input type="file" accept=".xlsx,.xls,.csv" hidden data-file></label></header>
+          <label class="btn">${icon("import")}Upload Excel<input type="file" accept=".xlsx,.xls,.csv" hidden data-file></label>
+          <button class="btn btn-primary" type="button" data-add-person="player">${icon("plus")}Add player</button></header>
         <p class="mcl-sum">${club.sections.length ? club.sections.map((s) => `<b>${esc(s.name)}</b> ${s.teams.map((t) => esc(t.name)).join(", ") || "—"}`).join(" · ") : "No sections yet."}</p>
-        ${pending ? `<div class="mcl-pending">${icon("alert")}<span><b>${num(pending)} account${pending === 1 ? "" : "s"} not scraped yet.</b> Their posts aren't in SCP: add them to the scraping Excel and import their posts as usual.</span><button class="btn btn-sm" type="button" data-scraper>${icon("download")}Accounts for the scraper</button></div>` : ""}
+        ${pending ? `<div class="mcl-pending">${icon("alert")}<span><b>${num(pending)} account${pending === 1 ? "" : "s"} without posts yet.</b> ${pendingIg ? `Scrape ${pendingIg === 1 ? "it" : "them"} here: the last 10 posts of each Instagram, only in this club's My Club (about 1–2 minutes).` : "Add them to the scraping Excel and import their posts as usual."}</span>
+          ${pendingIg ? `<button class="btn btn-primary btn-sm" type="button" data-scrape-all>${icon("download")}${pendingIg === 1 ? "Scrape it now" : `Scrape all ${num(pendingIg)}`}</button>` : ""}
+          ${pending > pendingIg ? `<button class="btn btn-sm" type="button" data-scraper>${icon("download")}Accounts for the scraper</button>` : ""}</div>` : ""}
       </section>
-      <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Players</h2><span class="aud-count">${num(people.filter((p) => p.kind === "player").length)}</span></header>${table("player")}</section>
-      <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Sponsors</h2><span class="aud-count">${num(people.filter((p) => p.kind === "sponsor").length)}</span><span class="spacer"></span><button class="btn btn-primary btn-sm" type="button" data-add-sponsor>${icon("plus")}Add sponsor from the library</button></header>${table("sponsor")}</section>`;
+      <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Players</h2><span class="aud-count">${num(people.filter((p) => p.kind === "player").length)}</span><span class="spacer"></span><button class="btn btn-sm" type="button" data-add-person="player">${icon("plus")}Add player</button></header>${table("player")}</section>
+      <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Sponsors</h2><span class="aud-count">${num(people.filter((p) => p.kind === "sponsor").length)}</span><span class="spacer"></span><button class="btn btn-sm" type="button" data-add-person="sponsor">${icon("plus")}Add sponsor</button><button class="btn btn-primary btn-sm" type="button" data-add-sponsor>${icon("plus")}Add sponsor from the library</button></header>${table("sponsor")}</section>`;
   }
 
   // the Excel: headers in EN / ES / CA, any order
@@ -136,9 +140,54 @@
     const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), "Club");
     XLSX.writeFile(wb, "scp-my-club-template.xlsx");
   }
+  // every Instagram account of the club with no posts yet, 3 at a time (each takes 1–2 minutes at Bright Data)
+  async function scrapeAll(btn) {
+    const list = [...$$("[data-scrape]", main)].filter((x) => !x.disabled);
+    if (!list.length) return;
+    btn.disabled = true;
+    let i = 0;
+    const next = async () => { while (i < list.length) { const b = list[i++]; await scrapeNow(b.dataset.scrape, b, true); } };
+    await Promise.all([next(), next(), next()]);
+    btn.disabled = false;
+    loadClub();
+  }
+
+  // one player or sponsor by hand: name, where, Instagram / TikTok, and its Instagram scraped right away
+  function personDialog(kind) {
+    const secs = club.sections.map((s) => s.name), teams = [...new Set(club.sections.flatMap((s) => s.teams.map((t) => t.name)))];
+    const m = A.modal({ title: kind === "player" ? "Add player" : "Add sponsor", size: "sm",
+      body: `<form class="mcl-new mcl-person" data-person-form>
+        <label>Name<input class="input" name="name" required maxlength="120" placeholder="${kind === "player" ? "Lamine Yamal" : "Spotify"}" autofocus></label>
+        <div class="mcl-person-2"><label>Section<input class="input" name="section" list="mcl-secs" placeholder="${kind === "player" ? "Football" : "Empty: the whole club"}"></label>
+          <label>Team<input class="input" name="team" list="mcl-teams" placeholder="First team (men)"></label></div>
+        <datalist id="mcl-secs">${secs.map((n) => `<option value="${esc(n)}">`).join("")}</datalist><datalist id="mcl-teams">${teams.map((n) => `<option value="${esc(n)}">`).join("")}</datalist>
+        <div class="mcl-person-2"><label>Instagram<input class="input" name="instagram" placeholder="@lamineyamal" autocomplete="off"></label>
+          <label>TikTok<input class="input" name="tiktok" placeholder="@handle (optional)" autocomplete="off"></label></div>
+        <label class="check-inline mcl-person-scrape"><input type="checkbox" name="scrape" checked> Scrape its last 10 Instagram posts now (only in this club's My Club)</label>
+      </form>`,
+      foot: `<button class="btn btn-ghost" type="button" data-x>Cancel</button><button class="btn btn-primary" type="button" data-ok>${icon("plus")}Add</button>` });
+    const f = $("[data-person-form]", m.el);
+    $("[data-x]", m.el).onclick = () => m.close();
+    const save = async () => {
+      const v = (n) => f[n].value.trim();
+      if (!v("name")) return f.name.focus();
+      const handle = v("instagram").replace(/^@/, "").replace(/^https?:\/\/(www\.)?instagram\.com\//, "").replace(/\/.*$/, "").toLowerCase();
+      try {
+        await rpc("admin_club_import", { p_club: cur, p_rows: [{ type: kind, name: v("name"), section: v("section"), team: v("section") ? v("team") : "", instagram: handle, tiktok: v("tiktok").replace(/^@/, "") }] });
+        m.close();
+        A.toast(`${v("name")} added`);
+        await loadClub();
+        const b = handle && f.scrape.checked ? $(`[data-scrape="${CSS.escape(handle)}"]`, main) : null;
+        if (b) { b.scrollIntoView({ block: "center", behavior: "smooth" }); scrapeNow(handle, b); }
+      } catch (x) { fail(x); }
+    };
+    $("[data-ok]", m.el).onclick = save;
+    f.addEventListener("submit", (e) => { e.preventDefault(); save(); });
+  }
+
   // "Scrape now": Bright Data collects the account's last 10 posts (supabase/functions/club-scrape) and they're imported like
   // the daily scraping CSV (Admin → Import): club_mark_imported puts them only in this club's My Club, then their covers load
-  async function scrapeNow(handle, btn) {
+  async function scrapeNow(handle, btn, quiet = false) {
     const label = btn.innerHTML, t0 = Date.now();
     const say = (t) => { btn.innerHTML = `<span class="spinner sm"></span>${esc(t)}`; };
     btn.disabled = true; say("Starting…");
@@ -177,7 +226,7 @@
       say("Loading covers…");
       for (const part of A.chunk((ids || []).map((x) => x.id), 12)) await A.db.functions.invoke("covers", { body: { ids: part } }).catch(() => {});
       A.toast(`@${handle}: ${num(out.created + out.replaced)} posts in ${club.club.name}'s My Club${mark?.club_only ? "" : " (already public: they stay in the library too)"}.`);
-      loadClub();
+      if (quiet) { btn.innerHTML = `${icon("check")}${num(out.created + out.replaced)} posts`; btn.classList.add("is-done"); } else loadClub();
     } catch (x) {
       btn.disabled = false; btn.innerHTML = label;
       fail(x);
@@ -286,6 +335,8 @@
       if (b.matches("[data-logo-clear]")) return setLogo("");
       if (b.matches("[data-scraper]")) return scraperFile();
       if (b.dataset.scrape) return scrapeNow(b.dataset.scrape, b);
+      if (b.matches("[data-scrape-all]")) return scrapeAll(b);
+      if (b.dataset.addPerson) return personDialog(b.dataset.addPerson);
       if (b.matches("[data-club-del]")) {
         if (!(await A.confirmDialog({ title: `Delete ${club.club.name}?`, text: "Deletes the club's space, sections, teams, players, sponsors and members. The posts stay in the library.", confirm: "Delete", danger: true }))) return;
         await rpc("admin_club_edit", { p_what: "club_delete", p_id: cur }); cur = null; A.toast("Club deleted"); return loadClubs();
