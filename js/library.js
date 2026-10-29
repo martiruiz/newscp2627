@@ -2786,4 +2786,25 @@
     })();
     if (!LAYOUT_BEFORE) loadPlanHints().catch(() => {});
   });
+
+  // "Following" tip: drawn on the page, above the badge (the card cuts off what leaves it), kept inside the screen
+  let favTip = null;
+  const hideFavTip = () => { favTip?.remove(); favTip = null; };
+  const showFavTip = (badge) => {
+    const src = badge.querySelector(".lib-tip"); if (!src) return;
+    hideFavTip();
+    favTip = Object.assign(document.createElement("div"), { className: "lib-tip-float", textContent: src.textContent });
+    favTip.setAttribute("role", "tooltip");
+    document.body.append(favTip);
+    const r = badge.getBoundingClientRect(), w = favTip.offsetWidth, h = favTip.offsetHeight;
+    const left = Math.min(Math.max(8, r.left), innerWidth - w - 8);
+    const top = r.top - h - 10 >= 8 ? r.top - h - 10 : r.bottom + 10;   // above, or below when there's no room
+    favTip.style.left = `${left}px`; favTip.style.top = `${top}px`;
+    favTip.classList.toggle("is-below", top > r.top);
+  };
+  document.addEventListener("mouseover", (e) => { const b = e.target.closest?.(".lib-badge-fav"); if (b) showFavTip(b); });
+  document.addEventListener("mouseout", (e) => { const b = e.target.closest?.(".lib-badge-fav"); if (b && !b.contains(e.relatedTarget)) hideFavTip(); });
+  document.addEventListener("focusin", (e) => { const b = e.target.closest?.(".lib-badge-fav"); if (b) showFavTip(b); });
+  document.addEventListener("focusout", (e) => { if (e.target.closest?.(".lib-badge-fav")) hideFavTip(); });
+  addEventListener("scroll", hideFavTip, { passive: true });
 })();

@@ -9070,3 +9070,10 @@ body.club-themed .mc-strip::after { content: ""; position: absolute; left: 18px;
 .lib-tip { background: var(--surface); color: var(--text); border: 1px solid color-mix(in srgb, var(--gold) 55%, transparent);
   box-shadow: 0 16px 34px rgba(0, 0, 0, 0.28); font-size: 12.5px; line-height: 1.5; width: 240px; max-width: calc(100vw - 48px); }
 :root[data-theme="light"] .lib-tip { background: #fff; color: #14161c; box-shadow: 0 14px 30px rgba(12, 12, 13, 0.18); }
+/* the "Following" tip is drawn on the page above the badge (js/library.js), so the card never cuts it off */
+.lib-badge-fav .lib-tip { display: none !important; }
+.lib-tip-float { position: fixed; z-index: 1000; width: 250px; max-width: calc(100vw - 16px); padding: 10px 13px; border-radius: 12px; pointer-events: none;
+  background: var(--surface); color: var(--text); border: 1px solid color-mix(in srgb, var(--gold) 55%, transparent);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.3); font: 500 12.5px/1.5 var(--font-body); animation: favTipIn 0.15s ease-out; }
+:root[data-theme="light"] .lib-tip-float { background: #fff; color: #14161c; box-shadow: 0 14px 30px rgba(12, 12, 13, 0.18); }
+@keyframes favTipIn { from { opacity: 0; transform: translateY(4px); } }
