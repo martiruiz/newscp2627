@@ -2,9 +2,10 @@
 // Shared by smart-classify.mjs (eval, batches). The system prompt is identical for every post and marked for prompt
 // caching, so after the first request it's billed at ~10% (and the Batch API halves everything again).
 import fs from "node:fs";
+import { francAll } from "franc";
 import { AI_CATEGORIES, AI_VALUES, canonicalBrand } from "./taxonomy.mjs";
 
-export const VERSION = "v7.3-all";
+export const VERSION = "v7.4-all";
 export const MODEL = process.env.AI_CLASSIFY_MODEL || "claude-haiku-5-5";
 
 const arr = (values) => ({ type: "array", items: values ? { type: "string", enum: values } : { type: "string" } });
@@ -80,6 +81,25 @@ function sponsorsInCaption(out, caption) {
   if (!keep.length) { out.sponsor_sector = []; out.sponsor_integration = []; }
 }
 
+// The caption's language by a fixed detector (letter patterns, franc), so the same text always gets the same language; the
+// AI's answer stays when the text is too short or too mixed to tell
+const LANGS = { eng: "English", spa: "Spanish", cat: "Catalan", fra: "French", ita: "Italian", por: "Portuguese", deu: "German", nld: "Dutch",
+  tur: "Turkish", arb: "Arabic", pol: "Polish", ell: "Greek", jpn: "Japanese", kor: "Korean", cmn: "Chinese", ind: "Indonesian", rus: "Russian",
+  ukr: "Ukrainian", swe: "Swedish", dan: "Danish", nob: "Norwegian", hrv: "Croatian", srp: "Serbian", bos: "Bosnian", ces: "Czech", ron: "Romanian",
+  heb: "Hebrew", hin: "Hindi", tha: "Thai", vie: "Vietnamese", glg: "Galician", eus: "Basque" };
+const SLAVIC = new Set(["Croatian", "Serbian", "Bosnian"]);
+function captionLanguage(caption, ai) {
+  const text = String(caption || "").replace(/https?:\/\/\S+|[@#][\p{L}\p{N}_.]+/gu, " ");
+  const letters = (text.match(/\p{L}/gu) || []).length;
+  if (letters < 3) return "Emoji only";
+  if (letters < 40) return ai;
+  const [top, second] = francAll(text, { only: Object.keys(LANGS), minLength: 10 });
+  if (!top || top[0] === "und") return ai;
+  const lang = LANGS[top[0]];
+  if (SLAVIC.has(lang)) return SLAVIC.has(ai) ? ai : lang;   // Croatian, Serbian and Bosnian read the same: the AI tells them apart
+  return second && second[1] >= 0.9 ? ai : lang;
+}
+
 export function parseAnswer(message, caption) {
   if (message.stop_reason === "refusal" || message.stop_reason === "max_tokens") throw new Error(`stopped: ${message.stop_reason}`);
   const out = JSON.parse(message.content.find((b) => b.type === "text")?.text || "{}");
@@ -88,7 +108,7 @@ export function parseAnswer(message, caption) {
   out.opponent = [...new Set((out.opponent || []).map((x) => String(x).trim()).filter(Boolean))];
   out.city = [...new Set((out.city || []).map((x) => String(x).trim()).filter(Boolean))];
   if (!out.sponsor.length) { out.sponsor_sector = []; out.sponsor_integration = []; }
-  if (caption !== undefined) sponsorsInCaption(out, caption);
+  if (caption !== undefined) { sponsorsInCaption(out, caption); out.language = captionLanguage(caption, out.language); }
   return out;
 }
 
