@@ -56,7 +56,7 @@ async function pending(from, limit) {
 
 // ---------- --eval: the reviewed posts, labelled again, against your answers ----------
 if (argv.includes("--eval")) {
-  const { data: gold, error } = await db.from("smart_review").select("post_id,gold").eq("status", "done");
+  const { data: gold, error } = await db.from("smart_review").select("post_id,gold,ai").eq("status", "done");
   if (error) throw error;
   const posts = await loadPosts(gold.map((g) => g.post_id));
   let usd = 0, withImg = 0;
@@ -70,22 +70,27 @@ if (argv.includes("--eval")) {
   const norm = (x) => String(x).normalize("NFD").replace(/\p{M}/gu, "").trim().toLowerCase();
   const S = (v) => new Set([].concat(v || []).map(norm).filter(Boolean));
   console.log(`${after.size} reviewed posts labelled by ${MODEL} (${withImg} with their cover) · $${usd.toFixed(4)}\n`);
-  console.log(`${"Filter".padEnd(24)} precision  recall   (labels you gave)`);
-  let TP = 0, FP = 0, FN = 0;
-  for (const c of AI_CATEGORIES) {
+  // before = the labels the reviewed posts had (the earlier AI), now = this run
+  const score = (pred, c) => {
     let tp = 0, fp = 0, fn = 0;
     for (const g of gold) {
       if (!after.has(g.post_id) || !g.gold || !(c.key in g.gold)) continue;
-      const a = S(after.get(g.post_id)[c.key]), t = S(g.gold[c.key]);
+      const a = S((pred(g) || {})[c.key]), t = S(g.gold[c.key]);
       const match = (x, set) => set.has(x) || (c.free && [...set].some((y) => y.includes(x) || x.includes(y)));
       for (const x of a) match(x, t) ? tp++ : fp++;
       for (const x of t) if (!match(x, a)) fn++;
     }
-    TP += tp; FP += fp; FN += fn;
-    const pct = (a, b) => (b ? `${Math.round((100 * a) / b)}%` : "—").padStart(6);
-    console.log(`${c.label.padEnd(24)} ${pct(tp, tp + fp)}    ${pct(tp, tp + fn)}   (${tp + fn})`);
+    return { tp, fp, fn };
+  };
+  const pct = (a, b) => (b ? `${Math.round((100 * a) / b)}%` : "—").padStart(5);
+  console.log(`${"Filter".padEnd(24)} precision before → now   recall before → now   (labels you gave)`);
+  const T = { b: { tp: 0, fp: 0, fn: 0 }, a: { tp: 0, fp: 0, fn: 0 } };
+  for (const c of AI_CATEGORIES) {
+    const b = score((g) => g.ai, c), a = score((g) => after.get(g.post_id), c);
+    for (const k of ["tp", "fp", "fn"]) { T.b[k] += b[k]; T.a[k] += a[k]; }
+    console.log(`${c.label.padEnd(24)} ${pct(b.tp, b.tp + b.fp)} → ${pct(a.tp, a.tp + a.fp)}           ${pct(b.tp, b.tp + b.fn)} → ${pct(a.tp, a.tp + a.fn)}        (${a.tp + a.fn})`);
   }
-  console.log(`${"All filters".padEnd(24)} ${Math.round((100 * TP) / (TP + FP))}%       ${Math.round((100 * TP) / (TP + FN))}%`);
+  console.log(`${"All filters".padEnd(24)} ${pct(T.b.tp, T.b.tp + T.b.fp)} → ${pct(T.a.tp, T.a.tp + T.a.fp)}           ${pct(T.b.tp, T.b.tp + T.b.fn)} → ${pct(T.a.tp, T.a.tp + T.a.fn)}`);
   process.exit(0);
 }
 
