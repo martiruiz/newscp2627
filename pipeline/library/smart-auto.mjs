@@ -64,7 +64,7 @@ if (argv.includes("--eval")) {
   for (const p of posts) {
     const params = await request(p);
     if (params.messages[0].content.length > 1) withImg++;
-    try { const msg = await claude.messages.create(params); after.set(p.id, parseAnswer(msg)); usd += cost(msg.usage); }
+    try { const msg = await claude.messages.create(params); after.set(p.id, parseAnswer(msg, p.title)); usd += cost(msg.usage); }
     catch (e) { console.log(`  ✗ ${p.id}: ${e.message}`); }
   }
   const norm = (x) => String(x).normalize("NFD").replace(/\p{M}/gu, "").trim().toLowerCase();
@@ -121,7 +121,7 @@ if (argv.includes("--test")) {
   for (const p of posts) {
     const params = await request(p);
     if (params.messages[0].content.length > 1) withImg++;
-    try { const msg = await claude.messages.create(params); rows.push({ id: p.id, version: VERSION, labels: parseAnswer(msg) }); usd += cost(msg.usage); }
+    try { const msg = await claude.messages.create(params); rows.push({ id: p.id, version: VERSION, labels: parseAnswer(msg, p.title) }); usd += cost(msg.usage); }
     catch (e) { console.log(`  ✗ ${p.id}: ${e.message}`); }
   }
   const { error } = await db.rpc("apply_smart_labels", { p_rows: rows });
@@ -133,7 +133,7 @@ if (argv.includes("--test")) {
 
 // ---------- --run: collect the finished batches, send the pending posts ----------
 if (argv.includes("--run")) {
-  const { data: open, error } = await db.from("smart_batches").select("id").is("collected_at", null);
+  const { data: open, error } = await db.from("smart_batches").select("id,post_ids").is("collected_at", null);
   if (error) throw error;
   let labelled = 0, spent = 0;
   for (const b of open) {
@@ -141,9 +141,14 @@ if (argv.includes("--run")) {
     if (info.processing_status !== "ended") { console.log(`${b.id}: ${info.processing_status}`); continue; }
     const rows = [];
     let usd = 0;
+    const captions = new Map();
+    for (let i = 0; i < b.post_ids.length; i += 500) {
+      const { data } = await db.from("content_ideas").select("id,title").in("id", b.post_ids.slice(i, i + 500));
+      for (const x of data || []) captions.set(x.id, x.title || "");
+    }
     for await (const r of await claude.messages.batches.results(b.id)) {
       if (r.result.type !== "succeeded") continue;
-      try { rows.push({ id: Number(r.custom_id), version: VERSION, labels: parseAnswer(r.result.message) }); usd += cost(r.result.message.usage, { batch: true }); } catch {}
+      try { rows.push({ id: Number(r.custom_id), version: VERSION, labels: parseAnswer(r.result.message, captions.get(Number(r.custom_id)) ?? "") }); usd += cost(r.result.message.usage, { batch: true }); } catch {}
     }
     for (let i = 0; i < rows.length; i += 200) { const { error: e } = await db.rpc("apply_smart_labels", { p_rows: rows.slice(i, i + 200) }); if (e) throw e; }
     await db.from("smart_batches").update({ collected_at: new Date().toISOString(), labelled: rows.length, usd }).eq("id", b.id);
