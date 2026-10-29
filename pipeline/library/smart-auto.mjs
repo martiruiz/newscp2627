@@ -205,8 +205,10 @@ if (argv.includes("--run")) {
     batch = []; bytes = 0;
   };
   for (let i = 0; i < ids.length; i += 100) {
-    for (const p of await loadPosts(ids.slice(i, i + 100))) {
-      const r = { custom_id: String(p.id), params: await request(p) };
+    const chunk = await loadPosts(ids.slice(i, i + 100));
+    const params = await Promise.all(chunk.map(request));   // the 100 covers at once
+    for (const [k, p] of chunk.entries()) {
+      const r = { custom_id: String(p.id), params: params[k] };
       const size = JSON.stringify(r).length;
       if (batch.length && (bytes + size > MAX_BYTES || batch.length >= MAX_POSTS)) await flush();
       batch.push(r); bytes += size;
