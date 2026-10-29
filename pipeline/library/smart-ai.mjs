@@ -4,7 +4,7 @@
 import fs from "node:fs";
 import { AI_CATEGORIES, AI_VALUES, canonicalBrand } from "./taxonomy.mjs";
 
-export const VERSION = "v7.1-all";
+export const VERSION = "v7.2-all";
 export const MODEL = process.env.AI_CLASSIFY_MODEL || "claude-haiku-5-5";
 
 const arr = (values) => ({ type: "array", items: values ? { type: "string", enum: values } : { type: "string" } });
@@ -67,10 +67,12 @@ export function requestParams(post, image) {
   };
 }
 
-// A sponsor only counts when the caption names it (its name, @handle or #hashtag): the AI also "reads" the logos printed on
-// shirts, kits and boards, which aren't what the post is about (with it go its sector and integration)
+// A sponsor only counts when the caption names it (its name, @handle or #hashtag) or the post is a designed graphic (its partner
+// logo placed on it): in plain photos the AI also "reads" the logos printed on shirts, kits and boards (with it go its sector
+// and integration)
 const squash = (x) => String(x).normalize("NFD").replace(/\p{M}/gu, "").toLowerCase().replace(/[^a-z0-9]/g, "");
 function sponsorsInCaption(out, caption) {
+  if ((out.matchday_graphic || []).length) return;
   const text = squash(caption || "");
   const keep = out.sponsor.filter((b) => { const k = squash(b); return k.length >= 3 && text.includes(k); });
   if (keep.length === out.sponsor.length) return;
