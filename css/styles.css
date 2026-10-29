@@ -9059,3 +9059,9 @@ body.club-themed .mc-strip::after { content: ""; position: absolute; left: 18px;
 /* Instagram post that Instagram no longer embeds (flagged, no cover): the drawn card with an Instagram tint and "Watch on Instagram" */
 .lib-ph-instagram { background: radial-gradient(110% 60% at 15% 0%, rgba(225, 48, 108, 0.16), transparent 60%), radial-gradient(90% 50% at 100% 100%, rgba(240, 184, 74, 0.1), transparent 60%), linear-gradient(180deg, #17203d, #0d1426); }
 .lib-ignote.is-gone { justify-content: center; text-decoration: none; }
+/* Library, YouTube only: YouTube's grid — a Short one lane, a horizontal video two (two Shorts as wide as one video) */
+.library .posts.ytgrid { display: grid; column-gap: 22px; row-gap: 0; grid-auto-rows: 2px; grid-auto-flow: row dense; align-items: start; }
+.library .posts.ytgrid > .lib-card { margin-bottom: 22px; }
+/* a Short in the YouTube grid is one lane wide: its footer keeps the views only (like YouTube's own Shorts) */
+.ytgrid > .lib-card.is-lane .lib-foot { gap: 7px; padding: 9px 10px 10px; }
+.ytgrid > .lib-card.is-lane .lib-foot-views:not(.is-views) { display: none; }

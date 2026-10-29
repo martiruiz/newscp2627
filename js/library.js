@@ -2209,6 +2209,9 @@
   // ---------- Masonry: N columns, each card goes to the shortest one (heights known from the ratios) ----------
   const GAP = 22;
   let cols = [], colH = [], placed = [];
+  // YouTube only (or Facebook videos only): a grid like YouTube's own — a Short takes one lane, a horizontal video two,
+  // so two Shorts are as wide as one video. Each card spans as many 2px rows as it is tall (a masonry on CSS grid).
+  let ytGrid = 0;   // the number of lanes when this layout is on, 0 otherwise
   function columnCount() {
     const w = grid.clientWidth - parseFloat(getComputedStyle(grid).paddingLeft) - parseFloat(getComputedStyle(grid).paddingRight);
     // as many ~240px columns as fit (with or without the filters column), up to 6 on very wide screens
@@ -2216,16 +2219,27 @@
     const fmts = [...(selected.format || [])].map((id) => catalog.byId.get(id)?.name.toLowerCase());
     // horizontal videos (YouTube, Facebook videos) need wide cards: 3 columns at most
     const ytOnly = pfs.length === 1 && (pfs[0] === "youtube" || (pfs[0] === "facebook" && fmts.length === 1 && fmts[0] === "video"));
-    const MAX = ytOnly ? 3 : 6, MIN = ytOnly ? 260 : 240;
-    return Math.max(1, Math.min(MAX, Math.floor((w + GAP) / (MIN + GAP))));
+    if (ytOnly) { const n = Math.min(8, Math.floor((w + GAP) / (150 + GAP))); return -Math.max(2, n - (n % 2)); }   // negative: lanes of the YouTube grid (even)
+    return Math.max(1, Math.min(6, Math.floor((w + GAP) / (240 + GAP))));
   }
   function buildColumns(n) {
     grid.innerHTML = "";
-    grid.classList.add("masonry");
-    cols = Array.from({ length: n }, () => grid.appendChild(Object.assign(document.createElement("div"), { className: "mcol" })));
+    ytGrid = n < 0 ? -n : 0;
+    grid.classList.toggle("masonry", !ytGrid);
+    grid.classList.toggle("ytgrid", !!ytGrid);
+    grid.style.gridTemplateColumns = ytGrid ? `repeat(${ytGrid}, minmax(0, 1fr))` : "";
+    cols = ytGrid ? [] : Array.from({ length: n }, () => grid.appendChild(Object.assign(document.createElement("div"), { className: "mcol" })));
     colH = cols.map(() => 0);
   }
+  const ytSpan = (el) => { el.style.gridRowEnd = `span ${Math.max(1, Math.ceil((el.offsetHeight + GAP) / 2))}`; };
   function place(el, ratio) {
+    if (ytGrid) {   // a horizontal video (shorter than wide) takes two lanes, a Short one
+      el.style.gridColumn = ratio < 1 ? "span 2" : "span 1";
+      el.classList.toggle("is-lane", ratio >= 1);   // one lane wide (a Short)
+      grid.appendChild(el);
+      requestAnimationFrame(() => ytSpan(el));
+      return;
+    }
     const i = colH.indexOf(Math.min(...colH));
     cols[i].appendChild(el);
     colH[i] += ratio + 0.25; // + caption / button area
@@ -2330,8 +2344,9 @@
   }
   // Re-flow only when the number of columns changes (moving iframes reloads them)
   new ResizeObserver(() => {
-    if (!cols.length) return;
+    if (!cols.length && !ytGrid) return;
     const n = columnCount();
+    if (ytGrid && n === -ytGrid) return placed.forEach(({ el }) => ytSpan(el));   // same lanes: only the heights change
     if (n === cols.length) return;
     const keep = placed;
     buildColumns(n);
