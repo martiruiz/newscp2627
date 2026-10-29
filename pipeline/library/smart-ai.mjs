@@ -58,7 +58,6 @@ export function requestParams(post, image) {
     model: MODEL,
     max_tokens: 1024,
     thinking: { type: "disabled" },
-    temperature: 0,   // the same post always gets the same labels
     output_config: { format: { type: "json_schema", schema: SCHEMA } },
     system: [{ type: "text", text: SYSTEM_FULL, cache_control: { type: "ephemeral" } }],
     messages: [{ role: "user", content: [
