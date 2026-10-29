@@ -1987,7 +1987,9 @@
     // 20/10). Not TikTok (its player is throttled when many load at once: "ratelimit triggered") nor YouTube (its own
     // image is free): those keep the poster below, and the player loads on ▶.
     const sh = shape(p);
-    const src = pf !== "tiktok" && pf !== "youtube" ? previewSrc(p) : "";
+    // an Instagram post the platform no longer embeds (gone_at, supabase/gone-not-hidden.sql): the drawn card, never a broken embed
+    const gone = pf === "instagram" && !!p.gone_at;
+    const src = pf !== "tiktok" && pf !== "youtube" && !gone ? previewSrc(p) : "";
     if (src) {
       const zoomStyle = sh.zoom ? ` style="--zoom:${sh.zoom.toFixed(4)};--inset:${((1 - sh.boxFrac) / 2 * 100).toFixed(3)}%"` : "";
       return `
@@ -2007,9 +2009,10 @@
         <div class="lib-media" style="aspect-ratio: 1 / ${sh.ratio.toFixed(4)}">
           ${posterHtml(p, who)}
           <button class="lib-hit" type="button" data-open="${esc(p.id)}" aria-label="Details${who ? ` · ${esc(who)}` : ""}"></button>
-          ${playerSrc(p) ? `<button class="lib-playbtn${video ? "" : " is-view"}" type="button" data-play="${esc(p.id)}" aria-label="${esc(video ? tx("Play video") : tx("Show the post"))}">${icon(video ? "play" : "eye")}</button>` : ""}
+          ${gone ? `<a class="lib-ignote is-gone" href="${esc(p.url || "")}" target="_blank" rel="noopener">${icon("external-link")}<span>${tx("Watch on Instagram")}</span></a>`
+            : playerSrc(p) ? `<button class="lib-playbtn${video ? "" : " is-view"}" type="button" data-play="${esc(p.id)}" aria-label="${esc(video ? tx("Play video") : tx("Show the post"))}">${icon(video ? "play" : "eye")}</button>` : ""}
           ${fmt || p.duration_s ? `<span class="lib-fmt">${video ? icon("play") : ""}${esc([fmt, p.duration_s ? mmss(p.duration_s) : ""].filter(Boolean).join(" · "))}</span>` : ""}
-          ${igNote}${corner}${rail}
+          ${gone ? "" : igNote}${corner}${rail}
         </div>${foot}${aiPeek(p.id)}
       </article>`;
   }
@@ -2260,10 +2263,27 @@
       });
     }
   }
+  // Instagram posts without a cover: is any of them flagged as not shown by Instagram (gone_at)? → its drawn card instead
+  // of the embed. Quiet when the column doesn't exist yet (gone-not-hidden.sql not run).
+  async function loadGone(list) {
+    if (!list.length || !db) return;
+    const { data } = await db.from("content_ideas").select("id,gone_at").in("id", list.map((w) => Number(w.row.id))).not("gone_at", "is", null).then((x) => x, () => ({ data: null }));
+    for (const d of data || []) {
+      const w = list.find((x) => String(x.row.id) === String(d.id));
+      if (!w) continue;
+      w.row.gone_at = d.gone_at;
+      if (!w.el.isConnected) continue;
+      const t = document.createElement("template");
+      t.innerHTML = card(w.row).trim();
+      const nw = t.content.firstElementChild;
+      w.el.replaceWith(nw); w.pe.el = nw;
+    }
+  }
   function resetGrid() { placed = []; buildColumns(columnCount()); }
   function addCards(rows) {
     const tpl = document.createElement("template");
     tpl.innerHTML = rows.map(card).join("");
+    const goneCheck = [];
     [...tpl.content.children].forEach((el, i) => {
       const pfi = platformOf(rows[i]);
       const asPosted = ["x", "linkedin", "facebook"].includes(pfi);
@@ -2272,6 +2292,7 @@
       placed.push(pe);
       place(el, ratio);
       if (pfi === "instagram" && rows[i].ig_blocked == null) igRightsQueue(rows[i], el, pe);
+      if (pfi === "instagram" && !rows[i].cover_url && rows[i].gone_at === undefined) goneCheck.push({ row: rows[i], el, pe });
       // Facebook without a stored cover or shape: its real shape is looked up once (fb-shape) and saved for everyone
       if (pfi === "facebook" && !rows[i].cover_url && !Number(rows[i].media_ratio)) fbShapeQueue(rows[i], el, pe);
       // Facebook doesn't say a video's shape: its stored cover does (a horizontal video gets a horizontal card)
@@ -2290,6 +2311,7 @@
     });
     window.SCP_COVERS?.observe(grid);
     loadLikes(rows);
+    loadGone(goneCheck);
   }
   // Re-flow only when the number of columns changes (moving iframes reloads them)
   new ResizeObserver(() => {

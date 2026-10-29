@@ -801,8 +801,15 @@
 
   // A post without a cover, as the Content Library shows it (js/library.js previewSrc): the platform's own embed.
   // TikTok and YouTube show a drawn card there until ▶, so here only a note.
-  function libPreview(url) {
+  function libPreview(url, { gone = false, title = "", who = "" } = {}) {
     const u = String(url || ""); let m, src = "", h = 560;
+    // flagged Instagram post (the platform doesn't show it): the library draws a card instead of the embed (js/library.js)
+    if (gone && /instagram\.com\//.test(u)) {
+      const text = String(title || "").replace(/\s+/g, " ").trim();
+      return `<div class="lib-prev"><p class="lib-prev-h">How it looks in the Content Library without a cover</p>
+        <div class="lib-prev-card is-drawn"><div class="lib-prev-ph">${who ? `<b>${esc(who)}</b>` : ""}${text ? `<p>${esc(text.length > 160 ? text.slice(0, 157) + "…" : text)}</p>` : ""}<span class="lib-prev-ig">Watch on Instagram ↗</span></div></div>
+        <p class="lib-prev-note">Instagram doesn't let this post be shown on other websites, so members see this card. Add a cover to show the picture.</p></div>`;
+    }
     if ((m = u.match(/instagram\.com\/(?:[\w.]+\/)?(p|reel|tv)\/([\w-]+)/))) { src = `https://www.instagram.com/${m[1]}/${m[2]}/embed/`; h = m[1] === "p" ? 560 : 640; }
     else if ((m = u.match(/(?:twitter|x)\.com\/[^/]+\/status\/(\d+)/))) src = `https://platform.twitter.com/embed/Tweet.html?id=${m[1]}&theme=dark&dnt=true&hideThread=true`;
     else if (/facebook\.com\//.test(u)) src = `https://www.facebook.com/plugins/${/\/(reel|videos?)\//.test(u) ? "video" : "post"}.php?href=${encodeURIComponent(u)}&show_text=false&width=500`;

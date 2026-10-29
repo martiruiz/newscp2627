@@ -582,4 +582,6 @@ window.SCPA_DICT = Object.assign(window.SCPA_DICT || {}, {
   "Cover added.": ["Portada añadida.", "Portada afegida."],
   "Found it: the post exists and its cover is saved.": ["Encontrada: el post existe y su portada se ha guardado.", "Trobada: el post existeix i se n'ha desat la portada."],
   "the platform no longer shows (deleted, private or with embedding switched off). They're still in the Content Library: keep them or delete them.": ["que la plataforma ya no muestra (eliminados, privados o con la inserción desactivada). Siguen en la biblioteca: mantenlos o elimínalos.", "que la plataforma ja no mostra (eliminats, privats o amb la inserció desactivada). Continuen a la biblioteca: mantén-los o elimina'ls."],
+  "Watch on Instagram ↗": ["Ver en Instagram ↗", "Veure a Instagram ↗"],
+  "Instagram doesn't let this post be shown on other websites, so members see this card. Add a cover to show the picture.": ["Instagram no deja mostrar este post en otras webs, así que los miembros ven esta tarjeta. Añade una portada para mostrar la imagen.", "Instagram no deixa mostrar aquest post en altres webs, així que els membres veuen aquesta targeta. Afegeix-hi una portada per mostrar la imatge."],
 });

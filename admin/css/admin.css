@@ -2218,3 +2218,8 @@ tr[data-row].is-open td:first-child { box-shadow: inset 3px 0 0 var(--accent, #f
 .rv-issues ul:has(.rv-prev) { max-height: 820px; }
 .rv-issues li.rv-prev { display: block; padding: 10px 4px 14px; }
 .notice-broken .brk-pv-img .lib-prev-card { width: 220px; }
+.lib-prev-card.is-drawn { aspect-ratio: 4 / 5; position: relative; background: radial-gradient(110% 60% at 15% 0%, rgba(225, 48, 108, .16), transparent 60%), linear-gradient(180deg, #17203d, #0d1426); border-color: rgba(255, 255, 255, .12); }
+.lib-prev-ph { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; padding: 40px 16px 56px; color: #fff; }
+.lib-prev-ph b { font-size: 15px; font-weight: 600; }
+.lib-prev-ph p { margin: 0; color: #b4c0d3; font-size: 13px; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
+.lib-prev-ig { position: absolute; left: 8px; right: 8px; bottom: 8px; padding: 8px 11px; border-radius: 10px; text-align: center; font-size: 12px; font-weight: 600; background: rgba(11, 15, 28, .85); border: 1px solid rgba(240, 184, 74, .5); color: #f0b84a; }

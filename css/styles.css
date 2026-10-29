@@ -9064,3 +9064,6 @@ body.club-themed .mc-strip::after { content: ""; position: absolute; left: 18px;
 /* Jobs: the company's logo whole, on white (crests and wordmarks), and the card without the summary */
 .job-logo.has-img { background: #fff; padding: 6px; }
 .job-logo.has-img img { object-fit: contain; }
+/* Instagram post that Instagram no longer embeds (flagged, no cover): the drawn card with an Instagram tint and "Watch on Instagram" */
+.lib-ph-instagram { background: radial-gradient(110% 60% at 15% 0%, rgba(225, 48, 108, 0.16), transparent 60%), radial-gradient(90% 50% at 100% 100%, rgba(240, 184, 74, 0.1), transparent 60%), linear-gradient(180deg, #17203d, #0d1426); }
+.lib-ignote.is-gone { justify-content: center; text-decoration: none; }

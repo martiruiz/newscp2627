@@ -1187,6 +1187,7 @@ window.SCP_ES = {
   "Library + AI": "Biblioteca + IA",
   "Library + Content Plan": "Biblioteca + Plan de contenido",
   "All Access": "Acceso total",
+  "Watch on Instagram": "Ver en Instagram",
   "Pro": "Pro",
   "Start with the Content Library or get everything: AI analyses and the Content Plan. Cancel anytime.": "Empieza con la Biblioteca de contenido o tenlo todo: análisis con IA y Plan de contenido. Cancela cuando quieras.",
   "Custom plan": "Plan personalizado",

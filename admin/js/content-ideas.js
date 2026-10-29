@@ -279,7 +279,7 @@
       const p = posts.get(row.dataset.id); if (!p) return;
       row.setAttribute("aria-expanded", "true");
       row.insertAdjacentHTML("afterend", `<div class="brk-pv" data-id="${p.id}">
-          <div class="brk-pv-img">${p.cover_url ? `<img src="${esc(p.cover_url)}" alt="" loading="lazy">` : A.libPreview(p.url)}</div>
+          <div class="brk-pv-img">${p.cover_url ? `<img src="${esc(p.cover_url)}" alt="" loading="lazy">` : A.libPreview(p.url, { gone: G, title: p.title, who: p.account })}</div>
           <div class="brk-pv-body"><p class="brk-pv-acc">${esc([p.account, p.account_platform].filter(Boolean).join(" · "))}</p>
             <p class="brk-pv-cap">${esc(p.title || "")}</p>
             <dl><dt>Published</dt><dd>${esc(when(p.published_at) || "–")}</dd><dt>Marked unavailable</dt><dd>${esc(when(p.gone_at || p.unavailable_at))}</dd></dl>
