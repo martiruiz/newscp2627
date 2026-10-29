@@ -1974,7 +1974,9 @@
       <article class="lib-card has-cover" data-id="${esc(p.id)}">
         <div class="lib-media" style="aspect-ratio: 1 / ${mediaRatio(p).toFixed(4)}">
           <img class="lib-cover-img" src="${esc(p.cover_url)}" alt="${esc(who || "Post")}" loading="lazy" decoding="async">
-          <button class="lib-hit" type="button" data-open="${esc(p.id)}" aria-label="Details${who ? ` · ${esc(who)}` : ""}"></button>
+          ${video && playerSrc(p)   // a video: a click anywhere on its cover plays it in place (the details open from the footer / ✨)
+            ? `<button class="lib-hit" type="button" data-play="${esc(p.id)}" aria-label="${esc(tx("Play video"))}${who ? ` · ${esc(who)}` : ""}"></button>`
+            : `<button class="lib-hit" type="button" data-open="${esc(p.id)}" aria-label="Details${who ? ` · ${esc(who)}` : ""}"></button>`}
           ${video ? `<button class="lib-playbtn" type="button" data-play="${esc(p.id)}" aria-label="Play video">${icon("play")}</button>` : ""}
           ${!video && pf === "instagram" && (/carousel/i.test(fmt) || /carousel|sidecar/i.test(p.media_type || "")) ? `<button class="lib-carbtn" type="button" data-play="${esc(p.id)}" aria-label="${esc(tx("See the carousel"))}" title="${esc(tx("See the carousel"))}">${icon("chevron-right")}</button><span class="lib-cardots" aria-hidden="true"><i></i><i></i><i></i></span>` : ""}
           ${fmt || p.duration_s ? `<span class="lib-fmt">${video ? icon("play") : ""}${esc([fmt, p.duration_s ? mmss(p.duration_s) : ""].filter(Boolean).join(" · "))}</span>` : ""}
@@ -2008,7 +2010,9 @@
       <article class="lib-card is-poster" data-id="${esc(p.id)}">
         <div class="lib-media" style="aspect-ratio: 1 / ${sh.ratio.toFixed(4)}">
           ${posterHtml(p, who)}
-          <button class="lib-hit" type="button" data-open="${esc(p.id)}" aria-label="Details${who ? ` · ${esc(who)}` : ""}"></button>
+          ${video && playerSrc(p) && !gone   // a video: a click anywhere on its cover plays it in place (the details open from the footer / ✨)
+            ? `<button class="lib-hit" type="button" data-play="${esc(p.id)}" aria-label="${esc(tx("Play video"))}${who ? ` · ${esc(who)}` : ""}"></button>`
+            : `<button class="lib-hit" type="button" data-open="${esc(p.id)}" aria-label="Details${who ? ` · ${esc(who)}` : ""}"></button>`}
           ${gone ? `<a class="lib-ignote is-gone" href="${esc(p.url || "")}" target="_blank" rel="noopener">${icon("external-link")}<span>${tx("Watch on Instagram")}</span></a>`
             : playerSrc(p) ? `<button class="lib-playbtn${video ? "" : " is-view"}" type="button" data-play="${esc(p.id)}" aria-label="${esc(video ? tx("Play video") : tx("Show the post"))}">${icon(video ? "play" : "eye")}</button>` : ""}
           ${fmt || p.duration_s ? `<span class="lib-fmt">${video ? icon("play") : ""}${esc([fmt, p.duration_s ? mmss(p.duration_s) : ""].filter(Boolean).join(" · "))}</span>` : ""}

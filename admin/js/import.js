@@ -818,7 +818,7 @@
     };
     const step = async () => {
       if (stopped || !host.isConnected) return;
-      const { data: s, error } = await A.db.rpc("admin_import_covers", { p_import_id: importId, p_todo: 36 });
+      const { data: s, error } = await A.db.rpc("admin_import_covers", { p_import_id: importId, p_todo: 72 });
       if (error) { el("err").hidden = false; el("err").textContent = /does not exist|schema cache|Could not find/i.test(error.message) ? "Run supabase/import-review.sql in Supabase first." : error.message; return; }
       finished = !s.todo;
       draw(s);
@@ -827,7 +827,7 @@
       if (finished && loaded) { loaded = false; await A.db.rpc("admin_import_issues_ok", { p_import_id: importId, p_ids: [] }); }
       if (finished || paused) return;
       loaded = true;
-      const ids = s.todo_ids, parts = [ids.slice(0, 12), ids.slice(12, 24), ids.slice(24, 36)].filter((x) => x.length);
+      const ids = s.todo_ids, parts = A.chunk(ids, 12);   // 6 calls of 12 at once (each one does several posts at a time)
       try { await Promise.all(parts.map(coversFn)); } catch (e) { el("err").hidden = false; el("err").textContent = A.errMsg(e); el("approve").hidden = false; stopped = true; return; }
       step();
     };

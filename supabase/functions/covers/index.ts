@@ -3,8 +3,8 @@
 // (same rules as pipeline/library/covers.mjs), copied to Storage (bucket "covers", public) → content_ideas.cover_url.
 // A post with no image available gets cover_at (tried) and no cover; a removed post gets unavailable_at.
 // A post imported with its image link from the scraping (content_ideas.cover_source, supabase/import-cover-source.sql)
-// takes that image first, without asking the platform; the platform's page is then only tried for Instagram's extra data
-// (type, size, length, views), and only when that fails it's used for the cover too.
+// takes that image first, without asking the platform (6 at a time); the others ask their platform (3 at a time).
+// Instagram's extra data (type, size, length, views) from the post's page: POST { ids, meta: true }, a separate pass.
 // SUPABASE_URL, SUPABASE_ANON_KEY and SUPABASE_SERVICE_ROLE_KEY are provided by Supabase.
 const env = (k: string) => Deno.env.get(k) ?? "";
 const CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, apikey, content-type", "Access-Control-Allow-Methods": "POST, OPTIONS" };
@@ -148,50 +148,70 @@ async function store(id: number, imageUrl: string) {
   return { url: `${env("SUPABASE_URL")}/storage/v1/object/public/covers/${path}`, size: imageSize(bytes) };
 }
 
+// a few at a time: each worker takes the next post (Promise.all over `n` workers)
+async function pool<T>(items: T[], n: number, fn: (x: T) => Promise<void>) {
+  let i = 0;
+  await Promise.all(Array.from({ length: Math.min(n, items.length) }, async () => { while (i < items.length) await fn(items[i++]); }));
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: CORS });
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
   if (!(await superadmin(req))) return json({ error: "Only superadmins" }, 403);
-  const { ids } = await req.json().catch(() => ({ ids: [] }));
+  const { ids, meta } = await req.json().catch(() => ({ ids: [] }));
   const list = (Array.isArray(ids) ? ids : []).map(Number).filter(Boolean).slice(0, 12);
   if (!list.length) return json({ done: 0, no_image: 0, removed: 0 });
   let rows;
   try { rows = await rest(`content_ideas?select=id,url,cover_source&id=in.(${list.join(",")})`); }
   catch (_) { rows = await rest(`content_ideas?select=id,url&id=in.(${list.join(",")})`); }   // import-cover-source.sql not run yet
   let done = 0, noImage = 0, removed = 0;
-  for (const p of rows) {
+  const igMeta = (id: number, c: Cover) => (c && !c.broken && c.media_type && c.width && c.height
+    ? rest("rpc/apply_ig_meta", { method: "POST", body: JSON.stringify({ p_rows: [{ id, media_type: c.media_type, width: c.width, height: c.height, duration: c.duration, views: c.views }] }) }).catch(() => {})
+    : Promise.resolve());
+
+  // meta: true → only Instagram's own data (reel / carousel, size, length, views) from the post's page, for posts that
+  // already have their cover: the slow part, done apart from the covers (a later, gentler pass)
+  if (meta) {
+    const ig = (rows as { id: number; url: string }[]).filter((p) => /instagram\.com/.test(p.url || ""));
+    await pool(ig, 2, async (p) => { await igMeta(p.id, await coverFor(p.url || "").catch(() => null)); done++; await sleep(400); });
+    return json({ done, no_image: 0, removed: 0 });
+  }
+
+  // the image from the scraping (cover_source): just copied, 6 at a time; its shape from the image itself. The others ask
+  // their platform for the image, 3 at a time (Instagram's page, with a short pause, so it doesn't block us)
+  const withSrc = (rows as { id: number; url: string; cover_source?: string }[]).filter((p) => p.cover_source);
+  const without = (rows as { id: number; url: string; cover_source?: string }[]).filter((p) => !p.cover_source);
+  const fromPlatform = async (p: { id: number; url: string }) => {
     const ig = /instagram\.com/.test(p.url || "");
     const now = new Date().toISOString();
+    // YouTube: its own still (i.ytimg.com) never expires, so it's linked as it is, not copied
+    const yt = /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/|live\/)|youtu\.be\/)([\w-]{11})/.exec(p.url || "")?.[1];
+    if (yt) { await rest(`content_ideas?id=eq.${p.id}`, { method: "PATCH", body: JSON.stringify({ cover_url: `https://i.ytimg.com/vi/${yt}/hqdefault.jpg`, cover_at: now }) }); done++; return; }
     try {
-      // the image from the scraping: copied straight away; its shape from the image itself
-      const src = p.cover_source ? await store(p.id, p.cover_source).catch(() => null) : null;
-      if (src?.url) {
-        await rest(`content_ideas?id=eq.${p.id}`, { method: "PATCH", body: JSON.stringify({ cover_url: `${src.url}?v=${Date.now().toString(36)}`, cover_at: now }) });
-        if (src.size) await rest("rpc/apply_media_shape", { method: "POST", body: JSON.stringify({ p_rows: [{ id: p.id, ...src.size }] }) }).catch(() => {});
-        // Instagram's own data (reel / carousel, length, views) when its page answers; not needed for the cover
-        if (ig) {
-          const c = await coverFor(p.url || "").catch(() => null);
-          if (c && !c.broken && c.media_type && c.width && c.height) await rest("rpc/apply_ig_meta", { method: "POST", body: JSON.stringify({ p_rows: [{ id: p.id, media_type: c.media_type, width: c.width, height: c.height, duration: c.duration, views: c.views }] }) }).catch(() => {});
-        }
-        done++;
-        await sleep(ig ? 700 : 0);
-        continue;
-      }
       const c = await coverFor(p.url || "");
-      if (c?.broken) { removed++; await rest(`content_ideas?id=eq.${p.id}`, { method: "PATCH", body: JSON.stringify({ unavailable_at: now, cover_at: now }) }); continue; }
+      if (c?.broken) { removed++; await rest(`content_ideas?id=eq.${p.id}`, { method: "PATCH", body: JSON.stringify({ unavailable_at: now, cover_at: now }) }); return; }
       const st = c?.image ? await store(p.id, c.image) : null;
-      const url = st?.url;
-      if (!url) { noImage++; await rest(`content_ideas?id=eq.${p.id}`, { method: "PATCH", body: JSON.stringify({ cover_at: now }) }); continue; }
-      const extra = !ig ? { ...(c!.media_type ? { media_type: c!.media_type } : {}), ...(c!.width && c!.height ? { media_width: c!.width, media_height: c!.height, media_ratio: Math.round((c!.height / c!.width) * 10000) / 10000 } : {}), ...(c!.duration ? { duration_s: c!.duration } : {}) } : {};
-      await rest(`content_ideas?id=eq.${p.id}`, { method: "PATCH", body: JSON.stringify({ cover_url: `${url}?v=${Date.now().toString(36)}`, cover_at: now, ...extra }) });
-      if (/facebook\.com/.test(p.url || "") && st?.size) await rest("rpc/apply_media_shape", { method: "POST", body: JSON.stringify({ p_rows: [{ id: p.id, ...st.size }] }) }).catch(() => {});   // supabase/media-shape.sql
-      if (ig) await rest("rpc/apply_ig_meta", { method: "POST", body: JSON.stringify({ p_rows: [{ id: p.id, media_type: c!.media_type, width: c!.width, height: c!.height, duration: c!.duration, views: c!.views }] }) });
+      if (!st?.url) { noImage++; await rest(`content_ideas?id=eq.${p.id}`, { method: "PATCH", body: JSON.stringify({ cover_at: now }) }); return; }
+      const extra = !ig ? { ...(c!.media_type ? { media_type: c!.media_type } : {}), ...(c!.width && c!.height ? { media_width: c!.width, media_height: c!.height, media_ratio: Math.round((c!.height / c!.width) * 10000) / 10000 } : {}) } : {};
+      await rest(`content_ideas?id=eq.${p.id}`, { method: "PATCH", body: JSON.stringify({ cover_url: `${st.url}?v=${Date.now().toString(36)}`, cover_at: now, ...extra }) });
+      if (/facebook\.com/.test(p.url || "") && st.size) await rest("rpc/apply_media_shape", { method: "POST", body: JSON.stringify({ p_rows: [{ id: p.id, ...st.size }] }) }).catch(() => {});   // supabase/fb-shape.sql
+      if (ig) await igMeta(p.id, c);
       done++;
     } catch (_) {
       noImage++;
       await rest(`content_ideas?id=eq.${p.id}`, { method: "PATCH", body: JSON.stringify({ cover_at: now }) }).catch(() => {});
     }
-    await sleep(ig ? 700 : 250);
-  }
+    await sleep(ig ? 300 : 100);
+  };
+  await Promise.all([
+    pool(withSrc, 6, async (p) => {
+      const src = await store(p.id, p.cover_source!).catch(() => null);
+      if (!src?.url) return fromPlatform(p);   // the scraping's link expired: ask the platform
+      await rest(`content_ideas?id=eq.${p.id}`, { method: "PATCH", body: JSON.stringify({ cover_url: `${src.url}?v=${Date.now().toString(36)}`, cover_at: new Date().toISOString() }) });
+      if (src.size) await rest("rpc/apply_media_shape", { method: "POST", body: JSON.stringify({ p_rows: [{ id: p.id, ...src.size }] }) }).catch(() => {});
+      done++;
+    }),
+    pool(without, 3, fromPlatform),
+  ]);
   return json({ done, no_image: noImage, removed });
 });
