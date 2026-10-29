@@ -179,8 +179,9 @@ Deno.serve(async (req) => {
 
   // the image from the scraping (cover_source): just copied, 6 at a time; its shape from the image itself. The others ask
   // their platform for the image, 3 at a time (Instagram's page, with a short pause, so it doesn't block us)
-  const withSrc = (rows as { id: number; url: string; cover_source?: string }[]).filter((p) => p.cover_source);
-  const without = (rows as { id: number; url: string; cover_source?: string }[]).filter((p) => !p.cover_source);
+  const isYt = (p: { url: string }) => /youtube\.com|youtu\.be/.test(p.url || "");   // YouTube: its own still, never a copy
+  const withSrc = (rows as { id: number; url: string; cover_source?: string }[]).filter((p) => p.cover_source && !isYt(p));
+  const without = (rows as { id: number; url: string; cover_source?: string }[]).filter((p) => !p.cover_source || isYt(p));
   const fromPlatform = async (p: { id: number; url: string }) => {
     const ig = /instagram\.com/.test(p.url || "");
     const now = new Date().toISOString();
