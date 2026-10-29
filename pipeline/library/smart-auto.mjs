@@ -194,6 +194,7 @@ if (argv.includes("--run")) {
 
   const from = arg("--from") || new Date(Date.now() - 7 * 864e5).toISOString().slice(0, 10);
   const ids = await pending(from, Number(arg("--limit")) || 50000);
+  console.log(`${ids.length} posts to send (imported since ${from})`);
   // a batch may not exceed 256 MB: ~200 MB or 2,000 posts each
   const MAX_BYTES = 200 * 1024 * 1024, MAX_POSTS = 2000;
   let sent = 0, batch = [], bytes = 0;
@@ -207,6 +208,7 @@ if (argv.includes("--run")) {
   for (let i = 0; i < ids.length; i += 100) {
     const chunk = await loadPosts(ids.slice(i, i + 100));
     const params = await Promise.all(chunk.map(request));   // the 100 covers at once
+    if (i % 1000 === 0) console.log(`  ${new Date().toISOString().slice(11, 19)} prepared ${i + chunk.length} · ${Math.round(bytes / 1048576)} MB waiting`);
     for (const [k, p] of chunk.entries()) {
       const r = { custom_id: String(p.id), params: params[k] };
       const size = JSON.stringify(r).length;
