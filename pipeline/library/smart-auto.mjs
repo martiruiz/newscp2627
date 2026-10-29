@@ -47,12 +47,14 @@ async function pending(from, limit) {
   const ids = [];
   for (let last = null; ids.length < limit; ) {
     // newest first on the index of pending posts (content_ideas_smart_todo_idx), until the posts are older than `from`
-    let q = db.from("content_ideas").select("id,created_at").is("smart_at", null).is("unavailable_at", null).order("id", { ascending: false }).limit(1000);
+    let q = db.from("content_ideas").select("id,created_at,cover_url").is("smart_at", null).is("unavailable_at", null).order("id", { ascending: false }).limit(1000);
     if (last) q = q.lt("id", last);
     const { data, error } = await q;
     if (error) throw error;
     const fresh = data.filter((r) => r.created_at >= from);
-    for (const r of fresh) if (!sent.has(r.id) && ids.length < limit) ids.push(r.id);
+    // a post imported in the last 24 h without its cover yet waits for it (the covers job copies it within minutes or hours)
+    const waits = (r) => !r.cover_url && r.created_at > new Date(Date.now() - 864e5).toISOString();
+    for (const r of fresh) if (!sent.has(r.id) && !waits(r) && ids.length < limit) ids.push(r.id);
     if (fresh.length < data.length || !data.length) break;
     last = data.at(-1).id;
   }
