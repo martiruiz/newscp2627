@@ -54,7 +54,7 @@ ${EXAMPLES}` : SYSTEM;
 // Request params for one post. image: { data (base64), type } or null
 export function requestParams(post, image) {
   const tags = Object.entries(post.tags || {}).map(([k, v]) => `${k}: ${v.join(", ")}`).join("; ");
-  const text = `Date: ${String(post.published_at || "").slice(0, 10)}\nFormat: ${post.media_type || (post.tags?.format || []).join(", ") || "?"}\nExisting tags: ${tags || "none"}\nCaption:\n${(post.title || "(no caption)").slice(0, 1500)}`;
+  const text = `Date: ${String(post.published_at || "").slice(0, 10)}\nFormat: ${post.media_type || (post.tags?.format || []).join(", ") || "?"}\nExisting tags: ${tags || "none"}\nCaption:\n${(post.title || "(no caption)").slice(0, 1500)}`.toWellFormed();   // a cut emoji would make the request invalid
   return {
     model: MODEL,
     max_tokens: 1024,
