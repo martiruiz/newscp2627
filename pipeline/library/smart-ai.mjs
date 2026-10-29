@@ -4,7 +4,7 @@
 import fs from "node:fs";
 import { AI_CATEGORIES, AI_VALUES, canonicalBrand } from "./taxonomy.mjs";
 
-export const VERSION = "v6-img";
+export const VERSION = "v7-all";
 export const MODEL = process.env.AI_CLASSIFY_MODEL || "claude-haiku-5-5";
 
 const arr = (values) => ({ type: "array", items: values ? { type: "string", enum: values } : { type: "string" } });
@@ -14,7 +14,7 @@ export const SCHEMA = {
   required: AI_CATEGORIES.map((c) => c.key),
 };
 
-export const SYSTEM = `You label Instagram posts from sports clubs, leagues, federations, athletes and sports brands for a content research platform used by social media managers, designers, press officers, marketing and sponsorship teams.
+export const SYSTEM = `You label social media posts (Instagram, TikTok, YouTube, Facebook, X) from sports clubs, leagues, federations, athletes and sports brands for a content research platform used by social media managers, designers, press officers, marketing and sponsorship teams.
 You get the post's image (the cover or first slide), its caption, date, format and existing tags. Return the labels that clearly apply, using ONLY the allowed values. An empty list is better than a guess; usually 0-1 value per list, 2 only when both are obvious.
 How to use the image: use it ONLY for matchday_graphic (is it a designed graphic, and which one), kit (is a kit being presented), sponsor_integration "Logo on graphic" (a partner logo placed on a designed graphic), and to read text written on a designed graphic (a score, a line-up, "FULL-TIME"). opponent, city, team and language come ONLY from the caption, the hashtags and the existing tags. sponsor comes from the caption or from a partner logo placed ON a designed graphic — never from shirts, kits, courts, boards, faces or places in a photo.
 
