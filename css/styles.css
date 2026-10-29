@@ -9065,3 +9065,8 @@ body.club-themed .mc-strip::after { content: ""; position: absolute; left: 18px;
 /* a Short in the YouTube grid is one lane wide: its footer keeps the views only (like YouTube's own Shorts) */
 .ytgrid > .lib-card.is-lane .lib-foot { gap: 7px; padding: 9px 10px 10px; }
 .ytgrid > .lib-card.is-lane .lib-foot-views:not(.is-views) { display: none; }
+/* "Following" tip: readable in both themes (light card, dark text in the light theme) and above the card's side buttons */
+.lib-corner:has(.lib-badge-fav:hover), .lib-corner:has(.lib-badge-fav:focus) { z-index: 30; }
+.lib-tip { background: var(--surface); color: var(--text); border: 1px solid color-mix(in srgb, var(--gold) 55%, transparent);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.28); font-size: 12.5px; line-height: 1.5; width: 240px; max-width: calc(100vw - 48px); }
+:root[data-theme="light"] .lib-tip { background: #fff; color: #14161c; box-shadow: 0 14px 30px rgba(12, 12, 13, 0.18); }
