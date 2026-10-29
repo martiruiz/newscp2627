@@ -19,7 +19,9 @@ You receive one article from an external source (often in Spanish). Your job:
    Write in your own words: do not copy sentences from the source and do not quote more than a few words. Stick to facts that are in the article; never invent figures, dates or quotes.
 4. If not relevant, still return the platform and an English title, and an empty paragraphs list.
 
-Return a list of stories. Usually the article is one news item: return one story. When the user message says the source is a newsletter with several news items, return one story per separate news item, up to the number it allows, best ones first.`;
+Return a list of stories. Usually the article is one news item: return one story. When the user message says the source is a newsletter with several news items, return one story per separate news item, up to the number it allows, best ones first.
+
+image: when the user message lists the article's pictures (numbered, with their captions), the number of the picture that shows this story's news item; 0 if none of them does or no list is given.`;
 
 const STORY = {
   type: "object",
@@ -29,8 +31,9 @@ const STORY = {
     platform: { type: "string", enum: PLATFORMS },
     title: { type: "string" },
     paragraphs: { type: "array", items: { type: "string" } },
+    image: { type: "integer" },
   },
-  required: ["relevant", "platform", "title", "paragraphs"],
+  required: ["relevant", "platform", "title", "paragraphs", "image"],
 };
 const SCHEMA = { type: "object", additionalProperties: false, properties: { stories: { type: "array", items: STORY } }, required: ["stories"] };
 
@@ -39,6 +42,7 @@ const Story = z.object({
   platform: z.enum(PLATFORMS),
   title: z.string().min(1),
   paragraphs: z.array(z.string().min(1)),
+  image: z.number().int(),
 });
 const Result = z.object({ stories: z.array(Story).min(1) });
 
@@ -63,8 +67,9 @@ export async function worthEditing(item) {
   try { return t ? JSON.parse(t.text).keep === true : false; } catch { return false; }
 }
 
-/** Returns [{ relevant, platform, title, paragraphs }] (one per news item, up to `stories`) or null if the model declined. */
-export async function editArticle(item, sourceName, stories = 1) {
+/** Returns [{ relevant, platform, title, paragraphs, image }] (one per news item, up to `stories`) or null if the model declined.
+ *  pictures: the newsletter's captioned pictures, so each story gets its own (image = its number, 0 = none) */
+export async function editArticle(item, sourceName, stories = 1, pictures = []) {
   const response = await client.beta.messages.create({
     model: "claude-opus-5-5",
     max_tokens: 16000,
@@ -78,7 +83,7 @@ export async function editArticle(item, sourceName, stories = 1) {
     messages: [
       {
         role: "user",
-        content: `Source: ${sourceName}${stories > 1 ? ` (a newsletter with several news items: up to ${stories} stories)` : " (one story)"}\nURL: ${item.url}\nOriginal title: ${item.title}\n\nArticle text:\n${item.body}`,
+        content: `Source: ${sourceName}${stories > 1 ? ` (a newsletter with several news items: up to ${stories} stories)` : " (one story)"}\nURL: ${item.url}\nOriginal title: ${item.title}\n\nArticle text:\n${item.body}${pictures.length ? `\n\nPictures in the article:\n${pictures.map((p, i) => `${i + 1}. ${p.alt}`).join("\n")}` : ""}`,
       },
     ],
   });

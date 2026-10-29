@@ -100,6 +100,18 @@ export async function readSitemap(source, limit, cutoff = 0) {
   return out;
 }
 
+/** The article's pictures: its preview (og:image) and the ones in the text with a caption [{ src, alt }] (a newsletter has one per news item) */
+export async function pageImages(url) {
+  const html = await get(url.replace(/#.*$/, ""));
+  const abs = (src) => new URL(decode(src), url).href;
+  const og = meta(html, "og:image") ?? meta(html, "twitter:image");
+  const list = [...html.matchAll(/<img\b[^>]*>/gi)]
+    .map((m) => ({ src: m[0].match(/\ssrc=["']([^"']+)/i)?.[1], alt: decode(m[0].match(/\salt=["']([^"']*)/i)?.[1] ?? "").trim() }))
+    .filter((i) => i.src && i.alt && !/profile_picture|avatar|logo|icon/i.test(i.src))
+    .map((i) => ({ src: abs(i.src), alt: i.alt }));
+  return { og: og ? abs(og) : null, list };
+}
+
 export function readSource(source, limit, cutoff) {
   return source.type === "rss" ? readRss(source, limit, cutoff) : readSitemap(source, limit, cutoff);
 }
