@@ -56,7 +56,9 @@ async function pending(from, limit) {
 
 // ---------- --eval: the reviewed posts, labelled again, against your answers ----------
 if (argv.includes("--eval")) {
-  const { data: gold, error } = await db.from("smart_review").select("post_id,gold,ai").eq("status", "done");
+  let gq = db.from("smart_review").select("post_id,gold,ai").eq("status", "done");
+  if (arg("--batch")) gq = gq.eq("batch", arg("--batch"));   // one review set only
+  const { data: gold, error } = await gq;
   if (error) throw error;
   const posts = await loadPosts(gold.map((g) => g.post_id));
   let usd = 0, withImg = 0;

@@ -17,6 +17,9 @@ on:
       model:
         description: "eval only: another model to compare (empty = the one in use)"
         default: ""
+      batch:
+        description: "eval only: one review set (empty = every reviewed post)"
+        default: ""
 
 concurrency:
   group: smart-filters
@@ -43,10 +46,11 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           MODE: ${{ github.event.inputs.mode || 'run' }}
           FROM: ${{ github.event.inputs.from }}
+          BATCH: ${{ github.event.inputs.batch }}
           AI_CLASSIFY_MODEL: ${{ github.event.inputs.mode == 'eval' && github.event.inputs.model || '' }}
         run: |
           case "$MODE" in
-            eval) node library/smart-auto.mjs --eval --diff ;;
+            eval) node library/smart-auto.mjs --eval --diff ${BATCH:+--batch "$BATCH"} ;;
             test) node library/smart-auto.mjs --test 100 ;;
             seed) node library/smart-auto.mjs --seed 30 ;;
             *)    node library/smart-auto.mjs --run ${FROM:+--from "$FROM"} ;;
