@@ -612,6 +612,17 @@
     return m ? m[1].replace("https://www.youtube.com/embed/", "https://www.youtube.com/watch?v=") : "";
   }
 
+  // the covers function (cover, shape, length of some posts, 12 per call). A plain fetch: its CORS doesn't take the extra
+  // header functions.invoke() sends, so invoke() never reached it
+  async function loadCovers(ids) {
+    const cfg = window.SCP_CONFIG || {};
+    const token = (await db.auth.getSession()).data.session?.access_token;
+    for (let i = 0; i < ids.length; i += 12) {
+      await fetch(`${cfg.supabaseUrl}/functions/v1/covers`, { method: "POST", headers: { "Content-Type": "application/json", apikey: cfg.supabaseAnonKey, Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ ids: ids.slice(i, i + 12) }) }).catch(() => null);
+    }
+  }
+
   // ---------- Content idea editor (create + edit) ----------
   async function openIdeaEditor({ idea = null, onSaved } = {}) {
     const catalog = await loadCatalog();
@@ -700,7 +711,7 @@
         const newId = await rpc("save_content_idea", { p_id: idea?.id ?? null, p_data: data, p_value_ids: ids });
         m.close();
         toast(isNew ? "Content idea created." : "Changes saved.");
-        if (isNew && newId) db.functions.invoke("covers", { body: { ids: [Number(newId)] } }).catch(() => {});   // its cover, shape and length, as after an import
+        if (isNew && newId) loadCovers([Number(newId)]);   // its cover, shape and length, as after an import
         catalogCache = null;
         onSaved?.();
       } catch (e2) {
@@ -737,7 +748,7 @@
   window.SCPA = {
     db, auth, CATEGORIES, CAT_LABEL, CATALOG_ORDER, icon, info, $, $$, esc, store, fmtDate, fmtDateTime, num, debounce, chunk, errMsg, rpc,
     toast, modal, confirmDialog, boot, loadCatalog, MultiSelect, FilterPanel, pager, CSV_COLUMNS, toCSV, csvCell, downloadBlob,
-    ideaToCsvRow, cleanEmbed, embedKind, activateEmbeds, platformOfUrl, postUrl, openIdeaEditor, openIdeaPreview,
+    ideaToCsvRow, cleanEmbed, embedKind, activateEmbeds, platformOfUrl, postUrl, openIdeaEditor, openIdeaPreview, loadCovers,
     resetCatalog: () => { catalogCache = null; }, crmBadge,
   };
 

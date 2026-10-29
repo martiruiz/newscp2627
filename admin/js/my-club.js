@@ -110,9 +110,12 @@
         ${pending ? `<div class="mcl-pending">${icon("alert")}<span><b>${num(pending)} account${pending === 1 ? "" : "s"} without posts yet.</b> ${pendingIg ? `Scrape ${pendingIg === 1 ? "it" : "them"} here: the last 10 posts of each Instagram, only in this club's My Club (about 1–2 minutes).` : "Add them to the scraping Excel and import their posts as usual."}</span>
           ${pendingIg ? `<button class="btn btn-primary btn-sm" type="button" data-scrape-all>${icon("download")}${pendingIg === 1 ? "Scrape it now" : `Scrape all ${num(pendingIg)}`}</button>` : ""}
           ${pending > pendingIg ? `<button class="btn btn-sm" type="button" data-scraper>${icon("download")}Accounts for the scraper</button>` : ""}</div>` : ""}
+        <div class="mcl-live" data-live hidden></div>
       </section>
       <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Players</h2><span class="aud-count">${num(people.filter((p) => p.kind === "player").length)}</span><span class="spacer"></span><button class="btn btn-sm" type="button" data-add-person="player">${icon("plus")}Add player</button></header>${table("player")}</section>
       <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Sponsors</h2><span class="aud-count">${num(people.filter((p) => p.kind === "sponsor").length)}</span><span class="spacer"></span><button class="btn btn-sm" type="button" data-add-person="sponsor">${icon("plus")}Add sponsor</button><button class="btn btn-primary btn-sm" type="button" data-add-sponsor>${icon("plus")}Add sponsor from the library</button></header>${table("sponsor")}</section>`;
+    renderLive();
+    for (const j of jobs.values()) if (!j.done && !j.error) { const b = $(`[data-scrape="${CSS.escape(j.handle)}"]`, main); if (b) { b.disabled = true; b.innerHTML = `<span class="spinner sm"></span>Scraping…`; } }
     resumeScrapes();
   }
 
@@ -205,11 +208,38 @@
   }
 
   // "Scrape now": Bright Data collects the account's last 10 posts (supabase/functions/club-scrape) and they're imported like
-  // the daily scraping CSV (Admin → Import): club_mark_imported puts them only in this club's My Club, then their covers load
+  // the daily scraping CSV (Admin → Import): club_mark_imported puts them only in this club's My Club, then their covers load.
+  // Each collection is a job shown live in the "Scraping" panel ([data-live]): its step, Bright Data's state and a log.
+  const STEPS = ["Bright Data", "Collecting posts", "Importing", "My Club", "Covers", "Done"];
+  const jobs = new Map();   // handle → { handle, step, t0, log: [[time, kind, text]], records, n, error, done }
+  let liveTimer = 0;
+  const mmss = (ms) => { const s = Math.max(0, Math.round(ms / 1000)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; };
+  function renderLive() {
+    const box = $("[data-live]", main);
+    if (!box) return;
+    const list = [...jobs.values()];
+    box.hidden = !list.length;
+    box.innerHTML = list.length ? `<header class="mcl-live-h"><b>${icon("download")}Scraping</b><span class="muted">${num(list.filter((j) => !j.done && !j.error).length)} running</span><span class="spacer"></span>
+        ${list.some((j) => j.done || j.error) ? `<button class="btn btn-ghost btn-sm" type="button" data-live-clear>Clear finished</button>` : ""}</header>
+      ${list.map((j) => `<article class="mcl-job${j.error ? " is-err" : j.done ? " is-done" : ""}">
+        <div class="mcl-job-h"><b>@${esc(j.handle)}</b><span class="mono">${mmss((j.end || Date.now()) - j.t0)}</span>
+          <span class="mcl-job-st">${j.error ? `${icon("alert")}${esc(j.error)}` : j.done ? `${icon("check")}${num(j.n)} posts in My Club` : `<span class="spinner sm"></span>${esc(STEPS[j.step])}${j.step === 1 && j.records ? ` · ${num(j.records)} posts so far` : ""}`}</span></div>
+        <ol class="mcl-steps">${STEPS.map((t, k) => `<li class="${k < j.step || j.done ? "is-ok" : k === j.step && !j.error ? "is-on" : k === j.step && j.error ? "is-err" : ""}">${esc(t)}</li>`).join("")}</ol>
+        <div class="mcl-job-log">${j.log.slice(-6).map(([t, k, x]) => `<p class="is-${k}"><span>${mmss(t - j.t0)}</span>${esc(x)}</p>`).join("")}</div>
+      </article>`).join("")}` : "";
+    clearInterval(liveTimer);
+    if (list.some((j) => !j.done && !j.error)) liveTimer = setInterval(renderLive, 1000);
+  }
+
   async function scrapeNow(handle, btn, quiet = false) {
-    const label = btn.innerHTML, t0 = Date.now();
-    const say = (t) => { btn.innerHTML = `<span class="spinner sm"></span>${esc(t)}`; };
-    btn.disabled = true; say("Starting…");
+    if (jobs.get(handle) && !jobs.get(handle).done && !jobs.get(handle).error) return;   // already running
+    const label = btn.innerHTML;
+    const job = { handle, step: 0, t0: Date.now(), log: [], records: 0, n: 0 };
+    jobs.set(handle, job);
+    const log = (kind, text) => { job.log.push([Date.now(), kind, text]); renderLive(); };
+    const step = (k, text) => { job.step = k; log("step", text); };
+    const say = (t) => { const b = $(`[data-scrape="${CSS.escape(handle)}"]`, main) || btn; b.disabled = true; b.innerHTML = `<span class="spinner sm"></span>${esc(t)}`; };
+    say("Starting…");
     const call = async (body) => {
       const { data, error } = await A.db.functions.invoke("club-scrape", { body });
       if (error || data?.error) { let m = data?.error; try { m = m || (await error?.context?.json())?.error; } catch {} throw new Error(m || "Bright Data didn't answer."); }
@@ -220,25 +250,32 @@
     let saved = null; try { saved = JSON.parse(localStorage.getItem(key) || "null"); } catch {}
     const forget = () => { try { localStorage.removeItem(key); } catch {} };
     try {
-      if (!saved?.snapshot_id) {
+      if (saved?.snapshot_id) { job.t0 = saved.at || job.t0; log("info", `Picking up the collection started before (${saved.snapshot_id})`); }
+      else {
+        log("info", `Asking Bright Data for the last 10 posts of instagram.com/${handle}`);
         const { snapshot_id } = await call({ action: "start", handle, num: 10 });
-        saved = { snapshot_id, at: Date.now() };
+        saved = { snapshot_id, at: job.t0 };
         try { localStorage.setItem(key, JSON.stringify(saved)); } catch {}
+        log("ok", `Bright Data accepted it · collection ${snapshot_id}`);
       }
-      let res;
+      step(1, "Bright Data is collecting the posts (usually 1–3 minutes; you can leave this page)");
+      let res, last = "";
       for (;;) {
         await new Promise((r) => setTimeout(r, 8000));
-        const sec = Math.round((Date.now() - (saved.at || t0)) / 1000);
         res = await call({ action: "status", snapshot_id: saved.snapshot_id });
-        say(`Scraping… ${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}${res.bd?.records ? ` · ${res.bd.records} posts` : ""}`);
+        job.records = Number(res.bd?.records) || job.records;
+        const st = `${res.bd?.status || res.status}${res.bd?.records ? ` · ${res.bd.records} posts` : ""}`;
+        if (st !== last) { log("info", `Bright Data: ${st}`); last = st; }
+        say(`Scraping… ${mmss(Date.now() - job.t0)}${job.records ? ` · ${job.records} posts` : ""}`);
         if (res.status === "failed") { forget(); throw new Error(res.error); }
         if (res.status === "ready") break;
-        if (sec > 1800) { forget(); throw new Error("Bright Data took more than 30 minutes with this account. Try again later."); }
+        if (Date.now() - job.t0 > 1800000) { forget(); throw new Error("Bright Data took more than 30 minutes with this account. Try again later."); }
       }
       forget();
       const rows = (res.rows || []).filter((r) => r.external_id && r.published_at);
+      log("ok", `Collected ${num(res.rows?.length || 0)} posts${res.rows?.length - rows.length ? ` (${res.rows.length - rows.length} without id or date, skipped)` : ""} · ${num(rows.filter((r) => r.title).length)} with text · ${num(rows.filter((r) => r.cover).length)} with image`);
       if (!rows.length) throw new Error(`Bright Data found no posts for @${handle}${res.errors?.length ? `: ${res.errors[0]}` : "."}`);
-      say("Importing…");
+      step(2, `Importing ${num(rows.length)} posts`); say("Importing…");
       const { data: imp, error: e1 } = await A.db.from("idea_imports").insert({ filename: `Bright Data · @${handle} · ${club.club.name}`, total_rows: rows.length, status: "importing" }).select("id").single();
       if (e1) throw e1;
       const out = await rpc("import_content_ideas_batch", { p_import_id: imp.id, p_rows: rows });
@@ -248,18 +285,27 @@
       await rpc("set_idea_scrape_extras", { p_rows: rows.map((r) => ({ external_id: r.external_id, account: r.account, hashtags: r.hashtags, followers: r.followers, profile_name: r.profile_name, verified: r.verified, profile_image: r.profile_image })) }).catch(() => {});
       await A.db.from("idea_imports").update({ status: out.created || out.replaced ? "completed" : "failed", rows_created: out.created, rows_replaced: out.replaced,
         error_count: out.errors?.length || 0, errors: out.errors || [], new_values: out.new_values_created || {}, completed_at: new Date().toISOString() }).eq("id", imp.id);
+      log(out.errors?.length ? "warn" : "ok", `Import #${imp.id}: ${num(out.created)} new · ${num(out.replaced)} updated${out.errors?.length ? ` · ${out.errors.length} errors` : ""}`);
+      step(3, `Putting them in ${club.club.name}'s My Club`);
       const mark = await rpc("club_mark_imported", { p_external_ids: rows.map((r) => r.external_id) });
+      log("ok", `${num(mark?.club_only || 0)} only in My Club · ${num(mark?.tags_added || 0)} tags added (club, sport, ${people_kind(handle)})`);
       // their covers, shape and length, as after an import (12 per call)
       const { data: ids } = await A.db.from("content_ideas").select("id").in("external_id", rows.map((r) => r.external_id));
-      say("Loading covers…");
-      for (const part of A.chunk((ids || []).map((x) => x.id), 12)) await A.db.functions.invoke("covers", { body: { ids: part } }).catch(() => {});
-      A.toast(`@${handle}: ${num(out.created + out.replaced)} posts in ${club.club.name}'s My Club${mark?.club_only ? "" : " (already public: they stay in the library too)"}.`);
-      if (quiet) { btn.innerHTML = `${icon("check")}${num(out.created + out.replaced)} posts`; btn.classList.add("is-done"); } else loadClub();
+      step(4, `Loading ${num((ids || []).length)} covers`); say("Loading covers…");
+      await A.loadCovers((ids || []).map((x) => x.id));
+      const { count: withCover } = await A.db.from("content_ideas").select("id", { count: "exact", head: true }).in("external_id", rows.map((r) => r.external_id)).not("cover_url", "is", null);
+      log("ok", `${num(withCover || 0)} of ${num(rows.length)} with cover`);
+      job.n = out.created + out.replaced; job.step = 5; job.done = true; job.end = Date.now();
+      log("ok", `Done: ${num(job.n)} posts in ${club.club.name}'s My Club`);
+      A.toast(`@${handle}: ${num(job.n)} posts in ${club.club.name}'s My Club.`);
+      if (quiet) { const b = $(`[data-scrape="${CSS.escape(handle)}"]`, main) || btn; b.innerHTML = `${icon("check")}${num(job.n)} posts`; b.classList.add("is-done"); } else loadClub();
     } catch (x) {
-      btn.disabled = false; btn.innerHTML = label;
+      job.error = x.message || String(x); job.end = Date.now(); log("err", job.error);
+      const b = $(`[data-scrape="${CSS.escape(handle)}"]`, main) || btn; b.disabled = false; b.innerHTML = label;
       fail(x);
     }
   }
+  const people_kind = (handle) => (club.people.find((p) => p.accounts.some((a) => a.handle === handle))?.kind === "sponsor" ? "Brand" : "Player");
 
   function scraperFile() {
     const sec = new Map(club.sections.map((s) => [s.id, s.name])), teamSec = new Map(club.sections.flatMap((s) => s.teams.map((t) => [t.id, s.name])));
@@ -364,6 +410,7 @@
       if (b.matches("[data-scraper]")) return scraperFile();
       if (b.dataset.scrape) return scrapeNow(b.dataset.scrape, b);
       if (b.matches("[data-scrape-all]")) return scrapeAll(b);
+      if (b.matches("[data-live-clear]")) { for (const [h, j] of jobs) if (j.done || j.error) jobs.delete(h); return renderLive(); }
       if (b.dataset.addPerson) return personDialog(b.dataset.addPerson);
       if (b.matches("[data-club-del]")) {
         if (!(await A.confirmDialog({ title: `Delete ${club.club.name}?`, text: "Deletes the club's space, sections, teams, players, sponsors and members. The posts stay in the library.", confirm: "Delete", danger: true }))) return;
