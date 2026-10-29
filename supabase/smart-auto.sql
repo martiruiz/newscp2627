@@ -9,3 +9,6 @@ create table if not exists public.smart_batches (
   usd numeric(10, 4)
 );
 alter table public.smart_batches enable row level security;   -- only the service role (the GitHub Action) uses it
+
+-- the posts still without AI labels, newest first (smart-auto.mjs reads them page by page)
+create index if not exists content_ideas_smart_todo_idx on public.content_ideas (id desc) where smart_at is null and unavailable_at is null;

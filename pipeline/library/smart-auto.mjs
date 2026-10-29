@@ -46,12 +46,14 @@ async function pending(from, limit) {
   const sent = new Set((open || []).flatMap((b) => b.post_ids));
   const ids = [];
   for (let last = null; ids.length < limit; ) {
-    let q = db.from("content_ideas").select("id").is("smart_at", null).is("unavailable_at", null).gte("created_at", from).order("id", { ascending: false }).limit(1000);
+    // newest first on the index of pending posts (content_ideas_smart_todo_idx), until the posts are older than `from`
+    let q = db.from("content_ideas").select("id,created_at").is("smart_at", null).is("unavailable_at", null).order("id", { ascending: false }).limit(1000);
     if (last) q = q.lt("id", last);
     const { data, error } = await q;
     if (error) throw error;
-    if (!data.length) break;
-    for (const r of data) if (!sent.has(r.id) && ids.length < limit) ids.push(r.id);
+    const fresh = data.filter((r) => r.created_at >= from);
+    for (const r of fresh) if (!sent.has(r.id) && ids.length < limit) ids.push(r.id);
+    if (fresh.length < data.length || !data.length) break;
     last = data.at(-1).id;
   }
   return ids;
