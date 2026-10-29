@@ -60,6 +60,7 @@
     let query = auth.client
       .from("news")
       .select("*")   // with slug once supabase/seo.sql is run: the title links to the news page
+      .eq("relevant", true)   // the ones the pipeline set aside stay stored (so they aren't screened again) but never show; admins can read them
       .order("published_at", { ascending: false })
       .range(state.offset, state.offset + PAGE - 1);
     if (state.platform !== "all") query = query.eq("platform", state.platform);
