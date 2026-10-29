@@ -948,8 +948,21 @@
     if (!open) host.innerHTML = "";
     else if (cur && cur.dataset.sec === open.key) cur.innerHTML = lfpHtml(open.key);
     else host.innerHTML = `<div class="lfb-panel lfp" role="dialog" aria-label="${esc(open.label)}" data-sec="${open.key}">${lfpHtml(open.key)}</div>`;
-    if (open) { $(".lfp-main", bar).scrollTop = keep; loadCovers(); }
+    if (open) { $(".lfp-main", bar).scrollTop = keep; loadCovers(); fitPanel(bar); }
   }
+  // computers: the open panel exactly under the tabs (their width, at least 640px, centred on them) instead of the whole head
+  let fitBar = null;
+  function fitPanel(bar = fitBar) {
+    fitBar = bar;
+    const p = bar && $(".lfb-panel", bar), row = bar && $(".lfb-row", bar);
+    if (!p || !row || !p.offsetParent) return;
+    if (innerWidth < 961) { p.style.left = p.style.right = ""; return; }
+    const r = row.getBoundingClientRect(), op = p.offsetParent.getBoundingClientRect();
+    const w = Math.min(op.width - 28, Math.max(640, r.width));
+    const left = Math.min(Math.max(14, r.left - op.left - (w - r.width) / 2), op.width - 14 - w);
+    p.style.left = `${Math.round(left)}px`; p.style.right = `${Math.round(op.width - left - w)}px`;
+  }
+  addEventListener("resize", () => fitPanel());
 
   // Mobile: the three specials as quick chips above the posts
   function renderQuick() {
