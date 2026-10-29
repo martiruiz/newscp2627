@@ -3,6 +3,7 @@
 // back as the same rows as the daily scraping CSV, and the admin imports them the same way (only in that club's My Club).
 // Superadmins only. Two steps, because Bright Data collects in the background (usually 1–3 minutes):
 //   POST { action: "start", platform: "instagram" | "tiktok", handle, num }   → { snapshot_id }
+//   POST { action: "cancel", snapshot_id }  → { cancelled: true }
 //   POST { action: "status", platform, snapshot_id, handle }  → { status: "running" } | { status: "ready", rows, fields } | { status: "failed", error }
 // Secret (Supabase → Edge Functions → Secrets): BRIGHTDATA_API_KEY. SUPABASE_URL, SUPABASE_ANON_KEY and
 // SUPABASE_SERVICE_ROLE_KEY are provided by Supabase.
@@ -130,6 +131,14 @@ Deno.serve(async (req) => {
     const pic = (rows.find((r: Rec) => r?.profile_image) as Rec | undefined)?.profile_image || null;
     const avatar = await storeAvatar(b.platform === "tiktok" ? "tiktok" : "instagram", String(b.handle || (rows[0] as Rec)?.account || ""), pic).catch(() => null);
     return json({ status: "ready", rows, errors, avatar, fields: Object.keys(posts[0] || {}).slice(0, 60) });
+  }
+
+  // stop a collection at Bright Data (one stuck "running"): 400 = it wasn't running any more, also fine
+  if (b.action === "cancel") {
+    const id = String(b.snapshot_id || "");
+    if (!/^[\w-]{6,}$/.test(id)) return json({ error: "Missing snapshot" }, 400);
+    const r = await bd(`/snapshot/${id}/cancel`, { method: "POST" });
+    return r.ok || r.status === 400 || r.status === 404 ? json({ cancelled: true, was_running: r.ok }) : json({ error: `Bright Data: ${r.status}` }, 502);
   }
 
   return json({ error: "Unknown action" }, 400);

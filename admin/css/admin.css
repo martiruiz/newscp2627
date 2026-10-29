@@ -2188,3 +2188,5 @@ tr[data-row].is-open td:first-child { box-shadow: inset 3px 0 0 var(--accent, #f
 .mcl-job-log span { color: #3f7f5a; }
 .mcl-job .mcl-job-st { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
 .mcl-steps li.is-on { border-top-color: #3cff8f; box-shadow: 0 -2px 10px rgba(60, 255, 143, 0.35); animation: none; }
+.mcl-job-x { margin-left: auto; padding: 3px 10px; border-radius: 999px; border: 1px solid rgba(255, 138, 128, 0.45); background: none; color: var(--red); font: 600 11.5px ui-monospace, SFMono-Regular, Menlo, monospace; cursor: pointer; }
+.mcl-job-x:hover { background: var(--red-soft); } .mcl-job-x + .mcl-job-st { margin-left: 0; }

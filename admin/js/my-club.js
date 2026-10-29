@@ -278,7 +278,7 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
         ${list.some((j) => j.done || j.error) ? `<button class="btn btn-ghost btn-sm" type="button" data-live-clear>Clear finished</button>` : ""}</header>
       ${list.map((j) => `<article class="mcl-job${j.error ? " is-err" : j.done ? " is-done" : ""}">
         <div class="mcl-job-h"><b>${esc(PF[j.platform] || "")} @${esc(j.handle)}</b><span class="mono">${mmss((j.end || Date.now()) - j.t0)}</span>
-          <span class="mcl-job-st">${j.error ? `${icon("alert")}${esc(j.error)}` : j.done ? `${icon("check")}${num(j.n)} posts in My Club` : `<i class="hk-dot"></i>${esc(STEPS[j.step])}${j.step === 1 && j.records ? ` · ${num(j.records)} posts so far` : ""}`}</span></div>
+          ${!j.done && !j.error && j.snap ? `<button class="mcl-job-x" type="button" data-cancel-job="${esc(j.id)}" title="Stop this collection at Bright Data">✕ Cancel</button>` : ""}<span class="mcl-job-st">${j.error ? `${icon("alert")}${esc(j.error)}` : j.done ? `${icon("check")}${num(j.n)} posts in My Club` : `<i class="hk-dot"></i>${esc(STEPS[j.step])}${j.step === 1 && j.records ? ` · ${num(j.records)} posts so far` : ""}`}</span></div>
         <ol class="mcl-steps">${STEPS.map((t, k) => `<li class="${k < j.step || j.done ? "is-ok" : k === j.step && !j.error ? "is-on" : k === j.step && j.error ? "is-err" : ""}">${esc(t)}</li>`).join("")}</ol>
         <div class="mcl-job-log${j.done || j.error ? "" : " is-live"}"><p class="is-cmd">scp@myclub:~$ scrape --${esc(j.platform)} @${esc(j.handle)} --posts 10</p>${j.log.slice(-7).map(([t, k, x]) => `<p class="is-${k}${Date.now() - t < 900 ? " is-new" : ""}"><span>[${mmss(t - j.t0)}]</span>${esc(x)}</p>`).join("")}${j.done || j.error ? "" : `<p class="is-prompt">&gt; <i class="hk-cur"></i></p>`}</div>
       </article>`).join("")}` : "";
@@ -309,11 +309,11 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
     let saved = null; try { saved = JSON.parse(localStorage.getItem(key) || "null"); } catch {}
     const forget = () => { try { localStorage.removeItem(key); } catch {} };
     try {
-      if (saved?.snapshot_id) { job.t0 = saved.at || job.t0; log("info", `Picking up the collection started before (${saved.snapshot_id})`); }
+      if (saved?.snapshot_id) { job.snap = saved.snapshot_id; job.t0 = saved.at || job.t0; log("info", `Picking up the collection started before (${saved.snapshot_id})`); }
       else {
         log("info", `Asking Bright Data for the last 10 posts of ${platform === "tiktok" ? `tiktok.com/@${handle}` : `instagram.com/${handle}`}`);
         const { snapshot_id } = await call({ action: "start", platform, handle, num: 10 });
-        saved = { snapshot_id, at: job.t0 };
+        saved = { snapshot_id, at: job.t0 }; job.snap = snapshot_id;
         try { localStorage.setItem(key, JSON.stringify(saved)); } catch {}
         log("ok", `Bright Data accepted it · collection ${snapshot_id}`);
       }
@@ -321,6 +321,7 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
       let res, last = "";
       for (;;) {
         await new Promise((r) => setTimeout(r, 8000));
+        if (job.cancelled) throw new Error("Cancelled");
         saved.tab = TAB; saved.beat = Date.now(); try { localStorage.setItem(key, JSON.stringify(saved)); } catch {}
         res = await call({ action: "status", platform, handle, snapshot_id: saved.snapshot_id });
         job.records = Number(res.bd?.records) || job.records;
@@ -500,6 +501,15 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
         $$("[data-tab]", main).forEach((t) => { t.classList.toggle("is-on", t === b); t.setAttribute("aria-selected", t === b); });
         $$("[data-pane]", main).forEach((p) => { p.hidden = p.dataset.pane !== b.dataset.tab; });
         return;
+      }
+      if (b.dataset.cancelJob) {
+        const j = jobs.get(b.dataset.cancelJob); if (!j?.snap) return;
+        b.disabled = true; b.textContent = "Cancelling…";
+        const { data, error } = await A.db.functions.invoke("club-scrape", { body: { action: "cancel", snapshot_id: j.snap } });
+        if (error || data?.error) { b.disabled = false; b.textContent = "✕ Cancel"; return fail(new Error(data?.error || "Bright Data didn't answer.")); }
+        try { localStorage.removeItem(`scp-scrape:${cur}:${j.id}`); } catch {}
+        j.cancelled = true; j.log.push([Date.now(), "warn", `Cancelled at Bright Data (${j.snap})`]); renderLive();
+        return A.toast(`@${j.handle}: collection cancelled`);
       }
       if (b.matches("[data-live-clear]")) { for (const [h, j] of jobs) if (j.done || j.error) jobs.delete(h); return renderLive(); }
       if (b.dataset.addPerson) return personDialog(b.dataset.addPerson);
