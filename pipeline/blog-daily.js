@@ -95,11 +95,11 @@ const user = `Today: ${today}. Material (${origin}):\n\n${material}\n\n## Source
 const usage = { input: 0, output: 0 };
 const messages = [{ role: "user", content: user }];
 async function write() {
-  const response = await client.messages.create({
+  const response = await client.messages.stream({
     model: MODEL, max_tokens: 32000,
     output_config: { format: { type: "json_schema", schema: SCHEMA } },
     system: SYSTEM, messages,
-  });
+  }).finalMessage();
   usage.input += response.usage.input_tokens ?? 0;
   usage.output += response.usage.output_tokens ?? 0;
   if (response.stop_reason !== "end_turn") throw new Error(`Claude stopped: ${response.stop_reason}`);
