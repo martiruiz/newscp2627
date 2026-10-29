@@ -1955,6 +1955,21 @@
           <span class="lib-foot-stats" data-stats="${esc(p.id)}">${footStats(p)}</span>
         </div>`;
 
+    // Instagram reel with licensed music: Instagram doesn't play it outside its app (ig-rights). The cover (or the drawn
+    // card), a link to watch it there, and why on hover
+    if (pf === "instagram" && p.ig_blocked) {
+      return `
+      <article class="lib-card is-igblock${p.cover_url ? " has-cover" : " is-poster"}" data-id="${esc(p.id)}">
+        <div class="lib-media" style="aspect-ratio: 1 / ${(p.cover_url ? mediaRatio(p) : shape(p).ratio).toFixed(4)}">
+          ${p.cover_url ? `<img class="lib-cover-img" src="${esc(p.cover_url)}" alt="${esc(who || "Post")}" loading="lazy" decoding="async">` : posterHtml(p, who)}
+          <button class="lib-hit" type="button" data-open="${esc(p.id)}" aria-label="Details${who ? ` · ${esc(who)}` : ""}"></button>
+          <a class="lib-igwatch" href="${esc(p.url || "")}" target="_blank" rel="noopener">${icon("play")}<span>${tx("Watch on Instagram")}</span></a>
+          <div class="lib-igwhy" role="note"><b>${icon("music")}${tx("Music with copyright")}</b><span>${tx("This reel uses licensed music, and Instagram only lets it play inside its app. That's why it can't be watched here: open it on Instagram.")}</span></div>
+          ${corner}${rail}
+        </div>${foot}${aiPeek(p.id)}
+      </article>`;
+    }
+
     // X, LinkedIn and Facebook: always the post itself, so the text can be read and videos played in place
     const asPosted = pf === "x" || pf === "linkedin" || pf === "facebook";
     if (p.cover_url && !asPosted) {
@@ -2224,6 +2239,30 @@
       });
     }
   }
+  // Instagram posts never checked: ig-rights reads each one's embed once and stores whether it's blocked (licensed
+  // music); a blocked one becomes its "watch on Instagram" card at once
+  const igWait = new Map(); let igTimer = 0;
+  function igRightsQueue(row, el, pe) {
+    igWait.set(String(row.id), { row, el, pe });
+    clearTimeout(igTimer); igTimer = setTimeout(igRightsFlush, 600);
+  }
+  async function igRightsFlush() {
+    const cfg = window.SCP_CONFIG || {};
+    while (igWait.size) {
+      const batch = [...igWait.keys()].slice(0, 12);
+      const r = await fetch(`${cfg.supabaseUrl}/functions/v1/ig-rights`, { method: "POST", headers: { "Content-Type": "application/json", apikey: cfg.supabaseAnonKey, Authorization: `Bearer ${cfg.supabaseAnonKey}` }, body: JSON.stringify({ ids: batch.map(Number) }) }).then((x) => (x.ok ? x.json() : {})).catch(() => ({}));
+      batch.forEach((id) => {
+        const w = igWait.get(id); igWait.delete(id);
+        if (!w || typeof r?.[id] !== "boolean") return;
+        w.row.ig_blocked = r[id];
+        if (!r[id] || !w.el.isConnected) return;
+        const t = document.createElement("template");
+        t.innerHTML = card(w.row).trim();
+        const nw = t.content.firstElementChild;
+        w.el.replaceWith(nw); w.pe.el = nw;
+      });
+    }
+  }
   function resetGrid() { placed = []; buildColumns(columnCount()); }
   function addCards(rows) {
     const tpl = document.createElement("template");
@@ -2235,6 +2274,7 @@
       const pe = { el, ratio };
       placed.push(pe);
       place(el, ratio);
+      if (pfi === "instagram" && rows[i].ig_blocked == null) igRightsQueue(rows[i], el, pe);
       // Facebook without a stored cover or shape: its real shape is looked up once (fb-shape) and saved for everyone
       if (pfi === "facebook" && !rows[i].cover_url && !Number(rows[i].media_ratio)) fbShapeQueue(rows[i], el, pe);
       // Facebook doesn't say a video's shape: its stored cover does (a horizontal video gets a horizontal card)
