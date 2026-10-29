@@ -2209,3 +2209,12 @@ tr[data-row].is-open td:first-child { box-shadow: inset 3px 0 0 var(--accent, #f
 /* My Club toolbar: the secondary actions with a soft border so they read as buttons on the light background */
 .mcl-toolbar .btn:not(.btn-primary):not(.btn-ghost) { background: var(--panel); box-shadow: inset 0 0 0 1px var(--border); }
 .mcl-toolbar .btn:not(.btn-primary):not(.btn-ghost):hover:not(:disabled) { background: var(--panel-2); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 55%, var(--border)); color: var(--text); }
+/* A post without a cover as the Content Library shows it (A.libPreview): import issues and Content ideas review */
+.lib-prev { display: grid; gap: 8px; justify-items: start; }
+.lib-prev-h { margin: 0; font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+.lib-prev-card { width: 320px; max-width: 100%; border-radius: 14px; overflow: hidden; background: #fff; border: 1px solid var(--border-2); box-shadow: 0 10px 30px rgba(0, 0, 0, .3); }
+.lib-prev-card iframe { display: block; width: 100%; border: 0; }
+.lib-prev-note { margin: 0; font-size: 12.5px; color: var(--muted); max-width: 420px; }
+.rv-issues ul:has(.rv-prev) { max-height: 820px; }
+.rv-issues li.rv-prev { display: block; padding: 10px 4px 14px; }
+.notice-broken .brk-pv-img .lib-prev-card { width: 220px; }

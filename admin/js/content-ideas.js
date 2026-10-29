@@ -240,14 +240,18 @@
     } catch (e) { A.toast(A.errMsg(e), "err"); }
   });
 
-  // ---------- Posts that no longer exist on Instagram or Facebook (marked by check-embeds.mjs, covers, views-cron, fb-shape) ----------
-  // LinkedIn posts are hidden on purpose with the same mark (supabase/hide-linkedin.sql): never listed or deleted here
+  // ---------- Posts a platform no longer shows (flagged by check-embeds.mjs, covers, views-cron, fb-shape) ----------
+  // With supabase/gone-not-hidden.sql they stay in the library, flagged (gone_at), until someone keeps or deletes them here;
+  // before it, they were hidden (unavailable_at). LinkedIn posts are hidden on purpose (hide-linkedin.sql): never listed here.
   async function loadBroken() {
     const box = $("[data-broken]");
-    const { count, error } = await A.db.from("content_ideas").select("id", { count: "exact", head: true }).not("unavailable_at", "is", null).not("url", "ilike", "%linkedin.com%");
+    let G = true;   // gone_at exists
+    const flagged = (q) => (G ? q.or("gone_at.not.is.null,unavailable_at.not.is.null") : q.not("unavailable_at", "is", null)).not("url", "ilike", "%linkedin.com%");
+    let { count, error } = await flagged(A.db.from("content_ideas").select("id", { count: "exact", head: true }));
+    if (error && /gone_at/.test(error.message)) { G = false; ({ count, error } = await flagged(A.db.from("content_ideas").select("id", { count: "exact", head: true }))); }
     if (error || !count) { box.hidden = true; return; }
     box.hidden = false;
-    box.innerHTML = `<span><b>${num(count)} post${count === 1 ? "" : "s"}</b> no longer exist${count === 1 ? "s" : ""} on Instagram or Facebook (deleted or made private). They're already hidden from the Content Library.</span>
+    box.innerHTML = `<span><b>${num(count)} post${count === 1 ? "" : "s"}</b> ${G ? `the platform no longer shows (deleted, private or with embedding switched off). They're still in the Content Library: keep them or delete them.` : `no longer exist${count === 1 ? "s" : ""} on Instagram or Facebook (deleted or made private). They're already hidden from the Content Library.`}</span>
       <span class="brk-btns"><button class="btn btn-sm" type="button" data-review-broken>Review</button>
       <button class="btn btn-danger btn-sm" type="button" data-delete-broken>${icon("trash")}Delete all</button></span>
       <div class="brk-list" hidden data-broken-list></div>`;
@@ -256,11 +260,11 @@
     const posts = new Map();
     const when = (d) => (d ? new Date(d).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) : "");
     const IMG = `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></svg>`;
-    const acts = `<span class="brk-acts"><button class="btn btn-sm" type="button" data-cover title="Add its cover">${IMG}Cover</button><button class="btn btn-sm" type="button" data-keep>${icon("undo")}Recover</button><button class="btn btn-danger btn-sm" type="button" data-del aria-label="Delete">${icon("trash")}</button></span>`;
+    const acts = `<span class="brk-acts"><button class="btn btn-sm" type="button" data-cover title="Add its cover">${IMG}Cover</button><button class="btn btn-sm" type="button" data-keep>${icon(G ? "check" : "undo")}${G ? "Keep" : "Recover"}</button><button class="btn btn-danger btn-sm" type="button" data-del aria-label="Delete">${icon("trash")}</button></span>`;
     $("[data-review-broken]", box).addEventListener("click", async () => {
       const list = $("[data-broken-list]", box);
       if (!list.hidden) { list.hidden = true; return; }
-      const { data } = await A.db.from("content_ideas").select("id,title,url,account,account_platform,cover_url,published_at,unavailable_at").not("unavailable_at", "is", null).not("url", "ilike", "%linkedin.com%").order("unavailable_at", { ascending: false }).limit(300);
+      const { data } = await flagged(A.db.from("content_ideas").select(`id,title,url,account,account_platform,cover_url,published_at,unavailable_at${G ? ",gone_at" : ""}`)).order(G ? "gone_at" : "unavailable_at", { ascending: false, nullsFirst: false }).limit(300);
       (data || []).forEach((p) => posts.set(String(p.id), p));
       list.innerHTML = (data || []).map((p) => `<div class="brk-row" data-id="${p.id}" role="button" tabindex="0" aria-expanded="false">
           <span class="brk-th"${p.cover_url ? ` style="background-image:url('${esc(p.cover_url)}')"` : ""}></span>
@@ -275,12 +279,12 @@
       const p = posts.get(row.dataset.id); if (!p) return;
       row.setAttribute("aria-expanded", "true");
       row.insertAdjacentHTML("afterend", `<div class="brk-pv" data-id="${p.id}">
-          <div class="brk-pv-img">${p.cover_url ? `<img src="${esc(p.cover_url)}" alt="" loading="lazy">` : `<span>No cover saved</span>`}</div>
+          <div class="brk-pv-img">${p.cover_url ? `<img src="${esc(p.cover_url)}" alt="" loading="lazy">` : A.libPreview(p.url)}</div>
           <div class="brk-pv-body"><p class="brk-pv-acc">${esc([p.account, p.account_platform].filter(Boolean).join(" · "))}</p>
             <p class="brk-pv-cap">${esc(p.title || "")}</p>
-            <dl><dt>Published</dt><dd>${esc(when(p.published_at) || "–")}</dd><dt>Marked unavailable</dt><dd>${esc(when(p.unavailable_at))}</dd></dl>
+            <dl><dt>Published</dt><dd>${esc(when(p.published_at) || "–")}</dd><dt>Marked unavailable</dt><dd>${esc(when(p.gone_at || p.unavailable_at))}</dd></dl>
             <a href="${esc(p.url)}" target="_blank" rel="noopener">${icon("external")}Open the original</a>
-            <div class="brk-pv-acts"><button class="btn btn-sm" type="button" data-keep>${icon("undo")}Recover: show it in the library again</button><button class="btn btn-danger btn-sm" type="button" data-del>${icon("trash")}Delete</button></div></div></div>`);
+            <div class="brk-pv-acts"><button class="btn btn-sm" type="button" data-keep>${icon(G ? "check" : "undo")}${G ? "Keep: it's fine" : "Recover: show it in the library again"}</button><button class="btn btn-danger btn-sm" type="button" data-del>${icon("trash")}Delete</button></div></div></div>`);
     };
     // ---------- Cover of a post: look for it again on the platform (Edge Function "covers"), or upload / paste / drop an image
     // (e.g. a screenshot of the post) → Storage covers/{id/1000}/{id}-m.jpg (supabase/cover-upload.sql) ----------
@@ -321,7 +325,7 @@
         if (error) throw error;
         await A.db.rpc("apply_media_shape", { p_rows: [{ id, width: cv.width, height: cv.height }] }).catch(() => {});
         setRowCover(id, url);
-        cvMsg(id, "Cover added. Press Recover to show the post in the library again.");
+        cvMsg(id, G ? "Cover added." : "Cover added. Press Recover to show the post in the library again.");
       } catch (err) { cvMsg(id, A.errMsg(err), true); }
     }
     // the platform again (same function as the import): found → cover saved; gone → stays hidden
@@ -336,7 +340,7 @@
         if (d.done) {
           const { data } = await A.db.from("content_ideas").select("cover_url").eq("id", id).single();
           if (data?.cover_url) setRowCover(id, data.cover_url);
-          cvMsg(id, "Found it: the post exists and its cover is saved. Press Recover to show it in the library again.");
+          cvMsg(id, G ? "Found it: the post exists and its cover is saved." : "Found it: the post exists and its cover is saved. Press Recover to show it in the library again.");
         } else cvMsg(id, d.removed ? "The platform says the post is gone or private. Upload an image if you know it's there." : "No image found on the platform (it may be blocking us). Upload an image instead.", true);
       } catch (err) { cvMsg(id, A.errMsg(err), true); }
       btn.disabled = false;
@@ -362,10 +366,10 @@
       if (!b) { const row = e.target.closest(".brk-row"); if (row && !e.target.closest("a")) preview(row); return; }
       const holder = b.closest("[data-id]"), id = holder.dataset.id;
       const q = A.db.from("content_ideas");
-      const { error: e2 } = b.matches("[data-keep]") ? await q.update({ unavailable_at: null }).eq("id", Number(id)) : await q.delete().eq("id", Number(id));
+      const { error: e2 } = b.matches("[data-keep]") ? await q.update(G ? { unavailable_at: null, gone_at: null } : { unavailable_at: null }).eq("id", Number(id)) : await q.delete().eq("id", Number(id));
       if (e2) return A.toast(A.errMsg(e2), "err");
       $$(`[data-id="${id}"]`, box).forEach((el) => el.remove());
-      A.toast(b.matches("[data-keep]") ? "Back in the Content Library." : "Post deleted.");
+      A.toast(b.matches("[data-keep]") ? (G ? "Kept: no longer flagged." : "Back in the Content Library.") : "Post deleted.");
       A.resetCatalog();
     });
     $("[data-broken-list]", box).addEventListener("keydown", (e) => { const row = e.target.closest?.(".brk-row"); if (row && (e.key === "Enter" || e.key === " ") && e.target === row) { e.preventDefault(); preview(row); } });
@@ -376,7 +380,7 @@
         confirm: "Delete", danger: true,
       });
       if (!ok) return;
-      const { error: e } = await A.db.from("content_ideas").delete().not("unavailable_at", "is", null).not("url", "ilike", "%linkedin.com%");
+      const { error: e } = await flagged(A.db.from("content_ideas").delete());
       if (e) return A.toast(A.errMsg(e), "err");
       A.toast(`${num(count)} unavailable post${count === 1 ? "" : "s"} deleted.`);
       A.resetCatalog(); loadBroken(); load();

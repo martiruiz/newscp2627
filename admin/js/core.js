@@ -799,10 +799,23 @@
     crmLast = n;
   }
 
+  // A post without a cover, as the Content Library shows it (js/library.js previewSrc): the platform's own embed.
+  // TikTok and YouTube show a drawn card there until ▶, so here only a note.
+  function libPreview(url) {
+    const u = String(url || ""); let m, src = "", h = 560;
+    if ((m = u.match(/instagram\.com\/(?:[\w.]+\/)?(p|reel|tv)\/([\w-]+)/))) { src = `https://www.instagram.com/${m[1]}/${m[2]}/embed/`; h = m[1] === "p" ? 560 : 640; }
+    else if ((m = u.match(/(?:twitter|x)\.com\/[^/]+\/status\/(\d+)/))) src = `https://platform.twitter.com/embed/Tweet.html?id=${m[1]}&theme=dark&dnt=true&hideThread=true`;
+    else if (/facebook\.com\//.test(u)) src = `https://www.facebook.com/plugins/${/\/(reel|videos?)\//.test(u) ? "video" : "post"}.php?href=${encodeURIComponent(u)}&show_text=false&width=500`;
+    return `<div class="lib-prev"><p class="lib-prev-h">How it looks in the Content Library without a cover</p>${src
+      ? `<div class="lib-prev-card"><iframe src="${esc(src)}" loading="lazy" scrolling="no" style="height:${h}px" title="Preview" allow="encrypted-media; picture-in-picture"></iframe></div>
+        <p class="lib-prev-note">If it reads “link broken” or “post removed”, members see that too: add a cover.</p>`
+      : `<p class="lib-prev-note">This network shows a card drawn with the account and the text until the member presses ▶.</p>`}</div>`;
+  }
+
   window.SCPA = {
     db, auth, CATEGORIES, CAT_LABEL, CATALOG_ORDER, icon, info, $, $$, esc, store, fmtDate, fmtDateTime, num, debounce, chunk, errMsg, rpc,
     toast, modal, confirmDialog, boot, loadCatalog, MultiSelect, FilterPanel, pager, CSV_COLUMNS, toCSV, csvCell, downloadBlob,
-    ideaToCsvRow, cleanEmbed, embedKind, activateEmbeds, platformOfUrl, postUrl, openIdeaEditor, openIdeaPreview, loadCovers, scrapeAndImport,
+    ideaToCsvRow, cleanEmbed, embedKind, activateEmbeds, platformOfUrl, postUrl, libPreview, openIdeaEditor, openIdeaPreview, loadCovers, scrapeAndImport,
     resetCatalog: () => { catalogCache = null; }, crmBadge,
   };
 
