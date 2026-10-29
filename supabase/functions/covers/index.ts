@@ -5,7 +5,7 @@
 // A post imported with its image link from the scraping (content_ideas.cover_source, supabase/import-cover-source.sql)
 // takes that image first, without asking the platform (6 at a time); the others ask their platform (3 at a time).
 // Instagram's extra data (type, size, length, views) from the post's page: POST { ids, meta: true }, a separate pass.
-// SUPABASE_URL, SUPABASE_ANON_KEY and SUPABASE_SERVICE_ROLE_KEY are provided by Supabase.
+// SUPABASE_URL, SUPABASE_ANON_KEY and SUPABASE_SERVICE_ROLE_KEY are provided by Supabase; CRON_SECRET (secret) lets the every-minute run in.
 const env = (k: string) => Deno.env.get(k) ?? "";
 const CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, apikey, content-type", "Access-Control-Allow-Methods": "POST, OPTIONS" };
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...CORS, "Content-Type": "application/json" } });
@@ -159,13 +159,17 @@ async function pool<T>(items: T[], n: number, fn: (x: T) => Promise<void>) {
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: CORS });
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
-  if (!(await superadmin(req))) return json({ error: "Only superadmins" }, 403);
-  const { ids, meta } = await req.json().catch(() => ({ ids: [] }));
+  // the every-minute run (pg_cron "scp-covers", supabase/covers-queue.sql) comes with the cron secret; anyone else is a superadmin
+  const cron = !!env("CRON_SECRET") && req.headers.get("x-cron-secret") === env("CRON_SECRET");
+  if (!cron && !(await superadmin(req))) return json({ error: "Only superadmins" }, 403);
+  const { ids, meta, queue } = await req.json().catch(() => ({ ids: [] }));
   const list = (Array.isArray(ids) ? ids : []).map(Number).filter(Boolean).slice(0, 12);
-  if (!list.length) return json({ done: 0, no_image: 0, removed: 0 });
-  let rows;
-  try { rows = await rest(`content_ideas?select=id,url,cover_source&id=in.(${list.join(",")})`); }
-  catch (_) { rows = await rest(`content_ideas?select=id,url&id=in.(${list.join(",")})`); }   // import-cover-source.sql not run yet
+  if (!list.length && !queue) return json({ done: 0, no_image: 0, removed: 0 });
+  let rows: { id: number; url: string; cover_source?: string }[] = [];
+  if (list.length) {
+    try { rows = await rest(`content_ideas?select=id,url,cover_source&id=in.(${list.join(",")})`); }
+    catch (_) { rows = await rest(`content_ideas?select=id,url&id=in.(${list.join(",")})`); }   // import-cover-source.sql not run yet
+  }
   let done = 0, noImage = 0, removed = 0;
   const igMeta = (id: number, c: Cover) => (c && !c.broken && c.media_type && c.width && c.height
     ? rest("rpc/apply_ig_meta", { method: "POST", body: JSON.stringify({ p_rows: [{ id, media_type: c.media_type, width: c.width, height: c.height, duration: c.duration, views: c.views }] }) }).catch(() => {})
@@ -181,6 +185,7 @@ Deno.serve(async (req) => {
 
   // the image from the scraping (cover_source): just copied, 6 at a time; its shape from the image itself. The others ask
   // their platform for the image, 3 at a time (Instagram's page, with a short pause, so it doesn't block us)
+  const work = async (rows: { id: number; url: string; cover_source?: string }[]) => {
   const isYt = (p: { url: string }) => /youtube\.com|youtu\.be/.test(p.url || "");   // YouTube: its own still, never a copy
   const withSrc = (rows as { id: number; url: string; cover_source?: string }[]).filter((p) => p.cover_source && !isYt(p));
   const without = (rows as { id: number; url: string; cover_source?: string }[]).filter((p) => !p.cover_source || isYt(p));
@@ -230,5 +235,19 @@ Deno.serve(async (req) => {
     }),
     pool(without, 3, fromPlatform),
   ]);
+  };
+
+  // the posts are claimed first (claim_cover_jobs): the every-minute run and the import page never do one twice
+  const claim = async (only: number[] | null) => {
+    try { return ((await rest("rpc/claim_cover_jobs", { method: "POST", body: JSON.stringify({ p_ids: only, p_n: 12 }) })) || []) as typeof rows; }
+    catch (_) { return only ? rows : []; }   // supabase/covers-queue.sql not run yet: as before
+  };
+  // queue: the pending posts, newest first, 12 at a time on 3 lanes, for up to ~50 s (the run comes back every minute)
+  if (queue) {
+    const t0 = Date.now();
+    await Promise.all([0, 1, 2].map(async () => { while (Date.now() - t0 < 50000) { const r = await claim(null); if (!r.length) break; await work(r); } }));
+    return json({ done, no_image: noImage, removed, secs: Math.round((Date.now() - t0) / 1000) });
+  }
+  await work(await claim(list));
   return json({ done, no_image: noImage, removed });
 });

@@ -706,11 +706,8 @@
         for (const r of withAcc) if (!club.handles.has(handle(r))) out.set(handle(r), (out.get(handle(r)) || 0) + 1);
         wizard.result.club = { matched: withAcc.length - [...out.values()].reduce((a, b) => a + b, 0), noAccount: rows.length - withAcc.length, unlinked: [...out.entries()].sort((a, b) => b[1] - a[1]) };
       }
-      // members don't see the new posts until their covers are loaded; then they're published on their own (supabase/import-review.sql, import-autopublish.sql)
-      if (total.created + total.replaced) {
-        const h = await A.db.rpc("admin_import_hold", { p_import_id: wizard.importId });
-        if (h.error) term.log("warn", `review: ${esc(h.error.message)} — run supabase/import-review.sql in Supabase (the posts are visible right away)`);
-      }
+      // the new posts go live at once: until its cover is copied (on the server, every minute: supabase/covers-queue.sql)
+      // a post shows the scraping's image link. The covers panel below only speeds it up while this page is open.
       // My Club (supabase/my-club-daily.sql): the clubs' players' and sponsors' posts → only in My Club, with the tags they miss
       if (total.created + total.replaced) {
         let mark = { posts: 0, club_only: 0, tags_added: 0 };
@@ -781,7 +778,7 @@
   function reviewPanel(host, importId, onApproved) {
     let paused = false, finished = false, stopped = false, loaded = false;
     host.innerHTML = `<div class="panel panel-pad rv">
-      <div class="rv-h"><div><b>Covers</b><p class="muted">The new posts are published as soon as their covers are loaded.</p></div><span class="status status-importing" data-rv-status>Loading covers</span></div>
+      <div class="rv-h"><div><b>Covers</b><p class="muted">The new posts are already live. Their covers load on the server: you can close this page (here they load faster).</p></div><span class="status status-importing" data-rv-status>Loading covers</span></div>
       <div class="rv-bar"><i data-rv-bar style="width:0%"></i></div>
       <p class="rv-stats" data-rv-stats>Loading…</p>
       <p class="error-text" hidden data-rv-err></p>

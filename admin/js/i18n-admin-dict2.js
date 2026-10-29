@@ -140,6 +140,7 @@ window.SCPA_DICT = Object.assign(window.SCPA_DICT || {}, {
   "Required — must be unique": ["Obligatorio, debe ser único", "Obligatori, ha de ser únic"],
   "Paste the post's link: everything else fills in by itself": ["Pega el enlace del post: el resto se rellena solo", "Enganxa l'enllaç del post: la resta s'omple sola"],
   "Post link": ["Enlace del post", "Enllaç del post"],
+  "The new posts are already live. Their covers load on the server: you can close this page (here they load faster).": ["Los posts nuevos ya están publicados. Sus portadas se cargan en el servidor: puedes cerrar esta página (aquí se cargan más rápido).", "Els posts nous ja estan publicats. Les portades es carreguen al servidor: pots tancar aquesta pàgina (aquí es carreguen més de pressa)."],
   "Scrape an account": ["Scrapear una cuenta", "Scrapejar un compte"],
   "Any club, player, creator, competition or media outlet: its latest posts come into the library with their tags.": ["Cualquier club, jugador, creador, competición o medio: sus últimos posts entran en la biblioteca con sus etiquetas.", "Qualsevol club, jugador, creador, competició o mitjà: els seus últims posts entren a la biblioteca amb les seves etiquetes."],
   "account (e.g. realmadrid, lamine.yamal)": ["cuenta (p. ej. realmadrid, lamine.yamal)", "compte (p. ex. realmadrid, lamine.yamal)"],
