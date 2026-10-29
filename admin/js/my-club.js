@@ -113,6 +113,7 @@
       </section>
       <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Players</h2><span class="aud-count">${num(people.filter((p) => p.kind === "player").length)}</span><span class="spacer"></span><button class="btn btn-sm" type="button" data-add-person="player">${icon("plus")}Add player</button></header>${table("player")}</section>
       <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Sponsors</h2><span class="aud-count">${num(people.filter((p) => p.kind === "sponsor").length)}</span><span class="spacer"></span><button class="btn btn-sm" type="button" data-add-person="sponsor">${icon("plus")}Add sponsor</button><button class="btn btn-primary btn-sm" type="button" data-add-sponsor>${icon("plus")}Add sponsor from the library</button></header>${table("sponsor")}</section>`;
+    resumeScrapes();
   }
 
   // the Excel: headers in EN / ES / CA, any order
@@ -140,6 +141,14 @@
     const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), "Club");
     XLSX.writeFile(wb, "scp-my-club-template.xlsx");
   }
+  // collections started before a reload: pick them up (scrapeNow finds them in this browser)
+  function resumeScrapes() {
+    for (const b of $$("[data-scrape]", main)) {
+      let on = false; try { on = !!localStorage.getItem(`scp-scrape:${cur}:${b.dataset.scrape}`); } catch {}
+      if (on && !b.disabled) scrapeNow(b.dataset.scrape, b);
+    }
+  }
+
   // every Instagram account of the club with no posts yet, 3 at a time (each takes 1–2 minutes at Bright Data)
   async function scrapeAll(btn) {
     const list = [...$$("[data-scrape]", main)].filter((x) => !x.disabled);
@@ -206,18 +215,27 @@
       if (error || data?.error) { let m = data?.error; try { m = m || (await error?.context?.json())?.error; } catch {} throw new Error(m || "Bright Data didn't answer."); }
       return data;
     };
+    // the collection is remembered in this browser, so a reload or another visit picks it up and imports it when it's ready
+    const key = `scp-scrape:${cur}:${handle}`;
+    let saved = null; try { saved = JSON.parse(localStorage.getItem(key) || "null"); } catch {}
+    const forget = () => { try { localStorage.removeItem(key); } catch {} };
     try {
-      const { snapshot_id } = await call({ action: "start", handle, num: 10 });
+      if (!saved?.snapshot_id) {
+        const { snapshot_id } = await call({ action: "start", handle, num: 10 });
+        saved = { snapshot_id, at: Date.now() };
+        try { localStorage.setItem(key, JSON.stringify(saved)); } catch {}
+      }
       let res;
       for (;;) {
-        await new Promise((r) => setTimeout(r, 6000));
-        const sec = Math.round((Date.now() - t0) / 1000);
-        say(`Scraping… ${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`);
-        res = await call({ action: "status", snapshot_id });
-        if (res.status === "failed") throw new Error(res.error);
+        await new Promise((r) => setTimeout(r, 8000));
+        const sec = Math.round((Date.now() - (saved.at || t0)) / 1000);
+        res = await call({ action: "status", snapshot_id: saved.snapshot_id });
+        say(`Scraping… ${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}${res.bd?.records ? ` · ${res.bd.records} posts` : ""}`);
+        if (res.status === "failed") { forget(); throw new Error(res.error); }
         if (res.status === "ready") break;
-        if (sec > 600) throw new Error("Bright Data is taking more than 10 minutes. Try again later.");
+        if (sec > 1800) { forget(); throw new Error("Bright Data took more than 30 minutes with this account. Try again later."); }
       }
+      forget();
       const rows = (res.rows || []).filter((r) => r.external_id && r.published_at);
       if (!rows.length) throw new Error(`Bright Data found no posts for @${handle}${res.errors?.length ? `: ${res.errors[0]}` : "."}`);
       say("Importing…");

@@ -82,8 +82,9 @@ Deno.serve(async (req) => {
     const id = String(b.snapshot_id || "");
     if (!/^[\w-]{6,}$/.test(id)) return json({ error: "Missing snapshot" }, 400);
     const pr = await bd(`/progress/${id}`).then((x) => x.json()).catch(() => ({}));
-    if (pr?.status === "failed") return json({ status: "failed", error: pr?.error || "Bright Data couldn't collect this account." });
-    if (pr?.status !== "ready") return json({ status: "running" });
+    const bdState = { status: pr?.status ?? null, records: pr?.records ?? null, errors: pr?.errors ?? null };   // Bright Data's own state, to see where it is
+    if (pr?.status === "failed") return json({ status: "failed", error: pr?.error || "Bright Data couldn't collect this account.", bd: bdState });
+    if (pr?.status !== "ready") return json({ status: "running", bd: bdState });
     const recs = await bd(`/snapshot/${id}?format=json`).then((x) => x.json()).catch(() => null);
     if (!Array.isArray(recs)) return json({ status: "failed", error: "Bright Data gave no posts." });
     // posts come one per record, or inside a profile record (posts: [...])
