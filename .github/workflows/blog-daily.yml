@@ -1,0 +1,52 @@
+name: Daily blog post
+
+# Every morning (08:20 UTC): one new blog post written by Claude from today's reel topics (pipeline/blog-daily.js),
+# committed with its cover, saved in Admin → Blog, then "Publish blog" builds it and adds the Spanish version.
+# Runs in the cloud: it doesn't depend on any computer being on. "Run workflow" to write one now.
+on:
+  schedule:
+    - cron: "20 8 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: blog-daily
+  cancel-in-progress: false
+
+jobs:
+  write:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: pipeline/package-lock.json
+      - run: npm ci
+        working-directory: pipeline
+      - run: pip install pillow
+      - name: Write the post
+        run: node blog-daily.js
+        working-directory: pipeline
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      - name: Commit it and publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          [ -f .daily-post ] || exit 0   # already a post today
+          slug=$(sed -n 1p .daily-post); img=$(sed -n 2p .daily-post)
+          git config user.name "SCP blog"
+          git config user.email "actions@users.noreply.github.com"
+          git add "content/blog/$slug.json" "assets/blog/$img"
+          git commit -m "Blog: daily post $slug"
+          git pull --rebase
+          git push
+          gh workflow run publish-blog.yml
