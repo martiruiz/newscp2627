@@ -14,6 +14,9 @@ on:
       from:
         description: "run: posts imported since this day (YYYY-MM-DD; empty = last 7 days)"
         default: ""
+      model:
+        description: "eval only: another model to compare (empty = the one in use)"
+        default: ""
 
 concurrency:
   group: smart-filters
@@ -40,6 +43,7 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           MODE: ${{ github.event.inputs.mode || 'run' }}
           FROM: ${{ github.event.inputs.from }}
+          AI_CLASSIFY_MODEL: ${{ github.event.inputs.mode == 'eval' && github.event.inputs.model || '' }}
         run: |
           case "$MODE" in
             eval) node library/smart-auto.mjs --eval --diff ;;
