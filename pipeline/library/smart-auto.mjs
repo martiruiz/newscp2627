@@ -12,7 +12,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@supabase/supabase-js";
 import { loadEnv } from "./env.mjs";
-import { AI_CATEGORIES } from "./taxonomy.mjs";
+import { AI_CATEGORIES, AI_VALUES } from "./taxonomy.mjs";
 import { VERSION, MODEL, requestParams, parseAnswer, fetchImage, cost } from "./smart-ai.mjs";
 
 loadEnv();
@@ -70,6 +70,15 @@ if (argv.includes("--eval")) {
   const norm = (x) => String(x).normalize("NFD").replace(/\p{M}/gu, "").trim().toLowerCase();
   const S = (v) => new Set([].concat(v || []).map(norm).filter(Boolean));
   console.log(`${after.size} reviewed posts labelled by ${MODEL} (${withImg} with their cover) · $${usd.toFixed(4)}\n`);
+  // your answers were given with an earlier version of the filters: values the platform's filters no longer have can't be
+  // given by the AI, so they are left out (or mapped to today's value when there is an obvious one)
+  const SAME = { "post-match": "match coverage", "live match": "match coverage", "preseason / tour": null };
+  const today = (c, v) => {
+    if (c.free || !AI_VALUES[c.key]) return v;
+    const ok = new Set(AI_VALUES[c.key].map(norm));
+    return [...S(v)].map((x) => (x in SAME ? SAME[x] : x)).filter((x) => x && ok.has(x));
+  };
+  for (const g of gold) if (g.gold) for (const c of AI_CATEGORIES) if (c.key in g.gold) g.gold[c.key] = today(c, g.gold[c.key]);
   // before = the labels the reviewed posts had (the earlier AI), now = this run
   const score = (pred, c) => {
     let tp = 0, fp = 0, fn = 0;
