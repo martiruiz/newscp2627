@@ -275,11 +275,11 @@
         if (box.dataset.single) $$(".sr-chip", box).forEach((x) => x !== b && !x.classList.contains("pend") && x.classList.remove("on"));
         b.classList.toggle("on");
       }
-      const left = $$(".sr-chip.pend").length;
+      const left = $$(".sr-form .sr-chip.pend").length;
       const btn = $("[data-save]");
       if (btn) btn.innerHTML = left ? `${left} to check` : `${icon("check")}Save &amp; next`;
     }));
-    if (verify) { const left = $$(".sr-chip.pend").length; if (left) $("[data-save]").innerHTML = `${left} to check`; }
+    if (verify) { const left = $$(".sr-form .sr-chip.pend").length; if (left) $("[data-save]").innerHTML = `${left} to check`; }
     $("[data-prev]").addEventListener("click", () => { idx = Math.max(0, idx - 1); renderReview(); });
     $("[data-skip]").addEventListener("click", () => save("skipped"));
     $("[data-save]").addEventListener("click", () => save("done"));
@@ -301,7 +301,7 @@
   }
   async function save(status) {
     const r = items[idx];
-    if (status === "done" && $$(".sr-chip.pend").length) return A.toast("Confirm (✓) or reject (✗) every dashed label first.", "err");
+    if (status === "done" && $$(".sr-form .sr-chip.pend").length) return A.toast("Confirm (✓) or reject (✗) every dashed label first.", "err");
     const btn = $("[data-save]");
     btn.disabled = true;
     const patch = { status, gold: status === "done" ? collect() : r.gold, note: $("[data-note]")?.value.trim() || null, reviewed_at: new Date().toISOString(), reviewed_by: (await A.db.auth.getUser()).data.user?.id };
