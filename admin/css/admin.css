@@ -2066,3 +2066,41 @@ tr[data-row].is-open td:first-child { box-shadow: inset 3px 0 0 var(--accent, #f
 .mcl-job-log p { margin: 0; } .mcl-job-log span { color: #6f7d95; margin-right: 8px; }
 .mcl-job-log .is-ok { color: #8fe3a5; } .mcl-job-log .is-warn { color: #f0b84a; } .mcl-job-log .is-err { color: #ff8a80; } .mcl-job-log .is-step { color: #fff; font-weight: 600; }
 @media (max-width: 700px) { .mcl-steps li { font-size: 0; height: 6px; padding: 0; } }
+/* My Club, redesigned: the club's header, three tabs (players & sponsors · members · settings), the main actions in sight */
+.mcl-clubs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; scrollbar-width: thin; }
+.mcl-club { flex: none; }
+.mcl-hero { --c1: var(--accent); --c2: var(--panel-3); position: relative; display: flex; align-items: center; gap: 18px; flex-wrap: wrap; padding: 18px 22px; margin-bottom: 14px;
+  border-radius: 18px; border: 1px solid var(--border); background: linear-gradient(110deg, color-mix(in srgb, var(--c1) 14%, var(--panel)) 0%, var(--panel) 55%, color-mix(in srgb, var(--c2) 12%, var(--panel)) 100%); overflow: hidden; }
+.mcl-hero::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: linear-gradient(90deg, var(--c1), var(--c2)); }
+.mcl-hero-logo { flex: none; display: grid; place-items: center; width: 64px; height: 64px; border-radius: 16px; background: var(--panel-2); border: 1px solid var(--border); overflow: hidden; }
+.mcl-hero-logo img { width: 100%; height: 100%; object-fit: cover; } .mcl-hero-logo span { font: 700 20px var(--display); color: var(--accent-light); }
+.mcl-hero-t { display: grid; gap: 6px; min-width: 0; }
+.mcl-hero-t h2 { margin: 0; font: 700 24px/1.1 var(--display); }
+.mcl-hero-st { justify-self: start; padding: 2px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 700; background: color-mix(in srgb, var(--green) 16%, transparent); color: var(--green); }
+.mcl-hero-st.is-off { background: var(--panel-3); color: var(--muted); }
+.mcl-stats { display: flex; gap: 8px; margin-left: auto; flex-wrap: wrap; }
+.mcl-stats span { display: grid; min-width: 86px; padding: 8px 14px; border-radius: 12px; background: var(--panel); border: 1px solid var(--border); font-size: 11.5px; color: var(--muted); text-align: center; }
+.mcl-stats b { font: 700 20px/1.2 var(--display); color: var(--text); }
+.mcl-tabs { display: flex; gap: 4px; margin: 0 0 14px; padding: 4px; border-radius: 14px; background: var(--panel-2); border: 1px solid var(--border); width: max-content; max-width: 100%; overflow-x: auto; }
+.mcl-tab { display: inline-flex; align-items: center; gap: 7px; padding: 8px 16px; border: 0; border-radius: 10px; background: none; color: var(--muted); font-weight: 600; font-size: 13.5px; white-space: nowrap; cursor: pointer; }
+.mcl-tab:hover { color: var(--text); }
+.mcl-tab.is-on { background: var(--panel); color: var(--text); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12); }
+.mcl-tab em { font-style: normal; font-size: 11.5px; padding: 1px 7px; border-radius: 999px; background: var(--panel-3); color: var(--muted); }
+.mcl-tab.is-on em { background: var(--accent); color: #0b0f1c; }
+.mcl-pane[hidden] { display: none; }
+.mcl-toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.mcl-more { position: relative; }
+.mcl-more > summary { list-style: none; cursor: pointer; } .mcl-more > summary::-webkit-details-marker { display: none; }
+.mcl-more > summary svg { width: 14px; height: 14px; transition: transform 0.15s; } .mcl-more[open] > summary svg { transform: rotate(180deg); }
+.mcl-more-menu { position: absolute; right: 0; top: calc(100% + 6px); z-index: 40; width: 290px; padding: 6px; border-radius: 14px; background: var(--panel); border: 1px solid var(--border); box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25); display: grid; gap: 2px; }
+.mcl-more-it { display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 10px; border: 0; border-radius: 10px; background: none; color: var(--text); text-align: left; text-decoration: none; cursor: pointer; font: inherit; }
+.mcl-more-it:hover { background: var(--panel-2); }
+.mcl-more-it svg { width: 16px; height: 16px; flex: none; color: var(--accent); }
+.mcl-more-it span { display: grid; gap: 1px; } .mcl-more-it b { font-size: 13px; font-weight: 600; } .mcl-more-it small { font-size: 11.5px; color: var(--muted); }
+.mcl-pane > .mcl-pending, .mcl-pane > .mcl-live { margin-left: 0; margin-right: 0; }
+.mcl-pane > .mcl-sum { padding: 0 2px 12px; }
+.mcl-help { margin: 0; padding: 0 18px 10px; color: var(--muted); font-size: 13px; }
+@media (max-width: 760px) { .mcl-stats { margin-left: 0; width: 100%; } .mcl-stats span { flex: 1; min-width: 0; } .mcl-tabs { width: 100%; } .mcl-tab { flex: 1; justify-content: center; } .mcl-more-menu { right: auto; left: 0; } }
+.mcl-toolbar .spacer { flex: 1; }
+.mcl-form .check-inline { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text); }
+@media (max-width: 760px) { .mcl-stats span { padding: 8px 4px; font-size: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .mcl-hero { padding: 14px; gap: 12px; } .mcl-hero-t h2 { font-size: 20px; } }

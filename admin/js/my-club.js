@@ -75,8 +75,52 @@
           <td class="td-actions"><button class="icon-btn" type="button" title="Delete" aria-label="Delete" data-del="${p.id}">${icon("trash")}</button></td></tr>`).join("")}
         </tbody></table></div>`;
     };
+    const nPlayers = people.filter((p) => p.kind === "player").length, nSponsors = people.length - nPlayers;
+    const nPosts = people.reduce((n, p) => n + p.accounts.reduce((m, a) => m + (a.posts || 0), 0), 0);
+    let tab = "people"; try { tab = localStorage.getItem("scp-mcl-tab") || "people"; } catch {}
+    const tabs = [["people", "Players & sponsors", nPlayers + nSponsors], ["members", "Members", club.members.length], ["settings", "Club settings", null]];
     $("[data-club]").innerHTML = `
-      <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Club</h2>${info("Name, logo and profiles shown on the club's page. The club's profiles (as many per network as it has) also tell which sponsor posts are “linked to the club”: the ones that mention one of them.")}</header>
+      <section class="mcl-hero"${c.colors?.primary ? ` style="--c1:${esc(c.colors.primary)};--c2:${esc(c.colors.secondary || c.colors.primary)}"` : ""}>
+        <span class="mcl-hero-logo">${c.logo_url ? `<img src="${esc(c.logo_url)}" alt="">` : `<span>${esc(c.name.slice(0, 2).toUpperCase())}</span>`}</span>
+        <div class="mcl-hero-t"><h2>${esc(c.name)}</h2><span class="mcl-hero-st${c.active ? "" : " is-off"}">${c.active ? "Active" : "Inactive"}</span></div>
+        <div class="mcl-stats">
+          <span><b>${num(nPlayers)}</b>players</span><span><b>${num(nSponsors)}</b>sponsors</span><span><b>${num(club.members.length)}</b>members</span><span><b>${num(nPosts)}</b>posts</span>
+        </div>
+      </section>
+      <nav class="mcl-tabs" role="tablist">${tabs.map(([k, t, n]) => `<button type="button" role="tab" class="mcl-tab${k === tab ? " is-on" : ""}" data-tab="${k}" aria-selected="${k === tab}">${esc(t)}${n != null ? ` <em>${num(n)}</em>` : ""}</button>`).join("")}</nav>
+
+      <div class="mcl-pane" data-pane="people"${tab === "people" ? "" : " hidden"}>
+        <div class="mcl-toolbar">
+          <button class="btn btn-primary" type="button" data-add-person="player">${icon("plus")}Add player</button>
+          <button class="btn" type="button" data-add-person="sponsor">${icon("plus")}Add sponsor</button>
+          <button class="btn" type="button" data-add-sponsor>${icon("library")}Sponsor from the library</button>
+          <span class="spacer"></span>
+          <details class="mcl-more"><summary class="btn btn-ghost">More${icon("chevron")}</summary>
+            <div class="mcl-more-menu">
+              <label class="mcl-more-it">${icon("import")}<span><b>Upload Excel</b><small>Many players and sponsors at once</small></span><input type="file" accept=".xlsx,.xls,.csv" hidden data-file></label>
+              <button class="mcl-more-it" type="button" data-template>${icon("download")}<span><b>Excel template</b><small>The columns the Excel needs</small></span></button>
+              <a class="mcl-more-it" href="import.html?club=${cur}">${icon("import")}<span><b>Import posts (CSV)</b><small>The daily scraping file, for this club</small></span></a>
+              <button class="mcl-more-it" type="button" data-scraper>${icon("download")}<span><b>Accounts for the scraper</b><small>This club's accounts with no posts yet</small></span></button>
+            </div></details>
+        </div>
+        ${pending ? `<div class="mcl-pending">${icon("alert")}<span><b>${num(pending)} account${pending === 1 ? "" : "s"} without posts yet.</b> ${pendingIg ? `Scrape ${pendingIg === 1 ? "it" : "them"} here: the last 10 posts of each Instagram, only in this club's My Club (about 1–2 minutes).` : "Add them to the scraping Excel and import their posts as usual."}</span>
+          ${pendingIg ? `<button class="btn btn-primary btn-sm" type="button" data-scrape-all>${icon("download")}${pendingIg === 1 ? "Scrape it now" : `Scrape all ${num(pendingIg)}`}</button>` : ""}
+          ${pending > pendingIg ? `<button class="btn btn-sm" type="button" data-scraper>${icon("download")}Accounts for the scraper</button>` : ""}</div>` : ""}
+        <div class="mcl-live" data-live hidden></div>
+        ${club.sections.length ? `<p class="mcl-sum">${club.sections.map((x) => `<b>${esc(x.name)}</b> ${x.teams.map((t) => esc(t.name)).join(", ") || "—"}`).join(" · ")}</p>` : ""}
+        <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Players</h2><span class="aud-count">${num(nPlayers)}</span></header>${table("player")}</section>
+        <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Sponsors</h2><span class="aud-count">${num(nSponsors)}</span></header>${table("sponsor")}</section>
+      </div>
+
+      <div class="mcl-pane" data-pane="members"${tab === "members" ? "" : " hidden"}>
+        <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Members</h2>${info("Who can open this club's space (they also need an active plan or trial). Add them by the e-mail of their SCP account.")}</header>
+        <p class="mcl-help">Members see ${esc(c.name)}'s My Club: its players' and sponsors' posts, only for them.</p>
+        <div class="mcl-members">${club.members.map((m) => `<span class="mcl-member">${esc(m.email)}<button type="button" title="Remove" data-unmember="${esc(m.email)}">✕</button></span>`).join("") || `<span class="muted">Nobody yet.</span>`}</div>
+        <form class="mcl-add" data-member><input class="input" type="email" name="email" placeholder="name@club.com" required><button class="btn" type="submit">${icon("plus")}Add member</button></form></section>
+      </div>
+
+      <div class="mcl-pane" data-pane="settings"${tab === "settings" ? "" : " hidden"}>
+        <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Club settings</h2>${info("Name, logo and profiles shown on the club's page. The club's profiles (as many per network as it has) also tell which sponsor posts are “linked to the club”: the ones that mention one of them.")}</header>
         <form class="mcl-form" data-form>
           <div class="mcl-logo-edit">
             <span class="mcl-logo-prev" data-logo-prev>${c.logo_url ? `<img src="${esc(c.logo_url)}" alt="">` : `<span>${esc(c.name.slice(0, 2).toUpperCase())}</span>`}</span>
@@ -98,22 +142,7 @@
           <label class="check-inline"><input type="checkbox" name="active"${c.active ? " checked" : ""}> Active</label>
           <div class="mcl-form-act"><button class="btn btn-primary" type="submit">Save</button><button class="btn btn-danger" type="button" data-club-del>${icon("trash")}Delete club</button></div>
         </form></section>
-      <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Members</h2>${info("Who can open this club's space (they also need an active plan or trial). Add them by the e-mail of their SCP account.")}</header>
-        <div class="mcl-members">${club.members.map((m) => `<span class="mcl-member">${esc(m.email)}<button type="button" title="Remove" data-unmember="${esc(m.email)}">✕</button></span>`).join("") || `<span class="muted">Nobody yet.</span>`}</div>
-        <form class="mcl-add" data-member><input class="input" type="email" name="email" placeholder="name@club.com" required><button class="btn" type="submit">${icon("plus")}Add member</button></form></section>
-      <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Players &amp; sponsors</h2>${info("Upload an Excel with one row per person and team: Type (player / sponsor), Name, Photo, Section, Team, Instagram, TikTok, X, YouTube, Facebook, LinkedIn, Active, From, To. The same name again adds a link, it never duplicates the person. A sponsor with no section is a global sponsor.")}<span class="spacer"></span>
-          <a class="btn" href="import.html?club=${cur}" title="The daily scraping CSV (same as Admin → Import): its players' and sponsors' posts go to this club's My Club">${icon("import")}Import posts (CSV)</a>
-          <button class="btn" type="button" data-template>${icon("download")}Excel template</button>
-          <label class="btn">${icon("import")}Upload Excel<input type="file" accept=".xlsx,.xls,.csv" hidden data-file></label>
-          <button class="btn btn-primary" type="button" data-add-person="player">${icon("plus")}Add player</button></header>
-        <p class="mcl-sum">${club.sections.length ? club.sections.map((s) => `<b>${esc(s.name)}</b> ${s.teams.map((t) => esc(t.name)).join(", ") || "—"}`).join(" · ") : "No sections yet."}</p>
-        ${pending ? `<div class="mcl-pending">${icon("alert")}<span><b>${num(pending)} account${pending === 1 ? "" : "s"} without posts yet.</b> ${pendingIg ? `Scrape ${pendingIg === 1 ? "it" : "them"} here: the last 10 posts of each Instagram, only in this club's My Club (about 1–2 minutes).` : "Add them to the scraping Excel and import their posts as usual."}</span>
-          ${pendingIg ? `<button class="btn btn-primary btn-sm" type="button" data-scrape-all>${icon("download")}${pendingIg === 1 ? "Scrape it now" : `Scrape all ${num(pendingIg)}`}</button>` : ""}
-          ${pending > pendingIg ? `<button class="btn btn-sm" type="button" data-scraper>${icon("download")}Accounts for the scraper</button>` : ""}</div>` : ""}
-        <div class="mcl-live" data-live hidden></div>
-      </section>
-      <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Players</h2><span class="aud-count">${num(people.filter((p) => p.kind === "player").length)}</span><span class="spacer"></span><button class="btn btn-sm" type="button" data-add-person="player">${icon("plus")}Add player</button></header>${table("player")}</section>
-      <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Sponsors</h2><span class="aud-count">${num(people.filter((p) => p.kind === "sponsor").length)}</span><span class="spacer"></span><button class="btn btn-sm" type="button" data-add-person="sponsor">${icon("plus")}Add sponsor</button><button class="btn btn-primary btn-sm" type="button" data-add-sponsor>${icon("plus")}Add sponsor from the library</button></header>${table("sponsor")}</section>`;
+      </div>`;
     renderLive();
     for (const j of jobs.values()) if (!j.done && !j.error) { const b = $(`[data-scrape="${CSS.escape(j.handle)}"]`, main); if (b) { b.disabled = true; b.innerHTML = `<span class="spinner sm"></span>Scraping…`; } }
     resumeScrapes();
@@ -384,6 +413,9 @@
     });
   }
 
+  // the "More" menu closes on a click outside it or after a file is chosen
+  document.addEventListener("click", (e) => { $$(".mcl-more[open]", main).forEach((d) => { if (!d.contains(e.target)) d.removeAttribute("open"); }); });
+  main.addEventListener("change", (e) => { if (e.target.matches("[data-file]")) e.target.closest(".mcl-more")?.removeAttribute("open"); });
   main.addEventListener("click", async (e) => {
     const b = e.target.closest("button"); if (!b) return;
     try {
@@ -410,6 +442,13 @@
       if (b.matches("[data-scraper]")) return scraperFile();
       if (b.dataset.scrape) return scrapeNow(b.dataset.scrape, b);
       if (b.matches("[data-scrape-all]")) return scrapeAll(b);
+      b.closest(".mcl-more")?.removeAttribute("open");
+      if (b.dataset.tab) {
+        try { localStorage.setItem("scp-mcl-tab", b.dataset.tab); } catch {}
+        $$("[data-tab]", main).forEach((t) => { t.classList.toggle("is-on", t === b); t.setAttribute("aria-selected", t === b); });
+        $$("[data-pane]", main).forEach((p) => { p.hidden = p.dataset.pane !== b.dataset.tab; });
+        return;
+      }
       if (b.matches("[data-live-clear]")) { for (const [h, j] of jobs) if (j.done || j.error) jobs.delete(h); return renderLive(); }
       if (b.dataset.addPerson) return personDialog(b.dataset.addPerson);
       if (b.matches("[data-club-del]")) {
