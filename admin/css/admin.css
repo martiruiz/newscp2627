@@ -2027,3 +2027,7 @@ tr[data-row].is-open td:first-child { box-shadow: inset 3px 0 0 var(--accent, #f
 .notice-broken .brk-cv-msg:empty { display: none; }
 .notice-broken .brk-cv-msg.is-bad { color: #ff8a8a; }
 @media (max-width: 760px) { .notice-broken .brk-cv { grid-template-columns: 1fr; } }
+
+/* My Club → "Scrape now" next to an account not scraped yet */
+.mcl-scrape { margin-left: 8px; gap: 6px; vertical-align: middle; }
+.mcl-scrape .spinner.sm { width: 12px; height: 12px; }

@@ -69,7 +69,7 @@
         ${list.map((p) => `<tr${p.active ? "" : ' class="is-off"'}>
           <td><div class="ld-person">${p.photo_url ? `<img class="mcl-ph" src="${esc(p.photo_url)}" alt="">` : `<span class="ld-av">${esc(p.name.charAt(0).toUpperCase())}</span>`}<span><b>${esc(p.name)}</b></span></div></td>
           <td>${p.links.map((l) => `<span class="mcl-link${l.live ? "" : " is-ended"}" title="${esc([l.starts_on && `from ${l.starts_on}`, l.ends_on && `until ${l.ends_on}`].filter(Boolean).join(" ") || "no dates")}">${esc(linkLabel(l))}${l.live ? `<button type="button" title="End this link today (keeps the history)" data-end="${l.id}">✕</button>` : ` <small>ended</small><button type="button" title="Active again" data-relink="${l.id}">↺</button>`}</span>`).join("")}</td>
-          <td>${p.accounts.length ? p.accounts.map((a) => `<span class="mcl-acc${a.posts ? "" : " is-zero"}">${esc(PF[a.platform] || a.platform)} @${esc(a.handle)} · <b title="${esc(last.get(`${a.platform}|${a.handle}`) ? `Last post imported ${age(last.get(`${a.platform}|${a.handle}`))}` : "")}">${a.posts ? num(a.posts) + " posts" : "not scraped yet"}</b></span>`).join("") : `<span class="muted">—</span>`}</td>
+          <td>${p.accounts.length ? p.accounts.map((a) => `<span class="mcl-acc${a.posts ? "" : " is-zero"}">${esc(PF[a.platform] || a.platform)} @${esc(a.handle)} · <b title="${esc(last.get(`${a.platform}|${a.handle}`) ? `Last post imported ${age(last.get(`${a.platform}|${a.handle}`))}` : "")}">${a.posts ? num(a.posts) + " posts" : "not scraped yet"}</b>${!a.posts && a.platform === "instagram" ? `<button class="btn btn-sm mcl-scrape" type="button" data-scrape="${esc(a.handle)}" title="Bright Data collects its last 10 posts: only in this club's My Club">${icon("download")}Scrape now (10)</button>` : ""}</span>`).join("") : `<span class="muted">—</span>`}</td>
           <td><input class="check" type="checkbox" aria-label="Active" data-active="${p.id}"${p.active ? " checked" : ""}></td>
           <td class="td-actions"><button class="icon-btn" type="button" title="Delete" aria-label="Delete" data-del="${p.id}">${icon("trash")}</button></td></tr>`).join("")}
         </tbody></table></div>`;
@@ -136,6 +136,54 @@
     const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), "Club");
     XLSX.writeFile(wb, "scp-my-club-template.xlsx");
   }
+  // "Scrape now": Bright Data collects the account's last 10 posts (supabase/functions/club-scrape) and they're imported like
+  // the daily scraping CSV (Admin → Import): club_mark_imported puts them only in this club's My Club, then their covers load
+  async function scrapeNow(handle, btn) {
+    const label = btn.innerHTML, t0 = Date.now();
+    const say = (t) => { btn.innerHTML = `<span class="spinner sm"></span>${esc(t)}`; };
+    btn.disabled = true; say("Starting…");
+    const call = async (body) => {
+      const { data, error } = await A.db.functions.invoke("club-scrape", { body });
+      if (error || data?.error) { let m = data?.error; try { m = m || (await error?.context?.json())?.error; } catch {} throw new Error(m || "Bright Data didn't answer."); }
+      return data;
+    };
+    try {
+      const { snapshot_id } = await call({ action: "start", handle, num: 10 });
+      let res;
+      for (;;) {
+        await new Promise((r) => setTimeout(r, 6000));
+        const sec = Math.round((Date.now() - t0) / 1000);
+        say(`Scraping… ${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`);
+        res = await call({ action: "status", snapshot_id });
+        if (res.status === "failed") throw new Error(res.error);
+        if (res.status === "ready") break;
+        if (sec > 600) throw new Error("Bright Data is taking more than 10 minutes. Try again later.");
+      }
+      const rows = (res.rows || []).filter((r) => r.external_id && r.published_at);
+      if (!rows.length) throw new Error(`Bright Data found no posts for @${handle}${res.errors?.length ? `: ${res.errors[0]}` : "."}`);
+      say("Importing…");
+      const { data: imp, error: e1 } = await A.db.from("idea_imports").insert({ filename: `Bright Data · @${handle} · ${club.club.name}`, total_rows: rows.length, status: "importing" }).select("id").single();
+      if (e1) throw e1;
+      const out = await rpc("import_content_ideas_batch", { p_import_id: imp.id, p_rows: rows });
+      await rpc("set_idea_accounts", { p_rows: rows.map((r) => ({ external_id: r.external_id, account: r.account })) }).catch(() => {});
+      const covers = rows.filter((r) => r.cover).map((r) => ({ external_id: r.external_id, cover: r.cover }));
+      if (covers.length) await rpc("set_idea_cover_sources", { p_rows: covers }).catch(() => {});
+      await rpc("set_idea_scrape_extras", { p_rows: rows.map((r) => ({ external_id: r.external_id, account: r.account, hashtags: r.hashtags, followers: r.followers, profile_name: r.profile_name, verified: r.verified, profile_image: r.profile_image })) }).catch(() => {});
+      await A.db.from("idea_imports").update({ status: out.created || out.replaced ? "completed" : "failed", rows_created: out.created, rows_replaced: out.replaced,
+        error_count: out.errors?.length || 0, errors: out.errors || [], new_values: out.new_values_created || {}, completed_at: new Date().toISOString() }).eq("id", imp.id);
+      const mark = await rpc("club_mark_imported", { p_external_ids: rows.map((r) => r.external_id) });
+      // their covers, shape and length, as after an import (12 per call)
+      const { data: ids } = await A.db.from("content_ideas").select("id").in("external_id", rows.map((r) => r.external_id));
+      say("Loading covers…");
+      for (const part of A.chunk((ids || []).map((x) => x.id), 12)) await A.db.functions.invoke("covers", { body: { ids: part } }).catch(() => {});
+      A.toast(`@${handle}: ${num(out.created + out.replaced)} posts in ${club.club.name}'s My Club${mark?.club_only ? "" : " (already public: they stay in the library too)"}.`);
+      loadClub();
+    } catch (x) {
+      btn.disabled = false; btn.innerHTML = label;
+      fail(x);
+    }
+  }
+
   function scraperFile() {
     const sec = new Map(club.sections.map((s) => [s.id, s.name])), teamSec = new Map(club.sections.flatMap((s) => s.teams.map((t) => [t.id, s.name])));
     const rows = [["account", "platform", "url", "name", "sport", "club", "entity"]];
@@ -237,6 +285,7 @@
       if (b.dataset.logoLib) return setLogo(b.dataset.logoLib);
       if (b.matches("[data-logo-clear]")) return setLogo("");
       if (b.matches("[data-scraper]")) return scraperFile();
+      if (b.dataset.scrape) return scrapeNow(b.dataset.scrape, b);
       if (b.matches("[data-club-del]")) {
         if (!(await A.confirmDialog({ title: `Delete ${club.club.name}?`, text: "Deletes the club's space, sections, teams, players, sponsors and members. The posts stay in the library.", confirm: "Delete", danger: true }))) return;
         await rpc("admin_club_edit", { p_what: "club_delete", p_id: cur }); cur = null; A.toast("Club deleted"); return loadClubs();
