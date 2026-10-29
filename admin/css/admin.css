@@ -2104,3 +2104,64 @@ tr[data-row].is-open td:first-child { box-shadow: inset 3px 0 0 var(--accent, #f
 .mcl-toolbar .spacer { flex: 1; }
 .mcl-form .check-inline { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text); }
 @media (max-width: 760px) { .mcl-stats span { padding: 8px 4px; font-size: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .mcl-hero { padding: 14px; gap: 12px; } .mcl-hero-t h2 { font-size: 20px; } }
+/* My Club → pending accounts listed one by one (Scrape / discard), the row's "Scrape", the club's own accounts */
+.mcl-pending { align-items: flex-start; }
+.mcl-pend-b { flex: 1; min-width: 240px; display: grid; gap: 8px; } .mcl-pend-b p { margin: 0; }
+.mcl-pend-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.mcl-pend-list li { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 6px 6px 6px 10px; border-radius: 10px; background: var(--panel); border: 1px solid var(--border); }
+.mcl-pend-list li > span { flex: 1; min-width: 160px; font-size: 13px; } .mcl-pend-list small { color: var(--muted); margin-left: 4px; }
+.mcl-pend-x { width: 26px; height: 26px; border-radius: 50%; border: 0; background: none; color: var(--muted); cursor: pointer; }
+.mcl-pend-x:hover { background: var(--red-soft); color: var(--red); }
+.mcl-scrape.is-again { background: var(--panel-3); color: var(--text); }
+.mcl-row-scrape { margin-right: 6px; gap: 6px; }
+.mcl-row-scrape svg { width: 13px; height: 13px; }
+.td-actions { white-space: nowrap; }
+.mcl-clubaccs { display: flex; flex-wrap: wrap; gap: 4px; padding: 4px 18px 14px; }
+/* My Club → Club settings, premium: cards (identity, colours, profiles) and an action bar */
+.mcl-set { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); max-width: 880px; padding: 4px 18px 18px; }
+.mcl-set-card { padding: 18px 20px; border-radius: 16px; background: var(--panel-2); border: 1px solid var(--border); display: grid; gap: 14px; }
+.mcl-set-h { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.mcl-set-h b { font: 700 15px var(--display); color: var(--text); }
+.mcl-set-h small { flex-basis: 100%; color: var(--muted); font-size: 12.5px; }
+.mcl-count { font-style: normal; font-size: 11.5px; font-weight: 700; padding: 1px 8px; border-radius: 999px; background: var(--panel-3); color: var(--muted); }
+.mcl-ident { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+.mcl-crest-up { position: relative; flex: none; cursor: pointer; border-radius: 22px; }
+.mcl-crest-up .mcl-logo-prev { width: 104px; height: 104px; border-radius: 22px; box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18); }
+.mcl-crest-ov { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 4px; border-radius: 22px; background: rgba(11, 15, 28, 0.62);
+  color: #fff; font-size: 12px; font-weight: 700; opacity: 0; transition: opacity 0.18s; }
+.mcl-crest-ov svg { width: 18px; height: 18px; }
+.mcl-crest-up:hover .mcl-crest-ov, .mcl-crest-up:focus-within .mcl-crest-ov { opacity: 1; }
+.mcl-ident-f { flex: 1; min-width: 240px; display: grid; gap: 10px; }
+.mcl-name-in { font: 700 18px var(--display); height: 46px; }
+.mcl-logo-act { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.mcl-logo-link summary { cursor: pointer; font-size: 12.5px; color: var(--muted); list-style: none; padding: 4px 2px; }
+.mcl-logo-link summary::-webkit-details-marker { display: none; }
+.mcl-logo-link summary:hover { color: var(--text); }
+.mcl-logo-link[open] { flex-basis: 100%; } .mcl-logo-link[open] .input { margin-top: 6px; width: 100%; }
+.mcl-set .mcl-colors { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.mcl-swatch { display: flex; align-items: center; gap: 10px; padding: 8px 14px 8px 8px; border-radius: 14px; background: var(--panel); border: 1px solid var(--border); cursor: pointer; }
+.mcl-swatch input[type=color] { width: 38px; height: 38px; padding: 0; border: 0; border-radius: 50%; background: none; cursor: pointer; overflow: hidden; }
+.mcl-swatch input[type=color]::-webkit-color-swatch-wrapper { padding: 0; } .mcl-swatch input[type=color]::-webkit-color-swatch { border: 2px solid rgba(255, 255, 255, 0.8); border-radius: 50%; box-shadow: 0 0 0 1px var(--border); }
+.mcl-swatch span { display: grid; } .mcl-swatch b { font-size: 13px; color: var(--text); } .mcl-swatch small { font-size: 11.5px; color: var(--muted); text-transform: uppercase; }
+.mcl-cprev { position: relative; height: 54px; border-radius: 12px; overflow: hidden; display: flex; align-items: center; padding: 0 16px;
+  background: linear-gradient(110deg, color-mix(in srgb, var(--c1) 85%, #000) 0%, color-mix(in srgb, var(--c2) 85%, #000) 100%); }
+.mcl-cprev span { font: 700 15px var(--display); color: #fff; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.35); }
+.mcl-cprev::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: linear-gradient(90deg, var(--c1), var(--c2)); filter: brightness(1.25); }
+.mcl-set .mcl-accs { gap: 8px; }
+.mcl-set .mcl-acc-row { padding: 6px; border-radius: 12px; background: var(--panel); border: 1px solid var(--border); }
+.mcl-set .mcl-acc-row .select, .mcl-set .mcl-acc-row .input { border-color: transparent; background: var(--panel-2); }
+.mcl-acc-add { justify-self: start; }
+.mcl-set-bar { position: sticky; bottom: 12px; z-index: 5; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 12px 14px; border-radius: 16px;
+  background: color-mix(in srgb, var(--panel) 92%, transparent); border: 1px solid var(--border); box-shadow: 0 14px 34px rgba(0, 0, 0, 0.14); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.mcl-set-bar .spacer { flex: 1; }
+.mcl-del { color: var(--red); } .mcl-del:hover { background: var(--red-soft); }
+.mcl-switch { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.mcl-switch input { position: absolute; opacity: 0; pointer-events: none; }
+.mcl-switch i { position: relative; width: 42px; height: 24px; border-radius: 999px; background: var(--panel-3); transition: background 0.2s; flex: none; }
+.mcl-switch i::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); transition: transform 0.2s; }
+.mcl-switch input:checked + i { background: var(--green); } .mcl-switch input:checked + i::after { transform: translateX(18px); }
+.mcl-switch input:focus-visible + i { outline: 2px solid var(--accent); outline-offset: 2px; }
+.mcl-switch span { display: grid; font-size: 13px; font-weight: 600; color: var(--text); } .mcl-switch small { font-weight: 400; font-size: 11.5px; color: var(--muted); }
+@media (max-width: 560px) { .mcl-set { padding: 4px 10px 14px; } .mcl-set-card { padding: 14px; } .mcl-crest-up .mcl-logo-prev { width: 84px; height: 84px; } }
+.mcl-form .mcl-switch, .mcl-form .mcl-swatch { display: flex; grid-template-columns: none; }
+.mcl-form .mcl-crest-up { display: block; }

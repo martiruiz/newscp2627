@@ -2,15 +2,16 @@
 // scraped yet. Bright Data (Web Scraper API, Instagram posts, discover by profile URL) collects its latest posts; they come
 // back as the same rows as the daily scraping CSV, and the admin imports them the same way (only in that club's My Club).
 // Superadmins only. Two steps, because Bright Data collects in the background (usually 1–3 minutes):
-//   POST { action: "start", handle, num }   → { snapshot_id }
-//   POST { action: "status", snapshot_id }  → { status: "running" } | { status: "ready", rows, fields } | { status: "failed", error }
+//   POST { action: "start", platform: "instagram" | "tiktok", handle, num }   → { snapshot_id }
+//   POST { action: "status", platform, snapshot_id, handle }  → { status: "running" } | { status: "ready", rows, fields } | { status: "failed", error }
 // Secret (Supabase → Edge Functions → Secrets): BRIGHTDATA_API_KEY. SUPABASE_URL, SUPABASE_ANON_KEY and
 // SUPABASE_SERVICE_ROLE_KEY are provided by Supabase.
 const env = (k: string) => Deno.env.get(k) ?? "";
 const CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info", "Access-Control-Allow-Methods": "POST, OPTIONS" };
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...CORS, "Content-Type": "application/json" } });
 const BD = "https://api.brightdata.com/datasets/v3";
-const IG_POSTS = "gd_lk5ns7kz21pck8jpis";   // Bright Data: Instagram posts
+const IG_POSTS = "gd_lk5ns7kz21pck8jpis";   // Bright Data: Instagram posts (discover by profile URL)
+const TT_POSTS = "gd_lu702nij2f790tmv9h";   // Bright Data: TikTok posts (discover by profile URL)
 const bd = (path: string, init: RequestInit = {}) =>
   fetch(`${BD}${path}`, { ...init, headers: { Authorization: `Bearer ${env("BRIGHTDATA_API_KEY")}`, "Content-Type": "application/json", ...(init.headers || {}) } });
 
@@ -60,6 +61,40 @@ function toRow(p: Rec, handle: string) {
   };
 }
 
+// the account's profile picture, copied to Storage (bucket "logos", folder people/): the platforms' links expire in days
+async function storeAvatar(platform: string, handle: string, src: string | null) {
+  if (!src || !/^https:\/\//.test(src)) return null;
+  const r = await fetch(src, { headers: { "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36" } }).catch(() => null);
+  if (!r?.ok) return null;
+  const type = (r.headers.get("content-type") || "image/jpeg").split(";")[0];
+  const ext = ({ "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" } as Record<string, string>)[type];
+  if (!ext) return null;
+  const path = `people/${platform}-${handle.replace(/[^\w.-]/g, "")}.${ext}`;
+  const key = env("SUPABASE_SERVICE_ROLE_KEY");
+  const up = await fetch(`${env("SUPABASE_URL")}/storage/v1/object/logos/${path}`, { method: "POST",
+    headers: { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": type, "x-upsert": "true", "Cache-Control": "max-age=604800" }, body: new Uint8Array(await r.arrayBuffer()) });
+  return up.ok ? `${env("SUPABASE_URL")}/storage/v1/object/public/logos/${path}?v=${Date.now()}` : null;
+}
+
+// one Bright Data TikTok post → one row of the import (its id carries the exact time: id >> 32 = seconds)
+function tiktokRow(p: Rec, handle: string) {
+  const id = String(first(p, "post_id", "id") || /video\/(\d+)/.exec(String(first(p, "url") || ""))?.[1] || "");
+  if (!/^\d{10,}$/.test(id)) return null;
+  const user = String(first(p, "profile_username", "author", "username") || handle).replace(/^@/, "").toLowerCase();
+  const link = `https://www.tiktok.com/@${user}/video/${id}`;
+  const tags = first(p, "hashtags");
+  let at: string | null = null; try { at = new Date(Number(BigInt(id) >> 32n) * 1000).toISOString(); } catch { at = isoOf(first(p, "create_time")); }
+  return {
+    external_id: id, url: link,
+    embed: `<blockquote class="tiktok-embed" cite="${link}" data-video-id="${id}"><section><a href="${link}"></a></section></blockquote><script async src="https://www.tiktok.com/embed.js"></script>`,
+    title: String(first(p, "description", "text") || "").trim(), published_at: at, media_id: null, account: user,
+    cover: first(p, "preview_image", "cover_image", "cover", "thumbnail", "origin_cover"),
+    hashtags: Array.isArray(tags) ? tags.map((t: any) => (typeof t === "string" ? t : t?.name || "")).filter(Boolean).join(",") : tags || "",
+    followers: first(p, "profile_followers", "followers"), profile_name: first(p, "profile_name", "nickname"), verified: first(p, "is_verified"),
+    profile_image: first(p, "profile_avatar", "avatar"), format: "Video", platform: "TikTok",
+  };
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
   if (!(await superadmin(req))) return json({ error: "Not allowed" }, 403);
@@ -67,11 +102,12 @@ Deno.serve(async (req) => {
   const b = await req.json().catch(() => ({}));
 
   if (b.action === "start") {
-    const handle = String(b.handle || "").trim().replace(/^@/, "").replace(/^https?:\/\/(www\.)?instagram\.com\//, "").replace(/\/.*$/, "").toLowerCase();
-    if (!/^[\w.]{1,30}$/.test(handle)) return json({ error: "That isn't an Instagram account." }, 400);
+    const tt = b.platform === "tiktok";
+    const handle = String(b.handle || "").trim().replace(/^@/, "").replace(/^https?:\/\/(www\.)?(instagram|tiktok)\.com\/@?/, "").replace(/\/.*$/, "").toLowerCase();
+    if (!/^[\w.]{1,30}$/.test(handle)) return json({ error: `That isn't a${tt ? " TikTok" : "n Instagram"} account.` }, 400);
     const num = Math.min(Math.max(Number(b.num) || 10, 1), 50);
-    const input = [{ url: `https://www.instagram.com/${handle}/`, num_of_posts: num }];
-    const q = `?dataset_id=${IG_POSTS}&type=discover_new&discover_by=url&include_errors=true`;
+    const input = [{ url: tt ? `https://www.tiktok.com/@${handle}` : `https://www.instagram.com/${handle}/`, num_of_posts: num }];
+    const q = tt ? `?dataset_id=${TT_POSTS}&type=discover_new&discover_by=profile_url&include_errors=true` : `?dataset_id=${IG_POSTS}&type=discover_new&discover_by=url&include_errors=true`;
     let r = await bd(`/trigger${q}`, { method: "POST", body: JSON.stringify({ input }) });
     if (r.status === 400) r = await bd(`/trigger${q}`, { method: "POST", body: JSON.stringify(input) });   // older shape: a bare list
     const d = await r.json().catch(() => ({}));
@@ -90,8 +126,10 @@ Deno.serve(async (req) => {
     // posts come one per record, or inside a profile record (posts: [...])
     const posts = recs.flatMap((x: Rec) => (Array.isArray(x?.posts) ? x.posts.map((p: Rec) => ({ ...x, ...p, posts: undefined })) : [x]));
     const errors = posts.filter((p: Rec) => p?.error).map((p: Rec) => String(p.error));
-    const rows = posts.filter((p: Rec) => !p?.error).map((p: Rec) => toRow(p, String(b.handle || ""))).filter(Boolean);
-    return json({ status: "ready", rows, errors, fields: Object.keys(posts[0] || {}).slice(0, 60) });
+    const rows = posts.filter((p: Rec) => !p?.error).map((p: Rec) => (b.platform === "tiktok" ? tiktokRow : toRow)(p, String(b.handle || ""))).filter(Boolean);
+    const pic = (rows.find((r: Rec) => r?.profile_image) as Rec | undefined)?.profile_image || null;
+    const avatar = await storeAvatar(b.platform === "tiktok" ? "tiktok" : "instagram", String(b.handle || (rows[0] as Rec)?.account || ""), pic).catch(() => null);
+    return json({ status: "ready", rows, errors, avatar, fields: Object.keys(posts[0] || {}).slice(0, 60) });
   }
 
   return json({ error: "Unknown action" }, 400);

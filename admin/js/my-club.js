@@ -15,6 +15,7 @@
     if (error) throw new Error(/does not exist|schema cache|Could not find the function/i.test(error.message) ? "Run supabase/my-club.sql in Supabase first." : error.message);
     return data;
   }
+const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Data collects here (club-scrape)
   const PF = { instagram: "Instagram", tiktok: "TikTok", x: "X", youtube: "YouTube", facebook: "Facebook", linkedin: "LinkedIn" };
   let clubs = [], cur = null, club = null;
 
@@ -60,8 +61,9 @@
     const c = club.club, people = club.people;
     const secName = new Map(club.sections.map((s) => [s.id, s.name]));
     const teamName = new Map(club.sections.flatMap((s) => s.teams.map((t) => [t.id, `${s.name} · ${t.name}`])));
-    const pendingAcc = people.flatMap((p) => p.accounts.filter((a) => !a.posts));
-    const pending = pendingAcc.length, pendingIg = pendingAcc.filter((a) => a.platform === "instagram").length;
+    let dismissed = new Set(); try { dismissed = new Set(JSON.parse(localStorage.getItem(`scp-mcl-dismissed:${cur}`) || "[]")); } catch {}
+    const pendingAcc = people.flatMap((p) => p.accounts.filter((a) => !a.posts && !dismissed.has(`${a.platform}|${a.handle}`)).map((a) => ({ ...a, person: p.name })));
+    const pending = pendingAcc.length, pendingIg = pendingAcc.filter((a) => CAN_SCRAPE.has(a.platform)).length;
     const linkLabel = (l) => l.team_id ? teamName.get(l.team_id) : l.section_id ? `${secName.get(l.section_id)} · all teams` : "Whole club (global)";
     const table = (kind) => {
       const list = people.filter((p) => p.kind === kind);
@@ -70,9 +72,9 @@
         ${list.map((p) => `<tr${p.active ? "" : ' class="is-off"'}>
           <td><div class="ld-person">${p.photo_url ? `<img class="mcl-ph" src="${esc(p.photo_url)}" alt="">` : `<span class="ld-av">${esc(p.name.charAt(0).toUpperCase())}</span>`}<span><b>${esc(p.name)}</b></span></div></td>
           <td>${p.links.map((l) => `<span class="mcl-link${l.live ? "" : " is-ended"}" title="${esc([l.starts_on && `from ${l.starts_on}`, l.ends_on && `until ${l.ends_on}`].filter(Boolean).join(" ") || "no dates")}">${esc(linkLabel(l))}${l.live ? `<button type="button" title="End this link today (keeps the history)" data-end="${l.id}">✕</button>` : ` <small>ended</small><button type="button" title="Active again" data-relink="${l.id}">↺</button>`}</span>`).join("")}</td>
-          <td>${p.accounts.length ? p.accounts.map((a) => `<span class="mcl-acc${a.posts ? "" : " is-zero"}">${esc(PF[a.platform] || a.platform)} @${esc(a.handle)} · <b title="${esc(last.get(`${a.platform}|${a.handle}`) ? `Last post imported ${age(last.get(`${a.platform}|${a.handle}`))}` : "")}">${a.posts ? num(a.posts) + " posts" : "not scraped yet"}</b>${!a.posts && a.platform === "instagram" ? `<button class="mcl-scrape" type="button" data-scrape="${esc(a.handle)}" title="Bright Data collects its last 10 posts: only in this club's My Club">${icon("download")}Scrape</button>` : ""}</span>`).join("") : `<span class="muted">—</span>`}</td>
+          <td>${p.accounts.length ? p.accounts.map((a) => `<span class="mcl-acc${a.posts ? "" : " is-zero"}">${esc(PF[a.platform] || a.platform)} @${esc(a.handle)} · <b title="${esc(last.get(`${a.platform}|${a.handle}`) ? `Last post imported ${age(last.get(`${a.platform}|${a.handle}`))}` : "")}">${a.posts ? num(a.posts) + " posts" : "not scraped yet"}</b>${CAN_SCRAPE.has(a.platform) ? scrapeBtn(a) : ""}</span>`).join("") : `<span class="muted">—</span>`}</td>
           <td><input class="check" type="checkbox" aria-label="Active" data-active="${p.id}"${p.active ? " checked" : ""}></td>
-          <td class="td-actions"><button class="icon-btn" type="button" title="Delete" aria-label="Delete" data-del="${p.id}">${icon("trash")}</button></td></tr>`).join("")}
+          <td class="td-actions">${p.accounts.some((a) => CAN_SCRAPE.has(a.platform)) ? `<button class="btn btn-sm mcl-row-scrape" type="button" data-scrape-person="${p.id}" title="Scrape the last 10 posts of each of its Instagram / TikTok accounts">${icon("download")}Scrape</button>` : ""}<button class="icon-btn" type="button" title="Delete" aria-label="Delete" data-del="${p.id}">${icon("trash")}</button></td></tr>`).join("")}
         </tbody></table></div>`;
     };
     const nPlayers = people.filter((p) => p.kind === "player").length, nSponsors = people.length - nPlayers;
@@ -103,11 +105,15 @@
               <button class="mcl-more-it" type="button" data-scraper>${icon("download")}<span><b>Accounts for the scraper</b><small>This club's accounts with no posts yet</small></span></button>
             </div></details>
         </div>
-        ${pending ? `<div class="mcl-pending">${icon("alert")}<span><b>${num(pending)} account${pending === 1 ? "" : "s"} without posts yet.</b> ${pendingIg ? `Scrape ${pendingIg === 1 ? "it" : "them"} here: the last 10 posts of each Instagram, only in this club's My Club (about 1–2 minutes).` : "Add them to the scraping Excel and import their posts as usual."}</span>
-          ${pendingIg ? `<button class="btn btn-primary btn-sm" type="button" data-scrape-all>${icon("download")}${pendingIg === 1 ? "Scrape it now" : `Scrape all ${num(pendingIg)}`}</button>` : ""}
-          ${pending > pendingIg ? `<button class="btn btn-sm" type="button" data-scraper>${icon("download")}Accounts for the scraper</button>` : ""}</div>` : ""}
+        ${pending ? `<div class="mcl-pending">${icon("alert")}<div class="mcl-pend-b"><p><b>${num(pending)} account${pending === 1 ? "" : "s"} without posts yet</b></p>
+          <ul class="mcl-pend-list">${pendingAcc.map((a) => `<li><span>${esc(PF[a.platform] || a.platform)} <b>@${esc(a.handle)}</b> <small>${esc(a.person)}</small></span>
+            ${CAN_SCRAPE.has(a.platform) ? scrapeBtn(a) : `<small class="muted">not collected here yet: use the scraping Excel</small>`}
+            <button class="mcl-pend-x" type="button" data-dismiss="${esc(`${a.platform}|${a.handle}`)}" title="Discard: don't ask for it again">✕</button></li>`).join("")}</ul></div>
+          ${pendingIg > 1 ? `<button class="btn btn-primary btn-sm" type="button" data-scrape-all>${icon("download")}Scrape all ${num(pendingIg)}</button>` : ""}</div>` : ""}
         <div class="mcl-live" data-live hidden></div>
         ${club.sections.length ? `<p class="mcl-sum">${club.sections.map((x) => `<b>${esc(x.name)}</b> ${x.teams.map((t) => esc(t.name)).join(", ") || "—"}`).join(" · ")}</p>` : ""}
+        ${(c.accounts || []).length ? `<section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Club accounts</h2><span class="aud-count">${num(c.accounts.length)}</span>${info("The club's own profiles (Club settings). Their posts go to the library with the club's tag, like the daily scraping.")}</header>
+          <div class="mcl-clubaccs">${c.accounts.map((a) => `<span class="mcl-acc">${esc(PF[a.platform] || a.platform)} @${esc(a.handle)}${CAN_SCRAPE.has(a.platform) ? scrapeBtn(a, true) : ""}</span>`).join("")}</div></section>` : ""}
         <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Players</h2><span class="aud-count">${num(nPlayers)}</span></header>${table("player")}</section>
         <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Sponsors</h2><span class="aud-count">${num(nSponsors)}</span></header>${table("sponsor")}</section>
       </div>
@@ -121,30 +127,46 @@
 
       <div class="mcl-pane" data-pane="settings"${tab === "settings" ? "" : " hidden"}>
         <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Club settings</h2>${info("Name, logo and profiles shown on the club's page. The club's profiles (as many per network as it has) also tell which sponsor posts are “linked to the club”: the ones that mention one of them.")}</header>
-        <form class="mcl-form" data-form>
-          <div class="mcl-logo-edit">
-            <span class="mcl-logo-prev" data-logo-prev>${c.logo_url ? `<img src="${esc(c.logo_url)}" alt="">` : `<span>${esc(c.name.slice(0, 2).toUpperCase())}</span>`}</span>
-            <div class="mcl-logo-act">
-              <label class="btn btn-sm">${icon("import")}Upload logo<input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden data-logo-file></label>
-              ${c.library_logo && c.library_logo !== c.logo_url ? `<button class="btn btn-sm" type="button" data-logo-lib="${esc(c.library_logo)}">Use the SCP logo</button>` : ""}
-              ${c.logo_url ? `<button class="btn btn-ghost btn-sm" type="button" data-logo-clear>Remove</button>` : ""}
-              <input class="input input-sm" name="logo_url" value="${esc(c.logo_url || "")}" placeholder="…or paste an image URL">
+        <form class="mcl-form mcl-set" data-form>
+          <div class="mcl-set-card">
+            <div class="mcl-set-h"><b>Identity</b><small>The crest and the name the club's members see.</small></div>
+            <div class="mcl-ident">
+              <label class="mcl-crest-up" title="Upload logo"><span class="mcl-logo-prev" data-logo-prev>${c.logo_url ? `<img src="${esc(c.logo_url)}" alt="">` : `<span>${esc(c.name.slice(0, 2).toUpperCase())}</span>`}</span>
+                <span class="mcl-crest-ov">${icon("import")}Change</span><input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden data-logo-file></label>
+              <div class="mcl-ident-f">
+                <label>Name<input class="input mcl-name-in" name="name" value="${esc(c.name)}" required></label>
+                <div class="mcl-logo-act">
+                  ${c.library_logo && c.library_logo !== c.logo_url ? `<button class="btn btn-sm" type="button" data-logo-lib="${esc(c.library_logo)}">Use the SCP logo</button>` : ""}
+                  ${c.logo_url ? `<button class="btn btn-ghost btn-sm" type="button" data-logo-clear>Remove logo</button>` : ""}
+                  <details class="mcl-logo-link"><summary>Paste an image link</summary><input class="input input-sm" name="logo_url" value="${esc(c.logo_url || "")}" placeholder="https://…/crest.png"></details>
+                </div>
+              </div>
             </div>
           </div>
-          <label>Name<input class="input" name="name" value="${esc(c.name)}" required></label>
-          <div class="mcl-colors"><span class="mcl-accs-h">Club colours ${info("The club's page takes these colours (buttons, tabs, the club's header). Empty: they are taken from the crest.")}</span>
-            <label class="mcl-color">Primary<input type="color" name="color1" value="${esc(c.colors?.primary || "#f0b84a")}" data-color-set="${c.colors?.primary ? 1 : ""}"></label>
-            <label class="mcl-color">Secondary<input type="color" name="color2" value="${esc(c.colors?.secondary || "#121b33")}" data-color-set="${c.colors?.secondary ? 1 : ""}"></label>
-            <button class="btn btn-ghost btn-sm" type="button" data-colors-clear>${c.colors ? "Use the crest's colours" : "From the crest (no colours set)"}</button></div>
-          <div class="mcl-accs"><span class="mcl-accs-h">Club profiles</span>
-            <div data-accs>${(c.accounts?.length ? c.accounts : [{ platform: "instagram", handle: "" }]).map(accRow).join("")}</div>
-            <button class="btn btn-ghost btn-sm" type="button" data-acc-add>${icon("plus")}Add profile</button></div>
-          <label class="check-inline"><input type="checkbox" name="active"${c.active ? " checked" : ""}> Active</label>
-          <div class="mcl-form-act"><button class="btn btn-primary" type="submit">Save</button><button class="btn btn-danger" type="button" data-club-del>${icon("trash")}Delete club</button></div>
+          <div class="mcl-set-card">
+            <div class="mcl-set-h"><b>Colours</b><small>The club's page takes them: buttons, tabs, its header. Empty: taken from the crest.</small></div>
+            <div class="mcl-colors">
+              <label class="mcl-swatch"><input type="color" name="color1" value="${esc(c.colors?.primary || "#f0b84a")}" data-color-set="${c.colors?.primary ? 1 : ""}"><span><b>Primary</b><small class="mono" data-hex="color1">${esc(c.colors?.primary || "from the crest")}</small></span></label>
+              <label class="mcl-swatch"><input type="color" name="color2" value="${esc(c.colors?.secondary || "#121b33")}" data-color-set="${c.colors?.secondary ? 1 : ""}"><span><b>Secondary</b><small class="mono" data-hex="color2">${esc(c.colors?.secondary || "from the crest")}</small></span></label>
+              <button class="btn btn-ghost btn-sm" type="button" data-colors-clear>${c.colors ? "Use the crest's colours" : "From the crest (no colours set)"}</button>
+            </div>
+            <div class="mcl-cprev" data-cprev style="--c1:${esc(c.colors?.primary || "#f0b84a")};--c2:${esc(c.colors?.secondary || "#121b33")}"><span>${esc(c.name)}</span></div>
+          </div>
+          <div class="mcl-set-card">
+            <div class="mcl-set-h"><b>Club profiles</b> <em class="mcl-count">${num((c.accounts || []).length)}</em><small>The club's own accounts. They also tell which sponsor posts are linked to the club (the ones that mention them).</small></div>
+            <div class="mcl-accs"><div data-accs>${(c.accounts?.length ? c.accounts : [{ platform: "instagram", handle: "" }]).map(accRow).join("")}</div>
+              <button class="btn btn-ghost btn-sm mcl-acc-add" type="button" data-acc-add>${icon("plus")}Add profile</button></div>
+          </div>
+          <div class="mcl-set-bar">
+            <label class="mcl-switch"><input type="checkbox" name="active"${c.active ? " checked" : ""}><i></i><span>Active<small>Members can open the club's space</small></span></label>
+            <span class="spacer"></span>
+            <button class="btn btn-ghost mcl-del" type="button" data-club-del>${icon("trash")}Delete club</button>
+            <button class="btn btn-primary" type="submit">Save changes</button>
+          </div>
         </form></section>
       </div>`;
     renderLive();
-    for (const j of jobs.values()) if (!j.done && !j.error) { const b = $(`[data-scrape="${CSS.escape(j.handle)}"]`, main); if (b) { b.disabled = true; b.innerHTML = `<span class="spinner sm"></span>Scraping…`; } }
+    for (const j of jobs.values()) if (!j.done && !j.error) { const b = $(`[data-scrape="${CSS.escape(j.id)}"]`, main); if (b) { b.disabled = true; b.innerHTML = `<span class="spinner sm"></span>Scraping…`; } }
     resumeScrapes();
   }
 
@@ -183,7 +205,7 @@
 
   // every Instagram account of the club with no posts yet, 3 at a time (each takes 1–2 minutes at Bright Data)
   async function scrapeAll(btn) {
-    const list = [...$$("[data-scrape]", main)].filter((x) => !x.disabled);
+    const list = [...new Map([...$$(".mcl-pend-list [data-scrape]", main)].filter((x) => !x.disabled).map((x) => [x.dataset.scrape, x])).values()];
     if (!list.length) return;
     btn.disabled = true;
     let i = 0;
@@ -228,8 +250,8 @@
         m.close();
         A.toast(`${v("name")} added`);
         await loadClub();
-        const b = handle && f.scrape.checked ? $(`[data-scrape="${CSS.escape(handle)}"]`, main) : null;
-        if (b) { b.scrollIntoView({ block: "center", behavior: "smooth" }); scrapeNow(handle, b); }
+        const b = handle && f.scrape.checked ? $(`[data-scrape="${CSS.escape(`instagram|${handle}`)}"]`, main) : null;
+        if (b) { b.scrollIntoView({ block: "center", behavior: "smooth" }); scrapeNow(`instagram|${handle}`, b); }
       } catch (x) { fail(x); }
     };
     $("[data-ok]", m.el).onclick = save;
@@ -251,7 +273,7 @@
     box.innerHTML = list.length ? `<header class="mcl-live-h"><b>${icon("download")}Scraping</b><span class="muted">${num(list.filter((j) => !j.done && !j.error).length)} running</span><span class="spacer"></span>
         ${list.some((j) => j.done || j.error) ? `<button class="btn btn-ghost btn-sm" type="button" data-live-clear>Clear finished</button>` : ""}</header>
       ${list.map((j) => `<article class="mcl-job${j.error ? " is-err" : j.done ? " is-done" : ""}">
-        <div class="mcl-job-h"><b>@${esc(j.handle)}</b><span class="mono">${mmss((j.end || Date.now()) - j.t0)}</span>
+        <div class="mcl-job-h"><b>${esc(PF[j.platform] || "")} @${esc(j.handle)}</b><span class="mono">${mmss((j.end || Date.now()) - j.t0)}</span>
           <span class="mcl-job-st">${j.error ? `${icon("alert")}${esc(j.error)}` : j.done ? `${icon("check")}${num(j.n)} posts in My Club` : `<span class="spinner sm"></span>${esc(STEPS[j.step])}${j.step === 1 && j.records ? ` · ${num(j.records)} posts so far` : ""}`}</span></div>
         <ol class="mcl-steps">${STEPS.map((t, k) => `<li class="${k < j.step || j.done ? "is-ok" : k === j.step && !j.error ? "is-on" : k === j.step && j.error ? "is-err" : ""}">${esc(t)}</li>`).join("")}</ol>
         <div class="mcl-job-log">${j.log.slice(-6).map(([t, k, x]) => `<p class="is-${k}"><span>${mmss(t - j.t0)}</span>${esc(x)}</p>`).join("")}</div>
@@ -260,14 +282,17 @@
     if (list.some((j) => !j.done && !j.error)) liveTimer = setInterval(renderLive, 1000);
   }
 
-  async function scrapeNow(handle, btn, quiet = false) {
-    if (jobs.get(handle) && !jobs.get(handle).done && !jobs.get(handle).error) return;   // already running
+  async function scrapeNow(id, btn, quiet = false) {
+    const [platform, handle] = id.includes("|") ? id.split("|") : ["instagram", id];
+    const clubAcc = btn?.hasAttribute("data-club-acc");
+    if (jobs.get(id) && !jobs.get(id).done && !jobs.get(id).error) return;   // already running
     const label = btn.innerHTML;
-    const job = { handle, step: 0, t0: Date.now(), log: [], records: 0, n: 0 };
-    jobs.set(handle, job);
+    const job = { id, handle, platform, step: 0, t0: Date.now(), log: [], records: 0, n: 0 };
+    jobs.set(id, job);
     const log = (kind, text) => { job.log.push([Date.now(), kind, text]); renderLive(); };
     const step = (k, text) => { job.step = k; log("step", text); };
-    const say = (t) => { const b = $(`[data-scrape="${CSS.escape(handle)}"]`, main) || btn; b.disabled = true; b.innerHTML = `<span class="spinner sm"></span>${esc(t)}`; };
+    const btns = () => { const l = $$(`[data-scrape="${CSS.escape(id)}"]`, main); return l.length ? l : [btn]; };   // the table's and the pending list's
+    const say = (t) => btns().forEach((b) => { b.disabled = true; b.innerHTML = `<span class="spinner sm"></span>${esc(t)}`; });
     say("Starting…");
     const call = async (body) => {
       const { data, error } = await A.db.functions.invoke("club-scrape", { body });
@@ -275,14 +300,14 @@
       return data;
     };
     // the collection is remembered in this browser, so a reload or another visit picks it up and imports it when it's ready
-    const key = `scp-scrape:${cur}:${handle}`;
+    const key = `scp-scrape:${cur}:${id}`;
     let saved = null; try { saved = JSON.parse(localStorage.getItem(key) || "null"); } catch {}
     const forget = () => { try { localStorage.removeItem(key); } catch {} };
     try {
       if (saved?.snapshot_id) { job.t0 = saved.at || job.t0; log("info", `Picking up the collection started before (${saved.snapshot_id})`); }
       else {
-        log("info", `Asking Bright Data for the last 10 posts of instagram.com/${handle}`);
-        const { snapshot_id } = await call({ action: "start", handle, num: 10 });
+        log("info", `Asking Bright Data for the last 10 posts of ${platform === "tiktok" ? `tiktok.com/@${handle}` : `instagram.com/${handle}`}`);
+        const { snapshot_id } = await call({ action: "start", platform, handle, num: 10 });
         saved = { snapshot_id, at: job.t0 };
         try { localStorage.setItem(key, JSON.stringify(saved)); } catch {}
         log("ok", `Bright Data accepted it · collection ${snapshot_id}`);
@@ -291,7 +316,7 @@
       let res, last = "";
       for (;;) {
         await new Promise((r) => setTimeout(r, 8000));
-        res = await call({ action: "status", snapshot_id: saved.snapshot_id });
+        res = await call({ action: "status", platform, handle, snapshot_id: saved.snapshot_id });
         job.records = Number(res.bd?.records) || job.records;
         const st = `${res.bd?.status || res.status}${res.bd?.records ? ` · ${res.bd.records} posts` : ""}`;
         if (st !== last) { log("info", `Bright Data: ${st}`); last = st; }
@@ -301,7 +326,8 @@
         if (Date.now() - job.t0 > 1800000) { forget(); throw new Error("Bright Data took more than 30 minutes with this account. Try again later."); }
       }
       forget();
-      const rows = (res.rows || []).filter((r) => r.external_id && r.published_at);
+      // a club's own account: its posts carry the club's tag (they go to the library, like the daily scraping)
+      const rows = (res.rows || []).filter((r) => r.external_id && r.published_at).map((r) => (clubAcc ? { ...r, club: club.club.name } : r));
       log("ok", `Collected ${num(res.rows?.length || 0)} posts${res.rows?.length - rows.length ? ` (${res.rows.length - rows.length} without id or date, skipped)` : ""} · ${num(rows.filter((r) => r.title).length)} with text · ${num(rows.filter((r) => r.cover).length)} with image`);
       if (!rows.length) throw new Error(`Bright Data found no posts for @${handle}${res.errors?.length ? `: ${res.errors[0]}` : "."}`);
       step(2, `Importing ${num(rows.length)} posts`); say("Importing…");
@@ -315,6 +341,11 @@
       await A.db.from("idea_imports").update({ status: out.created || out.replaced ? "completed" : "failed", rows_created: out.created, rows_replaced: out.replaced,
         error_count: out.errors?.length || 0, errors: out.errors || [], new_values: out.new_values_created || {}, completed_at: new Date().toISOString() }).eq("id", imp.id);
       log(out.errors?.length ? "warn" : "ok", `Import #${imp.id}: ${num(out.created)} new · ${num(out.replaced)} updated${out.errors?.length ? ` · ${out.errors.length} errors` : ""}`);
+      // the first time: the account's profile picture becomes the player's / sponsor's photo (kept in Storage by club-scrape)
+      const owner = club.people.find((x) => x.accounts.some((acc) => acc.platform === platform && acc.handle === handle));
+      if (res.avatar && owner && !owner.photo_url) {
+        await rpc("admin_club_edit", { p_what: "person", p_id: owner.id, p: { photo_url: res.avatar } }).then(() => { owner.photo_url = res.avatar; log("ok", `Profile picture saved as ${owner.name}'s photo`); }, () => {});
+      } else if (owner?.photo_url) log("info", `${owner.name} already has a photo: kept`);
       step(3, `Putting them in ${club.club.name}'s My Club`);
       const mark = await rpc("club_mark_imported", { p_external_ids: rows.map((r) => r.external_id) });
       log("ok", `${num(mark?.club_only || 0)} only in My Club · ${num(mark?.tags_added || 0)} tags added (club, sport, ${people_kind(handle)})`);
@@ -327,12 +358,17 @@
       job.n = out.created + out.replaced; job.step = 5; job.done = true; job.end = Date.now();
       log("ok", `Done: ${num(job.n)} posts in ${club.club.name}'s My Club`);
       A.toast(`@${handle}: ${num(job.n)} posts in ${club.club.name}'s My Club.`);
-      if (quiet) { const b = $(`[data-scrape="${CSS.escape(handle)}"]`, main) || btn; b.innerHTML = `${icon("check")}${num(job.n)} posts`; b.classList.add("is-done"); } else loadClub();
+      if (quiet) btns().forEach((b) => { b.innerHTML = `${icon("check")}${num(job.n)} posts`; b.classList.add("is-done"); }); else loadClub();
     } catch (x) {
       job.error = x.message || String(x); job.end = Date.now(); log("err", job.error);
-      const b = $(`[data-scrape="${CSS.escape(handle)}"]`, main) || btn; b.disabled = false; b.innerHTML = label;
+      btns().forEach((b) => { b.disabled = false; b.innerHTML = label; });
       fail(x);
     }
+  }
+  // the Scrape button of one account: "Scrape" when it has no posts, ↻ "Update" when it has (new posts are added)
+  function scrapeBtn(a, clubAcc = false) {
+    const k = `${a.platform}|${a.handle}`;
+    return `<button class="mcl-scrape${a.posts ? " is-again" : ""}" type="button" data-scrape="${esc(k)}"${clubAcc ? " data-club-acc" : ""} title="${a.posts ? "Collect its last 10 posts again (new ones are added)" : "Bright Data collects its last 10 posts"}">${icon(a.posts ? "undo" : "download")}${a.posts ? "Update" : "Scrape"}</button>`;
   }
   const people_kind = (handle) => (club.people.find((p) => p.accounts.some((a) => a.handle === handle))?.kind === "sponsor" ? "Brand" : "Player");
 
@@ -442,6 +478,16 @@
       if (b.matches("[data-scraper]")) return scraperFile();
       if (b.dataset.scrape) return scrapeNow(b.dataset.scrape, b);
       if (b.matches("[data-scrape-all]")) return scrapeAll(b);
+      if (b.dataset.scrapePerson) {
+        const p = club.people.find((x) => x.id === Number(b.dataset.scrapePerson));
+        for (const a of p?.accounts || []) if (CAN_SCRAPE.has(a.platform)) { const k = `${a.platform}|${a.handle}`; scrapeNow(k, $(`tr [data-scrape="${CSS.escape(k)}"]`, main) || b, true); }
+        return;
+      }
+      if (b.dataset.dismiss) {
+        let d = []; try { d = JSON.parse(localStorage.getItem(`scp-mcl-dismissed:${cur}`) || "[]"); } catch {}
+        try { localStorage.setItem(`scp-mcl-dismissed:${cur}`, JSON.stringify([...new Set([...d, b.dataset.dismiss])])); } catch {}
+        return loadClub();
+      }
       b.closest(".mcl-more")?.removeAttribute("open");
       if (b.dataset.tab) {
         try { localStorage.setItem("scp-mcl-tab", b.dataset.tab); } catch {}
@@ -500,13 +546,18 @@
   }
   main.addEventListener("input", (e) => {
     if (e.target.matches("[name=acc_handle]")) accLookup(e.target);
-    if (e.target.matches("[name=color1], [name=color2]")) { const f = e.target.form; f.color1.dataset.colorSet = f.color2.dataset.colorSet = "1"; }   // chosen by hand: saved
+    if (e.target.matches("[name=color1], [name=color2]")) {   // chosen by hand: saved; the hex and the preview follow
+      const f = e.target.form; f.color1.dataset.colorSet = f.color2.dataset.colorSet = "1";
+      $$("[data-hex]", f).forEach((h) => { h.textContent = f[h.dataset.hex].value; });
+      const pv = $("[data-cprev]", f); if (pv) { pv.style.setProperty("--c1", f.color1.value); pv.style.setProperty("--c2", f.color2.value); }
+    }
   });
   // back to the crest's colours: nothing is saved, the page works them out
   main.addEventListener("click", (e) => {
     const b = e.target.closest("[data-colors-clear]"); if (!b) return;
     const f = b.form; f.color1.dataset.colorSet = f.color2.dataset.colorSet = ""; f.color1.value = "#f0b84a"; f.color2.value = "#121b33";
     b.textContent = "From the crest (save to apply)";
+    $$("[data-hex]", f).forEach((h) => { h.textContent = "from the crest"; });
   });
   main.addEventListener("focusin", (e) => { if (e.target.matches("[name=acc_handle]") && e.target.value.trim().length >= 2 && ddOf(e.target).hidden) accLookup(e.target); });
   main.addEventListener("focusout", (e) => { if (e.target.matches("[name=acc_handle]")) setTimeout(() => { if (document.activeElement !== e.target) ddClose(e.target); }, 150); });
