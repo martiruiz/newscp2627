@@ -1870,6 +1870,8 @@
 
   // Media-first card at the post's real shape. Reels play right in the grid; on photos and carousels a click opens
   // the details pop-up, except on the carousel arrows (left / right, middle), which stay live to swipe in the card.
+  // a YouTube Short: its /shorts/ link, or the Shorts format (imports bring Shorts with the plain watch?v= link)
+  const isShort = (p) => /\/shorts\//.test(p.url || "") || /^shorts?$/i.test(first(p, "format") || "");
   const isReel = (p) => /^(reels?|shorts?|video)$/i.test(first(p, "format")) || /\/(reel|shorts)\//.test(p.url || "");
   // Instagram's embed shows reels (9:16) letterboxed inside its media box (usually 4:5): the card is 9:16 and the box is zoomed to fill it.
   // Default card shapes (height / width) for platforms without a measured media ratio
@@ -1880,7 +1882,7 @@
   function shape(p) {
     const pf = platformOf(p);
     if (pf === "facebook") return { ratio: Number(p.media_ratio) || fbRatio(p) };
-    if (pf === "youtube") return { ratio: /\/shorts\//.test(p.url || "") ? 1.78 : 0.5625 };
+    if (pf === "youtube") return { ratio: isShort(p) ? 1.78 : 0.5625 };
     if (PLATFORM_RATIO[pf]) return { ratio: PLATFORM_RATIO[pf] };
     const box = Number(p.media_ratio) || 1.25;
     if (!isReel(p) || box >= 16 / 9) return { ratio: box };
@@ -1894,7 +1896,7 @@
   // Real shape of each post (height / width): reels, TikToks and Shorts vertical, YouTube videos horizontal,
   // Instagram photos and carousels as posted (4:5 to 1:1)
   function mediaRatio(p) {
-    const pf = platformOf(p), shorts = /\/shorts\//.test(p.url || "");
+    const pf = platformOf(p), shorts = pf === "youtube" && isShort(p);
     if (pf === "tiktok" || shorts || (pf === "instagram" && isReel(p))) return 16 / 9;
     if (pf === "youtube") return 9 / 16;
     if (pf === "instagram") return Math.min(1.25, Math.max(1, Number(p.media_ratio) || 1.25));
