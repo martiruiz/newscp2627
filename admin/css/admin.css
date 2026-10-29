@@ -2204,3 +2204,8 @@ tr[data-row].is-open td:first-child { box-shadow: inset 3px 0 0 var(--accent, #f
 .ci-sc-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
 .ci-sc-live { display: grid; gap: 10px; } .ci-sc-live:empty { display: none; }
 @media (max-width: 900px) { .ci-sc-f { grid-template-columns: 1fr 1fr; } .ci-sc-grid { grid-template-columns: 1fr 1fr; } }
+/* Light theme: a secondary button's hover was the dark theme's navy (#2a3b60) under dark text — unreadable */
+:root[data-theme="light"] .btn:hover:not(:disabled):not(.btn-primary):not(.btn-danger) { background: color-mix(in srgb, var(--panel-3) 82%, #0c0c0d); color: var(--text); }
+/* My Club toolbar: the secondary actions with a soft border so they read as buttons on the light background */
+.mcl-toolbar .btn:not(.btn-primary):not(.btn-ghost) { background: var(--panel); box-shadow: inset 0 0 0 1px var(--border); }
+.mcl-toolbar .btn:not(.btn-primary):not(.btn-ghost):hover:not(:disabled) { background: var(--panel-2); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 55%, var(--border)); color: var(--text); }
