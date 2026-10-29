@@ -45,6 +45,7 @@
     <div class="info-box notice-broken" hidden data-broken></div>
     <div class="info-box notice-removed" hidden data-removed></div>
     <section data-filters></section>
+    <section class="panel ci-scrape" data-scrape-box></section>
     <div class="selbar" hidden data-selbar>
       <span data-selcount></span>
       <button class="link" type="button" data-select-all hidden></button>
@@ -640,6 +641,117 @@
     const tr = e.target.closest("tr[data-row]");
     if (tr) Number(tr.dataset.row) === sideId ? closeSide() : openSide(Number(tr.dataset.row));
   });
+
+  // ---------- Scrape an account: any club, player, creator, competition, media… (Bright Data → the library) ----------
+  // Its tags: copied from the account's other posts when it has any (admin_account_tags), else chosen here (or created).
+  // The collection runs in core.js (scrapeAndImport) and shows as a console; the posts go to the library with their covers.
+  const SC_TAB = Math.random().toString(36).slice(2);
+  const SC_STEPS = ["Bright Data", "Collecting posts", "Importing", "Tags", "Covers", "Done"];
+  const SC_CATS = ["entity", "club", "sport", "competition"];
+  const scBox = $("[data-scrape-box]");
+  scBox.innerHTML = `
+    <div class="ci-sc-h"><b>${icon("download")}Scrape an account</b><small>Any club, player, creator, competition or media outlet: its latest posts come into the library with their tags.</small></div>
+    <form class="ci-sc-f" data-sc-form autocomplete="off">
+      <select class="select" name="platform"><option value="instagram">Instagram</option><option value="tiktok">TikTok</option></select>
+      <label class="ci-sc-handle"><span>@</span><input class="input" name="handle" placeholder="account (e.g. realmadrid, lamine.yamal)" required></label>
+      <select class="select" name="num" title="How many posts"><option value="10">10 posts</option><option value="25">25 posts</option><option value="50">50 posts</option></select>
+      <button class="btn btn-primary" type="submit" data-sc-go>${icon("download")}Scrape</button>
+    </form>
+    <div class="ci-sc-tags" data-sc-tags hidden>
+      <p class="hint" data-sc-hint></p>
+      <div class="ci-sc-grid">${SC_CATS.map((k) => `<div class="field"><span class="label">${esc(A.CATEGORIES.find((c) => c.key === k).label)}</span><div data-sc-ms="${k}"></div></div>`).join("")}</div>
+    </div>
+    <div class="ci-sc-live" data-sc-live></div>`;
+  const scForm = $("[data-sc-form]", scBox);
+  const scMs = {};
+  for (const k of SC_CATS) scMs[k] = new A.MultiSelect($(`[data-sc-ms="${k}"]`, scBox), { single: true,
+    options: catalog.byCat[k].map((v) => ({ id: v.id, name: v.name, count: v.ideas })), onCreate: async (name) => ({ id: -Date.now(), name }) });
+  const scHandle = () => scForm.handle.value.trim().replace(/^@/, "").replace(/^https?:\/\/(www\.)?(instagram|tiktok)\.com\/@?/, "").replace(/\/.*$/, "").toLowerCase();
+  // the account's tags from its other posts, as soon as it's typed
+  const scLookup = A.debounce(async () => {
+    const h = scHandle(), tags = $("[data-sc-tags]", scBox), hint = $("[data-sc-hint]", scBox);
+    if (h.length < 2) { tags.hidden = true; return; }
+    tags.hidden = false;
+    const got = await rpc("admin_account_tags", { p_platform: scForm.platform.value, p_account: h }).catch(() => ({}));
+    const n = Object.values(got || {}).flat().length;
+    for (const k of SC_CATS) scMs[k].setSelected((got?.[k] || []).slice(0, 1));
+    hint.textContent = n ? `@${h} is already in SCP: its tags are taken from its other posts (change them if you want).` : `@${h} is new in SCP: choose its tags (they go on every post). Type to create one.`;
+  }, 450);
+  scForm.handle.addEventListener("input", scLookup);
+  scForm.platform.addEventListener("change", scLookup);
+
+  const scJobs = new Map();
+  let scTimer = 0;
+  const scMmss = (ms) => { const x = Math.max(0, Math.round(ms / 1000)); return `${Math.floor(x / 60)}:${String(x % 60).padStart(2, "0")}`; };
+  function scRender() {
+    const list = [...scJobs.values()];
+    $("[data-sc-live]", scBox).innerHTML = list.map((j) => `<article class="mcl-job${j.error ? " is-err" : j.done ? " is-done" : ""}">
+      <div class="mcl-job-h"><b>${j.platform === "tiktok" ? "TikTok" : "Instagram"} @${esc(j.handle)}</b><span class="mono">${scMmss((j.end || Date.now()) - j.t0)}</span>
+        ${!j.done && !j.error && j.snap ? `<button class="mcl-job-x" type="button" data-sc-cancel="${esc(j.id)}">✕ Cancel</button>` : ""}${j.done || j.error ? `<button class="mcl-job-close" type="button" data-sc-close="${esc(j.id)}" aria-label="Close">✕</button>` : ""}
+        <span class="mcl-job-st">${j.error ? `${icon("alert")}${esc(j.error)}` : j.done ? `${icon("check")}${num(j.n)} posts in the library` : `<i class="hk-dot"></i>${esc(SC_STEPS[j.step])}${j.step === 1 && j.records ? ` · ${num(j.records)} posts so far` : ""}`}</span></div>
+      <ol class="mcl-steps">${SC_STEPS.map((t, k) => `<li class="${k < j.step || j.done ? "is-ok" : k === j.step && !j.error ? "is-on" : k === j.step && j.error ? "is-err" : ""}">${esc(t)}</li>`).join("")}</ol>
+      <div class="mcl-job-log${j.done || j.error ? "" : " is-live"}"><p class="is-cmd">scp@ideas:~$ scrape --${esc(j.platform)} @${esc(j.handle)} --posts ${j.num}</p>${j.log.slice(-7).map(([t, k, x]) => `<p class="is-${k}${Date.now() - t < 900 ? " is-new" : ""}"><span>[${scMmss(t - j.t0)}]</span>${esc(x)}</p>`).join("")}${j.done || j.error ? "" : `<p class="is-prompt">&gt; <i class="hk-cur"></i></p>`}</div>
+    </article>`).join("");
+    clearInterval(scTimer);
+    if (list.some((j) => !j.done && !j.error)) scTimer = setInterval(scRender, 1000);
+  }
+  async function scrapeAccount(platform, handle, n, tagNames) {
+    const id = `${platform}|${handle}`;
+    if (scJobs.get(id) && !scJobs.get(id).done && !scJobs.get(id).error) return A.toast(`@${handle} is already being scraped`);
+    const job = { id, platform, handle, num: n, step: 0, t0: Date.now(), log: [], records: 0, n: 0 };
+    scJobs.set(id, job);
+    const log = (kind, text) => { job.log.push([Date.now(), kind, text]); scRender(); };
+    const step = (k, text) => { job.step = k; log("step", text); };
+    const tagKey = `scp-scrape-tags:ideas:${id}`;   // the chosen tags, for a reload in the middle
+    try { localStorage.setItem(tagKey, JSON.stringify(tagNames)); } catch {}
+    try {
+      const { rows, out } = await A.scrapeAndImport({ platform, handle, num: n, job, log, step, say: () => {}, tab: SC_TAB,
+        key: `scp-scrape:ideas:${id}`, filename: `Bright Data · @${handle} · Content ideas`,
+        mapRows: (r) => ({ ...r, ...tagNames }) });
+      step(3, "Tags");
+      log("ok", Object.keys(tagNames).length ? `Tagged: ${Object.entries(tagNames).map(([k, v]) => `${k} ${v}`).join(" · ")}` : "No tags chosen (only platform and format)");
+      const { data: ids } = await A.db.from("content_ideas").select("id").in("external_id", rows.map((r) => r.external_id));
+      step(4, `Loading ${num((ids || []).length)} covers`);
+      await A.loadCovers((ids || []).map((x) => x.id));
+      const { count: withCover } = await A.db.from("content_ideas").select("id", { count: "exact", head: true }).in("external_id", rows.map((r) => r.external_id)).not("cover_url", "is", null);
+      log("ok", `${num(withCover || 0)} of ${num(rows.length)} with cover`);
+      job.n = out.created + out.replaced; job.step = 5; job.done = true; job.end = Date.now();
+      log("ok", `Done: ${num(job.n)} posts in the library`);
+      A.toast(`@${handle}: ${num(job.n)} posts in the library.`);
+      try { localStorage.removeItem(tagKey); } catch {}
+      A.resetCatalog(); load();
+    } catch (x) {
+      if (!localStorage.getItem(`scp-scrape:ideas:${id}`)) try { localStorage.removeItem(tagKey); } catch {}
+      job.error = x.message || String(x); job.end = Date.now(); log("err", job.error);
+    }
+  }
+  scForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const h = scHandle();
+    if (!/^[\w.]{2,30}$/.test(h)) return A.toast("Type the account's @name", "err");
+    const tagNames = {};
+    for (const k of SC_CATS) { const v = scMs[k].value()[0]; if (v != null) tagNames[k] = scMs[k].nameOf(v); }
+    scrapeAccount(scForm.platform.value, h, Number(scForm.num.value), tagNames);
+    scForm.handle.value = ""; $("[data-sc-tags]", scBox).hidden = true;
+  });
+  scBox.addEventListener("click", async (e) => {
+    const c = e.target.closest("[data-sc-close]"); if (c) { scJobs.delete(c.dataset.scClose); return scRender(); }
+    const x = e.target.closest("[data-sc-cancel]"); if (!x) return;
+    const j = scJobs.get(x.dataset.scCancel); if (!j?.snap) return;
+    x.disabled = true;
+    const { data, error } = await A.db.functions.invoke("club-scrape", { body: { action: "cancel", snapshot_id: j.snap } });
+    if (error || data?.error) { x.disabled = false; return A.toast(data?.error || "Bright Data didn't answer.", "err"); }
+    try { localStorage.removeItem(`scp-scrape:ideas:${j.id}`); } catch {}
+    j.cancelled = true; j.log.push([Date.now(), "warn", `Cancelled at Bright Data (${j.snap})`]); scRender();
+  });
+  // collections started before a reload (and not kept by another open tab) carry on
+  for (const k of Object.keys(localStorage).filter((x) => x.startsWith("scp-scrape:ideas:"))) {
+    let sv = null; try { sv = JSON.parse(localStorage.getItem(k)); } catch {}
+    if (!sv || (sv.tab && sv.tab !== SC_TAB && Date.now() - (sv.beat || 0) < 25000)) continue;
+    const [platform, handle] = k.slice("scp-scrape:ideas:".length).split("|");
+    let tags = {}; try { tags = JSON.parse(localStorage.getItem(`scp-scrape-tags:ideas:${platform}|${handle}`) || "{}"); } catch {}
+    scrapeAccount(platform, handle, 10, tags);
+  }
 
   load();
 })();

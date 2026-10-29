@@ -299,55 +299,12 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
     // while it runs the button is a tiny terminal: green monospace, a blinking cursor, a scanline (no spinner)
     const say = (t) => btns().forEach((b) => { b.disabled = true; b.classList.add("is-hacking"); b.innerHTML = `<span class="hk">&gt; ${esc(String(t).toLowerCase().replace(/…$/, ""))}<i class="hk-cur"></i></span>`; });
     say("Starting…");
-    const call = async (body) => {
-      const { data, error } = await A.db.functions.invoke("club-scrape", { body });
-      if (error || data?.error) { let m = data?.error; try { m = m || (await error?.context?.json())?.error; } catch {} throw new Error(m || "Bright Data didn't answer."); }
-      return data;
-    };
-    // the collection is remembered in this browser, so a reload or another visit picks it up and imports it when it's ready
-    const key = `scp-scrape:${cur}:${id}`;
-    let saved = null; try { saved = JSON.parse(localStorage.getItem(key) || "null"); } catch {}
-    const forget = () => { try { localStorage.removeItem(key); } catch {} };
     try {
-      if (saved?.snapshot_id) { job.snap = saved.snapshot_id; job.t0 = saved.at || job.t0; log("info", `Picking up the collection started before (${saved.snapshot_id})`); }
-      else {
-        log("info", `Asking Bright Data for the last 10 posts of ${platform === "tiktok" ? `tiktok.com/@${handle}` : `instagram.com/${handle}`}`);
-        const { snapshot_id } = await call({ action: "start", platform, handle, num: 10 });
-        saved = { snapshot_id, at: job.t0 }; job.snap = snapshot_id;
-        try { localStorage.setItem(key, JSON.stringify(saved)); } catch {}
-        log("ok", `Bright Data accepted it · collection ${snapshot_id}`);
-      }
-      step(1, "Bright Data is collecting the posts (usually 1–3 minutes; you can leave this page)");
-      let res, last = "";
-      for (;;) {
-        await new Promise((r) => setTimeout(r, 8000));
-        if (job.cancelled) throw new Error("Cancelled");
-        saved.tab = TAB; saved.beat = Date.now(); try { localStorage.setItem(key, JSON.stringify(saved)); } catch {}
-        res = await call({ action: "status", platform, handle, snapshot_id: saved.snapshot_id });
-        job.records = Number(res.bd?.records) || job.records;
-        const st = `${res.bd?.status || res.status}${res.bd?.records ? ` · ${res.bd.records} posts` : ""}`;
-        if (st !== last) { log("info", `Bright Data: ${st}`); last = st; }
-        say(`Scraping… ${mmss(Date.now() - job.t0)}${job.records ? ` · ${job.records} posts` : ""}`);
-        if (res.status === "failed") { forget(); throw new Error(res.error); }
-        if (res.status === "ready") break;
-        if (Date.now() - job.t0 > 1800000) { forget(); throw new Error("Bright Data took more than 30 minutes with this account. Try again later."); }
-      }
-      forget();
-      // a club's own account: its posts carry the club's tag (they go to the library, like the daily scraping)
-      const rows = (res.rows || []).filter((r) => r.external_id && r.published_at).map((r) => (clubAcc ? { ...r, club: club.club.name } : r));
-      log("ok", `Collected ${num(res.rows?.length || 0)} posts${res.rows?.length - rows.length ? ` (${res.rows.length - rows.length} without id or date, skipped)` : ""} · ${num(rows.filter((r) => r.title).length)} with text · ${num(rows.filter((r) => r.cover).length)} with image`);
-      if (!rows.length) throw new Error(`Bright Data found no posts for @${handle}${res.errors?.length ? `: ${res.errors[0]}` : "."}`);
-      step(2, `Importing ${num(rows.length)} posts`); say("Importing…");
-      const { data: imp, error: e1 } = await A.db.from("idea_imports").insert({ filename: `Bright Data · @${handle} · ${club.club.name}`, total_rows: rows.length, status: "importing" }).select("id").single();
-      if (e1) throw e1;
-      const out = await rpc("import_content_ideas_batch", { p_import_id: imp.id, p_rows: rows });
-      await rpc("set_idea_accounts", { p_rows: rows.map((r) => ({ external_id: r.external_id, account: r.account })) }).catch(() => {});
-      const covers = rows.filter((r) => r.cover).map((r) => ({ external_id: r.external_id, cover: r.cover }));
-      if (covers.length) await rpc("set_idea_cover_sources", { p_rows: covers }).catch(() => {});
-      await rpc("set_idea_scrape_extras", { p_rows: rows.map((r) => ({ external_id: r.external_id, account: r.account, hashtags: r.hashtags, followers: r.followers, profile_name: r.profile_name, verified: r.verified, profile_image: r.profile_image })) }).catch(() => {});
-      await A.db.from("idea_imports").update({ status: out.created || out.replaced ? "completed" : "failed", rows_created: out.created, rows_replaced: out.replaced,
-        error_count: out.errors?.length || 0, errors: out.errors || [], new_values: out.new_values_created || {}, completed_at: new Date().toISOString() }).eq("id", imp.id);
-      log(out.errors?.length ? "warn" : "ok", `Import #${imp.id}: ${num(out.created)} new · ${num(out.replaced)} updated${out.errors?.length ? ` · ${out.errors.length} errors` : ""}`);
+      // Bright Data → the import (core.js), remembered in this browser so a reload picks it up
+      const { rows, out, res } = await A.scrapeAndImport({ platform, handle, num: 10, job, log, step, say, tab: TAB,
+        key: `scp-scrape:${cur}:${id}`, filename: `Bright Data · @${handle} · ${club.club.name}`,
+        // a club's own account: its posts carry the club's tag (they go to the library, like the daily scraping)
+        mapRows: (r) => (clubAcc ? { ...r, club: club.club.name } : r) });
       // the first time: the account's profile picture becomes the player's / sponsor's photo (kept in Storage by club-scrape)
       const owner = club.people.find((x) => x.accounts.some((acc) => acc.platform === platform && acc.handle === handle));
       if (res.avatar && owner && !owner.photo_url) {

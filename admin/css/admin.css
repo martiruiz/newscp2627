@@ -2192,3 +2192,15 @@ tr[data-row].is-open td:first-child { box-shadow: inset 3px 0 0 var(--accent, #f
 .mcl-job-x:hover { background: var(--red-soft); } .mcl-job-x + .mcl-job-st { margin-left: 0; }
 .mcl-job-close { order: 9; width: 26px; height: 26px; border-radius: 50%; border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 13px; }
 .mcl-job-close:hover { background: var(--panel-3); color: var(--text); }
+/* Content ideas → "Scrape an account" (under the filters) */
+.ci-scrape { margin: 14px 0; padding: 16px 18px; display: grid; gap: 12px; }
+.ci-sc-h { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.ci-sc-h b { display: inline-flex; align-items: center; gap: 8px; font: 700 15px var(--display); } .ci-sc-h b svg { width: 16px; height: 16px; color: var(--accent); }
+.ci-sc-h small { color: var(--muted); font-size: 12.5px; }
+.ci-sc-f { display: grid; grid-template-columns: 150px minmax(0, 1fr) 130px auto; gap: 10px; }
+.ci-sc-handle { position: relative; display: block; } .ci-sc-handle span { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-weight: 600; }
+.ci-sc-handle .input { width: 100%; padding-left: 28px; }
+.ci-sc-tags { display: grid; gap: 8px; } .ci-sc-tags[hidden] { display: none; } .ci-sc-tags .hint { margin: 0; }
+.ci-sc-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.ci-sc-live { display: grid; gap: 10px; } .ci-sc-live:empty { display: none; }
+@media (max-width: 900px) { .ci-sc-f { grid-template-columns: 1fr 1fr; } .ci-sc-grid { grid-template-columns: 1fr 1fr; } }
