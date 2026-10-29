@@ -1,5 +1,99 @@
 [
   {
+    "id": 66,
+    "url": "https://www.socialmediatoday.com/news/x-lets-users-share-credit-on-reposted-images/873100/",
+    "source_name": "Social Media Today",
+    "platform": "x",
+    "title": "X begins sharing creator credit when original images are reposted by others",
+    "paragraphs": [
+      "X has updated its Original Content Rewards Program so that credit for reposted images can be shared. According to the report, the change is designed to let more users benefit when engagement builds around linked graphics, rather than rewards flowing only to the account that reposted an image. The short announcement offers few further details on how the credit split will work in practice.",
+      "For sports social teams, this matters because so much matchday content on X is visual: lineups, score graphics, player cards and fan-made edits. If original creators gain credit when their images travel, clubs and leagues that produce standout graphics could see more value from wide resharing, and fan artists may be more willing to collaborate.",
+      "Teams should keep posting original, clearly branded graphics and watch how the program attributes engagement once details emerge. Athletes and club-affiliated creators enrolled in X monetization may want to review their image strategy, while social leads could consider partnering with fan designers whose work is already widely reposted."
+    ],
+    "relevant": true,
+    "published_at": "2026-10-28T18:59:28+00:00",
+    "created_at": "2026-10-28T22:31:03.308881+00:00",
+    "edited_at": null,
+    "slug": "x-begins-sharing-creator-credit-when-original-images-are-reposted-by-66",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/hTjJ2HxBAj7GgVsmXZ5RnQvAV3t6SY7RSxqeDz8WagU/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS94X3Bob3RvX3Jlc2hhcmluZy5wbmc=.webp",
+    "es": {
+      "title": "X empieza a compartir el crédito con el creador cuando otros vuelven a publicar sus imágenes originales",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "X ha actualizado su Original Content Rewards Program para que el crédito por las imágenes republicadas pueda compartirse. Según el informe, el cambio busca que más usuarios se beneficien cuando el engagement se genera en torno a gráficos enlazados, en lugar de que las recompensas vayan solo a la cuenta que volvió a publicar una imagen. El breve anuncio ofrece pocos detalles más sobre cómo funcionará en la práctica el reparto del crédito.",
+        "Para los equipos de redes sociales deportivas, esto importa porque gran parte del contenido de día de partido en X es visual: alineaciones, gráficos de resultado, tarjetas de jugadores y ediciones hechas por aficionados. Si los creadores originales ganan crédito cuando sus imágenes se difunden, los clubes y las ligas que producen gráficos destacados podrían obtener más valor de una amplia redifusión, y los artistas aficionados podrían estar más dispuestos a colaborar.",
+        "Los equipos deberían seguir publicando gráficos originales y con una marca claramente reconocible, y observar cómo atribuye el programa el engagement cuando se conozcan más detalles. Los deportistas y los creadores vinculados a clubes que estén inscritos en la monetización de X quizá quieran revisar su estrategia de imágenes, mientras que los responsables de redes sociales podrían plantearse colaborar con diseñadores aficionados cuyo trabajo ya se republica mucho."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-10-28T22:31:03.308881+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-10-29T01:50:01.732Z",
+      "tokens": {
+        "in": 1370,
+        "out": 630
+      }
+    }
+  },
+  {
+    "id": 74,
+    "url": "https://frontofficesports.com/article/womens-sports-bar-owners-matinee-wnba-finals-game-6/",
+    "source_name": "Front Office Sports",
+    "platform": "other",
+    "title": "Women's sports bars push back on WNBA's 12:30 p.m. Finals Game 6 tip-off",
+    "paragraphs": [
+      "The WNBA moved Game 6 of its Finals from 8 p.m. to 12:30 p.m. ET on a Thursday so the Atlanta Dream could play at the 17,000-seat State Farm Arena instead of the 3,500-seat Gateway Center. With Golden State up 3-2, a potential title clincher now starts at 9:30 a.m. in San Francisco. Owners of women's sports bars in Chicago, Brooklyn, Portland and Seattle told Front Office Sports the slot hurts fans and their revenue.",
+      "Several owners voiced frustration publicly, starting with an Instagram post from Level Sporting Club's founder. The Sports Bra's founder warned that weaker viewing numbers could be misread as proof the audience is missing. Seattle's Rough & Tumble said it may not open, risking roughly $10,000 to $15,000 per Finals night. Level Sporting Club chose to open anyway, promoting the game on social as a remote-work gathering, a first weekday morning opening for the bar.",
+      "For sports social teams, this shows how kickoff times shape fan sentiment and partner businesses. When games land in work hours, clubs and leagues can lean into mobile-first coverage: live clip drops, short recaps, vertical highlights and second-screen prompts for fans stuck at their desks. Teams can also amplify fan bars and watch-party venues, co-creating creative angles like the 'work from the bar' idea, and should listen to and acknowledge fan feedback rather than stay silent."
+    ],
+    "relevant": true,
+    "published_at": "2026-10-28T16:00:00+00:00",
+    "created_at": "2026-10-28T22:31:24.647392+00:00",
+    "edited_at": null,
+    "slug": "women-s-sports-bars-push-back-on-wnba-s-12-30-p-m-finals-game-6-tip-74",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://frontofficesports.com/wp-content/uploads/2026/10/24-BAC08655-scaled-e1793130057961.jpg?quality=80&w=1024",
+    "es": {
+      "title": "Los bares de deporte femenino se quejan de que el sexto partido de las Finales de la WNBA empiece a las 12:30",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "La WNBA adelantó el sexto partido de sus Finales de las 20:00 a las 12:30 ET de un jueves para que las Atlanta Dream pudieran jugar en el State Farm Arena, de 17.000 asientos, en lugar del Gateway Center, de 3.500. Con Golden State ganando 3-2, un posible partido decisivo por el título arranca ahora a las 9:30 de la mañana en San Francisco. Propietarios de bares de deporte femenino de Chicago, Brooklyn, Portland y Seattle dijeron a Front Office Sports que ese horario perjudica a las aficionadas y aficionados y a sus ingresos.",
+        "Varios propietarios han expresado su frustración públicamente, empezando por un post en Instagram del fundador de Level Sporting Club. El fundador de The Sports Bra advirtió de que unas audiencias más bajas podrían interpretarse erróneamente como una prueba de que la audiencia no existe. Rough & Tumble, de Seattle, dijo que quizá no abra, con un riesgo de entre 10.000 y 15.000 dólares por cada noche de Finales. Level Sporting Club decidió abrir de todos modos y promocionó el partido en redes como una quedada para teletrabajar, la primera apertura del local en una mañana entre semana.",
+        "Para los equipos de redes sociales deportivas, esto demuestra cómo los horarios de los partidos influyen en el sentimiento de la afición y en los negocios aliados. Cuando los partidos caen en horas de trabajo, los clubes y las ligas pueden apostar por una cobertura pensada para el móvil: clips en directo, resúmenes cortos, highlights verticales y propuestas de segunda pantalla para quienes están atrapados en su escritorio. Los equipos también pueden amplificar los bares de aficionados y los locales de watch parties, cocreando ideas creativas como la de «trabajar desde el bar», y deberían escuchar y reconocer los comentarios de la afición en lugar de callarse."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-10-28T22:31:24.647392+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-10-29T01:50:09.348Z",
+      "tokens": {
+        "in": 1593,
+        "out": 823
+      }
+    }
+  },
+  {
     "id": 53,
     "url": "https://www.socialmediatoday.com/news/edits-gets-new-halloween-themed-options/872983/",
     "source_name": "Social Media Today",
