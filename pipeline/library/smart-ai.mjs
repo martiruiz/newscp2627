@@ -57,7 +57,7 @@ export function requestParams(post, image) {
   return {
     model: MODEL,
     max_tokens: 1024,
-    thinking: { type: "disabled" },
+    thinking: { type: MODEL.includes("haiku") ? "disabled" : "between_tools" },
     output_config: { format: { type: "json_schema", schema: SCHEMA } },
     system: [{ type: "text", text: SYSTEM_FULL, cache_control: { type: "ephemeral" } }],
     messages: [{ role: "user", content: [
