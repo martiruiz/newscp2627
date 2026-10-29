@@ -278,7 +278,7 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
         ${list.some((j) => j.done || j.error) ? `<button class="btn btn-ghost btn-sm" type="button" data-live-clear>Clear finished</button>` : ""}</header>
       ${list.map((j) => `<article class="mcl-job${j.error ? " is-err" : j.done ? " is-done" : ""}">
         <div class="mcl-job-h"><b>${esc(PF[j.platform] || "")} @${esc(j.handle)}</b><span class="mono">${mmss((j.end || Date.now()) - j.t0)}</span>
-          ${!j.done && !j.error && j.snap ? `<button class="mcl-job-x" type="button" data-cancel-job="${esc(j.id)}" title="Stop this collection at Bright Data">✕ Cancel</button>` : ""}<span class="mcl-job-st">${j.error ? `${icon("alert")}${esc(j.error)}` : j.done ? `${icon("check")}${num(j.n)} posts in My Club` : `<i class="hk-dot"></i>${esc(STEPS[j.step])}${j.step === 1 && j.records ? ` · ${num(j.records)} posts so far` : ""}`}</span></div>
+          ${!j.done && !j.error && j.snap ? `<button class="mcl-job-x" type="button" data-cancel-job="${esc(j.id)}" title="Stop this collection at Bright Data">✕ Cancel</button>` : ""}${j.done || j.error ? `<button class="mcl-job-close" type="button" data-close-job="${esc(j.id)}" title="Close" aria-label="Close">✕</button>` : ""}<span class="mcl-job-st">${j.error ? `${icon("alert")}${esc(j.error)}` : j.done ? `${icon("check")}${num(j.n)} posts in My Club` : `<i class="hk-dot"></i>${esc(STEPS[j.step])}${j.step === 1 && j.records ? ` · ${num(j.records)} posts so far` : ""}`}</span></div>
         <ol class="mcl-steps">${STEPS.map((t, k) => `<li class="${k < j.step || j.done ? "is-ok" : k === j.step && !j.error ? "is-on" : k === j.step && j.error ? "is-err" : ""}">${esc(t)}</li>`).join("")}</ol>
         <div class="mcl-job-log${j.done || j.error ? "" : " is-live"}"><p class="is-cmd">scp@myclub:~$ scrape --${esc(j.platform)} @${esc(j.handle)} --posts 10</p>${j.log.slice(-7).map(([t, k, x]) => `<p class="is-${k}${Date.now() - t < 900 ? " is-new" : ""}"><span>[${mmss(t - j.t0)}]</span>${esc(x)}</p>`).join("")}${j.done || j.error ? "" : `<p class="is-prompt">&gt; <i class="hk-cur"></i></p>`}</div>
       </article>`).join("")}` : "";
@@ -502,6 +502,7 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
         $$("[data-pane]", main).forEach((p) => { p.hidden = p.dataset.pane !== b.dataset.tab; });
         return;
       }
+      if (b.dataset.closeJob) { jobs.delete(b.dataset.closeJob); return renderLive(); }
       if (b.dataset.cancelJob) {
         const j = jobs.get(b.dataset.cancelJob); if (!j?.snap) return;
         b.disabled = true; b.textContent = "Cancelling…";
