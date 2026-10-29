@@ -1278,6 +1278,8 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
   .hero .btn-gold { margin-top: 40px; }
   .hero-shot { margin-top: 56px; }
   .trust-badge::after { display: none; }
+  .trust-badge { gap: 12px; padding-right: 16px; }
+  .logo-stack span + span { margin-left: -9px; }
   .stats { grid-template-columns: 1fr; }
   .stat + .stat { border-left: 0; border-top: 1px solid var(--line); padding-top: 28px; }
   .stat { min-height: 0; padding-inline: 8px; }
