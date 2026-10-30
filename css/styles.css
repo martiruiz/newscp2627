@@ -9240,3 +9240,5 @@ body.club-themed .mc-strip::after { content: ""; position: absolute; left: 18px;
 .lfp-results button.is-on i { border-color: #1a1206; }
 .lfp-cards.lfp-cards-design { grid-template-columns: repeat(3, minmax(0, 1fr)); }   /* Graphic design: three per row, so the names read in full */
 .lfb-panel[data-sec="benchmark"] .lfp-rail { grid-template-columns: repeat(4, minmax(0, 1fr)); }   /* Inspire: its four groups on one line */
+/* the panels are as tall as what they show (up to the same maximum): no empty space under a short list */
+.lfb-panel.lfp { height: auto; max-height: min(640px, calc(100vh - var(--lib-head-h, 150px) - 24px)); }
