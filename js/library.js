@@ -574,7 +574,7 @@
     const nOn = (ph) => ph.list.filter(isOn).length;
     let cur = phases.find((ph) => ph.key === ui.phase) || phases.find(nOn) || phases[0];
     const chip = (v) => `<button type="button" class="lf-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="${v.category}" data-id="${v.id}">${esc(pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`;
-    const results = (catalog.byCat.outcome || []).filter((v) => countOf(v) > 0 || isOn(v));
+    const results = (catalog.byCat.outcome || []).filter((v) => countOf(v) > 0 || isOn(v)).sort((x, y) => ["win", "draw", "loss"].indexOf(x.name.toLowerCase()) - ["win", "draw", "loss"].indexOf(y.name.toLowerCase()));
     return `<div class="lf-md">
       <div class="lf-md-h">${svg("ball")}<b>Matchday</b><small>${esc(tx("Pick a moment of the game"))}</small></div>
       ${phases.length ? `<div class="lf-md-steps" role="tablist" style="--n:${phases.length}">${phases.map((ph) => `<button type="button" role="tab" aria-selected="${ph === cur}" class="${ph === cur ? "is-cur" : ""}${nOn(ph) ? " has-on" : ""}" data-md-phase="${ph.key}"><i></i><span>${esc(ph.label)}</span>${nOn(ph) ? `<em>${nOn(ph)}</em>` : ""}</button>`).join("")}</div>
@@ -810,7 +810,8 @@
     // the bar's Match Day: the moments of the match; the graphics (poster, starting XI, full-time…) are in Inspire → Graphic design
     // the three phases always show (a phase the other filters leave without posts is dimmed, not removed)
     const phases = MATCHDAY.map((ph) => ({ ...ph, list: ph.vals.filter(([cat]) => cat !== "matchday_graphic").map(([cat, name]) => valByName(cat, name)).filter(Boolean) })).filter((ph) => ph.list.length);
-    const results = (catalog.byCat.outcome || []).filter(live);
+    const RES = ["win", "draw", "loss"];   // Win · Draw · Loss, always in that order
+    const results = (catalog.byCat.outcome || []).filter(live).sort((x, y) => RES.indexOf(x.name.toLowerCase()) - RES.indexOf(y.name.toLowerCase()));
     const DOT = { win: "#3ddc97", loss: "#ff6b6b", draw: "#b4c0d3" };
     // Before · Live · After, with the Opponent filter on its right
     const opp = has("opponent") ? `<div class="lf-stack lfp-opp">${rowHtml(CAT.opponent)}</div>` : "";
