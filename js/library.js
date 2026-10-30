@@ -751,7 +751,9 @@
     occasion: [
       { key: "matchday", label: "Matchday", ico: "ball", desc: "" },
       // Transfer market: inside Inspire → Club
-      { key: "kit", label: "Kit launches", ico: "shirt", desc: "Shirts and collections", cats: ["kit"] },
+      { key: "kit", label: "Kit launches", ico: "shirt", desc: "Shirts and collections", cats: ["kit"], tiles: true,   // tiles like Inspire's
+        order: ["home kit", "away kit", "third kit", "goalkeeper kit", "special edition kit", "training wear", "retro / heritage"],
+        tileIco: { "home kit": "shirt", "away kit": "shirt", "third kit": "shirt", "goalkeeper kit": "glove", "special edition kit": "star", "training wear": "run", "retro / heritage": "clock" } },
       { key: "season_moment", label: "Season", ico: "flag", desc: "The big moments of the year", cats: ["season_moment"] },
       { key: "moment", label: "Dates & campaigns", ico: "star", desc: "Records, tributes and birthdays", cats: ["moment"],
         skip: ["christmas", "halloween", "black friday", "valentine's day", "pride", "ramadan / eid", "international women's day", "lunar new year", "new year"] },   // no calendar holidays
