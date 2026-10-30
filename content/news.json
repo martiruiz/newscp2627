@@ -1,32 +1,126 @@
 [
   {
-    "id": 83,
-    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces#2",
-    "source_name": "SocialGeek News",
-    "platform": "ai",
-    "title": "CapCut announces ChatGPT plugin to edit videos through conversation",
+    "id": 98,
+    "url": "https://frontofficesports.com/article/pga-tour-fills-part-of-6m-void-left-by-good-good-split/",
+    "source_name": "Front Office Sports",
+    "platform": "other",
+    "title": "PGA Tour Lands Short-Term Sponsor for Austin Event After Good Good Golf Exit",
     "paragraphs": [
-      "At its CapCut World event in Los Angeles, CapCut, which reports more than 700 million monthly users, unveiled a ChatGPT plugin coming in the next few months. Users will be able to shape an idea in ChatGPT, let CapCut assemble a first cut, and refine it by chatting, such as extending a shot or lowering music under voiceover. Manual timeline edits are understood by the conversation too.",
-      "CapCut also introduced EditPilot on desktop for natural-language edits of complex or repetitive tasks, plus more image, video and audio generation on web and an AI Lab in the mobile app that turns photos and clips into vlogs or recaps.",
-      "For sports social teams, this could speed up matchday recaps, player highlight packages and behind-the-scenes edits, especially for smaller clubs with limited staff. The tool lowers production effort, but storytelling and editorial judgment will still separate standout club content from the rest."
+      "The PGA Tour has found a partial replacement for Good Good Golf, the creator group that withdrew from sponsoring and hosting a new Austin tournament after backlash over a controversial Callaway driver ad. Compliance Solutions, a Florida tax services firm already backing a Korn Ferry Tour event, will become presenting sponsor of the renamed Austin Championship for this year only, paying less than the $6 million Good Good had committed.",
+      "The reduced fee reflects how little time remains to activate: practice rounds start in about 11 days, leaving the sponsor almost no runway for promotion. Meanwhile, Good Good has also lost its Callaway deal, its Golf Channel show and retail placement for its merchandise, showing how quickly a creator brand's commercial ecosystem can unravel after a misstep.",
+      "For sports marketing teams, the episode is a reminder that creator partnerships carry reputational risk and that ad content should be vetted with the same rigor as any official campaign. It also shows the value of existing sponsor relationships as a fast fallback, and that activation time directly drives deal value. Properties should build contingency plans and pre-approved messaging before tying events to influencer brands."
     ],
     "relevant": true,
-    "published_at": "2026-10-29T12:12:00+00:00",
-    "created_at": "2026-10-29T12:54:20.149885+00:00",
+    "published_at": "2026-10-29T17:55:00+00:00",
+    "created_at": "2026-10-29T22:42:35.289594+00:00",
     "edited_at": null,
-    "slug": "capcut-announces-chatgpt-plugin-to-edit-videos-through-conversation-83",
+    "slug": "pga-tour-lands-short-term-sponsor-for-austin-event-after-good-good-98",
     "meta_title": null,
     "meta_description": null,
     "takeaways": [],
     "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/d111e67e2e467a7e-16x9.jpg",
+    "image_url": "https://frontofficesports.com/wp-content/uploads/2026/04/USATSI_23083311_168420755_lowres-scaled-e1776984611832.jpg?quality=80&w=1024",
+    "es": {
+      "title": "El PGA Tour consigue un patrocinador a corto plazo para el evento de Austin tras la salida de Good Good Golf",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "El PGA Tour ha encontrado un sustituto parcial para Good Good Golf, el grupo de creadores que renunció a patrocinar y organizar un nuevo torneo en Austin tras la polémica por un anuncio controvertido de un driver de Callaway. Compliance Solutions, una empresa de servicios fiscales de Florida que ya respalda un evento del Korn Ferry Tour, será patrocinador principal del renombrado Austin Championship solo este año, con un pago inferior a los 6 millones de dólares a los que se había comprometido Good Good.",
+        "La tarifa reducida refleja el poco tiempo que queda para activar el patrocinio: las rondas de práctica empiezan en unos 11 días, lo que deja al patrocinador casi sin margen para la promoción. Mientras tanto, Good Good también ha perdido su acuerdo con Callaway, su programa en Golf Channel y la presencia de su merchandising en tiendas, una muestra de la rapidez con la que puede desmoronarse el ecosistema comercial de una marca de creadores tras un error.",
+        "Para los equipos de marketing deportivo, el episodio es un recordatorio de que las colaboraciones con creadores conllevan riesgo reputacional y de que el contenido publicitario debe revisarse con el mismo rigor que cualquier campaña oficial. También demuestra el valor de las relaciones existentes con patrocinadores como solución de emergencia rápida, y que el tiempo de activación influye directamente en el valor del acuerdo. Las propiedades deberían preparar planes de contingencia y mensajes preaprobados antes de vincular sus eventos a marcas de influencers."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-10-29T22:42:35.289594+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-10-30T01:03:22.423Z",
+      "tokens": {
+        "in": 1481,
+        "out": 695
+      }
+    }
+  },
+  {
+    "id": 92,
+    "url": "https://www.sponconsports.com/p/2026-nba-sponsored-content-scouting-report",
+    "source_name": "SponCon Sports",
+    "platform": "other",
+    "title": "NBA opening week sponsored content report: what top teams did with partners",
+    "paragraphs": [
+      "A Sponcon Sports analysis with Mondo Metrics reviewed 11,919 posts from all 30 NBA teams across five platforms during opening week. About 11.7% carried a brand integration, producing 5.6M engagements and at least 42M views for 193 brands. The 76ers led sponsored engagement, Golden State dominated views thanks to a Steph Curry warmup trick shot backed by IREN, and Michelob ULTRA was the most featured sponsor, shifting toward a Courtside Moments series.",
+      "Standout ideas include jersey patch partners running surveys and uniform votes to gather first-party data, the Sixers' Bloom Energy 'Power Run' giveaway pushed via Instagram Stories, and series names that link naturally to the sponsor, such as Hornets x Lowe's 'Drilling Threes'. Swapping 'presented by' for phrases like 'Delivered By FedEx' and embedding promo codes in win graphics also added brand meaning without standalone ads.",
+      "The report flags a common flaw: sponsor logos too small or low-contrast to read on mobile. A simple fix for content teams is previewing creative on private accounts at real size before partner approval. Clubs in any league can borrow these tactics to make sponsored posts feel native, keep brands recognizable and build measurable value for renewals."
+    ],
+    "relevant": true,
+    "published_at": "2026-10-29T14:00:00+00:00",
+    "created_at": "2026-10-29T22:42:14.518646+00:00",
+    "edited_at": null,
+    "slug": "nba-opening-week-sponsored-content-report-what-top-teams-did-with-92",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/9c5c3f1e-0c36-4f9a-be89-3afc5d2d8556/Untitled_design__12_.png?t=1793218727",
+    "es": {
+      "title": "Informe de contenido patrocinado de la semana inaugural de la NBA: qué hicieron los mejores equipos con sus socios",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "Un análisis de Sponcon Sports con Mondo Metrics revisó 11.919 posts de los 30 equipos de la NBA en cinco plataformas durante la semana inaugural. Cerca del 11,7 % incluía una integración de marca, lo que generó 5,6 M de interacciones y al menos 42 M de visualizaciones para 193 marcas. Los 76ers lideraron el engagement patrocinado, Golden State dominó en visualizaciones gracias a un tiro espectacular de Steph Curry en el calentamiento respaldado por IREN, y Michelob ULTRA fue el patrocinador con más presencia, con un giro hacia una serie llamada Courtside Moments.",
+        "Entre las ideas destacadas están los patrocinadores del parche de la camiseta que lanzan encuestas y votaciones sobre la equipación para recopilar datos propios, el sorteo 'Power Run' de Bloom Energy de los Sixers impulsado a través de Instagram Stories, y nombres de series que se vinculan de forma natural con el patrocinador, como 'Drilling Threes' de Hornets x Lowe's. Cambiar el 'presented by' por fórmulas como 'Delivered By FedEx' e incluir códigos promocionales en los gráficos de victoria también aportó significado de marca sin recurrir a anuncios independientes.",
+        "El informe señala un fallo habitual: logotipos de patrocinadores demasiado pequeños o con poco contraste para leerse en el móvil. Una solución sencilla para los equipos de contenido es previsualizar el creativo en cuentas privadas a tamaño real antes de la aprobación del socio. Los clubes de cualquier liga pueden tomar prestadas estas tácticas para que los posts patrocinados resulten más nativos, mantener las marcas reconocibles y construir un valor medible de cara a las renovaciones."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-10-29T22:42:14.518646+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-10-30T01:03:30.208Z",
+      "tokens": {
+        "in": 1516,
+        "out": 772
+      }
+    }
+  },
+  {
+    "id": 84,
+    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces#3",
+    "source_name": "SocialGeek News",
+    "platform": "other",
+    "title": "Gen Z app Posting2 grows with chronological, ad-free, algorithm-free photo feed",
+    "paragraphs": [
+      "Posting2 is a small app built as a throwback to early Instagram: square photos, a chronological feed, no algorithm, no ads and no celebrities, with lots of casual everyday posts. According to Fast Company, it grew from 1,600 beta users in April to 36,671 users by October 21, and Sensor Tower recorded a 42% jump in downloads in September versus August.",
+      "The app is still tiny, but it reflects a slice of Gen Z that wants to see friends' posts without algorithmic curation. For clubs and athletes, it is a reminder that raw, imperfect and authentic content is regaining value.",
+      "Sports teams can lean into this by mixing polished campaigns with low-production moments: dressing room snapshots, player phone photos, training ground candids and fan-shot content that feels personal rather than produced."
+    ],
+    "relevant": true,
+    "published_at": "2026-10-29T12:12:00+00:00",
+    "created_at": "2026-10-29T12:54:20.285329+00:00",
+    "edited_at": null,
+    "slug": "gen-z-app-posting2-grows-with-chronological-ad-free-algorithm-free-84",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/linkedin-posting2-16x9.jpg",
     "es": {
       "faq": [],
       "model": "claude-sonnet-5-5",
-      "title": "CapCut anuncia un plugin de ChatGPT para editar vídeos a través de una conversación",
+      "title": "Posting2, la app de la Generación Z, crece con un feed de fotos cronológico, sin anuncios y sin algoritmo",
       "tokens": {
-        "in": 1382,
-        "out": 559
+        "in": 1352,
+        "out": 518
       },
       "excerpt": "",
       "cta_text": "",
@@ -36,13 +130,13 @@
       "takeaways": [],
       "meta_title": "",
       "paragraphs": [
-        "En su evento CapCut World, celebrado en Los Ángeles, CapCut, que asegura tener más de 700 millones de usuarios mensuales, presentó un plugin de ChatGPT que llegará en los próximos meses. Los usuarios podrán dar forma a una idea en ChatGPT, dejar que CapCut monte un primer corte y perfeccionarlo chateando, por ejemplo alargando un plano o bajando la música bajo una voz en off. La conversación también entiende las ediciones manuales hechas en la línea de tiempo.",
-        "CapCut también presentó EditPilot en escritorio, para editar con lenguaje natural tareas complejas o repetitivas, además de más generación de imágenes, vídeo y audio en la web y un AI Lab en la app móvil que convierte fotos y clips en vlogs o resúmenes.",
-        "Para los equipos de redes sociales deportivas, esto podría acelerar los resúmenes del día de partido, los paquetes de mejores jugadas de los jugadores y las ediciones de behind-the-scenes, sobre todo en clubes pequeños con poco personal. La herramienta reduce el esfuerzo de producción, pero la narrativa y el criterio editorial seguirán marcando la diferencia entre el contenido destacado de un club y el resto."
+        "Posting2 es una pequeña app concebida como un homenaje a los inicios de Instagram: fotos cuadradas, un feed cronológico, sin algoritmo, sin anuncios y sin famosos, con muchos posts informales del día a día. Según Fast Company, pasó de 1.600 usuarios beta en abril a 36.671 usuarios el 21 de octubre, y Sensor Tower registró un aumento del 42 % en las descargas en septiembre frente a agosto.",
+        "La app sigue siendo diminuta, pero refleja a un sector de la Generación Z que quiere ver las publicaciones de sus amigos sin curación algorítmica. Para clubes y deportistas, es un recordatorio de que el contenido crudo, imperfecto y auténtico está recuperando valor.",
+        "Los equipos deportivos pueden aprovechar esta tendencia combinando campañas muy cuidadas con momentos de baja producción: instantáneas del vestuario, fotos hechas con el móvil de los jugadores, imágenes espontáneas de la ciudad deportiva y contenido grabado por aficionados que resulte personal en lugar de producido."
       ],
       "image_title": "",
-      "translated_at": "2026-10-29T16:10:15.419Z",
-      "source_changed": "2026-10-29T12:54:20.149885+00:00",
+      "translated_at": "2026-10-29T16:10:26.722Z",
+      "source_changed": "2026-10-29T12:54:20.285329+00:00",
       "meta_description": ""
     }
   },
@@ -94,33 +188,33 @@
     }
   },
   {
-    "id": 84,
-    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces#3",
+    "id": 83,
+    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces#2",
     "source_name": "SocialGeek News",
-    "platform": "other",
-    "title": "Gen Z app Posting2 grows with chronological, ad-free, algorithm-free photo feed",
+    "platform": "ai",
+    "title": "CapCut announces ChatGPT plugin to edit videos through conversation",
     "paragraphs": [
-      "Posting2 is a small app built as a throwback to early Instagram: square photos, a chronological feed, no algorithm, no ads and no celebrities, with lots of casual everyday posts. According to Fast Company, it grew from 1,600 beta users in April to 36,671 users by October 21, and Sensor Tower recorded a 42% jump in downloads in September versus August.",
-      "The app is still tiny, but it reflects a slice of Gen Z that wants to see friends' posts without algorithmic curation. For clubs and athletes, it is a reminder that raw, imperfect and authentic content is regaining value.",
-      "Sports teams can lean into this by mixing polished campaigns with low-production moments: dressing room snapshots, player phone photos, training ground candids and fan-shot content that feels personal rather than produced."
+      "At its CapCut World event in Los Angeles, CapCut, which reports more than 700 million monthly users, unveiled a ChatGPT plugin coming in the next few months. Users will be able to shape an idea in ChatGPT, let CapCut assemble a first cut, and refine it by chatting, such as extending a shot or lowering music under voiceover. Manual timeline edits are understood by the conversation too.",
+      "CapCut also introduced EditPilot on desktop for natural-language edits of complex or repetitive tasks, plus more image, video and audio generation on web and an AI Lab in the mobile app that turns photos and clips into vlogs or recaps.",
+      "For sports social teams, this could speed up matchday recaps, player highlight packages and behind-the-scenes edits, especially for smaller clubs with limited staff. The tool lowers production effort, but storytelling and editorial judgment will still separate standout club content from the rest."
     ],
     "relevant": true,
     "published_at": "2026-10-29T12:12:00+00:00",
-    "created_at": "2026-10-29T12:54:20.285329+00:00",
+    "created_at": "2026-10-29T12:54:20.149885+00:00",
     "edited_at": null,
-    "slug": "gen-z-app-posting2-grows-with-chronological-ad-free-algorithm-free-84",
+    "slug": "capcut-announces-chatgpt-plugin-to-edit-videos-through-conversation-83",
     "meta_title": null,
     "meta_description": null,
     "takeaways": [],
     "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/linkedin-posting2-16x9.jpg",
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/d111e67e2e467a7e-16x9.jpg",
     "es": {
       "faq": [],
       "model": "claude-sonnet-5-5",
-      "title": "Posting2, la app de la Generación Z, crece con un feed de fotos cronológico, sin anuncios y sin algoritmo",
+      "title": "CapCut anuncia un plugin de ChatGPT para editar vídeos a través de una conversación",
       "tokens": {
-        "in": 1352,
-        "out": 518
+        "in": 1382,
+        "out": 559
       },
       "excerpt": "",
       "cta_text": "",
@@ -130,13 +224,13 @@
       "takeaways": [],
       "meta_title": "",
       "paragraphs": [
-        "Posting2 es una pequeña app concebida como un homenaje a los inicios de Instagram: fotos cuadradas, un feed cronológico, sin algoritmo, sin anuncios y sin famosos, con muchos posts informales del día a día. Según Fast Company, pasó de 1.600 usuarios beta en abril a 36.671 usuarios el 21 de octubre, y Sensor Tower registró un aumento del 42 % en las descargas en septiembre frente a agosto.",
-        "La app sigue siendo diminuta, pero refleja a un sector de la Generación Z que quiere ver las publicaciones de sus amigos sin curación algorítmica. Para clubes y deportistas, es un recordatorio de que el contenido crudo, imperfecto y auténtico está recuperando valor.",
-        "Los equipos deportivos pueden aprovechar esta tendencia combinando campañas muy cuidadas con momentos de baja producción: instantáneas del vestuario, fotos hechas con el móvil de los jugadores, imágenes espontáneas de la ciudad deportiva y contenido grabado por aficionados que resulte personal en lugar de producido."
+        "En su evento CapCut World, celebrado en Los Ángeles, CapCut, que asegura tener más de 700 millones de usuarios mensuales, presentó un plugin de ChatGPT que llegará en los próximos meses. Los usuarios podrán dar forma a una idea en ChatGPT, dejar que CapCut monte un primer corte y perfeccionarlo chateando, por ejemplo alargando un plano o bajando la música bajo una voz en off. La conversación también entiende las ediciones manuales hechas en la línea de tiempo.",
+        "CapCut también presentó EditPilot en escritorio, para editar con lenguaje natural tareas complejas o repetitivas, además de más generación de imágenes, vídeo y audio en la web y un AI Lab en la app móvil que convierte fotos y clips en vlogs o resúmenes.",
+        "Para los equipos de redes sociales deportivas, esto podría acelerar los resúmenes del día de partido, los paquetes de mejores jugadas de los jugadores y las ediciones de behind-the-scenes, sobre todo en clubes pequeños con poco personal. La herramienta reduce el esfuerzo de producción, pero la narrativa y el criterio editorial seguirán marcando la diferencia entre el contenido destacado de un club y el resto."
       ],
       "image_title": "",
-      "translated_at": "2026-10-29T16:10:26.722Z",
-      "source_changed": "2026-10-29T12:54:20.285329+00:00",
+      "translated_at": "2026-10-29T16:10:15.419Z",
+      "source_changed": "2026-10-29T12:54:20.149885+00:00",
       "meta_description": ""
     }
   },
@@ -1128,53 +1222,6 @@
     }
   },
   {
-    "id": 39,
-    "url": "https://www.socialmediatoday.com/news/tiktok-us-shares-q2-account-enforcement-data/833907/",
-    "source_name": "Social Media Today",
-    "platform": "tiktok",
-    "title": "TikTok US removes 14.6 million fake accounts and 781 million fake followers in Q2",
-    "paragraphs": [
-      "TikTok USDS, the US-based group running the app's American operations since January, released its second enforcement report, covering April to June. It removed 14.6 million fake accounts, blocked 64.8 million spam accounts at sign-up, stripped 781.4 million fake followers and stopped 403.2 million fake follow requests, a clear jump on the first quarter. Video removals and livestream warnings or demonetizations also rose.",
-      "Most video takedowns fell under regulated goods and services, a broad category covering gambling, alcohol, counterfeit products and services selling fake likes, views and followers. TikTok also said it disrupted 30 covert networks trying to manipulate engagement, removing more than 76,000 accounts and 4.8 million posts, as it ramps up integrity efforts ahead of the US midterms.",
-      "For sports social teams, larger fake-follower sweeps can cause sudden drops in follower counts, so expect some fluctuation and report engagement rate rather than raw totals to sponsors. Clubs working with betting or alcohol partners should review branded content carefully against TikTok's regulated-goods rules, and anyone tempted by bought growth should note that these services are a prime enforcement target."
-    ],
-    "relevant": true,
-    "published_at": "2026-10-25T22:13:46+00:00",
-    "created_at": "2026-10-27T12:04:45.467727+00:00",
-    "edited_at": null,
-    "slug": "tiktok-us-removes-14-6-million-fake-accounts-and-781-million-fake-39",
-    "meta_title": null,
-    "meta_description": null,
-    "takeaways": [],
-    "faq": [],
-    "image_url": "https://imgproxy.divecdn.com/12K6ogX9lcgDYYC0J9LHBG_Vz43JSghdwOStO8_Cc34/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS90aWt0b2tfdXNkc2p2LnBuZw==.webp",
-    "es": {
-      "faq": [],
-      "model": "claude-sonnet-5-5",
-      "title": "TikTok EE. UU. elimina 14,6 millones de cuentas falsas y 781 millones de seguidores falsos en el segundo trimestre",
-      "tokens": {
-        "in": 1476,
-        "out": 773
-      },
-      "excerpt": "",
-      "cta_text": "",
-      "body_html": "",
-      "cta_title": "",
-      "image_alt": "",
-      "takeaways": [],
-      "meta_title": "",
-      "paragraphs": [
-        "TikTok USDS, el grupo con sede en EE. UU. que gestiona las operaciones estadounidenses de la app desde enero, ha publicado su segundo informe de cumplimiento, que abarca de abril a junio. Eliminó 14,6 millones de cuentas falsas, bloqueó 64,8 millones de cuentas de spam en el registro, retiró 781,4 millones de seguidores falsos y detuvo 403,2 millones de solicitudes de seguimiento falsas, un claro aumento respecto al primer trimestre. También aumentaron las eliminaciones de vídeos y las advertencias o desmonetizaciones en directos.",
-        "La mayoría de las retiradas de vídeos correspondieron a bienes y servicios regulados, una categoría amplia que incluye apuestas, alcohol, productos falsificados y servicios que venden likes, visualizaciones y seguidores falsos. TikTok también explicó que desarticuló 30 redes encubiertas que intentaban manipular el engagement, eliminando más de 76.000 cuentas y 4,8 millones de publicaciones, mientras intensifica sus esfuerzos de integridad de cara a las elecciones de mitad de mandato de EE. UU.",
-        "Para los equipos de redes sociales deportivas, las limpiezas más amplias de seguidores falsos pueden provocar caídas repentinas en el número de seguidores, así que espera cierta fluctuación e informa a los patrocinadores de la tasa de engagement en lugar de los totales brutos. Los clubes que trabajan con socios de apuestas o alcohol deben revisar con cuidado el contenido de marca según las normas de TikTok sobre bienes regulados, y quien se sienta tentado por el crecimiento comprado debe tener en cuenta que estos servicios son un objetivo prioritario de las medidas de cumplimiento."
-      ],
-      "image_title": "",
-      "translated_at": "2026-10-27T13:15:03.983Z",
-      "source_changed": "2026-10-27T12:04:45.467727+00:00",
-      "meta_description": ""
-    }
-  },
-  {
     "id": 17,
     "url": "https://www.socialmediatoday.com/news/tiktok-us-shares-second-quarter-account-enforcement-data/833907/",
     "source_name": "Social Media Today",
@@ -1218,6 +1265,53 @@
       "image_title": "",
       "translated_at": "2026-10-26T22:11:27.862Z",
       "source_changed": "2026-10-26T22:03:14.65779+00:00",
+      "meta_description": ""
+    }
+  },
+  {
+    "id": 39,
+    "url": "https://www.socialmediatoday.com/news/tiktok-us-shares-q2-account-enforcement-data/833907/",
+    "source_name": "Social Media Today",
+    "platform": "tiktok",
+    "title": "TikTok US removes 14.6 million fake accounts and 781 million fake followers in Q2",
+    "paragraphs": [
+      "TikTok USDS, the US-based group running the app's American operations since January, released its second enforcement report, covering April to June. It removed 14.6 million fake accounts, blocked 64.8 million spam accounts at sign-up, stripped 781.4 million fake followers and stopped 403.2 million fake follow requests, a clear jump on the first quarter. Video removals and livestream warnings or demonetizations also rose.",
+      "Most video takedowns fell under regulated goods and services, a broad category covering gambling, alcohol, counterfeit products and services selling fake likes, views and followers. TikTok also said it disrupted 30 covert networks trying to manipulate engagement, removing more than 76,000 accounts and 4.8 million posts, as it ramps up integrity efforts ahead of the US midterms.",
+      "For sports social teams, larger fake-follower sweeps can cause sudden drops in follower counts, so expect some fluctuation and report engagement rate rather than raw totals to sponsors. Clubs working with betting or alcohol partners should review branded content carefully against TikTok's regulated-goods rules, and anyone tempted by bought growth should note that these services are a prime enforcement target."
+    ],
+    "relevant": true,
+    "published_at": "2026-10-25T22:13:46+00:00",
+    "created_at": "2026-10-27T12:04:45.467727+00:00",
+    "edited_at": null,
+    "slug": "tiktok-us-removes-14-6-million-fake-accounts-and-781-million-fake-39",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/12K6ogX9lcgDYYC0J9LHBG_Vz43JSghdwOStO8_Cc34/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS90aWt0b2tfdXNkc2p2LnBuZw==.webp",
+    "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
+      "title": "TikTok EE. UU. elimina 14,6 millones de cuentas falsas y 781 millones de seguidores falsos en el segundo trimestre",
+      "tokens": {
+        "in": 1476,
+        "out": 773
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [],
+      "meta_title": "",
+      "paragraphs": [
+        "TikTok USDS, el grupo con sede en EE. UU. que gestiona las operaciones estadounidenses de la app desde enero, ha publicado su segundo informe de cumplimiento, que abarca de abril a junio. Eliminó 14,6 millones de cuentas falsas, bloqueó 64,8 millones de cuentas de spam en el registro, retiró 781,4 millones de seguidores falsos y detuvo 403,2 millones de solicitudes de seguimiento falsas, un claro aumento respecto al primer trimestre. También aumentaron las eliminaciones de vídeos y las advertencias o desmonetizaciones en directos.",
+        "La mayoría de las retiradas de vídeos correspondieron a bienes y servicios regulados, una categoría amplia que incluye apuestas, alcohol, productos falsificados y servicios que venden likes, visualizaciones y seguidores falsos. TikTok también explicó que desarticuló 30 redes encubiertas que intentaban manipular el engagement, eliminando más de 76.000 cuentas y 4,8 millones de publicaciones, mientras intensifica sus esfuerzos de integridad de cara a las elecciones de mitad de mandato de EE. UU.",
+        "Para los equipos de redes sociales deportivas, las limpiezas más amplias de seguidores falsos pueden provocar caídas repentinas en el número de seguidores, así que espera cierta fluctuación e informa a los patrocinadores de la tasa de engagement en lugar de los totales brutos. Los clubes que trabajan con socios de apuestas o alcohol deben revisar con cuidado el contenido de marca según las normas de TikTok sobre bienes regulados, y quien se sienta tentado por el crecimiento comprado debe tener en cuenta que estos servicios son un objetivo prioritario de las medidas de cumplimiento."
+      ],
+      "image_title": "",
+      "translated_at": "2026-10-27T13:15:03.983Z",
+      "source_changed": "2026-10-27T12:04:45.467727+00:00",
       "meta_description": ""
     }
   },
