@@ -756,9 +756,8 @@
         skip: ["christmas", "halloween", "black friday", "valentine's day", "pride", "ramadan / eid", "international women's day", "lunar new year", "new year"] },   // no calendar holidays
       { key: "angle", label: "How do you tell it?", ico: "smile", desc: "The tone of the post", cats: ["angle"], skip: ["player-focused"] },   // → Players
       { key: "memes", label: "Memes", ico: "smile", desc: "Meme accounts and humour pages", vals: [["entity", "Meme"]] },
-      { key: "comms", label: "Press and comms", ico: "message", desc: "Announcements, press and practical info", cats: ["comms"] },
+      { key: "comms", label: "Press and comms", ico: "message", desc: "Announcements, press and practical info", cats: ["comms"], chips: [["entity", "Media", "Media"]] },   // Media: a featured chip
       { key: "crisis", label: "Sensitive topics", ico: "alert", desc: "How other clubs handle them, with care", cats: ["crisis"] },
-      { key: "design", label: "Graphic design", ico: "image", desc: "Matchday graphics, posters and cards", vals: [["campaign", "Graphic Design"]] },
     ],
     goal: [
       // Sponsors: the brands · how they show (what was Inspiration → Sponsors) · the goal
@@ -774,7 +773,7 @@
       { key: "competition", label: "Competition", ico: "trophy", desc: "Leagues and cups", cats: ["competition"], logos: true, chips: [["campaign", "Player Appearance", "Players"]] },
       { key: "club", label: "Club", ico: "shield", desc: "", cats: ["club"], logos: true, chips: [["campaign", "Player Appearance", "Players"]] },
       // vals: [category, name] (every value of the category when name is null)
-      { key: "media", label: "Media", ico: "megaphone", desc: "What sports media publish", vals: [["entity", "Media"]], head: "Who publishes it" },
+      { key: "design", label: "Graphic design", ico: "image", desc: "Matchday graphics, posters and cards", vals: [["campaign", "Graphic Design"]] },
       // the club's squad (women's team, academy…) shows inside Club; cities only through the search box
       { key: "team", label: "Team", ico: "user", desc: "Women's team, academy, legends…", cats: ["team"], hidden: true },
       { key: "city", label: "City", ico: "pin", desc: "Clubs by city", cats: ["city"], logos: true, hidden: true },
