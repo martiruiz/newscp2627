@@ -1904,7 +1904,7 @@ window.SCP_ES = {
   "Racism / abuse": "Racismo",
   "Sanction / disciplinary": "Sanción / disciplina",
   "Serious injury": "Lesión grave",
-  "Security / incident": "Seguridad / incidente",
+  "Security / incident": "Seguridad",
   "Condolences": "Condolencias",
   "Women's team": "Equipo femenino",
   "Academy / youth": "Cantera",
