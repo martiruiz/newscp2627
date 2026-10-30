@@ -8,7 +8,7 @@
   // catalog but not listed here still shows, under "Other"
   const GROUPS = [
     ["Where & how", [["platform", "Platform"], ["format", "Format"], ["aspect_ratio", "Aspect ratio"], ["duration", "Duration"], ["language", "Language"], ["trend", "Trend"]]],
-    ["Who", [["sport", "Sport"], ["entity", "Publisher type"], ["competition", "Competition"], ["club", "Club"], ["team", "Team"]]],
+    ["Who", [["sport", "Sport"], ["entity", "Publisher type"], ["competition", "Competition"], ["club", "Club"], ["media", "Media outlets"], ["team", "Team"]]],
     ["Occasion", [["campaign", "Campaign"], ["moment", "Campaign moment"], ["matchday_graphic", "Matchday graphic"], ["season_moment", "Season moment"], ["outcome", "Result"], ["opponent", "Opponent"], ["city", "City"], ["transfer", "Transfers"], ["kit", "Kit"]]],
     ["Story", [["angle", "Angle and tone"], ["comms", "Press and comms"], ["crisis", "Sensitive topics"]]],
     ["Brands & goals", [["sponsor", "Sponsors"], ["sponsor_sector", "Sponsor sector"], ["sponsor_integration", "Integration"], ["collab", "Collaborations"], ["goal", "Business goal"], ["cta", "Call to action"]]],
@@ -18,9 +18,9 @@
   const labelOf = (k) => LABEL[k] || A.CAT_LABEL[k] || k.replace(/_/g, " ").replace(/^./, (c) => c.toUpperCase());
   let current = A.store.get("scpa-filters-cat", "sport");
   let catalog, totals = {}, sort = A.store.get("scpa-filters-sort", "az"), unusedOnly = false, noLogoOnly = false;
-  // brands, clubs and competitions show a logo in the Content Library: set it here (a link or an uploaded image, bucket
+  // brands, clubs, competitions and media outlets show a logo in the Content Library: set it here (a link or an uploaded image, bucket
   // "logos" → idea_catalog.logo_url; supabase/catalog-logos.sql lets admins upload)
-  const LOGO_CATS = new Set(["sponsor", "club", "competition"]);
+  const LOGO_CATS = new Set(["sponsor", "club", "competition", "media"]);
   let logos = new Map();
 
   main.innerHTML = `

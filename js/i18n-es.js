@@ -582,6 +582,8 @@ window.SCP_ES = {
   "Copy link to this search": "Copiar el enlace de esta búsqueda",
   "Match Day": "Día de partido",
   "Squad and profiles": "Plantilla y perfiles",
+  "Media outlets": "Medios",
+  "All media": "Todos los medios",
   "Meme accounts": "Cuentas de memes",
   "Humour posts": "Posts de humor",
   "Pre-match": "Previa",

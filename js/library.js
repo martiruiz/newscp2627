@@ -32,6 +32,7 @@
     { key: "entity", label: "Publisher type", sec: "explore", ico: "users" },
     { key: "competition", label: "Competition", sec: "explore", ico: "trophy", crest: true },
     { key: "club", label: "Club", sec: "explore", ico: "shield", crest: true },
+    { key: "media", label: "Media outlets", sec: "content", ico: "megaphone", crest: true, more: true, search: true },
     { key: "campaign", label: "Campaign", sec: "content", ico: "megaphone" },
     { key: "moment", label: "Campaign moment", sec: "content", ico: "calendar" },
     { key: "matchday_graphic", label: "Matchday graphic", sec: "content", ico: "grid" },
@@ -764,7 +765,9 @@
       // Memes: the meme accounts and the humour posts (the "Humour / meme" tone), together
       { key: "memes", label: "Memes", ico: "smile", desc: "Meme accounts and humour pages", vals: [["entity", "Meme"], ["angle", "Humour / meme"]],
         labels: { meme: "Meme accounts", "humour / meme": "Humour posts" }, tileIco: { meme: "users", "humour / meme": "smile" } },
-      { key: "comms", label: "Press and comms", ico: "message", desc: "Announcements, press and practical info", cats: ["comms"], chips: [["entity", "Media", "Media"]] },   // Media: a featured chip
+      { key: "comms", label: "Press and comms", ico: "message", desc: "Announcements, press and practical info", cats: ["comms"] },
+      // Media: the outlets with their logos (like clubs and competitions; set in Admin → Filters), every media post on top
+      { key: "media", label: "Media", ico: "megaphone", desc: "", cats: ["media"], logos: true, chips: [["entity", "Media", "All media"]] },
       { key: "crisis", label: "Sensitive topics", ico: "alert", desc: "How other clubs handle them, with care", cats: ["crisis"] },
     ],
     goal: [
