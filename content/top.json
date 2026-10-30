@@ -60,6 +60,12 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/573/573869.jpg?v=mvuufiqh"
   },
   {
+    "account": "fcbayern",
+    "account_platform": "instagram",
+    "views": 5783892,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/573/573956.jpg?v=mvuufk0c"
+  },
+  {
     "account": "intermiamicf",
     "account_platform": "instagram",
     "views": 5059154,
@@ -138,10 +144,28 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/570/570400.jpg?v=mvtludtg"
   },
   {
+    "account": "mancity",
+    "account_platform": "instagram",
+    "views": 2736963,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/573/573929.jpg?v=mvuufl15"
+  },
+  {
     "account": "houseofhighlights",
     "account_platform": "instagram",
     "views": 2679506,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/570/570006.jpg?v=mvtmofpa"
+  },
+  {
+    "account": "arsenal",
+    "account_platform": "instagram",
+    "views": 2647028,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/573/573943.jpg?v=mvuufkck"
+  },
+  {
+    "account": "espnfc",
+    "account_platform": "instagram",
+    "views": 2616033,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/574/574081.jpg?v=mvuuhoh5"
   },
   {
     "account": "realmadrid",
@@ -154,29 +178,5 @@
     "account_platform": "instagram",
     "views": 2548283,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/570/570150.jpg?v=mvtmn86p"
-  },
-  {
-    "account": "fcbarcelona",
-    "account_platform": "instagram",
-    "views": 2534445,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/570/570022.jpg?v=mvtmodwj"
-  },
-  {
-    "account": "premierleague",
-    "account_platform": "instagram",
-    "views": 2495082,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/568/568043.jpg?v=mvtcp6je"
-  },
-  {
-    "account": "galatasaray",
-    "account_platform": "instagram",
-    "views": 2334666,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/570/570581.jpg?v=mvtlw44q"
-  },
-  {
-    "account": "houseofhighlights",
-    "account_platform": "instagram",
-    "views": 2316686,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/568/568070.jpg?v=mvtcpe2v"
   }
 ]
