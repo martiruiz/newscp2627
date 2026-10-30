@@ -616,7 +616,7 @@ window.SCP_ES = {
   "Signings, renewals and farewells": "Fichajes, renovaciones y despedidas",
   "Shirts and collections": "Camisetas y colecciones",
   "The big moments of the year": "Los grandes momentos del a\u00f1o",
-  "Dates & campaigns": "Fechas y campa\u00f1as",
+  "Dates & campaigns": "Campañas",
   "Records, tributes and calendar dates": "R\u00e9cords, homenajes y fechas del calendario",
   "The tone of the post": "El tono del post",
   "Announcements, press and practical info": "Anuncios, prensa e informaci\u00f3n pr\u00e1ctica",
