@@ -9252,3 +9252,10 @@ body.club-themed .mc-strip::after { content: ""; position: absolute; left: 18px;
 /* …with the same corners and height as the My space buttons, and the icon without a tile */
 .lib-head .lfb-glass .lfb-btn, .lib-head .lfb-glass .lfb-btn:hover, .lib-head .lfb-glass .lfb-btn.is-open, .lib-head .lfb-glass .lfb-btn.is-open:hover { height: 35px; border-radius: 11px; padding: 0 13px 0 11px; }
 .lib-head .lfb-glass .lfb-ic { width: auto; height: auto; border-radius: 0; background: none; }
+/* …in quiet colours (deep, desaturated tones of the same hues) and sharing out the whole centre of the bar */
+.lib-head .lfb-glass .lfb-btn[data-lfb="benchmark"] { --g: linear-gradient(135deg, #1d4f4c, #2a6862); --glow: 42, 104, 98; }
+.lib-head .lfb-glass .lfb-btn[data-lfb="occasion"] { --g: linear-gradient(135deg, #5a3a2a, #77503a); --glow: 119, 80, 58; }
+.lib-head .lfb-glass .lfb-btn[data-lfb="goal"] { --g: linear-gradient(135deg, #522e44, #6c3e5a); --glow: 108, 62, 90; }
+.lib-head .lfb-row.lfb-glass { width: 100%; flex-wrap: nowrap; }
+.lib-head .lfb-glass .lfb-btn, .lib-head .lfb-glass .lfb-btn:hover, .lib-head .lfb-glass .lfb-btn.is-open, .lib-head .lfb-glass .lfb-btn.is-open:hover { flex: 1 1 0; justify-content: center; min-width: 0; }
+.lib-head .lfb-row.lfb-glass:not(.mcb-row) .lfb-btn { flex: 1 1 auto; justify-content: center; min-width: 0; }   /* share out the centre; the longest name keeps its room */
