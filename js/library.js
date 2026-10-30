@@ -777,6 +777,9 @@
       // choosing the group turns the "Graphic design" filter on (pick: every matchday graphic has it too, supabase/graphic-design-tag.sql);
       // its options are the matchday graphics (not in Match Day), as tiles like the sports'
       { key: "design", label: "Graphic design", ico: "image", desc: "Matchday graphics, posters and cards", pick: ["campaign", "Graphic Design"], vals: [["matchday_graphic", null]], tiles: true,
+        // most important first: the graphics every club publishes each matchday, then the occasional ones
+        order: ["starting xi", "matchday poster", "full-time", "goal", "squad list", "fixture / schedule", "signing graphic", "half-time", "countdown",
+          "stats card", "standings", "motm vote", "quote card", "weekly recap"],
         tileIco: { "matchday poster": "image", countdown: "clock", "squad list": "users", "starting xi": "grid", "half-time": "clock", goal: "ball", "full-time": "flagc", "motm vote": "star",
           "fixture / schedule": "calendar", "weekly recap": "reel", standings: "trophy", "stats card": "trend", "quote card": "message", "signing graphic": "swap" } },
       // the club's squad (women's team, academy…) shows inside Club; cities only through the search box
@@ -809,7 +812,7 @@
     return `<button type="button" class="lfp-card${st}" aria-pressed="${on}" data-facet="${v.category}" data-id="${v.id}">
       <span class="lfp-img${c === undefined ? " is-loading" : ""}" data-cover="${v.id}"${c ? ` style="background-image:url('${esc(c)}')"` : ""}>${c ? "" : ph}</span>${hot ? `<span class="lfp-hot">${esc(tx("Popular"))}</span>` : ""}${meta}</button>`;
   }
-  const lfpCards = (list, g, max = 0) => { const l = byCount(list), shown = max ? [...l.slice(0, max), ...l.slice(max).filter(isOn)] : l, hot = l.length > 2 ? l[0] : null;
+  const lfpCards = (list, g, max = 0) => { const l = g.order ? [...list].sort((x, y) => (g.order.indexOf(x.name.toLowerCase()) + 1 || 99) - (g.order.indexOf(y.name.toLowerCase()) + 1 || 99)) : byCount(list), shown = max ? [...l.slice(0, max), ...l.slice(max).filter(isOn)] : l, hot = l.length > 2 ? l[0] : null;
     return `<div class="lfp-cards${g.logos ? " lfp-cards-logo" : g.tiles ? " lfp-cards-sport" : ""} lfp-cards-${g.key}">${shown.map((v) => lfpCard(v, g, v === hot && !g.logos && !g.tiles)).join("")}</div>`; };
   function lfpMatchday(g) {
     // the bar's Match Day: the moments of the match; the graphics (poster, starting XI, full-time…) are in Inspire → Graphic design
