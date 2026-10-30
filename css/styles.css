@@ -9078,3 +9078,51 @@ body.club-themed .mc-strip::after { content: ""; position: absolute; left: 18px;
   box-shadow: 0 16px 34px rgba(0, 0, 0, 0.3); font: 500 12.5px/1.5 var(--font-body); animation: favTipIn 0.15s ease-out; }
 :root[data-theme="light"] .lib-tip-float { background: #fff; color: #14161c; box-shadow: 0 14px 30px rgba(12, 12, 13, 0.18); }
 @keyframes favTipIn { from { opacity: 0; transform: translateY(4px); } }
+
+/* ---------- Shared post (post.html?s=…): one post of the library, public ---------- */
+.sp-page { padding-top: 120px; padding-bottom: 80px; }
+.sp-loading, .sp-missing { text-align: center; color: var(--muted); padding: 80px 0; }
+.sp-missing h1 { font-family: var(--font-display); color: var(--text); font-size: 32px; margin-bottom: 8px; }
+.sp-missing .btn { margin-top: 24px; }
+.sp-grid { display: grid; grid-template-columns: minmax(0, 440px) minmax(0, 1fr); gap: 48px; align-items: start; }
+.sp-media { position: relative; border-radius: 18px; overflow: hidden; background: var(--surface); border: 1px solid var(--line); }
+.sp-media img { display: block; width: 100%; height: auto; }
+.sp-media.is-vertical img { aspect-ratio: 9 / 16; object-fit: cover; }
+.sp-frame { display: block; width: 100%; height: 640px; border: 0; background: #fff; }
+.sp-frame.is-ig { height: 760px; }
+.sp-media.is-vertical .sp-frame { height: auto; aspect-ratio: 9 / 16; }
+.sp-play { position: absolute; inset: 50% auto auto 50%; transform: translate(-50%, -50%); width: 68px; height: 68px; border-radius: 50%; border: 0;
+  background: var(--gold); color: var(--on-gold); display: grid; place-items: center; cursor: pointer; box-shadow: var(--shadow-soft); }
+.sp-play svg { width: 28px; height: 28px; margin-left: 3px; }
+.sp-nomedia { display: block; padding: 120px 24px; text-align: center; color: var(--gold); }
+.sp-info .hx-eyebrow { display: inline-block; margin-bottom: 12px; }
+.sp-who { font-family: var(--font-display); font-size: clamp(28px, 4vw, 42px); line-height: 1.1; margin: 0; }
+.sp-date { color: var(--muted); margin: 8px 0 20px; }
+.sp-stats { list-style: none; display: flex; flex-wrap: wrap; gap: 10px; padding: 0; margin: 0 0 24px; }
+.sp-stats li { display: flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+.sp-stats svg { width: 16px; height: 16px; }
+.sp-stats b { color: var(--text); }
+.sp-ai { padding: 18px 20px; border-radius: 16px; background: var(--gold-tint); border: 1px solid var(--gold-dim); margin-bottom: 20px; }
+.sp-ai p { margin: 0; line-height: 1.55; }
+.sp-ai .sp-ai-h { display: flex; align-items: center; gap: 8px; color: var(--gold); font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }
+.sp-ai .sp-ai-more { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; margin-top: 10px; }
+.sp-ai svg { width: 16px; height: 16px; flex: none; }
+.sp-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.sp-tag { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); font-size: 13px; }
+.sp-tag img { width: 18px; height: 18px; object-fit: contain; }
+.sp-tag.is-trend { background: var(--gold); color: var(--on-gold); border-color: transparent; font-weight: 600; }
+.sp-caption { margin-bottom: 16px; color: var(--muted); }
+.sp-caption summary { cursor: pointer; color: var(--text); font-weight: 600; margin-bottom: 8px; }
+.sp-caption p { white-space: pre-line; line-height: 1.55; margin: 0; }
+.sp-open { display: inline-block; color: var(--gold); margin-bottom: 32px; }
+.sp-cta { padding: 24px; border-radius: 18px; background: var(--surface); border: 1px solid var(--gold-dim); box-shadow: var(--inset-glow); }
+.sp-cta p { margin: 0 0 8px; color: var(--muted); line-height: 1.5; }
+.sp-cta .sp-cta-title { font-family: var(--font-display); font-size: 22px; color: var(--text); line-height: 1.25; }
+.sp-cta .sp-cta-title b { color: var(--gold); }
+.sp-cta-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+@media (max-width: 860px) {
+  .sp-page { padding-top: 96px; }
+  .sp-grid { grid-template-columns: 1fr; gap: 28px; }
+  .sp-frame { height: 560px; }
+  .sp-frame.is-ig { height: 680px; }
+}

@@ -1995,6 +1995,7 @@
             <button class="lib-grip" type="button" data-pp-grip="${esc(p.id)}" data-tip="${esc(tx("Drag to your Content Plan"))}" aria-label="${esc(tx("Drag to your Content Plan"))}">${icon("grip-vertical")}</button>
             ${saveBtn(p.id)}
             <button class="lib-ai" type="button" data-open="${esc(p.id)}" data-tip="${esc(tx("AI analysis"))}" aria-label="${esc(tx("AI analysis"))}">${icon("sparkles")}</button>
+            <button class="lib-share" type="button" data-share-post="${esc(p.id)}" data-tip="${esc(tx("Public link to this post"))}" aria-label="${esc(tx("Public link to this post"))}">${icon("link")}</button>
             ${me.isSuper ? `<button class="lib-remove" type="button" data-remove="${esc(p.id)}" data-tip="Remove (superadmin)" aria-label="Remove from the library">${icon("trash-2")}</button>` : ""}
           </div>`;
     const foot = `
@@ -2717,6 +2718,19 @@
   }
 
   document.addEventListener("click", (e) => {
+    // public link to one post (post.html?s=…): anyone can open it, even without an account, and sees only that post
+    const share = e.target.closest("[data-share-post]");
+    if (share) {
+      e.preventDefault(); e.stopPropagation();
+      (async () => {
+        const { data: token, error } = await db.rpc("share_post", { p_id: Number(share.dataset.sharePost) });
+        if (error || !token) return toast(error?.message || tx("The link couldn't be made. Try again."));
+        const link = new URL(`post.html?s=${token}`, location.href).href;
+        try { await navigator.clipboard.writeText(link); toast(tx("Public link copied: whoever opens it sees only this post")); }
+        catch { window.prompt(tx("Copy this link"), link); }
+      })();
+      return;
+    }
     const rm = e.target.closest("[data-remove]");
     if (rm && me.isSuper) { e.preventDefault(); e.stopPropagation(); return askRemove(rm, rm.dataset.remove); }
     const tag = e.target.closest("[data-tag]");
