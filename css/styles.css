@@ -9235,3 +9235,6 @@ body.club-themed .mc-strip::after { content: ""; position: absolute; left: 18px;
 .lfp-rtx small { display: block; font-size: 11px; color: var(--muted); }
 :root[data-theme="light"] .lfp-r { background: rgba(255, 255, 255, 0.85); border-color: var(--line); }
 .lfp-phases button.is-zero { opacity: 0.45; }
+/* Match Day results: the same segmented look as Pre-match · Live · Post-match, each with its coloured dot */
+.lfp-results button i { border-color: var(--dot); background: var(--dot); }
+.lfp-results button.is-on i { border-color: #1a1206; }
