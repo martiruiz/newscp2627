@@ -580,6 +580,7 @@ window.SCP_ES = {
   "Choose favourites": "Elegir favoritos",
   "Save search": "Guardar búsqueda",
   "Copy link to this search": "Copiar el enlace de esta búsqueda",
+  "Match Day": "Día de partido",
   "Link copied: whoever opens it sees these filters": "Enlace copiado: quien lo abra verá estos filtros",
   "Copy this link": "Copia este enlace",
   "Public link to this post": "Enlace público a este post",
