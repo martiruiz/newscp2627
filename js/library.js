@@ -772,7 +772,13 @@
     benchmark: [
       { key: "sport", label: "Sport", ico: "ball", desc: "", cats: ["sport"], tiles: true, head: "Where it's played" },   // Players: only in Club
       { key: "competition", label: "Competition", ico: "trophy", desc: "Leagues and cups", cats: ["competition"], logos: true },
-      { key: "club", label: "Club", ico: "shield", desc: "", cats: ["club"], logos: true, chips: [["campaign", "Player Appearance", "Players"]] },
+      { key: "club", label: "Club", ico: "shield", desc: "", cats: ["club"], logos: true },
+      // Squad and profiles, Transfer market: groups of their own (tiles like the sports'), in this order
+      { key: "team", label: "Squad and profiles", ico: "users", desc: "", cats: ["team"], plus: [["campaign", "Player Appearance"]], tiles: true,
+        order: ["player appearance", "women's team", "academy / youth", "legends", "staff / coaches"], labels: { "player appearance": "Players" },
+        tileIco: { "player appearance": "user", "women's team": "users", "academy / youth": "star", legends: "trophy", "staff / coaches": "flag" } },
+      { key: "market", label: "Transfer market", ico: "swap", desc: "", cats: ["transfer"], tiles: true,
+        order: ["signing", "renewal", "loan", "departure"], tileIco: { signing: "swap", renewal: "check", loan: "clock", departure: "flag" } },
       // vals: [category, name] (every value of the category when name is null)
       // choosing the group turns the "Graphic design" filter on (pick: every matchday graphic has it too, supabase/graphic-design-tag.sql);
       // its options are the matchday graphics (not in Match Day), as tiles like the sports'
@@ -782,8 +788,7 @@
           "stats card", "standings", "motm vote", "quote card", "weekly recap"],
         tileIco: { "matchday poster": "image", countdown: "clock", "squad list": "users", "starting xi": "grid", "half-time": "clock", goal: "ball", "full-time": "flagc", "motm vote": "star",
           "fixture / schedule": "calendar", "weekly recap": "reel", standings: "trophy", "stats card": "trend", "quote card": "message", "signing graphic": "swap" } },
-      // the club's squad (women's team, academy…) shows inside Club; cities only through the search box
-      { key: "team", label: "Team", ico: "user", desc: "Women's team, academy, legends…", cats: ["team"], hidden: true },
+      // cities only through the search box
       { key: "city", label: "City", ico: "pin", desc: "Clubs by city", cats: ["city"], logos: true, hidden: true },
     ],
   };
@@ -802,7 +807,7 @@
   function lfpCard(v, g, hot) {
     const on = isOn(v), n = countOf(v);
     const st = `${on ? " is-on" : ""}${n === 0 && !on ? " is-zero" : ""}${n < 20 && !on ? " is-low" : ""}`;
-    const meta = `<span class="lfp-meta"><b>${esc(pretty(v.name))}</b><small>${esc(tx("{n} posts", { n: kfmt(n) }))}</small></span><span class="lfp-ck">${svg("check")}</span>`;
+    const meta = `<span class="lfp-meta"><b>${esc(g.labels?.[v.name.toLowerCase()] ? tx(g.labels[v.name.toLowerCase()]) : pretty(v.name))}</b><small>${esc(tx("{n} posts", { n: kfmt(n) }))}</small></span><span class="lfp-ck">${svg("check")}</span>`;
     // competitions, clubs, brands: their logo, in a small tile
     if (g.logos) return `<button type="button" class="lfp-logo${st}" aria-pressed="${on}" data-facet="${v.category}" data-id="${v.id}">${v.logo ? `<span class="lfp-lg${v.ig ? " is-photo" : ""}"><img src="${esc(v.logo)}" alt="" loading="lazy"></span>` : `<span class="lfp-lg"><b>${esc(initials(v.name))}</b></span>`}${meta}</button>`;
     // sports: a small button with the sport's icon (no cover photo)
@@ -849,29 +854,14 @@
     const head = `<div class="lfp-head"><div><h3>${esc(tx(g.label))}</h3></div>${total ? `<span>${esc(tx("{n} posts", { n: total.toLocaleString(window.SCP_LOC || "en-GB") }))}</span>` : ""}</div>`;
     if (g.key === "matchday") return head + lfpMatchday(g);
     if (g.vals?.length === 1 && groupVals(g).length === 1) return head + lfpSingle(groupVals(g)[0]);
-    // Club: the squad as quick chips above the clubs
-    const teamG = g.key === "club" && groups.find((x) => x.key === "team");
-    // chips above the options: the club's squad (Club), Players (Sport, Competition, Club), the brands' own accounts
-    // (Brands). They stay in place; one that the chosen filters leave without posts is switched off (greyed, not clickable)
+    // chips above the options: the brands' own accounts (Brands). They stay in place; one that the chosen filters leave
+    // without posts is switched off (greyed, not clickable)
     const chip = (v, label) => { const on = isOn(v), off = countOf(v) === 0 && !on;
       return `<button type="button" class="lfp-chip${on ? " is-on" : ""}${off ? " is-off" : ""}" aria-pressed="${on}"${off ? ' disabled aria-disabled="true"' : ""} data-facet="${v.category}" data-id="${v.id}">${esc(label)}<em>${off ? "0" : kfmt(countOf(v))}</em></button>`; };
-    // (the players' accounts are inside Players: supabase/players-merge.sql)
-    const SQUAD = ["women's team", "academy / youth", "legends", "staff / coaches"];   // after Players, in this order
-    const squadVals = teamG ? [...(catalog.byCat.team || [])].sort((x, y) => (SQUAD.indexOf(x.name.toLowerCase()) + 1 || 99) - (SQUAD.indexOf(y.name.toLowerCase()) + 1 || 99)) : [];
     const chipVals = (g.chips || []).map(([c, n, l]) => [valByName(c, n), l]).filter(([v]) => v);
-    // Club: the squad and Players as tiles like the sports' (icon, name, posts), in two rows
-    const TEAM_ICO = { "women's team": "users", "academy / youth": "star", legends: "trophy", "staff / coaches": "flag", "player appearance": "user" };
-    const tile = (v, label) => { const on = isOn(v), off = countOf(v) === 0 && !on;
-      return `<button type="button" class="lfp-sport${on ? " is-on" : ""}${off ? " is-zero" : ""}" aria-pressed="${on}"${off ? ' disabled aria-disabled="true"' : ""} data-facet="${v.category}" data-id="${v.id}"><span class="lfp-sp-ic">${svg(TEAM_ICO[v.name.toLowerCase()] || "user")}</span><span class="lfp-meta"><b>${esc(label)}</b><small>${esc(tx("{n} posts", { n: off ? "0" : kfmt(countOf(v)) }))}</small></span><span class="lfp-ck">${svg("check")}</span></button>`; };
-    // Club: the transfer market (signings, renewals, loans, departures) as its own section of tiles
-    const MARKET = ["signing", "renewal", "loan", "departure"], MARKET_ICO = { signing: "swap", renewal: "check", loan: "clock", departure: "flag" };
-    const marketVals = teamG ? (catalog.byCat.transfer || []).filter(live).sort((x, y) => (MARKET.indexOf(x.name.toLowerCase()) + 1 || 99) - (MARKET.indexOf(y.name.toLowerCase()) + 1 || 99)) : [];
-    const market = marketVals.length ? `<section class="lfp-sec lfp-sec-squad"><p class="lfp-sec-h">${svg("swap")}${esc(tx("Transfer market"))}</p><div class="lfp-cards lfp-cards-sport lfp-squad-tiles">${marketVals.map((v) => tile(v, pretty(v.name)).replace(/<span class="lfp-sp-ic">[\s\S]*?<\/span>/, `<span class="lfp-sp-ic">${svg(MARKET_ICO[v.name.toLowerCase()] || "swap")}</span>`)).join("")}</div></section>` : "";
-    // two sections, told apart: the squad and profiles (a gold-edged panel) and the clubs (their crests) under their own title
-    const squad = teamG && squadVals.length ? `<section class="lfp-sec lfp-sec-squad"><p class="lfp-sec-h">${svg("users")}${esc(tx("Squad and profiles"))}</p><div class="lfp-cards lfp-cards-sport lfp-squad-tiles">${[...chipVals.map(([v, l]) => tile(v, tx(l))), ...squadVals.map((v) => tile(v, pretty(v.name)))].join("")}</div></section>${market}<p class="lfp-sec-h lfp-sec-h-clubs">${svg("shield")}${esc(tx("Clubs"))}</p>` : "";
-    const chips = !squad && chipVals.length ? `<div class="lfp-chips lfp-squad">${chipVals.map(([v, l]) => chip(v, tx(l))).join("")}</div>` : "";
+    const chips = chipVals.length ? `<div class="lfp-chips lfp-squad">${chipVals.map(([v, l]) => chip(v, tx(l))).join("")}</div>` : "";
     const many = g.logos && g.key !== "competition" && groupVals(g).length > 20;   // competitions: every crest shows
-    return head + squad + chips + (g.key === "city" ? "" : lfpCards(groupVals(g), g, many ? 20 : 0))
+    return head + chips + (g.key === "city" ? "" : lfpCards(groupVals(g), g, many ? 20 : 0))
       + (many || g.key === "city" ? `<p class="lfp-tip">${svg("search")}${esc(tx("Search above to find any of the {n}", { n: groupVals(g).length.toLocaleString(window.SCP_LOC || "en-GB") }))}</p>` : "");
   }
   function lfpTop(sec) {

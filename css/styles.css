@@ -9189,23 +9189,8 @@ body.club-themed .mc-strip::after { content: ""; position: absolute; left: 18px;
 .lfp-rtx small { display: none; }
 .lfp-r em { margin-left: 2px; }
 
-/* Inspire → Club: two sections told apart. "Squad and profiles" (women's team, academy, legends, coaches, esports, players)
-   in a gold-edged panel, three compact tiles per row; then "Clubs" with their crests */
-.lfp-sec-h { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font: 700 11px var(--font-body); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
-.lfp-sec-h .lf-i { width: 14px; height: 14px; color: var(--gold); }
-.lfp-sec-h::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--line), transparent); }
-.lfp-sec-squad { margin: 0 0 22px; padding: 14px; border-radius: 16px; border: 1px solid rgba(240, 184, 74, 0.28);
-  background: radial-gradient(120% 140% at 0% 0%, rgba(240, 184, 74, 0.10), transparent 55%), rgba(var(--fg), 0.02); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05); }
-.lfp-sec-squad .lfp-sec-h { color: var(--gold); }
-.lfp-sec-squad .lfp-sec-h::after { background: linear-gradient(90deg, rgba(240, 184, 74, 0.35), transparent); }
-.lfp-cards.lfp-squad-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 0; }
-.lfp-squad-tiles .lfp-sport { height: 46px; padding: 0 30px 0 6px; border-radius: 12px; border-color: rgba(255, 255, 255, 0.06); background: rgba(13, 20, 38, 0.55); }
-.lfp-squad-tiles .lfp-sport:hover { border-color: rgba(240, 184, 74, 0.45); background: rgba(13, 20, 38, 0.8); }
-.lfp-squad-tiles .lfp-sp-ic { width: 32px; height: 32px; border-radius: 50%; background: rgba(240, 184, 74, 0.14); box-shadow: inset 0 0 0 1px rgba(240, 184, 74, 0.25); }
-.lfp-squad-tiles .lfp-sp-ic .lf-i { width: 16px; height: 16px; }
-.lfp-squad-tiles .lfp-sport[disabled] { opacity: 0.35; cursor: default; }
-.lfp-sec-h-clubs { margin-top: 2px; }
-:root[data-theme="light"] .lfp-squad-tiles .lfp-sport { background: rgba(255, 255, 255, 0.85); border-color: var(--line); }
+/* Inspire → Squad and profiles, Transfer market: sport-like tiles, three per row */
+.lfp-cards.lfp-cards-team, .lfp-cards.lfp-cards-market { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
 /* a club's / competition's / brand's tile in the panels: on hover, the colours of its crest (read by the script) */
 .lfp-logo.has-cc { transition: border-color 0.25s, background 0.25s, box-shadow 0.25s; }
@@ -9239,6 +9224,6 @@ body.club-themed .mc-strip::after { content: ""; position: absolute; left: 18px;
 .lfp-results button i { border-color: var(--dot); background: var(--dot); }
 .lfp-results button.is-on i { border-color: #1a1206; }
 .lfp-cards.lfp-cards-design { grid-template-columns: repeat(3, minmax(0, 1fr)); }   /* Graphic design: three per row, so the names read in full */
-.lfb-panel[data-sec="benchmark"] .lfp-rail { grid-template-columns: repeat(4, minmax(0, 1fr)); }   /* Inspire: its four groups on one line */
+.lfb-panel[data-sec="benchmark"] .lfp-rail { grid-template-columns: repeat(3, minmax(0, 1fr)); }   /* Inspire: its six groups in two rows of three */
 /* the panels are as tall as what they show (up to the same maximum): no empty space under a short list */
 .lfb-panel.lfp { height: auto; max-height: min(640px, calc(100vh - var(--lib-head-h, 150px) - 24px)); }
