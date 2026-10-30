@@ -1902,7 +1902,7 @@ window.SCP_ES = {
   "Ticket info": "Información de entradas",
   "Apology": "Disculpa",
   "Racism / abuse": "Racismo",
-  "Sanction / disciplinary": "Sanción / disciplina",
+  "Sanction / disciplinary": "Sanción",
   "Serious injury": "Lesión grave",
   "Security / incident": "Seguridad",
   "Condolences": "Condolencias",
