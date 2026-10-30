@@ -47,7 +47,7 @@ export const AI_VALUES = {
   goal: ["Ticket sales", "Merchandise sales", "Memberships", "Sponsor value", "App / digital product", "Community / CSR", "Recruitment / grassroots"],
   comms: ["Official announcement", "Press conference", "Statement", "Injury / medical update", "Ticket info"],
   crisis: ["Apology", "Racism / abuse", "Sanction / disciplinary", "Serious injury", "Security / incident", "Condolences"],
-  team: ["Women's team", "Academy / youth", "Legends", "Esports", "Staff / coaches"],
+  team: ["Women's team", "Academy / youth", "Legends", "Staff / coaches"],   // Esports is a sport (catalog "sport"), not a team
   angle: ["Player-focused", "Humour / meme", "Emotional", "Data & stats", "Behind the scenes", "Skills / tutorial", "Celebration"],
   collab: ["Player collab", "Athlete takeover", "Fan content (UGC)", "Influencer / creator", "Club collab", "Brand collab"],
   cta: ["Link in bio", "Buy tickets", "Shop now", "Vote / poll", "Comment", "Tag a friend", "Giveaway / contest", "Watch / stream", "Download app"],
@@ -116,7 +116,6 @@ export const RULES = {
     "Women's team": [W("women|femenino|femení|féminine|femminile|feminino|frauen|#?wsl\\b|liga f\\b|nwsl|wnba|uwcl|d1 arkema|serie a femminile|she ?believes|#?womensfootball|\\bfem\\b")],
     "Academy / youth": [W("academy|cantera|pedrera|juvenil|u-?1[5-9]|u-?2[0-3]|sub-?1[5-9]|sub-?2[0-3]|youth|primavera|la masia|reserves?|b team|filial|équipe réserve")],
     "Legends": [W("legend|leyenda|llegenda|légende|leggenda|lenda|veterans?|veteranos")],
-    "Esports": [W("esports?|e-?sports|ea ?fc|fifa\\b|efootball|gaming|gamer|twitch")],
     "Fans": [W("fans|aficionados|afició|afición|supporters|tifosi|torcida|hinchas|socios|culers|you'?ll never walk alone|ultras|grada")],
     "Staff / coaches": [W("coach|entrenador|míster|mister|manager|técnico|cuerpo técnico|staff|board|president|presidente|director deportivo")],
   },

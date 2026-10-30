@@ -122,6 +122,7 @@
     "sp-basketball": '<circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/><path d="M5.8 5.5Q10 12 5.8 18.5M18.2 5.5Q14 12 18.2 18.5"/>',
     "sp-baseball": '<circle cx="12" cy="12" r="9"/><path d="M7.2 4.4Q11 12 7.2 19.6M16.8 4.4Q13 12 16.8 19.6"/><path d="M7.4 7.5l1.6-.6M8.3 10.5l1.7-.2M8.3 13.5l1.7.2M7.4 16.5l1.6.6M16.6 7.5l-1.6-.6M15.7 10.5l-1.7-.2M15.7 13.5l-1.7.2M16.6 16.5l-1.6.6"/>',
     "sp-tennis": '<ellipse cx="9.5" cy="9.5" rx="5" ry="6.2" transform="rotate(-45 9.5 9.5)"/><path d="m13.4 13.4 6.6 6.6"/><path d="M6.3 9.7l3.4-3.4M8 12.3l4.3-4.3M10 13.9l3.4-3.4"/><circle cx="18.5" cy="5.5" r="2"/>',
+    "sp-esports": '<path d="M6 8h12a4 4 0 0 1 3.9 4.9l-1 4.3a2.4 2.4 0 0 1-4.1 1.1L14.5 16h-5l-2.3 2.3a2.4 2.4 0 0 1-4.1-1.1l-1-4.3A4 4 0 0 1 6 8z"/><path d="M7.5 11v3M6 12.5h3"/><circle cx="16" cy="11.5" r=".6"/><circle cx="17.8" cy="13.3" r=".6"/>',
     "sp-padel": '<path d="M12 2.5c3.6 0 6 2.6 6 6.2 0 3.8-2.6 6.3-6 6.3s-6-2.5-6-6.3c0-3.6 2.4-6.2 6-6.2z"/><path d="M10.6 15v6h2.8v-6"/><circle cx="10" cy="7" r=".4"/><circle cx="14" cy="7" r=".4"/><circle cx="12" cy="9" r=".4"/><circle cx="10" cy="11" r=".4"/><circle cx="14" cy="11" r=".4"/>',
     "sp-american-football": '<ellipse cx="12" cy="12" rx="10" ry="5.8" transform="rotate(-45 12 12)"/><path d="m9 15 6-6M9.6 11.6l2.8 2.8M11.6 9.6l2.8 2.8"/><path d="M5.3 14.5 9.5 18.7M14.5 5.3l4.2 4.2"/>',
     "sp-rugby": '<ellipse cx="12" cy="12" rx="9.8" ry="6.3"/><path d="M2.6 11Q12 6.5 21.4 11M2.6 13Q12 17.5 21.4 13"/>',
@@ -187,7 +188,7 @@
   };
   const svg = (k, cls = "") => `<svg class="lf-i ${cls}" viewBox="0 0 24 24" aria-hidden="true">${P[k] || P.dots}</svg>`;
   const FORMAT_ICON = { images: "image", image: "image", post: "image", photo: "image", reel: "reel", reels: "reel", shorts: "reel", carousel: "carousel", video: "video", story: "story", stories: "story" };
-  const SPORT_ICON = { football: "football", soccer: "football", basketball: "basketball", tennis: "tennis", padel: "padel", "american football": "american-football", rugby: "rugby", baseball: "baseball", motor: "motor", motorsport: "motor", f1: "f1", "formula 1": "f1", cycling: "cycling", "ice hockey": "ice-hockey", hockey: "ice-hockey", handball: "handball", "martial arts": "martial-arts", running: "running", athletics: "running", golf: "golf", waterpolo: "waterpolo", "water polo": "waterpolo", volleyball: "volleyball" };
+  const SPORT_ICON = { football: "football", soccer: "football", basketball: "basketball", tennis: "tennis", padel: "padel", "american football": "american-football", rugby: "rugby", baseball: "baseball", motor: "motor", motorsport: "motor", f1: "f1", "formula 1": "f1", cycling: "cycling", "ice hockey": "ice-hockey", hockey: "ice-hockey", handball: "handball", "martial arts": "martial-arts", running: "running", athletics: "running", golf: "golf", waterpolo: "waterpolo", "water polo": "waterpolo", volleyball: "volleyball", esports: "esports" };
   const sportIco = (name) => { const k = SPORT_ICON[String(name || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim()]; return k ? `sp-${k}` : "dots"; };
   // Official platform logos (assets/pf-*.svg used as masks): muted at rest, brand colours on hover / when chosen
   const PLATFORM = { instagram: "Instagram", tiktok: "TikTok", youtube: "YouTube", x: "X", facebook: "Facebook", linkedin: "LinkedIn" };
@@ -852,16 +853,17 @@
     const chip = (v, label) => { const on = isOn(v), off = countOf(v) === 0 && !on;
       return `<button type="button" class="lfp-chip${on ? " is-on" : ""}${off ? " is-off" : ""}" aria-pressed="${on}"${off ? ' disabled aria-disabled="true"' : ""} data-facet="${v.category}" data-id="${v.id}">${esc(label)}<em>${off ? "0" : kfmt(countOf(v))}</em></button>`; };
     // (the players' accounts are inside Players: supabase/players-merge.sql)
-    const squadVals = teamG ? [...(catalog.byCat.team || [])].sort((x, y) => y.total - x.total) : [];
+    const SQUAD = ["women's team", "academy / youth", "legends", "staff / coaches"];   // after Players, in this order
+    const squadVals = teamG ? [...(catalog.byCat.team || [])].sort((x, y) => (SQUAD.indexOf(x.name.toLowerCase()) + 1 || 99) - (SQUAD.indexOf(y.name.toLowerCase()) + 1 || 99)) : [];
     const chipVals = (g.chips || []).map(([c, n, l]) => [valByName(c, n), l]).filter(([v]) => v);
     // Club: the squad and Players as tiles like the sports' (icon, name, posts), in two rows
-    const TEAM_ICO = { "women's team": "users", "academy / youth": "star", legends: "trophy", "staff / coaches": "flag", esports: "cursor", "player appearance": "user" };
+    const TEAM_ICO = { "women's team": "users", "academy / youth": "star", legends: "trophy", "staff / coaches": "flag", "player appearance": "user" };
     const tile = (v, label) => { const on = isOn(v), off = countOf(v) === 0 && !on;
       return `<button type="button" class="lfp-sport${on ? " is-on" : ""}${off ? " is-zero" : ""}" aria-pressed="${on}"${off ? ' disabled aria-disabled="true"' : ""} data-facet="${v.category}" data-id="${v.id}"><span class="lfp-sp-ic">${svg(TEAM_ICO[v.name.toLowerCase()] || "user")}</span><span class="lfp-meta"><b>${esc(label)}</b><small>${esc(tx("{n} posts", { n: off ? "0" : kfmt(countOf(v)) }))}</small></span><span class="lfp-ck">${svg("check")}</span></button>`; };
     // two sections, told apart: the squad and profiles (a gold-edged panel) and the clubs (their crests) under their own title
-    const squad = teamG && squadVals.length ? `<section class="lfp-sec lfp-sec-squad"><p class="lfp-sec-h">${svg("users")}${esc(tx("Squad and profiles"))}</p><div class="lfp-cards lfp-cards-sport lfp-squad-tiles">${[...squadVals.map((v) => tile(v, pretty(v.name))), ...chipVals.map(([v, l]) => tile(v, tx(l)))].join("")}</div></section><p class="lfp-sec-h lfp-sec-h-clubs">${svg("shield")}${esc(tx("Clubs"))}</p>` : "";
+    const squad = teamG && squadVals.length ? `<section class="lfp-sec lfp-sec-squad"><p class="lfp-sec-h">${svg("users")}${esc(tx("Squad and profiles"))}</p><div class="lfp-cards lfp-cards-sport lfp-squad-tiles">${[...chipVals.map(([v, l]) => tile(v, tx(l))), ...squadVals.map((v) => tile(v, pretty(v.name)))].join("")}</div></section><p class="lfp-sec-h lfp-sec-h-clubs">${svg("shield")}${esc(tx("Clubs"))}</p>` : "";
     const chips = !squad && chipVals.length ? `<div class="lfp-chips lfp-squad">${chipVals.map(([v, l]) => chip(v, tx(l))).join("")}</div>` : "";
-    const many = g.logos && groupVals(g).length > 20;
+    const many = g.logos && g.key !== "competition" && groupVals(g).length > 20;   // competitions: every crest shows
     return head + squad + chips + (g.key === "city" ? "" : lfpCards(groupVals(g), g, many ? 20 : 0))
       + (many || g.key === "city" ? `<p class="lfp-tip">${svg("search")}${esc(tx("Search above to find any of the {n}", { n: groupVals(g).length.toLocaleString(window.SCP_LOC || "en-GB") }))}</p>` : "");
   }

@@ -203,7 +203,6 @@ window.SCP_SMART = {
       "Women's team",
       "Academy / youth",
       "Legends",
-      "Esports",
       "Staff / coaches"
     ],
     "angle": [

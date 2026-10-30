@@ -1805,7 +1805,7 @@ window.SCP_ES = {
   // library filter values (database / taxonomy)
   "American football": "Fútbol americano",
   "Baseball": "Béisbol",
-  "Ice Hockey": "Hockey sobre hielo",
+  "Ice Hockey": "Hockey hielo",
   "Basketball": "Baloncesto",
   "Cycling": "Ciclismo",
   "Handball": "Balonmano",
@@ -1820,7 +1820,7 @@ window.SCP_ES = {
   "Padel": "Pádel",
   "Volleyball": "Voleibol",
   "american football": "fútbol americano",
-  "ice hockey": "hockey sobre hielo",
+  "ice hockey": "hockey hielo",
   "martial arts": "artes marciales",
   "Competitions": "Competiciones",
   "Brand": "Marca",

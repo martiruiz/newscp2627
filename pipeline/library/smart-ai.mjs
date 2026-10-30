@@ -5,7 +5,7 @@ import fs from "node:fs";
 import { francAll } from "franc";
 import { AI_CATEGORIES, AI_VALUES, canonicalBrand } from "./taxonomy.mjs";
 
-export const VERSION = "v7.4-all";
+export const VERSION = "v7.5-all";
 export const MODEL = process.env.AI_CLASSIFY_MODEL || "claude-haiku-5-5";
 
 const arr = (values) => ({ type: "array", items: values ? { type: "string", enum: values } : { type: "string" } });
@@ -30,7 +30,7 @@ How to use the image: use it ONLY for matchday_graphic (is it a designed graphic
 - goal: the business goal the post clearly serves: selling tickets, merchandise or memberships, giving value to a sponsor, promoting an app or digital product, community / CSR work, recruitment or grassroots. Leave it empty for ordinary sports content (most posts).
 - comms: official press-type communication only.
 - crisis: sensitive communication (apologies, racism or abuse, sanctions, serious injuries, incidents, condolences).
-- team: only when the post is about a team OTHER than the senior first team: women's team, academy / youth, legends, esports, staff / coaches. Leave it empty for first-team content (most posts).
+- team: only when the post is about a team OTHER than the senior first team: women's team, academy / youth, legends, staff / coaches. Leave it empty for first-team content (most posts).
 - angle: the storytelling angle, only when it's clearly the point of the post (usually one value, often none). "Player-focused" only when the post is about one player as a person (their story, their milestone, their words), not just because a player appears in the photo: Player-focused (one player is the protagonist), Humour / meme, Emotional (feelings, tears, goosebumps, nostalgia), Data & stats (numbers are the content), Behind the scenes (access fans don't normally get: dressing room, travel, training, backstage), Skills / tutorial, Celebration (a win, title or milestone being celebrated). Empty if none clearly applies.
 - collab: collaborations: Player collab (posted jointly with a player), Athlete takeover (a player runs the account or films the content), Fan content (UGC) (the club reposts a photo or video made by a fan, usually credited "📸 @fan"), Influencer / creator (a creator who is not a player), Club collab (a collaboration between two teams published as one shared post on both accounts, e.g. an Instagram collab post by two clubs), Brand collab (a joint post with a brand). A photographer credit ("📸 @name") is NOT fan content: Fan content (UGC) only when the caption says the photo or video was made by a fan.
 - cta: calls to action written in the caption. "Watch / stream" only when the caption asks to watch a live match, broadcast or stream on a channel; "watch the full video, link in bio" is "Link in bio" only.
