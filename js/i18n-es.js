@@ -1898,7 +1898,7 @@ window.SCP_ES = {
   "Official announcement": "Comunicado oficial",
   "Press conference": "Rueda de prensa",
   "Statement": "Comunicado",
-  "Injury / medical update": "Lesión / parte médico",
+  "Injury / medical update": "Lesión",
   "Ticket info": "Ticketing",
   "Apology": "Disculpa",
   "Racism / abuse": "Racismo",
