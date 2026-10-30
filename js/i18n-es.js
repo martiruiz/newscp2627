@@ -1863,7 +1863,7 @@ window.SCP_ES = {
   "Fixture / schedule": "Calendario / horario",
   "Weekly recap": "Resumen semanal",
   "Standings": "Clasificación",
-  "Stats card": "Tarjeta de estadísticas",
+  "Stats card": "Estadísticas",
   "Quote card": "Tarjeta con cita",
   "Birthday graphic": "Gráfico de cumpleaños",
   "Signing graphic": "Gráfico de fichaje",
