@@ -750,7 +750,7 @@
   const BAR_GROUPS = {
     occasion: [
       { key: "matchday", label: "Matchday", ico: "ball", desc: "" },
-      { key: "transfer", label: "Transfer market", ico: "swap", desc: "Signings, renewals and farewells", cats: ["transfer"] },
+      // Transfer market: inside Inspire → Club
       { key: "kit", label: "Kit launches", ico: "shirt", desc: "Shirts and collections", cats: ["kit"] },
       { key: "season_moment", label: "Season", ico: "flag", desc: "The big moments of the year", cats: ["season_moment"] },
       { key: "moment", label: "Dates & campaigns", ico: "star", desc: "Records, tributes and birthdays", cats: ["moment"],
@@ -863,8 +863,12 @@
     const TEAM_ICO = { "women's team": "users", "academy / youth": "star", legends: "trophy", "staff / coaches": "flag", "player appearance": "user" };
     const tile = (v, label) => { const on = isOn(v), off = countOf(v) === 0 && !on;
       return `<button type="button" class="lfp-sport${on ? " is-on" : ""}${off ? " is-zero" : ""}" aria-pressed="${on}"${off ? ' disabled aria-disabled="true"' : ""} data-facet="${v.category}" data-id="${v.id}"><span class="lfp-sp-ic">${svg(TEAM_ICO[v.name.toLowerCase()] || "user")}</span><span class="lfp-meta"><b>${esc(label)}</b><small>${esc(tx("{n} posts", { n: off ? "0" : kfmt(countOf(v)) }))}</small></span><span class="lfp-ck">${svg("check")}</span></button>`; };
+    // Club: the transfer market (signings, renewals, loans, departures) as its own section of tiles
+    const MARKET = ["signing", "renewal", "loan", "departure"], MARKET_ICO = { signing: "swap", renewal: "check", loan: "clock", departure: "flag" };
+    const marketVals = teamG ? (catalog.byCat.transfer || []).filter(live).sort((x, y) => (MARKET.indexOf(x.name.toLowerCase()) + 1 || 99) - (MARKET.indexOf(y.name.toLowerCase()) + 1 || 99)) : [];
+    const market = marketVals.length ? `<section class="lfp-sec lfp-sec-squad"><p class="lfp-sec-h">${svg("swap")}${esc(tx("Transfer market"))}</p><div class="lfp-cards lfp-cards-sport lfp-squad-tiles">${marketVals.map((v) => tile(v, pretty(v.name)).replace(/<span class="lfp-sp-ic">[\s\S]*?<\/span>/, `<span class="lfp-sp-ic">${svg(MARKET_ICO[v.name.toLowerCase()] || "swap")}</span>`)).join("")}</div></section>` : "";
     // two sections, told apart: the squad and profiles (a gold-edged panel) and the clubs (their crests) under their own title
-    const squad = teamG && squadVals.length ? `<section class="lfp-sec lfp-sec-squad"><p class="lfp-sec-h">${svg("users")}${esc(tx("Squad and profiles"))}</p><div class="lfp-cards lfp-cards-sport lfp-squad-tiles">${[...chipVals.map(([v, l]) => tile(v, tx(l))), ...squadVals.map((v) => tile(v, pretty(v.name)))].join("")}</div></section><p class="lfp-sec-h lfp-sec-h-clubs">${svg("shield")}${esc(tx("Clubs"))}</p>` : "";
+    const squad = teamG && squadVals.length ? `<section class="lfp-sec lfp-sec-squad"><p class="lfp-sec-h">${svg("users")}${esc(tx("Squad and profiles"))}</p><div class="lfp-cards lfp-cards-sport lfp-squad-tiles">${[...chipVals.map(([v, l]) => tile(v, tx(l))), ...squadVals.map((v) => tile(v, pretty(v.name)))].join("")}</div></section>${market}<p class="lfp-sec-h lfp-sec-h-clubs">${svg("shield")}${esc(tx("Clubs"))}</p>` : "";
     const chips = !squad && chipVals.length ? `<div class="lfp-chips lfp-squad">${chipVals.map(([v, l]) => chip(v, tx(l))).join("")}</div>` : "";
     const many = g.logos && g.key !== "competition" && groupVals(g).length > 20;   // competitions: every crest shows
     return head + squad + chips + (g.key === "city" ? "" : lfpCards(groupVals(g), g, many ? 20 : 0))
