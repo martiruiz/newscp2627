@@ -1843,7 +1843,7 @@ window.SCP_ES = {
   "Over 60s": "Más de 60 s",
   "Matchday preview": "Previa del partido",
   "Match coverage": "Cobertura del partido",
-  "Milestone / record": "Hito / récord",
+  "Milestone / record": "Récord",
   "Award": "Premio",
   "Tribute": "Homenaje",
   "Birthday": "Cumpleaños",
