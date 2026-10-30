@@ -9163,7 +9163,19 @@ body.club-themed .mc-strip::after { content: ""; position: absolute; left: 18px;
 .lib-head .lf-dd-btn > svg.ico { color: var(--gold); }
 .lib-head .lfb-glass .lfb-tx b { font: 700 13px var(--font-display); letter-spacing: 0; }
 .lib-head .lfb-row.lfb-glass { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 0; max-width: none; margin-inline: 0; box-shadow: none; background: none; border: 0; }
-.lib-head .lfb-glass .lfb-lens { display: none; }
+/* switching between Inspire, Match Day and Brands: a gold pill glides from one button to the other (left and width set
+   by the script, the buttons being different widths), and the new panel slides in from that side */
+.lib-head .lfb-glass .lfb-lens { display: block; top: 0; bottom: 0; transform: none; border-radius: 999px; opacity: 0;
+  background: radial-gradient(120% 160% at 50% 0%, rgba(240, 184, 74, 0.22), rgba(240, 184, 74, 0.06)); box-shadow: inset 0 0 0 1px rgba(240, 184, 74, 0.7), 0 6px 18px -8px rgba(240, 184, 74, 0.6);
+  transition: left 0.45s cubic-bezier(0.32, 0.72, 0, 1), width 0.45s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.2s ease; }
+.lib-head .lfb-glass .lfb-lens.is-on { transform: none; opacity: 1; }
+.lib-head .lfb-glass .lfb-btn { position: relative; z-index: 1; }
+.lib-head .lfb-glass .lfb-btn.is-open, .lib-head .lfb-glass .lfb-btn.is-open:hover { border-color: transparent; background: transparent; }
+.lfb-panel.from-right { animation: lfp-from-right 0.32s cubic-bezier(0.32, 0.72, 0, 1); }
+.lfb-panel.from-left { animation: lfp-from-left 0.32s cubic-bezier(0.32, 0.72, 0, 1); }
+@keyframes lfp-from-right { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
+@keyframes lfp-from-left { from { opacity: 0; transform: translateX(-24px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .lib-head .lfb-glass .lfb-lens { transition: opacity 0.2s; } .lfb-panel.from-right, .lfb-panel.from-left { animation: none; } }
 
 /* The bar's panels (Inspire, Match Day, Brands): their groups as a row of pills on top, the options underneath
    (they were a column on the left) */
@@ -9177,6 +9189,31 @@ body.club-themed .mc-strip::after { content: ""; position: absolute; left: 18px;
 .lfp-rtx small { display: none; }
 .lfp-r em { margin-left: 2px; }
 
-/* Inspire → Club: the squad (women's team, academy…) and Players as sport-like tiles, three per row (two rows) */
-.lfp-cards.lfp-squad-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: 16px; }
+/* Inspire → Club: two sections told apart. "Squad and profiles" (women's team, academy, legends, coaches, esports, players)
+   in a gold-edged panel, three compact tiles per row; then "Clubs" with their crests */
+.lfp-sec-h { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font: 700 11px var(--font-body); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.lfp-sec-h .lf-i { width: 14px; height: 14px; color: var(--gold); }
+.lfp-sec-h::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--line), transparent); }
+.lfp-sec-squad { margin: 0 0 22px; padding: 14px; border-radius: 16px; border: 1px solid rgba(240, 184, 74, 0.28);
+  background: radial-gradient(120% 140% at 0% 0%, rgba(240, 184, 74, 0.10), transparent 55%), rgba(var(--fg), 0.02); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05); }
+.lfp-sec-squad .lfp-sec-h { color: var(--gold); }
+.lfp-sec-squad .lfp-sec-h::after { background: linear-gradient(90deg, rgba(240, 184, 74, 0.35), transparent); }
+.lfp-cards.lfp-squad-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 0; }
+.lfp-squad-tiles .lfp-sport { height: 46px; padding: 0 30px 0 6px; border-radius: 12px; border-color: rgba(255, 255, 255, 0.06); background: rgba(13, 20, 38, 0.55); }
+.lfp-squad-tiles .lfp-sport:hover { border-color: rgba(240, 184, 74, 0.45); background: rgba(13, 20, 38, 0.8); }
+.lfp-squad-tiles .lfp-sp-ic { width: 32px; height: 32px; border-radius: 50%; background: rgba(240, 184, 74, 0.14); box-shadow: inset 0 0 0 1px rgba(240, 184, 74, 0.25); }
+.lfp-squad-tiles .lfp-sp-ic .lf-i { width: 16px; height: 16px; }
 .lfp-squad-tiles .lfp-sport[disabled] { opacity: 0.35; cursor: default; }
+.lfp-sec-h-clubs { margin-top: 2px; }
+:root[data-theme="light"] .lfp-squad-tiles .lfp-sport { background: rgba(255, 255, 255, 0.85); border-color: var(--line); }
+
+/* a club's / competition's / brand's tile in the panels: on hover, the colours of its crest (read by the script) */
+.lfp-logo.has-cc { transition: border-color 0.25s, background 0.25s, box-shadow 0.25s; }
+.lfp-logo.has-cc:hover { border-color: var(--cc1); background: linear-gradient(135deg, color-mix(in srgb, var(--cc1) 34%, var(--surface-2)), color-mix(in srgb, var(--cc2) 22%, var(--surface-2)));
+  box-shadow: 0 8px 22px -12px var(--cc1); }
+.lfp-logo.has-cc:hover .lfp-meta b { color: #fff; }
+.lfp-logo.has-cc:hover .lfp-meta small { color: rgba(255, 255, 255, 0.75); }
+
+/* the panels' search box: the full width of the panel (the Content Plan's occasions, when there are any, go below it) */
+.lfp-top { flex-wrap: wrap; }
+.lfp-search { flex: 1 1 100%; min-width: 0; }

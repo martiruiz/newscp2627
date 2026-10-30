@@ -769,8 +769,8 @@
       { key: "goal", label: "Business goal", ico: "target", desc: "What the post should achieve", cats: ["goal"], head: "What for" },
     ],
     benchmark: [
-      { key: "sport", label: "Sport", ico: "ball", desc: "", cats: ["sport"], tiles: true, head: "Where it's played", chips: [["campaign", "Player Appearance", "Players"]] },   // Players: a chip in Sport, Competition and Club
-      { key: "competition", label: "Competition", ico: "trophy", desc: "Leagues and cups", cats: ["competition"], logos: true, chips: [["campaign", "Player Appearance", "Players"]] },
+      { key: "sport", label: "Sport", ico: "ball", desc: "", cats: ["sport"], tiles: true, head: "Where it's played" },   // Players: only in Club
+      { key: "competition", label: "Competition", ico: "trophy", desc: "Leagues and cups", cats: ["competition"], logos: true },
       { key: "club", label: "Club", ico: "shield", desc: "", cats: ["club"], logos: true, chips: [["campaign", "Player Appearance", "Players"]] },
       // vals: [category, name] (every value of the category when name is null)
       { key: "design", label: "Graphic design", ico: "image", desc: "Matchday graphics, posters and cards", vals: [["campaign", "Graphic Design"], ["matchday_graphic", null]] },   // the matchday graphics live here (not in Match Day)
@@ -851,7 +851,8 @@
     const TEAM_ICO = { "women's team": "users", "academy / youth": "star", legends: "trophy", "staff / coaches": "flag", esports: "cursor", "player appearance": "user" };
     const tile = (v, label) => { const on = isOn(v), off = countOf(v) === 0 && !on;
       return `<button type="button" class="lfp-sport${on ? " is-on" : ""}${off ? " is-zero" : ""}" aria-pressed="${on}"${off ? ' disabled aria-disabled="true"' : ""} data-facet="${v.category}" data-id="${v.id}"><span class="lfp-sp-ic">${svg(TEAM_ICO[v.name.toLowerCase()] || "user")}</span><span class="lfp-meta"><b>${esc(label)}</b><small>${esc(tx("{n} posts", { n: off ? "0" : kfmt(countOf(v)) }))}</small></span><span class="lfp-ck">${svg("check")}</span></button>`; };
-    const squad = teamG && squadVals.length ? `<div class="lfp-cards lfp-cards-sport lfp-squad-tiles">${[...squadVals.map((v) => tile(v, pretty(v.name))), ...chipVals.map(([v, l]) => tile(v, tx(l)))].join("")}</div>` : "";
+    // two sections, told apart: the squad and profiles (a gold-edged panel) and the clubs (their crests) under their own title
+    const squad = teamG && squadVals.length ? `<section class="lfp-sec lfp-sec-squad"><p class="lfp-sec-h">${svg("users")}${esc(tx("Squad and profiles"))}</p><div class="lfp-cards lfp-cards-sport lfp-squad-tiles">${[...squadVals.map((v) => tile(v, pretty(v.name))), ...chipVals.map(([v, l]) => tile(v, tx(l)))].join("")}</div></section><p class="lfp-sec-h lfp-sec-h-clubs">${svg("shield")}${esc(tx("Clubs"))}</p>` : "";
     const chips = !squad && chipVals.length ? `<div class="lfp-chips lfp-squad">${chipVals.map(([v, l]) => chip(v, tx(l))).join("")}</div>` : "";
     const many = g.logos && groupVals(g).length > 20;
     return head + squad + chips + (g.key === "city" ? "" : lfpCards(groupVals(g), g, many ? 20 : 0))
@@ -914,6 +915,39 @@
   // ---------- Bar above the posts (wide screens): one button per section, its filters in a wide panel ----------
   const secOf = (c) => (c.key === "angle" || c.key === "campaign" ? "occasion" : ["format", "platform"].includes(c.sec) ? "where" : c.sec);
   const BAR_ICON = { benchmark: "shield", occasion: "flag", goal: "tag", discover: "trend", where: "grid" };
+  let lastOi = -1;   // the bar's section open before (the next panel slides in from its side)
+  // A club's tile (also a competition's or a brand's) takes the colours of its crest on hover: its two main colours,
+  // read once from the logo (greys, white and black left out) and kept for the session
+  const crestColors = new Map();
+  function crestColor(src) {
+    if (!crestColors.has(src)) crestColors.set(src, new Promise((res) => {
+      const im = new Image();
+      im.crossOrigin = "anonymous";
+      im.onload = () => { try {
+        const c = document.createElement("canvas"); c.width = c.height = 32;
+        const x = c.getContext("2d", { willReadFrequently: true }); x.drawImage(im, 0, 0, 32, 32);
+        const d = x.getImageData(0, 0, 32, 32).data, bins = new Map();
+        for (let i = 0; i < d.length; i += 4) {
+          const r = d[i], g = d[i + 1], b = d[i + 2];
+          if (d[i + 3] < 200 || Math.max(r, g, b) - Math.min(r, g, b) < 40 || Math.max(r, g, b) < 50) continue;
+          const k = `${r >> 5},${g >> 5},${b >> 5}`, e = bins.get(k) || { n: 0, r: 0, g: 0, b: 0 };
+          e.n++; e.r += r; e.g += g; e.b += b; bins.set(k, e);
+        }
+        const top = [...bins.values()].sort((p, q) => q.n - p.n).map((e) => `rgb(${Math.round(e.r / e.n)}, ${Math.round(e.g / e.n)}, ${Math.round(e.b / e.n)})`);
+        res(top.length ? [top[0], top[1] || top[0]] : null);
+      } catch { res(null); } };
+      im.onerror = () => res(null);
+      im.src = `${src}${src.includes("?") ? "&" : "?"}cc=1`;   // its own request (CORS), not the page's cached image
+    }));
+    return crestColors.get(src);
+  }
+  document.addEventListener("mouseover", (e) => {
+    const b = e.target.closest?.(".lfp-logo");
+    const img = b && !b.dataset.cc && b.querySelector("img");
+    if (!img) return;
+    b.dataset.cc = "1";
+    crestColor(img.currentSrc || img.src).then((c) => { if (!c) return; b.style.setProperty("--cc1", c[0]); b.style.setProperty("--cc2", c[1]); b.classList.add("has-cc"); });
+  });
   function renderBar(list, parts) {
     const bar = $("[data-lf-bar]");
     if (!list.length) { bar.hidden = true; bar.innerHTML = ""; ui.bar = null; return; }
@@ -938,8 +972,11 @@
     });
     const lens = $(".lfb-lens", row);
     if (oi >= 0) {
-      if (!lens.classList.contains("is-on")) { lens.style.transition = "none"; lens.style.setProperty("--x", oi); void lens.offsetWidth; lens.style.transition = ""; }   // appears where it is, then glides
-      lens.style.setProperty("--x", oi);
+      // the buttons have different widths: the lens takes the open one's exact place and size
+      const ob = row.querySelectorAll("[data-lfb]")[oi];
+      const place = () => { lens.style.setProperty("--x", oi); if (ob) { lens.style.left = `${ob.offsetLeft}px`; lens.style.width = `${ob.offsetWidth}px`; } };
+      if (!lens.classList.contains("is-on")) { lens.style.transition = "none"; place(); void lens.offsetWidth; lens.style.transition = ""; }   // appears where it is, then glides
+      place();
     }
     lens.classList.toggle("is-on", oi >= 0);
     // the open panel is kept and only its content changes (a new panel would replay its opening animation on every
@@ -948,10 +985,11 @@
     const cur = $(".lfb-panel", host);
     if (!open) host.innerHTML = "";
     else if (cur && cur.dataset.sec === open.key) cur.innerHTML = lfpHtml(open.key);
-    else host.innerHTML = `<div class="lfb-panel lfp" role="dialog" aria-label="${esc(open.label)}" data-sec="${open.key}">${lfpHtml(open.key)}</div>`;
+    else host.innerHTML = `<div class="lfb-panel lfp${cur && lastOi >= 0 ? (oi > lastOi ? " from-right" : " from-left") : ""}" role="dialog" aria-label="${esc(open.label)}" data-sec="${open.key}">${lfpHtml(open.key)}</div>`;   // from another section: it slides in from its side
+    lastOi = open ? oi : -1;
     if (open) { $(".lfp-main", bar).scrollTop = keep; loadCovers(); fitPanel(bar); }
   }
-  // computers: the open panel exactly under the tabs (their width, at least 640px, centred on them) instead of the whole head
+  // computers: the open panel exactly under the tabs (their width, at least 760px, centred on them) instead of the whole head
   let fitBar = null;
   function fitPanel(bar = fitBar) {
     fitBar = bar;
@@ -959,7 +997,7 @@
     if (!p || !row || !p.offsetParent) return;
     if (innerWidth < 961) { p.style.left = p.style.right = ""; return; }
     const r = row.getBoundingClientRect(), op = p.offsetParent.getBoundingClientRect();
-    const w = Math.min(op.width - 28, Math.max(640, r.width));
+    const w = Math.min(op.width - 28, Math.max(760, r.width));
     const left = Math.min(Math.max(14, r.left - op.left - (w - r.width) / 2), op.width - 14 - w);
     p.style.left = `${Math.round(left)}px`; p.style.right = `${Math.round(op.width - left - w)}px`;
   }
