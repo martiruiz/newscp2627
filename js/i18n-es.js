@@ -1860,7 +1860,7 @@ window.SCP_ES = {
   "Goal": "Gol",
   "Full-time": "Final del partido",
   "MOTM vote": "Votación MVP",
-  "Fixture / schedule": "Calendario / horario",
+  "Fixture / schedule": "Calendario",
   "Weekly recap": "Resumen semanal",
   "Standings": "Clasificación",
   "Stats card": "Estadísticas",
