@@ -9238,3 +9238,4 @@ body.club-themed .mc-strip::after { content: ""; position: absolute; left: 18px;
 /* Match Day results: the same segmented look as Pre-match · Live · Post-match, each with its coloured dot */
 .lfp-results button i { border-color: var(--dot); background: var(--dot); }
 .lfp-results button.is-on i { border-color: #1a1206; }
+.lfp-cards.lfp-cards-design { grid-template-columns: repeat(3, minmax(0, 1fr)); }   /* Graphic design: three per row, so the names read in full */

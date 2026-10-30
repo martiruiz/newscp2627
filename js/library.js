@@ -809,7 +809,7 @@
       <span class="lfp-img${c === undefined ? " is-loading" : ""}" data-cover="${v.id}"${c ? ` style="background-image:url('${esc(c)}')"` : ""}>${c ? "" : ph}</span>${hot ? `<span class="lfp-hot">${esc(tx("Popular"))}</span>` : ""}${meta}</button>`;
   }
   const lfpCards = (list, g, max = 0) => { const l = byCount(list), shown = max ? [...l.slice(0, max), ...l.slice(max).filter(isOn)] : l, hot = l.length > 2 ? l[0] : null;
-    return `<div class="lfp-cards${g.logos ? " lfp-cards-logo" : g.tiles ? " lfp-cards-sport" : ""}">${shown.map((v) => lfpCard(v, g, v === hot && !g.logos && !g.tiles)).join("")}</div>`; };
+    return `<div class="lfp-cards${g.logos ? " lfp-cards-logo" : g.tiles ? " lfp-cards-sport" : ""} lfp-cards-${g.key}">${shown.map((v) => lfpCard(v, g, v === hot && !g.logos && !g.tiles)).join("")}</div>`; };
   function lfpMatchday(g) {
     // the bar's Match Day: the moments of the match; the graphics (poster, starting XI, full-time…) are in Inspire → Graphic design
     // the three phases always show (a phase the other filters leave without posts is dimmed, not removed)
