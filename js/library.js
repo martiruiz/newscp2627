@@ -755,6 +755,7 @@
       { key: "moment", label: "Dates & campaigns", ico: "star", desc: "Records, tributes and birthdays", cats: ["moment"],
         skip: ["christmas", "halloween", "black friday", "valentine's day", "pride", "ramadan / eid", "international women's day", "lunar new year", "new year"] },   // no calendar holidays
       { key: "angle", label: "How do you tell it?", ico: "smile", desc: "The tone of the post", cats: ["angle"], skip: ["player-focused"] },   // → Players
+      { key: "memes", label: "Memes", ico: "smile", desc: "Meme accounts and humour pages", vals: [["entity", "Meme"]] },
       { key: "comms", label: "Press and comms", ico: "message", desc: "Announcements, press and practical info", cats: ["comms"] },
       { key: "crisis", label: "Sensitive topics", ico: "alert", desc: "How other clubs handle them, with care", cats: ["crisis"] },
       { key: "design", label: "Graphic design", ico: "image", desc: "Matchday graphics, posters and cards", vals: [["campaign", "Graphic Design"]] },
@@ -773,7 +774,6 @@
       { key: "competition", label: "Competition", ico: "trophy", desc: "Leagues and cups", cats: ["competition"], logos: true, chips: [["campaign", "Player Appearance", "Players"]] },
       { key: "club", label: "Club", ico: "shield", desc: "", cats: ["club"], logos: true, chips: [["campaign", "Player Appearance", "Players"]] },
       // vals: [category, name] (every value of the category when name is null)
-      { key: "memes", label: "Memes", ico: "smile", desc: "Meme accounts and humour pages", vals: [["entity", "Meme"]], head: "What's published" },
       { key: "media", label: "Media", ico: "megaphone", desc: "What sports media publish", vals: [["entity", "Media"]], head: "Who publishes it" },
       // the club's squad (women's team, academy…) shows inside Club; cities only through the search box
       { key: "team", label: "Team", ico: "user", desc: "Women's team, academy, legends…", cats: ["team"], hidden: true },
