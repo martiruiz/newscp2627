@@ -1932,7 +1932,7 @@ window.SCP_ES = {
   "Watch / stream": "Ver / directo",
   "Download app": "Descargar la app",
   "Apparel / sportswear": "Ropa deportiva",
-  "Airline / travel": "Aerolínea / viajes",
+  "Airline / travel": "Aerolínea",
   "Bank / finance": "Banca",
   "Telecom / tech": "Telecomunicaciones / tecnología",
   "Beverage": "Bebidas",
