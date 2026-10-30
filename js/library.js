@@ -754,7 +754,10 @@
       { key: "kit", label: "Kit launches", ico: "shirt", desc: "Shirts and collections", cats: ["kit"], tiles: true,   // tiles like Inspire's
         order: ["home kit", "away kit", "third kit", "goalkeeper kit", "special edition kit", "training wear", "retro / heritage"],
         tileIco: { "home kit": "shirt", "away kit": "shirt", "third kit": "shirt", "goalkeeper kit": "glove", "special edition kit": "star", "training wear": "run", "retro / heritage": "clock" } },
-      { key: "season_moment", label: "Season", ico: "flag", desc: "The big moments of the year", cats: ["season_moment"] },
+      { key: "season_moment", label: "Season", ico: "flag", desc: "The big moments of the year", cats: ["season_moment"], tiles: true,   // tiles like Kit launches
+        order: ["pre-season", "opening day", "derby", "cup final", "title celebration", "promotion", "european qualification", "relegation", "last game of the season"],
+        tileIco: { "pre-season": "run", "opening day": "calendar", derby: "versus", "cup final": "trophy", "title celebration": "star", promotion: "trend",
+          "european qualification": "pin", relegation: "alert", "last game of the season": "clock" } },
       { key: "moment", label: "Dates & campaigns", ico: "star", desc: "Records, tributes and birthdays", cats: ["moment"],
         skip: ["christmas", "halloween", "black friday", "valentine's day", "pride", "ramadan / eid", "international women's day", "lunar new year", "new year"] },   // no calendar holidays
       { key: "angle", label: "How do you tell it?", ico: "smile", desc: "The tone of the post", cats: ["angle"], skip: ["player-focused"] },   // → Players

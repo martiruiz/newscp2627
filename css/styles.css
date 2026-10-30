@@ -9190,7 +9190,7 @@ body.club-themed .mc-strip::after { content: ""; position: absolute; left: 18px;
 .lfp-r em { margin-left: 2px; }
 
 /* Inspire → Squad and profiles, Transfer market: sport-like tiles, three per row */
-.lfp-cards.lfp-cards-team, .lfp-cards.lfp-cards-market, .lfp-cards.lfp-cards-kit { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.lfp-cards.lfp-cards-team, .lfp-cards.lfp-cards-market, .lfp-cards.lfp-cards-kit, .lfp-cards.lfp-cards-season_moment { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
 /* a club's / competition's / brand's tile in the panels: on hover, the colours of its crest (read by the script) */
 .lfp-logo.has-cc { transition: border-color 0.25s, background 0.25s, box-shadow 0.25s; }
