@@ -773,7 +773,11 @@
       { key: "competition", label: "Competition", ico: "trophy", desc: "Leagues and cups", cats: ["competition"], logos: true },
       { key: "club", label: "Club", ico: "shield", desc: "", cats: ["club"], logos: true, chips: [["campaign", "Player Appearance", "Players"]] },
       // vals: [category, name] (every value of the category when name is null)
-      { key: "design", label: "Graphic design", ico: "image", desc: "Matchday graphics, posters and cards", vals: [["campaign", "Graphic Design"], ["matchday_graphic", null]] },   // the matchday graphics live here (not in Match Day)
+      // choosing the group turns the "Graphic design" filter on (pick: every matchday graphic has it too, supabase/graphic-design-tag.sql);
+      // its options are the matchday graphics (not in Match Day), as tiles like the sports'
+      { key: "design", label: "Graphic design", ico: "image", desc: "Matchday graphics, posters and cards", pick: ["campaign", "Graphic Design"], vals: [["matchday_graphic", null]], tiles: true,
+        tileIco: { "matchday poster": "image", countdown: "clock", "squad list": "users", "starting xi": "grid", "half-time": "clock", goal: "ball", "full-time": "flagc", "motm vote": "star",
+          "fixture / schedule": "calendar", "weekly recap": "reel", standings: "trophy", "stats card": "trend", "quote card": "message", "signing graphic": "swap" } },
       // the club's squad (women's team, academy…) shows inside Club; cities only through the search box
       { key: "team", label: "Team", ico: "user", desc: "Women's team, academy, legends…", cats: ["team"], hidden: true },
       { key: "city", label: "City", ico: "pin", desc: "Clubs by city", cats: ["city"], logos: true, hidden: true },
@@ -788,7 +792,7 @@
     return [...g.cats.flatMap((k) => (catalog.byCat[k] || []).filter((v) => live(v) && !(md && md.has(v.id)) && !g.skip?.includes(v.name.toLowerCase()) && !(k === "entity" && REPEATED.entity.includes(v.name.toLowerCase()) && !isOn(v)))),
       ...(g.plus || []).map(([c, n]) => valByName(c, n)).filter((v) => v && live(v))];
   }
-  const groupsOf = (sec) => (BAR_GROUPS[sec] || []).filter((g) => groupVals(g).length || (g.key === "matchday" && has("opponent")));
+  const groupsOf = (sec) => (BAR_GROUPS[sec] || []).filter((g) => g.pick || groupVals(g).length || (g.key === "matchday" && has("opponent")));
   const covers = new Map();   // value id → cover url ("" = none)
   const hotOf = (list) => list.reduce((b, v) => (countOf(v) > countOf(b || v) || !b ? v : b), null);
   function lfpCard(v, g, hot) {
@@ -798,7 +802,7 @@
     // competitions, clubs, brands: their logo, in a small tile
     if (g.logos) return `<button type="button" class="lfp-logo${st}" aria-pressed="${on}" data-facet="${v.category}" data-id="${v.id}">${v.logo ? `<span class="lfp-lg${v.ig ? " is-photo" : ""}"><img src="${esc(v.logo)}" alt="" loading="lazy"></span>` : `<span class="lfp-lg"><b>${esc(initials(v.name))}</b></span>`}${meta}</button>`;
     // sports: a small button with the sport's icon (no cover photo)
-    if (g.tiles) return `<button type="button" class="lfp-sport${st}" aria-pressed="${on}" data-facet="${v.category}" data-id="${v.id}"><span class="lfp-sp-ic">${svg(sportIco(v.name))}</span>${meta}</button>`;
+    if (g.tiles) return `<button type="button" class="lfp-sport${st}" aria-pressed="${on}" data-facet="${v.category}" data-id="${v.id}"><span class="lfp-sp-ic">${svg(g.tileIco ? g.tileIco[v.name.toLowerCase()] || g.ico : sportIco(v.name))}</span>${meta}</button>`;
     const c = covers.get(v.id);
     const ph = g.logos && v.logo ? `<img class="lfp-img-logo" src="${esc(v.logo)}" alt="" loading="lazy">` : svg(g.tiles ? sportIco(v.name) : g.ico);
     return `<button type="button" class="lfp-card${st}" aria-pressed="${on}" data-facet="${v.category}" data-id="${v.id}">
@@ -871,13 +875,14 @@
   }
   function lfpRail(sec) {
     return groupsOf(sec).filter((g) => !g.hidden).map((g) => {
-      const n = groupVals(g).filter(isOn).length + (g.key === "matchday" ? selected.opponent.size : g.key === "moment" ? 0 : 0);
+      const pv = g.pick && valByName(...g.pick);
+      const n = groupVals(g).filter(isOn).length + (g.key === "matchday" ? selected.opponent.size : g.key === "moment" ? 0 : 0) + (pv && isOn(pv) ? 1 : 0);
       const cur = !ui.barQ && (ui.barG?.[sec] || groupsOf(sec).find((x) => !x.hidden)?.key) === g.key;
       return `${g.head ? `<p class="lfp-rh">${esc(tx(g.head))}</p>` : ""}<button type="button" class="lfp-r${cur ? " is-on" : ""}" data-lfb-g="${g.key}"><span class="lfp-ric">${svg(g.ico)}</span><span class="lfp-rtx"><b>${esc(tx(g.label))}</b><small>${esc(groupVals(g).length === 1 ? tx("{n} posts", { n: kfmt(countOf(groupVals(g)[0])) }) : tx("{n} options", { n: groupVals(g).length }))}</small></span>${n ? `<em>${n}</em>` : ""}</button>`;
     }).join("");
   }
   // the options of the groups picked by name (Players, Sponsors, Media, Brands, Graphic design) that are on
-  const valsOn = (sec) => [...groupsOf(sec).filter((g) => g.vals).flatMap(groupVals), ...groupsOf(sec).flatMap((g) => (g.chips || []).map(([c, n]) => valByName(c, n)))].filter((v) => v && isOn(v));
+  const valsOn = (sec) => [...groupsOf(sec).filter((g) => g.vals).flatMap(groupVals), ...groupsOf(sec).flatMap((g) => [...(g.chips || []), ...(g.pick ? [g.pick] : [])].map(([c, n]) => valByName(c, n)))].filter((v) => v && isOn(v));
   const selOf = (sec) => [...new Set([...CATEGORIES.filter((c) => secOf(c) === sec).flatMap((c) => [...selected[c.key]].map((id) => catalog.byId.get(id)).filter(Boolean)), ...valsOn(sec)])];
   function lfpFoot(sec) {
     const sel = selOf(sec);
@@ -1235,6 +1240,9 @@
       // a group with one option (Memes, Media): choosing it applies that filter straight away
       const g1 = groupsOf(ui.bar).find((x) => x.key === grp.dataset.lfbG), only = g1?.vals?.length === 1 && groupVals(g1).length === 1 ? groupVals(g1)[0] : null;
       if (only && !isOn(only)) { $(".lfp-main")?.scrollTo(0, 0); return toggleValue(only.category, only.id, true); }
+      // a group that is a filter itself (Graphic design): choosing it turns that filter on
+      const pick = g1?.pick && valByName(...g1.pick);
+      if (pick && !isOn(pick)) { $(".lfp-main")?.scrollTo(0, 0); return toggleValue(pick.category, pick.id, true); }
       renderFacets(); $(".lfp-main")?.scrollTo(0, 0); return;
     }
     const clr = e.target.closest("[data-lfb-clear]");
