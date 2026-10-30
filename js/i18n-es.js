@@ -1901,7 +1901,7 @@ window.SCP_ES = {
   "Injury / medical update": "Lesión / parte médico",
   "Ticket info": "Información de entradas",
   "Apology": "Disculpa",
-  "Racism / abuse": "Racismo / abusos",
+  "Racism / abuse": "Racismo",
   "Sanction / disciplinary": "Sanción / disciplina",
   "Serious injury": "Lesión grave",
   "Security / incident": "Seguridad / incidente",
