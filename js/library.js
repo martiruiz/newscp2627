@@ -1607,6 +1607,29 @@
     renderFacets();
   }
 
+  // ---------- Shareable link: the filters live in the address (?f=…), so a copied link opens the same view ----------
+  const b64e = (t) => btoa(String.fromCharCode(...new TextEncoder().encode(t))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  const b64d = (t) => new TextDecoder().decode(Uint8Array.from(atob(t.replace(/-/g, "+").replace(/_/g, "/")), (c) => c.charCodeAt(0)));
+  function linkOf(s) {
+    const o = {};
+    if (s.order !== "latest") o.order = s.order;
+    if (s.period !== "all") Object.assign(o, { period: s.period }, s.period === "custom" ? { from: s.from, to: s.to } : {});
+    if (Object.keys(s.facets).length) o.facets = s.facets;
+    if (s.q) o.q = s.q;
+    if (s.views) o.views = s.views;
+    if (s.viewsExact) o.viewsExact = s.viewsExact;
+    return Object.keys(o).length ? b64e(JSON.stringify(o)) : "";
+  }
+  function syncLink(s) {
+    const p = new URLSearchParams(location.search);
+    p.delete("f"); p.delete("topic");   // the topic is already in the search box (and so in f)
+    const f = linkOf(s);
+    if (f) p.set("f", f);
+    const qs = p.toString();
+    history.replaceState(history.state, "", `${location.pathname}${qs ? `?${qs}` : ""}${location.hash}`);
+  }
+  const linkState = (() => { try { const f = new URLSearchParams(location.search).get("f"); return f ? JSON.parse(b64d(f)) : null; } catch { return null; } })();
+
   function seasonStart() {
     const now = new Date();
     return `${now.getMonth() >= 6 ? now.getFullYear() : now.getFullYear() - 1}-07-01`; // seasons start in July
@@ -1653,6 +1676,7 @@
       + chips.map((x, i) => `<button type="button" class="active-chip" data-chip="${i}"${x.title ? ` title="${esc(tx(x.title))}"` : ""} aria-label="${esc(tx("Remove {what}", { what: x.label }))}">${chipLead(x)}<span class="ac-tx"><b>${esc(x.label)}</b></span><span class="ac-x" aria-hidden="true">${icon("x")}</span></button>`).join("")
  : "";
     $("[data-save-search]").hidden = chips.length === 0;
+    $("[data-share-search]").hidden = chips.length === 0;
     const sidebarCount = chips.length - (s.q ? 1 : 0);
     const badge = $("[data-filter-count]");
     badge.textContent = sidebarCount; badge.hidden = sidebarCount <= 0;
@@ -1680,6 +1704,10 @@
     applyState(found.filters);
     e.target.value = "";
     load(true);
+  });
+  $("[data-share-search]").addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText(location.href); toast(tx("Link copied: whoever opens it sees these filters")); }
+    catch { window.prompt(tx("Copy this link"), location.href); }
   });
   $("[data-save-search]").addEventListener("click", async () => {
     const name = window.prompt("Name this search (e.g. “Basketball carousels”)");
@@ -1719,6 +1747,7 @@
   async function load(reset) {
     const s = state();
     renderActive(s);
+    if (reset) syncLink(s);
     if (reset) {
       offset = 0; resetGrid(); empty.hidden = true; note.hidden = true;
       // skeleton cards while the posts load (different heights, like the real grid)
@@ -2781,10 +2810,11 @@
     // favourite network (catalog value "platform") goes first in "For you", and its tile first in the filters
     const pv = me.favPlatform && (catalog?.byCat?.platform || []).find((v) => v.name.toLowerCase() === me.favPlatform);
     if (pv && !me.boost.includes(pv.id)) { me.boost = [pv.id, ...me.boost]; renderFacets(); }
-    // back where you were after a refresh, unless the link asks for something else (a topic, My AI analyses, a post)
+    // back where you were after a refresh, unless the link asks for something else (shared filters, a topic, My AI analyses, a post)
     const saved = keep.get();
-    const intent = /[?&](topic|ai)=/.test(location.search) || location.hash.startsWith("#post=");
-    if (saved?.state && !intent && Date.now() - (saved.t || 0) < 12 * 3600e3) {
+    const intent = /[?&](topic|ai|f)=/.test(location.search) || location.hash.startsWith("#post=");
+    if (linkState) applyState(linkState);   // a shared link: its filters
+    else if (saved?.state && !intent && Date.now() - (saved.t || 0) < 12 * 3600e3) {
       restoring = true;
       applyState(saved.state);
       if (saved.seed) seed = saved.seed;

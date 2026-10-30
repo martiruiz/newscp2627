@@ -7,8 +7,8 @@
   const plan = PLAN_NAMES[params.get("plan")] ? params.get("plan") : "";
   const users = Math.min(Math.max(parseInt(params.get("users"), 10) || 1, 1), 8);
   const status = document.querySelector("[data-auth-status]");
-  // Only allow returning to a page of this site (e.g. ?next=content-library.html)
-  const next = /^[a-z0-9-]+\.html$/i.test(params.get("next") || "") ? params.get("next") : "";
+  // Only allow returning to a page of this site (e.g. ?next=content-library.html, or with its query: content-library.html?f=…)
+  const next = /^[a-z0-9-]+\.html(\?[\w=&%.-]*)?$/i.test(params.get("next") || "") ? params.get("next") : "";
   const redirectUrl = next ? auth?.pageUrl(next) : auth?.afterLoginUrl;
 
   const setStatus = (text, kind) => {

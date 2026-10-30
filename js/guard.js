@@ -2,7 +2,7 @@
 // Note: this hides the page in the browser; real data protection comes from Supabase RLS.
 (async () => {
   const auth = window.SCP_AUTH;
-  const here = location.pathname.split("/").pop() || "index.html";
+  const here = (location.pathname.split("/").pop() || "index.html") + location.search;   // with its query: a shared library link keeps its filters
   const toLogin = () => location.replace(`login.html?next=${encodeURIComponent(here)}`);
 
   if (!auth?.ready) return toLogin();
