@@ -1241,6 +1241,7 @@
     if (lfb) { ui.bar = ui.bar === lfb.dataset.lfb ? null : lfb.dataset.lfb; ui.barQ = ""; return renderFacets(); }
     const grp = e.target.closest("[data-lfb-g]");
     if (grp) {
+      const was = ui.barG?.[ui.bar];   // the group that was open
       ui.barG = { ...ui.barG, [ui.bar]: grp.dataset.lfbG }; ui.barQ = "";
       // a group with one option (Memes, Media): choosing it applies that filter straight away
       const g1 = groupsOf(ui.bar).find((x) => x.key === grp.dataset.lfbG), only = g1?.vals?.length === 1 && groupVals(g1).length === 1 ? groupVals(g1)[0] : null;
@@ -1248,6 +1249,7 @@
       // a group that is a filter itself (Graphic design): choosing it turns that filter on
       const pick = g1?.pick && valByName(...g1.pick);
       if (pick && !isOn(pick)) { $(".lfp-main")?.scrollTo(0, 0); return toggleValue(pick.category, pick.id, true); }
+      if (pick && was === g1.key) return toggleValue(pick.category, pick.id, false);   // clicked again while open: off
       renderFacets(); $(".lfp-main")?.scrollTo(0, 0); return;
     }
     const clr = e.target.closest("[data-lfb-clear]");
