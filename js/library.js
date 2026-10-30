@@ -773,7 +773,7 @@
       { key: "competition", label: "Competition", ico: "trophy", desc: "Leagues and cups", cats: ["competition"], logos: true, chips: [["campaign", "Player Appearance", "Players"]] },
       { key: "club", label: "Club", ico: "shield", desc: "", cats: ["club"], logos: true, chips: [["campaign", "Player Appearance", "Players"]] },
       // vals: [category, name] (every value of the category when name is null)
-      { key: "design", label: "Graphic design", ico: "image", desc: "Matchday graphics, posters and cards", vals: [["campaign", "Graphic Design"]] },
+      { key: "design", label: "Graphic design", ico: "image", desc: "Matchday graphics, posters and cards", vals: [["campaign", "Graphic Design"], ["matchday_graphic", null]] },   // the matchday graphics live here (not in Match Day)
       // the club's squad (women's team, academy…) shows inside Club; cities only through the search box
       { key: "team", label: "Team", ico: "user", desc: "Women's team, academy, legends…", cats: ["team"], hidden: true },
       { key: "city", label: "City", ico: "pin", desc: "Clubs by city", cats: ["city"], logos: true, hidden: true },
@@ -783,7 +783,7 @@
   const live = (v) => countOf(v) > 0 || isOn(v);
   function groupVals(g) {
     if (g.vals) return g.vals.flatMap(([c, n]) => (n ? [valByName(c, n)] : catalog.byCat[c] || [])).filter((v) => v && live(v));
-    if (g.key === "matchday") { const md = MD_IDS(); return [...[...md].map((id) => catalog.byId.get(id)), ...(catalog.byCat.matchday_graphic || []), ...(catalog.byCat.outcome || [])].filter((v, i, a) => v && a.indexOf(v) === i && live(v)); }
+    if (g.key === "matchday") { const md = MD_IDS(); return [...[...md].map((id) => catalog.byId.get(id)), ...(catalog.byCat.outcome || [])].filter((v, i, a) => v && v.category !== "matchday_graphic" && a.indexOf(v) === i && live(v)); }   // its graphics are in Graphic design
     const md = g.key === "moment" ? MD_IDS() : null;   // matchday previews / coverage live in Matchday
     return [...g.cats.flatMap((k) => (catalog.byCat[k] || []).filter((v) => live(v) && !(md && md.has(v.id)) && !g.skip?.includes(v.name.toLowerCase()) && !(k === "entity" && REPEATED.entity.includes(v.name.toLowerCase()) && !isOn(v)))),
       ...(g.plus || []).map(([c, n]) => valByName(c, n)).filter((v) => v && live(v))];
@@ -807,17 +807,15 @@
   const lfpCards = (list, g, max = 0) => { const l = byCount(list), shown = max ? [...l.slice(0, max), ...l.slice(max).filter(isOn)] : l, hot = l.length > 2 ? l[0] : null;
     return `<div class="lfp-cards${g.logos ? " lfp-cards-logo" : g.tiles ? " lfp-cards-sport" : ""}">${shown.map((v) => lfpCard(v, g, v === hot && !g.logos && !g.tiles)).join("")}</div>`; };
   function lfpMatchday(g) {
-    const phases = MATCHDAY.map((ph) => ({ ...ph, list: ph.vals.map(([cat, name]) => valByName(cat, name)).filter((v) => v && live(v)) })).filter((ph) => ph.list.length);
+    // the bar's Match Day: the moments of the match; the graphics (poster, starting XI, full-time…) are in Inspire → Graphic design
+    const phases = MATCHDAY.map((ph) => ({ ...ph, list: ph.vals.filter(([cat]) => cat !== "matchday_graphic").map(([cat, name]) => valByName(cat, name)).filter((v) => v && live(v)) })).filter((ph) => ph.list.length);
     const nOn = (ph) => ph.list.filter(isOn).length;
     const cur = phases.find((ph) => ph.key === ui.phase) || phases.find(nOn) || phases[0];
-    const inPh = MD_IDS();
-    const other = (catalog.byCat.matchday_graphic || []).filter((v) => live(v) && !inPh.has(v.id));
     const results = (catalog.byCat.outcome || []).filter(live);
     const DOT = { win: "#3ddc97", loss: "#ff6b6b", draw: "#b4c0d3" };
     return `${cur ? `<div class="lfp-phases" role="tablist">${phases.map((ph) => `<button type="button" role="tab" aria-selected="${ph === cur}" class="${ph === cur ? "is-on" : ""}${ph.key === "live" ? " is-live" : ""}" data-md-phase="${ph.key}"><i></i>${esc(tx(ph.label))}${nOn(ph) ? `<em>${nOn(ph)}</em>` : ""}</button>`).join("")}</div>${lfpCards(cur.list, g)}` : ""}
       ${results.length && (!cur || cur.key !== "before") ? `<p class="lfp-sub">${esc(tx("Result"))}</p><div class="lfp-chips">${results.map((v) => `<button type="button" class="lfp-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="outcome" data-id="${v.id}"><i style="background:${DOT[v.name.toLowerCase()] || "#b4c0d3"}"></i>${esc(pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`).join("")}</div>` : ""}
-      ${has("opponent") ? `<p class="lfp-sub">${esc(tx("Opponent"))}</p><div class="lf-stack lfp-opp">${rowHtml(CAT.opponent)}</div>` : ""}
-      ${other.length ? `<p class="lfp-sub">${esc(tx("More matchday graphics"))}</p>${lfpCards(other, g)}` : ""}`;
+      ${has("opponent") ? `<p class="lfp-sub">${esc(tx("Opponent"))}</p><div class="lf-stack lfp-opp">${rowHtml(CAT.opponent)}</div>` : ""}`;
   }
   // a group with a single option (Memes, Media): choosing the group applies it; the panel shows it switched on
   function lfpSingle(v) {
