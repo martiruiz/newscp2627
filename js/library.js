@@ -2022,8 +2022,8 @@
           ${video ? `<button class="lib-playbtn" type="button" data-play="${esc(p.id)}" aria-label="Play video">${icon("play")}</button>` : ""}
           ${!video && pf === "instagram" && (/carousel/i.test(fmt) || /carousel|sidecar/i.test(p.media_type || "")) ? `<button class="lib-carbtn" type="button" data-play="${esc(p.id)}" aria-label="${esc(tx("See the carousel"))}" title="${esc(tx("See the carousel"))}">${icon("chevron-right")}</button><span class="lib-cardots" aria-hidden="true"><i></i><i></i><i></i></span>` : ""}
           ${fmt || p.duration_s ? `<span class="lib-fmt">${video ? icon("play") : ""}${esc([fmt, p.duration_s ? mmss(p.duration_s) : ""].filter(Boolean).join(" · "))}</span>` : ""}
-          ${igNote}${corner}${rail}
-        </div>${foot}${aiPeek(p.id)}
+          ${igNote}${corner}
+        </div>${foot}${rail}${aiPeek(p.id)}
       </article>`;
     }
 
@@ -2044,8 +2044,8 @@
             // the tweet's own video / image stays clickable (plays in place); its header, text and bottom open the detail
             ? `<button class="lib-hit lib-hit-top" type="button" data-open="${esc(p.id)}" aria-label="Details${who ? ` · ${esc(who)}` : ""}"></button><button class="lib-hit lib-hit-bottom" type="button" data-open="${esc(p.id)}" tabindex="-1" aria-hidden="true"></button>`
             : `<button class="lib-hit" type="button" data-open="${esc(p.id)}" aria-label="Details${who ? ` · ${esc(who)}` : ""}"></button>`}
-          ${igNote}${rail}
-        </div>${asPosted ? "" : foot}${aiPeek(p.id)}
+          ${igNote}${asPosted ? rail : ""}
+        </div>${asPosted ? "" : foot + rail}${aiPeek(p.id)}
       </article>`;
     }
     return `
@@ -2058,8 +2058,8 @@
           ${gone ? `<a class="lib-ignote is-gone" href="${esc(p.url || "")}" target="_blank" rel="noopener">${icon("external-link")}<span>${tx("Watch on Instagram")}</span></a>`
             : playerSrc(p) ? `<button class="lib-playbtn${video ? "" : " is-view"}" type="button" data-play="${esc(p.id)}" aria-label="${esc(video ? tx("Play video") : tx("Show the post"))}">${icon(video ? "play" : "eye")}</button>` : ""}
           ${fmt || p.duration_s ? `<span class="lib-fmt">${video ? icon("play") : ""}${esc([fmt, p.duration_s ? mmss(p.duration_s) : ""].filter(Boolean).join(" · "))}</span>` : ""}
-          ${gone ? "" : igNote}${corner}${rail}
-        </div>${foot}${aiPeek(p.id)}
+          ${gone ? "" : igNote}${corner}
+        </div>${foot}${rail}${aiPeek(p.id)}
       </article>`;
   }
 
