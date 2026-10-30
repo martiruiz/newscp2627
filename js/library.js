@@ -808,15 +808,16 @@
     return `<div class="lfp-cards${g.logos ? " lfp-cards-logo" : g.tiles ? " lfp-cards-sport" : ""}">${shown.map((v) => lfpCard(v, g, v === hot && !g.logos && !g.tiles)).join("")}</div>`; };
   function lfpMatchday(g) {
     // the bar's Match Day: the moments of the match; the graphics (poster, starting XI, full-time…) are in Inspire → Graphic design
-    const phases = MATCHDAY.map((ph) => ({ ...ph, list: ph.vals.filter(([cat]) => cat !== "matchday_graphic").map(([cat, name]) => valByName(cat, name)).filter((v) => v && live(v)) })).filter((ph) => ph.list.length);
-    const nOn = (ph) => ph.list.filter(isOn).length;
-    const cur = phases.find((ph) => ph.key === ui.phase) || phases.find(nOn) || phases[0];
+    // the three phases always show (a phase the other filters leave without posts is dimmed, not removed)
+    const phases = MATCHDAY.map((ph) => ({ ...ph, list: ph.vals.filter(([cat]) => cat !== "matchday_graphic").map(([cat, name]) => valByName(cat, name)).filter(Boolean) })).filter((ph) => ph.list.length);
     const results = (catalog.byCat.outcome || []).filter(live);
     const DOT = { win: "#3ddc97", loss: "#ff6b6b", draw: "#b4c0d3" };
     // Before · Live · After, with the Opponent filter on its right
     const opp = has("opponent") ? `<div class="lf-stack lfp-opp">${rowHtml(CAT.opponent)}</div>` : "";
-    return `${cur ? `<div class="lfp-md-top"><div class="lfp-phases" role="tablist">${phases.map((ph) => `<button type="button" role="tab" aria-selected="${ph === cur}" class="${ph === cur ? "is-on" : ""}${ph.key === "live" ? " is-live" : ""}" data-md-phase="${ph.key}"><i></i>${esc(tx(ph.label))}${nOn(ph) ? `<em>${nOn(ph)}</em>` : ""}</button>`).join("")}</div>${opp}</div>${lfpCards(cur.list, g)}` : opp}
-      ${results.length && (!cur || cur.key !== "before") ? `<p class="lfp-sub">${esc(tx("Result"))}</p><div class="lfp-chips">${results.map((v) => `<button type="button" class="lfp-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="outcome" data-id="${v.id}"><i style="background:${DOT[v.name.toLowerCase()] || "#b4c0d3"}"></i>${esc(pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`).join("")}</div>` : ""}`;
+    // each phase is the filter itself (Pre-match = "Matchday preview"…): a click turns it on or off, no cards below
+    const allOn = (ph) => ph.list.every(isOn);
+    return `${phases.length ? `<div class="lfp-md-top"><div class="lfp-phases">${phases.map((ph) => `<button type="button" aria-pressed="${allOn(ph)}" class="${allOn(ph) ? "is-on" : ""}${ph.key === "live" ? " is-live" : ""}${!allOn(ph) && !ph.list.some(live) ? " is-zero" : ""}" data-md-toggle="${ph.list.map((v) => `${v.category}:${v.id}`).join(",")}"><i></i>${esc(tx(ph.label))}<small>${kfmt(ph.list.reduce((n, v) => n + countOf(v), 0))}</small></button>`).join("")}</div>${opp}</div>` : opp}
+      ${results.length ? `<p class="lfp-sub">${esc(tx("Result"))}</p><div class="lfp-chips">${results.map((v) => `<button type="button" class="lfp-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="outcome" data-id="${v.id}"><i style="background:${DOT[v.name.toLowerCase()] || "#b4c0d3"}"></i>${esc(pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`).join("")}</div>` : ""}`;
   }
   // a group with a single option (Memes, Media): choosing the group applies it; the panel shows it switched on
   function lfpSingle(v) {
@@ -1251,6 +1252,13 @@
     const more = e.target.closest("[data-lf-more]");
     if (more) { const s = more.dataset.lfMore; ui.more.has(s) ? ui.more.delete(s) : ui.more.add(s); return renderFacets(); }
     if (e.target.closest("[data-like-mine]")) return toggleLikeMine();
+    // the bar's Match Day: a phase button turns its filter(s) on, or off when they're all on
+    const mdt = e.target.closest("[data-md-toggle]");
+    if (mdt) {
+      const vals = mdt.dataset.mdToggle.split(",").map((x) => x.split(":")).map(([c, id]) => [c, Number(id)]);
+      const on = vals.every(([c, id]) => selected[c]?.has(id));
+      return vals.filter(([c, id]) => on || !selected[c]?.has(id)).forEach(([c, id]) => toggleValue(c, id));
+    }
     const ph = e.target.closest("[data-md-phase]");
     if (ph) { ui.phase = ph.dataset.mdPhase; return renderFacets(); }
     const vq = e.target.closest("[data-vq]");
