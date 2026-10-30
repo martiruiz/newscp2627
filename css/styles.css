@@ -9239,3 +9239,4 @@ body.club-themed .mc-strip::after { content: ""; position: absolute; left: 18px;
 .lfp-results button i { border-color: var(--dot); background: var(--dot); }
 .lfp-results button.is-on i { border-color: #1a1206; }
 .lfp-cards.lfp-cards-design { grid-template-columns: repeat(3, minmax(0, 1fr)); }   /* Graphic design: three per row, so the names read in full */
+.lfb-panel[data-sec="benchmark"] .lfp-rail { grid-template-columns: repeat(4, minmax(0, 1fr)); }   /* Inspire: its four groups on one line */
