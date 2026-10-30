@@ -21,29 +21,29 @@
     "faq": [],
     "image_url": "https://frontofficesports.com/wp-content/uploads/2026/04/USATSI_23083311_168420755_lowres-scaled-e1776984611832.jpg?quality=80&w=1024",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "El PGA Tour consigue un patrocinador a corto plazo para el evento de Austin tras la salida de Good Good Golf",
+      "tokens": {
+        "in": 1481,
+        "out": 695
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "El PGA Tour ha encontrado un sustituto parcial para Good Good Golf, el grupo de creadores que renunció a patrocinar y organizar un nuevo torneo en Austin tras la polémica por un anuncio controvertido de un driver de Callaway. Compliance Solutions, una empresa de servicios fiscales de Florida que ya respalda un evento del Korn Ferry Tour, será patrocinador principal del renombrado Austin Championship solo este año, con un pago inferior a los 6 millones de dólares a los que se había comprometido Good Good.",
         "La tarifa reducida refleja el poco tiempo que queda para activar el patrocinio: las rondas de práctica empiezan en unos 11 días, lo que deja al patrocinador casi sin margen para la promoción. Mientras tanto, Good Good también ha perdido su acuerdo con Callaway, su programa en Golf Channel y la presencia de su merchandising en tiendas, una muestra de la rapidez con la que puede desmoronarse el ecosistema comercial de una marca de creadores tras un error.",
         "Para los equipos de marketing deportivo, el episodio es un recordatorio de que las colaboraciones con creadores conllevan riesgo reputacional y de que el contenido publicitario debe revisarse con el mismo rigor que cualquier campaña oficial. También demuestra el valor de las relaciones existentes con patrocinadores como solución de emergencia rápida, y que el tiempo de activación influye directamente en el valor del acuerdo. Las propiedades deberían preparar planes de contingencia y mensajes preaprobados antes de vincular sus eventos a marcas de influencers."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-10-29T22:42:35.289594+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-10-30T01:03:22.423Z",
-      "tokens": {
-        "in": 1481,
-        "out": 695
-      }
+      "source_changed": "2026-10-29T22:42:35.289594+00:00",
+      "meta_description": ""
     }
   },
   {
@@ -68,29 +68,29 @@
     "faq": [],
     "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/9c5c3f1e-0c36-4f9a-be89-3afc5d2d8556/Untitled_design__12_.png?t=1793218727",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "Informe de contenido patrocinado de la semana inaugural de la NBA: qué hicieron los mejores equipos con sus socios",
+      "tokens": {
+        "in": 1516,
+        "out": 772
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "Un análisis de Sponcon Sports con Mondo Metrics revisó 11.919 posts de los 30 equipos de la NBA en cinco plataformas durante la semana inaugural. Cerca del 11,7 % incluía una integración de marca, lo que generó 5,6 M de interacciones y al menos 42 M de visualizaciones para 193 marcas. Los 76ers lideraron el engagement patrocinado, Golden State dominó en visualizaciones gracias a un tiro espectacular de Steph Curry en el calentamiento respaldado por IREN, y Michelob ULTRA fue el patrocinador con más presencia, con un giro hacia una serie llamada Courtside Moments.",
         "Entre las ideas destacadas están los patrocinadores del parche de la camiseta que lanzan encuestas y votaciones sobre la equipación para recopilar datos propios, el sorteo 'Power Run' de Bloom Energy de los Sixers impulsado a través de Instagram Stories, y nombres de series que se vinculan de forma natural con el patrocinador, como 'Drilling Threes' de Hornets x Lowe's. Cambiar el 'presented by' por fórmulas como 'Delivered By FedEx' e incluir códigos promocionales en los gráficos de victoria también aportó significado de marca sin recurrir a anuncios independientes.",
         "El informe señala un fallo habitual: logotipos de patrocinadores demasiado pequeños o con poco contraste para leerse en el móvil. Una solución sencilla para los equipos de contenido es previsualizar el creativo en cuentas privadas a tamaño real antes de la aprobación del socio. Los clubes de cualquier liga pueden tomar prestadas estas tácticas para que los posts patrocinados resulten más nativos, mantener las marcas reconocibles y construir un valor medible de cara a las renovaciones."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-10-29T22:42:14.518646+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-10-30T01:03:30.208Z",
-      "tokens": {
-        "in": 1516,
-        "out": 772
-      }
+      "source_changed": "2026-10-29T22:42:14.518646+00:00",
+      "meta_description": ""
     }
   },
   {
