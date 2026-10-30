@@ -1940,7 +1940,7 @@ window.SCP_ES = {
   "Automotive": "Automoción",
   "Energy": "Energía",
   "Betting": "Apuestas",
-  "Crypto / fintech": "Cripto / fintech",
+  "Crypto / fintech": "Cripto",
   "Media / streaming": "Streaming",
   "Health": "Salud",
   "Retail": "Retail",
