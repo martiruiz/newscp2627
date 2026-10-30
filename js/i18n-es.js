@@ -1899,7 +1899,7 @@ window.SCP_ES = {
   "Press conference": "Rueda de prensa",
   "Statement": "Comunicado",
   "Injury / medical update": "Lesión / parte médico",
-  "Ticket info": "Información de entradas",
+  "Ticket info": "Ticketing",
   "Apology": "Disculpa",
   "Racism / abuse": "Racismo",
   "Sanction / disciplinary": "Sanción",
