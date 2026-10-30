@@ -582,6 +582,8 @@ window.SCP_ES = {
   "Copy link to this search": "Copiar el enlace de esta búsqueda",
   "Match Day": "Día de partido",
   "Squad and profiles": "Plantilla y perfiles",
+  "Pre-match": "Previa",
+  "Post-match": "Post-partido",
   "Link copied: whoever opens it sees these filters": "Enlace copiado: quien lo abra verá estos filtros",
   "Copy this link": "Copia este enlace",
   "Public link to this post": "Enlace público a este post",

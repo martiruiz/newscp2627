@@ -83,9 +83,9 @@
   }
   // Matchday as a timeline: before / live / after the game (graphics + campaign moments that belong to each phase)
   const MATCHDAY = [
-    { key: "before", label: "Before", vals: [["moment", "Matchday preview"], ["matchday_graphic", "Matchday poster"], ["matchday_graphic", "Countdown"], ["matchday_graphic", "Squad list"], ["matchday_graphic", "Starting XI"], ["matchday_graphic", "Fixture / schedule"]] },
+    { key: "before", label: "Pre-match", vals: [["moment", "Matchday preview"], ["matchday_graphic", "Matchday poster"], ["matchday_graphic", "Countdown"], ["matchday_graphic", "Squad list"], ["matchday_graphic", "Starting XI"], ["matchday_graphic", "Fixture / schedule"]] },
     { key: "live", label: "Live", vals: [["matchday_graphic", "Goal"], ["campaign", "Goals & Highlights"], ["matchday_graphic", "Half-time"]] },
-    { key: "after", label: "After", vals: [["matchday_graphic", "Full-time"], ["moment", "Match coverage"], ["matchday_graphic", "MOTM vote"], ["matchday_graphic", "Stats card"], ["matchday_graphic", "Quote card"], ["matchday_graphic", "Weekly recap"], ["matchday_graphic", "Standings"]] },
+    { key: "after", label: "Post-match", vals: [["matchday_graphic", "Full-time"], ["moment", "Match coverage"], ["matchday_graphic", "MOTM vote"], ["matchday_graphic", "Stats card"], ["matchday_graphic", "Quote card"], ["matchday_graphic", "Weekly recap"], ["matchday_graphic", "Standings"]] },
   ];
   const CAT = Object.fromEntries(CATEGORIES.map((c) => [c.key, c]));
   const CAT_LABEL = Object.fromEntries(CATEGORIES.map((c) => [c.key, c.label]));
@@ -813,9 +813,10 @@
     const cur = phases.find((ph) => ph.key === ui.phase) || phases.find(nOn) || phases[0];
     const results = (catalog.byCat.outcome || []).filter(live);
     const DOT = { win: "#3ddc97", loss: "#ff6b6b", draw: "#b4c0d3" };
-    return `${cur ? `<div class="lfp-phases" role="tablist">${phases.map((ph) => `<button type="button" role="tab" aria-selected="${ph === cur}" class="${ph === cur ? "is-on" : ""}${ph.key === "live" ? " is-live" : ""}" data-md-phase="${ph.key}"><i></i>${esc(tx(ph.label))}${nOn(ph) ? `<em>${nOn(ph)}</em>` : ""}</button>`).join("")}</div>${lfpCards(cur.list, g)}` : ""}
-      ${results.length && (!cur || cur.key !== "before") ? `<p class="lfp-sub">${esc(tx("Result"))}</p><div class="lfp-chips">${results.map((v) => `<button type="button" class="lfp-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="outcome" data-id="${v.id}"><i style="background:${DOT[v.name.toLowerCase()] || "#b4c0d3"}"></i>${esc(pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`).join("")}</div>` : ""}
-      ${has("opponent") ? `<p class="lfp-sub">${esc(tx("Opponent"))}</p><div class="lf-stack lfp-opp">${rowHtml(CAT.opponent)}</div>` : ""}`;
+    // Before · Live · After, with the Opponent filter on its right
+    const opp = has("opponent") ? `<div class="lf-stack lfp-opp">${rowHtml(CAT.opponent)}</div>` : "";
+    return `${cur ? `<div class="lfp-md-top"><div class="lfp-phases" role="tablist">${phases.map((ph) => `<button type="button" role="tab" aria-selected="${ph === cur}" class="${ph === cur ? "is-on" : ""}${ph.key === "live" ? " is-live" : ""}" data-md-phase="${ph.key}"><i></i>${esc(tx(ph.label))}${nOn(ph) ? `<em>${nOn(ph)}</em>` : ""}</button>`).join("")}</div>${opp}</div>${lfpCards(cur.list, g)}` : opp}
+      ${results.length && (!cur || cur.key !== "before") ? `<p class="lfp-sub">${esc(tx("Result"))}</p><div class="lfp-chips">${results.map((v) => `<button type="button" class="lfp-chip${isOn(v) ? " is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="outcome" data-id="${v.id}"><i style="background:${DOT[v.name.toLowerCase()] || "#b4c0d3"}"></i>${esc(pretty(v.name))}<em>${kfmt(countOf(v))}</em></button>`).join("")}</div>` : ""}`;
   }
   // a group with a single option (Memes, Media): choosing the group applies it; the panel shows it switched on
   function lfpSingle(v) {

@@ -9217,3 +9217,8 @@ body.club-themed .mc-strip::after { content: ""; position: absolute; left: 18px;
 /* the panels' search box: the full width of the panel (the Content Plan's occasions, when there are any, go below it) */
 .lfp-top { flex-wrap: wrap; }
 .lfp-search { flex: 1 1 100%; min-width: 0; }
+
+/* Match Day: Before · Live · After and, on their right, the Opponent filter */
+.lfp-md-top { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
+.lfp-md-top .lfp-phases { flex: none; margin-bottom: 0; }
+.lfp-md-top .lfp-opp { flex: 1 1 auto; min-width: 0; max-width: none; }
