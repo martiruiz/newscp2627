@@ -9243,3 +9243,9 @@ body.club-themed .mc-strip::after { content: ""; position: absolute; left: 18px;
 .lib-head .lfb-glass .lfb-btn em { background: rgba(255, 255, 255, 0.25); color: #fff; }
 .lib-head .lfb-glass .lfb-btn.is-set { border: 0; }
 .lib-head .lfb-glass .lfb-lens { display: none; }
+/* Match Day: phases and result side by side (wrapping on narrow panels), the opponent underneath */
+.lfp-md-top { flex-wrap: wrap; }
+.lfp-md-top + .lfp-opp { max-width: none; }
+.lfp-md-top { gap: 6px; }
+.lfp-md-top .lfp-phases { flex: none; }
+.lfp-md-top .lfp-phases button { padding: 0 9px; gap: 6px; }

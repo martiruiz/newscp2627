@@ -828,10 +828,12 @@
     const DOT = { win: "#3ddc97", loss: "#ff6b6b", draw: "#b4c0d3" };
     // Before · Live · After, with the Opponent filter on its right
     const opp = has("opponent") ? `<div class="lf-stack lfp-opp">${rowHtml(CAT.opponent)}</div>` : "";
-    // each phase is the filter itself (Pre-match = "Matchday preview"…): a click turns it on or off, no cards below
+    // each phase is the filter itself (Pre-match = "Matchday preview"…): a click turns it on or off, no cards below;
+    // the result on their right (same look), the opponent underneath
     const allOn = (ph) => ph.list.every(isOn);
-    return `${phases.length ? `<div class="lfp-md-top"><div class="lfp-phases">${phases.map((ph) => `<button type="button" aria-pressed="${allOn(ph)}" class="${allOn(ph) ? "is-on" : ""}${ph.key === "live" ? " is-live" : ""}${!allOn(ph) && !ph.list.some(live) ? " is-zero" : ""}" data-md-toggle="${ph.list.map((v) => `${v.category}:${v.id}`).join(",")}"><i></i>${esc(tx(ph.label))}<small>${kfmt(ph.list.reduce((n, v) => n + countOf(v), 0))}</small></button>`).join("")}</div>${opp}</div>` : opp}
-      ${results.length ? `<p class="lfp-sub">${esc(tx("Result"))}</p><div class="lfp-phases lfp-results">${results.map((v) => `<button type="button" class="${isOn(v) ? "is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="outcome" data-id="${v.id}"><i style="--dot:${DOT[v.name.toLowerCase()] || "#b4c0d3"}"></i>${esc(pretty(v.name))}<small>${kfmt(countOf(v))}</small></button>`).join("")}</div>` : ""}`;   // same look as Pre-match · Live · Post-match
+    const phaseBtns = phases.length ? `<div class="lfp-phases">${phases.map((ph) => `<button type="button" aria-pressed="${allOn(ph)}" class="${allOn(ph) ? "is-on" : ""}${ph.key === "live" ? " is-live" : ""}${!allOn(ph) && !ph.list.some(live) ? " is-zero" : ""}" data-md-toggle="${ph.list.map((v) => `${v.category}:${v.id}`).join(",")}"><i></i>${esc(tx(ph.label))}<small>${kfmt(ph.list.reduce((n, v) => n + countOf(v), 0))}</small></button>`).join("")}</div>` : "";
+    const resultBtns = results.length ? `<div class="lfp-phases lfp-results" aria-label="${esc(tx("Result"))}">${results.map((v) => `<button type="button" class="${isOn(v) ? "is-on" : ""}" aria-pressed="${isOn(v)}" data-facet="outcome" data-id="${v.id}"><i style="--dot:${DOT[v.name.toLowerCase()] || "#b4c0d3"}"></i>${esc(pretty(v.name))}<small>${kfmt(countOf(v))}</small></button>`).join("")}</div>` : "";
+    return `${phaseBtns || resultBtns ? `<div class="lfp-md-top">${phaseBtns}${resultBtns}</div>` : ""}${opp}`;
   }
   // a group with a single option (Memes, Media): choosing the group applies it; the panel shows it switched on
   function lfpSingle(v) {
