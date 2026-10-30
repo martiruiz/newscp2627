@@ -1,0 +1,50 @@
+{
+ "label": "Oct 2026",
+ "items": [
+  {
+   "img": "fblinks",
+   "brand": "facebook",
+   "platform": "Facebook",
+   "title": "Facebook tests a <span class='g'>two-link</span> monthly cap for Pages.",
+   "para": "Some Pages are limited to two link posts per month, then a prompt invites them to subscribe through Meta One.",
+   "tip": "Check how much of your traffic <span class='g'>depends on links</span>. Keep them for tickets and memberships, and make matchday posts work natively.",
+   "date": "29 Oct"
+  },
+  {
+   "img": "igfeatures",
+   "brand": "instagram",
+   "platform": "Instagram",
+   "title": "Instagram tests <span class='g'>90-minute</span> videos called Features.",
+   "para": "Selected creators can publish podcasts, vlogs and interviews, and the test reaches select US creators from 26 October.",
+   "tip": "Full <span class='g'>interviews</span> could live on Instagram. Cut Reels that link back to the long version to bring fans in.",
+   "date": "26 Oct"
+  },
+  {
+   "img": "adsbreakdown",
+   "brand": "meta",
+   "platform": "Meta Ads",
+   "title": "Ads Manager now shows results for <span class='g'>each creative</span>.",
+   "para": "A new Breakdown option reports individual images, videos and text variations. Carousel and collection ads are excluded.",
+   "tip": "Learn which <span class='g'>image or headline</span> works for tickets or memberships, then reuse it in the next campaign.",
+   "date": "27 Oct"
+  },
+  {
+   "img": "reddit",
+   "brand": "reddit",
+   "platform": "Reddit",
+   "title": "Reddit launches a <span class='g'>For You</span> feed.",
+   "para": "It recommends posts and subreddits users have not joined, next to a Following feed. The rollout is global over the coming weeks.",
+   "tip": "Content can reach <span class='g'>fans who don't follow you yet</span>. Write posts that make sense without insider context.",
+   "date": "28 Oct"
+  },
+  {
+   "img": "ytmicro",
+   "brand": "youtube",
+   "platform": "YouTube",
+   "title": "YouTube backs <span class='g'>microdramas</span> with members-only episodes.",
+   "para": "The format topped 6.5 billion views in the first half of 2026, up more than 50% year over year.",
+   "tip": "Serial Shorts, like <span class='g'>a season in episodes</span>, could become a members perk. Test with one format first.",
+   "date": "27 Oct"
+  }
+ ]
+}
