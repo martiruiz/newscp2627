@@ -41,7 +41,8 @@ language sql stable security definer set search_path = public as $$
     'media_ratio', c.media_ratio,
     'tags', coalesce((select jsonb_agg(jsonb_build_object('category', v.category, 'name', v.name, 'logo', v.logo_url) order by v.category, v.name)
                       from content_idea_tags t join idea_catalog v on v.id = t.value_id where t.idea_id = c.id), '[]'),
-    'summary', (select a.result ->> 'summary' from ai_analyses a where a.post_id = c.id order by a.generated_at desc limit 1))
+    'summary', (select a.result ->> 'summary' from ai_analyses a where a.post_id = c.id order by a.generated_at desc limit 1),
+    'summary_es', (select a.result -> 'es' ->> 'summary' from ai_analyses a where a.post_id = c.id order by a.generated_at desc limit 1))
   from post_shares s join content_ideas c on c.id = s.post_id
   where s.token = p_token and c.unavailable_at is null
 $$;

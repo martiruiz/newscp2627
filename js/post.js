@@ -54,7 +54,8 @@
     .filter(([k]) => Number(p[k]) > 0).map(([k, ico]) => `<li>${icon(ico)}<b>${num(Number(p[k]))}</b><span>${esc(tx(k))}</span></li>`).join("");
 
   // the summary of its AI analysis (the full analysis is for members)
-  if (p.summary) { $("[data-sp-summary]").textContent = p.summary; $("[data-sp-ai]").hidden = false; }
+  const summary = (window.SCP_LANG === "es" && p.summary_es) || p.summary;   // its Spanish version once someone has read it in Spanish
+  if (summary) { $("[data-sp-summary]").textContent = summary; $("[data-sp-ai]").hidden = false; }
 
   // its filters, as in the library
   const SHOW = ["trend", "platform", "format", "sport", "competition", "club", "moment", "matchday_graphic", "season_moment", "outcome", "angle", "collab", "sponsor", "language"];

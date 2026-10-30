@@ -8,6 +8,9 @@
 //   4. on any error refunds every pending unlock of that post (fail_generation).
 // Other users who unlock the same post later get the stored analysis without any API call.
 //
+// POST { post_id, lang: "es" }: the Spanish version of an analysis the caller has unlocked, made the first time someone
+// reads it in Spanish and kept inside the analysis (result.es, same shape), so it's made only once per analysis.
+//
 // Secrets: ANTHROPIC_API_KEY; optional AI_MODEL (default claude-sonnet-5-5: faster and cheaper than Opus for this task),
 //          AI_PRICE_IN_PER_MTOK / AI_PRICE_OUT_PER_MTOK (USD per million tokens, to record the real cost).
 // SUPABASE_URL, SUPABASE_ANON_KEY and SUPABASE_SERVICE_ROLE_KEY are provided by Supabase.
@@ -78,6 +81,61 @@ async function coverImage(url: string): Promise<{ data: string; type: string } |
   return toBase64(img);
 }
 
+// ---------- Spanish version ----------
+const TRANSLATE = `You translate the AI analysis of a sports social media post, written for the social media teams of sports clubs, leagues and brands, from English into Spanish (Spain).
+Natural, professional Spanish, tú form. Keep the meaning and length; don't add or remove information. Keep names of clubs, players, brands, platforms and features as they are (Instagram, TikTok, Reels…), and numbers.
+Common terms Spanish social media teams use can stay (hook, engagement, post, reel, scroll). Spanish only: never a word or character from another language or alphabet.
+You get a JSON object: return the same object with every text translated, the same keys and the same number of items in every list.`;
+// the readers' text of an analysis (what is translated); hook.text and onScreenText are the post's own words: they stay
+const textOf = (a: any) => ({
+  summary: a.summary || "", whyItWorks: a.whyItWorks || "",
+  hook: { category: a.hook?.category || "", template: a.hook?.template || "", whyItWorks: a.hook?.whyItWorks || "" },
+  format: { category: a.format?.category || "", type: a.format?.type || "", visualLayout: a.format?.visualLayout || "", pacing: a.format?.pacing || "" },
+  angle: { topic: a.angle?.topic || "", angle: a.angle?.angle || "" },
+  visualBreakdown: (a.visualBreakdown || []).map((x: any) => ({ shot: x.shot || "", why: x.why || "" })),
+  scrollStoppers: (a.scrollStoppers || []).map((x: any) => ({ moment: x.moment || "", why: x.why || "" })),
+  replicable: { howToAdapt: a.replicable?.howToAdapt || "" },
+  topics: (a.topics || []).map(String),
+});
+const s = { type: "string" };
+const obj = (keys: string[]) => ({ type: "object", additionalProperties: false, properties: Object.fromEntries(keys.map((k) => [k, s])), required: keys });
+const ES_SCHEMA = { type: "object", additionalProperties: false, required: ["summary", "whyItWorks", "hook", "format", "angle", "visualBreakdown", "scrollStoppers", "replicable", "topics"], properties: {
+  summary: s, whyItWorks: s, hook: obj(["category", "template", "whyItWorks"]), format: obj(["category", "type", "visualLayout", "pacing"]), angle: obj(["topic", "angle"]),
+  visualBreakdown: { type: "array", items: obj(["shot", "why"]) }, scrollStoppers: { type: "array", items: obj(["moment", "why"]) },
+  replicable: obj(["howToAdapt"]), topics: { type: "array", items: s } } };
+
+async function spanish(postId: number, userId: string) {
+  // only someone who can read the analysis (their unlock is completed) asks for its Spanish version
+  const [u] = await (await rest(`user_ai_unlocks?select=analysis_id&user_id=eq.${userId}&post_id=eq.${postId}&status=eq.completed`)).json();
+  if (!u?.analysis_id) return json({ error: "Unlock the analysis first" }, 403);
+  const [row] = await (await rest(`ai_analyses?select=id,result&id=eq.${u.analysis_id}`)).json();
+  const a = row?.result;
+  if (!a) return json({ error: "Analysis not found" }, 404);
+  if (a.es) return json({ status: "ok", es: a.es });
+  const claude = new Anthropic({ apiKey: env("ANTHROPIC_API_KEY") });
+  const src = textOf(a);
+  const res: any = await claude.messages.create({
+    model: env("TRANSLATE_MODEL") || "claude-sonnet-5-5", max_tokens: 8000,
+    output_config: { format: { type: "json_schema", schema: ES_SCHEMA } },
+    system: TRANSLATE, messages: [{ role: "user", content: JSON.stringify(src) }],
+  } as never);
+  if (res.stop_reason !== "end_turn") return json({ error: `Translation stopped: ${res.stop_reason}` }, 502);
+  const t = JSON.parse(res.content.find((b: { type: string }) => b.type === "text")?.text || "{}");
+  if (/[\u0400-\u04FF\u3040-\u30FF\u3400-\u9FFF]/.test(JSON.stringify(t))) return json({ error: "Translation failed the check" }, 502);
+  // the whole shape, so a page shows a.es over a: lists keep their times (t), the post's own words stay as they were
+  const es = {
+    ...t,
+    hook: { ...a.hook, ...t.hook },
+    format: { ...a.format, ...t.format },
+    angle: { ...a.angle, ...t.angle },
+    replicable: { ...a.replicable, ...t.replicable },
+    visualBreakdown: (a.visualBreakdown || []).map((x: any, i: number) => ({ ...x, ...(t.visualBreakdown?.[i] || {}) })),
+    scrollStoppers: (a.scrollStoppers || []).map((x: any, i: number) => ({ ...x, ...(t.scrollStoppers?.[i] || {}) })),
+  };
+  await rest(`ai_analyses?id=eq.${row.id}`, { method: "PATCH", body: JSON.stringify({ result: { ...a, es } }), headers: { Prefer: "return=minimal" } });
+  return json({ status: "ok", es });
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: CORS });
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
@@ -86,9 +144,10 @@ Deno.serve(async (req) => {
   const userRes = await fetch(`${env("SUPABASE_URL")}/auth/v1/user`, { headers: { apikey: env("SUPABASE_ANON_KEY"), Authorization: req.headers.get("Authorization") ?? "" } });
   if (!userRes.ok) return json({ error: "Not signed in" }, 401);
   const user = await userRes.json();
-  const { post_id } = await req.json().catch(() => ({}));
+  const { post_id, lang } = await req.json().catch(() => ({}));
   const postId = Number(post_id);
   if (!postId) return json({ error: "post_id required" }, 400);
+  if (lang === "es") return spanish(postId, user.id).catch((e) => json({ error: String((e as Error)?.message || e) }, 500));
 
   // Only someone who has paid (pending unlock) can trigger a generation
   const unlock = await (await rest(`user_ai_unlocks?select=status&user_id=eq.${user.id}&post_id=eq.${postId}`)).json();

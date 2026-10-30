@@ -2192,12 +2192,27 @@
     load(true);
   }
   // the AI's "how to adapt it" for a post I or my team analysed (the Content Plan puts it in the entry's notes)
-  const aiAdapt = (id) => { const r = (ai.mine.get(Number(id)) || ai.team.get(Number(id)))?.result; return r?.replicable?.howToAdapt ? `AI · ${r.replicable.howToAdapt}` : ""; };
+  // an analysis in the page's language: in Spanish its Spanish version (result.es) once it exists (ai-analyze, lang "es")
+  const inLang = (a) => (window.SCP_LANG === "es" && a?.es ? { ...a, ...a.es } : a);
+  const esAsked = new Map();
+  function toSpanish(id) {
+    if (!esAsked.has(id)) esAsked.set(id, (async () => {
+      const { data: { session } } = await db.auth.getSession();
+      const cfg = window.SCP_CONFIG;
+      const r = await fetch(`${cfg.supabaseUrl}/functions/v1/ai-analyze`, { method: "POST",
+        headers: { "Content-Type": "application/json", apikey: cfg.supabaseAnonKey, Authorization: `Bearer ${session?.access_token}` },
+        body: JSON.stringify({ post_id: id, lang: "es" }) }).catch(() => null);
+      const d = r?.ok ? await r.json().catch(() => null) : null;
+      return d?.es || null;
+    })());
+    return esAsked.get(id);
+  }
+  const aiAdapt = (id) => { const r = inLang((ai.mine.get(Number(id)) || ai.team.get(Number(id)))?.result); return r?.replicable?.howToAdapt ? `AI · ${r.replicable.howToAdapt}` : ""; };
   // in the card: the hook and why it works, without opening it
   function aiPeek(id) {
     if (!ui.aiMode) return "";
     const it = aiList().get(Number(id));
-    const r = it?.result;
+    const r = inLang(it?.result);
     if (!r) return "";
     const why = r.hook?.whyItWorks || r.whyItWorks || r.summary || "";
     return `<div class="lib-ai-peek" data-open="${esc(id)}" role="button" tabindex="-1">
@@ -2219,7 +2234,7 @@
       h3{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#7b5cff;margin:12px 0 2px}p{margin:0}article{padding:18px 0;border-top:1px solid #dde3ee;break-inside:avoid}
       q{display:block;font-size:16px;font-weight:600;margin:4px 0}a{color:#7b5cff;font-size:12px}.m{color:#6b7488;font-size:12px;margin-bottom:22px}</style></head><body>
       <h1>${esc(tx(ui.aiMode === "team" ? "My team's AI analyses" : "My AI analyses"))}</h1><p class="m">Sports Content Playbook · ${esc(new Date().toLocaleDateString(window.SCP_LOC || "en-GB"))} · ${list.length}</p>
-      ${list.map(([id, it]) => { const r = it.result || {}, p = post.get(id) || {}; return `<article><h2>${esc((p.title || "Post").slice(0, 90))}</h2>
+      ${list.map(([id, it]) => { const r = inLang(it.result) || {}, p = post.get(id) || {}; return `<article><h2>${esc((p.title || "Post").slice(0, 90))}</h2>
         ${p.url ? `<a href="${esc(p.url)}">${esc(p.url)}</a>` : ""}${r.hook?.text ? `<h3>${esc(tx("Hook"))}</h3><q>${esc(r.hook.text)}</q>` : ""}
         ${sec("Summary", r.summary)}${sec("Why it works", r.whyItWorks)}${sec("How to adapt it to your club", r.replicable?.howToAdapt)}</article>`; }).join("")}
       <script>onload=()=>setTimeout(()=>print(),300)<\/script></body></html>`);
@@ -2491,11 +2506,19 @@
   const area = () => body.querySelector("[data-analysis]");
   // the analysis on the right, its topics in the drop-down under the post
   let shown = null;   // the analysis on screen (for its PDF)
-  const showAnalysis = (a, before = "") => {
+  const showAnalysis = (raw, before = "") => {
+    const id = Number(body.dataset.post || 0), a = inLang(raw);
     area().innerHTML = before + analysisHtml(a);
     const t = body.querySelector("[data-topics]"); if (t) { t.innerHTML = topicsHtml(a); t.closest("[data-topics-sec]").hidden = !t.innerHTML; }
-    shown = a ? { id: Number(body.dataset.post || 0), a } : null;
+    shown = a ? { id, a } : null;
     const b = body.querySelector("[data-an-pdf]"); if (b) b.hidden = !a;
+    // read in Spanish for the first time: its Spanish version is made now (once per analysis) and shown when ready
+    if (raw && !raw.es && window.SCP_LANG === "es" && id) toSpanish(id).then((es) => {
+      if (!es) return;
+      raw.es = es;
+      const mine = ai.mine.get(id)?.result; if (mine) mine.es = es;
+      if (Number(body.dataset.post) === id && area()) showAnalysis(raw, before);
+    });
   };
   // one analysis as a printable page, laid out like the panel (the browser saves it as PDF)
   function analysisPdf(p, a) {
