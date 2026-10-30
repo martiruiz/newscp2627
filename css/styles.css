@@ -5736,9 +5736,6 @@ body:has(.dock) .site-footer.sf { padding-bottom: 100px; }
 .lib-cardots i { width: 6px; height: 6px; border-radius: 50%; background: rgba(255, 255, 255, 0.55); }
 .lib-cardots i:first-child { background: #fff; }
 .lib-media.is-playing .lib-carbtn, .lib-media.is-playing .lib-cardots { display: none; }
-.lib-carbtn { transition: transform 0.2s, background 0.2s, right 0.22s; }
-.lib-card:hover .lib-carbtn, .lib-card:focus-within .lib-carbtn { right: 56px; }
-@media (hover: none) { .lib-carbtn { right: 56px; } }
 .lf-views-note { margin: 8px 2px 2px; font-size: 11.5px; color: var(--muted); }
 
 /* Top Picks / Replicable / Overperforming explainer: a small card in the filter's colours */
