@@ -9150,3 +9150,14 @@ body.club-themed .mc-strip::after { content: ""; position: absolute; left: 18px;
 @media (hover: none) {
   .lib-card > .lib-rail { position: static; opacity: 1; transform: none; padding: 0 10px 10px; justify-content: space-between; }
 }
+
+/* Library top bar: date, sort and the three filter groups (Inspire, Match Day, Brands) are the same pill — thin border,
+   gold icon, the font of the My space buttons — side by side; My space keeps its own buttons */
+.lib-head .lf-dd-btn, .lib-head .lfb-glass .lfb-btn { height: 36px; padding: 0 14px; gap: 8px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--text); box-shadow: none; }
+.lib-head .lfb-glass .lfb-btn { flex: 0 0 auto; width: auto; }
+.lib-head .lf-dd-btn:hover, .lib-head .lf-dd-btn[aria-expanded="true"], .lib-head .lfb-glass .lfb-btn:hover, .lib-head .lfb-glass .lfb-btn.is-open { border-color: var(--gold-dim); background: rgba(var(--fg), 0.04); }
+.lib-head .lfb-glass .lfb-btn.is-set { border: 1px solid var(--gold); }
+.lib-head .lf-dd-btn > svg.ico { color: var(--gold); }
+.lib-head .lfb-glass .lfb-tx b { font: 700 13px var(--font-display); letter-spacing: 0; }
+.lib-head .lfb-row.lfb-glass { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 8px; padding: 0; max-width: none; margin-inline: 0; box-shadow: none; background: none; border: 0; }
+.lib-head .lfb-glass .lfb-lens { display: none; }
