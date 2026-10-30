@@ -1949,7 +1949,7 @@ window.SCP_ES = {
   "Presented-by segment": "Sección patrocinada",
   "Brand collab post": "Post de colaboración con marca",
   "Product placement": "Product placement",
-  "Sponsor activation / event": "Activación / evento del patrocinador",
+  "Sponsor activation / event": "Activación de patrocinio",
   "Sponsor giveaway": "Sorteo del patrocinador",
   "Spanish": "Español",
   "Catalan": "Catalán",
