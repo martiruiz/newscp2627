@@ -45,7 +45,7 @@ export const AI_VALUES = {
   aspect_ratio: ["1:1", "4:5", "3:4", "9:16", "16:9", "1.91:1", "2:3", "4:3"],
   duration: ["Under 15s", "15–30s", "30–60s", "Over 60s"],
   goal: ["Ticket sales", "Merchandise sales", "Memberships", "Sponsor value", "App / digital product", "Community / CSR", "Recruitment / grassroots"],
-  comms: ["Official announcement", "Press conference", "Statement", "Injury / medical update", "Ticket info"],
+  comms: ["Official announcement", "Press conference", "Statement", "Injury / medical update"],   // ticketing: goal "Ticket sales"
   crisis: ["Apology", "Racism / abuse", "Sanction / disciplinary", "Serious injury", "Security / incident", "Condolences"],
   team: ["Women's team", "Academy / youth", "Legends", "Staff / coaches"],   // Esports is a sport (catalog "sport"), not a team
   angle: ["Player-focused", "Humour / meme", "Emotional", "Data & stats", "Behind the scenes", "Skills / tutorial", "Celebration"],

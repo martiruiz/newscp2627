@@ -188,8 +188,7 @@ window.SCP_SMART = {
       "Official announcement",
       "Press conference",
       "Statement",
-      "Injury / medical update",
-      "Ticket info"
+      "Injury / medical update"
     ],
     "crisis": [
       "Apology",
