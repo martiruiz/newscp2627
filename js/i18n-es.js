@@ -1406,7 +1406,7 @@ window.SCP_ES = {
   "Long video": "Vídeo largo",
   "Live": "Directo",
   "Signings": "Fichajes",
-  "Kit launches": "Presentaciones de equipación",
+  "Kit launches": "Equipaciones",
   "Sponsor activations": "Activaciones de patrocinadores",
   "Milestones": "Hitos",
   "Ticketing": "Entradas",
