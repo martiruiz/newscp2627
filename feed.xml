@@ -6,7 +6,17 @@
     <atom:link href="https://sportscontentplaybook.com/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Sports social media content ideas, trends and analysis.</description>
     <language>en</language>
-    <lastBuildDate>Thu, 29 Oct 2026 08:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Fri, 30 Oct 2026 08:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Football social media content ideas: tell the stories only your club owns</title>
+      <link>https://sportscontentplaybook.com/blog/football-social-media-content-ideas-stories-only-your-club-owns.html</link>
+      <guid isPermaLink="true">https://sportscontentplaybook.com/blog/football-social-media-content-ideas-stories-only-your-club-owns.html</guid>
+      <pubDate>Fri, 30 Oct 2026 08:00:00 GMT</pubDate>
+      <dc:creator>Martí Ruiz</dc:creator>
+      <description>A fourth-tier cup upset, a fan telling her first stadium visit and a kit built on a city legend: three profiles, one pattern any club can copy.</description>
+      <enclosure url="https://sportscontentplaybook.com/assets/blog/football-social-media-content-ideas-stories-only-your-club-owns.jpg" length="66301" type="image/jpeg"/>
+      <media:content url="https://sportscontentplaybook.com/assets/blog/football-social-media-content-ideas-stories-only-your-club-owns.jpg" medium="image" type="image/jpeg"/>
+    </item>
     <item>
       <title>Sports social media strategy: prepare the big-day content before the big day</title>
       <link>https://sportscontentplaybook.com/blog/sports-social-media-strategy-big-day-content.html</link>
@@ -296,16 +306,6 @@
       <description>Sports Content Playbook introduces a new feature allowing creators to save formats and ideas into a personalized library for future sports content inspiration.</description>
       <enclosure url="https://sportscontentplaybook.com/assets/blog/never-lose-a-great-idea-again-your-personalized-library-arrives-on-sports-content-playbook.jpg" length="332426" type="image/jpeg"/>
       <media:content url="https://sportscontentplaybook.com/assets/blog/never-lose-a-great-idea-again-your-personalized-library-arrives-on-sports-content-playbook.jpg" medium="image" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>Two finals, two narratives: How Barça and Madrid communicated the Supercopa</title>
-      <link>https://sportscontentplaybook.com/blog/two-finals-two-narratives-how-barca-and-madrid-communicated-the-supercopa.html</link>
-      <guid isPermaLink="true">https://sportscontentplaybook.com/blog/two-finals-two-narratives-how-barca-and-madrid-communicated-the-supercopa.html</guid>
-      <pubDate>Tue, 13 Jan 2026 08:00:00 GMT</pubDate>
-      <dc:creator>Josep</dc:creator>
-      <description>Barça and Madrid’s Supercopa communication revealed how results shape digital storytelling, contrasting celebration and restraint, and offering key lessons for content creators navigating tone, volume, and strategy in elite football.</description>
-      <enclosure url="https://sportscontentplaybook.com/assets/blog/two-finals-two-narratives-how-barca-and-madrid-communicated-the-supercopa.jpg" length="517365" type="image/jpeg"/>
-      <media:content url="https://sportscontentplaybook.com/assets/blog/two-finals-two-narratives-how-barca-and-madrid-communicated-the-supercopa.jpg" medium="image" type="image/jpeg"/>
     </item>
   </channel>
 </rss>

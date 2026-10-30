@@ -21,29 +21,29 @@
     "faq": [],
     "image_url": "https://imgproxy.divecdn.com/WtVwuvPQucR0rUzMtUQpYml2_BnBh7RJ_Yvc4iKkzcw/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS90aHJlYWRzX25ld19sb2dvLnBuZw==.webp",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "Threads prueba Threads Friends, una lista al estilo Close Friends para publicar en privado",
+      "tokens": {
+        "in": 1409,
+        "out": 602
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "Threads está probando Threads Friends, una función que permite crear una lista privada de hasta 50 contactos y publicar posts visibles solo para ese grupo. Funciona de forma muy parecida a Close Friends de Instagram: las personas añadidas pueden ver que están en la lista y los miembros pueden ver los likes y las respuestas de los demás en esos posts. La prueba se está realizando en Irlanda, Italia y Japón, aunque se puede añadir a cualquier persona del mundo a una lista.",
         "Para los equipos de redes sociales deportivas, esto apunta a un cambio más amplio: de la difusión pública hacia espacios de contenido más reducidos y cuidadosamente seleccionados. Los deportistas podrían usar una lista de Friends para compartir reflexiones entre bastidores con su familia, sus compañeros o un puñado de creadores de confianza, mientras que los clubes podrían reservarla para medios aliados, embajadores o un grupo selecto de superfans.",
         "Con un límite de 50 personas, la función encaja mejor en activaciones de estilo VIP que en acciones de alcance masivo. Los clubes podrían premiar a los ganadores de concursos o a los abonados con acceso temporal a novedades exclusivas, y los equipos que ya gestionan programas con Close Friends de Instagram deberían vigilar si Threads extiende la opción de forma más amplia en sus mercados."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-10-30T12:47:11.791417+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-10-30T14:13:19.740Z",
-      "tokens": {
-        "in": 1409,
-        "out": 602
-      }
+      "source_changed": "2026-10-30T12:47:11.791417+00:00",
+      "meta_description": ""
     }
   },
   {
