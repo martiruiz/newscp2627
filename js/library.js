@@ -867,8 +867,9 @@
       return `<button type="button" class="lfp-chip${on ? " is-on" : ""}${off ? " is-off" : ""}" aria-pressed="${on}"${off ? ' disabled aria-disabled="true"' : ""} data-facet="${v.category}" data-id="${v.id}">${esc(label)}<em>${off ? "0" : kfmt(countOf(v))}</em></button>`; };
     const chipVals = (g.chips || []).map(([c, n, l]) => [valByName(c, n), l]).filter(([v]) => v);
     const chips = chipVals.length ? `<div class="lfp-chips lfp-squad">${chipVals.map(([v, l]) => chip(v, tx(l))).join("")}</div>` : "";
-    const many = g.logos && g.key !== "competition" && groupVals(g).length > 20;   // competitions: every crest shows
-    return head + chips + (g.key === "city" ? "" : lfpCards(groupVals(g), g, many ? 20 : 0))
+    // long lists: the first ones (competitions and clubs 15, others 20), the search box finds the rest
+    const max = g.logos ? (g.key === "competition" || g.key === "club" ? 15 : 20) : 0, many = max && groupVals(g).length > max;
+    return head + chips + (g.key === "city" ? "" : lfpCards(groupVals(g), g, many ? max : 0))
       + (many || g.key === "city" ? `<p class="lfp-tip">${svg("search")}${esc(tx("Search above to find any of the {n}", { n: groupVals(g).length.toLocaleString(window.SCP_LOC || "en-GB") }))}</p>` : "");
   }
   function lfpTop(sec) {
