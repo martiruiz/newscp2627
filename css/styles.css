@@ -9249,3 +9249,6 @@ body.club-themed .mc-strip::after { content: ""; position: absolute; left: 18px;
 .lfp-md-top { gap: 6px; }
 .lfp-md-top .lfp-phases { flex: none; }
 .lfp-md-top .lfp-phases button { padding: 0 9px; gap: 6px; }
+/* …with the same corners and height as the My space buttons, and the icon without a tile */
+.lib-head .lfb-glass .lfb-btn, .lib-head .lfb-glass .lfb-btn:hover, .lib-head .lfb-glass .lfb-btn.is-open, .lib-head .lfb-glass .lfb-btn.is-open:hover { height: 35px; border-radius: 11px; padding: 0 13px 0 11px; }
+.lib-head .lfb-glass .lfb-ic { width: auto; height: auto; border-radius: 0; background: none; }
