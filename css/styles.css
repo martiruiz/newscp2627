@@ -9227,3 +9227,19 @@ body.club-themed .mc-strip::after { content: ""; position: absolute; left: 18px;
 .lfb-panel[data-sec="benchmark"] .lfp-rail { grid-template-columns: repeat(3, minmax(0, 1fr)); }   /* Inspire: its six groups in two rows of three */
 /* the panels are as tall as what they show (up to the same maximum): no empty space under a short list */
 .lfb-panel.lfp { height: auto; max-height: min(640px, calc(100vh - var(--lib-head-h, 150px) - 24px)); }
+
+/* Library top bar: Inspire, Match Day and Brands look like the My space buttons — a filled gradient each, white text,
+   the icon in a light tile; the open one gets the white ring (the gliding pill isn't needed on filled buttons) */
+.lib-head .lfb-glass .lfb-btn, .lib-head .lfb-glass .lfb-btn:hover, .lib-head .lfb-glass .lfb-btn.is-open, .lib-head .lfb-glass .lfb-btn.is-open:hover {
+  height: 38px; padding: 0 14px 0 5px; gap: 8px; border: 0; color: #fff; background: var(--g) border-box; box-shadow: 0 8px 22px -14px rgba(var(--glow), 0.9); }
+.lib-head .lfb-glass .lfb-btn:hover { filter: brightness(1.08); }
+.lib-head .lfb-glass .lfb-btn.is-open { box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85), 0 10px 26px -10px rgba(var(--glow), 0.95); }
+.lib-head .lfb-glass .lfb-btn[data-lfb="benchmark"] { --g: linear-gradient(135deg, #0f9f8f, #34d3b4); --glow: 52, 211, 180; }
+.lib-head .lfb-glass .lfb-btn[data-lfb="occasion"] { --g: linear-gradient(135deg, #e0572e, #f59e5b); --glow: 245, 158, 91; }
+.lib-head .lfb-glass .lfb-btn[data-lfb="goal"] { --g: linear-gradient(135deg, #d6336c, #f472b6); --glow: 244, 114, 182; }
+.lib-head .lfb-glass .lfb-ic { flex: none; width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: rgba(255, 255, 255, 0.2); }
+.lib-head .lfb-glass .lfb-ic svg, .lib-head .lfb-glass .lfb-btn.is-open .lfb-ic svg { width: 15px !important; height: 15px !important; stroke: #fff; color: #fff; }
+.lib-head .lfb-glass .lfb-tx b, .lib-head .lfb-glass .lfb-btn:hover .lfb-tx b, .lib-head .lfb-glass .lfb-btn.is-open .lfb-tx b { color: #fff; font-weight: 700; }
+.lib-head .lfb-glass .lfb-btn em { background: rgba(255, 255, 255, 0.25); color: #fff; }
+.lib-head .lfb-glass .lfb-btn.is-set { border: 0; }
+.lib-head .lfb-glass .lfb-lens { display: none; }
