@@ -846,9 +846,13 @@
       return `<button type="button" class="lfp-chip${on ? " is-on" : ""}${off ? " is-off" : ""}" aria-pressed="${on}"${off ? ' disabled aria-disabled="true"' : ""} data-facet="${v.category}" data-id="${v.id}">${esc(label)}<em>${off ? "0" : kfmt(countOf(v))}</em></button>`; };
     // (the players' accounts are inside Players: supabase/players-merge.sql)
     const squadVals = teamG ? [...(catalog.byCat.team || [])].sort((x, y) => y.total - x.total) : [];
-    const squad = squadVals.length ? `<div class="lfp-chips lfp-squad">${squadVals.map((v) => chip(v, pretty(v.name))).join("")}</div>` : "";
     const chipVals = (g.chips || []).map(([c, n, l]) => [valByName(c, n), l]).filter(([v]) => v);
-    const chips = chipVals.length ? `<div class="lfp-chips lfp-squad">${chipVals.map(([v, l]) => chip(v, tx(l))).join("")}</div>` : "";
+    // Club: the squad and Players as tiles like the sports' (icon, name, posts), in two rows
+    const TEAM_ICO = { "women's team": "users", "academy / youth": "star", legends: "trophy", "staff / coaches": "flag", esports: "cursor", "player appearance": "user" };
+    const tile = (v, label) => { const on = isOn(v), off = countOf(v) === 0 && !on;
+      return `<button type="button" class="lfp-sport${on ? " is-on" : ""}${off ? " is-zero" : ""}" aria-pressed="${on}"${off ? ' disabled aria-disabled="true"' : ""} data-facet="${v.category}" data-id="${v.id}"><span class="lfp-sp-ic">${svg(TEAM_ICO[v.name.toLowerCase()] || "user")}</span><span class="lfp-meta"><b>${esc(label)}</b><small>${esc(tx("{n} posts", { n: off ? "0" : kfmt(countOf(v)) }))}</small></span><span class="lfp-ck">${svg("check")}</span></button>`; };
+    const squad = teamG && squadVals.length ? `<div class="lfp-cards lfp-cards-sport lfp-squad-tiles">${[...squadVals.map((v) => tile(v, pretty(v.name))), ...chipVals.map(([v, l]) => tile(v, tx(l)))].join("")}</div>` : "";
+    const chips = !squad && chipVals.length ? `<div class="lfp-chips lfp-squad">${chipVals.map(([v, l]) => chip(v, tx(l))).join("")}</div>` : "";
     const many = g.logos && groupVals(g).length > 20;
     return head + squad + chips + (g.key === "city" ? "" : lfpCards(groupVals(g), g, many ? 20 : 0))
       + (many || g.key === "city" ? `<p class="lfp-tip">${svg("search")}${esc(tx("Search above to find any of the {n}", { n: groupVals(g).length.toLocaleString(window.SCP_LOC || "en-GB") }))}</p>` : "");

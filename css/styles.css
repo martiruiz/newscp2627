@@ -9176,3 +9176,7 @@ body.club-themed .mc-strip::after { content: ""; position: absolute; left: 18px;
 .lfp-ric { width: 26px; height: 26px; border-radius: 50%; }
 .lfp-rtx small { display: none; }
 .lfp-r em { margin-left: 2px; }
+
+/* Inspire → Club: the squad (women's team, academy…) and Players as sport-like tiles, three per row (two rows) */
+.lfp-cards.lfp-squad-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: 16px; }
+.lfp-squad-tiles .lfp-sport[disabled] { opacity: 0.35; cursor: default; }
