@@ -760,8 +760,10 @@
           "european qualification": "pin", relegation: "alert", "last game of the season": "clock" } },
       { key: "moment", label: "Dates & campaigns", ico: "star", desc: "Records, tributes and birthdays", cats: ["moment"],
         skip: ["christmas", "halloween", "black friday", "valentine's day", "pride", "ramadan / eid", "international women's day", "lunar new year", "new year"] },   // no calendar holidays
-      { key: "angle", label: "How do you tell it?", ico: "smile", desc: "The tone of the post", cats: ["angle"], skip: ["player-focused"] },   // → Players
-      { key: "memes", label: "Memes", ico: "smile", desc: "Meme accounts and humour pages", vals: [["entity", "Meme"]] },
+      { key: "angle", label: "How do you tell it?", ico: "smile", desc: "The tone of the post", cats: ["angle"], skip: ["player-focused", "humour / meme"] },   // → Players; humour → Memes
+      // Memes: the meme accounts and the humour posts (the "Humour / meme" tone), together
+      { key: "memes", label: "Memes", ico: "smile", desc: "Meme accounts and humour pages", vals: [["entity", "Meme"], ["angle", "Humour / meme"]],
+        labels: { meme: "Meme accounts", "humour / meme": "Humour posts" }, tileIco: { meme: "users", "humour / meme": "smile" } },
       { key: "comms", label: "Press and comms", ico: "message", desc: "Announcements, press and practical info", cats: ["comms"], chips: [["entity", "Media", "Media"]] },   // Media: a featured chip
       { key: "crisis", label: "Sensitive topics", ico: "alert", desc: "How other clubs handle them, with care", cats: ["crisis"] },
     ],
