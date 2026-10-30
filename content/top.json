@@ -72,6 +72,12 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/566/566958.jpg?v=mvrux6wp"
   },
   {
+    "account": "pumafootball",
+    "account_platform": "instagram",
+    "views": 4804160,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/574/574161.jpg?v=mvuuht52"
+  },
+  {
     "account": "fcbayern",
     "account_platform": "instagram",
     "views": 4435121,
@@ -132,6 +138,12 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/570/570158.jpg?v=mvtmnmqg"
   },
   {
+    "account": "ibaillanos",
+    "account_platform": "tiktok",
+    "views": 2900000,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/573/573137.jpg?v=mvutv6y4"
+  },
+  {
     "account": "houseofhighlights",
     "account_platform": "instagram",
     "views": 2819968,
@@ -166,17 +178,5 @@
     "account_platform": "instagram",
     "views": 2616033,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/574/574081.jpg?v=mvuuhoh5"
-  },
-  {
-    "account": "realmadrid",
-    "account_platform": "instagram",
-    "views": 2603268,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/570/570144.jpg?v=mvtmmsrr"
-  },
-  {
-    "account": "mancity",
-    "account_platform": "instagram",
-    "views": 2548283,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/570/570150.jpg?v=mvtmn86p"
   }
 ]
