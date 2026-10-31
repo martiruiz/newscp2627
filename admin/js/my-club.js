@@ -99,6 +99,7 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
       <div class="mcl-pane" data-pane="people"${tab === "people" ? "" : " hidden"}>
         <div class="mcl-toolbar">
           ${KINDS.map(([k, one]) => `<button class="btn${k === "player" ? " btn-primary" : ""}" type="button" data-add-person="${k}">${icon("plus")}Add ${one.toLowerCase()}</button>`).join("")}
+          <button class="btn" type="button" data-add-library="player">${icon("library")}From the library</button>
           <button class="btn" type="button" data-add-sponsor>${icon("library")}Sponsor from the library</button>
           <span class="spacer"></span>
           <details class="mcl-more"><summary class="btn btn-ghost">More${icon("chevron")}</summary>
@@ -116,8 +117,9 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
           ${pendingIg > 1 ? `<button class="btn btn-primary btn-sm" type="button" data-scrape-all>${icon("download")}Scrape all ${num(pendingIg)}</button>` : ""}</div>` : ""}
         <div class="mcl-live" data-live hidden></div>
         ${club.sections.length ? `<p class="mcl-sum">${club.sections.map((x) => `<b>${esc(x.name)}</b> ${x.teams.map((t) => esc(t.name)).join(", ") || "—"}`).join(" · ")}</p>` : ""}
-        ${(c.accounts || []).length ? `<section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Club accounts</h2><span class="aud-count">${num(c.accounts.length)}</span>${info("The club's own profiles (Club settings). Their posts go to the library with the club's tag, like the daily scraping.")}</header>
-          <div class="mcl-clubaccs">${c.accounts.map((a) => `<span class="mcl-acc">${esc(PF[a.platform] || a.platform)} @${esc(a.handle)}${CAN_SCRAPE.has(a.platform) ? scrapeBtn(a, true) : ""}</span>`).join("")}</div></section>` : ""}
+        <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>${esc((TYPES.find((x) => x[0] === c.kind) || TYPES[0])[1])} account</h2><span class="aud-count">${num((c.accounts || []).length + (c.library_tags || []).length)}</span>${info("The space's own profiles (Club settings) and its library tags. Their posts show in the client's first tab.")}<span class="spacer"></span><button class="btn btn-sm" type="button" data-add-library="account">${icon("library")}From the library</button></header>
+          ${(c.accounts || []).length || (c.library_tags || []).length ? `<div class="mcl-clubaccs">${(c.library_tags || []).map((t) => `<span class="mcl-acc">Library tag · <b>${esc(t.name)}</b> · ${num(t.posts)} posts<button type="button" title="Remove" aria-label="Remove" data-tag-del="${t.id}">✕</button></span>`).join("")}${(c.accounts || []).map((a) => `<span class="mcl-acc">${esc(PF[a.platform] || a.platform)} @${esc(a.handle)}${CAN_SCRAPE.has(a.platform) ? scrapeBtn(a, true) : ""}</span>`).join("")}</div>`
+            : `<p class="panel-pad muted">None yet. Add it from the library, or its profiles in Club settings.</p>`}</section>
         ${KINDS.map(([k, , many]) => `<section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>${many}</h2><span class="aud-count">${num(people.filter((p) => p.kind === k).length)}</span></header>${table(k)}</section>`).join("")}
       </div>
 
@@ -377,6 +379,73 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
     XLSX.writeFile(wb, `scp-clubs-accounts-${new Date().toISOString().slice(0, 10)}.xlsx`);
   }
 
+  // a club, competition, player or creator already in the Content Library, in one go: its accounts (every network) and
+  // its library tag (most library posts have no account: the tag brings them). As the space's own accounts or as a
+  // competitor, player or creator (supabase/my-club-library-add.sql)
+  function addFromLibrary(kind = "account") {
+    const sel = { tag: null, accounts: new Map(), name: "", avatar: "" };
+    const typeName = (TYPES.find((x) => x[0] === club.club.kind) || TYPES[0])[1];
+    const asOpts = [["account", `${typeName} account`], ...KINDS.filter(([k]) => k !== "sponsor").map(([k, one]) => [k, one])];
+    const scopes = [["", `Whole ${typeName.toLowerCase()}`], ...club.sections.flatMap((s) => [[`s${s.id}`, `${s.name} · all teams`], ...s.teams.map((t) => [`t${t.id}`, `${s.name} · ${t.name}`])])];
+    const m = A.modal({ title: "Add from the library", sub: "Search a club, competition, player or creator that's already in the Content Library: its posts show in this space.", size: "lg",
+      body: `<div class="mcl-sp">
+        <label class="mcl-sp-q">${icon("filters")}<input class="input" type="search" placeholder="FC Barcelona, @lamineyamal, LaLiga…" data-lb-q autofocus></label>
+        <div class="mcl-sp-res" data-lb-res><p class="muted">Type at least 2 letters.</p></div>
+        <div class="mcl-sp-form">
+          <label>Add as<select class="select" data-lb-kind>${asOpts.map(([v, l]) => `<option value="${v}"${v === kind ? " selected" : ""}>${esc(l)}</option>`).join("")}</select></label>
+          <label data-lb-person>Name<input class="input" data-lb-name></label>
+          <label data-lb-person>Where<select class="select" data-lb-scope>${scopes.map(([v, l]) => `<option value="${v}">${esc(l)}</option>`).join("")}</select></label>
+        </div>
+        <p class="mcl-sp-sum" data-lb-sum></p></div>`,
+      foot: `<button class="btn btn-primary" type="button" data-lb-save>${icon("plus")}Add</button>` });
+    const el = m.el, res = el.querySelector("[data-lb-res]"), kindSel = el.querySelector("[data-lb-kind]");
+    const person = () => kindSel.value !== "account";
+    const showPerson = () => el.querySelectorAll("[data-lb-person]").forEach((x) => { x.hidden = !person(); });
+    kindSel.addEventListener("change", showPerson); showPerson();
+    let data = [];
+    const sum = () => { el.querySelector("[data-lb-sum]").textContent = [sel.tag ? `Library tag “${sel.tag.name}” · ${num(sel.tag.posts)} posts` : "", sel.accounts.size ? `${sel.accounts.size} account${sel.accounts.size === 1 ? "" : "s"}` : ""].filter(Boolean).join(" · ") || "Pick a result."; };
+    const draw = () => {
+      res.innerHTML = data.length ? data.map((g, i) => `<div class="mcl-lb-g">
+          <p class="mcl-sp-h">${g.avatar ? `<img src="${esc(g.avatar)}" alt="">` : ""}${esc(g.name)}</p>
+          ${g.tag ? `<button type="button" class="mcl-sp-item${sel.tag?.id === g.tag.id ? " is-on" : ""}" data-lb-tag="${i}"><b>Library tag · ${esc(g.tag.name)}</b><small>${esc(g.tag.category)}</small><span>${num(g.tag.posts)} posts</span></button>` : ""}
+          ${g.accounts.map((a) => { const k = `${a.platform}|${a.handle}`; return `<button type="button" class="mcl-sp-item${sel.accounts.has(k) ? " is-on" : ""}" data-lb-acc="${esc(k)}" data-lb-g="${i}"><b>${esc(PF[a.platform] || a.platform)} @${esc(a.handle)}</b><span>${num(a.posts)} posts</span></button>`; }).join("")}
+        </div>`).join("") : `<p class="muted">Nothing in the library with that name.</p>`;
+      sum();
+    };
+    // picking a result takes its tag and the accounts with posts (each can be switched off)
+    const take = (g) => {
+      sel.tag = g.tag || null; sel.accounts = new Map(g.accounts.filter((a) => a.posts > 0).map((a) => [`${a.platform}|${a.handle}`, { platform: a.platform, handle: a.handle }]));
+      sel.avatar = g.avatar || ""; el.querySelector("[data-lb-name]").value = (g.tag?.name || g.name).replace(/^@/, "");
+    };
+    let timer;
+    el.querySelector("[data-lb-q]").addEventListener("input", (e) => {
+      clearTimeout(timer);
+      const q = e.target.value.trim();
+      if (q.length < 2) { res.innerHTML = `<p class="muted">Type at least 2 letters.</p>`; return; }
+      res.innerHTML = `<p class="muted">Searching…</p>`;
+      timer = setTimeout(async () => { try { data = await rpc("admin_library_profiles", { p_q: q }); draw(); } catch (x) { fail(/admin_library_profiles/.test(x.message) ? new Error("Run supabase/my-club-library-add.sql in Supabase first.") : x); } }, 350);
+    });
+    res.addEventListener("click", (e) => {
+      const t = e.target.closest("[data-lb-tag]"), a = e.target.closest("[data-lb-acc]");
+      if (t) { const g = data[Number(t.dataset.lbTag)]; if (sel.tag?.id === g.tag.id) sel.tag = null; else if (sel.tag || sel.accounts.size) sel.tag = g.tag; else take(g); }
+      if (a) { const k = a.dataset.lbAcc, g = data[Number(a.dataset.lbG)];
+        if (!sel.tag && !sel.accounts.size) take(g); else if (sel.accounts.has(k)) sel.accounts.delete(k); else sel.accounts.set(k, { platform: k.split("|")[0], handle: k.split("|")[1] }); }
+      draw();
+    });
+    sum();
+    el.querySelector("[data-lb-save]").addEventListener("click", async () => {
+      const name = el.querySelector("[data-lb-name]").value.trim(), scope = el.querySelector("[data-lb-scope]").value;
+      if (!sel.tag && !sel.accounts.size) return fail(new Error("Pick a result."));
+      if (person() && !name) return fail(new Error("It needs a name."));
+      try {
+        const r = await rpc("admin_club_add_from_library", { p_club: cur, p: { kind: kindSel.value, name, photo_url: sel.avatar, tag_id: sel.tag?.id || null, accounts: [...sel.accounts.values()],
+          section_id: scope.startsWith("s") ? scope.slice(1) : null, team_id: scope.startsWith("t") ? scope.slice(1) : null } });
+        if (!r.ok) return fail(new Error(r.error));
+        m.close(); A.toast(`${name || sel.tag?.name || "Accounts"} added`); loadClubs(cur);
+      } catch (x) { fail(x); }
+    });
+  }
+
   // a sponsor from the library: its scraped accounts and / or its sponsor tag, and where it belongs
   function addSponsor() {
     const pick = { accounts: new Map(), tag: null };
@@ -452,6 +521,8 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
       if (b.matches("[data-template]")) return template();
       if (b.matches("[data-daily]")) return dailyFile();
       if (b.matches("[data-add-sponsor]")) return addSponsor();
+      if (b.dataset.addLibrary) return addFromLibrary(b.dataset.addLibrary);
+      if (b.dataset.tagDel) { await rpc("admin_club_tag_remove", { p_club: cur, p_tag: Number(b.dataset.tagDel) }); A.toast("Library tag removed"); return loadClub(); }
       if (b.matches("[data-acc-add]")) { $("[data-accs]").insertAdjacentHTML("beforeend", accRow({ platform: "instagram", handle: "" })); return $("[data-accs] .mcl-acc-row:last-child [name=acc_handle]").focus(); }
       if (b.matches("[data-acc-del]")) return b.closest(".mcl-acc-row").remove();
       if (b.dataset.logoLib) return setLogo(b.dataset.logoLib);

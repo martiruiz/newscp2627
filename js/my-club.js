@@ -181,7 +181,8 @@
     clubTheme(data.club);
     // the club's own profiles ("Club" tab), with their posts in SCP (supabase/my-club-daily.sql)
     const pr = await db.rpc("club_profiles", { p_club: st.club.id });
-    st.profiles = pr.error ? [] : (pr.data || []).map((a) => ({ id: `${a.platform}:${a.handle}`, name: `@${a.handle}`, platform: a.platform, section_id: a.section_id, posts: a.posts }));
+    // a library tag (platform "library": the club's posts in the Content Library, supabase/my-club-library-add.sql) goes by its name
+    st.profiles = pr.error ? [] : (pr.data || []).map((a) => ({ id: `${a.platform}:${a.handle}`, name: a.platform === "library" ? a.handle : `@${a.handle}`, platform: a.platform, section_id: a.section_id, posts: a.posts }));
     // the last section / team, only if it still exists (and the team belongs to the section)
     const sec = data.sections.find((s) => s.id === saved.section);
     st.section = sec ? sec.id : null;
@@ -217,6 +218,7 @@
   ];
   const sportIcon = (name) => svg((SPORT.find(([re]) => re.test(name)) || [, '<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/>'])[1]);
   const NET = {
+    library: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',   // a library tag: the club's shield
     instagram: '<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.4" cy="6.6" r=".6"/>',
     tiktok: '<path d="M9.5 11.5a4.2 4.2 0 1 0 4.2 4.2V3c.5 2.6 2.4 4.5 5.3 4.7"/>',
     x: '<path d="M4 4h4.5L20 20h-4.5z"/><path d="M4 20l6.6-6.6M20 4l-6.6 6.6"/>',
@@ -339,7 +341,7 @@
         else map = Object.fromEntries(Object.entries(data || {}).filter(([, k]) => !people || people.includes(k)));
       }
       SCOPE.ids = Object.keys(map).map(Number);
-      SCOPE.who = (id) => (map[id] ? `@${map[id].split(":")[1]}` : null);
+      SCOPE.who = (id) => (!map[id] ? null : map[id].startsWith("library:") ? map[id].slice(8) : `@${map[id].split(":")[1]}`);
       resolveReady();
       return window.dispatchEvent(new Event("scp-lib-scope"));
     }
