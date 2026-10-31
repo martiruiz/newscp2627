@@ -78,6 +78,12 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/577/577410.jpg?v=mvw97ccy"
   },
   {
+    "account": "houseofhighlights",
+    "account_platform": "instagram",
+    "views": 6003344,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/577/577019.jpg?v=mvw8ubb5"
+  },
+  {
     "account": "fcbayern",
     "account_platform": "instagram",
     "views": 5783892,
@@ -172,11 +178,5 @@
     "account_platform": "instagram",
     "views": 3073453,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/574/574001.jpg?v=mvuuhidp"
-  },
-  {
-    "account": "ibaillanos",
-    "account_platform": "tiktok",
-    "views": 2900000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/573/573137.jpg?v=mvutv6y4"
   }
 ]
