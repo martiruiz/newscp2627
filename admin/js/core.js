@@ -644,7 +644,7 @@
       try { localStorage.setItem(key, JSON.stringify(saved)); } catch {}
       log("ok", `Bright Data accepted it · collection ${snapshot_id}`);
     }
-    step(1, "Bright Data is collecting the posts (usually 1–3 minutes; you can leave this page)");
+    step(1, "Bright Data is collecting the posts (usually 3–6 minutes, TikTok a bit longer; you can leave this page)");
     let res, last = "";
     for (;;) {
       await new Promise((r) => setTimeout(r, 8000));

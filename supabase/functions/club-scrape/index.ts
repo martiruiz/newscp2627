@@ -81,7 +81,11 @@ async function storeAvatar(platform: string, handle: string, src: string | null)
 function tiktokRow(p: Rec, handle: string) {
   const id = String(first(p, "post_id", "id") || /video\/(\d+)/.exec(String(first(p, "url") || ""))?.[1] || "");
   if (!/^\d{10,}$/.test(id)) return null;
-  const user = String(first(p, "profile_username", "author", "username") || handle).replace(/^@/, "").toLowerCase();
+  // the @ from the post's link, else the account asked for: Bright Data's "profile_username" can be the display name
+  // ("Lamine Yamal"), which made a broken link and a post that didn't match the account
+  const fromUrl = /tiktok\.com\/@([\w.]+)\//.exec(String(first(p, "url") || ""))?.[1];
+  const named = String(first(p, "profile_username", "author", "username") || "").replace(/^@/, "").toLowerCase();
+  const user = (fromUrl || (/^[\w.]{1,30}$/.test(named) ? named : "") || handle).toLowerCase();
   const link = `https://www.tiktok.com/@${user}/video/${id}`;
   const tags = first(p, "hashtags");
   let at: string | null = null; try { at = new Date(Number(BigInt(id) >> 32n) * 1000).toISOString(); } catch { at = isoOf(first(p, "create_time")); }
@@ -121,6 +125,7 @@ Deno.serve(async (req) => {
     const pr = await bd(`/progress/${id}`).then((x) => x.json()).catch(() => ({}));
     const bdState = { status: pr?.status ?? null, records: pr?.records ?? null, errors: pr?.errors ?? null };   // Bright Data's own state, to see where it is
     if (pr?.status === "failed") return json({ status: "failed", error: pr?.error || "Bright Data couldn't collect this account.", bd: bdState });
+    if (pr?.status === "canceled" || pr?.status === "cancelled") return json({ status: "failed", error: "This collection was cancelled at Bright Data. Press Scrape again.", bd: bdState });
     if (pr?.status !== "ready") return json({ status: "running", bd: bdState });
     const recs = await bd(`/snapshot/${id}?format=json`).then((x) => x.json()).catch(() => null);
     if (!Array.isArray(recs)) return json({ status: "failed", error: "Bright Data gave no posts." });
