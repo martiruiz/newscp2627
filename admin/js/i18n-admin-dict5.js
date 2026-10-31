@@ -622,6 +622,8 @@ window.SCPA_DICT = Object.assign(window.SCPA_DICT || {}, {
   "Whole competition": ["Toda la competición", "Tota la competició"],
   "Whole agency": ["Toda la agencia", "Tota l'agència"],
   "Whole federation": ["Toda la federación", "Tota la federació"],
+  "By hand": ["A mano", "A mà"],
+  "None yet. Search it in the library or add it by hand (buttons on the right).": ["Todavía ninguno. Búscalo en la biblioteca o añádelo a mano (botones de la derecha).", "Encara cap. Busca'l a la biblioteca o afegeix-lo a mà (botons de la dreta)."],
   "Linked accounts": ["Cuentas vinculadas", "Comptes vinculats"],
   "Competitor": ["Competidor", "Competidor"],
   "Competitors": ["Competidores", "Competidors"],

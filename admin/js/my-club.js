@@ -72,7 +72,7 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
     const linkLabel = (l) => l.team_id ? teamName.get(l.team_id) : l.section_id ? `${secName.get(l.section_id)} · all teams` : "Whole club (global)";
     const table = (kind) => {
       const list = people.filter((p) => p.kind === kind);
-      if (!list.length) return `<p class="panel-pad muted">None yet. Add one with the buttons above or upload an Excel (More).</p>`;
+      if (!list.length) return `<p class="panel-pad muted">None yet. Search it in the library or add it by hand (buttons on the right).</p>`;
       return `<div class="table-wrap"><table class="data mcl-table"><thead><tr><th>${kindOf(kind)[1]}</th><th>Where</th><th>Accounts</th><th>Active</th><th></th></tr></thead><tbody>
         ${list.map((p) => `<tr${p.active ? "" : ' class="is-off"'}>
           <td><div class="ld-person">${p.photo_url ? `<img class="mcl-ph" src="${esc(p.photo_url)}" alt="">` : `<span class="ld-av">${esc(p.name.charAt(0).toUpperCase())}</span>`}<span><b>${esc(p.name)}</b></span></div></td>
@@ -120,7 +120,8 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
         <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>${esc((TYPES.find((x) => x[0] === c.kind) || TYPES[0])[1])} account</h2><span class="aud-count">${num((c.accounts || []).length + (c.library_tags || []).length)}</span>${info("The space's own profiles (Club settings) and its library tags. Their posts show in the client's first tab.")}<span class="spacer"></span><button class="btn btn-sm" type="button" data-add-library="account">${icon("library")}From the library</button></header>
           ${(c.accounts || []).length || (c.library_tags || []).length ? `<div class="mcl-clubaccs">${(c.library_tags || []).map((t) => `<span class="mcl-acc">Library tag · <b>${esc(t.name)}</b> · ${num(t.posts)} posts<button type="button" title="Remove" aria-label="Remove" data-tag-del="${t.id}">✕</button></span>`).join("")}${(c.accounts || []).map((a) => `<span class="mcl-acc">${esc(PF[a.platform] || a.platform)} @${esc(a.handle)}${CAN_SCRAPE.has(a.platform) ? scrapeBtn(a, true) : ""}</span>`).join("")}</div>`
             : `<p class="panel-pad muted">None yet. Add it from the library, or its profiles in Club settings.</p>`}</section>
-        ${KINDS.map(([k, , many]) => `<section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>${many}</h2><span class="aud-count">${num(people.filter((p) => p.kind === k).length)}</span></header>${table(k)}</section>`).join("")}
+        ${KINDS.map(([k, , many]) => `<section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>${many}</h2><span class="aud-count">${num(people.filter((p) => p.kind === k).length)}</span>
+          <span class="spacer"></span><button class="btn btn-sm" type="button" ${k === "sponsor" ? "data-add-sponsor" : `data-add-library="${k}"`}>${icon("library")}From the library</button><button class="btn btn-sm btn-ghost" type="button" data-add-person="${k}">${icon("plus")}By hand</button></header>${table(k)}</section>`).join("")}
       </div>
 
       <div class="mcl-pane" data-pane="members"${tab === "members" ? "" : " hidden"}>
