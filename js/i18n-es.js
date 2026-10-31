@@ -1170,7 +1170,7 @@ window.SCP_ES = {
   "The language you post in: ideas in it come first.": "El idioma en el que publicas: verás primero ideas en ese idioma.",
   "No matches.": "Sin resultados.",
   "Search a profile": "Busca un perfil",
-  "Club profiles": "Perfiles del club",
+  "Club profiles": "Perfiles",
   "Tap one or more profiles to see only theirs": "Toca uno o varios perfiles para ver solo los suyos",
   "No club profiles for this selection yet.": "Aún no hay perfiles del club en esta selección.",
   "The club's profiles have no posts imported yet.": "Los perfiles del club aún no tienen publicaciones importadas.",
