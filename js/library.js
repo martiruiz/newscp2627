@@ -1719,7 +1719,7 @@
       + chips.map((x, i) => `<button type="button" class="active-chip" data-chip="${i}"${x.title ? ` title="${esc(tx(x.title))}"` : ""} aria-label="${esc(tx("Remove {what}", { what: x.label }))}">${chipLead(x)}<span class="ac-tx"><b>${esc(x.label)}</b></span><span class="ac-x" aria-hidden="true">${icon("x")}</span></button>`).join("")
  : "";
     $("[data-save-search]").hidden = chips.length === 0;
-    $("[data-share-search]").hidden = chips.length === 0;
+    const shareBtn = $("[data-share-search]"); if (shareBtn) shareBtn.hidden = chips.length === 0;   // not in My Club (its posts are the club's only)
     const sidebarCount = chips.length - (s.q ? 1 : 0);
     const badge = $("[data-filter-count]");
     badge.textContent = sidebarCount; badge.hidden = sidebarCount <= 0;
@@ -1748,7 +1748,7 @@
     e.target.value = "";
     load(true);
   });
-  $("[data-share-search]").addEventListener("click", async () => {
+  $("[data-share-search]")?.addEventListener("click", async () => {
     try { await navigator.clipboard.writeText(location.href); toast(tx("Link copied: whoever opens it sees these filters")); }
     catch { window.prompt(tx("Copy this link"), location.href); }
   });
