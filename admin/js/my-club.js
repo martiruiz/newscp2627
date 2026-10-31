@@ -82,6 +82,8 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
           <td class="td-actions">${p.accounts.some((a) => CAN_SCRAPE.has(a.platform)) ? `<button class="btn btn-sm mcl-row-scrape" type="button" data-scrape-person="${p.id}" title="Scrape the last 10 posts of each of its Instagram / TikTok accounts">${icon("download")}Scrape</button>` : ""}<button class="icon-btn" type="button" title="Delete" aria-label="Delete" data-del="${p.id}">${icon("trash")}</button></td></tr>`).join("")}
         </tbody></table></div>`;
     };
+    // the section of one of the space's own accounts / tags, changed right here (empty: every section)
+    const secSel = (key, cur) => club.sections.length ? `<select class="mcl-chip-sec" title="Section" data-set-sec="${esc(JSON.stringify(key))}"><option value="">All sections</option>${club.sections.map((x) => `<option value="${x.id}"${Number(cur) === x.id ? " selected" : ""}>${esc(x.name)}</option>`).join("")}</select>` : "";
     const nPlayers = people.filter((p) => p.kind === "player").length, nSponsors = people.filter((p) => p.kind === "sponsor").length;
     const nPosts = people.reduce((n, p) => n + p.accounts.reduce((m, a) => m + (a.posts || 0), 0), 0);
     let tab = "people"; try { tab = localStorage.getItem("scp-mcl-tab") || "people"; } catch {}
@@ -118,7 +120,7 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
         <div class="mcl-live" data-live hidden></div>
         ${club.sections.length ? `<p class="mcl-sum">${club.sections.map((x) => `<b>${esc(x.name)}</b> ${x.teams.map((t) => esc(t.name)).join(", ") || "—"}`).join(" · ")}</p>` : ""}
         <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>${esc((TYPES.find((x) => x[0] === c.kind) || TYPES[0])[1])} account</h2><span class="aud-count">${num((c.accounts || []).length + (c.library_tags || []).length)}</span>${info("The space's own profiles (Club settings) and its library tags. Their posts show in the client's first tab.")}<span class="spacer"></span><button class="btn btn-sm" type="button" data-add-library="account">${icon("library")}From the library</button></header>
-          ${(c.accounts || []).length || (c.library_tags || []).length ? `<div class="mcl-clubaccs">${(c.library_tags || []).map((t) => `<span class="mcl-acc">Library tag · <b>${esc(t.name)}</b> · ${num(t.posts)} posts<button type="button" title="Remove" aria-label="Remove" data-tag-del="${t.id}">✕</button></span>`).join("")}${(c.accounts || []).map((a) => `<span class="mcl-acc">${esc(PF[a.platform] || a.platform)} @${esc(a.handle)}${CAN_SCRAPE.has(a.platform) ? scrapeBtn(a, true) : ""}</span>`).join("")}</div>`
+          ${(c.accounts || []).length || (c.library_tags || []).length ? `<div class="mcl-clubaccs">${(c.library_tags || []).map((t) => `<span class="mcl-acc">Library tag · <b>${esc(t.name)}</b> · ${num(t.posts)} posts${secSel({ tag_id: t.id }, t.section_id)}<button type="button" title="Remove" aria-label="Remove" data-tag-del="${t.id}">✕</button></span>`).join("")}${(c.accounts || []).map((a) => `<span class="mcl-acc">${esc(PF[a.platform] || a.platform)} @${esc(a.handle)}${secSel({ platform: a.platform, handle: a.handle }, a.section_id)}${CAN_SCRAPE.has(a.platform) ? scrapeBtn(a, true) : ""}</span>`).join("")}</div>`
             : `<p class="panel-pad muted">None yet. Add it from the library, or its profiles in Club settings.</p>`}</section>
         ${KINDS.map(([k, , many]) => `<section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>${many}</h2><span class="aud-count">${num(people.filter((p) => p.kind === k).length)}</span>
           <span class="spacer"></span><button class="btn btn-sm" type="button" ${k === "sponsor" ? "data-add-sponsor" : `data-add-library="${k}"`}>${icon("library")}From the library</button><button class="btn btn-sm btn-ghost" type="button" data-add-person="${k}">${icon("plus")}By hand</button></header>${table(k)}</section>`).join("")}
@@ -165,6 +167,13 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
               <button class="btn btn-ghost btn-sm" type="button" data-colors-clear>${c.colors ? "Use the crest's colours" : "From the crest (no colours set)"}</button>
             </div>
             <div class="mcl-cprev" data-cprev style="--c1:${esc(c.colors?.primary || "#f0b84a")};--c2:${esc(c.colors?.secondary || "#121b33")}"><span>${esc(c.name)}</span></div>
+          </div>
+          <div class="mcl-set-card">
+            <div class="mcl-set-h"><b>Sections</b> <em class="mcl-count">${num(club.sections.length)}</em><small>In this order in the client's Section filter (Primer equipo masculino, Femenino, Cantera…). Each profile and library tag goes in its section in Linked accounts.</small></div>
+            <div class="mcl-secs">${club.sections.map((x, i) => `<div class="mcl-sec-row"><input class="input input-sm" value="${esc(x.name)}" data-sec-name="${x.id}" aria-label="Section name">
+              <button class="icon-btn" type="button" title="Up" aria-label="Up" data-sec-move="up" data-sec="${x.id}"${i ? "" : " disabled"}>↑</button><button class="icon-btn" type="button" title="Down" aria-label="Down" data-sec-move="down" data-sec="${x.id}"${i < club.sections.length - 1 ? "" : " disabled"}>↓</button>
+              <button class="icon-btn" type="button" title="Delete" aria-label="Delete" data-sec-del="${x.id}">${icon("trash")}</button></div>`).join("") || `<p class="muted">No sections yet.</p>`}
+              <div class="mcl-sec-row"><input class="input input-sm" placeholder="New section (e.g. Primer equipo masculino)" data-sec-new><button class="btn btn-ghost btn-sm" type="button" data-sec-add>${icon("plus")}Add section</button></div></div>
           </div>
           <div class="mcl-set-card">
             <div class="mcl-set-h"><b>Club profiles</b> <em class="mcl-count">${num((c.accounts || []).length)}</em><small>The club's own accounts. They also tell which sponsor posts are linked to the club (the ones that mention them).</small></div>
@@ -523,6 +532,17 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
       if (b.matches("[data-daily]")) return dailyFile();
       if (b.matches("[data-add-sponsor]")) return addSponsor();
       if (b.dataset.addLibrary) return addFromLibrary(b.dataset.addLibrary);
+      if (b.dataset.secMove) { await rpc("admin_club_section", { p_club: cur, p_action: b.dataset.secMove, p: { id: Number(b.dataset.sec) } }); return loadClub(); }
+      if (b.dataset.secDel) {
+        const x = club.sections.find((s) => s.id === Number(b.dataset.secDel));
+        if (!(await A.confirmDialog({ title: `Delete ${x?.name || "this section"}?`, text: "Its teams go too. Its players and sponsors stay in the space (whole club); its profiles and tags show in every section.", confirm: "Delete", danger: true }))) return;
+        await rpc("admin_club_section", { p_club: cur, p_action: "delete", p: { id: x.id } }); A.toast("Section deleted"); return loadClub();
+      }
+      if (b.matches("[data-sec-add]")) {
+        const inp = $("[data-sec-new]", main), name = inp.value.trim(); if (!name) return inp.focus();
+        const r = await rpc("admin_club_section", { p_club: cur, p_action: "add", p: { name } }); if (!r.ok) return fail(new Error(r.error));
+        A.toast(`${name} added`); return loadClub();
+      }
       if (b.dataset.tagDel) { await rpc("admin_club_tag_remove", { p_club: cur, p_tag: Number(b.dataset.tagDel) }); A.toast("Library tag removed"); return loadClub(); }
       if (b.matches("[data-acc-add]")) { $("[data-accs]").insertAdjacentHTML("beforeend", accRow({ platform: "instagram", handle: "" })); return $("[data-accs] .mcl-acc-row:last-child [name=acc_handle]").focus(); }
       if (b.matches("[data-acc-del]")) return b.closest(".mcl-acc-row").remove();
@@ -632,6 +652,8 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
   // mousedown so the pick happens before the input loses focus
   main.addEventListener("mousedown", (e) => { const o = e.target.closest(".mcl-acc-opt"); if (!o) return; e.preventDefault(); ddPick(o.closest(".mcl-acc-q").querySelector("input"), o); });
   main.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && e.target.matches("[data-sec-new]")) { e.preventDefault(); return $("[data-sec-add]", main)?.click(); }
+    if (e.key === "Enter" && e.target.matches("[data-sec-name]")) { e.preventDefault(); return e.target.blur(); }
     if (!e.target.matches("[name=acc_handle]")) return;
     const dd = ddOf(e.target); if (dd.hidden) return;
     const opts = [...dd.querySelectorAll(".mcl-acc-opt")], i = opts.findIndex((o) => o.classList.contains("is-act"));
@@ -646,6 +668,8 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
     // another network: search the same text again on it
     if (e.target.matches("[name=acc_platform]")) { const h = e.target.closest(".mcl-acc-row").querySelector("[name=acc_handle]"); if (h.value.trim().length >= 2) { h.focus(); accLookup(h); } return; }
     try {
+      if (e.target.dataset.secName) { await rpc("admin_club_section", { p_club: cur, p_action: "rename", p: { id: Number(e.target.dataset.secName), name: e.target.value } }); A.toast("Section renamed"); return loadClub(); }
+      if (e.target.dataset.setSec) { await rpc("admin_club_set_section", { p_club: cur, p: JSON.parse(e.target.dataset.setSec), p_section: e.target.value ? Number(e.target.value) : null }); return A.toast("Section saved"); }
       if (e.target.matches("[data-logo-file]")) { const file = e.target.files[0]; e.target.value = ""; if (file) await uploadLogo(file); return; }
       if (e.target.dataset.active) { await rpc("admin_club_edit", { p_what: "person", p_id: Number(e.target.dataset.active), p: { active: e.target.checked } }); return loadClub(); }
       if (e.target.matches("[data-file]")) {
