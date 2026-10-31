@@ -1,5 +1,11 @@
 [
   {
+    "account": "lamine.yamal",
+    "account_platform": "tiktok",
+    "views": 138800000,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/578/578402.jpg?v=mvwd4p4h"
+  },
+  {
     "account": "celine.dept",
     "account_platform": "instagram",
     "views": 29767897,
@@ -66,6 +72,12 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/570/570094.jpg?v=mvtjeqzk"
   },
   {
+    "account": "espnfc",
+    "account_platform": "instagram",
+    "views": 6003991,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/577/577410.jpg?v=mvw97ccy"
+  },
+  {
     "account": "fcbayern",
     "account_platform": "instagram",
     "views": 5783892,
@@ -106,6 +118,12 @@
     "account_platform": "instagram",
     "views": 4361942,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/570/570159.jpg?v=mvtmnbf2"
+  },
+  {
+    "account": "isabelapagliari",
+    "account_platform": "instagram",
+    "views": 4281599,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/577/577207.jpg?v=mvw8wkdx"
   },
   {
     "account": "genoacfc",
@@ -160,23 +178,5 @@
     "account_platform": "tiktok",
     "views": 2900000,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/573/573137.jpg?v=mvutv6y4"
-  },
-  {
-    "account": "espn",
-    "account_platform": "tiktok",
-    "views": 2900000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/573/573325.jpg?v=mvuty7d3"
-  },
-  {
-    "account": "daznfootball",
-    "account_platform": "instagram",
-    "views": 2749449,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/570/570400.jpg?v=mvtludtg"
-  },
-  {
-    "account": "mancity",
-    "account_platform": "instagram",
-    "views": 2736963,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/573/573929.jpg?v=mvuufl15"
   }
 ]

@@ -6,7 +6,17 @@
     <atom:link href="https://sportscontentplaybook.com/es/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Ideas, tendencias y análisis de contenido deportivo en redes sociales.</description>
     <language>es</language>
-    <lastBuildDate>Fri, 30 Oct 2026 08:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Sat, 31 Oct 2026 08:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Ideas de Reels deportivos: convierte un vídeo largo en diez Reels</title>
+      <link>https://sportscontentplaybook.com/es/blog/sports-reels-ideas-one-long-video-ten-reels.html</link>
+      <guid isPermaLink="true">https://sportscontentplaybook.com/es/blog/sports-reels-ideas-one-long-video-ten-reels.html</guid>
+      <pubDate>Sat, 31 Oct 2026 08:00:00 GMT</pubDate>
+      <dc:creator>Martí Ruiz</dc:creator>
+      <description>Instagram está probando vídeos de hasta 90 minutos y una forma de cortarlos en Reels. Así pueden los equipos deportivos preparar diez Reels a partir de cada vídeo largo.</description>
+      <enclosure url="https://sportscontentplaybook.com/assets/blog/sports-reels-ideas-one-long-video-ten-reels.jpg" length="57061" type="image/jpeg"/>
+      <media:content url="https://sportscontentplaybook.com/assets/blog/sports-reels-ideas-one-long-video-ten-reels.jpg" medium="image" type="image/jpeg"/>
+    </item>
     <item>
       <title>Ideas de contenido para redes sociales de fútbol: cuenta las historias que solo tu club posee</title>
       <link>https://sportscontentplaybook.com/es/blog/football-social-media-content-ideas-stories-only-your-club-owns.html</link>
@@ -296,16 +306,6 @@
       <description>El Barça Femení y el Real Madrid Femenino llegaron a la final de la Supercopa de España femenina con estrategias sociales opuestas, que muestran cómo el volumen, el timing y el control de la narrativa dan forma al storytelling digital en el fútbol femenino.</description>
       <enclosure url="https://sportscontentplaybook.com/assets/blog/two-paths-to-the-final-how-barca-and-real-madrid-communicated-their-place-in-the-spanish-womens-super-cup-final.jpg" length="474668" type="image/jpeg"/>
       <media:content url="https://sportscontentplaybook.com/assets/blog/two-paths-to-the-final-how-barca-and-real-madrid-communicated-their-place-in-the-spanish-womens-super-cup-final.jpg" medium="image" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>No vuelvas a perder una gran idea: tu biblioteca personalizada llega a Sports Content Playbook</title>
-      <link>https://sportscontentplaybook.com/es/blog/never-lose-a-great-idea-again-your-personalized-library-arrives-on-sports-content-playbook.html</link>
-      <guid isPermaLink="true">https://sportscontentplaybook.com/es/blog/never-lose-a-great-idea-again-your-personalized-library-arrives-on-sports-content-playbook.html</guid>
-      <pubDate>Tue, 13 Jan 2026 08:00:00 GMT</pubDate>
-      <dc:creator>Martí</dc:creator>
-      <description>Sports Content Playbook presenta una nueva función que permite a los creadores guardar formatos e ideas en una biblioteca personalizada para inspirarse en futuros contenidos deportivos.</description>
-      <enclosure url="https://sportscontentplaybook.com/assets/blog/never-lose-a-great-idea-again-your-personalized-library-arrives-on-sports-content-playbook.jpg" length="332426" type="image/jpeg"/>
-      <media:content url="https://sportscontentplaybook.com/assets/blog/never-lose-a-great-idea-again-your-personalized-library-arrives-on-sports-content-playbook.jpg" medium="image" type="image/jpeg"/>
     </item>
   </channel>
 </rss>
