@@ -9233,7 +9233,7 @@ body.club-themed .mc-strip::after { content: ""; position: absolute; left: 18px;
 .lib-head .lfb-glass .lfb-btn[data-lfb="occasion"] { --g: linear-gradient(135deg, #5a3a2a, #77503a); --glow: 119, 80, 58; }
 .lib-head .lfb-glass .lfb-btn[data-lfb="goal"] { --g: linear-gradient(135deg, #522e44, #6c3e5a); --glow: 108, 62, 90; }
 .lib-head .lfb-row.lfb-glass { width: 100%; flex-wrap: nowrap; }
-.lib-head .lfb-glass .lfb-btn, .lib-head .lfb-glass .lfb-btn:hover, .lib-head .lfb-glass .lfb-btn.is-open, .lib-head .lfb-glass .lfb-btn.is-open:hover { flex: 1 1 0; justify-content: center; min-width: 0; }
+.lib-head .lfb-glass:not(.mcb-row) .lfb-btn, .lib-head .lfb-glass:not(.mcb-row) .lfb-btn:hover, .lib-head .lfb-glass:not(.mcb-row) .lfb-btn.is-open, .lib-head .lfb-glass:not(.mcb-row) .lfb-btn.is-open:hover { flex: 1 1 0; justify-content: center; min-width: 0; }
 .lib-head .lfb-row.lfb-glass:not(.mcb-row) .lfb-btn { flex: 1 1 auto; justify-content: center; min-width: 0; }   /* share out the centre; the longest name keeps its room */
 
 /* the panels' options (everything but crests): tiles, three per row */

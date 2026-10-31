@@ -5,8 +5,17 @@
 --     Removing them (or the membership running out) takes it away.
 --   · Trial: a superadmin gives an e-mail 7 days of the club's space (Admin → My Club → Members → "7-day trial"); it can be
 --     extended by 7 more days or turned into a full membership. When it runs out they see the My Club offer again.
+--   · What we sell: a club, a competition, an agency or a federation (clubs.kind, Admin → My Club → Settings); the page
+--     and the menu say "My club / My competition / My agency / My federation". Inside, besides the space's own accounts:
+--     competitors (rivals to compare with), players, content creators and sponsors (club_people.kind).
 --   · Club-only posts (content_ideas.club_only, my-club-daily.sql) can only be read by that club's members: before, any
 --     library member could open them by passing their ids to library_ideas or reading content_ideas.
+
+alter table public.clubs add column if not exists kind text not null default 'club';
+alter table public.clubs drop constraint if exists clubs_kind_check;
+alter table public.clubs add constraint clubs_kind_check check (kind in ('club', 'competition', 'agency', 'federation'));
+alter table public.club_people drop constraint if exists club_people_kind_check;
+alter table public.club_people add constraint club_people_kind_check check (kind in ('player', 'sponsor', 'competitor', 'creator'));
 
 alter table public.club_members add column if not exists ends_at timestamptz;          -- null = no end
 alter table public.club_members add column if not exists trial boolean not null default false;
@@ -22,7 +31,7 @@ $$;
 -- the clubs of the account, with the end of its trial (null: not a trial)
 create or replace function public.my_clubs()
 returns jsonb language sql stable security definer set search_path = public as $$
-  select coalesce(jsonb_agg(jsonb_build_object('id', c.id, 'name', c.name, 'logo_url', c.logo_url,
+  select coalesce(jsonb_agg(jsonb_build_object('id', c.id, 'name', c.name, 'logo_url', c.logo_url, 'kind', c.kind,
       'trial_ends', (select m.ends_at from public.club_members m where m.club_id = c.id and m.user_id = auth.uid() and m.trial)) order by c.name), '[]'::jsonb)
   from public.clubs c
   where c.active and public.club_can_view(c.id);   -- admins: every club (to set them up and check them)
@@ -118,7 +127,7 @@ returns jsonb language plpgsql stable security definer set search_path = public 
 begin
   if not public.is_admin() then raise exception 'Not allowed'; end if;
   return jsonb_build_object(
-    'club', (select jsonb_build_object('id', c.id, 'name', c.name, 'logo_url', c.logo_url, 'handles', to_jsonb(c.handles), 'accounts', c.accounts, 'active', c.active, 'colors', c.colors,
+    'club', (select jsonb_build_object('id', c.id, 'name', c.name, 'kind', c.kind, 'logo_url', c.logo_url, 'handles', to_jsonb(c.handles), 'accounts', c.accounts, 'active', c.active, 'colors', c.colors,
       -- the club's logo in the Content Library (a club filter with the same name), to reuse it
       'library_logo', (select ic.logo_url from public.idea_catalog ic where ic.category = 'club' and lower(ic.name) = lower(c.name) and ic.logo_url is not null limit 1))
       from public.clubs c where c.id = p_club),
@@ -144,10 +153,56 @@ create or replace function public.admin_clubs()
 returns jsonb language plpgsql stable security definer set search_path = public as $$
 begin
   if not public.is_admin() then raise exception 'Not allowed'; end if;
-  return coalesce((select jsonb_agg(jsonb_build_object('id', c.id, 'name', c.name, 'logo_url', c.logo_url, 'handles', to_jsonb(c.handles), 'active', c.active,
+  return coalesce((select jsonb_agg(jsonb_build_object('id', c.id, 'name', c.name, 'kind', c.kind, 'logo_url', c.logo_url, 'handles', to_jsonb(c.handles), 'active', c.active,
       'members', (select count(*) from public.club_members m where m.club_id = c.id and not m.trial and (m.ends_at is null or m.ends_at > now())),
       'trials', (select count(*) from public.club_members m where m.club_id = c.id and m.trial and m.ends_at > now()),
       'players', (select count(*) from public.club_people p where p.club_id = c.id and p.kind = 'player'),
-      'sponsors', (select count(*) from public.club_people p where p.club_id = c.id and p.kind = 'sponsor')) order by c.name)
+      'sponsors', (select count(*) from public.club_people p where p.club_id = c.id and p.kind = 'sponsor'),
+      'competitors', (select count(*) from public.club_people p where p.club_id = c.id and p.kind = 'competitor'),
+      'creators', (select count(*) from public.club_people p where p.club_id = c.id and p.kind = 'creator')) order by c.name)
     from public.clubs c), '[]'::jsonb);
+end $$;
+
+-- the space's type, saved from Admin → My Club → Settings
+create or replace function public.admin_club_save(p jsonb)
+returns bigint language plpgsql security definer set search_path = public as $$
+declare v_id bigint := nullif(p ->> 'id', '')::bigint; hs text[]; acc jsonb;
+  v_kind text := case when p ->> 'kind' in ('club', 'competition', 'agency', 'federation') then p ->> 'kind' end;
+begin
+  if not public.is_admin() then raise exception 'Not allowed'; end if;
+  select coalesce(jsonb_agg(distinct jsonb_strip_nulls(jsonb_build_object('platform', lower(a ->> 'platform'), 'handle', public.clean_handle(a ->> 'handle'),
+      'section_id', nullif(a ->> 'section_id', '')::bigint))), '[]'::jsonb) into acc
+    from jsonb_array_elements(coalesce(p -> 'accounts', '[]'::jsonb)) a
+    where public.clean_handle(a ->> 'handle') is not null and lower(a ->> 'platform') in ('instagram', 'tiktok', 'x', 'youtube', 'facebook', 'linkedin', 'threads');
+  select coalesce(array_agg(distinct a ->> 'handle'), '{}') into hs from jsonb_array_elements(acc) a;
+  if v_id is null then
+    insert into public.clubs (name, logo_url, handles, accounts, kind) values (trim(p ->> 'name'), nullif(trim(p ->> 'logo_url'), ''), hs, acc, coalesce(v_kind, 'club')) returning id into v_id;
+  else
+    update public.clubs set name = trim(p ->> 'name'), logo_url = nullif(trim(p ->> 'logo_url'), ''), handles = hs, accounts = acc, kind = coalesce(v_kind, kind),
+      active = coalesce((p ->> 'active')::boolean, active), colors = case when p ? 'colors' then nullif(p -> 'colors', '{}'::jsonb) else colors end, updated_at = now() where id = v_id;
+  end if;
+  return v_id;
+end $$;
+
+-- the space's type on its page; the Excel's "type" column knows competitors and creators; creators' club-only posts get
+-- the entity "Content Creators" (competitors none: a rival can be a club, a competition…). Rewrites the live versions.
+do $$
+declare d text;
+begin
+  d := pg_get_functiondef('public.club_space(bigint)'::regprocedure);
+  if position($q$'kind', c.kind, 'logo_url', c.logo_url, 'accounts'$q$ in d) = 0 then
+    if position($q$'logo_url', c.logo_url, 'accounts'$q$ in d) = 0 then raise exception 'club_space: unexpected version'; end if;
+    execute replace(d, $q$'logo_url', c.logo_url, 'accounts'$q$, $q$'kind', c.kind, 'logo_url', c.logo_url, 'accounts'$q$);
+  end if;
+  d := pg_get_functiondef('public.admin_club_import(bigint, jsonb)'::regprocedure);
+  if position($q$then 'sponsor' else 'player' end;$q$ in d) > 0 then
+    execute replace(d, $q$then 'sponsor' else 'player' end;$q$, $q$then 'sponsor'
+      when lower(coalesce(r ->> 'type', '')) ~ '^(compet|rival)' then 'competitor'
+      when lower(coalesce(r ->> 'type', '')) ~ '^(creat|influ)' then 'creator' else 'player' end;$q$);
+  end if;
+  d := pg_get_functiondef('public.club_mark_posts(bigint[])'::regprocedure);
+  if position($q$case when _cp.kind = 'player' then 'Player' else 'Brand' end$q$ in d) > 0 then
+    execute replace(d, $q$case when _cp.kind = 'player' then 'Player' else 'Brand' end$q$,
+      $q$case _cp.kind when 'player' then 'Player' when 'sponsor' then 'Brand' when 'creator' then 'Content Creators' end$q$);
+  end if;
 end $$;

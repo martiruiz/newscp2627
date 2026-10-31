@@ -18,6 +18,11 @@
 const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Data collects here (club-scrape)
   const PF = { instagram: "Instagram", tiktok: "TikTok", x: "X", youtube: "YouTube", facebook: "Facebook", linkedin: "LinkedIn" };
   let clubs = [], cur = null, club = null;
+  // what we sell (clubs.kind): the client's menu and page say "My club / My competition / My agency / My federation"
+  const TYPES = [["club", "Club"], ["competition", "Competition"], ["agency", "Agency"], ["federation", "Federation"]];
+  // who is linked to a space (club_people.kind), in the order the client's page shows them
+  const KINDS = [["competitor", "Competitor", "Competitors", "Real Madrid"], ["player", "Player", "Players", "Lamine Yamal"], ["creator", "Creator", "Content creators", "Ibai Llanos"], ["sponsor", "Sponsor", "Sponsors", "Spotify"]];
+  const kindOf = (k) => KINDS.find((x) => x[0] === k) || KINDS[1];
 
   main.innerHTML = `<div class="page-head"><div><h1>My Club</h1><p>Each club's space: who can open it, its sections and teams, its players and sponsors.</p></div>
     <div class="head-actions"><button class="btn" type="button" data-daily title="Every active club's accounts, for the daily scraping run">${icon("download")}Daily accounts (all clubs)</button><button class="btn btn-primary" type="button" data-new>${icon("plus")}New club</button></div></div>
@@ -29,7 +34,7 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
     cur = pick ?? cur ?? clubs[0]?.id ?? null;
     $("[data-clubs]").innerHTML = clubs.length ? clubs.map((c) => `<button type="button" class="mcl-club${c.id === cur ? " is-on" : ""}" data-pick="${c.id}">
         ${c.logo_url ? `<img src="${esc(c.logo_url)}" alt="">` : `<span class="mcl-ini">${esc(c.name.slice(0, 2).toUpperCase())}</span>`}
-        <span><b>${esc(c.name)}</b><small>${num(c.players)} players · ${num(c.sponsors)} sponsors · ${num(c.members)} members${c.trials ? ` · ${num(c.trials)} trial` : ""}${c.active ? "" : " · off"}</small></span></button>`).join("")
+        <span><b>${esc(c.name)}</b><small>${esc((TYPES.find((x) => x[0] === c.kind) || TYPES[0])[1])} · ${num(c.players)} players · ${num(c.sponsors)} sponsors · ${num(c.members)} members${c.trials ? ` · ${num(c.trials)} trial` : ""}${c.active ? "" : " · off"}</small></span></button>`).join("")
       : `<p class="muted">No clubs yet. Press “New club”.</p>`;
     if (cur) loadClub(); else $("[data-club]").innerHTML = "";
   }
@@ -67,8 +72,8 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
     const linkLabel = (l) => l.team_id ? teamName.get(l.team_id) : l.section_id ? `${secName.get(l.section_id)} · all teams` : "Whole club (global)";
     const table = (kind) => {
       const list = people.filter((p) => p.kind === kind);
-      if (!list.length) return `<p class="panel-pad muted">No ${kind === "player" ? "players" : "sponsors"} yet. Add one with “${kind === "player" ? "Add player" : "Add sponsor"}” or upload the Excel above.</p>`;
-      return `<div class="table-wrap"><table class="data mcl-table"><thead><tr><th>${kind === "player" ? "Player" : "Sponsor"}</th><th>Where</th><th>Accounts</th><th>Active</th><th></th></tr></thead><tbody>
+      if (!list.length) return `<p class="panel-pad muted">None yet. Add one with the buttons above or upload an Excel (More).</p>`;
+      return `<div class="table-wrap"><table class="data mcl-table"><thead><tr><th>${kindOf(kind)[1]}</th><th>Where</th><th>Accounts</th><th>Active</th><th></th></tr></thead><tbody>
         ${list.map((p) => `<tr${p.active ? "" : ' class="is-off"'}>
           <td><div class="ld-person">${p.photo_url ? `<img class="mcl-ph" src="${esc(p.photo_url)}" alt="">` : `<span class="ld-av">${esc(p.name.charAt(0).toUpperCase())}</span>`}<span><b>${esc(p.name)}</b></span></div></td>
           <td>${p.links.map((l) => `<span class="mcl-link${l.live ? "" : " is-ended"}" title="${esc([l.starts_on && `from ${l.starts_on}`, l.ends_on && `until ${l.ends_on}`].filter(Boolean).join(" ") || "no dates")}">${esc(linkLabel(l))}${l.live ? `<button type="button" title="End this link today (keeps the history)" data-end="${l.id}">✕</button>` : ` <small>ended</small><button type="button" title="Active again" data-relink="${l.id}">↺</button>`}</span>`).join("")}</td>
@@ -77,10 +82,10 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
           <td class="td-actions">${p.accounts.some((a) => CAN_SCRAPE.has(a.platform)) ? `<button class="btn btn-sm mcl-row-scrape" type="button" data-scrape-person="${p.id}" title="Scrape the last 10 posts of each of its Instagram / TikTok accounts">${icon("download")}Scrape</button>` : ""}<button class="icon-btn" type="button" title="Delete" aria-label="Delete" data-del="${p.id}">${icon("trash")}</button></td></tr>`).join("")}
         </tbody></table></div>`;
     };
-    const nPlayers = people.filter((p) => p.kind === "player").length, nSponsors = people.length - nPlayers;
+    const nPlayers = people.filter((p) => p.kind === "player").length, nSponsors = people.filter((p) => p.kind === "sponsor").length;
     const nPosts = people.reduce((n, p) => n + p.accounts.reduce((m, a) => m + (a.posts || 0), 0), 0);
     let tab = "people"; try { tab = localStorage.getItem("scp-mcl-tab") || "people"; } catch {}
-    const tabs = [["people", "Players & sponsors", nPlayers + nSponsors], ["members", "Members", club.members.length], ["settings", "Club settings", null]];
+    const tabs = [["people", "Linked accounts", people.length], ["members", "Members", club.members.length], ["settings", "Club settings", null]];
     $("[data-club]").innerHTML = `
       <section class="mcl-hero"${c.colors?.primary ? ` style="--c1:${esc(c.colors.primary)};--c2:${esc(c.colors.secondary || c.colors.primary)}"` : ""}>
         <span class="mcl-hero-logo">${c.logo_url ? `<img src="${esc(c.logo_url)}" alt="">` : `<span>${esc(c.name.slice(0, 2).toUpperCase())}</span>`}</span>
@@ -93,8 +98,7 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
 
       <div class="mcl-pane" data-pane="people"${tab === "people" ? "" : " hidden"}>
         <div class="mcl-toolbar">
-          <button class="btn btn-primary" type="button" data-add-person="player">${icon("plus")}Add player</button>
-          <button class="btn" type="button" data-add-person="sponsor">${icon("plus")}Add sponsor</button>
+          ${KINDS.map(([k, one]) => `<button class="btn${k === "player" ? " btn-primary" : ""}" type="button" data-add-person="${k}">${icon("plus")}Add ${one.toLowerCase()}</button>`).join("")}
           <button class="btn" type="button" data-add-sponsor>${icon("library")}Sponsor from the library</button>
           <span class="spacer"></span>
           <details class="mcl-more"><summary class="btn btn-ghost">More${icon("chevron")}</summary>
@@ -114,8 +118,7 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
         ${club.sections.length ? `<p class="mcl-sum">${club.sections.map((x) => `<b>${esc(x.name)}</b> ${x.teams.map((t) => esc(t.name)).join(", ") || "—"}`).join(" · ")}</p>` : ""}
         ${(c.accounts || []).length ? `<section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Club accounts</h2><span class="aud-count">${num(c.accounts.length)}</span>${info("The club's own profiles (Club settings). Their posts go to the library with the club's tag, like the daily scraping.")}</header>
           <div class="mcl-clubaccs">${c.accounts.map((a) => `<span class="mcl-acc">${esc(PF[a.platform] || a.platform)} @${esc(a.handle)}${CAN_SCRAPE.has(a.platform) ? scrapeBtn(a, true) : ""}</span>`).join("")}</div></section>` : ""}
-        <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Players</h2><span class="aud-count">${num(nPlayers)}</span></header>${table("player")}</section>
-        <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Sponsors</h2><span class="aud-count">${num(nSponsors)}</span></header>${table("sponsor")}</section>
+        ${KINDS.map(([k, , many]) => `<section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>${many}</h2><span class="aud-count">${num(people.filter((p) => p.kind === k).length)}</span></header>${table(k)}</section>`).join("")}
       </div>
 
       <div class="mcl-pane" data-pane="members"${tab === "members" ? "" : " hidden"}>
@@ -142,6 +145,7 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
                 <span class="mcl-crest-ov">${icon("import")}Change</span><input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden data-logo-file></label>
               <div class="mcl-ident-f">
                 <label>Name<input class="input mcl-name-in" name="name" value="${esc(c.name)}" required></label>
+                <label>Type<select class="select" name="kind" title="The client's menu and page say My club, My competition, My agency or My federation">${TYPES.map(([k, l]) => `<option value="${k}"${(c.kind || "club") === k ? " selected" : ""}>${l}</option>`).join("")}</select></label>
                 <div class="mcl-logo-act">
                   ${c.library_logo && c.library_logo !== c.logo_url ? `<button class="btn btn-sm" type="button" data-logo-lib="${esc(c.library_logo)}">Use the SCP logo</button>` : ""}
                   ${c.logo_url ? `<button class="btn btn-ghost btn-sm" type="button" data-logo-clear>Remove logo</button>` : ""}
@@ -189,6 +193,8 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
       const r = {};
       for (const [k, v] of Object.entries(raw)) { const key = Object.keys(COLS).find((c) => COLS[c].test(String(k).trim().toLowerCase())); if (key) r[key] = key === "from" || key === "to" ? dateOf(v) : String(v ?? "").trim(); }
       if (!r.type && /spons|patroc/i.test(name)) r.type = "sponsor";
+      if (!r.type && /compet|rival/i.test(name)) r.type = "competitor";
+      if (!r.type && /creat|influ/i.test(name)) r.type = "creator";
       if (r.name) rows.push(r);
     }
     return rows;
@@ -198,7 +204,9 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
       ["Player", "Player name", "https://…/photo.jpg", "Football", "First team (men)", "handle", "handle", "", "", "", "", "yes", "2026-07-01", ""],
       ["Player", "Player name", "", "Basketball", "First team (women)", "handle", "", "", "", "", "", "yes", "", ""],
       ["Sponsor", "Brand", "https://…/logo.png", "", "", "brandhandle", "", "", "", "", "", "yes", "2025-07-01", "2028-06-30"],
-      ["Sponsor", "Brand 2", "", "Handball", "", "brand2", "", "", "", "", "", "yes", "", ""]];
+      ["Sponsor", "Brand 2", "", "Handball", "", "brand2", "", "", "", "", "", "yes", "", ""],
+      ["Competitor", "Rival club", "", "", "", "rivalhandle", "", "", "", "", "", "yes", "", ""],
+      ["Creator", "Creator name", "", "", "", "creatorhandle", "creatorhandle", "", "", "", "", "yes", "", ""]];
     const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), "Club");
     XLSX.writeFile(wb, "scp-my-club-template.xlsx");
   }
@@ -235,10 +243,10 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
     const secNames = uniq([...club.sections.map((x) => x.name), ...catalog.byCat.sport.slice().sort((a, b) => (b.ideas || 0) - (a.ideas || 0)).map((v) => v.name)]);
     const teamNames = uniq([...club.sections.flatMap((x) => x.teams.map((t) => t.name)), "First team (men)", "First team (women)", "B team", "Academy"]);
     const opts = (names) => names.map((name, i) => ({ id: i + 1, name }));
-    const m = A.modal({ title: kind === "player" ? "Add player" : "Add sponsor", size: "sm",
+    const m = A.modal({ title: `Add ${kindOf(kind)[1].toLowerCase()}`, size: "sm",
       body: `<form class="mcl-new mcl-person" data-person-form>
-        <label>Name<input class="input" name="name" required maxlength="120" placeholder="${kind === "player" ? "Lamine Yamal" : "Spotify"}" autofocus></label>
-        <div class="mcl-person-2"><div class="field"><span class="label">Section${kind === "sponsor" ? " <small>(empty: the whole club)</small>" : ""}</span><div data-ms-sec></div></div>
+        <label>Name<input class="input" name="name" required maxlength="120" placeholder="${kindOf(kind)[3]}" autofocus></label>
+        <div class="mcl-person-2"><div class="field"><span class="label">Section${kind !== "player" ? " <small>(empty: the whole space)</small>" : ""}</span><div data-ms-sec></div></div>
           <div class="field"><span class="label">Team</span><div data-ms-team></div></div></div>
         <div class="mcl-person-2"><label>Instagram<input class="input" name="instagram" placeholder="@lamineyamal" autocomplete="off"></label>
           <label>TikTok<input class="input" name="tiktok" placeholder="@handle (optional)" autocomplete="off"></label></div>
@@ -341,7 +349,9 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
     const k = `${a.platform}|${a.handle}`;
     return `<button class="mcl-scrape${a.posts ? " is-again" : ""}" type="button" data-scrape="${esc(k)}"${clubAcc ? " data-club-acc" : ""} title="${a.posts ? "Collect its last 10 posts again (new ones are added)" : "Bright Data collects its last 10 posts"}">${icon(a.posts ? "undo" : "download")}${a.posts ? "Update" : "Scrape"}</button>`;
   }
-  const people_kind = (handle) => (club.people.find((p) => p.accounts.some((a) => a.handle === handle))?.kind === "sponsor" ? "Brand" : "Player");
+  // the library's entity of each kind (a competitor can be a club, a competition…: none)
+  const ENTITY = { player: "Player", sponsor: "Brand", creator: "Content Creators", competitor: "" };
+  const people_kind = (handle) => ENTITY[club.people.find((p) => p.accounts.some((a) => a.handle === handle))?.kind] ?? "Player";
 
   function scraperFile() {
     const sec = new Map(club.sections.map((s) => [s.id, s.name])), teamSec = new Map(club.sections.flatMap((s) => s.teams.map((t) => [t.id, s.name])));
@@ -350,7 +360,7 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
       const l = p.links.find((x) => x.live) || p.links[0];
       const sport = l ? (l.team_id ? teamSec.get(l.team_id) : sec.get(l.section_id)) || "" : "";
       const url = { instagram: `https://www.instagram.com/${a.handle}/`, tiktok: `https://www.tiktok.com/@${a.handle}`, x: `https://x.com/${a.handle}`, youtube: `https://www.youtube.com/@${a.handle}`, facebook: `https://www.facebook.com/${a.handle}`, linkedin: `https://www.linkedin.com/company/${a.handle}` }[a.platform] || "";
-      rows.push([a.handle, PF[a.platform] || a.platform, url, p.name, sport, club.club.name, p.kind === "player" ? "Player" : "Brand"]);
+      rows.push([a.handle, PF[a.platform] || a.platform, url, p.name, sport, club.club.name, ENTITY[p.kind] ?? "Player"]);
     }
     const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), "Accounts");
     XLSX.writeFile(wb, `scp-${club.club.name.toLowerCase().replace(/\W+/g, "-")}-accounts-to-scrape.xlsx`);
@@ -362,7 +372,7 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
     if (!list.length) return fail(new Error("No club accounts yet."));
     const url = { instagram: (h) => `https://www.instagram.com/${h}/`, tiktok: (h) => `https://www.tiktok.com/@${h}`, x: (h) => `https://x.com/${h}`, youtube: (h) => `https://www.youtube.com/@${h}`, facebook: (h) => `https://www.facebook.com/${h}`, linkedin: (h) => `https://www.linkedin.com/company/${h}` };
     const rows = [["account", "platform", "url", "name", "sport", "club", "entity", "posts in SCP", "last post imported"],
-      ...list.map((a) => [a.handle, PF[a.platform] || a.platform, url[a.platform]?.(a.handle) || "", a.person, a.section || "", a.club, a.kind === "player" ? "Player" : "Brand", a.posts, a.last_post ? a.last_post.slice(0, 10) : ""])];
+      ...list.map((a) => [a.handle, PF[a.platform] || a.platform, url[a.platform]?.(a.handle) || "", a.person, a.section || "", a.club, ENTITY[a.kind] ?? "Player", a.posts, a.last_post ? a.last_post.slice(0, 10) : ""])];
     const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), "Club accounts");
     XLSX.writeFile(wb, `scp-clubs-accounts-${new Date().toISOString().slice(0, 10)}.xlsx`);
   }
@@ -427,12 +437,12 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
     const b = e.target.closest("button"); if (!b) return;
     try {
       if (b.matches("[data-new]")) {   // a small form (the app's browser has no prompt())
-        const m = A.modal({ title: "New club", size: "sm", body: `<form class="mcl-new" data-new-form><label>Club name<input class="input" name="name" required maxlength="120" placeholder="FC Barcelona"></label></form>`,
+        const m = A.modal({ title: "New club", size: "sm", body: `<form class="mcl-new" data-new-form><label>Name<input class="input" name="name" required maxlength="120" placeholder="FC Barcelona"></label><label>Type<select class="select" name="kind">${TYPES.map(([k, l]) => `<option value="${k}">${l}</option>`).join("")}</select></label></form>`,
           foot: `<button class="btn btn-primary" type="button" data-new-save>Create club</button>` });
         const input = m.el.querySelector("[name=name]"); input.focus();
         const create = async () => {
           if (!input.value.trim()) return input.focus();
-          try { const id = await rpc("admin_club_save", { p: { name: input.value.trim(), accounts: [] } }); m.close(); A.toast("Club created"); loadClubs(id); } catch (x) { fail(x); }
+          try { const id = await rpc("admin_club_save", { p: { name: input.value.trim(), accounts: [], kind: m.el.querySelector("[name=kind]").value } }); m.close(); A.toast("Club created"); loadClubs(id); } catch (x) { fail(x); }
         };
         m.el.querySelector("[data-new-save]").addEventListener("click", create);
         m.el.querySelector("[data-new-form]").addEventListener("submit", (ev) => { ev.preventDefault(); create(); });
@@ -584,7 +594,7 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
       if (f.matches("[data-form]")) {
         const accounts = [...f.querySelectorAll(".mcl-acc-row")].map((r) => ({ platform: r.querySelector("[name=acc_platform]").value, handle: r.querySelector("[name=acc_handle]").value.trim(), section_id: r.querySelector("[name=acc_section]").value || null })).filter((a) => a.handle);
         const colors = f.color1.dataset.colorSet || f.color2.dataset.colorSet ? { primary: f.color1.value, secondary: f.color2.value } : {};
-        await rpc("admin_club_save", { p: { id: cur, name: f.name.value, logo_url: f.logo_url.value, accounts, active: f.active.checked, colors } });
+        await rpc("admin_club_save", { p: { id: cur, name: f.name.value, logo_url: f.logo_url.value, accounts, active: f.active.checked, colors, kind: f.kind.value } });
         A.toast("Saved"); return loadClubs(cur);
       }
       if (f.matches("[data-member]")) {

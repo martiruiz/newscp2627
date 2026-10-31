@@ -232,4 +232,25 @@
   const mb = bar.querySelector("[data-tb-menu]");
   mb.addEventListener("click", () => { nav.querySelector("[data-nav-toggle]")?.click(); if (nav.classList.contains("is-open")) scrollTo({ top: 0 }); });
   new MutationObserver(() => mb.setAttribute("aria-expanded", String(nav.classList.contains("is-open")))).observe(nav, { attributes: true, attributeFilter: ["class"] });
+
+  // a member whose space is a competition, an agency or a federation (clubs.kind, Admin → My Club): "My competition"…
+  (async () => {
+    const db = window.SCP_AUTH?.client;
+    if (!member || !db) return;
+    let kind = null;
+    try { kind = sessionStorage.getItem("scp-space-kind"); } catch {}
+    if (kind == null) {
+      const { data } = await db.rpc("my_clubs").then((r) => r, () => ({}));
+      const kinds = [...new Set((data || []).map((c) => c.kind || "club"))];
+      kind = kinds.length === 1 ? kinds[0] : "club";   // several kinds (superadmins): the general name
+      try { sessionStorage.setItem("scp-space-kind", kind); } catch {}
+    }
+    const label = { competition: "My competition", agency: "My agency", federation: "My federation" }[kind];
+    if (!label) return;
+    const text = window.tx ? window.tx(label) : label;
+    const btn = links.querySelector(".mm-club .mm-btn-tab"), node = btn && [...btn.childNodes].find((n) => n.nodeType === 3 && n.textContent.trim());
+    if (node) node.textContent = text;
+    const tb = bar.querySelector(".tb-club > span:last-child");
+    if (tb) tb.textContent = text;
+  })();
 })();

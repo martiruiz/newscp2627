@@ -12,6 +12,19 @@
   const initials = (n) => String(n || "?").trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
   const crest = (c) => `<span class="mc-cp-crest">${c.logo_url ? `<img src="${esc(c.logo_url)}" alt="">` : esc(initials(c.name))}</span>`;   // a club's crest in the club picker
 
+  // what we sell (clubs.kind, Admin → My Club → Settings): the page and the menu say "My club", "My competition"…
+  const TYPE = { club: ["My Club", "Club account"], competition: ["My competition", "Competition account"], agency: ["My agency", "Agency account"], federation: ["My federation", "Federation account"] };
+  const typeOf = (c) => TYPE[c?.kind] || TYPE.club;
+  // the space's tabs: its own accounts, then the people linked to it (club_people.kind); a tab without people doesn't show
+  const TABS = ["club", "competitors", "players", "creators", "sponsors"];
+  const KIND = { competitors: "competitor", players: "player", creators: "creator", sponsors: "sponsor" };
+  const TXT = {
+    club: { title: "Club profiles", tip: "Tap one or more profiles to see only theirs", search: "Search a profile", none: "No club profiles for this selection yet." },
+    competitors: { title: "Competitors", tip: "Tap one or more competitors to see only theirs", search: "Search a competitor", none: "No competitors linked to this selection yet.", empty: "These competitors' accounts have no posts imported yet." },
+    players: { title: "Players", tip: "Tap one or more players to see only theirs", search: "Search a player", none: "No players linked to this selection yet.", empty: "These players' accounts have no posts imported yet." },
+    creators: { title: "Content creators", tip: "Tap one or more creators to see only theirs", search: "Search a creator", none: "No content creators linked to this selection yet.", empty: "These creators' accounts have no posts imported yet." },
+    sponsors: { title: "Sponsors", tip: "Tap one or more sponsors to see only theirs", search: "Search a sponsor", none: "No sponsors linked to this selection yet.", empty: "These sponsors' accounts have no posts imported yet." },
+  };
   const st = { clubs: [], club: null, space: null, section: null, team: null, tab: "players", people: new Set(), q: "", linked: false, open: null };
   let box, db, token = 0;
 
@@ -21,7 +34,7 @@
     if (!box) return;
     if (!db) return fail("The club space isn't connected yet.");
     const saved = store.get();
-    st.tab = ["club", "sponsors"].includes(saved.tab) ? saved.tab : "players";
+    st.tab = TABS.includes(saved.tab) ? saved.tab : "players";
     const { data, error } = await db.rpc("my_clubs");
     if (error) return fail(/my_clubs|does not exist|schema cache/i.test(error.message) ? "My Club isn't set up yet (run supabase/my-club.sql)." : "Couldn't load your club right now. Try again in a moment.");
     // Superadmin → "View as" a plan: the page as a member of that plan without a club sees it
@@ -174,12 +187,13 @@
     st.section = sec ? sec.id : null;
     st.team = sec && sec.teams.some((x) => x.id === saved.team) ? saved.team : null;
     st.people.clear();
+    if (KIND[st.tab] && !data.people.some((p) => p.kind === KIND[st.tab])) st.tab = data.people.some((p) => p.kind === "player") ? "players" : "club";
     draw();
     scope();
   }
 
   const save = () => store.set({ club: st.club?.id, section: st.section, team: st.team, tab: st.tab });
-  const kind = () => (st.tab === "sponsors" ? "sponsor" : "player");
+  const kind = () => KIND[st.tab];
   const section = () => st.space.sections.find((s) => s.id === st.section);
   // the people of the current tab that belong to the selection (a global sponsor belongs everywhere)
   function inSelection() {
@@ -219,6 +233,8 @@
     check: '<path d="M5 12.5 10 17l9-10"/>',
     shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
     user: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+    vs: '<path d="M4 4l7 7M4 4v4M4 4h4M20 4l-7 7M20 4v4M20 4h-4M8 16l-4 4M16 16l4 4M9 15l6-6"/>',
+    cam: '<rect x="2.5" y="6" width="13" height="12" rx="2.5"/><path d="m15.5 10.5 6-3.5v10l-6-3.5"/>',
     shirt: '<path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/>',
   };
   // how many people of the current tab a section / team has (globals not counted: they're everywhere)
@@ -233,7 +249,7 @@
         <div class="mc-top">
           <div class="mc-logo">${club.logo_url ? `<img src="${esc(club.logo_url)}" alt="">` : `<span>${esc(initials(club.name))}</span>`}</div>
           <div class="mc-title">
-            <span class="mc-eyebrow">${esc(t("My Club"))}</span>
+            <span class="mc-eyebrow">${esc(t(typeOf(club)[0]))}</span>
             <h1>${esc(club.name)}</h1>
           </div>
           ${st.club.trial_ends ? (() => { const d = Math.max(1, Math.ceil((new Date(st.club.trial_ends) - Date.now()) / 864e5));   // a 7-day trial (Admin → My Club → Members)
@@ -250,17 +266,23 @@
 
   // the filters, in the Content Library's glass bar: Club · Players · Sponsors (whose posts) and Section · Team, each
   // opening its panel under the bar (my-club.html .mc-crumb, where the library has its own bar)
-  const BAR = [["club", "Club"], ["players", "Players"], ["sponsors", "Sponsors"], ["section", "Section"], ["team", "Team"]];
-  const BAR_ICON = { club: "shield", players: "user", sponsors: "deal", section: "grid", team: "shirt" };
+  const BAR_ICON = { club: "shield", competitors: "vs", players: "user", creators: "cam", sponsors: "deal", section: "grid", team: "shirt" };
+  // the tabs this space has: its accounts always, the others only with people in them; Section / Team only with sections
+  const barTabs = () => [["club", typeOf(st.space.club)[1]], ["competitors", "Competitors"], ["players", "Players"], ["creators", "Content creators"], ["sponsors", "Sponsors"], ["section", "Section"], ["team", "Team"]]
+    .filter(([k]) => k === "club" || (KIND[k] ? st.space.people.some((p) => p.kind === KIND[k]) : st.space.sections.length > 0));
+  let BAR = [];
   function bar() {
     const el = document.querySelector("[data-mc-crumb]"); if (!el || !st.space) return;
+    BAR = barTabs();
     const sec = section(), team = sec?.teams.find((x) => x.id === st.team);
     const val = { section: sec?.name, team: team?.name };
     const oi = BAR.findIndex(([k]) => k === st.open);
     let row = el.querySelector(".mcb-row");
+    if (row?.dataset.sig !== BAR.map(([k]) => k).join()) row = null;   // another space, other tabs
     if (!row) {
       el.innerHTML = `<div class="mcb"><div class="lfb-row lfb-glass mcb-row" role="toolbar" aria-label="${esc(t("Filters"))}" style="--n:${BAR.length}"><span class="lfb-lens"></span>${BAR.map(([k, l]) => `<button type="button" class="lfb-btn" data-mcb="${k}" aria-expanded="false"><span class="lfb-ic">${svg(ICON[BAR_ICON[k]])}</span><span class="lfb-tx"><b>${esc(t(l))}</b></span><em hidden></em></button>`).join("")}</div></div><div data-mcb-host></div>`;
       row = el.querySelector(".mcb-row");
+      row.dataset.sig = BAR.map(([k]) => k).join();
     }
     BAR.forEach(([k, l], i) => {
       const b = row.querySelectorAll("[data-mcb]")[i], em = b.querySelector("em");
@@ -289,14 +311,14 @@
     const list = inSelection(), shown = list.filter((p) => !st.q || p.name.toLowerCase().includes(st.q.toLowerCase()));
     return `<div class="mc-people">
         <div class="mc-people-h">
-          <b>${esc(t(st.tab === "club" ? "Club profiles" : st.tab === "sponsors" ? "Sponsors" : "Players"))}</b><span class="mc-n">${list.length}</span>
-          ${st.people.size ? `<button type="button" class="mc-clear" data-mc-clear>${esc(t("Clear"))} · ${st.people.size}</button>` : `<small class="mc-tip">${esc(t(st.tab === "club" ? "Tap one or more profiles to see only theirs" : st.tab === "sponsors" ? "Tap one or more sponsors to see only theirs" : "Tap one or more players to see only theirs"))}</small>`}
-          ${list.length > 6 ? `<label class="mc-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" value="${esc(st.q)}" placeholder="${esc(t(st.tab === "club" ? "Search a profile" : st.tab === "sponsors" ? "Search a sponsor" : "Search a player"))}" data-mc-q></label>` : ""}
+          <b>${esc(t(TXT[st.tab].title))}</b><span class="mc-n">${list.length}</span>
+          ${st.people.size ? `<button type="button" class="mc-clear" data-mc-clear>${esc(t("Clear"))} · ${st.people.size}</button>` : `<small class="mc-tip">${esc(t(TXT[st.tab].tip))}</small>`}
+          ${list.length > 6 ? `<label class="mc-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" value="${esc(st.q)}" placeholder="${esc(t(TXT[st.tab].search))}" data-mc-q></label>` : ""}
         </div>
         ${list.length ? `<div class="mc-chips">${shown.map((p) => `<button type="button" class="mc-person${p.posts ? "" : " is-empty"}${st.tab === "sponsors" ? " is-brand" : ""}" aria-pressed="${st.people.has(p.id)}" data-mc-person="${p.id}" title="${esc(p.posts ? t("{n} posts", { n: p.posts }) : t("Account linked, no posts imported yet"))}">
             <span class="mc-ph">${p.platform ? `<span class="mc-av mc-net">${svg(NET[p.platform] || NET.instagram)}</span>` : p.photo_url ? `<img src="${esc(p.photo_url)}" alt="" loading="lazy">` : `<span class="mc-av">${esc(initials(p.name))}</span>`}<span class="mc-tick">${svg(ICON.check)}</span></span>
             <span class="mc-person-tx"><b>${esc(p.name)}</b><small>${p.global && st.tab === "sponsors" ? `<em>${esc(t("Global sponsor"))}</em>` : esc(p.posts ? t("{n} posts", { n: p.posts }) : t("No posts yet"))}</small></span></button>`).join("")}</div>`
-          : `<p class="mc-none">${esc(t(st.tab === "club" ? "No club profiles for this selection yet." : st.tab === "sponsors" ? "No sponsors linked to this selection yet." : "No players linked to this selection yet."))}</p>`}
+          : `<p class="mc-none">${esc(t(TXT[st.tab].none))}</p>`}
         ${st.tab === "sponsors" && list.length ? `<div class="mc-mode" role="group" aria-label="${esc(t("Which posts"))}">
           <div class="mc-mode-sw"><button type="button" aria-pressed="${!st.linked}" data-mc-linked="0">${esc(t("All the brand's posts"))}</button>
           <button type="button" aria-pressed="${st.linked}" data-mc-linked="1">${esc(t("Posts linked to the club"))}</button></div>
@@ -308,7 +330,7 @@
     const my = ++token, list = inSelection();
     const people = st.people.size ? [...st.people].filter((id) => list.some((p) => p.id === id)) : null;
     if (st.tab === "club") {   // the club's own profiles
-      SCOPE.empty = t(!list.length ? "No club profiles for this selection yet." : "The club's profiles have no posts imported yet.");
+      SCOPE.empty = t(!list.length ? TXT.club.none : "The club's profiles have no posts imported yet.");
       let map = {};
       if (list.length) {
         const { data, error } = await db.rpc("club_profile_posts", { p_club: st.club.id, p_section: st.section, p_team: st.team });
@@ -321,9 +343,9 @@
       resolveReady();
       return window.dispatchEvent(new Event("scp-lib-scope"));
     }
-    SCOPE.empty = !list.length ? t(st.tab === "sponsors" ? "No sponsors linked to this selection yet." : "No players linked to this selection yet.")
+    SCOPE.empty = !list.length ? t(TXT[st.tab].none)
       : st.linked ? t("No posts from these sponsors mention the club yet.")
-      : t(st.tab === "sponsors" ? "These sponsors' accounts have no posts imported yet." : "These players' accounts have no posts imported yet.");
+      : t(TXT[st.tab].empty);
     let map = {};
     if (list.length) {
       const { data, error } = await db.rpc("club_post_ids", { p_club: st.club.id, p_kind: kind(), p_section: st.section, p_team: st.team, p_people: people, p_linked: st.tab === "sponsors" && st.linked });
@@ -346,7 +368,7 @@
     if (tab) {
       const k = tab.dataset.mcb;
       // Club / Players / Sponsors: whose posts (section and team stay); the panel to pick some of them
-      if (["club", "players", "sponsors"].includes(k) && st.tab !== k) { st.tab = k; st.people.clear(); st.q = ""; st.linked = false; st.open = k; save(); bar(); return scope(); }
+      if (TABS.includes(k) && st.tab !== k) { st.tab = k; st.people.clear(); st.q = ""; st.linked = false; st.open = k; save(); bar(); return scope(); }
       st.open = st.open === k ? null : k; return bar();
     }
     const b = e.target.closest("[data-mc-section], [data-mc-team], [data-mc-person], [data-mc-clear], [data-mc-linked]");
