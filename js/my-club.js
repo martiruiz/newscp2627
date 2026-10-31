@@ -282,7 +282,7 @@
     let row = el.querySelector(".mcb-row");
     if (row?.dataset.sig !== BAR.map(([k]) => k).join()) row = null;   // another space, other tabs
     if (!row) {
-      el.innerHTML = `<button type="button" class="mcb-toggle" aria-expanded="false" data-mcb-toggle><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><b></b><svg class="mcb-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="mcb"><div class="lfb-row lfb-glass mcb-row" role="toolbar" aria-label="${esc(t("Filters"))}" style="--n:${BAR.length}"><span class="lfb-lens"></span>${BAR.map(([k, l]) => `<button type="button" class="lfb-btn" data-mcb="${k}" aria-expanded="false"><span class="lfb-ic">${svg(ICON[BAR_ICON[k]])}</span><span class="lfb-tx"><b>${esc(t(l))}</b></span><em hidden></em></button>`).join("")}</div></div><div data-mcb-host></div>`;
+      el.innerHTML = `<button type="button" class="mcb-toggle" aria-expanded="false" data-mcb-toggle><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><b></b><svg class="mcb-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="mcb"><div class="lfb-row lfb-glass mcb-row" role="toolbar" aria-label="${esc(t("Filters"))}" style="--n:${BAR.length}"><span class="lfb-lens"></span>${BAR.map(([k, l], i) => `<button type="button" class="lfb-btn" data-mcb="${k}" aria-expanded="false" style="--i:${i}"><span class="lfb-ic">${svg(ICON[BAR_ICON[k]])}</span><span class="lfb-tx"><b>${esc(t(l))}</b></span><em hidden></em></button>`).join("")}</div></div><div data-mcb-host></div>`;
       row = el.querySelector(".mcb-row");
       row.dataset.sig = BAR.map(([k]) => k).join();
     }
@@ -320,7 +320,13 @@
   }
   let fitTimer = 0;
   addEventListener("resize", () => { clearTimeout(fitTimer); fitTimer = setTimeout(fit, 120); });
-  document.addEventListener("click", (e) => { if (e.target.closest("[data-mcb-toggle]")) { barOpen = !barOpen; if (!barOpen) st.open = null; bar(); } });
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest("[data-mcb-toggle]")) return;
+    barOpen = !barOpen; if (!barOpen) st.open = null; bar();
+    // the tabs slide out of the button, one after another (only when it opens, not on every click inside)
+    const el = document.querySelector("[data-mc-crumb]"); el.classList.toggle("is-sliding", barOpen);
+    if (barOpen) setTimeout(() => el.classList.remove("is-sliding"), 900);
+  });
 
   // what each panel holds: the people of the tab (players, sponsors, the club's profiles) or the sections / teams
   function panel() {
