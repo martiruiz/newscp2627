@@ -62,7 +62,8 @@ function toRow(p: Rec, handle: string) {
     format: /carousel|sidecar/.test(type) ? "Carousel" : /reel|clips|video/.test(type) ? "Reel" : type ? "Images" : "",
     platform: "Instagram",
     // its numbers as Bright Data read them (Instagram shows no views for photos and carousels)
-    views: count(p, "video_play_count", "video_view_count", "views") || null,   // 0 for a photo or carousel: no views likes: count(p, "likes", "like_count"), comments: count(p, "num_comments", "comments_count"), shares: null,
+    // 0 views for a photo or carousel means none
+    views: count(p, "video_play_count", "video_view_count", "views") || null, likes: count(p, "likes", "like_count"), comments: count(p, "num_comments", "comments_count"), shares: null,
   };
 }
 
