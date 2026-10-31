@@ -236,6 +236,8 @@
             <span class="mc-eyebrow">${esc(t("My Club"))}</span>
             <h1>${esc(club.name)}</h1>
           </div>
+          ${st.club.trial_ends ? (() => { const d = Math.max(1, Math.ceil((new Date(st.club.trial_ends) - Date.now()) / 864e5));   // a 7-day trial (Admin → My Club → Members)
+            return `<a class="mc-trial" href="book-a-call.html?for=clubs" data-cta="my-club-trial"><b>${esc(t(d === 1 ? "Trial: 1 day left" : "Trial: {n} days left", { n: d }))}</b><span>${esc(t("Book a demo"))} →</span></a>`; })() : ""}
           ${club.accounts?.length ? `<div class="mc-profiles">${club.accounts.map((a) => `<a class="mc-prof" href="${esc((URL_OF[a.platform] || URL_OF.instagram)(a.handle))}" target="_blank" rel="noopener" title="${esc(a.platform)}">${svg(NET[a.platform] || NET.instagram)}<span>@${esc(a.handle)}</span></a>`).join("")}</div>` : ""}
           ${st.clubs.length > 1 ? `<div class="mc-side"><div class="mc-clubpick" data-mc-pick>
               <button type="button" class="mc-cp-btn" aria-haspopup="listbox" aria-expanded="false" data-mc-pick-btn><small>${esc(t("Club"))}</small>${crest(club)}<b>${esc(club.name)}</b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>

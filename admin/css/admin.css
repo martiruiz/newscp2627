@@ -1138,7 +1138,7 @@ select.cs-native { display: none !important; }
 .mcl-member { display: inline-flex; align-items: center; gap: 8px; padding: 5px 6px 5px 12px; border-radius: 999px; background: var(--panel-2); border: 1px solid var(--border); font-size: 13px; }
 .mcl-member button, .mcl-link button { width: 20px; height: 20px; border-radius: 50%; color: var(--muted); font-size: 11px; }
 .mcl-member button:hover, .mcl-link button:hover { color: var(--red); background: var(--red-soft); }
-.mcl-add { display: flex; gap: 8px; padding: 0 18px 14px; } .mcl-add .input { max-width: 320px; }
+.mcl-add { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 18px; } .mcl-add .input { max-width: 320px; } .mcl-add .select { width: auto; }
 .mcl-sum { margin: 0; padding: 0 18px 12px; color: var(--muted); font-size: 13px; } .mcl-sum b { color: var(--text); }
 .mcl-pending { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 0 18px 14px; padding: 12px 14px; border-radius: 12px; background: var(--amber-soft); border: 1px solid rgba(240, 184, 74, 0.35); font-size: 13px; }
 .mcl-pending svg { width: 18px; height: 18px; color: var(--accent); flex: none; } .mcl-pending span { flex: 1; min-width: 220px; }

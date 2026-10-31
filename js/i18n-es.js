@@ -583,6 +583,8 @@ window.SCP_ES = {
   "Match Day": "Día de partido",
   "Squad and profiles": "Plantilla y perfiles",
   "Media outlets": "Medios",
+  "Trial: 1 day left": "Prueba: queda 1 día",
+  "Trial: {n} days left": "Prueba: quedan {n} días",
   "All media": "Todos los medios",
   "Meme accounts": "Cuentas de memes",
   "Humour posts": "Posts de humor",

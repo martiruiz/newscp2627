@@ -29,7 +29,7 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
     cur = pick ?? cur ?? clubs[0]?.id ?? null;
     $("[data-clubs]").innerHTML = clubs.length ? clubs.map((c) => `<button type="button" class="mcl-club${c.id === cur ? " is-on" : ""}" data-pick="${c.id}">
         ${c.logo_url ? `<img src="${esc(c.logo_url)}" alt="">` : `<span class="mcl-ini">${esc(c.name.slice(0, 2).toUpperCase())}</span>`}
-        <span><b>${esc(c.name)}</b><small>${num(c.players)} players · ${num(c.sponsors)} sponsors · ${num(c.members)} members${c.active ? "" : " · off"}</small></span></button>`).join("")
+        <span><b>${esc(c.name)}</b><small>${num(c.players)} players · ${num(c.sponsors)} sponsors · ${num(c.members)} members${c.trials ? ` · ${num(c.trials)} trial` : ""}${c.active ? "" : " · off"}</small></span></button>`).join("")
       : `<p class="muted">No clubs yet. Press “New club”.</p>`;
     if (cur) loadClub(); else $("[data-club]").innerHTML = "";
   }
@@ -119,10 +119,17 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
       </div>
 
       <div class="mcl-pane" data-pane="members"${tab === "members" ? "" : " hidden"}>
-        <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Members</h2>${info("Who can open this club's space (they also need an active plan or trial). Add them by the e-mail of their SCP account.")}</header>
+        <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Members</h2>${info("Who can open this club's space, by the e-mail of their SCP account (a free account is enough). A member gets every feature while they're a member; a trial lasts 7 days. Each account only sees its own club.")}</header>
         <p class="mcl-help">Members see ${esc(c.name)}'s My Club: its players' and sponsors' posts, only for them.</p>
-        <div class="mcl-members">${club.members.map((m) => `<span class="mcl-member">${esc(m.email)}<button type="button" title="Remove" data-unmember="${esc(m.email)}">✕</button></span>`).join("") || `<span class="muted">Nobody yet.</span>`}</div>
-        <form class="mcl-add" data-member><input class="input" type="email" name="email" placeholder="name@club.com" required><button class="btn" type="submit">${icon("plus")}Add member</button></form></section>
+        ${club.members.length ? `<div class="table-wrap"><table class="data mcl-table"><thead><tr><th>E-mail</th><th>Access</th><th>Until</th><th></th></tr></thead><tbody>
+          ${club.members.map((m) => `<tr${m.live ? "" : ' class="is-off"'}><td><b>${esc(m.email)}</b></td>
+            <td>${!m.live ? `<span class="status status-analyzed">${m.trial ? "Trial ended" : "Ended"}</span>` : m.trial ? `<span class="status status-importing">7-day trial</span>` : `<span class="status status-completed">Member</span>`}${m.live && !m.access ? ` <span class="status status-failed" title="This account has no library access, so it can't open the club. Remove it and add it again.">No access</span>` : ""}</td>
+            <td>${m.ends_at ? `${esc(new Date(m.ends_at).toLocaleDateString())} <small class="muted">${m.live ? `(${Math.max(1, Math.ceil((new Date(m.ends_at) - Date.now()) / 864e5))} d)` : ""}</small>` : `<span class="muted">—</span>`}</td>
+            <td class="td-actions">${m.trial ? `<button class="btn btn-sm" type="button" data-access="extend" data-email="${esc(m.email)}" title="7 more days">+7 days</button><button class="btn btn-sm" type="button" data-access="member" data-email="${esc(m.email)}" title="Full member, no end">Make member</button>` : ""}<button class="icon-btn" type="button" title="Remove" aria-label="Remove" data-access="remove" data-email="${esc(m.email)}">${icon("trash")}</button></td></tr>`).join("")}
+          </tbody></table></div>` : `<p class="muted">Nobody yet.</p>`}
+        <form class="mcl-add" data-member><input class="input" type="email" name="email" placeholder="name@club.com" required>
+          <select class="select" name="kind"><option value="member">Member</option><option value="trial">7-day trial</option></select>
+          <button class="btn" type="submit">${icon("plus")}Add</button></form></section>
       </div>
 
       <div class="mcl-pane" data-pane="settings"${tab === "settings" ? "" : " hidden"}>
@@ -475,7 +482,12 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
         if (!(await A.confirmDialog({ title: `Delete ${club.club.name}?`, text: "Deletes the club's space, sections, teams, players, sponsors and members. The posts stay in the library.", confirm: "Delete", danger: true }))) return;
         await rpc("admin_club_edit", { p_what: "club_delete", p_id: cur }); cur = null; A.toast("Club deleted"); return loadClubs();
       }
-      if (b.dataset.unmember) { const r = await rpc("admin_club_member", { p_club: cur, p_email: b.dataset.unmember, p_remove: true }); if (!r.ok) return fail(new Error(r.error)); return loadClubs(cur); }
+      if (b.dataset.access) {
+        if (b.dataset.access === "remove" && !(await A.confirmDialog({ title: `Remove ${b.dataset.email}?`, text: "They lose access to this club's space (and the features it gave them).", confirm: "Remove", danger: true }))) return;
+        const r = await rpc("admin_club_access", { p_club: cur, p_email: b.dataset.email, p_action: b.dataset.access });
+        if (!r.ok) return fail(new Error(r.error));
+        A.toast({ extend: "Trial extended by 7 days", member: "Now a full member", remove: "Member removed" }[b.dataset.access]); return loadClubs(cur);
+      }
       if (b.dataset.end) { await rpc("admin_club_edit", { p_what: "link", p_id: Number(b.dataset.end), p: { ends_on: new Date().toISOString().slice(0, 10) } }); A.toast("Link ended today (kept in the history)"); return loadClub(); }
       if (b.dataset.relink) { await rpc("admin_club_edit", { p_what: "link", p_id: Number(b.dataset.relink), p: { active: true, ends_on: "" } }); return loadClub(); }
       if (b.dataset.del) {
@@ -576,9 +588,9 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
         A.toast("Saved"); return loadClubs(cur);
       }
       if (f.matches("[data-member]")) {
-        const r = await rpc("admin_club_member", { p_club: cur, p_email: f.email.value });
+        const r = await rpc("admin_club_access", { p_club: cur, p_email: f.email.value, p_action: f.kind.value });
         if (!r.ok) return fail(new Error(r.error));
-        A.toast("Member added"); return loadClubs(cur);
+        A.toast(f.kind.value === "trial" ? "7-day trial given" : "Member added"); return loadClubs(cur);
       }
     } catch (x) { fail(x); }
   });

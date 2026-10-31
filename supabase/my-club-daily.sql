@@ -101,7 +101,7 @@ begin
       join public.filter_content_ideas(p_filters, p_q, null, p_from, p_to) c on c.id = b.idea_id
       where c.unavailable_at is null
         and not exists (select 1 from public.content_hidden h where h.external_id = c.external_id)
-        and (p_ids is not null or not c.club_only)   -- My Club posts: only through My Club (it passes p_ids)
+        and (not c.club_only or (p_ids is not null and public.club_post_ok(c.id)))   -- My Club posts: only through My Club (it passes p_ids)
         and (p_ids is null or c.id = any (p_ids))
         and (not p_by_views or c.views is not null) and (p_min_views is null or c.views >= p_min_views) and (p_max_views is null or c.views < p_max_views)
         and (cardinality(p_not) = 0 or not exists (select 1 from public.content_idea_tags t where t.idea_id = c.id and t.value_id = any (p_not)))
@@ -111,7 +111,7 @@ begin
       select c.id from public.filter_content_ideas(p_filters, p_q, null, p_from, p_to) c
       where c.unavailable_at is null
         and not exists (select 1 from public.content_hidden h where h.external_id = c.external_id)
-        and (p_ids is not null or not c.club_only)   -- My Club posts: only through My Club (it passes p_ids)
+        and (not c.club_only or (p_ids is not null and public.club_post_ok(c.id)))   -- My Club posts: only through My Club (it passes p_ids)
         and (p_ids is null or c.id = any (p_ids))
         and (not p_by_views or c.views is not null) and (p_min_views is null or c.views >= p_min_views) and (p_max_views is null or c.views < p_max_views)
         and (p_has is null or exists (select 1 from public.content_idea_tags t where t.idea_id = c.id and t.value_id = any (p_has)))
@@ -159,7 +159,7 @@ begin
     select count(*) into v_total from public.content_ideas c
     where c.id in (select public.ideas_matching_tags(p_filters))
       and c.unavailable_at is null
-      and not exists (select 1 from public.content_hidden h where h.external_id = c.external_id) and (p_ids is not null or not c.club_only)
+      and not exists (select 1 from public.content_hidden h where h.external_id = c.external_id) and (not c.club_only or (p_ids is not null and public.club_post_ok(c.id)))
       and (q is null or c.title ilike '%' || q || '%')
       and (p_from is null or c.published_at >= (p_from::timestamp at time zone 'UTC'))
       and (p_to is null or c.published_at < ((p_to + 1)::timestamp at time zone 'UTC'))
@@ -170,7 +170,7 @@ begin
   else
     select count(*) into v_total from public.filter_content_ideas(p_filters, q, null, p_from, p_to) c
     where c.unavailable_at is null
-      and not exists (select 1 from public.content_hidden h where h.external_id = c.external_id) and (p_ids is not null or not c.club_only)
+      and not exists (select 1 from public.content_hidden h where h.external_id = c.external_id) and (not c.club_only or (p_ids is not null and public.club_post_ok(c.id)))
       and (p_ids is null or c.id = any (p_ids))
       and (not by_views or c.views is not null)
       and (p_min_views is null or c.views >= p_min_views)
@@ -190,7 +190,7 @@ begin
       from public.content_ideas c
       where c.id in (select public.ideas_matching_tags(p_filters))
         and c.unavailable_at is null
-        and not exists (select 1 from public.content_hidden h where h.external_id = c.external_id) and (p_ids is not null or not c.club_only)
+        and not exists (select 1 from public.content_hidden h where h.external_id = c.external_id) and (not c.club_only or (p_ids is not null and public.club_post_ok(c.id)))
         and (q is null or c.title ilike '%' || q || '%')
         and (p_from is null or c.published_at >= (p_from::timestamp at time zone 'UTC'))
         and (p_to is null or c.published_at < ((p_to + 1)::timestamp at time zone 'UTC'))
@@ -210,12 +210,12 @@ begin
     with
     a1 as (select c.*, 0 as k_lap from public.filter_content_ideas(p_filters, q, null, p_from, p_to) c
            where c.shuffle_key >= r and c.unavailable_at is null
-             and not exists (select 1 from public.content_hidden h where h.external_id = c.external_id) and (p_ids is not null or not c.club_only)
+             and not exists (select 1 from public.content_hidden h where h.external_id = c.external_id) and (not c.club_only or (p_ids is not null and public.club_post_ok(c.id)))
              and (not by_views or c.views is not null) and (p_min_views is null or c.views >= p_min_views) and (p_max_views is null or c.views < p_max_views)
            order by c.shuffle_key limit lim + off),
     a2 as (select c.*, 1 as k_lap from public.filter_content_ideas(p_filters, q, null, p_from, p_to) c
            where c.shuffle_key < r and c.unavailable_at is null
-             and not exists (select 1 from public.content_hidden h where h.external_id = c.external_id) and (p_ids is not null or not c.club_only)
+             and not exists (select 1 from public.content_hidden h where h.external_id = c.external_id) and (not c.club_only or (p_ids is not null and public.club_post_ok(c.id)))
              and (not by_views or c.views is not null) and (p_min_views is null or c.views >= p_min_views) and (p_max_views is null or c.views < p_max_views)
            order by c.shuffle_key limit lim + off),
     page as (select * from (select * from a1 union all select * from a2) u order by k_lap, shuffle_key limit lim offset off)
@@ -256,7 +256,7 @@ begin
         case when p_order = 'random' then md5(c.id::text || coalesce(p_seed, '')) end as k_shuffle
       from public.filter_content_ideas(p_filters, q, null, p_from, p_to) c
       where c.unavailable_at is null
-        and not exists (select 1 from public.content_hidden h where h.external_id = c.external_id) and (p_ids is not null or not c.club_only)
+        and not exists (select 1 from public.content_hidden h where h.external_id = c.external_id) and (not c.club_only or (p_ids is not null and public.club_post_ok(c.id)))
         and (p_ids is null or c.id = any (p_ids))
         and (not by_views or c.views is not null)
         and (p_min_views is null or c.views >= p_min_views)
