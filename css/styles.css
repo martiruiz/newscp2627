@@ -9240,3 +9240,18 @@ body.club-themed .mc-strip::after { content: ""; position: absolute; left: 18px;
 .lfp-cards.lfp-cards-sport { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .lfp-sport.is-low { opacity: 0.6; }
 .lfp-sport.is-zero { opacity: 0.35; pointer-events: none; }
+
+/* My Club's bar when it doesn't fit (js/my-club.js fit()): folded into one button; unfolded, the whole bar on as many
+   lines as it needs, and "My space" hides to make room */
+.mcb-toggle { display: none; align-items: center; gap: 8px; max-width: 100%; height: 40px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--line); background: rgba(var(--fg), 0.05); color: inherit; font: 600 13.5px var(--font-body); cursor: pointer; }
+.mcb-toggle svg { width: 17px; height: 17px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.mcb-toggle b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--gold); }
+.mcb-toggle .mcb-chev { transition: transform 0.2s; }
+.mc-crumb.is-compact .mcb-toggle { display: inline-flex; }
+.mc-crumb.is-compact .mcb { display: none; }
+.mc-crumb.is-compact.is-unfolded .mcb { display: block; margin-top: 10px; }
+.mc-crumb.is-unfolded .mcb-toggle .mcb-chev { transform: rotate(180deg); }
+.mc-crumb.is-unfolded .mcb-row.lfb-glass { flex-wrap: wrap; overflow: visible; max-width: none; margin: 0; }
+.mc-crumb.is-unfolded .mcb-row .lfb-lens { display: none; }
+body.mcb-unfolded .lib-head .my-space { display: none; }
+@media (min-width: 961px) { body.mcb-unfolded.my-club-page .lib-head .mc-crumb { grid-column: 2 / -1; } }

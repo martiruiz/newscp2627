@@ -282,7 +282,7 @@
     let row = el.querySelector(".mcb-row");
     if (row?.dataset.sig !== BAR.map(([k]) => k).join()) row = null;   // another space, other tabs
     if (!row) {
-      el.innerHTML = `<div class="mcb"><div class="lfb-row lfb-glass mcb-row" role="toolbar" aria-label="${esc(t("Filters"))}" style="--n:${BAR.length}"><span class="lfb-lens"></span>${BAR.map(([k, l]) => `<button type="button" class="lfb-btn" data-mcb="${k}" aria-expanded="false"><span class="lfb-ic">${svg(ICON[BAR_ICON[k]])}</span><span class="lfb-tx"><b>${esc(t(l))}</b></span><em hidden></em></button>`).join("")}</div></div><div data-mcb-host></div>`;
+      el.innerHTML = `<button type="button" class="mcb-toggle" aria-expanded="false" data-mcb-toggle><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><b></b><svg class="mcb-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="mcb"><div class="lfb-row lfb-glass mcb-row" role="toolbar" aria-label="${esc(t("Filters"))}" style="--n:${BAR.length}"><span class="lfb-lens"></span>${BAR.map(([k, l]) => `<button type="button" class="lfb-btn" data-mcb="${k}" aria-expanded="false"><span class="lfb-ic">${svg(ICON[BAR_ICON[k]])}</span><span class="lfb-tx"><b>${esc(t(l))}</b></span><em hidden></em></button>`).join("")}</div></div><div data-mcb-host></div>`;
       row = el.querySelector(".mcb-row");
       row.dataset.sig = BAR.map(([k]) => k).join();
     }
@@ -301,7 +301,26 @@
     lens.classList.toggle("is-on", oi >= 0);
     const host = el.querySelector("[data-mcb-host]");
     host.innerHTML = st.open ? `<div class="mcb-pan" role="dialog" aria-label="${esc(t(BAR[oi][1]))}">${panel()}</div>` : "";
+    // the folded bar's button says where you are (tab · section · team)
+    el.querySelector("[data-mcb-toggle] b").textContent = [BAR.find(([k]) => k === st.tab)?.[1], val.section, val.team].filter(Boolean).map((x) => t(x)).join(" · ");
+    fit();
   }
+
+  // When the bar doesn't fit next to the date, sort and "My space", it folds into one button: a click unfolds it (whole,
+  // on as many lines as it needs) and hides "My space" to make room; another click folds it again
+  let barOpen = false;
+  function fit() {
+    const el = document.querySelector("[data-mc-crumb]"), row = el?.querySelector(".mcb-row"); if (!row) return;
+    el.classList.remove("is-compact", "is-unfolded"); document.body.classList.remove("mcb-unfolded");
+    const tight = row.scrollWidth > row.clientWidth + 2;
+    el.classList.toggle("is-compact", tight);
+    el.classList.toggle("is-unfolded", tight && barOpen);
+    document.body.classList.toggle("mcb-unfolded", tight && barOpen);
+    el.querySelector("[data-mcb-toggle]").setAttribute("aria-expanded", String(tight && barOpen));
+  }
+  let fitTimer = 0;
+  addEventListener("resize", () => { clearTimeout(fitTimer); fitTimer = setTimeout(fit, 120); });
+  document.addEventListener("click", (e) => { if (e.target.closest("[data-mcb-toggle]")) { barOpen = !barOpen; if (!barOpen) st.open = null; bar(); } });
 
   // what each panel holds: the people of the tab (players, sponsors, the club's profiles) or the sections / teams
   function panel() {
