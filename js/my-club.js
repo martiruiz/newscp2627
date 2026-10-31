@@ -13,7 +13,7 @@
   const crest = (c) => `<span class="mc-cp-crest">${c.logo_url ? `<img src="${esc(c.logo_url)}" alt="">` : esc(initials(c.name))}</span>`;   // a club's crest in the club picker
 
   // what we sell (clubs.kind, Admin → My Club → Settings): the page and the menu say "My club", "My competition"…
-  const TYPE = { club: ["My Club", "Account"], competition: ["My competition", "Account"], agency: ["My agency", "Account"], federation: ["My federation", "Account"] };
+  const TYPE = { club: ["My Club", "Club"], competition: ["My competition", "Competition"], agency: ["My agency", "Agency"], federation: ["My federation", "Federation"] };
   const typeOf = (c) => TYPE[c?.kind] || TYPE.club;
   // the space's tabs: its own accounts, then the people linked to it (club_people.kind); a tab without people doesn't show
   const TABS = ["club", "competitors", "players", "creators", "sponsors"];

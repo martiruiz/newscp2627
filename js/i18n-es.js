@@ -587,6 +587,7 @@ window.SCP_ES = {
   "My competition": "Mi competición",
   "My agency": "Mi agencia",
   "My federation": "Mi federación",
+  "Federation": "Federación",
   "Competitors": "Competidores",
   "Tap one or more competitors to see only theirs": "Toca uno o más competidores para ver solo los suyos",
   "Search a competitor": "Busca un competidor",
