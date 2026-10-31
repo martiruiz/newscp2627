@@ -671,6 +671,11 @@
     const covers = rows.filter((r) => r.cover).map((r) => ({ external_id: r.external_id, cover: r.cover }));
     if (covers.length) await rpc("set_idea_cover_sources", { p_rows: covers }).catch(() => {});
     await rpc("set_idea_scrape_extras", { p_rows: rows.map((r) => ({ external_id: r.external_id, account: r.account, hashtags: r.hashtags, followers: r.followers, profile_name: r.profile_name, verified: r.verified, profile_image: r.profile_image })) }).catch(() => {});
+    // its views, likes, comments and shares, as Bright Data read them (the views cron keeps them fresh afterwards)
+    const now = new Date().toISOString();
+    await Promise.all(rows.filter((r) => [r.views, r.likes, r.comments, r.shares].some((v) => v != null)).map((r) =>
+      db.from("content_ideas").update({ ...Object.fromEntries(["views", "likes", "comments", "shares"].filter((k) => r[k] != null).map((k) => [k, r[k]])), ...(r.views != null ? { views_at: now } : {}) })
+        .eq("external_id", r.external_id).then(() => {}, () => {})));
     await db.from("idea_imports").update({ status: out.created || out.replaced ? "completed" : "failed", rows_created: out.created, rows_replaced: out.replaced,
       error_count: out.errors?.length || 0, errors: out.errors || [], new_values: out.new_values_created || {}, completed_at: new Date().toISOString() }).eq("id", imp.id);
     log(out.errors?.length ? "warn" : "ok", `Import #${imp.id}: ${num(out.created)} new · ${num(out.replaced)} updated${out.errors?.length ? ` · ${out.errors.length} errors` : ""}`);

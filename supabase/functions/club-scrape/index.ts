@@ -37,6 +37,8 @@ const isoOf = (v: unknown) => { const t = typeof v === "number" ? (v < 1e12 ? v 
 // one Bright Data post → one row of the import (same columns as the daily scraping CSV)
 type Rec = Record<string, any>;
 const first = (o: Rec, ...ks: string[]) => { for (const k of ks) if (o?.[k] != null && o[k] !== "") return o[k]; return null; };
+// a count Bright Data gives (views, likes…), or null when it hasn't got it
+const count = (o: Rec, ...ks: string[]) => { const v = Number(first(o, ...ks)); return Number.isFinite(v) && v >= 0 ? Math.round(v) : null; };
 function toRow(p: Rec, handle: string) {
   const url = String(first(p, "url", "post_url", "permalink") || "");
   const code = String(first(p, "shortcode") || /instagram\.com\/(?:[\w.]+\/)?(?:p|reels?|tv)\/([\w-]+)/.exec(url)?.[1] || "");
@@ -59,6 +61,8 @@ function toRow(p: Rec, handle: string) {
     profile_image: first(p, "profile_image_link", "profile_pic_url"),
     format: /carousel|sidecar/.test(type) ? "Carousel" : /reel|clips|video/.test(type) ? "Reel" : type ? "Images" : "",
     platform: "Instagram",
+    // its numbers as Bright Data read them (Instagram shows no views for photos and carousels)
+    views: count(p, "video_play_count", "video_view_count", "views"), likes: count(p, "likes", "like_count"), comments: count(p, "num_comments", "comments_count"), shares: null,
   };
 }
 
@@ -97,6 +101,7 @@ function tiktokRow(p: Rec, handle: string) {
     hashtags: Array.isArray(tags) ? tags.map((t: any) => (typeof t === "string" ? t : t?.name || "")).filter(Boolean).join(",") : tags || "",
     followers: first(p, "profile_followers", "followers"), profile_name: first(p, "profile_name", "nickname"), verified: first(p, "is_verified"),
     profile_image: first(p, "profile_avatar", "avatar"), format: "Video", platform: "TikTok",
+    views: count(p, "play_count", "views"), likes: count(p, "digg_count", "likes"), comments: count(p, "comment_count", "comments"), shares: count(p, "share_count", "shares"),
   };
 }
 
