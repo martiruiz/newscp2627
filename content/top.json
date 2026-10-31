@@ -78,22 +78,28 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/574/574161.jpg?v=mvuuht52"
   },
   {
+    "account": "433",
+    "account_platform": "instagram",
+    "views": 4780367,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/569/569989.jpg?v=mvtje4af"
+  },
+  {
     "account": "fcbayern",
     "account_platform": "instagram",
     "views": 4435121,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/570/570191.jpg?v=mvtmo250"
   },
   {
-    "account": "433",
-    "account_platform": "instagram",
-    "views": 4363541,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/569/569989.jpg?v=mvtje4af"
-  },
-  {
     "account": "liverpoolfc",
     "account_platform": "instagram",
     "views": 4361942,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/570/570159.jpg?v=mvtmnbf2"
+  },
+  {
+    "account": "genoacfc",
+    "account_platform": "instagram",
+    "views": 4074285,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/574/574336.jpg?v=mvuui2kx"
   },
   {
     "account": "lacobraaa2.0",
@@ -162,21 +168,15 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/573/573929.jpg?v=mvuufl15"
   },
   {
+    "account": "fcbarcelona",
+    "account_platform": "instagram",
+    "views": 2708742,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/570/570022.jpg?v=mvtmodwj"
+  },
+  {
     "account": "houseofhighlights",
     "account_platform": "instagram",
     "views": 2679506,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/570/570006.jpg?v=mvtmofpa"
-  },
-  {
-    "account": "arsenal",
-    "account_platform": "instagram",
-    "views": 2647028,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/573/573943.jpg?v=mvuufkck"
-  },
-  {
-    "account": "espnfc",
-    "account_platform": "instagram",
-    "views": 2616033,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/574/574081.jpg?v=mvuuhoh5"
   }
 ]
