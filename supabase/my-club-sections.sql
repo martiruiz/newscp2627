@@ -109,3 +109,18 @@ begin
       $q$jsonb_build_object('id', v.id, 'name', v.name, 'category', v.category, 'section_id', (c.tag_sections ->> v.id::text)::bigint,$q$);
   end if;
 end $$;
+
+-- the section of a player, competitor, creator or sponsor (Admin → My Club → Linked accounts, its "Section" column): it
+-- becomes its only place in the space (empty: the whole space). Internal: the client only filters by it.
+create or replace function public.admin_club_person_section(p_person bigint, p_section bigint)
+returns void language plpgsql volatile security definer set search_path = public as $$
+declare v_club bigint := (select club_id from public.club_people where id = p_person);
+begin
+  if not public.is_admin() then raise exception 'Not allowed'; end if;
+  if p_section is not null and not exists (select 1 from public.club_sections where id = p_section and club_id = v_club) then raise exception 'Unknown section'; end if;
+  delete from public.club_links where person_id = p_person and not (coalesce(section_id, 0) = coalesce(p_section, 0) and team_id is null);
+  insert into public.club_links (person_id, section_id, team_id, active) values (p_person, p_section, null, true)
+    on conflict (person_id, coalesce(section_id, 0), coalesce(team_id, 0)) do update set active = true, ends_on = null;
+end $$;
+revoke execute on function public.admin_club_person_section(bigint, bigint) from public, anon;
+grant execute on function public.admin_club_person_section(bigint, bigint) to authenticated;

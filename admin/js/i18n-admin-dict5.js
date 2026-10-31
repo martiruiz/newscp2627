@@ -637,6 +637,7 @@ window.SCPA_DICT = Object.assign(window.SCPA_DICT || {}, {
   "Section deleted": ["Sección eliminada", "Secció eliminada"],
   "All sections": ["Todas las secciones", "Totes les seccions"],
   "Its teams go too. Its players and sponsors stay in the space (whole club); its profiles and tags show in every section.": ["También se borran sus equipos. Sus jugadores y patrocinadores siguen en el espacio (todo el club); sus perfiles y etiquetas salen en todas las secciones.", "També s'esborren els seus equips. Els seus jugadors i patrocinadors continuen a l'espai (tot el club); els seus perfils i etiquetes surten a totes les seccions."],
+  "Internal: the client only filters by it": ["Interna: el cliente solo filtra con ella", "Interna: el client només hi filtra"],
   "Linked accounts": ["Cuentas vinculadas", "Comptes vinculats"],
   "Competitor": ["Competidor", "Competidor"],
   "Competitors": ["Competidores", "Competidors"],

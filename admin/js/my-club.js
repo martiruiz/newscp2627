@@ -64,24 +64,25 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
     try { for (const a of await rpc("admin_club_accounts")) last.set(`${a.platform}|${a.handle}`, a.last_post); } catch {}
     const age = (d) => { if (!d) return ""; const n = Math.floor((Date.now() - new Date(d)) / 864e5); return n <= 0 ? "today" : n === 1 ? "1 day ago" : `${n} days ago`; };
     const c = club.club, people = club.people;
-    const secName = new Map(club.sections.map((s) => [s.id, s.name]));
-    const teamName = new Map(club.sections.flatMap((s) => s.teams.map((t) => [t.id, `${s.name} · ${t.name}`])));
     let dismissed = new Set(); try { dismissed = new Set(JSON.parse(localStorage.getItem(`scp-mcl-dismissed:${cur}`) || "[]")); } catch {}
     const pendingAcc = people.flatMap((p) => p.accounts.filter((a) => !a.posts && !dismissed.has(`${a.platform}|${a.handle}`)).map((a) => ({ ...a, person: p.name })));
     const pending = pendingAcc.length, pendingIg = pendingAcc.filter((a) => CAN_SCRAPE.has(a.platform)).length;
-    const linkLabel = (l) => l.team_id ? teamName.get(l.team_id) : l.section_id ? `${secName.get(l.section_id)} · all teams` : "Whole club (global)";
     const table = (kind) => {
       const list = people.filter((p) => p.kind === kind);
       if (!list.length) return `<p class="panel-pad muted">None yet. Search it in the library or add it by hand (buttons on the right).</p>`;
-      return `<div class="table-wrap"><table class="data mcl-table"><thead><tr><th>${kindOf(kind)[1]}</th><th>Where</th><th>Accounts</th><th>Active</th><th></th></tr></thead><tbody>
+      return `<div class="table-wrap"><table class="data mcl-table"><thead><tr><th>${kindOf(kind)[1]}</th><th title="Internal: the client only filters by it">Section</th><th>Accounts</th><th>Active</th><th></th></tr></thead><tbody>
         ${list.map((p) => `<tr${p.active ? "" : ' class="is-off"'}>
           <td><div class="ld-person">${p.photo_url ? `<img class="mcl-ph" src="${esc(p.photo_url)}" alt="">` : `<span class="ld-av">${esc(p.name.charAt(0).toUpperCase())}</span>`}<span><b>${esc(p.name)}</b></span></div></td>
-          <td>${p.links.map((l) => `<span class="mcl-link${l.live ? "" : " is-ended"}" title="${esc([l.starts_on && `from ${l.starts_on}`, l.ends_on && `until ${l.ends_on}`].filter(Boolean).join(" ") || "no dates")}">${esc(linkLabel(l))}${l.live ? `<button type="button" title="End this link today (keeps the history)" data-end="${l.id}">✕</button>` : ` <small>ended</small><button type="button" title="Active again" data-relink="${l.id}">↺</button>`}</span>`).join("")}</td>
+          <td>${personSec(p)}</td>
           <td>${p.accounts.length ? p.accounts.map((a) => `<span class="mcl-acc${a.posts ? "" : " is-zero"}">${esc(PF[a.platform] || a.platform)} @${esc(a.handle)} · <b title="${esc(last.get(`${a.platform}|${a.handle}`) ? `Last post imported ${age(last.get(`${a.platform}|${a.handle}`))}` : "")}">${a.posts ? num(a.posts) + " posts" : "not scraped yet"}</b>${CAN_SCRAPE.has(a.platform) ? scrapeBtn(a) : ""}</span>`).join("") : `<span class="muted">—</span>`}</td>
           <td><input class="check" type="checkbox" aria-label="Active" data-active="${p.id}"${p.active ? " checked" : ""}></td>
           <td class="td-actions">${p.accounts.some((a) => CAN_SCRAPE.has(a.platform)) ? `<button class="btn btn-sm mcl-row-scrape" type="button" data-scrape-person="${p.id}" title="Scrape the last 10 posts of each of its Instagram / TikTok accounts">${icon("download")}Scrape</button>` : ""}<button class="icon-btn" type="button" title="Delete" aria-label="Delete" data-del="${p.id}">${icon("trash")}</button></td></tr>`).join("")}
         </tbody></table></div>`;
     };
+    // a person's section, changed right here (internal: the client only filters by it); a team counts as its section
+    const teamSec = new Map(club.sections.flatMap((x) => x.teams.map((t) => [t.id, x.id])));
+    const personSec = (p) => { const l = p.links.find((x) => x.live) || p.links[0]; const curSec = l ? l.section_id || teamSec.get(l.team_id) || "" : "";
+      return `<select class="select select-sm" data-person-sec="${p.id}" aria-label="Section"><option value="">Whole ${esc((TYPES.find((x) => x[0] === c.kind) || TYPES[0])[1].toLowerCase())}</option>${club.sections.map((x) => `<option value="${x.id}"${Number(curSec) === x.id ? " selected" : ""}>${esc(x.name)}</option>`).join("")}</select>`; };
     // the section of one of the space's own accounts / tags, changed right here (empty: every section)
     const secSel = (key, cur) => club.sections.length ? `<select class="mcl-chip-sec" title="Section" data-set-sec="${esc(JSON.stringify(key))}"><option value="">All sections</option>${club.sections.map((x) => `<option value="${x.id}"${Number(cur) === x.id ? " selected" : ""}>${esc(x.name)}</option>`).join("")}</select>` : "";
     const nPlayers = people.filter((p) => p.kind === "player").length, nSponsors = people.filter((p) => p.kind === "sponsor").length;
@@ -590,8 +591,6 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
         if (!r.ok) return fail(new Error(r.error));
         A.toast({ extend: "Trial extended by 7 days", member: "Now a full member", remove: "Member removed" }[b.dataset.access]); return loadClubs(cur);
       }
-      if (b.dataset.end) { await rpc("admin_club_edit", { p_what: "link", p_id: Number(b.dataset.end), p: { ends_on: new Date().toISOString().slice(0, 10) } }); A.toast("Link ended today (kept in the history)"); return loadClub(); }
-      if (b.dataset.relink) { await rpc("admin_club_edit", { p_what: "link", p_id: Number(b.dataset.relink), p: { active: true, ends_on: "" } }); return loadClub(); }
       if (b.dataset.del) {
         const p = club.people.find((x) => x.id === Number(b.dataset.del));
         if (!(await A.confirmDialog({ title: `Delete ${p?.name}?`, text: "Removes them from the club with their links and accounts. To keep the history, switch them off instead.", confirm: "Delete", danger: true }))) return;
@@ -669,6 +668,7 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
     if (e.target.matches("[name=acc_platform]")) { const h = e.target.closest(".mcl-acc-row").querySelector("[name=acc_handle]"); if (h.value.trim().length >= 2) { h.focus(); accLookup(h); } return; }
     try {
       if (e.target.dataset.secName) { await rpc("admin_club_section", { p_club: cur, p_action: "rename", p: { id: Number(e.target.dataset.secName), name: e.target.value } }); A.toast("Section renamed"); return loadClub(); }
+      if (e.target.dataset.personSec) { await rpc("admin_club_person_section", { p_person: Number(e.target.dataset.personSec), p_section: e.target.value ? Number(e.target.value) : null }); return A.toast("Section saved"); }
       if (e.target.dataset.setSec) { await rpc("admin_club_set_section", { p_club: cur, p: JSON.parse(e.target.dataset.setSec), p_section: e.target.value ? Number(e.target.value) : null }); return A.toast("Section saved"); }
       if (e.target.matches("[data-logo-file]")) { const file = e.target.files[0]; e.target.value = ""; if (file) await uploadLogo(file); return; }
       if (e.target.dataset.active) { await rpc("admin_club_edit", { p_what: "person", p_id: Number(e.target.dataset.active), p: { active: e.target.checked } }); return loadClub(); }
