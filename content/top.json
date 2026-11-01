@@ -42,6 +42,12 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/566/566363.jpg?v=mvrulpsk"
   },
   {
+    "account": "espnfc",
+    "account_platform": "instagram",
+    "views": 7922054,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/577/577410.jpg?v=mvw97ccy"
+  },
+  {
     "account": "celine.dept",
     "account_platform": "instagram",
     "views": 7526721,
@@ -60,6 +66,12 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/569/569992.jpg?v=mvtje7uw"
   },
   {
+    "account": "houseofhighlights",
+    "account_platform": "instagram",
+    "views": 6655696,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/577/577019.jpg?v=mvw8ubb5"
+  },
+  {
     "account": "lacobraaa2.0",
     "account_platform": "tiktok",
     "views": 6200000,
@@ -72,22 +84,16 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/570/570094.jpg?v=mvtjeqzk"
   },
   {
-    "account": "espnfc",
-    "account_platform": "instagram",
-    "views": 6003991,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/577/577410.jpg?v=mvw97ccy"
-  },
-  {
-    "account": "houseofhighlights",
-    "account_platform": "instagram",
-    "views": 6003344,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/577/577019.jpg?v=mvw8ubb5"
-  },
-  {
     "account": "fcbayern",
     "account_platform": "instagram",
     "views": 5783892,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/573/573956.jpg?v=mvuufk0c"
+  },
+  {
+    "account": "isabelapagliari",
+    "account_platform": "instagram",
+    "views": 5223081,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/577/577207.jpg?v=mvw8wkdx"
   },
   {
     "account": "intermiamicf",
@@ -126,12 +132,6 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/570/570159.jpg?v=mvtmnbf2"
   },
   {
-    "account": "isabelapagliari",
-    "account_platform": "instagram",
-    "views": 4281599,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/577/577207.jpg?v=mvw8wkdx"
-  },
-  {
     "account": "genoacfc",
     "account_platform": "instagram",
     "views": 4074285,
@@ -148,6 +148,12 @@
     "account_platform": "instagram",
     "views": 3757333,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/574/574820.jpg?v=mvuuhapx"
+  },
+  {
+    "account": "espn",
+    "account_platform": "tiktok",
+    "views": 3700000,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/575/575594.jpg?v=mvw89y3x"
   },
   {
     "account": "intermiamicf",
@@ -172,11 +178,5 @@
     "account_platform": "instagram",
     "views": 3102624,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/568/568058.jpg?v=mvtcoxs5"
-  },
-  {
-    "account": "liverpoolfc",
-    "account_platform": "instagram",
-    "views": 3097612,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/570/570158.jpg?v=mvtmnmqg"
   }
 ]
