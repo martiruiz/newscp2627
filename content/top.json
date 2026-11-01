@@ -138,6 +138,12 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/574/574336.jpg?v=mvuui2kx"
   },
   {
+    "account": "espn",
+    "account_platform": "tiktok",
+    "views": 3800000,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/575/575588.jpg?v=mvw89x3v"
+  },
+  {
     "account": "fabriziorom",
     "account_platform": "instagram",
     "views": 3757333,
@@ -172,11 +178,5 @@
     "account_platform": "instagram",
     "views": 3097612,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/570/570158.jpg?v=mvtmnmqg"
-  },
-  {
-    "account": "bundesliga",
-    "account_platform": "instagram",
-    "views": 3073453,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/574/574001.jpg?v=mvuuhidp"
   }
 ]
