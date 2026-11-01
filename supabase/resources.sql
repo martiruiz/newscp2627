@@ -50,5 +50,8 @@ insert into public.resources (slug, title, description, bullets, status, cover_u
 ,
  ('content-ideas-november-2026', '6 Content Ideas for November 2026', 'Six content ideas for sports teams and brands, with real examples from the library, steps, hook templates and the key dates of the month.',
   E'6 ideas with steps and hook templates\n12 real examples from the SCP library, each with a link\nKey dates of November', 'live',
-  'assets/resources/november-cover.webp', 'assets/resources/Content-Ideas-November-2026.pdf', null, 40, true)
+  'assets/resources/november-cover.webp', 'assets/resources/Content-Ideas-November-2026.pdf', null, 40, true),
+ ('content-ideas-december-2026', '6 Content Ideas for December 2026', 'Six content ideas for sports teams and brands, with real examples from the library, steps, hook templates and the key dates of the month.',
+  E'6 ideas with steps and hook templates\n12 real examples from the SCP library, each with a link\nKey dates of December', 'live',
+  'assets/resources/december-cover.webp', 'assets/resources/Content-Ideas-December-2026.pdf', null, 50, true)
 on conflict (slug) do nothing;
