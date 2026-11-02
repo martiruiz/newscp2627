@@ -58,7 +58,7 @@
   if (summary) { $("[data-sp-summary]").textContent = summary; $("[data-sp-ai]").hidden = false; }
 
   // its filters, as in the library
-  const SHOW = ["trend", "platform", "format", "sport", "competition", "club", "moment", "matchday_graphic", "season_moment", "outcome", "angle", "collab", "sponsor", "language"];
+  const SHOW = ["trend", "platform", "format", "sport", "competition", "club", "moment", "matchday_graphic", "season_moment", "outcome", "angle", "challenge", "collab", "sponsor", "language"];
   $("[data-sp-tags]").innerHTML = (p.tags || []).filter((t) => SHOW.includes(t.category))
     .sort((a, b) => SHOW.indexOf(a.category) - SHOW.indexOf(b.category))
     .map((t) => `<span class="sp-tag${t.category === "trend" ? " is-trend" : ""}">${t.logo ? `<img src="${esc(t.logo)}" alt="" loading="lazy" onerror="this.remove()">` : ""}${esc(t.name)}</span>`).join("");

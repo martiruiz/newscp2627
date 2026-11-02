@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "run, eval, test, seed (30 posts to review in Admin → Smart filters) or seed-challenges (the posts in ids)"
+        description: "run, eval, test, seed (30 posts to review in Admin → Smart filters) seed-challenges (the posts in ids) or challenges (the posts in the library with its keywords, once)"
         default: "run"
       from:
         description: "run: posts imported since this day (YYYY-MM-DD; empty = last 7 days)"
@@ -58,5 +58,6 @@ jobs:
             test) node library/smart-auto.mjs --test 100 ;;
             seed) node library/smart-auto.mjs --seed 30 ;;
             seed-challenges) node library/smart-auto.mjs --seed-challenges "$IDS" ;;
+            challenges) node library/smart-auto.mjs --run --challenges ;;
             *)    node library/smart-auto.mjs --run ${FROM:+--from "$FROM"} ;;
           esac

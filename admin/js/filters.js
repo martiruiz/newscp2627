@@ -10,7 +10,7 @@
     ["Where & how", [["platform", "Platform"], ["format", "Format"], ["aspect_ratio", "Aspect ratio"], ["duration", "Duration"], ["language", "Language"], ["trend", "Trend"]]],
     ["Who", [["sport", "Sport"], ["entity", "Publisher type"], ["competition", "Competition"], ["club", "Club"], ["media", "Media outlets"], ["team", "Team"]]],
     ["Occasion", [["campaign", "Campaign"], ["moment", "Campaign moment"], ["matchday_graphic", "Matchday graphic"], ["season_moment", "Season moment"], ["outcome", "Result"], ["opponent", "Opponent"], ["city", "City"], ["transfer", "Transfers"], ["kit", "Kit"]]],
-    ["Story", [["angle", "Angle and tone"], ["comms", "Press and comms"], ["crisis", "Sensitive topics"]]],
+    ["Story", [["angle", "Angle and tone"], ["challenge", "Challenges"], ["comms", "Press and comms"], ["crisis", "Sensitive topics"]]],
     ["Brands & goals", [["sponsor", "Sponsors"], ["sponsor_sector", "Sponsor sector"], ["sponsor_integration", "Integration"], ["collab", "Collaborations"], ["goal", "Business goal"], ["cta", "Call to action"]]],
     ["Content creators", [["creator_type", "Creator type"], ["creator_language", "Creator's language"], ["creator_country", "Country"], ["creator_gender", "Gender"]]],
   ];

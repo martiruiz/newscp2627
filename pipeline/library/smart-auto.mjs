@@ -35,9 +35,8 @@ async function loadPosts(ids) {
   return out;
 }
 const request = async (p) => requestParams(p, await fetchImage(p.cover_url));
-// filters not written into the library yet (not reliable enough in the eval): the storytelling angle, and Challenges until
-// its review set is validated
-const HOLD = ["angle", "challenge"];
+// filters not written into the library yet (not reliable enough in the eval): the storytelling angle
+const HOLD = ["angle"];
 const applied = (labels) => Object.fromEntries(Object.entries(labels).filter(([k]) => !HOLD.includes(k)));
 const per1000 = (usd, n) => (n ? (usd / n) * 1000 : 0).toFixed(2);
 
@@ -187,7 +186,7 @@ if (argv.includes("--test")) {
 
 // ---------- --run: collect the finished batches, send the pending posts ----------
 if (argv.includes("--run")) {
-  const { data: open, error } = await db.from("smart_batches").select("id,post_ids").is("collected_at", null);
+  const { data: open, error } = await db.from("smart_batches").select("id,post_ids,kind").is("collected_at", null);
   if (error) throw error;
   let labelled = 0, spent = 0;
   for (const b of open) {
@@ -204,7 +203,9 @@ if (argv.includes("--run")) {
       if (r.result.type !== "succeeded" || !captions.has(Number(r.custom_id))) continue;   // a post replaced by a later import since it was sent: its new copy is sent on its own
       try { rows.push({ id: Number(r.custom_id), version: VERSION, labels: applied(parseAnswer(r.result.message, captions.get(Number(r.custom_id)) ?? "")) }); usd += cost(r.result.message.usage, { batch: true }); } catch {}
     }
-    for (let i = 0; i < rows.length; i += 200) { const { error: e } = await db.rpc("apply_smart_labels", { p_rows: rows.slice(i, i + 200) }); if (e) throw e; }
+    if (b.kind === "challenge") {   // this one filter only: the post's other labels stay as they are
+      for (const r of rows.filter((x) => x.labels.challenge?.length)) { const { error: e } = await db.rpc("set_idea_tags", { p_idea: r.id, p_category: "challenge", p_names: r.labels.challenge, p_source: "ai" }); if (e) throw e; }
+    } else for (let i = 0; i < rows.length; i += 200) { const { error: e } = await db.rpc("apply_smart_labels", { p_rows: rows.slice(i, i + 200) }); if (e) throw e; }
     await db.from("smart_batches").update({ collected_at: new Date().toISOString(), labelled: rows.length, usd }).eq("id", b.id);
     labelled += rows.length; spent += usd;
     console.log(`${b.id}: ${rows.length} posts labelled · $${usd.toFixed(2)}`);
@@ -212,14 +213,24 @@ if (argv.includes("--run")) {
   if (labelled) for (const part of ["values", "totals", "pairs"]) await db.rpc("refresh_library_stats", { p_part: part });
 
   const from = arg("--from") || new Date(Date.now() - 7 * 864e5).toISOString().slice(0, 10);
-  const ids = await pending(from, Number(arg("--limit")) || 50000);
-  console.log(`${ids.length} posts to send (imported since ${from})`);
+  // --challenges: the posts already in the library whose caption may be a challenge, once each (only for that filter)
+  const kind = argv.includes("--challenges") ? "challenge" : "all";
+  let ids;
+  if (kind === "challenge") {
+    const { data: cand, error: e1 } = await db.rpc("challenge_candidates");
+    if (e1) throw e1;
+    const { data: done, error: e2 } = await db.from("smart_batches").select("post_ids").eq("kind", "challenge");
+    if (e2) throw e2;
+    const seen = new Set((done || []).flatMap((b) => b.post_ids));
+    ids = cand.filter((id) => !seen.has(id));
+  } else ids = await pending(from, Number(arg("--limit")) || 50000);
+  console.log(`${ids.length} posts to send (${kind === "challenge" ? "Challenges keywords" : `imported since ${from}`})`);
   // a batch may not exceed 256 MB: ~200 MB or 2,000 posts each
   const MAX_BYTES = 200 * 1024 * 1024, MAX_POSTS = 2000;
   let sent = 0, batch = [], bytes = 0;
   const flush = async () => {
     const b = await claude.messages.batches.create({ requests: batch });
-    await db.from("smart_batches").insert({ id: b.id, post_ids: batch.map((r) => Number(r.custom_id)) });
+    await db.from("smart_batches").insert({ id: b.id, kind, post_ids: batch.map((r) => Number(r.custom_id)) });
     sent += batch.length;
     console.log(`Batch ${b.id}: ${batch.length} posts (${Math.round(bytes / 1048576)} MB)`);
     batch = []; bytes = 0;

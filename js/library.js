@@ -39,6 +39,7 @@
     { key: "transfer", label: "Transfers", sec: "content", ico: "swap" },
     { key: "kit", label: "Kit", sec: "content", ico: "shirt" },
     { key: "angle", label: "Angle and tone", sec: "content", ico: "smile" },
+    { key: "challenge", label: "Challenges", sec: "content", ico: "trophy" },
     { key: "season_moment", label: "Season moment", sec: "content", ico: "flag", more: true },
     { key: "outcome", label: "Result", sec: "content", ico: "pulse", more: true },
     { key: "team", label: "Team", sec: "content", ico: "user", more: true },
@@ -71,7 +72,7 @@
     const NEW = [
       ["trend", "discover"], ["format", "format"], ["aspect_ratio", "format"], ["duration", "format"], ["language", "format"], ["platform", "platform"],
       ["matchday_graphic", "occasion"], ["outcome", "occasion"], ["opponent", "occasion"],
-      ["transfer", "occasion"], ["kit", "occasion"], ["season_moment", "occasion"], ["moment", "occasion"], ["angle", "occasion"],
+      ["transfer", "occasion"], ["kit", "occasion"], ["season_moment", "occasion"], ["moment", "occasion"], ["angle", "occasion"], ["challenge", "occasion"],
       ["comms", "occasion", true], ["crisis", "occasion", true],
       ["goal", "goal"], ["sponsor", "goal"], ["sponsor_integration", "goal"], ["sponsor_sector", "goal"], ["cta", "goal", true], ["collab", "goal", true],
       ["sport", "benchmark"], ["competition", "benchmark"], ["club", "benchmark"], ["entity", "who"], ["team", "benchmark"], ["city", "benchmark", true],
@@ -765,6 +766,8 @@
       // Memes: the meme accounts and the humour posts (the "Humour / meme" tone), together
       { key: "memes", label: "Memes", ico: "smile", desc: "Meme accounts and humour pages", vals: [["entity", "Meme"], ["angle", "Humour / meme"]],
         labels: { meme: "Meme accounts", "humour / meme": "Humour posts" }, tileIco: { meme: "users", "humour / meme": "smile" } },
+      // Challenges: players doing a test, game or contest to entertain the fans (one option: choosing it applies the filter)
+      { key: "challenges", label: "Challenges", ico: "trophy", desc: "Players in games and tests to entertain the fans", vals: [["challenge", "Challenges"]] },
       { key: "comms", label: "Press and comms", ico: "message", desc: "Announcements, press and practical info", cats: ["comms"] },
       // Media: the outlets with their logos (like clubs and competitions; set in Admin → Filters), every media post on top
       { key: "media", label: "Media", ico: "megaphone", desc: "", cats: ["media"], logos: true, chips: [["entity", "Media", "All media"]] },
@@ -1369,7 +1372,7 @@
     ["team", "Women's team", "femeni|femenino|women|womens|dones|mujeres|equip femeni"], ["team", "Academy / youth", "academia|academy|cantera|planter|futbol base|youth"], ["team", "Legends", "llegendes|leyendas|legends"],
     ["goal", "Ticket sales", "entrades|entradas|tickets?|taquilla"], ["goal", "Merchandise sales", "botiga|tienda|merch\\w*|shop"], ["goal", "Memberships", "socis|socios|members(hip)?|abonaments?|abonos?"],
     ["sponsor_integration", "*", "sponsors?|patrocinadors?|patrocinadores|patrocini|patrocinio|partners?"],
-    ["angle", "Humour / meme", "humor|memes?|divertits?|graciosos?|funny"], ["angle", "Emotional", "emotius?|emotivos?|emotional|emocionants?"], ["angle", "Behind the scenes", "behind the scenes|backstage|darrere les cameres|detras de camaras|bts"],
+    ["challenge", "Challenges", "challenges?|retos?|reptes?|desaf[ií]os?"], ["angle", "Humour / meme", "humor|memes?|divertits?|graciosos?|funny"], ["angle", "Emotional", "emotius?|emotivos?|emotional|emocionants?"], ["angle", "Behind the scenes", "behind the scenes|backstage|darrere les cameres|detras de camaras|bts"],
     ["angle", "Celebration", "celebraci(o|on)(ns|es)?|celebrations?"], ["angle", "Data & stats", "dades|datos|data"],
     ["collab", "Influencer / creator", "influencers?|creadors?|creadores|creators?"], ["collab", "Fan content (UGC)", "ugc|contingut de fans|contenido de fans|fan content"],
     ["aspect_ratio", "9:16", "verticals?|verticales"], ["aspect_ratio", "1:1", "quadrats?|cuadrados?|square"],

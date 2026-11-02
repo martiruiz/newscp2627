@@ -583,6 +583,7 @@ window.SCP_ES = {
   "Match Day": "Día de partido",
   "Squad and profiles": "Plantilla y perfiles",
   "Media outlets": "Medios",
+  "Players in games and tests to entertain the fans": "Jugadores en juegos y retos para entretener a la afición",
   // My Club: the type of space and its tabs (supabase/my-club-access.sql)
   "My competition": "Mi competición",
   "My agency": "Mi agencia",
