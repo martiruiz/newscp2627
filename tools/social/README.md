@@ -12,6 +12,9 @@ Setup in a fresh session: `npm i --prefix /tmp/ic @phosphor-icons/core` and `npm
 (range label + jobs [id,title,company,location,type full-time|internship,area social|content|design|video|marketing|partnerships,added]).
 Logos: download `jobs.logo_url` to `<logos_dir>/<job id>.img`. Source: Supabase `jobs` (published, not expired, created_at in the last 7 days; max 10, varied areas).
 
+## Jobs story (the day's offers)
+`python3 tools/social/jobs_story.py <config.json> <logos_dir> <out.jpg>` -> 1080x1920 with the free band for the link sticker (y 1450-1570). Config: see configs/jobs-story-2026-11-02.json. Up to 10 offers fit.
+
 ## Social News (Fridays)
 `python3 tools/social/news_weekly.py <config.json> <out_dir>` -> news-01..(2N+2).png. Config: see configs/news-2026-10-26.json
 (label + items [img, brand (simple-icons slug), platform, title with <span class='g'>, para, tip, date]). `img` = one of tiktok|reels|mosseri|facebook|meta, otherwise a generic brand tile is used.
