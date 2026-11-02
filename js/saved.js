@@ -22,7 +22,7 @@
   // Other platforms (TikTok, YouTube, X, Facebook, LinkedIn): their own player
   const otherSrc = (p) => {
     const u = p.url || ""; let m;
-    if ((m = /tiktok\.com\/.*video\/(\d+)/.exec(u))) return `https://www.tiktok.com/embed/v2/${m[1]}`;
+    if ((m = /tiktok\.com\/.*video\/(\d+)/.exec(u))) return `https://www.tiktok.com/player/v1/${m[1]}?music_info=0&description=0&rel=0&controls=1`;   // not embed/v2: it answers 429 "ratelimit triggered"
     if ((m = /(?:shorts\/|v=|youtu\.be\/)([\w-]{11})/.exec(u))) return `https://www.youtube-nocookie.com/embed/${m[1]}`;
     if ((m = /(?:twitter|x)\.com\/[^/]+\/status\/(\d+)/.exec(u))) return `https://platform.twitter.com/embed/Tweet.html?id=${m[1]}&theme=dark&dnt=true&hideThread=true`;
     if (/facebook\.com\//.test(u)) return `https://www.facebook.com/plugins/${/\/(reel|videos?)\//.test(u) ? "video" : "post"}.php?href=${encodeURIComponent(u)}&show_text=false&width=500`;

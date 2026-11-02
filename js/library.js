@@ -2465,21 +2465,21 @@
   const PLATFORM_NAMES = { instagram: "Instagram", tiktok: "TikTok", youtube: "YouTube", x: "X", facebook: "Facebook", linkedin: "LinkedIn" };
   function embedHtml(p) {
     // the post itself, as the platform shows it, straight away (no cover): its embed code, or the platform's player
-    const blockquote = /^\s*<blockquote class="(instagram-media|tiktok-embed|twitter-tweet)/.test(p.embed || "");
+    // (TikTok: always its player. Its embed code loads embed/v2, which answers 429 "ratelimit triggered" and stays blank)
+    const blockquote = /^\s*<blockquote class="(instagram-media|twitter-tweet)/.test(p.embed || "");
     if (blockquote) return `<div class="an-embed">${p.embed}</div>`;
     const pl = playerSrc(p) || (previewSrc(p) ? { src: previewSrc(p) } : null);
     if (!pl) return p.url ? `<a class="btn btn-outline" href="${esc(p.url)}" target="_blank" rel="noopener">Open post</a>` : "";
     const vertical = shape(p).ratio > 1.05;
     return `<div class="an-poster is-live${vertical ? " is-vertical" : ""}" data-embed-id="${esc(p.id)}"><iframe src="${esc(pl.src)}" title="Post" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen scrolling="${pl.ig ? "no" : "auto"}"></iframe></div>`;
   }
-  const SCRIPTS = { "instagram-media": "https://www.instagram.com/embed.js", "tiktok-embed": "https://www.tiktok.com/embed.js", "twitter-tweet": "https://platform.twitter.com/widgets.js" };
+  const SCRIPTS = { "instagram-media": "https://www.instagram.com/embed.js", "twitter-tweet": "https://platform.twitter.com/widgets.js" };
   function runEmbedScript() {
     if ($(".instagram-media", body) && window.instgrm) return window.instgrm.Embeds.process();
     if ($(".twitter-tweet", body) && window.twttr?.widgets) return window.twttr.widgets.load(body);
     for (const [cls, src] of Object.entries(SCRIPTS)) {
       if (!$(`.${cls}`, body)) continue;
-      if (cls === "tiktok-embed") document.querySelectorAll(`script[src="${src}"]`).forEach((s) => s.remove());
-      if (cls === "tiktok-embed" || !document.querySelector(`script[src="${src}"]`)) {
+      if (!document.querySelector(`script[src="${src}"]`)) {
         const s = document.createElement("script"); s.async = true; s.src = src; document.body.append(s);
       }
     }

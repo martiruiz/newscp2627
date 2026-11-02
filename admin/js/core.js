@@ -577,7 +577,6 @@
   }
   const SCRIPTS = {
     instagram: "https://www.instagram.com/embed.js",
-    tiktok: "https://www.tiktok.com/embed.js",
     x: "https://platform.twitter.com/widgets.js",
   };
   function embedKind(html) {
@@ -593,7 +592,6 @@
       document.body.append(s);
     });
   }
-  let tiktokTimer;
   async function activateEmbeds(root) {
     const html = root.innerHTML;
     if (/instagram-media/.test(html)) {
@@ -604,14 +602,11 @@
       if (window.twttr?.widgets) window.twttr.widgets.load(root);
       else if (!document.querySelector(`script[src="${SCRIPTS.x}"]`)) loadScript(SCRIPTS.x);
     }
-    if (/tiktok-embed/.test(html)) {
-      // TikTok's script only scans once, so reload it (debounced) when new embeds appear
-      clearTimeout(tiktokTimer);
-      tiktokTimer = setTimeout(() => {
-        document.querySelectorAll(`script[src="${SCRIPTS.tiktok}"]`).forEach((s) => s.remove());
-        loadScript(SCRIPTS.tiktok);
-      }, 150);
-    }
+    // TikTok: its player in place of the embed code (its script loads embed/v2, which answers 429 "ratelimit triggered" and stays blank)
+    root.querySelectorAll("blockquote.tiktok-embed").forEach((b) => {
+      const id = b.dataset.videoId || /video\/(\d+)/.exec(b.getAttribute("cite") || "")?.[1];
+      if (id) b.outerHTML = `<iframe src="https://www.tiktok.com/player/v1/${id}?music_info=0&description=0&rel=0&controls=1" title="TikTok" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen style="display:block;width:100%;max-width:325px;aspect-ratio:9/16;border:0;border-radius:10px"></iframe>`;
+    });
   }
   function platformOfUrl(url = "") {
     if (/instagram\.com/.test(url)) return "Instagram";
