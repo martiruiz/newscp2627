@@ -12,6 +12,12 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/567/567796.jpg?v=mvtcjb9z"
   },
   {
+    "account": "houseofhighlights",
+    "account_platform": "instagram",
+    "views": 28493382,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/584/584012.jpg?v=mvz1k6gg"
+  },
+  {
     "account": "espn",
     "account_platform": "tiktok",
     "views": 11500000,
@@ -108,6 +114,12 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/577/577207.jpg?v=mvw8wkdx"
   },
   {
+    "account": "premierleague",
+    "account_platform": "instagram",
+    "views": 5167456,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/583/583974.jpg?v=mvz1k74o"
+  },
+  {
     "account": "intermiamicf",
     "account_platform": "instagram",
     "views": 5059154,
@@ -166,17 +178,5 @@
     "account_platform": "instagram",
     "views": 3722258,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/579/579994.jpg?v=mvy7ac3o"
-  },
-  {
-    "account": "espn",
-    "account_platform": "tiktok",
-    "views": 3700000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/575/575594.jpg?v=mvw89y3x"
-  },
-  {
-    "account": "espn",
-    "account_platform": "tiktok",
-    "views": 3600000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/582/582382.jpg?v=mvy82yxt"
   }
 ]
