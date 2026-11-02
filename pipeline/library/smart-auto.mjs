@@ -35,8 +35,9 @@ async function loadPosts(ids) {
   return out;
 }
 const request = async (p) => requestParams(p, await fetchImage(p.cover_url));
-// filters not written into the library yet (not reliable enough in the eval): the storytelling angle
-const HOLD = ["angle"];
+// filters not written into the library yet (not reliable enough in the eval): the storytelling angle, and Challenges until
+// its review set is validated
+const HOLD = ["angle", "challenge"];
 const applied = (labels) => Object.fromEntries(Object.entries(labels).filter(([k]) => !HOLD.includes(k)));
 const per1000 = (usd, n) => (n ? (usd / n) * 1000 : 0).toFixed(2);
 
@@ -149,6 +150,22 @@ if (argv.includes("--seed")) {
   process.exit(0);
 }
 
+// ---------- --seed-challenges ids: a review set for one filter (Admin → Smart filters shows only Challenges for it), from the
+// posts chosen by hand: nothing is written into the library ----------
+if (argv.includes("--seed-challenges")) {
+  const ids = String(arg("--seed-challenges") || "").split(",").map(Number).filter(Boolean), BATCH = `${new Date().toISOString().slice(0, 10)} Challenges ${VERSION}`;
+  const rows = [];
+  let usd = 0;
+  for (const p of await loadPosts(ids)) {
+    try { const msg = await claude.messages.create(await request(p)); rows.push({ post_id: p.id, ai: { challenge: parseAnswer(msg, p.title).challenge }, batch: BATCH, status: "todo" }); usd += cost(msg.usage); }
+    catch (e) { console.log(`  ✗ ${p.id}: ${e.message}`); }
+  }
+  const { error } = await db.from("smart_review").insert(rows);
+  if (error) throw error;
+  console.log(`Review set "${BATCH}": ${rows.length} posts · ${rows.filter((r) => r.ai.challenge.length).length} marked by the AI · $${usd.toFixed(4)} ($${per1000(usd, rows.length)} per 1,000 at full price)`);
+  process.exit(0);
+}
+
 // ---------- --test N: labelled right away, real cost ----------
 if (argv.includes("--test")) {
   const N = Number(arg("--test")) || 100;
@@ -184,7 +201,7 @@ if (argv.includes("--run")) {
       for (const x of data || []) captions.set(x.id, x.title || "");
     }
     for await (const r of await claude.messages.batches.results(b.id)) {
-      if (r.result.type !== "succeeded") continue;
+      if (r.result.type !== "succeeded" || !captions.has(Number(r.custom_id))) continue;   // a post replaced by a later import since it was sent: its new copy is sent on its own
       try { rows.push({ id: Number(r.custom_id), version: VERSION, labels: applied(parseAnswer(r.result.message, captions.get(Number(r.custom_id)) ?? "")) }); usd += cost(r.result.message.usage, { batch: true }); } catch {}
     }
     for (let i = 0; i < rows.length; i += 200) { const { error: e } = await db.rpc("apply_smart_labels", { p_rows: rows.slice(i, i + 200) }); if (e) throw e; }

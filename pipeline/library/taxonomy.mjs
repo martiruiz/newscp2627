@@ -19,6 +19,7 @@ export const CATEGORIES = [
   { key: "crisis", label: "Sensitive comms" },
   { key: "team", label: "Team / audience" },
   { key: "angle", label: "Storytelling angle" },
+  { key: "challenge", label: "Challenges" },
   { key: "collab", label: "Collabs & creators" },
   { key: "cta", label: "Call to action" },
   // brands
@@ -49,6 +50,7 @@ export const AI_VALUES = {
   crisis: ["Apology", "Racism / abuse", "Sanction / disciplinary", "Serious injury", "Security / incident", "Condolences"],
   team: ["Women's team", "Academy / youth", "Legends", "Staff / coaches"],   // Esports is a sport (catalog "sport"), not a team
   angle: ["Player-focused", "Humour / meme", "Emotional", "Data & stats", "Behind the scenes", "Skills / tutorial", "Celebration"],
+  challenge: ["Challenges"],
   collab: ["Player collab", "Athlete takeover", "Fan content (UGC)", "Influencer / creator", "Club collab", "Brand collab"],
   cta: ["Link in bio", "Buy tickets", "Shop now", "Vote / poll", "Comment", "Tag a friend", "Giveaway / contest", "Watch / stream", "Download app"],
   sponsor_sector: ["Apparel / sportswear", "Airline / travel", "Bank / finance", "Telecom / tech", "Beverage", "Food", "Automotive", "Energy", "Betting", "Crypto / fintech", "Media / streaming", "Health", "Retail", "Gaming"],

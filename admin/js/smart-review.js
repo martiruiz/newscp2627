@@ -9,7 +9,10 @@
   try { await A.boot("smart"); } catch { return; }
   const main = $("[data-main]");
   const T = window.SCP_SMART;
-  const CATS = T.categories.filter((c) => !c.meta); // aspect ratio & duration come from Instagram, not the AI
+  const ALL_CATS = T.categories.filter((c) => !c.meta); // aspect ratio & duration come from Instagram, not the AI
+  let CATS = ALL_CATS;
+  // a review set for one filter ("… Challenges …") asks only about that one; the others never ask about it
+  const scope = () => { CATS = /challenges/i.test(batch || "") ? ALL_CATS.filter((c) => c.key === "challenge") : ALL_CATS.filter((c) => c.key !== "challenge"); };
 
   let items = [], all = [], batches = [], batch = null, posts = new Map(), idx = 0, view = "review";
   const setOf = (v) => new Set([].concat(v || []).map((x) => String(x).trim()).filter(Boolean));
@@ -28,6 +31,7 @@
     });
     try { batch = localStorage.getItem("scp-smart-batch"); } catch {}
     if (!batches.includes(batch)) batch = batches[0];
+    scope();
     items = all.filter((r) => (r.batch || "—") === batch);
     const ids = all.map((r) => r.post_id);
     for (const part of A.chunk(ids, 100)) {
@@ -93,6 +97,7 @@
     $("[data-batch]")?.addEventListener("change", (e) => {
       batch = e.target.value;
       try { localStorage.setItem("scp-smart-batch", batch); } catch {}
+      scope();
       items = all.filter((r) => (r.batch || "—") === batch);
       const first = items.findIndex((r) => r.status === "todo");
       idx = first >= 0 ? first : 0; view = "review"; render();

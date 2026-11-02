@@ -56,6 +56,10 @@ window.SCP_SMART = {
       "label": "Storytelling angle"
     },
     {
+      "key": "challenge",
+      "label": "Challenges"
+    },
+    {
       "key": "collab",
       "label": "Collabs & creators"
     },
@@ -212,6 +216,9 @@ window.SCP_SMART = {
       "Behind the scenes",
       "Skills / tutorial",
       "Celebration"
+    ],
+    "challenge": [
+      "Challenges"
     ],
     "collab": [
       "Player collab",
