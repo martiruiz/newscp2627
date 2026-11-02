@@ -247,6 +247,9 @@ if (argv.includes("--run")) {
     }
   }
   if (batch.length) await flush();
+  // the run finished well: Admin warns when this is more than 12 hours old (supabase/smart-health.sql)
+  const { error: beat } = await db.from("smart_status").upsert({ id: 1, last_ok_at: new Date().toISOString() });
+  if (beat) console.log(`Couldn't note the run: ${beat.message}`);
   console.log(`\n${labelled} posts labelled ($${spent.toFixed(2)}) · ${sent} posts sent (imported since ${from}), collected on a later run`);
   process.exit(0);
 }

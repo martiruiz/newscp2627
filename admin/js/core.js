@@ -205,7 +205,24 @@
       throw new Error("not admin");
     }
     document.documentElement.classList.remove("auth-checking");
+    smartWarning(main);
     return { session, profile };
+  }
+
+  // on every page: the AI labelling has stopped (no good run of the Action "Smart filters" in 12 hours, supabase/smart-health.sql)
+  async function smartWarning(main) {
+    const { data } = await db.rpc("smart_health").then((r) => r, () => ({}));
+    if (!data?.stale) return;
+    const when = data.last_ok_at ? new Date(data.last_ok_at).toLocaleString(undefined, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "—";
+    const box = document.createElement("div");
+    box.className = "smart-alert"; box.setAttribute("role", "alert");
+    box.innerHTML = `${icon("alert")}<p><b>AI labelling has stopped</b><span>New imports aren't getting their filters, Challenges included.</span>
+      <small><span>Last run that worked:</span> <span data-i18n-skip>${esc(when)}</span></small></p>
+      <a class="btn btn-sm" href="https://github.com/martiruiz/newscp2627/actions/workflows/smart-filters.yml" target="_blank" rel="noopener">See the error ↗</a>`;
+    // the pages write their content into main after boot: it stays on top of whatever they write
+    const keep = () => { if (!box.isConnected) main.prepend(box); };
+    new MutationObserver(keep).observe(main, { childList: true });
+    keep();
   }
 
   function renderSide(pageKey, session, profile) {
