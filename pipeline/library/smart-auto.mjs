@@ -203,7 +203,20 @@ if (argv.includes("--run")) {
       if (r.result.type !== "succeeded" || !captions.has(Number(r.custom_id))) continue;   // a post replaced by a later import since it was sent: its new copy is sent on its own
       try { rows.push({ id: Number(r.custom_id), version: VERSION, labels: applied(parseAnswer(r.result.message, captions.get(Number(r.custom_id)) ?? "")) }); usd += cost(r.result.message.usage, { batch: true }); } catch {}
     }
-    if (b.kind === "challenge") {   // this one filter only: the post's other labels stay as they are
+    if (b.kind === "challenge-recheck") {   // the criterion was tightened: out of Challenges (and of Replicable Ideas, if that's why it was there) only on an explicit no
+      const out = rows.filter((x) => Array.isArray(x.labels.challenge) && !x.labels.challenge.length).map((x) => x.id);
+      const { data: vals, error: e0 } = await db.from("idea_catalog").select("id,category,name").or("category.eq.challenge,and(category.eq.trend,name.eq.Replicable Ideas)");
+      if (e0) throw e0;
+      const ch = vals.find((v) => v.category === "challenge").id, rep = vals.find((v) => v.category === "trend").id;
+      for (let i = 0; i < out.length; i += 200) {
+        const part = out.slice(i, i + 200);
+        const { error: e1 } = await db.from("content_idea_tags").delete().eq("value_id", ch).eq("source", "ai").in("idea_id", part);
+        if (e1) throw e1;
+        const { error: e2 } = await db.from("content_idea_tags").delete().eq("value_id", rep).eq("source", "meta").in("idea_id", part);
+        if (e2) throw e2;
+      }
+      console.log(`${b.id}: ${out.length} of ${rows.length} out of Challenges`);
+    } else if (b.kind === "challenge") {   // this one filter only: the post's other labels stay as they are
       for (const r of rows.filter((x) => x.labels.challenge?.length)) { const { error: e } = await db.rpc("set_idea_tags", { p_idea: r.id, p_category: "challenge", p_names: r.labels.challenge, p_source: "ai" }); if (e) throw e; }
     } else for (let i = 0; i < rows.length; i += 200) { const { error: e } = await db.rpc("apply_smart_labels", { p_rows: rows.slice(i, i + 200) }); if (e) throw e; }
     await db.from("smart_batches").update({ collected_at: new Date().toISOString(), labelled: rows.length, usd }).eq("id", b.id);
@@ -214,9 +227,19 @@ if (argv.includes("--run")) {
 
   const from = arg("--from") || new Date(Date.now() - 7 * 864e5).toISOString().slice(0, 10);
   // --challenges: the posts already in the library whose caption may be a challenge, once each (only for that filter)
-  const kind = argv.includes("--challenges") ? "challenge" : "all";
+  const kind = argv.includes("--challenges") ? "challenge" : argv.includes("--challenges-recheck") ? "challenge-recheck" : "all";
   let ids;
-  if (kind === "challenge") {
+  if (kind === "challenge-recheck") {   // every post the AI put in Challenges, with today's criterion (a post tagged by hand stays out of this)
+    const { data: v, error: e1 } = await db.from("idea_catalog").select("id").eq("category", "challenge").single();
+    if (e1) throw e1;
+    ids = [];
+    for (let at = 0; ; at += 1000) {
+      const { data, error: e2 } = await db.from("content_idea_tags").select("idea_id").eq("value_id", v.id).eq("source", "ai").order("idea_id").range(at, at + 999);
+      if (e2) throw e2;
+      ids.push(...data.map((r) => r.idea_id));
+      if (data.length < 1000) break;
+    }
+  } else if (kind === "challenge") {
     const { data: cand, error: e1 } = await db.rpc("challenge_candidates");
     if (e1) throw e1;
     const { data: done, error: e2 } = await db.from("smart_batches").select("post_ids").eq("kind", "challenge");
@@ -224,7 +247,7 @@ if (argv.includes("--run")) {
     const seen = new Set((done || []).flatMap((b) => b.post_ids));
     ids = cand.filter((id) => !seen.has(id));
   } else ids = await pending(from, Number(arg("--limit")) || 50000);
-  console.log(`${ids.length} posts to send (${kind === "challenge" ? "Challenges keywords" : `imported since ${from}`})`);
+  console.log(`${ids.length} posts to send (${kind === "challenge" ? "Challenges keywords" : kind === "challenge-recheck" ? "Challenges recheck" : `imported since ${from}`})`);
   // a batch may not exceed 256 MB: ~200 MB or 2,000 posts each
   const MAX_BYTES = 200 * 1024 * 1024, MAX_POSTS = 2000;
   let sent = 0, batch = [], bytes = 0;
