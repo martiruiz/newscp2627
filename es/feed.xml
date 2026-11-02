@@ -6,7 +6,17 @@
     <atom:link href="https://sportscontentplaybook.com/es/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Ideas, tendencias y análisis de contenido deportivo en redes sociales.</description>
     <language>es</language>
-    <lastBuildDate>Sun, 01 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 02 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Ideas de contenido deportivo para Instagram: por qué los hitos y los personajes superan al gol</title>
+      <link>https://sportscontentplaybook.com/es/blog/sports-instagram-content-ideas-milestones-characters-beat-goals.html</link>
+      <guid isPermaLink="true">https://sportscontentplaybook.com/es/blog/sports-instagram-content-ideas-milestones-characters-beat-goals.html</guid>
+      <pubDate>Mon, 02 Nov 2026 08:00:00 GMT</pubDate>
+      <dc:creator>Martí Ruiz</dc:creator>
+      <description>Una camiseta por las 100 apariciones logró 11,7 millones de visualizaciones. Un gol de la misma noche, 4 millones. Este es el patrón que hay detrás y cómo copiarlo.</description>
+      <enclosure url="https://sportscontentplaybook.com/assets/blog/sports-instagram-content-ideas-milestones-characters-beat-goals.jpg" length="70291" type="image/jpeg"/>
+      <media:content url="https://sportscontentplaybook.com/assets/blog/sports-instagram-content-ideas-milestones-characters-beat-goals.jpg" medium="image" type="image/jpeg"/>
+    </item>
     <item>
       <title>Ideas de redes sociales para equipos deportivos: coautoría de Reels para tomar prestada una audiencia</title>
       <link>https://sportscontentplaybook.com/es/blog/social-media-ideas-for-sports-teams-co-authored-reels.html</link>
@@ -296,16 +306,6 @@
       <description>Los clubes de rugby franceses Nissa y Massy muestran cómo un diseño coherente, formatos de vídeo selectivos y un storytelling entre bambalinas dan forma a estrategias de redes sociales eficaces dentro de Sports Content Playbook y del ecosistema moderno de las redes sociales en el deporte.</description>
       <enclosure url="https://sportscontentplaybook.com/assets/blog/two-french-rugby-clubs-one-digital-mindset-nissa-massy.jpg" length="587025" type="image/jpeg"/>
       <media:content url="https://sportscontentplaybook.com/assets/blog/two-french-rugby-clubs-one-digital-mindset-nissa-massy.jpg" medium="image" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>De los números a la narrativa: visualizar la clasificación de la Champions League</title>
-      <link>https://sportscontentplaybook.com/es/blog/from-numbers-to-narrative-visualizing-champions-league-qualification.html</link>
-      <guid isPermaLink="true">https://sportscontentplaybook.com/es/blog/from-numbers-to-narrative-visualizing-champions-league-qualification.html</guid>
-      <pubDate>Sat, 31 Jan 2026 08:00:00 GMT</pubDate>
-      <dc:creator>Josep</dc:creator>
-      <description>La Champions League convirtió la clasificación en una narrativa visual clara, usando movimiento, comparación y diseño de cuadro para transformar clasificaciones complejas en un storytelling atractivo y cercano al aficionado en redes sociales.</description>
-      <enclosure url="https://sportscontentplaybook.com/assets/blog/from-numbers-to-narrative-visualizing-champions-league-qualification.jpg" length="429059" type="image/jpeg"/>
-      <media:content url="https://sportscontentplaybook.com/assets/blog/from-numbers-to-narrative-visualizing-champions-league-qualification.jpg" medium="image" type="image/jpeg"/>
     </item>
   </channel>
 </rss>

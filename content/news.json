@@ -21,29 +21,29 @@
     "faq": [],
     "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/e446e36f-15d2-489a-b79c-94fe347435ce/Untitled_design__14_.png?t=1793470468",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "El Internet Invitational muestra cómo el golf de creadores convierte a los patrocinadores en parte del espectáculo",
+      "tokens": {
+        "in": 1443,
+        "out": 636
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "El segundo Internet Invitational, el evento de golf de creadores de Barstool Sports y Bob Does Sports, ha construido su modelo de patrocinio en torno a marcas que se suman al entretenimiento en lugar de interrumpirlo. Dunkin' vuelve como patrocinador principal con un drive-thru en el campo, Zyrtec es dueña de un Relief Hole con su marca y Reese's respalda un desafío de hoyo en uno de 500.000 $. Con 4 millones de dólares en juego, la presión forma parte del atractivo.",
         "WHOOP también recuperó su activación WHOOP Live, utilizada por primera vez en la Ryder Cup, que muestra las pulsaciones de los jugadores en los momentos de tensión. Así, los datos biométricos se convierten en una herramienta narrativa que intensifica el drama para los espectadores y mantiene al socio visiblemente vinculado a la acción, en lugar de relegarlo a una pausa publicitaria aparte.",
         "Para clubes, ligas y deportistas, la lección es diseñar los activos de patrocinio como formatos de contenido: un desafío con nombre propio, una zona de marca o una capa de datos en directo que los aficionados realmente quieran ver. Los equipos pueden asociar a sus socios con momentos naturales de sus propios eventos, como lanzamientos bajo presión o concursos para aficionados, de modo que las integraciones resulten nativas y generen más clips que se compartan."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-02T15:41:01.876786+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-11-02T16:00:15.518Z",
-      "tokens": {
-        "in": 1443,
-        "out": 636
-      }
+      "source_changed": "2026-11-02T15:41:01.876786+00:00",
+      "meta_description": ""
     }
   },
   {
@@ -68,29 +68,29 @@
     "faq": [],
     "image_url": "https://imgproxy.divecdn.com/unfmmF8wZI6o8OjVajckhaX-bwum9_eI6HzStBjd2MY/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS94X2xvZ28zLnBuZw==.webp",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "X lanza Video Kickstart, un bonus solo por invitación que paga a los creadores por publicar vídeo vertical con regularidad",
+      "tokens": {
+        "in": 1445,
+        "out": 678
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "X ha presentado Video Kickstart, un piloto solo por invitación que paga un bonus a los creadores por publicar vídeos verticales originales de formato corto. Para optar a él durante un periodo de aproximadamente un mes, los participantes deben publicar 15 clips válidos en 15 días distintos, cada uno de menos de tres minutos. Se permite contenido compartido antes en otras plataformas siempre que el creador sea su propietario, y los inscritos pasan por la vía rápida al programa de reparto de ingresos publicitarios de X.",
         "Este movimiento continúa el impulso de X hacia el vídeo, tras un estudio de directos renovado, nuevas opciones de superposición y un compositor de vídeo actualizado. Para los equipos de redes sociales deportivos, indica que X probablemente recompensará el vídeo vertical nativo con más visibilidad, por lo que merece la pena reutilizar clips propios de TikTok, Reels o Shorts en lugar de publicar solo enlaces y actualizaciones de texto.",
         "Los deportistas y creadores de clubes que reciban una invitación podrían establecer un ritmo de publicación sencillo con clips de entrenamientos, momentos entre bastidores y reacciones del día de partido para alcanzar el umbral de 15 días. Los clubes y las ligas deberían comprobar su elegibilidad en Creator Studio, seguir las fechas límite de inscripción y revisar cómo encaja el reparto de ingresos publicitarios con los acuerdos de patrocinio y derechos existentes antes de monetizar las imágenes."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-02T15:41:10.474815+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-11-02T16:00:24.206Z",
-      "tokens": {
-        "in": 1445,
-        "out": 678
-      }
+      "source_changed": "2026-11-02T15:41:10.474815+00:00",
+      "meta_description": ""
     }
   },
   {
