@@ -9278,3 +9278,10 @@ body.mcb-unfolded .lib-head .my-space { display: none; }
 .tour-foot > span { display: flex; align-items: center; gap: 8px; }
 .tour-skip { padding: 0; border: 0; background: none; font: inherit; font-size: 13px; color: var(--muted); cursor: pointer; text-decoration: underline; }
 .lib-card.is-tour .lib-rail { opacity: 1; transform: none; }
+.tour-note { margin: 12px 0 0; font-size: 12.5px; line-height: 1.4; color: var(--muted); }
+.tour-help { flex: none; width: 26px; height: 26px; padding: 0; align-self: center; border-radius: 50%; border: 1px solid var(--line); background: var(--surface-2); color: var(--muted); font: 700 13px/1 var(--font-body); cursor: pointer; transition: color 0.2s, border-color 0.2s; }
+.tour-help:hover { color: var(--gold); border-color: var(--gold); }
+@media (max-width: 960px) {
+  .my-space { position: relative; }
+  .tour-help { position: absolute; top: 4px; right: 12px; }
+}
