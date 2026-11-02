@@ -9259,3 +9259,22 @@ body.club-themed .mc-strip::after { content: ""; position: absolute; left: 18px;
 .mc-crumb.is-unfolded .mcb-row .lfb-lens { display: none; }
 body.mcb-unfolded .lib-head .my-space { display: none; }
 @media (min-width: 961px) { body.mcb-unfolded.my-club-page .lib-head .mc-crumb { grid-column: 2 / -1; } }
+
+/* Content Library: first-visit tour (js/library-tour.js) */
+.tour { position: fixed; inset: 0; z-index: 3000; }
+.tour-block { position: absolute; inset: 0; }
+.tour-spot { position: fixed; border-radius: 14px; border: 2px solid var(--gold); box-shadow: 0 0 0 100vmax rgba(5, 10, 25, 0.72); pointer-events: none; transition: left 0.25s, top 0.25s, width 0.25s, height 0.25s; }
+.tour-card { position: fixed; width: min(380px, calc(100vw - 24px)); padding: 20px; border-radius: 18px; background: var(--surface-2); border: 1px solid var(--line); color: var(--text); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45); }
+.tour-n { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 600; color: var(--gold); }
+.tour-card h2 { margin: 0 0 6px; font-size: 20px; line-height: 1.2; }
+.tour-text { margin: 0; font-size: 14px; line-height: 1.45; color: var(--muted); }
+.tour-list { display: grid; gap: 10px; margin: 12px 0 0; padding: 0; list-style: none; font-size: 14px; line-height: 1.4; color: var(--muted); }
+.tour-list li { display: flex; align-items: flex-start; gap: 10px; }
+.tour-list b { color: var(--text); }
+.tour-list b::after { content: ":"; }
+.tour-ic { flex: none; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 9px; background: var(--gold-tint); color: var(--gold); }
+.tour-ic svg { width: 15px; height: 15px; }
+.tour-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 16px; }
+.tour-foot > span { display: flex; align-items: center; gap: 8px; }
+.tour-skip { padding: 0; border: 0; background: none; font: inherit; font-size: 13px; color: var(--muted); cursor: pointer; text-decoration: underline; }
+.lib-card.is-tour .lib-rail { opacity: 1; transform: none; }
