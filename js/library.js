@@ -72,7 +72,7 @@
     const NEW = [
       ["trend", "discover"], ["format", "format"], ["aspect_ratio", "format"], ["duration", "format"], ["language", "format"], ["platform", "platform"],
       ["matchday_graphic", "occasion"], ["outcome", "occasion"], ["opponent", "occasion"],
-      ["transfer", "occasion"], ["kit", "occasion"], ["season_moment", "occasion"], ["moment", "occasion"], ["angle", "occasion"], ["challenge", "occasion"],
+      ["transfer", "occasion"], ["kit", "occasion"], ["season_moment", "occasion"], ["moment", "occasion"], ["angle", "occasion"], ["challenge", "benchmark"],
       ["comms", "occasion", true], ["crisis", "occasion", true],
       ["goal", "goal"], ["sponsor", "goal"], ["sponsor_integration", "goal"], ["sponsor_sector", "goal"], ["cta", "goal", true], ["collab", "goal", true],
       ["sport", "benchmark"], ["competition", "benchmark"], ["club", "benchmark"], ["entity", "who"], ["team", "benchmark"], ["city", "benchmark", true],
@@ -766,8 +766,6 @@
       // Memes: the meme accounts and the humour posts (the "Humour / meme" tone), together
       { key: "memes", label: "Memes", ico: "smile", desc: "Meme accounts and humour pages", vals: [["entity", "Meme"], ["angle", "Humour / meme"]],
         labels: { meme: "Meme accounts", "humour / meme": "Humour posts" }, tileIco: { meme: "users", "humour / meme": "smile" } },
-      // Challenges: players doing a test, game or contest to entertain the fans (one option: choosing it applies the filter)
-      { key: "challenges", label: "Challenges", ico: "trophy", desc: "Players in games and tests to entertain the fans", vals: [["challenge", "Challenges"]] },
       { key: "comms", label: "Press and comms", ico: "message", desc: "Announcements, press and practical info", cats: ["comms"] },
       // Media: the outlets with their logos (like clubs and competitions; set in Admin → Filters), every media post on top
       { key: "media", label: "Media", ico: "megaphone", desc: "", cats: ["media"], logos: true, chips: [["entity", "Media", "All media"]] },
@@ -792,6 +790,8 @@
         tileIco: { "player appearance": "user", "women's team": "users", "academy / youth": "star", legends: "trophy", "staff / coaches": "flag" } },
       { key: "market", label: "Transfer market", ico: "swap", desc: "", cats: ["transfer"], tiles: true,
         order: ["signing", "renewal", "loan", "departure"], tileIco: { signing: "swap", renewal: "check", loan: "clock", departure: "flag" } },
+      // Challenges: players doing a test, game or contest to entertain the fans (one option: choosing it applies the filter)
+      { key: "challenges", label: "Challenges", ico: "trophy", desc: "Players in games and tests to entertain the fans", vals: [["challenge", "Challenges"]] },
       // vals: [category, name] (every value of the category when name is null)
       // choosing the group turns the "Graphic design" filter on (pick: every matchday graphic has it too, supabase/graphic-design-tag.sql);
       // its options are the matchday graphics (not in Match Day), as tiles like the sports'
