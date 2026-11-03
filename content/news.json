@@ -21,29 +21,29 @@
     "faq": [],
     "image_url": "https://imgproxy.divecdn.com/uJILKCTaAEJ1EzAssbuegpTmAUH7xf0xlK8riB3Z9Oc/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS90aWt0b2tfYnJhbmRfc2FmZXR5X2NlbnRlcl8ySHZReFZzLnBuZw==.webp",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "TikTok lanza un centro de seguridad de marca con nuevas herramientas de protección contra falsificaciones y derechos de autor",
+      "tokens": {
+        "in": 1427,
+        "out": 663
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "TikTok ha puesto en marcha un nuevo sitio web de centro de seguridad de marca que reúne en un solo lugar sus recomendaciones para profesionales del marketing, con vídeos de expertos internos, una nueva Brand Protection Playbook y un resumen de AI Safety Essentials. El anuncio se hizo en su APAC Responsible Media Forum en Singapur, junto con un marco de IA responsable para las marcas que utilizan inteligencia artificial.",
         "Entre las nuevas herramientas hay una función de insights sobre la percepción de marca dentro del centro de negocios de TikTok, opciones para denunciar infracciones de derechos de autor y marcas registradas, y protecciones contra falsificaciones para vendedores. TikTok también compartió datos de moderación: afirma que eliminó más de 30 millones de vídeos en 10 mercados de Asia-Pacífico entre abril y junio de 2026, y que los sistemas automatizados gestionaron el 97,4 % de las retiradas a nivel global.",
         "Para clubes, ligas y deportistas, es un conjunto de herramientas práctico contra el merchandising falso, el uso no autorizado de escudos y logotipos, y la republicación de imágenes de partidos. Los equipos de redes sociales y de negocio pueden usar los insights de percepción para monitorizar el sentimiento de los aficionados hacia la marca, y compartir la playbook con los patrocinadores para tranquilizarlos de que las campañas en TikTok se desarrollan en un entorno más seguro."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-03T14:04:44.294974+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-11-03T15:13:07.894Z",
-      "tokens": {
-        "in": 1427,
-        "out": 663
-      }
+      "source_changed": "2026-11-03T14:04:44.294974+00:00",
+      "meta_description": ""
     }
   },
   {
@@ -68,29 +68,29 @@
     "faq": [],
     "image_url": "https://imgproxy.divecdn.com/aeeevtAyaZ3O5bAWtr6cf0tY1oBNPwMDTu5NEpjnDn0/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9tZXRhX2NyZWF0b3JfYXNzaXN0YW50X3VwZGF0ZTIucG5n.webp",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "El asistente para creadores de Meta añade alertas de tendencias, ayuda con storyboards y respuestas a comentarios con IA",
+      "tokens": {
+        "in": 1438,
+        "out": 693
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "Meta ha ampliado su asistente para creadores basado en IA, lanzado por primera vez en junio para guiar a los creadores en Facebook e Instagram. Ahora la herramienta puede avisar de forma proactiva de tendencias y oportunidades relevantes para el nicho de un creador, convertir una idea en un storyboard y una lista de planos, y revisar un borrador antes de publicarlo con comentarios específicos. Además, destaca las preguntas más relevantes de los espectadores en los comentarios y redacta respuestas con la propia voz del creador.",
         "El asistente ya es accesible en la web a través del Creator Dashboard de Meta, lo que facilita integrarlo en los flujos de trabajo de contenido en ordenador. Meta afirma que planea llevar la función a más apps y herramientas donde los creadores elaboran contenido y planifican su producción, extendiendo aún más su guía con IA a lo largo del proceso de producción.",
         "Para los equipos de redes sociales de clubes y deportistas, las alertas de tendencias podrían agilizar el contenido reactivo en torno a los días de partido, mientras que el storyboard y los comentarios sobre los borradores pueden ayudar a los equipos pequeños a planificar Reels más rápido. Las respuestas automáticas a comentarios pueden ayudar a gestionar las preguntas de los aficionados a gran escala, pero los equipos deben revisarlas con cuidado para mantener una voz auténtica. A medida que más cuentas persigan las mismas tendencias detectadas por la IA, la personalidad distintiva del club y el acceso exclusivo importarán todavía más."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-03T14:04:55.232123+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-11-03T15:13:14.180Z",
-      "tokens": {
-        "in": 1438,
-        "out": 693
-      }
+      "source_changed": "2026-11-03T14:04:55.232123+00:00",
+      "meta_description": ""
     }
   },
   {

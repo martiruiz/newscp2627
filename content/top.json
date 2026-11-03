@@ -36,12 +36,6 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/567/567814.jpg?v=mvtcjj19"
   },
   {
-    "account": "ibaillanos",
-    "account_platform": "instagram",
-    "views": 10072830,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/566/566363.jpg?v=mvrulpsk"
-  },
-  {
     "account": "bleacherreport",
     "account_platform": "instagram",
     "views": 9671933,
@@ -178,5 +172,11 @@
     "account_platform": "instagram",
     "views": 3757333,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/574/574820.jpg?v=mvuuhapx"
+  },
+  {
+    "account": "houseofhighlights",
+    "account_platform": "instagram",
+    "views": 3722258,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/579/579994.jpg?v=mvy7ac3o"
   }
 ]

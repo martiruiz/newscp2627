@@ -6,7 +6,17 @@
     <atom:link href="https://sportscontentplaybook.com/es/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Ideas, tendencias y análisis de contenido deportivo en redes sociales.</description>
     <language>es</language>
-    <lastBuildDate>Mon, 02 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Tue, 03 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Ideas de Reels deportivos: explica la jugada, no solo el gol</title>
+      <link>https://sportscontentplaybook.com/es/blog/sports-reels-ideas-explain-the-play-not-just-the-goal.html</link>
+      <guid isPermaLink="true">https://sportscontentplaybook.com/es/blog/sports-reels-ideas-explain-the-play-not-just-the-goal.html</guid>
+      <pubDate>Tue, 03 Nov 2026 08:00:00 GMT</pubDate>
+      <dc:creator>Martí Ruiz</dc:creator>
+      <description>En una jornada de la Premier League, un vídeo táctico sobre una sola jugada alcanzó 16,6 millones de visualizaciones, nueve veces más que el gol de la victoria. Así puede copiar el patrón cualquier equipo.</description>
+      <enclosure url="https://sportscontentplaybook.com/assets/blog/sports-reels-ideas-explain-the-play-not-just-the-goal.jpg" length="57891" type="image/jpeg"/>
+      <media:content url="https://sportscontentplaybook.com/assets/blog/sports-reels-ideas-explain-the-play-not-just-the-goal.jpg" medium="image" type="image/jpeg"/>
+    </item>
     <item>
       <title>Ideas de contenido deportivo para Instagram: por qué los hitos y los personajes superan al gol</title>
       <link>https://sportscontentplaybook.com/es/blog/sports-instagram-content-ideas-milestones-characters-beat-goals.html</link>
@@ -296,16 +306,6 @@
       <description>Los Seattle Seahawks dominaron Instagram tras ganar la Super Bowl, mientras que los Patriots adoptaron un tono contenido. Un claro contraste en la estrategia de redes sociales en el deporte, analizado desde la perspectiva de Sports Content Playbook.</description>
       <enclosure url="https://sportscontentplaybook.com/assets/blog/winning-loud-losing-smart-inside-super-bowl-instagram-tactics.jpg" length="514179" type="image/jpeg"/>
       <media:content url="https://sportscontentplaybook.com/assets/blog/winning-loud-losing-smart-inside-super-bowl-instagram-tactics.jpg" medium="image" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>Dos clubes de rugby franceses, una misma mentalidad digital: Nissa y Massy</title>
-      <link>https://sportscontentplaybook.com/es/blog/two-french-rugby-clubs-one-digital-mindset-nissa-massy.html</link>
-      <guid isPermaLink="true">https://sportscontentplaybook.com/es/blog/two-french-rugby-clubs-one-digital-mindset-nissa-massy.html</guid>
-      <pubDate>Wed, 04 Feb 2026 08:00:00 GMT</pubDate>
-      <dc:creator>Josep</dc:creator>
-      <description>Los clubes de rugby franceses Nissa y Massy muestran cómo un diseño coherente, formatos de vídeo selectivos y un storytelling entre bambalinas dan forma a estrategias de redes sociales eficaces dentro de Sports Content Playbook y del ecosistema moderno de las redes sociales en el deporte.</description>
-      <enclosure url="https://sportscontentplaybook.com/assets/blog/two-french-rugby-clubs-one-digital-mindset-nissa-massy.jpg" length="587025" type="image/jpeg"/>
-      <media:content url="https://sportscontentplaybook.com/assets/blog/two-french-rugby-clubs-one-digital-mindset-nissa-massy.jpg" medium="image" type="image/jpeg"/>
     </item>
   </channel>
 </rss>
