@@ -1,5 +1,99 @@
 [
   {
+    "id": 161,
+    "url": "https://www.socialmediatoday.com/news/tiktok-adds-new-brand-safety-resources/873529/",
+    "source_name": "Social Media Today",
+    "platform": "tiktok",
+    "title": "TikTok launches brand safety center with new counterfeit and copyright protection tools",
+    "paragraphs": [
+      "TikTok has rolled out a new brand safety center website that gathers its guidance for marketers in one place, including videos with internal experts, a new Brand Protection Playbook and an AI Safety Essentials overview. The announcement came at its APAC Responsible Media Forum in Singapore, alongside a responsible AI framework for brands using artificial intelligence.",
+      "New tools include a brand perception insights feature inside TikTok's business center, options to report copyright and trademark infringement, and counterfeit protections for sellers. TikTok also shared moderation data, saying it removed over 30 million videos across 10 Asia Pacific markets between April and June 2026, with automated systems handling 97.4% of removals globally.",
+      "For clubs, leagues and athletes, this is a practical toolkit against fake merchandise, unauthorized use of crests and logos, and reposted match footage. Social and commercial teams can use the perception insights to monitor fan sentiment around the brand, and share the playbook with sponsors to reassure them that campaigns on TikTok run in a safer environment."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-02T22:51:17+00:00",
+    "created_at": "2026-11-03T14:04:44.294974+00:00",
+    "edited_at": null,
+    "slug": "tiktok-launches-brand-safety-center-with-new-counterfeit-and-161",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/uJILKCTaAEJ1EzAssbuegpTmAUH7xf0xlK8riB3Z9Oc/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS90aWt0b2tfYnJhbmRfc2FmZXR5X2NlbnRlcl8ySHZReFZzLnBuZw==.webp",
+    "es": {
+      "title": "TikTok lanza un centro de seguridad de marca con nuevas herramientas de protección contra falsificaciones y derechos de autor",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "TikTok ha puesto en marcha un nuevo sitio web de centro de seguridad de marca que reúne en un solo lugar sus recomendaciones para profesionales del marketing, con vídeos de expertos internos, una nueva Brand Protection Playbook y un resumen de AI Safety Essentials. El anuncio se hizo en su APAC Responsible Media Forum en Singapur, junto con un marco de IA responsable para las marcas que utilizan inteligencia artificial.",
+        "Entre las nuevas herramientas hay una función de insights sobre la percepción de marca dentro del centro de negocios de TikTok, opciones para denunciar infracciones de derechos de autor y marcas registradas, y protecciones contra falsificaciones para vendedores. TikTok también compartió datos de moderación: afirma que eliminó más de 30 millones de vídeos en 10 mercados de Asia-Pacífico entre abril y junio de 2026, y que los sistemas automatizados gestionaron el 97,4 % de las retiradas a nivel global.",
+        "Para clubes, ligas y deportistas, es un conjunto de herramientas práctico contra el merchandising falso, el uso no autorizado de escudos y logotipos, y la republicación de imágenes de partidos. Los equipos de redes sociales y de negocio pueden usar los insights de percepción para monitorizar el sentimiento de los aficionados hacia la marca, y compartir la playbook con los patrocinadores para tranquilizarlos de que las campañas en TikTok se desarrollan en un entorno más seguro."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-11-03T14:04:44.294974+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-11-03T15:13:07.894Z",
+      "tokens": {
+        "in": 1427,
+        "out": 663
+      }
+    }
+  },
+  {
+    "id": 164,
+    "url": "https://www.socialmediatoday.com/news/meta-updates-creator-assistant-chatbot/873524/",
+    "source_name": "Social Media Today",
+    "platform": "instagram",
+    "title": "Meta's creator assistant adds trend alerts, storyboard help and AI comment replies",
+    "paragraphs": [
+      "Meta has expanded its AI-powered creator assistant, first launched in June to guide creators on Facebook and Instagram. The tool can now proactively flag trends and opportunities relevant to a creator's niche, turn an idea into a storyboard and shot list, and review a draft before publishing with specific feedback. It also surfaces the most relevant viewer questions in comments and drafts replies in the creator's own voice.",
+      "The assistant is now accessible on the web through Meta's Creator Dashboard, making it easier to fit into desktop-based content workflows. Meta says it plans to bring the feature to more apps and tools where creators build content and plan their output, extending its AI guidance further across the production process.",
+      "For club and athlete social teams, the trend alerts could speed up reactive content around matchdays, while storyboard and draft feedback can help small teams plan Reels faster. Automated comment replies may help manage fan questions at scale, but teams should review them carefully to keep an authentic voice. As more accounts chase the same AI-spotted trends, distinctive club personality and exclusive access will matter even more."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-02T22:25:51+00:00",
+    "created_at": "2026-11-03T14:04:55.232123+00:00",
+    "edited_at": null,
+    "slug": "meta-s-creator-assistant-adds-trend-alerts-storyboard-help-and-ai-164",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/aeeevtAyaZ3O5bAWtr6cf0tY1oBNPwMDTu5NEpjnDn0/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9tZXRhX2NyZWF0b3JfYXNzaXN0YW50X3VwZGF0ZTIucG5n.webp",
+    "es": {
+      "title": "El asistente para creadores de Meta añade alertas de tendencias, ayuda con storyboards y respuestas a comentarios con IA",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "Meta ha ampliado su asistente para creadores basado en IA, lanzado por primera vez en junio para guiar a los creadores en Facebook e Instagram. Ahora la herramienta puede avisar de forma proactiva de tendencias y oportunidades relevantes para el nicho de un creador, convertir una idea en un storyboard y una lista de planos, y revisar un borrador antes de publicarlo con comentarios específicos. Además, destaca las preguntas más relevantes de los espectadores en los comentarios y redacta respuestas con la propia voz del creador.",
+        "El asistente ya es accesible en la web a través del Creator Dashboard de Meta, lo que facilita integrarlo en los flujos de trabajo de contenido en ordenador. Meta afirma que planea llevar la función a más apps y herramientas donde los creadores elaboran contenido y planifican su producción, extendiendo aún más su guía con IA a lo largo del proceso de producción.",
+        "Para los equipos de redes sociales de clubes y deportistas, las alertas de tendencias podrían agilizar el contenido reactivo en torno a los días de partido, mientras que el storyboard y los comentarios sobre los borradores pueden ayudar a los equipos pequeños a planificar Reels más rápido. Las respuestas automáticas a comentarios pueden ayudar a gestionar las preguntas de los aficionados a gran escala, pero los equipos deben revisarlas con cuidado para mantener una voz auténtica. A medida que más cuentas persigan las mismas tendencias detectadas por la IA, la personalidad distintiva del club y el acceso exclusivo importarán todavía más."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-11-03T14:04:55.232123+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-11-03T15:13:14.180Z",
+      "tokens": {
+        "in": 1438,
+        "out": 693
+      }
+    }
+  },
+  {
     "id": 144,
     "url": "https://www.sponconsports.com/p/inside-the-internet-invitational-s-sponsorship-playbook",
     "source_name": "SponCon Sports",
@@ -235,33 +329,33 @@
     }
   },
   {
-    "id": 83,
-    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces#2",
+    "id": 84,
+    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces#3",
     "source_name": "SocialGeek News",
-    "platform": "ai",
-    "title": "CapCut announces ChatGPT plugin to edit videos through conversation",
+    "platform": "other",
+    "title": "Gen Z app Posting2 grows with chronological, ad-free, algorithm-free photo feed",
     "paragraphs": [
-      "At its CapCut World event in Los Angeles, CapCut, which reports more than 700 million monthly users, unveiled a ChatGPT plugin coming in the next few months. Users will be able to shape an idea in ChatGPT, let CapCut assemble a first cut, and refine it by chatting, such as extending a shot or lowering music under voiceover. Manual timeline edits are understood by the conversation too.",
-      "CapCut also introduced EditPilot on desktop for natural-language edits of complex or repetitive tasks, plus more image, video and audio generation on web and an AI Lab in the mobile app that turns photos and clips into vlogs or recaps.",
-      "For sports social teams, this could speed up matchday recaps, player highlight packages and behind-the-scenes edits, especially for smaller clubs with limited staff. The tool lowers production effort, but storytelling and editorial judgment will still separate standout club content from the rest."
+      "Posting2 is a small app built as a throwback to early Instagram: square photos, a chronological feed, no algorithm, no ads and no celebrities, with lots of casual everyday posts. According to Fast Company, it grew from 1,600 beta users in April to 36,671 users by October 21, and Sensor Tower recorded a 42% jump in downloads in September versus August.",
+      "The app is still tiny, but it reflects a slice of Gen Z that wants to see friends' posts without algorithmic curation. For clubs and athletes, it is a reminder that raw, imperfect and authentic content is regaining value.",
+      "Sports teams can lean into this by mixing polished campaigns with low-production moments: dressing room snapshots, player phone photos, training ground candids and fan-shot content that feels personal rather than produced."
     ],
     "relevant": true,
     "published_at": "2026-10-29T12:12:00+00:00",
-    "created_at": "2026-10-29T12:54:20.149885+00:00",
+    "created_at": "2026-10-29T12:54:20.285329+00:00",
     "edited_at": null,
-    "slug": "capcut-announces-chatgpt-plugin-to-edit-videos-through-conversation-83",
+    "slug": "gen-z-app-posting2-grows-with-chronological-ad-free-algorithm-free-84",
     "meta_title": null,
     "meta_description": null,
     "takeaways": [],
     "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/d111e67e2e467a7e-16x9.jpg",
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/linkedin-posting2-16x9.jpg",
     "es": {
       "faq": [],
       "model": "claude-sonnet-5-5",
-      "title": "CapCut anuncia un plugin de ChatGPT para editar vídeos a través de una conversación",
+      "title": "Posting2, la app de la Generación Z, crece con un feed de fotos cronológico, sin anuncios y sin algoritmo",
       "tokens": {
-        "in": 1382,
-        "out": 559
+        "in": 1352,
+        "out": 518
       },
       "excerpt": "",
       "cta_text": "",
@@ -271,13 +365,13 @@
       "takeaways": [],
       "meta_title": "",
       "paragraphs": [
-        "En su evento CapCut World, celebrado en Los Ángeles, CapCut, que asegura tener más de 700 millones de usuarios mensuales, presentó un plugin de ChatGPT que llegará en los próximos meses. Los usuarios podrán dar forma a una idea en ChatGPT, dejar que CapCut monte un primer corte y perfeccionarlo chateando, por ejemplo alargando un plano o bajando la música bajo una voz en off. La conversación también entiende las ediciones manuales hechas en la línea de tiempo.",
-        "CapCut también presentó EditPilot en escritorio, para editar con lenguaje natural tareas complejas o repetitivas, además de más generación de imágenes, vídeo y audio en la web y un AI Lab en la app móvil que convierte fotos y clips en vlogs o resúmenes.",
-        "Para los equipos de redes sociales deportivas, esto podría acelerar los resúmenes del día de partido, los paquetes de mejores jugadas de los jugadores y las ediciones de behind-the-scenes, sobre todo en clubes pequeños con poco personal. La herramienta reduce el esfuerzo de producción, pero la narrativa y el criterio editorial seguirán marcando la diferencia entre el contenido destacado de un club y el resto."
+        "Posting2 es una pequeña app concebida como un homenaje a los inicios de Instagram: fotos cuadradas, un feed cronológico, sin algoritmo, sin anuncios y sin famosos, con muchos posts informales del día a día. Según Fast Company, pasó de 1.600 usuarios beta en abril a 36.671 usuarios el 21 de octubre, y Sensor Tower registró un aumento del 42 % en las descargas en septiembre frente a agosto.",
+        "La app sigue siendo diminuta, pero refleja a un sector de la Generación Z que quiere ver las publicaciones de sus amigos sin curación algorítmica. Para clubes y deportistas, es un recordatorio de que el contenido crudo, imperfecto y auténtico está recuperando valor.",
+        "Los equipos deportivos pueden aprovechar esta tendencia combinando campañas muy cuidadas con momentos de baja producción: instantáneas del vestuario, fotos hechas con el móvil de los jugadores, imágenes espontáneas de la ciudad deportiva y contenido grabado por aficionados que resulte personal en lugar de producido."
       ],
       "image_title": "",
-      "translated_at": "2026-10-29T16:10:15.419Z",
-      "source_changed": "2026-10-29T12:54:20.149885+00:00",
+      "translated_at": "2026-10-29T16:10:26.722Z",
+      "source_changed": "2026-10-29T12:54:20.285329+00:00",
       "meta_description": ""
     }
   },
@@ -329,33 +423,33 @@
     }
   },
   {
-    "id": 84,
-    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces#3",
+    "id": 83,
+    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces#2",
     "source_name": "SocialGeek News",
-    "platform": "other",
-    "title": "Gen Z app Posting2 grows with chronological, ad-free, algorithm-free photo feed",
+    "platform": "ai",
+    "title": "CapCut announces ChatGPT plugin to edit videos through conversation",
     "paragraphs": [
-      "Posting2 is a small app built as a throwback to early Instagram: square photos, a chronological feed, no algorithm, no ads and no celebrities, with lots of casual everyday posts. According to Fast Company, it grew from 1,600 beta users in April to 36,671 users by October 21, and Sensor Tower recorded a 42% jump in downloads in September versus August.",
-      "The app is still tiny, but it reflects a slice of Gen Z that wants to see friends' posts without algorithmic curation. For clubs and athletes, it is a reminder that raw, imperfect and authentic content is regaining value.",
-      "Sports teams can lean into this by mixing polished campaigns with low-production moments: dressing room snapshots, player phone photos, training ground candids and fan-shot content that feels personal rather than produced."
+      "At its CapCut World event in Los Angeles, CapCut, which reports more than 700 million monthly users, unveiled a ChatGPT plugin coming in the next few months. Users will be able to shape an idea in ChatGPT, let CapCut assemble a first cut, and refine it by chatting, such as extending a shot or lowering music under voiceover. Manual timeline edits are understood by the conversation too.",
+      "CapCut also introduced EditPilot on desktop for natural-language edits of complex or repetitive tasks, plus more image, video and audio generation on web and an AI Lab in the mobile app that turns photos and clips into vlogs or recaps.",
+      "For sports social teams, this could speed up matchday recaps, player highlight packages and behind-the-scenes edits, especially for smaller clubs with limited staff. The tool lowers production effort, but storytelling and editorial judgment will still separate standout club content from the rest."
     ],
     "relevant": true,
     "published_at": "2026-10-29T12:12:00+00:00",
-    "created_at": "2026-10-29T12:54:20.285329+00:00",
+    "created_at": "2026-10-29T12:54:20.149885+00:00",
     "edited_at": null,
-    "slug": "gen-z-app-posting2-grows-with-chronological-ad-free-algorithm-free-84",
+    "slug": "capcut-announces-chatgpt-plugin-to-edit-videos-through-conversation-83",
     "meta_title": null,
     "meta_description": null,
     "takeaways": [],
     "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/linkedin-posting2-16x9.jpg",
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/d111e67e2e467a7e-16x9.jpg",
     "es": {
       "faq": [],
       "model": "claude-sonnet-5-5",
-      "title": "Posting2, la app de la Generación Z, crece con un feed de fotos cronológico, sin anuncios y sin algoritmo",
+      "title": "CapCut anuncia un plugin de ChatGPT para editar vídeos a través de una conversación",
       "tokens": {
-        "in": 1352,
-        "out": 518
+        "in": 1382,
+        "out": 559
       },
       "excerpt": "",
       "cta_text": "",
@@ -365,13 +459,13 @@
       "takeaways": [],
       "meta_title": "",
       "paragraphs": [
-        "Posting2 es una pequeña app concebida como un homenaje a los inicios de Instagram: fotos cuadradas, un feed cronológico, sin algoritmo, sin anuncios y sin famosos, con muchos posts informales del día a día. Según Fast Company, pasó de 1.600 usuarios beta en abril a 36.671 usuarios el 21 de octubre, y Sensor Tower registró un aumento del 42 % en las descargas en septiembre frente a agosto.",
-        "La app sigue siendo diminuta, pero refleja a un sector de la Generación Z que quiere ver las publicaciones de sus amigos sin curación algorítmica. Para clubes y deportistas, es un recordatorio de que el contenido crudo, imperfecto y auténtico está recuperando valor.",
-        "Los equipos deportivos pueden aprovechar esta tendencia combinando campañas muy cuidadas con momentos de baja producción: instantáneas del vestuario, fotos hechas con el móvil de los jugadores, imágenes espontáneas de la ciudad deportiva y contenido grabado por aficionados que resulte personal en lugar de producido."
+        "En su evento CapCut World, celebrado en Los Ángeles, CapCut, que asegura tener más de 700 millones de usuarios mensuales, presentó un plugin de ChatGPT que llegará en los próximos meses. Los usuarios podrán dar forma a una idea en ChatGPT, dejar que CapCut monte un primer corte y perfeccionarlo chateando, por ejemplo alargando un plano o bajando la música bajo una voz en off. La conversación también entiende las ediciones manuales hechas en la línea de tiempo.",
+        "CapCut también presentó EditPilot en escritorio, para editar con lenguaje natural tareas complejas o repetitivas, además de más generación de imágenes, vídeo y audio en la web y un AI Lab en la app móvil que convierte fotos y clips en vlogs o resúmenes.",
+        "Para los equipos de redes sociales deportivas, esto podría acelerar los resúmenes del día de partido, los paquetes de mejores jugadas de los jugadores y las ediciones de behind-the-scenes, sobre todo en clubes pequeños con poco personal. La herramienta reduce el esfuerzo de producción, pero la narrativa y el criterio editorial seguirán marcando la diferencia entre el contenido destacado de un club y el resto."
       ],
       "image_title": "",
-      "translated_at": "2026-10-29T16:10:26.722Z",
-      "source_changed": "2026-10-29T12:54:20.285329+00:00",
+      "translated_at": "2026-10-29T16:10:15.419Z",
+      "source_changed": "2026-10-29T12:54:20.149885+00:00",
       "meta_description": ""
     }
   },
