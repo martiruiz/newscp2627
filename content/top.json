@@ -1,11 +1,5 @@
 [
   {
-    "account": "lamine.yamal",
-    "account_platform": "tiktok",
-    "views": 138800000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/578/578402.jpg?v=mvwd4p4h"
-  },
-  {
     "account": "celine.dept",
     "account_platform": "instagram",
     "views": 29767897,
@@ -58,6 +52,12 @@
     "account_platform": "instagram",
     "views": 7922054,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/577/577410.jpg?v=mvw97ccy"
+  },
+  {
+    "account": "premierleague",
+    "account_platform": "instagram",
+    "views": 7616156,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/583/583974.jpg?v=mvz1k74o"
   },
   {
     "account": "celine.dept",
@@ -114,12 +114,6 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/577/577207.jpg?v=mvw8wkdx"
   },
   {
-    "account": "premierleague",
-    "account_platform": "instagram",
-    "views": 5167456,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/583/583974.jpg?v=mvz1k74o"
-  },
-  {
     "account": "intermiamicf",
     "account_platform": "instagram",
     "views": 5059154,
@@ -160,6 +154,12 @@
     "account_platform": "instagram",
     "views": 4074285,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/574/574336.jpg?v=mvuui2kx"
+  },
+  {
+    "account": "nfl",
+    "account_platform": "instagram",
+    "views": 3884923,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/584/584191.jpg?v=mvz1ndvi"
   },
   {
     "account": "espn",
