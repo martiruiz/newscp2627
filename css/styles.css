@@ -9766,3 +9766,48 @@ button.org-plan-pick { cursor: pointer; padding-right: 12px; }
   .pf-acc [data-multi="platforms"] .pf-role-ic svg, .pf-acc [data-multi="platforms"] .pf-role-ic img { width: 22px; height: 22px; }
   .pf-acc [data-multi="platforms"] .pf-role-ck { top: -4px; right: -4px; }
 }
+
+/* Library on phones: Dates and Sort open as a sheet from the bottom, and the custom-dates calendar takes its whole width */
+@media (max-width: 760px) {
+  .lib-head:has(.lf-sortbar .lf-menu:not([hidden])) { z-index: 60; }
+  .lib-head .lf-sortbar .lf-menu { position: fixed; top: auto; right: 0 !important; bottom: 0; left: 0 !important; z-index: 60; width: auto; min-width: 0; max-height: 86dvh; padding: 14px 14px calc(16px + env(safe-area-inset-bottom)); overflow-y: auto; overscroll-behavior: contain; border-radius: 22px 22px 0 0; border-width: 1px 0 0; box-shadow: 0 0 0 100vmax rgba(5, 8, 18, 0.62); animation: orgSheet 0.24s cubic-bezier(.2, .8, .2, 1) both; }
+  .lib-head .lf-sortbar .lf-menu-list button { width: 100%; height: 48px; padding-inline: 12px; border-radius: 13px; font-size: 15px; }
+  .lib-head .lf-sortbar .lf-menu .dp-wrap { min-width: 0; margin-inline: 0; }
+  /* a long choice ("Custom dates") shortens inside its button, it never pushes the page wider */
+  .lib-head .lf-sortbar .lf-dd { flex: 0 1 auto; min-width: 0; }
+  .lib-head .lf-sortbar .lf-dd-btn { max-width: 100%; overflow: hidden; }
+  .lib-head .lf-sortbar .lf-dd-btn > span:not([data-icon]) { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lib-head .lf-sortbar .lf-dd-btn svg { flex: none; }
+  .rcal-wrap { padding: 12px 0 0; }
+  .rcal { width: 100%; }
+  .rcal-sum { min-height: 36px; font-size: 14px; }
+  .rcal-clear { min-height: 36px; padding-inline: 10px; font-size: 13px; }
+  .rcal-head b { font-size: 16px; }
+  .rcal-head button { width: 44px; height: 44px; border-radius: 13px; font-size: 21px; }
+  .rcal-grid small { font-size: 12px; }
+  .rcal-grid button { width: 100%; height: 46px; font-size: 15px; border-radius: 12px; }
+  .rcal-grid button.is-start:not(.is-end) { border-radius: 12px 0 0 12px; }
+  .rcal-grid button.is-end:not(.is-start) { border-radius: 0 12px 12px 0; }
+}
+
+@media (max-width: 760px) {
+  /* Favourite network: only the logo, like the platforms */
+  .pf-acc [data-single="favouritePlatform"] { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+  .pf-acc [data-single="favouritePlatform"] .pf-chip { justify-content: center; aspect-ratio: 1; min-height: 44px; height: auto; padding: 0; border-radius: 13px; font-size: 0; gap: 0; }
+  .pf-acc [data-single="favouritePlatform"] .pf-chip img { width: 22px; height: 22px; }
+  /* Favourite profiles: each one a full-width row, the screen's width on any phone */
+  .pf-acc .pf-picked { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .pf-acc .pf-pick { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 54px; padding: 6px 6px 6px 10px; border-radius: 15px; font-size: 14.5px; line-height: 1.2; }
+  .pf-acc .pf-pick small { flex: none; margin-left: auto; white-space: nowrap; }
+  .pf-acc .pf-pick button { flex: none; width: 40px; height: 40px; min-height: 40px; }
+  /* the Library's head never stretches while the posts load */
+  .lib-head { align-content: start; align-self: start; }
+}
+@media (max-width: 760px) {
+  /* the tab bar steps aside while a sheet of the Library is open: it covered the last row of the calendar */
+  body:has(.lib-head .lf-sortbar .lf-menu:not([hidden])) .tabbar { display: none; }
+  /* profile sections use the whole width of the screen */
+  .pf-acc .pf-card .pf-q, .pf-acc .pf-card .pf-grid { padding-inline: 0 !important; background: none !important; border-left: 0 !important; border-right: 0 !important; border-bottom: 0 !important; box-shadow: none !important; }
+  /* a long name wraps inside its row, the remove button stays in */
+  .pf-acc .pf-pick { white-space: normal; overflow-wrap: anywhere; }
+}

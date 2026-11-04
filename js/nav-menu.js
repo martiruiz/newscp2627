@@ -249,7 +249,7 @@
     const phone = matchMedia("(max-width: 760px)");
     let last = scrollY;
     addEventListener("scroll", () => {
-      const y = scrollY, busy = document.querySelector(".tour, .library.sheet-open, .library.plan-open") || head.querySelector(".is-open");
+      const y = scrollY, busy = document.querySelector(".tour, .library.sheet-open, .library.plan-open") || head.querySelector(".is-open, [data-dd-menu]:not([hidden])");
       if (!phone.matches || busy || y < 200 || y < last - 6) head.classList.remove("is-away");
       else if (y > last + 6) head.classList.add("is-away");
       if (Math.abs(y - last) > 6) last = y;
