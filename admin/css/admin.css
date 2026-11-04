@@ -1080,6 +1080,32 @@ select.cs-native { display: none !important; }
 .crm-tag { padding: 2px 7px; border-radius: 999px; background: var(--panel-3); color: var(--muted); font-size: 11px; }
 .crm-when { margin-left: auto; color: var(--dim); font-size: 11px; }
 .crm-empty { margin: 4px 0; text-align: center; color: var(--dim); }
+.crm-use { display: flex; flex-wrap: wrap; gap: 2px 8px; color: var(--muted); font-size: 11.5px; }
+.crm-use .is-cold { color: var(--red); font-weight: 600; }
+.crm-next { display: flex; flex-wrap: wrap; gap: 2px 6px; padding-top: 7px; border-top: 1px solid var(--border); font-size: 12px; }
+.crm-next b { color: var(--accent-light); font-weight: 600; white-space: nowrap; }
+.crm-next.is-late b { color: var(--red); }
+.ld-table .crm-use, .ld-table .crm-next { margin-top: 6px; }
+.crm-today { border-radius: 16px; margin-bottom: 16px; }
+.crm-today-list { display: grid; gap: 6px; margin: 0; padding: 0 18px 18px; list-style: none; }
+.crm-today-list li { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding: 9px 12px; border-radius: 11px; background: var(--panel-2); border: 1px solid var(--border); cursor: pointer; font-size: 13px; }
+.crm-today-list li:hover { border-color: var(--border-2); }
+.crm-today-list b { font-weight: 600; }
+.crm-today-list small { color: var(--muted); font-size: 12px; }
+.crm-report { border-radius: 16px; margin-bottom: 16px; }
+.crm-report-grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(220px, 1fr); gap: 8px; padding-bottom: 12px; }
+.crm-report .crm-total td { font-weight: 600; }
+.crm-why { display: grid; gap: 6px; margin: 0; padding: 0 18px; list-style: none; font-size: 13px; }
+.crm-why li { display: flex; justify-content: space-between; gap: 12px; padding: 9px 12px; border-radius: 11px; background: var(--panel-2); border: 1px solid var(--border); }
+.crm-done { align-content: end; }
+.crm-log { display: flex; gap: 8px; margin-bottom: 12px; }
+.crm-log .input { flex: 1; min-width: 0; }
+.crm-tl { display: grid; gap: 10px; margin: 0; padding: 0 0 0 14px; border-left: 2px solid var(--border); list-style: none; font-size: 13px; }
+.crm-tl li { display: grid; gap: 1px; }
+.crm-tl time { color: var(--dim); font-size: 11.5px; }
+.crm-tl b { font-weight: 600; }
+.crm-tl span { color: var(--muted); white-space: pre-wrap; overflow-wrap: anywhere; }
+@media (max-width: 900px) { .crm-report-grid { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 900px) { .crm-board { grid-template-columns: repeat(6, 220px); } }
 
 /* ---------- Admin → Content Ideas, premium (js/content-ideas.js: main.ci-page) ---------- */

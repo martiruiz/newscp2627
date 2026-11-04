@@ -1,6 +1,6 @@
 // SCP Admin — Leads & Demos: people who went through the lead flow (js/lead-flow.js), their answers, demos booked,
 // commercial status, where they came from, the funnel step by step (A/B too) and the recommendation rules.
-// Data: supabase/leads.sql (admin_leads, admin_set_lead, admin_lead_rules, admin_lead_funnel).
+// Data: supabase/leads.sql (admin_leads, admin_set_lead, admin_lead_rules, admin_lead_funnel) and supabase/crm-next-level.sql (use of the product, next action, reasons, history).
 (async () => {
   const A = window.SCPA;
   const { $, $$, esc, icon, num, info } = A;
@@ -12,6 +12,9 @@
   const CH = { ideas: "Fresh content ideas", ai_time: "Saving time with AI", calendar: "Content calendar", performance: "Content performance", multiple_teams: "Multiple teams", exploring: "Exploring SCP" };
   const STATUS = { new: "New", qualified: "Qualified", demo_booked: "Demo booked", demo_completed: "Demo completed", trial: "In trial", customer: "Customer", lost: "Lost" };
   const MEET = { none: "—", booked: "Booked", rescheduled: "Rescheduled", cancelled: "Cancelled", completed: "Completed", no_show: "No-show" };
+  const LOST = { price: "The price", unused: "Didn't use it", content: "Can't find relevant content", missing: "A feature is missing", timing: "Not the right time", no_reply: "No reply", other: "Another reason" };
+  const SRC = { admin: "Added by hand", trial: "Free trial signup", index: "Home" };
+  const EVENTS = { trial_started: "Free trial started", activated: "Subscription started", trial_converted: "Trial became paid", plan_changed: "Plan changed", cancel_scheduled: "Cancelled (keeps access until the end)", reactivated: "Reactivated", canceled: "Subscription ended", past_due: "Payment overdue", recovered: "Payment recovered", payment_failed: "Payment failed", action_required: "Payment needs action", granted: "Access granted", linked: "Subscription linked" };
   const f = { q: "", status: "", org_type: "", challenge: "", identified: true };
   let leads = [], tab = "all";
   // tabs: what came in from the website, by kind (a lead can be in more than one: a demo with a message…)
@@ -27,8 +30,10 @@
     </div>`;
   main.innerHTML = CRM ? `<div class="page-head"><div><h1>CRM</h1><p data-sub>Loading…</p></div>
     <div class="head-actions"><a class="btn" href="leads.html">${icon("external")}Leads &amp; Demos</a><button class="btn btn-primary" type="button" data-add>${icon("plus")}Add client</button></div></div>
+    <section class="panel crm-today" data-today></section>
     <div class="aud-kpis" data-kpis></div>${filters}
-    <section class="panel ld-crm"><header class="aud-h aud-h-lg"><h2>Pipeline</h2>${info("Every lead as a card in its commercial stage. Drag a card to another column to change its status; click a card for every answer, the demo and notes. The filters above apply here too.")}<span class="spacer"></span><b class="aud-count" data-crm-count></b></header><div class="crm-board" data-board></div></section>`
+    <section class="panel ld-crm"><header class="aud-h aud-h-lg"><h2>Pipeline</h2>${info("Every lead as a card in its commercial stage. Drag a card to another column to change its status; click a card for every answer, the demo and notes. The filters above apply here too.")}<span class="spacer"></span><b class="aud-count" data-crm-count></b></header><div class="crm-board" data-board></div></section>
+    <section class="panel crm-report" data-report></section>`
   : `<div class="page-head"><div><h1>Leads &amp; Demos</h1><p data-sub>Loading…</p></div>
     <div class="head-actions"><a class="btn" href="crm.html">${icon("columns")}Open the CRM</a><button class="btn" type="button" data-rules>${icon("edit")}Recommendation rules</button>
     <button class="btn btn-primary" type="button" data-export>${icon("download")}Export authorised contacts</button></div></div>
@@ -40,6 +45,18 @@
 
   const fmt = (iso) => (iso ? new Date(iso).toLocaleString("es-ES", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "—");
   const source = (l) => [l.utm?.utm_source, l.utm?.utm_campaign].filter(Boolean).join(" / ") || l.utm?.referrer || l.source_page || "—";
+  const today = () => new Date().toLocaleDateString("sv");
+  const dayFmt = (d) => new Date(`${d}T12:00`).toLocaleDateString("es-ES", { day: "2-digit", month: "short" });
+  const daysAgo = (iso) => Math.round((new Date(today()) - new Date(new Date(iso).toLocaleDateString("sv"))) / 864e5);
+  // what they do in the product: red when an active trial hasn't come back in 3 days
+  const usage = (l) => {
+    const u = l.usage; if (!u) return "";
+    const d = u.last_visit ? daysAgo(u.last_visit) : null;
+    const seen = d === null ? "No visits yet" : d === 0 ? "Last visit today" : d === 1 ? "Last visit yesterday" : `Last visit ${d} days ago`;
+    const bits = [[u.saved, `${u.saved} saved`], [u.ai, `${u.ai} AI analyses`], [u.plan, `${u.plan} in the plan`]].filter(([n]) => n);
+    return `<div class="crm-use"><span${l.trial_state === "active" && (d === null || d >= 3) ? ` class="is-cold"` : ""}>${seen}</span>${bits.map(([, t]) => `<span>${t}</span>`).join("")}</div>`;
+  };
+  const nextAction = (l) => (l.next_action || l.next_action_at ? `<div class="crm-next${l.next_action_at && l.next_action_at < today() ? " is-late" : ""}">${l.next_action_at ? `<b>${dayFmt(l.next_action_at)}</b>` : ""}<span>${esc(l.next_action || "—")}</span></div>` : "");
   const trialPill = (l) => (l.trial_state === "active" ? `<span class="ld-pill is-green">Trial active</span>` : l.trial_state === "cancelled" ? `<span class="ld-pill is-red">Trial cancelled</span>` : "");
 
   async function load() {
@@ -70,15 +87,20 @@
       return `<div class="crm-col ${COLS[k]}" data-col="${k}"><header><span class="crm-dot"></span><b>${label}</b><span class="crm-n">${num(list.length)}</span></header>
         <div class="crm-cards">${list.map((l) => `<article class="crm-card" draggable="true" data-card="${l.id}">
           <div class="ld-person"><span class="ld-av">${esc((l.name || l.email || l.phone || "?").trim().charAt(0).toUpperCase())}</span><span><b>${esc(l.name || (l.phone ? "Phone lead" : "Anonymous"))}</b><small>${esc(l.organization || ORG[l.org_type] || l.email || l.phone || "—")}</small></span></div>
-          <div class="crm-meta">${trialPill(l)}${l.status === "trial" && !l.seen_at ? `<span class="ld-pill is-gold">● New trial</span>` : ""}${l.status === "trial" && l.trial_end ? `<span class="crm-tag">Trial ends ${fmt(l.trial_end)}</span>` : ""}${l.meeting_at ? `<span class="ld-pill is-gold">Demo · ${fmt(l.meeting_at)}</span>` : ""}${l.phone ? `<span class="crm-tag">Phone</span>` : ""}${(l.message || "").trim() ? `<span class="crm-tag">Message</span>` : ""}<span class="crm-when">${fmt(l.updated_at)}</span></div>
+          <div class="crm-meta">${trialPill(l)}${l.status === "trial" && !l.seen_at ? `<span class="ld-pill is-gold">● New trial</span>` : ""}${l.status === "trial" && l.trial_end ? `<span class="crm-tag">Trial ends ${fmt(l.trial_end)}</span>` : ""}${l.meeting_at ? `<span class="ld-pill is-gold">Demo · ${fmt(l.meeting_at)}</span>` : ""}${l.phone ? `<span class="crm-tag">Phone</span>` : ""}${(l.message || "").trim() ? `<span class="crm-tag">Message</span>` : ""}<span class="crm-when">${fmt(l.updated_at)}</span></div>${usage(l)}${nextAction(l)}
         </article>`).join("") || `<p class="crm-empty">—</p>`}</div></div>`;
     }).join("");
   }
   async function setStatus(id, status) {
-    const { error } = await A.db.rpc("admin_set_lead", { p_id: id, p: { status } });
+    const l = leads.find((x) => x.id === id);
+    // lost: the reason they gave when cancelling; if there's none, the lead opens so you can choose it
+    const p = { status };
+    if (status === "lost" && l && !l.lost_reason && l.cancel_reason) p.lost_reason = l.cancel_reason;
+    const { error } = await A.db.rpc("admin_set_lead", { p_id: id, p });
     if (error) { A.toast(A.errMsg(error), "err"); return false; }
     A.toast(`Status: ${STATUS[status]}`);
-    const l = leads.find((x) => x.id === id); if (l) l.status = status;
+    if (l) Object.assign(l, p);
+    if (status === "lost" && l && !l.lost_reason) openLead(id);
     return true;
   }
   main.addEventListener("dragstart", (e) => { const c = e.target.closest?.("[data-card]"); if (c) { e.dataTransfer.setData("text/plain", c.dataset.card); c.classList.add("is-drag"); } });
@@ -91,7 +113,50 @@
     if (l && (l.status || "new") !== col.dataset.col && await setStatus(id, col.dataset.col)) render();
   });
 
+  // Today: who needs something from you, the most urgent first
+  function todayList() {
+    const now = Date.now(), t = today();
+    const rows = leads.map((l) => {
+      const why = [];
+      if (l.next_action_at && l.next_action_at < t) why.push([0, `<span class="ld-pill is-red">Late · ${dayFmt(l.next_action_at)}</span>`]);
+      else if (l.next_action_at === t) why.push([1, `<span class="ld-pill is-gold">Today</span>`]);
+      const end = l.status === "trial" && l.trial_state && l.trial_end ? new Date(l.trial_end).getTime() : 0;
+      if (end > now && end - now <= 48 * 36e5) why.push([2, `<span class="ld-pill is-blue">Trial ends ${fmt(l.trial_end)}</span>${trialPill(l)}`]);
+      if (["demo_booked", "demo_completed"].includes(l.status) && !l.next_action_at && l.meeting_status !== "cancelled" && (l.status === "demo_completed" || (l.meeting_at && new Date(l.meeting_at).getTime() < now))) why.push([3, `<span class="ld-pill is-gold">Demo without follow-up</span>`]);
+      return why.length ? { l, rank: Math.min(...why.map(([r]) => r)), why: why.map(([, h]) => h).join("") } : null;
+    }).filter(Boolean).sort((a, b) => a.rank - b.rank);
+    $("[data-today]").innerHTML = `<header class="aud-h aud-h-lg"><h2>Today</h2>${info("Next actions that are late or due today, free trials ending in the next 48 hours and demos with no next action. The filters below apply here too.")}<span class="spacer"></span><b class="aud-count">${num(rows.length)}</b></header>
+      ${rows.length ? `<ul class="crm-today-list">${rows.map(({ l, why }) => `<li data-card="${l.id}"><b>${esc(l.name || l.email || l.phone || "Anonymous")}</b><span class="crm-meta">${why}</span>${l.next_action ? `<small>${esc(l.next_action)}</small>` : ""}</li>`).join("")}</ul>` : `<p class="panel-pad muted">Nothing pending today.</p>`}`;
+  }
+  // where the leads come from and how far they get; why they leave
+  function report() {
+    const by = new Map(), why = new Map();
+    const paying = (l) => ["active", "past_due"].includes(l.sub?.status) || l.status === "customer";
+    for (const l of leads) {
+      const k = l.utm?.utm_source || SRC[l.source_page] || l.source_page || "—";
+      const r = by.get(k) || { k, n: 0, demo: 0, trial: 0, pay: 0, value: 0 };
+      r.n++;
+      if (l.meeting_at || ["demo_booked", "demo_completed"].includes(l.status)) r.demo++;
+      if (l.sub?.trial_start || l.status === "trial") r.trial++;
+      if (paying(l)) { r.pay++; r.value += Number(l.sub?.amount || 0) / (l.sub?.interval === "year" ? 12 : 1); }
+      by.set(k, r);
+      if (l.trial_state === "cancelled" || l.status === "lost") { const c = l.lost_reason || l.cancel_reason || ""; why.set(c, (why.get(c) || 0) + 1); }
+    }
+    const rows = [...by.values()].sort((a, b) => b.n - a.n);
+    const pct = (a, b) => `${num(a)} <small class="muted">${b ? Math.round((a / b) * 100) : 0}%</small>`;
+    const euro = (v) => `${Math.round(v).toLocaleString("es-ES")} €`;
+    const sum = (k) => rows.reduce((s, r) => s + r[k], 0);
+    $("[data-report]").innerHTML = `<div class="crm-report-grid"><div><header class="aud-h aud-h-lg"><h2>Conversion by source</h2>${info("Of the leads that match the filters: how many got to a demo, a free trial and a paid plan. Monthly value = what the ones paying now bring in per month (a yearly plan counts as a twelfth). Leads with no campaign count under the page where they came in.")}</header>
+      <div class="table-wrap"><table class="data"><thead><tr><th>Source</th><th>Leads</th><th>Demo</th><th>Trial</th><th>Paying</th><th>Monthly value</th></tr></thead><tbody>
+      ${rows.map((r) => `<tr><td>${esc(r.k)}</td><td>${num(r.n)}</td><td>${pct(r.demo, r.n)}</td><td>${pct(r.trial, r.n)}</td><td>${pct(r.pay, r.n)}</td><td>${euro(r.value)}</td></tr>`).join("")}
+      <tr class="crm-total"><td>Total</td><td>${num(sum("n"))}</td><td>${pct(sum("demo"), sum("n"))}</td><td>${pct(sum("trial"), sum("n"))}</td><td>${pct(sum("pay"), sum("n"))}</td><td>${euro(sum("value"))}</td></tr></tbody></table></div></div>
+      <div><header class="aud-h aud-h-lg"><h2>Why they leave</h2>${info("Cancelled trials and lost leads, by reason: the one you chose, or else the one they gave when cancelling.")}</header>
+      ${why.size ? `<ul class="crm-why">${[...why].sort((a, b) => b[1] - a[1]).map(([c, n]) => `<li><span>${LOST[c] || "No reason yet"}</span><b>${num(n)}</b></li>`).join("")}</ul>` : `<p class="panel-pad muted">No cancellations or lost leads yet.</p>`}</div></div>`;
+  }
+
   function render() {
+    if ($("[data-today]")) todayList();
+    if ($("[data-report]")) report();
     if ($("[data-board]")) board();
     if (!$("[data-list]")) return;
     $("[data-tabs]").innerHTML = TABS.map(([k, label, ok]) => `<a href="#" role="tab" data-tab="${k}" aria-selected="${tab === k}">${label} <b>${num(leads.filter(ok).length)}</b></a>`).join("");
@@ -104,7 +169,7 @@
         <td><div class="ld-person"><span class="ld-av">${esc((l.name || l.email || l.phone || "?").trim().charAt(0).toUpperCase())}</span><span><b>${esc(l.name || (l.phone ? "Phone lead" : "Anonymous"))}</b><small>${esc([l.email, l.phone].filter(Boolean).join(" · ") || "no email yet")}</small>${tab === "messages" ? `<small class="ld-msg">“${esc(l.message.trim().slice(0, 90))}${l.message.trim().length > 90 ? "…" : ""}”</small>` : ""}</span></div></td>
         <td>${esc(l.organization || "—")}</td><td>${esc(ORG[l.org_type] || "—")}</td><td>${esc(SIZE[l.team_size] || "—")}</td><td>${esc(CH[l.challenge] || "—")}</td>
         <td>${l.recommendation === "demo" ? `<span class="ld-pill is-gold">Demo</span>` : l.recommendation === "trial" ? `<span class="ld-pill is-blue">Free trial</span>` : "—"}</td>
-        <td><select class="select select-sm ld-status st-${l.status}" data-status="${l.id}">${Object.entries(STATUS).map(([k, v]) => `<option value="${k}"${l.status === k ? " selected" : ""}>${v}</option>`).join("")}</select>${l.trial_state ? `<br>${trialPill(l)}` : ""}</td>
+        <td><select class="select select-sm ld-status st-${l.status}" data-status="${l.id}">${Object.entries(STATUS).map(([k, v]) => `<option value="${k}"${l.status === k ? " selected" : ""}>${v}</option>`).join("")}</select>${l.trial_state ? `<br>${trialPill(l)}` : ""}${usage(l)}${nextAction(l)}</td>
         <td>${l.meeting_at ? `${fmt(l.meeting_at)}<br><small class="muted">${esc(MEET[l.meeting_status] || "")}${l.meeting_source === "calcom-webhook" ? " ✓" : ""}</small>` : esc(MEET[l.meeting_status] || "—")}</td>
         <td><small>${esc(source(l))}</small><br><small class="muted">${esc(l.cta || "")}</small></td></tr>`).join("")}
       </tbody></table></div>` : `<p class="panel-pad muted">No leads with these filters yet.</p>`;
@@ -136,21 +201,56 @@
       body: `<div class="ld-fields">${field("name", "Name")}${field("email", "Email", "email")}${field("phone", "Phone", "tel")}${field("organization", "Organisation")}
           <label class="ld-field"><span>Type</span><select class="select" data-k="org_type">${opts(ORG, l.org_type, "—")}</select></label>
           <label class="ld-field"><span>Status</span><select class="select" data-k="status">${opts(STATUS, l.status)}</select></label>
-          <label class="ld-field"><span>Demo status</span><select class="select" data-k="meeting_status">${opts(MEET, l.meeting_status)}</select></label></div>
+          <label class="ld-field"><span>Demo status</span><select class="select" data-k="meeting_status">${opts(MEET, l.meeting_status)}</select></label>
+          <label class="ld-field"><span>Reason lost</span><select class="select" data-k="lost_reason">${opts(LOST, l.lost_reason, "—")}</select></label>
+          ${field("next_action", "Next action")}${field("next_action_at", "Action date", "date")}
+          <div class="ld-field crm-done"><span>&nbsp;</span><button class="btn" type="button" data-action-done>${icon("check")}Mark as done</button></div></div>
         <h3>Notes</h3><textarea class="input" rows="4" data-k="admin_notes" style="width:100%">${esc(l.admin_notes || "")}</textarea>
         <div class="kv-grid">${l.phone ? kv("WhatsApp", `<a href="https://wa.me/${esc(l.phone.replace(/[^0-9]/g, ""))}" target="_blank" rel="noopener">${esc(l.phone)}</a>`) : ""}${kv("Team", esc(SIZE[l.team_size] || "—"))}${kv("Need", esc(CH[l.challenge] || "—"))}
-        ${kv("Recommended", l.recommendation === "demo" ? "Demo" : l.recommendation === "trial" ? "Free trial" : "—")}${kv("Created", fmt(l.created_at))}${l.trial_state ? kv("Free trial", trialPill(l)) : ""}${l.trial_state === "cancelled" ? kv("Cancelled on", fmt(l.trial_canceled_at)) : ""}${l.trial_end ? kv("Trial ends", fmt(l.trial_end)) : ""}
+        ${kv("Recommended", l.recommendation === "demo" ? "Demo" : l.recommendation === "trial" ? "Free trial" : "—")}${kv("Created", fmt(l.created_at))}${l.trial_state ? kv("Free trial", trialPill(l)) : ""}${l.trial_state === "cancelled" ? kv("Cancelled on", fmt(l.trial_canceled_at)) : ""}${l.cancel_reason ? kv("Reason they gave", `${LOST[l.cancel_reason] || esc(l.cancel_reason)}${l.cancel_detail ? ` · ${esc(l.cancel_detail)}` : ""}`) : ""}
+        ${l.usage ? kv("Last visit", l.usage.last_visit ? fmt(l.usage.last_visit) : "—") + kv("Days with a visit", num(l.usage.visits)) + kv("Posts saved", num(l.usage.saved)) + kv("Boards created", num(l.usage.boards)) + kv("AI analyses", num(l.usage.ai)) + kv("Content Plan entries", num(l.usage.plan)) : ""}${l.trial_end ? kv("Trial ends", fmt(l.trial_end)) : ""}
         ${kv("Demo", l.meeting_at ? `${fmt(l.meeting_at)} · ${esc(MEET[l.meeting_status])}${l.meeting_source ? ` (${esc(l.meeting_source)})` : ""}` : "—")}
         ${kv("Source page", esc(l.source_page || "—"))}${kv("CTA", esc(l.cta || "—"))}${kv("Campaign", esc(Object.entries(l.utm || {}).map(([k, v]) => `${k}: ${v}`).join(" · ") || "—"))}
         ${kv("Language", esc(l.lang || "—"))}${kv("A/B variant", esc(l.variant || "—"))}
         ${kv("Privacy accepted", l.privacy_accepted_at ? fmt(l.privacy_accepted_at) : "—")}${kv("Marketing consent", l.marketing_consent ? `Yes · ${fmt(l.marketing_consent_at)}` : "No")}</div>
-        ${l.message ? `<h3>Message</h3><p style="white-space:pre-wrap">${esc(l.message)}</p>` : ""}`,
+        ${l.message ? `<h3>Message</h3><p style="white-space:pre-wrap">${esc(l.message)}</p>` : ""}
+        <h3>History</h3><div class="crm-log"><input class="input" data-note maxlength="2000" placeholder="Log a call or a note…"><button class="btn" type="button" data-note-add>Add</button></div><ol class="crm-tl" data-tl><li class="muted">Loading…</li></ol>`,
       foot: `<button class="btn btn-danger" type="button" data-del>${icon("trash")}Delete</button>`, onClose: () => render() });
     $("[data-del]", m.el).addEventListener("click", async () => {
       if (!await A.confirmDialog({ title: "Delete this client?", text: "It will be removed from the CRM for good.", confirm: "Delete", danger: true })) return;
       const { error } = await A.db.rpc("admin_delete_lead", { p_id: id });
       if (error) return A.toast(/admin_delete_lead|schema cache/i.test(error.message) ? "Run supabase/crm-delete.sql in Supabase first." : A.errMsg(error), "err");
       leads = leads.filter((x) => x.id !== id); m.close(); A.toast("Deleted"); A.crmBadge?.();
+    });
+    const timeline = async () => {
+      const { data, error } = await A.db.rpc("admin_lead_timeline", { p_id: id });
+      const el = $("[data-tl]", m.el); if (!el) return;
+      if (error) { el.innerHTML = `<li class="muted">${esc(A.errMsg(error))}</li>`; return; }
+      el.innerHTML = (data || []).map((t) => {
+        const ev = t.kind.startsWith("sub:") ? t.kind.slice(4) : "";
+        const title = ev ? EVENTS[ev] || ev : { created: "Lead created", demo: "Demo", note: "Note", status: "Stage changed", email: "E-mail sent", cancel_reason: "Reason they gave" }[t.kind] || t.kind;
+        const body = t.kind === "status" ? STATUS[t.body] || t.body : t.kind === "demo" ? MEET[t.body] || t.body : t.kind === "created" ? SRC[t.body] || t.body : t.kind === "cancel_reason" ? `${LOST[t.body.split(": ")[0]] || ""}${t.body.includes(": ") ? ` · ${t.body.split(": ").slice(1).join(": ")}` : ""}` : t.body;
+        return `<li class="is-${esc(t.kind.split(":")[0])}"><time>${fmt(t.at)}</time><b>${title}</b>${body ? `<span>${esc(body)}</span>` : ""}</li>`;
+      }).join("") || `<li class="muted">Nothing yet.</li>`;
+    };
+    timeline();
+    const addNote = async (body) => {
+      const { error } = await A.db.rpc("admin_add_lead_note", { p_id: id, p_body: body });
+      if (error) { A.toast(A.errMsg(error), "err"); return false; }
+      timeline(); return true;
+    };
+    const note = $("[data-note]", m.el);
+    const sendNote = async () => { const body = note.value.trim(); if (body && await addNote(body)) note.value = ""; };
+    $("[data-note-add]", m.el).addEventListener("click", sendNote);
+    note.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); sendNote(); } });
+    // done: it goes to the history and the action is cleared, ready for the next one
+    $("[data-action-done]", m.el).addEventListener("click", async () => {
+      if (!l.next_action && !l.next_action_at) return A.toast("There's no next action yet.", "err");
+      const { error } = await A.db.rpc("admin_set_lead", { p_id: id, p: { next_action: "", next_action_at: "" } });
+      if (error) return A.toast(A.errMsg(error), "err");
+      await addNote(`✓ ${l.next_action || "Next action"}`);
+      l.next_action = null; l.next_action_at = null;
+      $('[data-k="next_action"]', m.el).value = ""; $('[data-k="next_action_at"]', m.el).value = "";
     });
     const saved = $("[data-saved]", m.el), pending = {};
     const flush = A.debounce(async () => {
