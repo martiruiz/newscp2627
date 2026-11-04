@@ -9643,3 +9643,126 @@ html.nav-lock .ck { visibility: hidden; }   /* the cookie notice waits while the
   .sv3-grid::-webkit-scrollbar { display: none; }
   .sv3-grid > * { flex: 0 0 78vw; min-width: 0; scroll-snap-align: start; }
 }
+
+/* Content Plan: the plan picker, our own menu; a sheet from the bottom on phones */
+.org-pick { position: relative; min-width: 0; }
+.org-plan-pick b { overflow: hidden; max-width: 200px; font-weight: 600; font-size: 14px; color: var(--text); text-overflow: ellipsis; white-space: nowrap; }
+button.org-plan-pick { cursor: pointer; padding-right: 12px; }
+.org-pick-chev { display: grid; margin-left: auto; color: var(--muted); transition: transform 0.2s; }
+.org-pick-chev svg { width: 15px; height: 15px; }
+.org-plan-pick[aria-expanded="true"] .org-pick-chev { transform: rotate(180deg); }
+.org-pick-menu[hidden] { display: none; }
+.org-pick-menu { position: absolute; top: calc(100% + 8px); left: 0; z-index: 60; min-width: 280px; }
+.org-pick-list { display: grid; gap: 2px; max-height: 60vh; padding: 8px; overflow-y: auto; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); box-shadow: 0 30px 60px -24px rgba(0, 0, 0, 0.75); }
+.org-pick-h { margin: 6px 10px 6px; color: var(--muted); font-size: 11.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.org-pick-list hr { width: 100%; margin: 6px 0; border: 0; border-top: 1px solid rgba(var(--fg), 0.1); }
+.org-pick-list button { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 46px; padding: 0 12px; border: 0; border-radius: 12px; background: none; color: var(--text); font: 500 14.5px var(--font-body); text-align: left; cursor: pointer; }
+.org-pick-list button:hover { background: rgba(var(--fg), 0.06); }
+.org-pick-list button[aria-checked="true"] { background: var(--gold-tint); font-weight: 600; }
+.org-pick-list button span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.org-pick-list svg { flex: none; width: 17px; height: 17px; color: var(--muted); }
+.org-pick-list button[aria-checked="true"] svg { color: var(--gold); }
+@media (max-width: 760px) {
+  .org-pick { flex: 1 1 0; }
+  button.org-plan-pick { width: 100%; }
+  .org-plan-pick b { max-width: none; font-size: 15px; }
+  .org-pick-menu { position: fixed; inset: 0; z-index: 90; display: flex; align-items: flex-end; min-width: 0; background: rgba(5, 8, 18, 0.6); animation: navOverlay 0.18s ease both; }
+  .org-pick-list { width: 100%; max-height: 70dvh; padding: 14px 14px calc(14px + env(safe-area-inset-bottom)); border-radius: 22px 22px 0 0; border-width: 1px 0 0; animation: orgSheet 0.24s cubic-bezier(.2, .8, .2, 1) both; }
+  .org-pick-list button { min-height: 54px; font-size: 16px; border-radius: 14px; }
+}
+@keyframes orgSheet { from { transform: translateY(30%); } to { transform: none; } }
+
+/* Library on phones: one row with Filters, dates, order and the tutorial; My space keeps its colours, with room for a finger */
+@media (max-width: 760px) {
+  .lib-head { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; background: var(--surface); border-bottom: 1px solid var(--line-soft); }
+  .lib-head .feed-bar { grid-column: 1; grid-row: 1; padding: 10px 0 8px 16px; border: 0; background: none; box-shadow: none; }
+  .lib-head .lf-sortbar { grid-column: 2; grid-row: 1; display: flex; gap: 6px; min-width: 0; padding: 10px 52px 8px 6px; border: 0; background: none; }
+  .lib-head .my-space { grid-column: 1 / -1; grid-row: 2; position: static; padding: 2px 16px 12px; border: 0; background: none; }
+  .lib-head .my-space-t { display: none; }
+  .lib-head .my-space.is-closed .my-space-btns { max-width: none; max-height: none; overflow: visible; opacity: 1; transform: none; pointer-events: auto; }
+  .lib-head .lf-sortbar::before, .lib-head .lf-sortbar::after, .lib-head .feed-bar::before, .lib-head .feed-bar::after { display: none; }
+  .lib-head .feed-bar .collapse, .lib-head .lf-dd-btn { height: 42px; padding-inline: 13px; border-radius: 13px; }
+  .lib-head .tour-help { position: absolute; top: 15px; right: 14px; width: 32px; height: 32px; }
+  .lib-head .my-space-btns { gap: 8px; }
+  .lib-head .my-space-btns .pill { gap: 6px; min-height: 72px; padding: 10px 6px 8px; border-radius: 15px; -webkit-tap-highlight-color: transparent; transition: transform 0.12s; }
+  .lib-head .my-space-btns .pill:active { transform: scale(0.96); }
+  .lib-head .my-space-btns .pill .lf-hide-sm { font-size: 12px; font-weight: 600; line-height: 1.15; }
+}
+
+/* Demo and contact form on phones: the options as a tidy list of full-width rows, easy to tap */
+@media (max-width: 640px) {
+  .lead-bubbles { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; width: 100%; padding: 4px 0 12px; }
+  .lead-bubbles .lead-break { display: none; }
+  .lead-bubble, .lead-modal.is-quick .lead-bubble { width: 100%; height: 58px; padding: 0 16px 0 12px; justify-content: flex-start; gap: 12px; border-radius: 16px; font-size: 15.5px; font-weight: 600; text-align: left; animation: none; transform: none; -webkit-tap-highlight-color: transparent; }
+  .lead-bubble::after { content: ""; flex: none; width: 8px; height: 8px; margin-left: auto; border-top: 2px solid currentColor; border-right: 2px solid currentColor; opacity: 0.45; transform: rotate(45deg); }
+  .lead-bubble:active { background: rgba(240, 184, 74, 0.18); }
+  .lead-bubble-ic { width: 36px; height: 36px; margin: 0; border-radius: 11px; }
+  .lead-bubble-ic svg { width: 19px; height: 19px; }
+  .lead-modal.is-quick .lead-q-big { font-size: 24px; line-height: 1.2; }
+}
+
+/* My profile on phones: who you are in one compact card, then the sections as a list; each opens on its own, the most used (billing) first */
+@media (max-width: 760px) {
+  .pf { padding-top: 8px; }
+  .pf-hero { display: block; padding: 16px; border-radius: 20px; }
+  .pf-id { align-items: center; gap: 14px; padding-right: 66px; }
+  .pf-avatar { width: 64px; height: 64px; font-size: 22px; }
+  .pf-photo-remove { display: none !important; }
+  .pf-eyebrow { font-size: 11px; }
+  .pf-id h1 { margin-top: 2px; font-size: 23px; }
+  .pf-org { margin-top: 2px; font-size: 13px; line-height: 1.3; }
+  .pf-plan-chip { margin-top: 12px; }
+  .pf-meter { top: 16px; right: 14px; width: 56px; height: 56px; }
+  .pf-meter-text b { font-size: 13px; }
+  .pf-meter-text span { display: none; }
+  .pf-why { display: none; }
+  .pf-layout { display: block; margin-top: 12px; }
+  .pf-nav { display: none; }
+  .pf-form.pf-acc { display: flex; flex-direction: column; gap: 8px; }
+  .pf-acc #billing { order: -1; }
+  .pf-acc .pf-card { scroll-margin-top: 84px; padding: 0 14px; border-radius: 16px; }
+  .pf-acc .pf-card:not(.is-open) > :not(.pf-head) { display: none; }
+  .pf-acc .pf-card.is-open { padding-bottom: 18px; }
+  .pf-acc .pf-head { flex-wrap: nowrap; gap: 12px; min-height: 64px; padding: 10px 0; border: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .pf-acc .is-open > .pf-head { margin-bottom: 14px; border-bottom: 0.5px solid var(--line-soft); }
+  .pf-acc .pf-head > div { flex: 1 1 0; min-width: 0; }
+  .pf-acc .pf-head h2 { margin: 0; font-size: 16px; line-height: 1.2; }
+  .pf-acc .pf-head p { display: none; }
+  .pf-acc .is-open > .pf-head p { display: block; margin-top: 3px; font-size: 12.5px; line-height: 1.35; }
+  .pf-acc .pf-head-ic { flex: none; width: 38px; height: 38px; }
+  .pf-acc .pf-sec-prog { flex: none; height: auto; margin: 0; padding: 0; border: 0; background: none; font-size: 12px; }
+  .pf-acc .pf-sec-prog.is-done { background: none; }
+  .pf-acc .pf-head::after { content: ""; flex: none; width: 8px; height: 8px; margin: 0 4px 3px 0; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(45deg); transition: transform 0.2s; }
+  .pf-acc .is-open > .pf-head::after { margin-bottom: -3px; border-color: var(--gold); transform: rotate(-135deg); }
+  /* the save bar over the tab bar */
+  .pf-savebar { bottom: calc(76px + env(safe-area-inset-bottom)); }
+}
+@media (max-width: 760px) {
+  .pf-id { flex-direction: row; text-align: left; }
+  .pf-id > div:last-child, .pf-id > :not(.pf-photo) { min-width: 0; }
+  .pf-acc .pf-head { margin: 0; }
+  /* inside a section: no boxes within boxes, all the width for the content */
+  .pf-acc .pf-grid, .pf-acc .pf-card .pf-q { padding: 14px 0; border-radius: 0; background: none; border-width: 0; box-shadow: none; }
+  .pf-acc .pf-card .pf-q + .pf-q, .pf-acc .pf-card .pf-q + .pf-grid, .pf-acc .pf-card .pf-grid + .pf-q { border-top: 0.5px solid var(--line-soft); }
+  .pf-acc .pf-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .pf-acc .pf-field input, .pf-acc .pf-in, .pf-acc .pf-country-btn { min-height: 48px; }
+  /* every button with room for a finger and sized to its row */
+  .pf-acc .pf-chip { min-height: 42px; padding-inline: 14px; }
+  .pf-acc .pf-chips { gap: 8px; }
+  .pf-acc .pf-roles { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 1fr; gap: 8px; }
+  .pf-acc .pf-chip.pf-role { min-height: 56px; height: 100%; padding: 8px 12px; gap: 0; justify-content: center; border-radius: 13px; font-size: 13px; line-height: 1.2; text-align: center; white-space: normal; overflow-wrap: anywhere; }
+  .pf-acc .pf-role-ic { display: none; }
+  .pf-acc .pf-role-ck { top: 5px; right: 5px; width: 15px; height: 15px; }
+  .pf-acc .pf-seg-b { flex: 1 1 auto; justify-content: center; }
+  .pf-acc .pf-card button:not(.pf-chip):not(.pf-eye):not(.pf-head) { min-height: 42px; }
+  .pf-acc .pf-eye { width: 44px; height: 44px; }
+  .pf-acc .btn, .pf-acc .pf-billing .pill { width: 100%; justify-content: center; min-height: 46px; }
+}
+@media (max-width: 760px) {
+  /* Platforms you manage: only the logo, six to a row; the name stays for screen readers */
+  .pf-acc .pf-roles[data-multi="platforms"] { grid-template-columns: repeat(6, minmax(0, 1fr)); grid-auto-rows: auto; gap: 6px; }
+  .pf-acc [data-multi="platforms"] .pf-chip.pf-role { aspect-ratio: 1; min-height: 44px; height: auto; padding: 0; font-size: 0; }
+  .pf-acc [data-multi="platforms"] .pf-role-ic { display: grid; width: 26px; height: 26px; background: none; }
+  .pf-acc [data-multi="platforms"] .pf-role-ic svg, .pf-acc [data-multi="platforms"] .pf-role-ic img { width: 22px; height: 22px; }
+  .pf-acc [data-multi="platforms"] .pf-role-ck { top: -4px; right: -4px; }
+}

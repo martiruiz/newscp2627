@@ -101,7 +101,27 @@
   }
   function renderPlans() {
     $("select[data-plan]").innerHTML = plans.map((p) => `<option value="${p.id}"${p.id === planId ? " selected" : ""}>${esc(p.name)}</option>`).join("") + `<option value="__rename">Rename this plan…</option>`;
+    $("[data-plan-name]").textContent = plans.find((p) => p.id === planId)?.name || "";
+    $("[data-plan-list]").innerHTML = `<p class="org-pick-h">${esc(tx("Your plans"))}</p>` + plans.map((p) => `<button type="button" role="menuitemradio" aria-checked="${p.id === planId}" data-plan-opt="${p.id}">${icon("layers")}<span>${esc(p.name)}</span>${p.id === planId ? icon("check") : ""}</button>`).join("")
+      + `<hr><button type="button" role="menuitem" data-plan-opt="__rename">${icon("pencil")}<span>${esc(tx("Rename this plan…"))}</span></button><button type="button" role="menuitem" data-plan-new>${icon("plus")}<span>${esc(tx("New plan"))}</span></button>`;
   }
+  // The plan picker: our own menu (a sheet from the bottom on phones) over the same select, which keeps doing the work
+  const pickMenu = $("[data-plan-menu]"), pickBtn = $("[data-plan-btn]");
+  if (phone.matches) document.body.append(pickMenu);   // above the tab bar
+  const pickOpen = (open) => { pickMenu.hidden = !open; pickBtn.setAttribute("aria-expanded", String(open)); };
+  pickBtn.addEventListener("click", (e) => { e.preventDefault(); pickOpen(pickMenu.hidden); });
+  pickMenu.addEventListener("click", (e) => {
+    if (e.target === pickMenu) return pickOpen(false);
+    const opt = e.target.closest("[data-plan-opt]"), add = e.target.closest("[data-plan-new]");
+    if (!opt && !add) return;
+    pickOpen(false);
+    if (add) return $("[data-new-plan]").click();
+    const sel = $("select[data-plan]");
+    sel.value = opt.dataset.planOpt;
+    sel.dispatchEvent(new Event("change"));
+  });
+  document.addEventListener("click", (e) => { if (!pickMenu.hidden && !e.target.closest("[data-plan-menu], [data-plan-btn]")) pickOpen(false); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !pickMenu.hidden) { pickOpen(false); pickBtn.focus(); } });
   async function loadEntries() {
     if (!planId) return;
     err.hidden = true;
@@ -813,6 +833,7 @@
     }
     planId = e.target.value;
     try { localStorage.setItem("scp-org-plan", planId); } catch {}
+    renderPlans();
     loadEntries();
   });
   $("[data-new-plan]").addEventListener("click", async () => {

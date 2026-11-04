@@ -404,6 +404,24 @@
   }), { rootMargin: "-35% 0px -60% 0px" });
   $$(".pf-card").forEach((s) => io.observe(s));
 
+  // Phones: a short list of sections that open one at a time (and open by themselves from a link like #billing)
+  if (matchMedia("(max-width: 760px)").matches) {
+    const cards = $$(".pf-card[id]");
+    $("[data-pf-form]").classList.add("pf-acc");
+    const openCard = (card, go) => {
+      cards.forEach((c) => { const on = c === card && !c.classList.contains("is-open"); c.classList.toggle("is-open", on); c.querySelector(".pf-head")?.setAttribute("aria-expanded", String(on)); });
+      if (go && card.classList.contains("is-open")) card.scrollIntoView({ block: "start", behavior: "instant" });
+    };
+    cards.forEach((c) => {
+      const h = c.querySelector(".pf-head"); if (!h) return;
+      h.setAttribute("role", "button"); h.tabIndex = 0; h.setAttribute("aria-expanded", "false");
+      h.addEventListener("click", (e) => { if (!e.target.closest("a, button, input, label")) openCard(c, true); });
+      h.addEventListener("keydown", (e) => { if ((e.key === "Enter" || e.key === " ") && e.target === h) { e.preventDefault(); openCard(c, true); } });
+    });
+    const fromHash = () => { const c = cards.find((x) => `#${x.id}` === location.hash); if (c && !c.classList.contains("is-open")) openCard(c, true); };
+    addEventListener("hashchange", fromHash); fromHash();
+  }
+
   // Show what we have straight away; sports / competitions / accounts arrive with the catalog
   fillText(); renderChips(); meter();
   // the plan in the hero: "Trial · plan · until …" / "plan · Active"
