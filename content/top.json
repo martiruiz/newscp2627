@@ -56,12 +56,6 @@
   {
     "account": "433",
     "account_platform": "instagram",
-    "views": 7446709,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/568/568059.jpg?v=mvtcoyzo"
-  },
-  {
-    "account": "433",
-    "account_platform": "instagram",
     "views": 6805274,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/569/569992.jpg?v=mvtje7uw"
   },
@@ -172,6 +166,12 @@
     "account_platform": "tiktok",
     "views": 3700000,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/575/575594.jpg?v=mvw89y3x"
+  },
+  {
+    "account": "433",
+    "account_platform": "instagram",
+    "views": 3604687,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/588/588421.jpg?v=mw1amsso"
   },
   {
     "account": "espn",
