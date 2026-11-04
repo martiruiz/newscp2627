@@ -6,12 +6,6 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/584/584012.jpg?v=mvz1k6gg"
   },
   {
-    "account": "celine.dept",
-    "account_platform": "instagram",
-    "views": 29767897,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/567/567796.jpg?v=mvtcjb9z"
-  },
-  {
     "account": "espn",
     "account_platform": "tiktok",
     "views": 11500000,
@@ -178,5 +172,11 @@
     "account_platform": "tiktok",
     "views": 3600000,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/582/582382.jpg?v=mvy82yxt"
+  },
+  {
+    "account": "premierleague",
+    "account_platform": "instagram",
+    "views": 3503401,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/583/583972.jpg?v=mvz1k6tv"
   }
 ]
