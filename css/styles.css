@@ -9559,3 +9559,87 @@ html.nav-lock .ck { visibility: hidden; }   /* the cookie notice waits while the
   .ai-unlock-btn { width: 100%; min-height: 52px; border-radius: 15px; }
   .ai-balance { font-size: 12.5px; line-height: 1.45; }
 }
+
+/* Content Plan on phones: the calendar first (the week's days or a month with dots), the chosen day's posts under it, the tools after that */
+.org-agenda[hidden] { display: none; }
+@media (max-width: 760px) {
+  .org { padding-top: 8px; }
+  .org-head { gap: 14px; }
+  .org-eyebrow, .org-sub { display: none; }
+  .org-head h1 { margin: 0; font-size: 27px; }
+  .org-controls { display: grid; gap: 10px; width: 100%; margin: 0; }
+  .org-plan { display: flex; gap: 8px; width: 100%; }
+  .org-plan-pick { flex: 1 1 0; min-width: 0; height: 44px; border-radius: 14px; }
+  .org-plan-pick select { flex: 1; width: 100%; min-width: 0; max-width: none; }
+  .org-plan .pill { flex: none; width: 44px; height: 44px; padding: 0; justify-content: center; border-radius: 14px; font-size: 0; gap: 0; }
+  .org-plan .pill svg { width: 19px; height: 19px; }
+  .org-view { display: grid; grid-template-columns: 1fr 1fr; width: 100%; height: 44px; padding: 3px; border-radius: 14px; }
+  .org-view button { width: 100%; height: 38px; padding: 0; border-radius: 11px; }
+  .org-week { gap: 4px; padding: 0; border: 0; background: none; }
+  .org-week .org-nav-btn { flex: none; width: 44px; height: 44px; border-radius: 13px; background: rgba(var(--fg), 0.05); }
+  .org-week .pill { flex: none; height: 44px; padding: 0 14px; border-radius: 13px; }
+  .org-week-label b { text-transform: capitalize; }
+  /* the page's order, without moving anything on computers */
+  [data-planner] { display: flex; flex-direction: column; margin-top: 12px; }
+  .org-layout { display: contents; }
+  .org-error { order: 0; }
+  .org-days-mobile { order: 1; margin-top: 0; }
+  .org-days-mobile:empty { display: none; }
+  .org-grid-wrap, .org-month { order: 2; }
+  .org-agenda { order: 3; }
+  .org-bar { order: 4; margin-top: 18px; }
+  .org-insp { order: 5; margin-top: 14px; }
+  /* the week's strip */
+  .org-days-mobile button { min-height: 60px; align-content: center; gap: 3px; border-radius: 14px; }
+  .org-days-mobile button.has { box-shadow: none; position: relative; }
+  .org-days-mobile button.has::after { content: ""; position: absolute; bottom: 6px; left: 50%; width: 5px; height: 5px; margin-left: -2.5px; border-radius: 50%; background: var(--gold); }
+  .org-days-mobile button.is-active { background: var(--gold); border-color: var(--gold); color: var(--on-gold); }
+  .org-days-mobile button.is-active b { color: var(--on-gold); }
+  .org-days-mobile button.is-active.has::after { background: var(--on-gold); }
+  /* the month */
+  .org-month { border-radius: 18px; }
+  .org-month-head span { padding: 9px 0 5px; }
+  .org-pday { display: grid; justify-items: center; align-content: start; gap: 3px; min-width: 0; height: 50px; padding: 4px 0 0; border: 0; background: none; color: var(--text); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .org-pday b { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; font: 600 14px var(--font-display); transition: background 0.15s; }
+  .org-pday.is-out { opacity: 0.32; }
+  .org-pday.is-today b { color: var(--gold); box-shadow: inset 0 0 0 1.5px var(--gold); }
+  .org-pday.is-chosen b { background: var(--gold); color: var(--on-gold); box-shadow: none; }
+  .org-pdots { display: flex; align-items: center; justify-content: center; gap: 2px; height: 6px; }
+  .org-pdots i { width: 5px; height: 5px; border-radius: 50%; background: var(--s, var(--muted)); }
+  .org-pdots i.is-key { background: none; box-shadow: inset 0 0 0 1px var(--gold); }
+  .org-pdots em { font: 700 9px/1 var(--font-body); color: var(--muted); }
+  /* the chosen day */
+  .org-agenda { display: grid; gap: 12px; margin-top: 12px; padding: 16px; border-radius: 18px; background: var(--surface); border: 0.5px solid var(--line); }
+  .org-agenda-h { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+  .org-agenda-h b { display: block; font: 600 18px/1.2 var(--font-display); letter-spacing: -0.01em; }
+  .org-agenda-h b::first-letter { text-transform: uppercase; }
+  .org-agenda-h small { display: block; margin-top: 2px; color: var(--muted); font-size: 13px; }
+  .org-agenda-h .org-kd { flex: none; max-width: 45%; margin: 0; }
+  .org-agenda-list { display: grid; gap: 8px; }
+  .org-agenda .org-entry { margin: 0; padding: 12px 14px; border-radius: 14px; }
+  .org-agenda .org-entry-tools { display: none; }
+  .org-agenda .org-entry-title { padding: 0; font-size: 15px; }
+  .org-agenda .org-entry-time { margin-right: 6px; color: var(--muted); font-weight: 500; }
+  .org-agenda .org-ghost { min-height: 52px; margin: 0; padding: 10px 14px; border-radius: 14px; }
+  .org-agenda-empty { margin: 0; padding: 14px 0; text-align: center; color: var(--muted); font-size: 14px; }
+  .org-agenda-add { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 50px; border: 0; border-radius: 15px; background: linear-gradient(135deg, #f7d27a, #f0b84a 45%, #d99a2b); color: #1a1206; font: 700 15px var(--font-body); cursor: pointer; }
+  .org-agenda-add svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; }
+  /* the tools: progress, status on one line, the buttons on one line that slides */
+  .org-bar { gap: 12px; padding: 14px; border-radius: 18px; }
+  .org-legend { flex-wrap: nowrap; gap: 12px; overflow-x: auto; scrollbar-width: none; }
+  .org-legend > * { flex: none; }
+  .org-actions { flex-wrap: nowrap; margin: 0 -14px; padding: 0 14px 2px; overflow-x: auto; scrollbar-width: none; }
+  .org-legend::-webkit-scrollbar, .org-actions::-webkit-scrollbar { display: none; }
+  .org-actions .pill, .org-dl { flex: none; }
+  .org-actions .pill { height: 42px; border-radius: 13px; white-space: nowrap; font-size: 14px; }
+  .org-dl-menu { position: fixed; left: 16px; right: 16px; bottom: 84px; top: auto; width: auto; }
+  .org-insp-head span { display: none; }
+  .org-insp { max-height: none; }
+}
+
+/* Saved on phones: Your folders on one line that slides, the next one peeking */
+@media (max-width: 760px) {
+  .sv3-grid { display: flex; align-items: stretch; gap: 12px; width: 100vw; margin-left: calc(50% - 50vw); padding: 4px var(--gutter) 12px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: var(--gutter); scrollbar-width: none; }
+  .sv3-grid::-webkit-scrollbar { display: none; }
+  .sv3-grid > * { flex: 0 0 78vw; min-width: 0; scroll-snap-align: start; }
+}

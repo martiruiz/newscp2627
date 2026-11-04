@@ -50,6 +50,9 @@
   let view = "week";
   let anchor = mondayOf(new Date());          // week view: Monday; month view: any day of the month
   let mobileDay = dow(new Date());
+  // Phones: a calendar that fits on the screen (the week's days or a month with dots) and the chosen day's posts under it, instead of the hours grid
+  const phone = matchMedia("(max-width: 760px)");
+  let phoneDay = null;
   const weekDays = () => Array.from({ length: 7 }, (_, i) => addDays(mondayOf(anchor), i));
   function range() {
     if (view === "week") { const m = mondayOf(anchor); return [m, addDays(m, 6)]; }
@@ -97,7 +100,7 @@
     renderPlans();
   }
   function renderPlans() {
-    $("[data-plan]").innerHTML = plans.map((p) => `<option value="${p.id}"${p.id === planId ? " selected" : ""}>${esc(p.name)}</option>`).join("") + `<option value="__rename">Rename this plan…</option>`;
+    $("select[data-plan]").innerHTML = plans.map((p) => `<option value="${p.id}"${p.id === planId ? " selected" : ""}>${esc(p.name)}</option>`).join("") + `<option value="__rename">Rename this plan…</option>`;
   }
   async function loadEntries() {
     if (!planId) return;
@@ -271,6 +274,39 @@
         </div>`;
       }).join("")}</div>`;
   }
+  // The month on a phone: each day a tap target with a dot per post, coloured by status
+  function renderMonthPhone() {
+    const [start] = range();
+    const today = iso(new Date()), month = anchor.getMonth(), chosen = agendaDate();
+    $("[data-month-view]").innerHTML = `<div class="org-month-head">${DAYS.map((d) => `<span>${d}</span>`).join("")}</div>
+      <div class="org-month-grid">${Array.from({ length: 42 }, (_, i) => addDays(start, i)).map((d) => {
+        const date = iso(d), list = entries.filter((e) => e.entry_date === date);
+        return `<button type="button" class="org-pday${d.getMonth() !== month ? " is-out" : ""}${date === today ? " is-today" : ""}${date === chosen ? " is-chosen" : ""}" data-phone-day="${date}" aria-pressed="${date === chosen}">
+          <b>${d.getDate()}</b><span class="org-pdots">${list.slice(0, 3).map((e) => `<i class="org-s-${e.status}"></i>`).join("")}${list.length > 3 ? "<em>+</em>" : ""}${window.SCP_KEY_DATES?.on(date) ? `<i class="is-key"></i>` : ""}</span></button>`;
+      }).join("")}</div>`;
+  }
+  // The day being looked at on a phone: the one chosen in the week's strip or in the month
+  function agendaDate() {
+    if (view === "week") return iso(weekDays()[mobileDay]);
+    if (phoneDay && parse(phoneDay).getMonth() === anchor.getMonth() && parse(phoneDay).getFullYear() === anchor.getFullYear()) return phoneDay;
+    const now = new Date();
+    return iso(now.getMonth() === anchor.getMonth() && now.getFullYear() === anchor.getFullYear() ? now : new Date(anchor.getFullYear(), anchor.getMonth(), 1));
+  }
+  function renderAgenda() {
+    const box = $("[data-agenda]");
+    box.hidden = !phone.matches;
+    if (!phone.matches) return;
+    const date = agendaDate(), d = parse(date);
+    const list = entries.filter((e) => e.entry_date === date).sort((a, b) => a.time_slot.localeCompare(b.time_slot));
+    const ghosts = base.filter((s) => s.day === dow(d) && !list.some((e) => e.time_slot === s.time_slot));
+    box.dataset.cell = `${date}|12:00`;
+    box.innerHTML = `<header class="org-agenda-h"><div><b>${esc(d.toLocaleDateString(window.SCP_LOC || "en-GB", { weekday: "long", day: "numeric", month: "long" }))}</b><small>${esc(tx(list.length === 1 ? "1 post" : "{n} posts", { n: list.length }))}</small></div>${keyMark(date)}</header>
+      <div class="org-agenda-list">${list.map((e) => entryHtml(e)).join("")}
+      ${ghosts.map((g) => `<button type="button" class="org-ghost" data-ghost="${g.id}"><b>${esc(g.label)}</b><span>${typeOf(g.content_type)?.label || "Recurring"} · ${g.time_slot} · to plan</span></button>`).join("")}
+      ${list.length || ghosts.length ? "" : `<p class="org-agenda-empty">Nothing planned this day.</p>`}</div>
+      <button type="button" class="org-agenda-add" data-add>${icon("plus")}<span>${esc(tx("Add post"))}</span></button>`;
+  }
+  phone.addEventListener("change", () => render());
   function renderUndated() {
     const list = entries.filter((e) => !e.entry_date);
     $("[data-undated]").innerHTML = list.length ? list.map((e) => entryHtml(e)).join("") : `<p class="org-empty">Drop posts here to keep them as ideas without a date.</p>`;
@@ -278,17 +314,24 @@
   function render() {
     renderHeader();
     renderUndated();
-    $("[data-week-view]").hidden = view !== "week";
+    $("[data-week-view]").hidden = view !== "week" || phone.matches;
     $("[data-month-view]").hidden = view !== "month";
     $(".org-progress").hidden = view !== "week";
-    view === "week" ? renderWeek() : renderMonth();
+    if (view === "month") (phone.matches ? renderMonthPhone : renderMonth)();
+    else if (!phone.matches) renderWeek();
+    renderAgenda();
     if (T) requestAnimationFrame(() => T.fit(layout));
-    if (view === "week" && base && entries) requestAnimationFrame(scrollToNow);
+    if (view === "week" && !phone.matches && base && entries) requestAnimationFrame(scrollToNow);
   }
 
   // ---------- Interactions (both views) ----------
   const layout = $("[data-layout]");
   layout.addEventListener("click", async (e) => {
+    const pick = e.target.closest("[data-phone-day]");
+    if (pick) { phoneDay = pick.dataset.phoneDay; return render(); }
+    // phones can't drag: tapping a saved post plans your version of it on the chosen day
+    const saved = phone.matches && !e.target.closest("a") && e.target.closest(".org-insp-item");
+    if (saved) { const created = await planFromInspiration(saved.dataset.insp, agendaDate(), "12:00"); return created && openEntry(created.id); }
     const cellEl = e.target.closest("[data-cell]");
     const [date, t] = cellEl ? cellEl.dataset.cell.split("|").map((x, i) => (i === 0 ? x || null : x)) : [];
     const fold = e.target.closest("[data-fold-toggle]");
@@ -349,14 +392,14 @@
       return update(moving, changes);
     }
     const insp = e.dataTransfer.getData("text/scp-inspiration");
-    if (insp) {
-      const p = inspiration.get(Number(insp));
-      const fmt = (p?.tags.format?.[0] || "").toLowerCase();
-      const type = /reel|video/.test(fmt) ? "reel" : /carousel/.test(fmt) ? "carousel" : /image/.test(fmt) ? "post" : null;
-      const created = await create(date, t, { label: p ? `Our version: ${p.who}` : "", content_type: type, inspiration: `ci-${insp}`, status: date ? "planned" : "idea" });
-      return created && openEntry(created.id);
-    }
+    if (insp) { const created = await planFromInspiration(insp, date, t); return created && openEntry(created.id); }
   });
+  function planFromInspiration(insp, date, t) {
+    const p = inspiration.get(Number(insp));
+    const fmt = (p?.tags.format?.[0] || "").toLowerCase();
+    const type = /reel|video/.test(fmt) ? "reel" : /carousel/.test(fmt) ? "carousel" : /image/.test(fmt) ? "post" : null;
+    return create(date, t, { label: p ? `Our version: ${p.who}` : "", content_type: type, inspiration: `ci-${insp}`, status: date ? "planned" : "idea" });
+  }
 
   // ---------- Hover preview: the post and the entry's details (js/post-preview.js) ----------
   window.SCP_PREVIEW?.attach(layout, "[data-entry]", (el) => {
@@ -406,7 +449,7 @@
         <div class="org-m-status">${Object.entries(STATUS).map(([k, v]) => `<button type="button" class="org-s-${k}" aria-pressed="${e.status === k}" data-f-status="${k}"><i></i>${v}</button>`).join("")}</div>
         <p class="org-m-label">Type</p>
         <div class="org-m-types">${TYPES.map((t) => `<button type="button" aria-pressed="${e.content_type === t.key}" data-f-type="${t.key}">${icon(t.icon)}<span>${t.label}</span></button>`).join("")}</div>
-        <p class="org-m-label">Copy <span data-copy-count>${(e.copy || "").length}</span></p>
+        <p class="org-m-label">Caption <span data-copy-count>${(e.copy || "").length}</span></p>
         <textarea class="org-m-copy" rows="5" maxlength="5000" placeholder="Write the caption for this post…" data-f="copy">${esc(e.copy || "")}</textarea>
         <p class="org-m-label">Notes <span>only you see these</span></p>
         <textarea class="org-m-copy org-m-notes" rows="3" maxlength="5000" placeholder="Ideas, assets needed, who's filming, approvals…" data-f="notes">${esc(e.notes || "")}</textarea>
@@ -761,7 +804,7 @@
   }
 
   // ---------- Plans, views, navigation ----------
-  $("[data-plan]").addEventListener("change", async (e) => {
+  $("select[data-plan]").addEventListener("change", async (e) => {
     if (e.target.value === "__rename") {
       const cur = plans.find((p) => p.id === planId);
       const name = window.prompt("Plan name", cur?.name || "")?.trim();
