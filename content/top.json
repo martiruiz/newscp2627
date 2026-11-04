@@ -50,6 +50,12 @@
   {
     "account": "433",
     "account_platform": "instagram",
+    "views": 6877067,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/590/590758.jpg?v=mw2mgy1g"
+  },
+  {
+    "account": "433",
+    "account_platform": "instagram",
     "views": 6805274,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/569/569992.jpg?v=mvtje7uw"
   },
@@ -64,12 +70,6 @@
     "account_platform": "tiktok",
     "views": 6200000,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/573/573136.png?v=mvutv8c2"
-  },
-  {
-    "account": "433",
-    "account_platform": "instagram",
-    "views": 6083082,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/570/570094.jpg?v=mvtjeqzk"
   },
   {
     "account": "espn",
@@ -114,16 +114,10 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/583/583979.jpg?v=mvz1k8d5"
   },
   {
-    "account": "fcbayern",
+    "account": "memezar",
     "account_platform": "instagram",
-    "views": 4435121,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/570/570191.jpg?v=mvtmo250"
-  },
-  {
-    "account": "liverpoolfc",
-    "account_platform": "instagram",
-    "views": 4361942,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/570/570159.jpg?v=mvtmnbf2"
+    "views": 4256231,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/589/589979.jpg?v=mw1ara1r"
   },
   {
     "account": "genoacfc",
@@ -178,5 +172,11 @@
     "account_platform": "instagram",
     "views": 3503401,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/583/583972.jpg?v=mvz1k6tv"
+  },
+  {
+    "account": "433",
+    "account_platform": "instagram",
+    "views": 3446832,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/588/588417.jpg?v=mw1amtjs"
   }
 ]
