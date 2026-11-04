@@ -9498,3 +9498,64 @@ html.nav-lock .ck { visibility: hidden; }   /* the cookie notice waits while the
   .swipe-row.packs { margin-top: 18px; padding-top: 16px; }
   .packs-wrap { margin-top: 48px; }
 }
+
+/* Filters sheet on phones and tablets: a large search, suggestions on one line that slides, and the sections as underlined tabs (not more chips) */
+@media (max-width: 960px) {
+  .filters.lf .lf-search { height: 50px; margin: 0 0 12px; padding: 0 16px; border-radius: 16px; background: rgba(var(--fg), 0.06); border: 1px solid rgba(var(--fg), 0.14); }
+  .filters.lf .lf-search-ic { color: var(--gold); }
+  .filters.lf .lf-search-ic svg { width: 19px; height: 19px; }
+  .filters.lf .lf-sugg { flex: none; flex-wrap: nowrap; align-items: center; gap: 6px; min-height: 0; margin: 0 0 8px; padding-right: 22px; overflow-x: auto; scrollbar-width: none; -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent); mask-image: linear-gradient(90deg, #000 88%, transparent); }
+  .filters.lf .lf-sugg::-webkit-scrollbar, .filters.lf .lf-jump::-webkit-scrollbar { display: none; }
+  .filters.lf .lf-sugg::before { content: "✦"; flex: none; margin-right: 2px; color: var(--gold); font-size: 13px; }
+  .filters.lf .lf-sugg-b { flex: none; height: 36px; padding: 0 13px; border-color: rgba(var(--fg), 0.12); background: none; color: var(--text); font-size: 13px; font-weight: 500; }
+  .filters.lf .lf-sugg-b:active { border-color: rgba(240, 184, 74, 0.6); color: var(--gold); }
+  .filters.lf .lf-jump { flex: none; gap: 18px; margin: 0 0 12px; padding: 0 22px 0 2px; border-bottom: 1px solid rgba(var(--fg), 0.1); -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent); mask-image: linear-gradient(90deg, #000 88%, transparent); }
+  .filters.lf .lf-jump button { position: relative; height: 42px; padding: 0; border: 0; border-radius: 0; background: none; color: var(--muted); font: 600 14px var(--font-body); white-space: nowrap; cursor: pointer; }
+  .filters.lf .lf-jump button.is-on { color: var(--text); box-shadow: inset 0 -2px 0 var(--gold); }
+}
+
+/* Your search: on computers the filters flow with the title; on phones a compact card, the title with Clear all, the filters on one line that slides, the saved searches under them */
+.ac-row { display: contents; }
+@media (max-width: 760px) {
+  .active-bar { display: block; margin: 12px var(--gutter) 0; padding: 12px; border-radius: 18px; }
+  .active-bar::before { display: none; }
+  .active-chips { display: block; }
+  .ab-lead { position: relative; display: flex; gap: 10px; width: 100%; min-height: 34px; margin: 0; padding: 0; border: 0; }
+  .ab-ic { width: 30px; height: 30px; border-radius: 9px; box-shadow: none; }
+  .ab-tx b { font-size: 14px; }
+  .ab-dot { display: none; }
+  .active-clear { position: absolute; top: 50%; right: 0; min-height: 40px; padding: 0 2px 0 12px; transform: translateY(-50%); font-size: 13px; font-weight: 600; }
+  .ac-row { display: flex; gap: 6px; margin: 10px -12px 0; padding: 0 28px 0 12px; overflow-x: auto; scroll-snap-type: x proximity; scroll-padding-left: 12px; scrollbar-width: none; -webkit-mask-image: linear-gradient(90deg, #000 90%, transparent); mask-image: linear-gradient(90deg, #000 90%, transparent); }
+  .ac-row::-webkit-scrollbar { display: none; }
+  .active-chip { flex: none; height: 40px; gap: 7px; scroll-snap-align: start; }
+  .active-chip .ac-tx b { font-size: 13px; white-space: nowrap; }
+  .active-actions { display: flex; align-items: center; gap: 6px; width: 100%; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(var(--fg), 0.08); }
+  .active-actions .saved-searches { flex: 1 1 0; min-width: 0; height: 40px; max-width: none; border-radius: 12px; }
+  .active-actions .pill { flex: none; width: 40px; height: 40px; padding: 0; justify-content: center; border-radius: 12px; }
+}
+
+@media (max-width: 760px) {
+  /* each post's buttons: a row that fills the card, big icons, 44px to tap; AI analysis in its purple, saved in gold */
+  .lib-card > .lib-rail, .lib-card.is-embed > .lib-rail { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 6px; padding: 2px 10px 10px; }
+  .lib-card > .lib-rail > button, .lib-card > .lib-rail > a { width: 100%; height: 44px; border-radius: 13px; color: var(--text); background: rgba(var(--fg), 0.05); box-shadow: inset 0 0 0 1px rgba(var(--fg), 0.09); -webkit-tap-highlight-color: transparent; transition: transform 0.12s, background 0.2s; }
+  .lib-card > .lib-rail svg { width: 20px; height: 20px; }
+  .lib-card > .lib-rail > button:hover, .lib-card > .lib-rail > a:hover { color: var(--text); background: rgba(var(--fg), 0.05); }
+  .lib-card > .lib-rail > button:active, .lib-card > .lib-rail > a:active { transform: scale(0.94); background: rgba(var(--fg), 0.12); }
+  .lib-card > .lib-rail > .lib-ai, .lib-card > .lib-rail > .lib-ai:hover { color: #c4b5fd; background: rgba(167, 139, 250, 0.14); box-shadow: inset 0 0 0 1px rgba(167, 139, 250, 0.38); }
+  .lib-card > .lib-rail > .save-btn.is-on, .lib-card > .lib-rail > .save-btn.is-on:hover { background: var(--gold); color: var(--on-gold); box-shadow: none; }
+  .lib-card > .lib-rail > .lib-remove, .lib-card > .lib-rail > .lib-remove:hover { color: var(--muted); }
+  .lib-card > .lib-rail > .lib-remove:active { background: #d9434b; color: #fff; }
+  :root[data-theme="light"] .lib-card > .lib-rail > .lib-ai, :root[data-theme="light"] .lib-card > .lib-rail > .lib-ai:hover { color: #6d4bd8; }
+
+  /* a post's detail: type and date beside the AI tag, the buttons on one line and easy to tap */
+  .an-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+  .an-head .an-eyebrow { margin: 0; }
+  .an-head h2 { flex: 0 0 100%; margin: 2px 0 0; font-size: 25px; line-height: 1.15; }
+  .an-head .an-actions { flex: 0 0 100%; align-items: stretch; gap: 8px; margin-top: 8px; }
+  .an-actions .pill, .an-actions .save-btn { flex: 1 1 0; justify-content: center; height: 46px; min-height: 46px; padding: 0 8px; gap: 6px; border-radius: 14px; font-size: 13.5px; font-weight: 600; white-space: nowrap; }
+  .an-actions .ico, .an-actions svg { width: 17px; height: 17px; }
+  .an-actions .an-remove { flex: none; width: 46px; padding: 0; }
+  .ai-unlock { padding: 18px; border-radius: 18px; }
+  .ai-unlock-btn { width: 100%; min-height: 52px; border-radius: 15px; }
+  .ai-balance { font-size: 12.5px; line-height: 1.45; }
+}

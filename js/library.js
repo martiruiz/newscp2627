@@ -740,7 +740,8 @@
     const NO_TITLE = new Set(["discover", "where"]); // these column sections show their filters with no title
     box.innerHTML = colSecs.map((s) => `<section class="lf-sec${LAYOUT_BEFORE ? "" : " lf-sec-v2"}" data-lf-sec="${s.key}">${NO_TITLE.has(s.key) ? "" : `<h2 class="lf-lbl">${esc(s.label)}${ai(s)}</h2>${s.q ? `<p class="lf-q">${esc(s.q)}</p>` : ""}`}${parts[s.key]}</section>`).join("");
     $("[data-lf-body]").scrollTop = scroll;
-    $("[data-lf-jump]").innerHTML = colSecs.map((s) => `<button type="button" data-lf-jump-to="${s.key}">${esc(s.jump || s.label.replace(" by", ""))}</button>`).join("");
+    const jumpOn = $("[data-lf-jump-to].is-on")?.dataset.lfJumpTo || colSecs[0]?.key;
+    $("[data-lf-jump]").innerHTML = colSecs.map((s) => `<button type="button"${s.key === jumpOn ? ' class="is-on"' : ""} data-lf-jump-to="${s.key}">${esc(s.jump || s.label.replace(" by", ""))}</button>`).join("");
     renderQuick();
     fadeEdges();
     loadToneThumbs();
@@ -1463,7 +1464,17 @@
     suggBox.innerHTML = pick.map((v) => `<button type="button" class="lf-sugg-b" data-facet="${v.category}" data-id="${v.id}">${esc(tx(pretty(v.name)))}</button>`).join("");
     suggBox.classList.add("is-in");
   }
-  setInterval(() => { if (suggBox && !suggBox.matches(":hover") && document.activeElement !== $("[data-lf-search]") && !document.hidden) drawSugg(); }, 9000);
+  // they change every few seconds, except on phones and tablets: there they wouldn't stay still under the finger
+  setInterval(() => { if (suggBox && !matchMedia("(max-width: 960px)").matches && !suggBox.matches(":hover") && document.activeElement !== $("[data-lf-search]") && !document.hidden) drawSugg(); }, 9000);
+  // the filter sheet: the tab of the section being read stays marked and in view
+  { const body = $("[data-lf-body]"); let raf = 0;
+    body?.addEventListener("scroll", () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => {
+      const secs = $$("[data-lf-jump-to]").map((b) => [b, $(`[data-lf-sec="${b.dataset.lfJumpTo}"]`)]).filter(([, t]) => t);
+      const now = secs.filter(([, t]) => t.getBoundingClientRect().top - body.getBoundingClientRect().top <= 24).pop() || secs[0];
+      if (!now || now[0].classList.contains("is-on")) return;
+      secs.forEach(([b]) => b.classList.toggle("is-on", b === now[0]));
+      const bar = now[0].parentElement; bar.scrollTo({ left: now[0].offsetLeft - bar.offsetLeft - (bar.clientWidth - now[0].offsetWidth) / 2, behavior: "smooth" });
+    }); }, { passive: true }); }
 
   // ---------- Search inside the filters: any value of any filter ----------
   const fsearch = $("[data-lf-search]"), fresults = $("[data-lf-results]");
@@ -1718,9 +1729,11 @@
       if (CAT[v.category]?.crest || v.logo) return crestImg(v, "ac-logo");
       if (v.category === "platform" && PLATFORM[v.name.toLowerCase()]) return `<span class="ac-ic">${pfLogo(v.name.toLowerCase(), "lf-pfi is-brand")}</span>`;
       return `<span class="ac-ic">${svg(v.category === "format" ? FORMAT_ICON[v.name.toLowerCase()] || "image" : v.category === "sport" ? sportIco(v.name) : CAT[v.category]?.ico || "dots")}</span>`; };
-    $("[data-active-chips]").innerHTML = chips.length ? `<span class="ab-lead"><span class="ab-ic">${svg("check")}</span><span class="ab-tx"><b>${esc(tx("Your search"))}</b><small>${esc(tx(chips.length === 1 ? "{n} filter" : "{n} filters", { n: chips.length }))}${chips.length > 1 ? ` · <button type="button" class="active-clear" data-chip-clear>${esc(tx("Clear all"))}</button>` : ""}</small></span></span>`
-      + chips.map((x, i) => `<button type="button" class="active-chip" data-chip="${i}"${x.title ? ` title="${esc(tx(x.title))}"` : ""} aria-label="${esc(tx("Remove {what}", { what: x.label }))}">${chipLead(x)}<span class="ac-tx"><b>${esc(x.label)}</b></span><span class="ac-x" aria-hidden="true">${icon("x")}</span></button>`).join("")
+    const chipsLeft = $("[data-active-chips] .ac-row")?.scrollLeft || 0;   // phones: the line of filters stays where it was when one is removed
+    $("[data-active-chips]").innerHTML = chips.length ? `<span class="ab-lead"><span class="ab-ic">${svg("check")}</span><span class="ab-tx"><b>${esc(tx("Your search"))}</b><small>${esc(tx(chips.length === 1 ? "{n} filter" : "{n} filters", { n: chips.length }))}${chips.length > 1 ? `<span class="ab-dot"> · </span><button type="button" class="active-clear" data-chip-clear>${esc(tx("Clear all"))}</button>` : ""}</small></span></span>`
+      + `<span class="ac-row">` + chips.map((x, i) => `<button type="button" class="active-chip" data-chip="${i}"${x.title ? ` title="${esc(tx(x.title))}"` : ""} aria-label="${esc(tx("Remove {what}", { what: x.label }))}">${chipLead(x)}<span class="ac-tx"><b>${esc(x.label)}</b></span><span class="ac-x" aria-hidden="true">${icon("x")}</span></button>`).join("") + `</span>`
  : "";
+    const chipRow = $("[data-active-chips] .ac-row"); if (chipRow) chipRow.scrollLeft = chipsLeft;
     $("[data-save-search]").hidden = chips.length === 0;
     const shareBtn = $("[data-share-search]"); if (shareBtn) shareBtn.hidden = chips.length === 0;   // not in My Club (its posts are the club's only)
     const sidebarCount = chips.length - (s.q ? 1 : 0);

@@ -63,6 +63,7 @@ window.SCP_ES = {
   "Why it works": "Por qué funciona",
   "See everything included": "Ver todo lo que incluye",
   "See less": "Ver menos",
+  "No matches": "Sin resultados",
   "or": "o",
   "Search...": "Buscar...",
   "Select...": "Seleccionar...",
