@@ -8907,8 +8907,8 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
   .lf-clear { height: 34px; }
 }
 
-/* Phones: tab bar at the bottom (js/nav-menu.js) — Home · Library · My Club (raised gold button with the crown) · Plan · Boards.
-   It replaces the home dock; the full menu opens from the button at the top right. */
+/* Phones: tab bar at the bottom (js/nav-menu.js), different for visitors and members; every tab at the same level, the current one with a
+   gold tile behind its icon; for visitors, Try it free is the one highlighted. It replaces the home dock. */
 .tabbar { display: none; }
 @media (max-width: 760px) {
   .tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); align-items: end;
@@ -8919,15 +8919,13 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
     text-align: center; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: color 0.2s; }
   .tb-item span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .tb-item > svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-  .tb-item[aria-current="page"], .tb-item[aria-expanded="true"] { color: var(--gold); }
-  .tb-item:active > svg { transform: scale(0.9); }
-  /* My Club: raised above the bar, gold, with the crown */
-  .tb-club { position: relative; color: var(--gold); }
-  .tb-crown { display: grid; place-items: center; width: 54px; height: 54px; margin-top: -26px; border-radius: 50%;
-    background: linear-gradient(135deg, #f7d27a, #f0b84a 45%, #d99a2b); box-shadow: 0 0 0 5px var(--bg), 0 10px 26px -8px rgba(240, 184, 74, 0.85); transition: transform 0.2s; }
-  .tb-crown svg { width: 25px; height: 25px; fill: #1a1206; stroke: none; }
-  .tb-club:active .tb-crown { transform: scale(0.94); }
-  .tb-club[aria-current="page"] .tb-crown { box-shadow: 0 0 0 5px var(--bg), 0 0 0 7px rgba(240, 184, 74, 0.55), 0 10px 26px -8px rgba(240, 184, 74, 0.85); }
+  .tb-item > svg { box-sizing: content-box; padding: 3px 15px; border-radius: 999px; transition: background 0.2s, transform 0.15s; }
+  .tb-item[aria-current="page"] { color: var(--gold); }
+  .tb-item[aria-current="page"] > svg { background: var(--gold-tint); }
+  .tb-item:active > svg { transform: scale(0.92); }
+  .tb-cta { align-content: center; margin: 2px 0 0 4px; padding: 6px 2px; border-radius: 14px; background: linear-gradient(135deg, #f7d27a, #f0b84a 45%, #d99a2b); color: #1a1206; font-weight: 700; box-shadow: 0 10px 22px -12px rgba(240, 184, 74, 0.9); }
+  .tb-cta > svg { padding: 0; width: 20px; height: 20px; stroke-width: 2.2; }
+  .tb-cta span { max-width: none; white-space: normal; line-height: 1.05; }
   /* the dock of the home page gives way to the bar */
   .dock { display: none !important; }
   /* bottom sheets with their own action button (Library filters) cover the bar */
@@ -9483,4 +9481,20 @@ html.nav-lock .ck { visibility: hidden; }   /* the cookie notice waits while the
   .sf-bottom nav { justify-content: center; gap: 0 16px; margin-top: 6px; }
   .sf-bottom a { display: inline-block; padding: 8px 0; }
   .sf-tm { text-align: center; }
+}
+
+/* Plans on phones: "What's included" folded to three points */
+.plan-incl-more { display: none; }
+@media (max-width: 760px) {
+  .plans:not(.incl-open) .plan-incl .plan-gets > li:nth-child(n+4) { display: none; }
+  .plan-incl-more { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 44px; margin-top: 10px; padding: 0 10px; border: 0; border-top: 1px solid var(--box-line, rgba(var(--fg), 0.1)); background: none; color: var(--text); font: 600 13.5px var(--font-body); cursor: pointer; }
+  .plan-incl-more::after { content: ""; width: 7px; height: 7px; margin-bottom: 3px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); transition: transform 0.2s; }
+  .plan-incl-more span:last-of-type { display: none; }
+  .incl-open .plan-incl-more span:first-of-type { display: none; }
+  .incl-open .plan-incl-more span:last-of-type { display: inline; }
+  .incl-open .plan-incl-more::after { margin-bottom: -3px; transform: rotate(-135deg); }
+}
+@media (max-width: 760px) {
+  .swipe-row.packs { margin-top: 18px; padding-top: 16px; }
+  .packs-wrap { margin-top: 48px; }
 }

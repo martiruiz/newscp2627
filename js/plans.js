@@ -37,6 +37,14 @@
   const currentSub = () => mine?.subscription && ["active", "trialing", "past_due", "unpaid"].includes(mine.subscription.status) && mine.subscription.source === "stripe" ? mine.subscription : null;
 
   // value: a line on the plan that has everything
+  // phones: "What's included" shows three points and a button for the rest (opens on every card, so they stay the same height)
+  const inclToggle = `<button class="plan-incl-more" type="button" aria-expanded="false" data-incl-toggle><span>${tx("See everything included")}</span><span>${tx("See less")}</span></button>`;
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-incl-toggle]"); if (!b) return;
+    const box = b.closest("[data-plans]"), open = box.classList.toggle("incl-open");
+    box.querySelectorAll("[data-incl-toggle]").forEach((x) => x.setAttribute("aria-expanded", String(open)));
+    if (!open) b.closest(".plan-card").scrollIntoView({ block: "nearest" });
+  });
   function planCard(p, { solo = false } = {}) {
     const price = priceOf(p) || priceOf(p, currency, "month");
     const iv = price?.interval || interval;
@@ -108,7 +116,7 @@
       <p class="plan-price">${seats > 1 && price ? `<em class="plan-total">${tx("Total")}</em>` : ""}${price ? `<b data-price="${big}" data-cur="${currency}">${fmt(big, currency)}</b><span>${seats > 1 ? `/ ${per("month")}` : tx("/ {per} per user", { per: per("month") })}</span>${launch ? `<small class="plan-launch">${tx("Launch price until {date}, then {price}/month", { date: launchDate, price: fmt(was * seats, currency) })}</small>` : ""}` : `<b>—</b>`}</p>
       <p class="plan-sub">${sub}</p>
       <div class="plan-ctabox">${cta}<p class="plan-note">${under}</p></div>
-      <div class="plan-incl"><h4>${tx("What's included")}</h4><ul class="plan-gets">${gets.map(keyPoint).join("")}</ul></div>
+      <div class="plan-incl"><h4>${tx("What's included")}</h4><ul class="plan-gets">${gets.map(keyPoint).join("")}</ul>${gets.length > 3 ? inclToggle : ""}</div>
     </article>`;
   }
 
@@ -133,7 +141,7 @@
       <p class="plan-price plan-price-custom"><b>${tx("Custom price")}</b></p>
       <p class="plan-sub">${tx("Custom plan, priced for the size of your club")}</p>
       <div class="plan-ctabox"><a class="btn btn-outline plan-cta" href="book-a-call.html?for=clubs" data-cta="pricing-my-club"><span>${tx("Book a demo")}</span><i class="plan-cta-arrow" aria-hidden="true">→</i></a><p class="plan-note">${tx("We show you your club's library in 30 minutes")}</p></div>
-      <div class="plan-incl"><h4>${tx("What's included")}</h4><ul class="plan-gets">${gets.map(keyPoint).join("")}</ul></div>
+      <div class="plan-incl"><h4>${tx("What's included")}</h4><ul class="plan-gets">${gets.map(keyPoint).join("")}</ul>${gets.length > 3 ? inclToggle : ""}</div>
     </article>`;
   }
 
@@ -199,6 +207,7 @@
     requestAnimationFrame(step);
   };
   function decorate(box, swap) {
+    box.querySelectorAll("[data-incl-toggle]").forEach((x) => x.setAttribute("aria-expanded", String(box.classList.contains("incl-open"))));
     [...box.querySelectorAll(".plan-card")].forEach((card, i) => {
       card.style.setProperty("--ci", i);
       card.querySelectorAll(".plan-features li").forEach((li, k) => li.style.setProperty("--li", k));
@@ -299,7 +308,19 @@
         <button class="btn btn-outline" type="button" data-checkout-pack="${esc(k.key)}">Buy this pack</button>
       </article>`).join("");
       if (!rows.length) packBox.closest(".packs-wrap")?.setAttribute("hidden", "");
-      else packFx();
+      else {
+        packFx();
+        // phones: the packs pass sideways too, standing on the best value
+        if (rows.length > 1 && window.SCP_swipe) {
+          packBox.classList.add("swipe-row");
+          const dots = document.createElement("div");
+          dots.className = "swipe-dots";
+          dots.innerHTML = rows.map((_, i) => `<button type="button" aria-label="${i + 1}"></button>`).join("");
+          packBox.after(dots);
+          const go = window.SCP_swipe(packBox, dots), best = packBox.querySelector(".is-best");
+          if (best && matchMedia("(max-width: 760px)").matches) { go(best, "auto"); packBox._swipeMark(); }
+        }
+      }
     } catch { packBox.closest(".packs-wrap")?.setAttribute("hidden", ""); }
   }
 
