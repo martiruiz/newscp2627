@@ -6,7 +6,17 @@
     <atom:link href="https://sportscontentplaybook.com/es/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Ideas, tendencias y análisis de contenido deportivo en redes sociales.</description>
     <language>es</language>
-    <lastBuildDate>Tue, 03 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Wed, 04 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Ideas de contenido de fútbol para redes sociales: construye el avance del partido antes del pitido inicial</title>
+      <link>https://sportscontentplaybook.com/es/blog/football-social-media-content-ideas-matchweek-preview.html</link>
+      <guid isPermaLink="true">https://sportscontentplaybook.com/es/blog/football-social-media-content-ideas-matchweek-preview.html</guid>
+      <pubDate>Wed, 04 Nov 2026 08:00:00 GMT</pubDate>
+      <dc:creator>Martí Ruiz</dc:creator>
+      <description>En la jornada 4 de la Champions League, tres clubes sacaron más partido al avance que a la publicación habitual del día del partido. Aquí tienes el patrón y cómo copiarlo.</description>
+      <enclosure url="https://sportscontentplaybook.com/assets/blog/football-social-media-content-ideas-matchweek-preview.jpg" length="68819" type="image/jpeg"/>
+      <media:content url="https://sportscontentplaybook.com/assets/blog/football-social-media-content-ideas-matchweek-preview.jpg" medium="image" type="image/jpeg"/>
+    </item>
     <item>
       <title>Ideas de Reels deportivos: explica la jugada, no solo el gol</title>
       <link>https://sportscontentplaybook.com/es/blog/sports-reels-ideas-explain-the-play-not-just-the-goal.html</link>
@@ -296,16 +306,6 @@
       <description>The Padded Seat muestra la hospitalidad deportiva como storytelling premium y demuestra, dentro de las redes sociales en el deporte, que el contenido basado en la experiencia amplía el valor, el engagement y la visión estratégica más allá de los resúmenes de los partidos.</description>
       <enclosure url="https://sportscontentplaybook.com/assets/blog/beyond-the-pitch-turning-premium-experiences-into-powerful-content.jpg" length="355634" type="image/jpeg"/>
       <media:content url="https://sportscontentplaybook.com/assets/blog/beyond-the-pitch-turning-premium-experiences-into-powerful-content.jpg" medium="image" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>Ganar a lo grande, perder con inteligencia: las tácticas de Instagram en la Super Bowl</title>
-      <link>https://sportscontentplaybook.com/es/blog/winning-loud-losing-smart-inside-super-bowl-instagram-tactics.html</link>
-      <guid isPermaLink="true">https://sportscontentplaybook.com/es/blog/winning-loud-losing-smart-inside-super-bowl-instagram-tactics.html</guid>
-      <pubDate>Wed, 11 Feb 2026 08:00:00 GMT</pubDate>
-      <dc:creator>Josep</dc:creator>
-      <description>Los Seattle Seahawks dominaron Instagram tras ganar la Super Bowl, mientras que los Patriots adoptaron un tono contenido. Un claro contraste en la estrategia de redes sociales en el deporte, analizado desde la perspectiva de Sports Content Playbook.</description>
-      <enclosure url="https://sportscontentplaybook.com/assets/blog/winning-loud-losing-smart-inside-super-bowl-instagram-tactics.jpg" length="514179" type="image/jpeg"/>
-      <media:content url="https://sportscontentplaybook.com/assets/blog/winning-loud-losing-smart-inside-super-bowl-instagram-tactics.jpg" medium="image" type="image/jpeg"/>
     </item>
   </channel>
 </rss>

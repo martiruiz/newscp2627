@@ -6,7 +6,17 @@
     <atom:link href="https://sportscontentplaybook.com/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Sports social media content ideas, trends and analysis.</description>
     <language>en</language>
-    <lastBuildDate>Tue, 03 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Wed, 04 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Football social media content ideas: build the match preview before kick-off</title>
+      <link>https://sportscontentplaybook.com/blog/football-social-media-content-ideas-matchweek-preview.html</link>
+      <guid isPermaLink="true">https://sportscontentplaybook.com/blog/football-social-media-content-ideas-matchweek-preview.html</guid>
+      <pubDate>Wed, 04 Nov 2026 08:00:00 GMT</pubDate>
+      <dc:creator>Martí Ruiz</dc:creator>
+      <description>On Champions League matchday 4, three clubs got more from the preview than from the usual match-day post. Here is the pattern and how to copy it.</description>
+      <enclosure url="https://sportscontentplaybook.com/assets/blog/football-social-media-content-ideas-matchweek-preview.jpg" length="68819" type="image/jpeg"/>
+      <media:content url="https://sportscontentplaybook.com/assets/blog/football-social-media-content-ideas-matchweek-preview.jpg" medium="image" type="image/jpeg"/>
+    </item>
     <item>
       <title>Sports Reels ideas: explain the play, not just the goal</title>
       <link>https://sportscontentplaybook.com/blog/sports-reels-ideas-explain-the-play-not-just-the-goal.html</link>
@@ -296,16 +306,6 @@
       <description>The Padded Seat showcases sports hospitality as premium storytelling, proving in social media in sports that experience-driven content expands value, engagement, and strategic vision beyond match highlights.</description>
       <enclosure url="https://sportscontentplaybook.com/assets/blog/beyond-the-pitch-turning-premium-experiences-into-powerful-content.jpg" length="355634" type="image/jpeg"/>
       <media:content url="https://sportscontentplaybook.com/assets/blog/beyond-the-pitch-turning-premium-experiences-into-powerful-content.jpg" medium="image" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>Winning loud, losing smart: inside Super Bowl Instagram tactics</title>
-      <link>https://sportscontentplaybook.com/blog/winning-loud-losing-smart-inside-super-bowl-instagram-tactics.html</link>
-      <guid isPermaLink="true">https://sportscontentplaybook.com/blog/winning-loud-losing-smart-inside-super-bowl-instagram-tactics.html</guid>
-      <pubDate>Wed, 11 Feb 2026 08:00:00 GMT</pubDate>
-      <dc:creator>Josep</dc:creator>
-      <description>Seattle Seahawks dominated Instagram after their Super Bowl win, while the Patriots adopted a restrained tone. A clear contrast in social media in sports strategy, analysed through the lens of Sports Content Playbook.</description>
-      <enclosure url="https://sportscontentplaybook.com/assets/blog/winning-loud-losing-smart-inside-super-bowl-instagram-tactics.jpg" length="514179" type="image/jpeg"/>
-      <media:content url="https://sportscontentplaybook.com/assets/blog/winning-loud-losing-smart-inside-super-bowl-instagram-tactics.jpg" medium="image" type="image/jpeg"/>
     </item>
   </channel>
 </rss>

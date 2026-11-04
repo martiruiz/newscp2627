@@ -30,16 +30,16 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/573/573869.jpg?v=mvuufiqh"
   },
   {
-    "account": "tony_czech",
-    "account_platform": "instagram",
-    "views": 10213823,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/567/567814.jpg?v=mvtcjj19"
-  },
-  {
     "account": "bleacherreport",
     "account_platform": "instagram",
     "views": 9671933,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/579/579981.jpg?v=mvy7aazj"
+  },
+  {
+    "account": "houseofhighlights",
+    "account_platform": "instagram",
+    "views": 8041653,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/588/588277.jpg?v=mw1alg4a"
   },
   {
     "account": "espnfc",
