@@ -407,8 +407,11 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString(window.SCP_LO
     window.SCP_swipe(box, tabs);
   });
 
-  // the same with dots under the cards: the home's How it works, What you get, testimonials, teams and blog posts
-  $$(".live-steps, .tools, .quote-grid, .team-tiles, .home-blog .blog-grid").forEach((box) => {
+  // the same with dots under the cards: the home's figures, How it works, What you get, each tool's points, testimonials, teams and blog posts
+  // the home's blog posts are written in English; in Spanish, their translated cards (blog-tools/build.mjs)
+  const blogEs = $("template[data-home-blog-es]");
+  if (blogEs && window.SCP_LANG === "es") $(".home-blog .blog-grid").innerHTML = blogEs.innerHTML;
+  $$(".stats-v2, .live-steps, .tools, .hx-list, .quote-grid, .team-tiles, .home-blog .blog-grid").forEach((box) => {
     box.classList.add("swipe-row");
     const dots = document.createElement("div");
     dots.className = "swipe-dots";
@@ -486,6 +489,24 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString(window.SCP_LO
     $$("[data-billing-switch]", card).forEach((b) => b.addEventListener("click", () => set(b.dataset.billingSwitch)));
   });
 
+  // Footer on phones: Product, Resources and Company fold, the social icons sit beside the logo
+  if (matchMedia("(max-width: 760px)").matches) $$(".sf").forEach((sf) => {
+    const brand = $(".sf-brand", sf), social = $(".sf-social", sf), logo = brand && $(".footer-brand", brand);
+    if (logo && social) logo.after(social);
+    $$(".sf-cols h3", sf).forEach((h) => {
+      h.setAttribute("role", "button"); h.tabIndex = 0; h.setAttribute("aria-expanded", "false");
+      const flip = () => h.setAttribute("aria-expanded", String(h.parentElement.classList.toggle("is-open")));
+      h.addEventListener("click", flip);
+      h.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(); } });
+    });
+  });
+
+  // Blog on phones: 12 articles (css: the rest aren't drawn, so their images don't download) and a button for all of them
+  $$("[data-blog-grid]").forEach((grid) => {
+    if (grid.children.length <= 12) return;
+    grid.insertAdjacentHTML("afterend", `<div class="load-more blog-more"><button class="pill pill-dark" type="button">${window.tx ? window.tx("Load more") : "Load more"}</button></div>`);
+    grid.nextElementSibling.firstElementChild.addEventListener("click", (e) => { grid.classList.add("show-all"); e.currentTarget.parentElement.remove(); });
+  });
   // Blog category tabs
   $$("[data-blog-tabs]").forEach((tabs) => {
     const cards = $$("[data-blog-grid] .blog-card");
@@ -494,6 +515,7 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString(window.SCP_LO
       tab.addEventListener("click", () => {
         $$("button", tabs).forEach((t) => t.setAttribute("aria-selected", String(t === tab)));
         const cat = tab.dataset.cat;
+        if (cat !== "all") { $("[data-blog-grid]").classList.add("show-all"); $(".blog-more")?.remove(); }
         let shown = 0;
         cards.forEach((card) => {
           card.hidden = cat !== "all" && card.dataset.cat !== cat;

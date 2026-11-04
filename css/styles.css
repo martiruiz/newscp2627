@@ -9392,3 +9392,95 @@ html.nav-lock .ck { visibility: hidden; }   /* the cookie notice waits while the
   .plan-switches .plan-seats span { display: none; }
   .plan-switches .plan-interval button { padding: 0 9px; font-size: 13px; }
 }
+
+/* ===== Phones: review of the whole site ===== */
+@media (max-width: 760px) {
+  /* forms: 16px, so iPhones don't zoom in when a field is tapped */
+  input:not([type="checkbox"]):not([type="radio"]), select, textarea { font-size: 16px !important; }
+  /* a finger-sized target on every button and link that acts as one */
+  .btn { min-height: 44px; }
+  .play-btn { min-height: 44px; }
+  .f-row .pill, .load-more .pill { min-height: 42px; height: auto; padding-inline: 16px; }
+  .res-tabs-row a { min-height: 44px; }
+  .news-source { padding-block: 10px; }
+  .plan-switches .plan-seats button { width: 32px; height: 40px; }
+  /* cookies: a compact card over the tab bar, the page stays visible; Reject and Accept the same size */
+  body.has-tabbar .ck { bottom: calc(72px + env(safe-area-inset-bottom)); }
+  .ck { left: 10px; right: 10px; padding: 12px 14px; border-radius: 16px; }
+  .ck:not(.is-settings) .ck-head { display: none; }
+  .ck-p { margin-bottom: 10px; font-size: 12.5px; line-height: 1.4; }
+  .ck:not(.is-settings) .ck-btns { grid-template-columns: 1fr 1fr auto; align-items: center; }
+  .ck-b { height: 40px; }
+  .ck-link { grid-column: auto; min-height: 40px; margin: 0; padding: 0 4px; font-size: 12.5px; }
+  /* Blog: the first 12 articles */
+  [data-blog-grid]:not(.show-all) > .blog-card:nth-child(n+13) { display: none; }
+  /* the menu without the article preview */
+  .site-nav .mm-rfeat { display: none; }
+  .site-nav .mm-res-grid { display: block; }
+  /* Library: the buttons' hover labels don't exist on phones (they stuck out and made the whole page wider) */
+  .lib-rail [data-tip]::after, .lib-rail .save-btn::after { display: none; }
+  /* Library: the head leaves on the way down; the menu's lines stay readable over the posts */
+  .lib-head { transition: transform 0.25s ease; }
+  .lib-head.is-away { transform: translateY(-110%); }
+  .library-page .site-nav:not(.is-open) .nav-toggle span, .library-page .site-nav:not(.is-open) .nav-toggle span::before, .library-page .site-nav:not(.is-open) .nav-toggle span::after { box-shadow: 0 0 5px rgba(0, 0, 0, 0.75); }
+}
+@media (min-width: 761px) { .blog-more { display: none; } }
+
+/* ===== The home on phones ===== */
+@media (max-width: 760px) {
+  /* tighter rhythm: the sections had 200px of air between them */
+  .hero { padding-top: 24px; }
+  .home-sec, .hx, .magic, .testimonials, .team-strip, .home-pricing, .faq { padding-top: 56px; padding-bottom: 0; }
+  .cta { padding: 56px 0 24px; }
+  .home-blog-sm { padding-top: 24px; padding-bottom: 0; }
+  .trust-badge p { font-size: 12.5px; line-height: 1.3; }
+  /* the figures and each tool's points pass sideways too */
+  .swipe-row.stats-v2 { padding-top: 12px; margin-top: 24px; }
+  .swipe-row.stats-v2 > .stat { border: 0; }
+  .swipe-row.hx-list { margin-top: 18px; padding-block: 2px 6px; }
+  .swipe-row.swipe-row.hx-list > li { flex-basis: 70vw; }
+  .hx-note { margin-top: 8px; }
+  .hx-visual { margin-top: 8px; }
+  /* the closing call to action: a headline that fits in the screen, the button on one line */
+  .cta-box { padding: 36px 18px; }
+  .cta-box .section-title { font-size: 25px; line-height: 1.2; }
+  .cta-box .cta-actions { margin-top: 28px; }
+  .cta-main { font-size: 14.5px; padding-inline: 10px; gap: 6px; }
+  /* the AI demo while it waits: the analysis blurred behind the button, not an empty card */
+  .ai-demo-card.is-live .ai-demo-row:not(.is-shown) { opacity: 0.28; filter: blur(3.5px); }
+  /* the menu's featured box: the title wraps, the arrow stays inside */
+  .site-nav.is-open .mm-featured { gap: 10px; }
+  .site-nav.is-open .mm-featured > span { flex: 1 1 0; min-width: 0; }
+  .site-nav.is-open .mm-featured b { white-space: normal; }
+  /* the three tools, a little more apart than the rest */
+  section.hx { padding-top: 64px; }
+
+  /* Footer: newsletter, logo with the social icons, sections that fold, legal */
+  .site-footer.sf, body:has(.dock) .site-footer.sf { margin-top: 40px; padding-bottom: 12px; }
+  .sf-news { display: block; margin-top: 0; padding: 20px 18px; border-radius: 18px; }
+  .sf-news-copy p { display: none; }
+  .sf-news h2 { margin: 10px 0 14px; font-size: 21px; }
+  .sf-news-row { flex-direction: row; align-items: center; padding: 4px; border-radius: 14px; }
+  .sf-news-row input { width: auto; height: 44px; padding: 0 10px; background: none; border: 0; box-shadow: none; }
+  .sf-news-row .btn { width: auto; margin: 0; padding-inline: 14px; border-radius: 11px; }
+  .sf-news-consent { font-size: 12px; line-height: 1.35; }
+  .sf-main { display: block; margin-top: 30px; }
+  .sf-brand { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 12px; }
+  .sf-brand .footer-brand img.brand-logo, .sf-brand .footer-brand img { width: auto; height: 46px; }
+  .sf-brand > p { grid-column: 1 / -1; margin: 0; font-size: 14px; line-height: 1.5; }
+  .sf-brand .sf-social { margin: 0; gap: 6px; }
+  .sf-brand .sf-social a { width: 42px; height: 42px; }
+  .sf-stats { display: none; }
+  .sf-cols { display: block; margin-top: 18px; border-top: 1px solid rgba(var(--fg), 0.1); }
+  .sf-cols > div { border-bottom: 1px solid rgba(var(--fg), 0.1); }
+  .sf-cols h3 { display: flex; align-items: center; justify-content: space-between; min-height: 54px; margin: 0; color: var(--text); font: 600 16px var(--font-display); letter-spacing: -0.01em; text-transform: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .sf-cols h3::after { content: ""; width: 8px; height: 8px; margin: 0 4px 3px 0; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(45deg); transition: transform 0.2s; }
+  .sf-cols .is-open > h3::after { margin-bottom: -3px; border-color: var(--gold); transform: rotate(-135deg); }
+  .sf-cols ul { display: none; gap: 0; padding-bottom: 10px; }
+  .sf-cols .is-open > ul { display: grid; }
+  .sf-cols a { display: block; padding: 11px 0; }
+  .sf-bottom { display: block; margin-top: 0; padding: 18px 0 8px; border-top: 0; text-align: center; font-size: 12.5px; }
+  .sf-bottom nav { justify-content: center; gap: 0 16px; margin-top: 6px; }
+  .sf-bottom a { display: inline-block; padding: 8px 0; }
+  .sf-tm { text-align: center; }
+}

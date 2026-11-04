@@ -15,8 +15,8 @@
       label: "Platform", type: "pillars",
       // same colours and little visuals as the home (index.html .tools): Library gold, Content Plan blue (centre), AI purple
       pillars: [
-        { icon: "layout-grid", title: "Content Library", href: "content-library.html", acc: "240, 184, 74", vis: "lib" },
-        { icon: "calendar-days", title: "Content Plan", href: "content-plan.html", acc: "122, 162, 255", vis: "cp" },
+        { icon: "layout-grid", title: "Content Library", href: "content-library.html", visitorHref: "index.html#library", acc: "240, 184, 74", vis: "lib" },
+        { icon: "calendar-days", title: "Content Plan", href: "content-plan.html", visitorHref: "index.html#content-plan", acc: "122, 162, 255", vis: "cp" },
         { icon: "sparkles", title: "AI analysis", href: "index.html#ai-analysis", memberHref: "content-library.html?ai=mine", acc: "167, 139, 250", vis: "ai" },
       ],
       more: [
@@ -61,6 +61,7 @@
   const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
   // icons (outline, Lucide shapes) — own copy so every page has them, even without js/icons.js
   const ICONS = {
+    tag: '<path d="M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4z"/><path d="M7.5 7.5h.01"/>',
     home: '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9"/><path d="M9.5 21v-6.5h5V21"/>',
     "layout-grid": '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>',
     "calendar-days": '<path d="M8 2v4M16 2v4"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/>',
@@ -100,7 +101,7 @@
 
   function panel(m, id) {
     if (m.type === "pillars") return `<div class="mm-panel mm-pillars" id="${id}" role="region" aria-label="${esc(m.label)}">
-      <div class="mm-pcols">${m.pillars.map((p) => `<a class="mm-pillar" href="${esc(member && p.memberHref ? p.memberHref : p.href)}" style="--acc:${p.acc}">
+      <div class="mm-pcols">${m.pillars.map((p) => `<a class="mm-pillar" href="${esc(member && p.memberHref ? p.memberHref : !signedIn && p.visitorHref ? p.visitorHref : p.href)}" style="--acc:${p.acc}">
         ${VIS[p.vis] || ""}<span class="mm-pillar-h"><span class="mm-ic">${icon(p.icon)}</span><b>${esc(p.title)}</b></span></a>`).join("")}</div>
       ${m.more?.filter(show).length ? `<div class="mm-ptab"${m.more.some((l) => l.noPlan) ? np : ""}>${m.more.filter(show).map((l) => `<a href="${esc(l.href)}">${icon(l.icon)}${esc(l.title)}</a>`).join("")}</div>` : ""}</div>`;
     if (m.type === "resources") {
@@ -214,14 +215,15 @@
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && nav.classList.contains("mm-open")) { const open = tabs.find((t) => t.classList.contains("is-open")); set(null, false); open?.querySelector(".mm-btn-tab").focus(); } });
   links.addEventListener("click", (e) => { if (e.target.closest(".mm-panel a, a.mm-btn-tab")) set(null, false); });
 
-  // Phones: a tab bar at the bottom — Home · Library · My Club (raised, gold, crown) · Plan · Boards; the full menu opens from the button at the top right
+  // Phones: a tab bar at the bottom — Home · Library · My Club (raised, gold, crown) · Plan · Boards; the full menu opens from the button at the top right.
+  // Visitors don't land on the login form: Library and Plan go to their explanation on the home, My Club opens its panel in the menu, Pricing instead of Boards.
   const here = location.pathname.split("/").pop() || "index.html";
   const TABS = [
     { label: "Home", href: "index.html", ic: "home" },
-    { label: "Library", href: "content-library.html", ic: "layout-grid" },
-    { label: "My Club", href: "my-club.html", club: true },
-    { label: "Plan", href: "content-plan.html", ic: "calendar-days" },
-    { label: "Boards", href: "saved.html", ic: "bookmark" },
+    { label: "Library", href: signedIn ? "content-library.html" : "index.html#library", ic: "layout-grid" },
+    { label: "My Club", href: signedIn ? "my-club.html" : "pricing.html", club: true },
+    { label: "Plan", href: signedIn ? "content-plan.html" : "index.html#content-plan", ic: "calendar-days" },
+    signedIn ? { label: "Boards", href: "saved.html", ic: "bookmark" } : { label: "Pricing", href: "pricing.html", ic: "tag" },
   ];
   const bar = document.createElement("nav");
   bar.className = "tabbar";
@@ -230,6 +232,25 @@
       ${t.club ? `<span class="tb-crown"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 7l5 4 5-7 5 7 5-4-2 12H4z"/></svg></span>` : icon(t.ic)}<span>${esc(t.label)}</span></a>`).join("");
   document.body.append(bar);
   document.body.classList.add("has-tabbar");
+  if (!signedIn) bar.querySelector(".tb-club").addEventListener("click", (e) => {
+    const tab = links.querySelector(".mm-club[data-mm]"), toggle = nav.querySelector("[data-nav-toggle]");
+    if (!tab || !toggle || !getComputedStyle(toggle).display.includes("grid")) return;
+    e.preventDefault(); e.stopPropagation();
+    if (!nav.classList.contains("is-open")) toggle.click();
+    set(tab, true);
+  });
+  // Library on phones: its sticky head leaves when scrolling down and comes back when scrolling up (not while it's in use)
+  const head = document.querySelector("[data-lib-head]");
+  if (head) {
+    const phone = matchMedia("(max-width: 760px)");
+    let last = scrollY;
+    addEventListener("scroll", () => {
+      const y = scrollY, busy = document.querySelector(".tour, .library.sheet-open, .library.plan-open") || head.querySelector(".is-open");
+      if (!phone.matches || busy || y < 200 || y < last - 6) head.classList.remove("is-away");
+      else if (y > last + 6) head.classList.add("is-away");
+      if (Math.abs(y - last) > 6) last = y;
+    }, { passive: true });
+  }
   // the open menu covers the screen: the page stays still underneath, and Esc closes it
   new MutationObserver(() => document.documentElement.classList.toggle("nav-lock", nav.classList.contains("is-open"))).observe(nav, { attributes: true, attributeFilter: ["class"] });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && nav.classList.contains("is-open") && !nav.classList.contains("mm-open")) nav.querySelector("[data-nav-toggle]")?.click(); });

@@ -427,7 +427,7 @@ function card(src, lang = "en") {
             <time datetime="${p.date}">${fmtDate(p.date, lang)}</time>
             <h2><a href="${href}">${esc(p.title)}</a></h2>
             <p>${esc(p.excerpt)}</p>
-            <a class="link-gold" href="${href}">Read more</a>
+            <a class="link-gold" href="${href}">${lang === "es" ? "Leer más" : "Read more"}</a>
           </div>
         </article>`;
 }
@@ -442,7 +442,8 @@ function replaceBetween(file, start, end, content) {
 if (posts.length) {
   replaceBetween("blog.html", "<!-- POSTS:START -->", "<!-- POSTS:END -->", posts.map(card).join("\n"));
   replaceBetween("news.html", "<!-- BLOG:START -->", "<!-- BLOG:END -->", posts.slice(0, 3).map(card).join("\n"));
-  replaceBetween("index.html", "<!-- HOME-BLOG:START -->", "<!-- HOME-BLOG:END -->", posts.slice(0, 3).map(card).join("\n"));
+  replaceBetween("index.html", "<!-- HOME-BLOG:START -->", "<!-- HOME-BLOG:END -->", posts.slice(0, 3).map((p) => card(p)).join("\n"));
+  replaceBetween("index.html", "<!-- HOME-BLOG-ES:START -->", "<!-- HOME-BLOG-ES:END -->", posts.slice(0, 3).map((p) => card(p, "es")).join("\n"));
 }
 
 // ---------- Social News pages ----------

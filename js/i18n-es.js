@@ -60,6 +60,8 @@ window.SCP_ES = {
   "Loading…": "Cargando…",
   "Load more": "Cargar más",
   "Read more": "Leer más",
+  "Why it works": "Por qué funciona",
+  "or": "o",
   "Search...": "Buscar...",
   "Select...": "Seleccionar...",
   "Something went wrong": "Algo ha fallado",

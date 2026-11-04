@@ -6,7 +6,8 @@
   const AREA = { social: "Social media", content: "Content", design: "Design", video: "Video", marketing: "Marketing", partnerships: "Partnerships", other: "Other" };
   const TYPE = { "full-time": "Full time", "part-time": "Part time", internship: "Internship", freelance: "Freelance" };
   const f = { area: "", q: "" };
-  let jobs = [];
+  let jobs = [], limit = 20;   // phones: 20 offers, and a button for more
+  const phone = matchMedia("(max-width: 760px)");
 
   const list = document.querySelector("[data-jobs-list]"), empty = document.querySelector("[data-jobs-empty]");
   const q = document.querySelector("[data-jobs-search]"), clear = document.querySelector("[data-jobs-clear]"), count = document.querySelector("[data-jobs-n]");
@@ -23,7 +24,7 @@
     const words = f.q.trim().toLowerCase().split(/\s+/).filter(Boolean);
     const shown = jobs.filter((j) => (!f.area || j.area === f.area)
       && words.every((w) => [j.title, j.company, j.location, j.summary].some((v) => String(v || "").toLowerCase().includes(w))));
-    list.innerHTML = shown.map((j) => `<article class="job">
+    list.innerHTML = shown.slice(0, phone.matches ? limit : shown.length).map((j) => `<article class="job">
         <span class="job-logo${j.logo_url ? " has-img" : ""}" data-ini="${esc(initials(j.company))}">${j.logo_url ? `<img src="${esc(j.logo_url)}" alt="${esc(j.company)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentNode.classList.remove('has-img');this.parentNode.textContent=this.parentNode.dataset.ini">` : esc(initials(j.company))}</span>
         <div class="job-body">
           <p class="job-co">${esc(j.company)}<span>${esc(ago(j.created_at))}</span></p>
@@ -35,15 +36,21 @@
     empty.hidden = !!shown.length;
     count.textContent = t(shown.length === 1 ? "1 job" : "{n} jobs", { n: shown.length });
     clear.hidden = !f.q;
+    more.hidden = !phone.matches || shown.length <= limit;
   }
+  const more = document.createElement("button");
+  more.type = "button"; more.className = "pill pill-dark"; more.textContent = t("Load more"); more.hidden = true;
+  const moreBox = document.createElement("div");
+  moreBox.className = "load-more"; moreBox.append(more); list.after(moreBox);
+  more.addEventListener("click", () => { limit += 20; draw(); });
 
   // the area (one at a time) and the search, with a button to clear it
   document.querySelector("[data-jobs-area]").addEventListener("click", (e) => {
     const b = e.target.closest("button"); if (!b) return;
     e.currentTarget.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
-    f.area = b.dataset.area; draw();
+    f.area = b.dataset.area; limit = 20; draw();
   });
-  q.addEventListener("input", () => { f.q = q.value; draw(); });
+  q.addEventListener("input", () => { f.q = q.value; limit = 20; draw(); });
   clear.addEventListener("click", () => { q.value = f.q = ""; draw(); q.focus(); });
 
   (async () => {
