@@ -94,6 +94,53 @@
     }
   },
   {
+    "id": 170,
+    "url": "https://www.socialmediatoday.com/news/tiktok-inks-new-content-deal-with-womens-tennis-association/873502/",
+    "source_name": "Social Media Today",
+    "platform": "tiktok",
+    "title": "TikTok formalizes WTA partnership with exclusive livestreams and a new Creator Club",
+    "paragraphs": [
+      "TikTok has signed a formal content deal with the Women's Tennis Association after a year of collaboration that pushed the WTA account past one million followers. WTA content generated a combined 250 million views and engagements over the past year, up 41% year over year. The first activation is an exclusive TikTok livestream of the WTA Finals Draw Ceremony on November 3, ahead of the season-ending event in Indian Wells.",
+      "The agreement also launches a WTA Creator Club, giving digital creators access to tournaments worldwide to film behind-the-scenes and off-court stories. The WTA will also gain tournament content hubs through TikTok's GamePlan offering, and both partners say player-led storytelling stays central, with support for athletes building their own presence on the app. TikTok signed a similar deal with the ATP last year.",
+      "For sports social teams, this is a template worth studying: turn low-cost moments like draws or ceremonies into live events, invite creators inside the venue to reach audiences beyond core fans, and help athletes show personality across fashion and lifestyle. Leagues and federations negotiating with platforms can use these engagement figures to argue for formal partnerships, exclusive formats and dedicated content hubs."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-02T19:50:12+00:00",
+    "created_at": "2026-11-03T23:16:10.686783+00:00",
+    "edited_at": null,
+    "slug": "tiktok-formalizes-wta-partnership-with-exclusive-livestreams-and-a-170",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/oOjO0WmNy4RtJVuH5FepY5jJzjy45uQEOYMrW3Hg4co/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS90aWt0b2tfd3RhLnBuZw==.webp",
+    "es": {
+      "title": "TikTok formaliza su alianza con la WTA con directos exclusivos y un nuevo Creator Club",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "TikTok ha firmado un acuerdo formal de contenidos con la Women's Tennis Association tras un año de colaboración que llevó la cuenta de la WTA a superar el millón de seguidores. El contenido de la WTA generó un total combinado de 250 millones de visualizaciones e interacciones durante el último año, un 41% más que el año anterior. La primera activación será un directo exclusivo en TikTok de la ceremonia del sorteo de las WTA Finals el 3 de noviembre, antes del evento que cierra la temporada en Indian Wells.",
+        "El acuerdo también pone en marcha un WTA Creator Club, que da a creadores digitales acceso a torneos de todo el mundo para grabar historias de backstage y de fuera de la pista. Además, la WTA contará con centros de contenido de los torneos a través de la oferta GamePlan de TikTok, y ambas partes aseguran que el storytelling protagonizado por las jugadoras seguirá siendo central, con apoyo a las atletas que construyen su propia presencia en la app. TikTok firmó un acuerdo similar con la ATP el año pasado.",
+        "Para los equipos de redes sociales deportivas, este es un modelo que merece estudio: convertir momentos de bajo coste, como sorteos o ceremonias, en eventos en directo; invitar a creadores al recinto para llegar a audiencias más allá de los aficionados más fieles; y ayudar a las atletas a mostrar su personalidad en moda y estilo de vida. Las ligas y federaciones que negocian con las plataformas pueden usar estas cifras de engagement para defender alianzas formales, formatos exclusivos y centros de contenido propios."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-11-03T23:16:10.686783+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-11-04T01:24:47.999Z",
+      "tokens": {
+        "in": 1479,
+        "out": 695
+      }
+    }
+  },
+  {
     "id": 144,
     "url": "https://www.sponconsports.com/p/inside-the-internet-invitational-s-sponsorship-playbook",
     "source_name": "SponCon Sports",
