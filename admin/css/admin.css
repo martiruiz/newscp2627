@@ -854,6 +854,8 @@ tr[data-imp-row]:hover .imp-more, .imp-more:focus-within { opacity: 1; }
 .ld-pill { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 999px; font-size: 11.5px; font-weight: 600; }
 .ld-pill.is-gold { color: var(--accent-light); background: var(--accent-soft); }
 .ld-pill.is-blue { color: #8fb4ff; background: rgba(122, 162, 255, 0.16); }
+.ld-pill.is-green { color: var(--green); background: rgba(0, 216, 91, 0.14); }
+.ld-pill.is-red { color: var(--red); background: rgba(255, 104, 92, 0.14); }
 .ld-status { border-radius: 999px; font-weight: 600; }
 .ld-status.st-qualified, .ld-status.st-demo_booked { color: var(--accent-light); border-color: rgba(240, 184, 74, 0.4); }
 .ld-status.st-demo_completed { color: #8fb4ff; border-color: rgba(122, 162, 255, 0.4); }

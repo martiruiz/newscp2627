@@ -40,6 +40,7 @@
 
   const fmt = (iso) => (iso ? new Date(iso).toLocaleString("es-ES", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "—");
   const source = (l) => [l.utm?.utm_source, l.utm?.utm_campaign].filter(Boolean).join(" / ") || l.utm?.referrer || l.source_page || "—";
+  const trialPill = (l) => (l.trial_state === "active" ? `<span class="ld-pill is-green">Trial active</span>` : l.trial_state === "cancelled" ? `<span class="ld-pill is-red">Trial cancelled</span>` : "");
 
   async function load() {
     const p = Object.fromEntries(Object.entries(f).filter(([k, v]) => v !== "" && v !== false && k !== "identified"));
@@ -69,7 +70,7 @@
       return `<div class="crm-col ${COLS[k]}" data-col="${k}"><header><span class="crm-dot"></span><b>${label}</b><span class="crm-n">${num(list.length)}</span></header>
         <div class="crm-cards">${list.map((l) => `<article class="crm-card" draggable="true" data-card="${l.id}">
           <div class="ld-person"><span class="ld-av">${esc((l.name || l.email || l.phone || "?").trim().charAt(0).toUpperCase())}</span><span><b>${esc(l.name || (l.phone ? "Phone lead" : "Anonymous"))}</b><small>${esc(l.organization || ORG[l.org_type] || l.email || l.phone || "—")}</small></span></div>
-          <div class="crm-meta">${l.status === "trial" && !l.seen_at ? `<span class="ld-pill is-gold">● New trial</span>` : ""}${l.status === "trial" && l.trial_end ? `<span class="crm-tag">Trial ends ${fmt(l.trial_end)}</span>` : ""}${l.meeting_at ? `<span class="ld-pill is-gold">Demo · ${fmt(l.meeting_at)}</span>` : ""}${l.phone ? `<span class="crm-tag">Phone</span>` : ""}${(l.message || "").trim() ? `<span class="crm-tag">Message</span>` : ""}<span class="crm-when">${fmt(l.updated_at)}</span></div>
+          <div class="crm-meta">${trialPill(l)}${l.status === "trial" && !l.seen_at ? `<span class="ld-pill is-gold">● New trial</span>` : ""}${l.status === "trial" && l.trial_end ? `<span class="crm-tag">Trial ends ${fmt(l.trial_end)}</span>` : ""}${l.meeting_at ? `<span class="ld-pill is-gold">Demo · ${fmt(l.meeting_at)}</span>` : ""}${l.phone ? `<span class="crm-tag">Phone</span>` : ""}${(l.message || "").trim() ? `<span class="crm-tag">Message</span>` : ""}<span class="crm-when">${fmt(l.updated_at)}</span></div>
         </article>`).join("") || `<p class="crm-empty">—</p>`}</div></div>`;
     }).join("");
   }
@@ -103,7 +104,7 @@
         <td><div class="ld-person"><span class="ld-av">${esc((l.name || l.email || l.phone || "?").trim().charAt(0).toUpperCase())}</span><span><b>${esc(l.name || (l.phone ? "Phone lead" : "Anonymous"))}</b><small>${esc([l.email, l.phone].filter(Boolean).join(" · ") || "no email yet")}</small>${tab === "messages" ? `<small class="ld-msg">“${esc(l.message.trim().slice(0, 90))}${l.message.trim().length > 90 ? "…" : ""}”</small>` : ""}</span></div></td>
         <td>${esc(l.organization || "—")}</td><td>${esc(ORG[l.org_type] || "—")}</td><td>${esc(SIZE[l.team_size] || "—")}</td><td>${esc(CH[l.challenge] || "—")}</td>
         <td>${l.recommendation === "demo" ? `<span class="ld-pill is-gold">Demo</span>` : l.recommendation === "trial" ? `<span class="ld-pill is-blue">Free trial</span>` : "—"}</td>
-        <td><select class="select select-sm ld-status st-${l.status}" data-status="${l.id}">${Object.entries(STATUS).map(([k, v]) => `<option value="${k}"${l.status === k ? " selected" : ""}>${v}</option>`).join("")}</select></td>
+        <td><select class="select select-sm ld-status st-${l.status}" data-status="${l.id}">${Object.entries(STATUS).map(([k, v]) => `<option value="${k}"${l.status === k ? " selected" : ""}>${v}</option>`).join("")}</select>${l.trial_state ? `<br>${trialPill(l)}` : ""}</td>
         <td>${l.meeting_at ? `${fmt(l.meeting_at)}<br><small class="muted">${esc(MEET[l.meeting_status] || "")}${l.meeting_source === "calcom-webhook" ? " ✓" : ""}</small>` : esc(MEET[l.meeting_status] || "—")}</td>
         <td><small>${esc(source(l))}</small><br><small class="muted">${esc(l.cta || "")}</small></td></tr>`).join("")}
       </tbody></table></div>` : `<p class="panel-pad muted">No leads with these filters yet.</p>`;
@@ -138,7 +139,7 @@
           <label class="ld-field"><span>Demo status</span><select class="select" data-k="meeting_status">${opts(MEET, l.meeting_status)}</select></label></div>
         <h3>Notes</h3><textarea class="input" rows="4" data-k="admin_notes" style="width:100%">${esc(l.admin_notes || "")}</textarea>
         <div class="kv-grid">${l.phone ? kv("WhatsApp", `<a href="https://wa.me/${esc(l.phone.replace(/[^0-9]/g, ""))}" target="_blank" rel="noopener">${esc(l.phone)}</a>`) : ""}${kv("Team", esc(SIZE[l.team_size] || "—"))}${kv("Need", esc(CH[l.challenge] || "—"))}
-        ${kv("Recommended", l.recommendation === "demo" ? "Demo" : l.recommendation === "trial" ? "Free trial" : "—")}${kv("Created", fmt(l.created_at))}${l.trial_end ? kv("Trial ends", fmt(l.trial_end)) : ""}
+        ${kv("Recommended", l.recommendation === "demo" ? "Demo" : l.recommendation === "trial" ? "Free trial" : "—")}${kv("Created", fmt(l.created_at))}${l.trial_state ? kv("Free trial", trialPill(l)) : ""}${l.trial_state === "cancelled" ? kv("Cancelled on", fmt(l.trial_canceled_at)) : ""}${l.trial_end ? kv("Trial ends", fmt(l.trial_end)) : ""}
         ${kv("Demo", l.meeting_at ? `${fmt(l.meeting_at)} · ${esc(MEET[l.meeting_status])}${l.meeting_source ? ` (${esc(l.meeting_source)})` : ""}` : "—")}
         ${kv("Source page", esc(l.source_page || "—"))}${kv("CTA", esc(l.cta || "—"))}${kv("Campaign", esc(Object.entries(l.utm || {}).map(([k, v]) => `${k}: ${v}`).join(" · ") || "—"))}
         ${kv("Language", esc(l.lang || "—"))}${kv("A/B variant", esc(l.variant || "—"))}

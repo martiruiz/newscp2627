@@ -652,4 +652,8 @@ window.SCPA_DICT = Object.assign(window.SCPA_DICT || {}, {
   "Federation": ["Federación", "Federació"],
   "The client's menu and page say My club, My competition, My agency or My federation": ["El menú y la página del cliente dicen Mi club, Mi competición, Mi agencia o Mi federación", "El menú i la pàgina del client diuen Mi club, Mi competición, Mi agencia o Mi federación"],
   "Only a trial can be extended.": ["Solo se puede ampliar una prueba.", "Només es pot allargar una prova."],
+  "Trial active": ["Prueba activa", "Prova activa"],
+  "Trial cancelled": ["Prueba cancelada", "Prova cancel·lada"],
+  "Free trial": ["Prueba gratuita", "Prova gratuïta"],
+  "Cancelled on": ["Cancelada el", "Cancel·lada el"],
 });
