@@ -407,6 +407,16 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString(window.SCP_LO
     window.SCP_swipe(box, tabs);
   });
 
+  // the same with dots under the cards: the home's How it works, What you get, testimonials, teams and blog posts
+  $$(".live-steps, .tools, .quote-grid, .team-tiles, .home-blog .blog-grid").forEach((box) => {
+    box.classList.add("swipe-row");
+    const dots = document.createElement("div");
+    dots.className = "swipe-dots";
+    dots.innerHTML = [...box.children].map((_, i) => `<button type="button" aria-label="${i + 1}"></button>`).join("");
+    box.after(dots);
+    window.SCP_swipe(box, dots);
+  });
+
   $$("[data-accordion]").forEach((acc) => {
     const items = $$(".acc-item", acc);
     items.forEach((item) => {

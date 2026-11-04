@@ -9311,7 +9311,7 @@ html.nav-lock .ck { visibility: hidden; }   /* the cookie notice waits while the
 .site-nav.is-open .mm-tab.is-open .mm-btn-tab { color: var(--gold) !important; }
 .site-nav.is-open .mm-panel { margin: 0 0 16px; }
 /* My Club: gold, no moving rim here */
-.site-nav.is-open .mm-club .mm-btn-tab { color: var(--gold) !important; }
+.site-nav.is-open .mm-club .mm-btn-tab, .site-nav.is-open .mm-club .mm-btn-tab:hover, .site-nav.is-open .mm-club .mm-btn-tab:focus-visible, .site-nav.is-open .mm-club .mm-btn-tab:active, :root[data-theme="light"] .site-nav.is-open .mm-club .mm-btn-tab:hover, :root[data-theme="light"] .site-nav.is-open .mm-club .mm-btn-tab:focus-visible { color: var(--gold) !important; background: none !important; box-shadow: none !important; outline: 0; transform: none; }
 .site-nav.is-open .mm-club .mm-btn-tab::before, .site-nav.is-open .mm-club .mm-btn-tab::after { display: none; }
 .site-nav.is-open .mm-crown { width: 19px; height: 19px; fill: var(--gold); }
 /* Pricing: the name and, at the far end, the free-trial badge (no flip here: they overlapped) */
@@ -9352,4 +9352,41 @@ html.nav-lock .ck { visibility: hidden; }   /* the cookie notice waits while the
   .swipe-tabs + .faq-blocks::-webkit-scrollbar { display: none; }
   .swipe-tabs + .faq-blocks > .faq-block { flex: 0 0 calc(100vw - 2 * var(--gutter) - 14px); min-width: 0; scroll-snap-align: center; }
   .swipe-tabs + .faq-blocks .faq-block-h { display: none; }
+
+  /* Monthly / Yearly and Users on one line; "2 months free" sits as a tag on the corner of Yearly */
+  .plan-switches { gap: 8px; }
+  .plan-switches .plan-interval { flex: 1 1 auto; position: relative; min-width: 0; height: 44px; padding: 3px; }
+  .plan-switches .plan-interval button { flex: 1 1 auto; height: 38px; min-width: 0; padding: 0 12px; font-size: 14px; }
+  .plan-switches .plan-interval em { position: absolute; top: -11px; right: -2px; margin: 0; padding: 2px 7px; font-size: 10px; line-height: 1.3; white-space: nowrap; z-index: 1; }
+  .plan-switches .plan-seats { flex: none; height: 44px; gap: 0; padding: 0 2px 0 10px; }
+  .plan-switches .plan-seats span { margin-right: 2px; font-size: 12.5px; }
+  .plan-switches .plan-seats button { width: 28px; }
+  .plan-switches .plan-seats input { width: 22px; }
+  /* FAQ: Contact us and Book a demo on one line */
+  .faq-intro .actions { flex-wrap: nowrap; gap: 8px; }
+  .faq-intro .actions .btn { flex: 1 1 auto; min-width: 0; padding-inline: 10px; white-space: nowrap; font-size: 14px; }
+
+  /* The home's How it works, What you get, Testimonials, For teams and blog posts: cards side by side, the next one peeking, dots under them */
+  .swipe-row.swipe-row { display: flex; justify-content: flex-start; align-items: stretch; gap: 12px; width: 100vw; max-width: none; margin-left: calc(50% - 50vw); margin-right: 0; padding: 4px 8vw 10px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .swipe-row::-webkit-scrollbar { display: none; }
+  .swipe-row.swipe-row > * { flex: 0 0 84vw; min-width: 0; scroll-snap-align: center; }
+  .swipe-dots { display: flex; justify-content: center; gap: 2px; margin-top: 8px; }
+  .swipe-dots button { display: grid; place-items: center; width: 24px; height: 24px; padding: 0; border: 0; background: none; cursor: pointer; }
+  .swipe-dots button::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: rgba(var(--fg), 0.25); transition: background 0.2s, transform 0.2s; }
+  .swipe-dots button[aria-selected="true"]::before { background: var(--gold); transform: scale(1.3); }
+
+  /* the hero's badge never wider than the screen */
+  .trust-badge { max-width: 100%; }
+  .trust-badge p { width: auto; flex: 1 1 0; min-width: 0; }
+}
+.swipe-dots { display: none; }
+@media (max-width: 760px) { .swipe-dots { display: flex; } }
+/* How it works on phones: all three steps are cards, not only the one the demo is on */
+@media (max-width: 760px) {
+  .live-steps.swipe-row > li { opacity: 1; border: 1px solid rgba(var(--fg), 0.14); border-radius: 18px; background: var(--surface); }
+}
+/* the narrowest phones: the Users stepper without its word, so it still fits beside Monthly / Yearly */
+@media (max-width: 350px) {
+  .plan-switches .plan-seats span { display: none; }
+  .plan-switches .plan-interval button { padding: 0 9px; font-size: 13px; }
 }
