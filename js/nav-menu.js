@@ -61,6 +61,7 @@
   const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
   // icons (outline, Lucide shapes) — own copy so every page has them, even without js/icons.js
   const ICONS = {
+    home: '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9"/><path d="M9.5 21v-6.5h5V21"/>',
     "layout-grid": '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>',
     "calendar-days": '<path d="M8 2v4M16 2v4"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/>',
     sparkles: '<path d="M9.94 15.5a2 2 0 0 0-1.44-1.44l-6.13-1.58a.5.5 0 0 1 0-.96L8.5 9.94A2 2 0 0 0 9.94 8.5l1.58-6.14a.5.5 0 0 1 .96 0l1.58 6.14a2 2 0 0 0 1.44 1.44l6.14 1.58a.5.5 0 0 1 0 .96l-6.14 1.58a2 2 0 0 0-1.44 1.44l-1.58 6.13a.5.5 0 0 1-.96 0z"/>',
@@ -213,25 +214,25 @@
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && nav.classList.contains("mm-open")) { const open = tabs.find((t) => t.classList.contains("is-open")); set(null, false); open?.querySelector(".mm-btn-tab").focus(); } });
   links.addEventListener("click", (e) => { if (e.target.closest(".mm-panel a, a.mm-btn-tab")) set(null, false); });
 
-  // Phones: a tab bar at the bottom — Library · Plan · My Club (raised, gold, crown) · Boards · Menu (opens the full menu)
+  // Phones: a tab bar at the bottom — Home · Library · My Club (raised, gold, crown) · Plan · Boards; the full menu opens from the button at the top right
   const here = location.pathname.split("/").pop() || "index.html";
   const TABS = [
+    { label: "Home", href: "index.html", ic: "home" },
     { label: "Library", href: "content-library.html", ic: "layout-grid" },
-    { label: "Plan", href: "content-plan.html", ic: "calendar-days" },
     { label: "My Club", href: "my-club.html", club: true },
+    { label: "Plan", href: "content-plan.html", ic: "calendar-days" },
     { label: "Boards", href: "saved.html", ic: "bookmark" },
   ];
   const bar = document.createElement("nav");
   bar.className = "tabbar";
   bar.setAttribute("aria-label", "Shortcuts");
   bar.innerHTML = TABS.map((t) => `<a class="tb-item${t.club ? " tb-club" : ""}" href="${t.href}"${here === t.href ? ' aria-current="page"' : ""}>
-      ${t.club ? `<span class="tb-crown"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 7l5 4 5-7 5 7 5-4-2 12H4z"/></svg></span>` : icon(t.ic)}<span>${esc(t.label)}</span></a>`).join("")
-    + `<button class="tb-item" type="button" aria-expanded="false" data-tb-menu><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Menu</span></button>`;
+      ${t.club ? `<span class="tb-crown"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 7l5 4 5-7 5 7 5-4-2 12H4z"/></svg></span>` : icon(t.ic)}<span>${esc(t.label)}</span></a>`).join("");
   document.body.append(bar);
   document.body.classList.add("has-tabbar");
-  const mb = bar.querySelector("[data-tb-menu]");
-  mb.addEventListener("click", () => { nav.querySelector("[data-nav-toggle]")?.click(); if (nav.classList.contains("is-open")) scrollTo({ top: 0 }); });
-  new MutationObserver(() => mb.setAttribute("aria-expanded", String(nav.classList.contains("is-open")))).observe(nav, { attributes: true, attributeFilter: ["class"] });
+  // the open menu covers the screen: the page stays still underneath, and Esc closes it
+  new MutationObserver(() => document.documentElement.classList.toggle("nav-lock", nav.classList.contains("is-open"))).observe(nav, { attributes: true, attributeFilter: ["class"] });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && nav.classList.contains("is-open") && !nav.classList.contains("mm-open")) nav.querySelector("[data-nav-toggle]")?.click(); });
 
   // a member whose space is a competition, an agency or a federation (clubs.kind, Admin → My Club): "My competition"…
   (async () => {

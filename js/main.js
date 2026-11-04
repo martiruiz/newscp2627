@@ -380,6 +380,33 @@ window.SCP_EUR = (v) => `€${Math.round(Number(v)).toLocaleString(window.SCP_LO
   });
 
   // Accordions (one open at a time)
+  // Phones: sections that pass sideways (plans, FAQ) with tabs on top that follow the swipe and jump to each part
+  window.SCP_swipe = (box, tabs) => {
+    const btns = () => [...tabs.querySelectorAll("button")];
+    const mark = () => {
+      const r = box.getBoundingClientRect(), mid = r.left + r.width / 2;
+      let at = 0, near = Infinity;
+      [...box.children].forEach((c, i) => { const x = c.getBoundingClientRect(), d = Math.abs(x.left + x.width / 2 - mid); if (d < near) { near = d; at = i; } });
+      btns().forEach((b, i) => b.setAttribute("aria-selected", String(i === at)));
+    };
+    const go = (el, behavior = "smooth") => { const r = box.getBoundingClientRect(), x = el.getBoundingClientRect(); box.scrollTo({ left: box.scrollLeft + x.left - r.left - (r.width - x.width) / 2, behavior }); };
+    btns().forEach((b, i) => b.addEventListener("click", () => { const el = box.children[i]; if (el) go(el); }));
+    box._swipeMark = mark;
+    if (!box._swipeOn) { box._swipeOn = true; let raf = 0; box.addEventListener("scroll", () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => box._swipeMark()); }, { passive: true }); }
+    mark();
+    return go;
+  };
+  $$(".faq-blocks").forEach((box) => {
+    const heads = [...box.querySelectorAll(".faq-block-h")];
+    if (heads.length < 2) return;
+    const tabs = document.createElement("div");
+    tabs.className = "swipe-tabs";
+    tabs.innerHTML = heads.map(() => `<button type="button"></button>`).join("");
+    [...tabs.children].forEach((b, i) => { b.textContent = window.tx ? window.tx(heads[i].textContent) : heads[i].textContent; });
+    box.before(tabs);
+    window.SCP_swipe(box, tabs);
+  });
+
   $$("[data-accordion]").forEach((acc) => {
     const items = $$(".acc-item", acc);
     items.forEach((item) => {

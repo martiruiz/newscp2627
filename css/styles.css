@@ -8907,8 +8907,8 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
   .lf-clear { height: 34px; }
 }
 
-/* Phones: tab bar at the bottom (js/nav-menu.js) — Library · Plan · My Club (raised gold button with the crown) · Boards · Menu.
-   It replaces the menu button at the top (shown again as the close button while the menu is open) and the home dock. */
+/* Phones: tab bar at the bottom (js/nav-menu.js) — Home · Library · My Club (raised gold button with the crown) · Plan · Boards.
+   It replaces the home dock; the full menu opens from the button at the top right. */
 .tabbar { display: none; }
 @media (max-width: 760px) {
   .tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); align-items: end;
@@ -8928,8 +8928,7 @@ button.plan-save-live { cursor: pointer; } button.plan-save-live:hover { backgro
   .tb-crown svg { width: 25px; height: 25px; fill: #1a1206; stroke: none; }
   .tb-club:active .tb-crown { transform: scale(0.94); }
   .tb-club[aria-current="page"] .tb-crown { box-shadow: 0 0 0 5px var(--bg), 0 0 0 7px rgba(240, 184, 74, 0.55), 0 10px 26px -8px rgba(240, 184, 74, 0.85); }
-  /* the top menu button only closes the open menu; the dock of the home page gives way to the bar */
-  .site-nav:not(.is-open) .nav-toggle { display: none; }
+  /* the dock of the home page gives way to the bar */
   .dock { display: none !important; }
   /* bottom sheets with their own action button (Library filters) cover the bar */
   body:has(.library.sheet-open) .tabbar { display: none; }
@@ -9284,4 +9283,73 @@ body.mcb-unfolded .lib-head .my-space { display: none; }
 @media (max-width: 960px) {
   .my-space { position: relative; }
   .tour-help { position: absolute; top: 4px; right: 12px; }
+}
+
+/* ===== Phone / tablet menu: button at the top right, opens over the whole screen ===== */
+html.nav-lock, html.nav-lock body { overflow: hidden; }
+.nav-toggle { width: 44px; height: 44px; flex: none; color: var(--text); background: none; border: 0; box-shadow: none; cursor: pointer; }
+.site-nav.is-open, .site-nav.is-tight.is-open { position: fixed; inset: 0; z-index: 70; display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto 1fr auto; align-items: center; gap: 0;
+  width: auto; height: 100dvh; margin: 0; padding: 14px 20px 0; overflow-y: auto; overscroll-behavior: contain; border: 0; border-radius: 0; box-shadow: none;
+  background: radial-gradient(90% 42% at 100% 0, rgba(240, 184, 74, 0.16), transparent 70%), radial-gradient(80% 30% at 0 100%, rgba(240, 184, 74, 0.07), transparent 70%), var(--bg); animation: navOverlay 0.24s ease both; }
+@keyframes navOverlay { from { opacity: 0; } to { opacity: 1; } }
+:root[data-theme="light"] .site-nav.is-open { background: radial-gradient(90% 42% at 100% 0, rgba(240, 184, 74, 0.2), transparent 70%), var(--bg) !important; }
+:root[data-theme="light"] .site-nav.is-open .nav-links.mm { background: none !important; border: 0 !important; box-shadow: none !important; -webkit-backdrop-filter: none; backdrop-filter: none; }
+:root[data-theme="light"] .site-nav.is-open .brand img.brand-logo { filter: brightness(0); }
+.site-nav.is-open .nav-actions .nav-cta .nav-cta-ic svg { stroke: #f0b84a !important; }
+html.nav-lock .ck { visibility: hidden; }   /* the cookie notice waits while the menu is open: it would cover its buttons */
+.site-nav.is-open .nav-toggle { grid-column: 2; grid-row: 1; margin: 0; }
+.site-nav.is-open .brand { grid-column: 1; grid-row: 1; }
+.site-nav.is-open .nav-links.mm, .site-nav.is-tight.is-open .nav-links.mm { grid-column: 1 / -1; grid-row: 2; align-self: start; display: flex; flex-direction: column; gap: 0; width: 100%; margin: 22px 0 18px; padding: 0; border-radius: 0; box-shadow: none; }
+/* each option: a large line with a hairline under it, nothing boxed */
+.site-nav.is-open .mm-tab { border-bottom: 1px solid rgba(var(--fg), 0.1); animation: navItem 0.42s cubic-bezier(.2, .8, .2, 1) both; }
+.site-nav.is-open .mm-tab:nth-child(2) { animation-delay: 0.04s; } .site-nav.is-open .mm-tab:nth-child(3) { animation-delay: 0.08s; }
+.site-nav.is-open .mm-tab:nth-child(4) { animation-delay: 0.12s; } .site-nav.is-open .mm-tab:nth-child(5) { animation-delay: 0.16s; }
+@keyframes navItem { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+.site-nav.is-open .mm-btn-tab, .site-nav.is-open .mm-btn-tab:hover, .site-nav.is-open .mm-tab.is-open .mm-btn-tab, .site-nav.is-open .mm-btn-tab[aria-current="page"] { width: 100%; height: 62px; justify-content: flex-start; gap: 10px; padding: 0 2px; border: 0; border-radius: 0; background: transparent; box-shadow: none; color: var(--text) !important; font: 600 21px var(--font-display); letter-spacing: -0.02em; }
+.site-nav.is-open .mm-chev { width: 18px; height: 18px; margin-left: auto; stroke: var(--muted); }
+.site-nav.is-open .mm-tab.is-open .mm-chev { stroke: var(--gold); }
+.site-nav.is-open .mm-tab.is-open .mm-btn-tab { color: var(--gold) !important; }
+.site-nav.is-open .mm-panel { margin: 0 0 16px; }
+/* My Club: gold, no moving rim here */
+.site-nav.is-open .mm-club .mm-btn-tab { color: var(--gold) !important; }
+.site-nav.is-open .mm-club .mm-btn-tab::before, .site-nav.is-open .mm-club .mm-btn-tab::after { display: none; }
+.site-nav.is-open .mm-crown { width: 19px; height: 19px; fill: var(--gold); }
+/* Pricing: the name and, at the far end, the free-trial badge (no flip here: they overlapped) */
+.site-nav.is-open .mm-btn-tab.mm-flip { display: flex !important; animation: none; }
+.site-nav.is-open .mm-btn-tab.mm-flip > span { opacity: 1; transform: none; }
+.site-nav.is-open .mm-btn-tab.mm-flip > .mm-badge { display: inline-flex; margin-left: auto !important; }
+/* the buttons stay at the bottom, always in reach: the main action, Log in, language and day / night */
+.site-nav.is-open .nav-actions, .site-nav.is-tight.is-open .nav-actions { grid-column: 1 / -1; grid-row: 3; position: sticky; bottom: 0; z-index: 2; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; width: auto; margin: 0 -20px; padding: 14px 20px calc(14px + env(safe-area-inset-bottom));
+  background: color-mix(in srgb, var(--bg) 88%, transparent); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); box-shadow: inset 0 1px 0 rgba(var(--fg), 0.1); }
+.site-nav.is-open .nav-actions .btn { flex: 1 1 100%; justify-content: center; height: 50px; font-size: 16px; }
+.site-nav.is-open .nav-actions .nav-cta { order: -2; position: relative; height: 54px; padding: 0 54px; border-radius: 16px; background: linear-gradient(135deg, #f7d27a, #f0b84a 45%, #d99a2b) !important; color: #1a1206 !important; font-weight: 700; box-shadow: 0 16px 34px -16px rgba(240, 184, 74, 0.9); }
+.site-nav.is-open .nav-actions .nav-cta .nav-cta-ic { position: absolute; right: 9px; top: 9px; width: 36px; height: 36px; background: #1a1206 !important; color: var(--gold) !important; }
+.site-nav.is-open .nav-actions .btn-outline { order: -1; border-radius: 16px; }
+.site-nav.is-open .nav-actions .lang-switch { order: 1; height: 44px; }
+.site-nav.is-open .nav-actions .lang-switch button { height: 36px; min-width: 44px; }
+.site-nav.is-open .nav-actions .theme-toggle { order: 2; width: 44px; height: 44px; }
+@media (prefers-reduced-motion: reduce) { .site-nav.is-open, .site-nav.is-open .mm-tab { animation: none; } }
+@media (min-width: 761px) { .site-nav.is-open .nav-links.mm, .site-nav.is-open .nav-actions { max-width: 640px; } }
+/* pages whose header scrolls away (Library…): on phones the menu button stays at the top right, over the sticky filters */
+@media (max-width: 760px) {
+  .library-page .site-nav:not(.is-open) { -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .library-page .site-nav:not(.is-open) .nav-toggle { position: fixed; top: 16px; right: 16px; }
+}
+
+/* ===== Phones: sections that pass sideways (js/main.js SCP_swipe): the plans and the FAQ, with tabs on top ===== */
+.swipe-tabs { display: none; }
+@media (max-width: 760px) {
+  .swipe-tabs { display: flex; flex: 0 0 100%; gap: 4px; width: 100%; padding: 4px; border-radius: 14px; background: rgba(var(--fg), 0.05); box-shadow: inset 0 0 0 1px rgba(var(--fg), 0.1); }
+  .swipe-tabs button { flex: 1 1 0; min-width: 0; min-height: 40px; padding: 4px 6px; border: 0; border-radius: 10px; background: none; color: var(--muted); font: 600 13px/1.15 var(--font-body); cursor: pointer; transition: background 0.2s, color 0.2s; }
+  .swipe-tabs button[aria-selected="true"] { background: var(--gold-tint); color: var(--gold); box-shadow: inset 0 0 0 1px rgba(240, 184, 74, 0.5); }
+  .swipe-tabs:has(+ .faq-pane[hidden]) { display: none; }
+
+  .plans.is-v2 { display: flex; justify-content: flex-start; gap: 12px; width: 100vw; margin-left: calc(50% - 50vw); padding: 16px 8vw 26px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; align-items: stretch; }
+  .plans.is-v2::-webkit-scrollbar { display: none; }
+  .plans.is-v2 > .plan-card { flex: 0 0 84vw; min-width: 0; scroll-snap-align: center; }
+
+  .swipe-tabs + .faq-blocks:not([hidden]) { display: flex; gap: 12px; width: 100vw; margin-left: calc(50% - 50vw); margin-top: 14px; padding: 0 var(--gutter) 6px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; align-items: flex-start; }
+  .swipe-tabs + .faq-blocks::-webkit-scrollbar { display: none; }
+  .swipe-tabs + .faq-blocks > .faq-block { flex: 0 0 calc(100vw - 2 * var(--gutter) - 14px); min-width: 0; scroll-snap-align: center; }
+  .swipe-tabs + .faq-blocks .faq-block-h { display: none; }
 }

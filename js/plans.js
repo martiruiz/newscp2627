@@ -179,6 +179,7 @@
         <input type="number" inputmode="numeric" min="1" max="${MAX_SEATS}" value="${seats}" aria-label="${esc(tx("Users"))}" data-seats-in>
         <button type="button" data-seats-step="1" aria-label="${esc(tx("More users"))}">+</button>
       </div>`}
+      ${!privatePlan && plans.length > 1 ? `<div class="swipe-tabs plan-tabs">${[...plans.map((p) => esc(p.name)), tx("Enterprise")].map((n) => `<button type="button">${n}</button>`).join("")}</div>` : ""}
       ${curs.length > 1 ? `<div class="plan-interval plan-currency" role="tablist" aria-label="Currency">${curs.map((c) => `<button type="button" role="tab" aria-selected="${currency === c}" data-currency-pick="${c}">${c.toUpperCase()}</button>`).join("")}</div>` : ""}
     </div>`;
   }
@@ -252,6 +253,14 @@
       }
       const prev = b.previousElementSibling?.matches?.(".plan-switches") ? b.previousElementSibling : null;
       if (prev) prev.outerHTML = switches(plans); else b.insertAdjacentHTML("beforebegin", switches(plans));
+      // phones: the plans pass sideways; the first time it stands on the one asked for, the member's own or the recommended one
+      const tabs = b.previousElementSibling?.querySelector(".plan-tabs");
+      if (tabs && window.SCP_swipe) {
+        const go = window.SCP_swipe(b, tabs);
+        const first = !b._swipeStart; b._swipeStart = true;
+        const start = first && matchMedia("(max-width: 760px)").matches && (b.querySelector(".is-wanted") || b.querySelector(".is-current") || b.querySelector(".is-best"));
+        if (start) { go(start, "auto"); b._swipeMark(); }
+      }
     });
     if (compareBox) compareBox.innerHTML = privatePlan ? "" : compareHtml(plans);
     const legal = document.querySelector("[data-legal]");
