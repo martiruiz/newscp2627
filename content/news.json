@@ -115,29 +115,29 @@
     "faq": [],
     "image_url": "https://imgproxy.divecdn.com/0_UAuGWuODch-cKIukdQwlsn9ZNtnCMwI2C0MYRPbbU/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9saW5rZWRpbl9jcmVhdG9yX2Rhc2hib2FyZC5wbmc=.webp",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "LinkedIn añade una tabla de rendimiento de posts y nuevas métricas de guardados, envíos y red",
+      "tokens": {
+        "in": 1443,
+        "out": 719
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "LinkedIn ha explicado cómo funcionarán sus analíticas renovadas para creadores, tras la actualización más amplia de herramientas para creadores del mes pasado. Una nueva Post Performance Table enumera cada post junto con sus impresiones, visualizaciones y tiempo de reproducción, de modo que los usuarios pueden comparar contenidos sin abrir por separado las analíticas de cada post. El director de producto de contenidos de LinkedIn, Sam Corrao Clannon, detalló los cambios y añadió que la compañía observará cómo usan los creadores los datos antes de decidir nuevas mejoras.",
         "También se han ampliado varias métricas. Ahora los creadores pueden ver qué miembros concretos los han empezado a seguir a partir de un post determinado, cuántas personas guardaron un post o se lo enviaron a otra persona, y cuántas visualizaciones procedieron de contactos frente a personas ajenas a su red. LinkedIn asegura que también trabaja en nuevas opciones de monetización para creadores mientras impulsa un mayor engagement en el feed.",
         "Para los clubes, las ligas y las marcas deportivas que usan LinkedIn para el storytelling B2B, las alianzas y las voces ejecutivas, estos datos hacen que los informes sean mucho más precisos. Los guardados y los envíos revelan qué posts, como resultados de patrocinios o hitos de negocio, se comparten de verdad, mientras que las visualizaciones fuera de la red muestran qué llega a nuevas audiencias. Saber quién ha empezado a seguirte a partir de un post también puede ayudar a los equipos comerciales a detectar posibles socios atraídos por contenidos concretos."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-04T23:37:33.13669+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-11-04T23:42:41.101Z",
-      "tokens": {
-        "in": 1443,
-        "out": 719
-      }
+      "source_changed": "2026-11-04T23:37:33.13669+00:00",
+      "meta_description": ""
     }
   },
   {
