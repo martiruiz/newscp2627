@@ -30,6 +30,12 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/592/592201.jpg?v=mw2modl0"
   },
   {
+    "account": "leomessi",
+    "account_platform": "instagram",
+    "views": 10592900,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/594/594404.jpg?v=mw3arnzi"
+  },
+  {
     "account": "433",
     "account_platform": "instagram",
     "views": 10325980,
@@ -64,6 +70,12 @@
     "account_platform": "instagram",
     "views": 7616156,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/583/583974.jpg?v=mvz1k74o"
+  },
+  {
+    "account": "santosfc",
+    "account_platform": "instagram",
+    "views": 7356322,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/594/594001.jpg?v=mw3arkvo"
   },
   {
     "account": "433",
@@ -102,18 +114,6 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/577/577207.jpg?v=mvw8wkdx"
   },
   {
-    "account": "pumafootball",
-    "account_platform": "instagram",
-    "views": 4804160,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/574/574161.jpg?v=mvuuht52"
-  },
-  {
-    "account": "433",
-    "account_platform": "instagram",
-    "views": 4780367,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/569/569989.jpg?v=mvtje4af"
-  },
-  {
     "account": "houseofhighlights",
     "account_platform": "instagram",
     "views": 4754057,
@@ -144,12 +144,6 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/592/592383.jpg?v=mw2mpcxa"
   },
   {
-    "account": "genoacfc",
-    "account_platform": "instagram",
-    "views": 4074285,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/574/574336.jpg?v=mvuui2kx"
-  },
-  {
     "account": "nfl",
     "account_platform": "instagram",
     "views": 3884923,
@@ -160,6 +154,12 @@
     "account_platform": "tiktok",
     "views": 3800000,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/575/575588.jpg?v=mvw89x3v"
+  },
+  {
+    "account": "433",
+    "account_platform": "instagram",
+    "views": 3775540,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/593/593397.jpg?v=mw3anoy3"
   },
   {
     "account": "fabriziorom",

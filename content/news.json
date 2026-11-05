@@ -1,5 +1,189 @@
 [
   {
+    "id": 209,
+    "url": "https://socialgeekpro.beehiiv.com/p/instagram-va-a-por-youtube",
+    "source_name": "SocialGeek News",
+    "platform": "instagram",
+    "title": "Instagram tests Features, horizontal videos up to 90 minutes linked from Reels",
+    "paragraphs": [
+      "Instagram is trialling a format called Features that lets creators publish horizontal videos of up to 90 minutes, aimed at podcasts, interviews and entertainment shows. Reels can link straight to the full episode, and a Clips as Reels option cuts segments from a Feature into Reels. Features can surface in Explore and recommendations, and Instagram wants to bring them to TV screens.",
+      "The test is limited to a group of US creators after an earlier trial in Brazil. Monetization remains unclear: unlike YouTube, Instagram has not announced any ad revenue sharing for the format yet, and the move is widely seen as a direct challenge to YouTube's long-form dominance.",
+      "For clubs and leagues already producing podcasts, documentaries, press conferences or long interviews, this opens a second home for long-form content where their biggest audiences already scroll. Teams could cut highlight Reels from a full player interview or matchday show and drive fans to the complete episode without leaving the app. Those without long formats should start planning content that holds attention beyond 30 seconds."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-05T12:13:00+00:00",
+    "created_at": "2026-11-05T14:33:05.619476+00:00",
+    "edited_at": null,
+    "slug": "instagram-tests-features-horizontal-videos-up-to-90-minutes-linked-209",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/instagram-features-linkedin-2026-11-04.jpg",
+    "es": {
+      "title": "Instagram prueba Features, vídeos horizontales de hasta 90 minutos enlazados desde Reels",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "Instagram está probando un formato llamado Features que permite a los creadores publicar vídeos horizontales de hasta 90 minutos, pensado para pódcast, entrevistas y programas de entretenimiento. Los Reels pueden enlazar directamente al episodio completo, y una opción llamada Clips as Reels recorta segmentos de un Feature para convertirlos en Reels. Los Features pueden aparecer en Explorar y en las recomendaciones, e Instagram quiere llevarlos también a las pantallas de TV.",
+        "La prueba se limita a un grupo de creadores de EE. UU., tras una prueba anterior en Brasil. La monetización sigue sin estar clara: a diferencia de YouTube, Instagram todavía no ha anunciado ningún reparto de ingresos publicitarios para este formato, y la medida se interpreta ampliamente como un desafío directo al dominio de YouTube en el contenido de larga duración.",
+        "Para los clubes y las ligas que ya producen pódcast, documentales, ruedas de prensa o entrevistas largas, esto abre un segundo hogar para el contenido de formato largo en el lugar donde ya hace scroll su mayor audiencia. Los equipos podrían recortar Reels con los mejores momentos de una entrevista completa a un jugador o de un programa de día de partido, y llevar a los aficionados al episodio completo sin salir de la app. Quienes no tengan formatos largos deberían empezar a planificar contenido que mantenga la atención más allá de los 30 segundos."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-11-05T14:33:05.619476+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-11-05T15:30:10.106Z",
+      "tokens": {
+        "in": 1428,
+        "out": 644
+      }
+    }
+  },
+  {
+    "id": 211,
+    "url": "https://socialgeekpro.beehiiv.com/p/instagram-va-a-por-youtube#3",
+    "source_name": "SocialGeek News",
+    "platform": "youtube",
+    "title": "Study finds citing sources in YouTube descriptions boosts trust and sharing",
+    "paragraphs": [
+      "A new study shows that YouTube creators who list their sources in video descriptions earn more viewer trust and make audiences more willing to share their content. It also found that adopting newsroom habits, such as citing, adding context and correcting errors, improves how trustworthy news videos are perceived, a lesson that extends beyond journalists to brands and creators.",
+      "Sports channels publishing explainers, tactical analysis, stats breakdowns or transfer and injury updates can apply this directly. Linking official data providers, league statements or original interviews in descriptions helps clubs and athletes stand out from rumor accounts, protect credibility and potentially increase shares among fans who want reliable information."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-05T12:13:00+00:00",
+    "created_at": "2026-11-05T14:33:06.48491+00:00",
+    "edited_at": null,
+    "slug": "study-finds-citing-sources-in-youtube-descriptions-boosts-trust-and-211",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/f972c0f35f28857c-16x9.jpg",
+    "es": {
+      "title": "Un estudio revela que citar las fuentes en las descripciones de YouTube aumenta la confianza y las veces que se comparte",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "Un nuevo estudio demuestra que los creadores de YouTube que enumeran sus fuentes en las descripciones de los vídeos ganan más confianza entre los espectadores y logran que las audiencias estén más dispuestas a compartir su contenido. También concluye que adoptar hábitos propios de una redacción, como citar, aportar contexto y corregir errores, mejora la percepción de fiabilidad de los vídeos de noticias, una lección que va más allá de los periodistas y que sirve también para marcas y creadores.",
+        "Los canales deportivos que publican explicativos, análisis tácticos, desgloses de estadísticas o novedades sobre fichajes y lesiones pueden aplicarlo directamente. Enlazar en las descripciones a proveedores oficiales de datos, comunicados de las ligas o entrevistas originales ayuda a clubes y deportistas a diferenciarse de las cuentas de rumores, a proteger su credibilidad y, potencialmente, a lograr que compartan más los aficionados que buscan información fiable."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-11-05T14:33:06.48491+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-11-05T15:30:15.920Z",
+      "tokens": {
+        "in": 1297,
+        "out": 483
+      }
+    }
+  },
+  {
+    "id": 210,
+    "url": "https://socialgeekpro.beehiiv.com/p/instagram-va-a-por-youtube#2",
+    "source_name": "SocialGeek News",
+    "platform": "youtube",
+    "title": "YouTube tests lowering creator payout threshold from 100 to 20 dollars",
+    "paragraphs": [
+      "YouTube is testing a reduction of the minimum earnings creators must reach before getting paid, cutting it from 100 to 20 dollars. The change would help smaller channels that currently wait months to hit the threshold and receive any income, and is read as an effort to attract and keep emerging creators as Instagram moves into long-form video.",
+      "For sports organizations, faster payouts could encourage more niche fan creators, ex-players and grassroots channels to professionalize. That widens the pool of smaller, highly engaged creators that clubs and sponsors can partner with for targeted campaigns, such as academy content, women's teams coverage or local fan-led shows, often at lower cost than big names."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-05T12:13:00+00:00",
+    "created_at": "2026-11-05T14:33:06.074643+00:00",
+    "edited_at": null,
+    "slug": "youtube-tests-lowering-creator-payout-threshold-from-100-to-20-dollars-210",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/f9e88369fdeb6c17-16x9.jpg",
+    "es": {
+      "title": "YouTube prueba a reducir el umbral de pago para creadores de 100 a 20 dólares",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "YouTube está probando una reducción de los ingresos mínimos que los creadores deben alcanzar antes de cobrar, rebajándolos de 100 a 20 dólares. El cambio ayudaría a los canales más pequeños, que actualmente esperan meses hasta alcanzar el umbral y recibir algún ingreso, y se interpreta como un esfuerzo por atraer y retener a creadores emergentes mientras Instagram avanza hacia el vídeo de formato largo.",
+        "Para las organizaciones deportivas, unos pagos más rápidos podrían animar a más creadores de nicho, ex jugadores y canales de base a profesionalizarse. Eso amplía el grupo de creadores más pequeños y con mucho engagement con los que los clubes y los patrocinadores pueden colaborar en campañas segmentadas, como contenido de cantera, cobertura de equipos femeninos o programas locales dirigidos por aficionados, a menudo a un coste menor que el de los grandes nombres."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-11-05T14:33:06.074643+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-11-05T15:30:20.586Z",
+      "tokens": {
+        "in": 1301,
+        "out": 458
+      }
+    }
+  },
+  {
+    "id": 212,
+    "url": "https://www.socialmediatoday.com/news/snapchat-posts-modest-user-increase-in-q3/873823/",
+    "source_name": "Social Media Today",
+    "platform": "snapchat",
+    "title": "Snapchat user growth stalls in North America and Europe while Spotlight surges",
+    "paragraphs": [
+      "Snap's Q3 2026 results show Snapchat reaching 495 million daily active users, just 2 million more than the previous quarter, with zero growth in North America and Europe. Revenue still rose 14% year over year to $1.72 billion. Teen social media bans are a growing risk: in Australia, Snapchat locked or disabled more than 415,000 accounts belonging to under-16 users.",
+      "The bright spot is short-form video. Snap says the number of people posting to Spotlight grew 130% year over year and daily active viewers rose 40%, while messaging and two-way communication also climbed. Subscriptions across Snapchat+, Lens+ and Memories Storage passed 30 million, and Snap is expanding creator partnership options for brands.",
+      "For clubs and leagues, Snapchat remains a strong channel for reaching teen fans in Western markets, but audience growth there has plateaued and age restrictions may shrink it. Teams should prioritise Spotlight clips and AR Lenses over chasing reach, track youth-ban developments in their key markets, and consider testing creator collaborations to keep younger supporters engaged."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-05T00:46:32+00:00",
+    "created_at": "2026-11-05T14:33:14.081425+00:00",
+    "edited_at": null,
+    "slug": "snapchat-user-growth-stalls-in-north-america-and-europe-while-212",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/gLovkk_EkyK4zBouf2JVJsJvORTYwkndS2dnbqTGxeo/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9zbmFwY2hhdF9sb2dvMV9Od0Z6MnAzLmpwZw==.webp",
+    "es": {
+      "title": "El crecimiento de usuarios de Snapchat se estanca en Norteamérica y Europa mientras Spotlight se dispara",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "Los resultados del tercer trimestre de 2026 de Snap muestran que Snapchat alcanzó los 495 millones de usuarios activos diarios, solo 2 millones más que en el trimestre anterior, con crecimiento cero en Norteamérica y Europa. Aun así, los ingresos subieron un 14 % interanual hasta los 1.720 millones de dólares. Las prohibiciones de redes sociales para adolescentes son un riesgo creciente: en Australia, Snapchat bloqueó o desactivó más de 415.000 cuentas de usuarios menores de 16 años.",
+        "El punto brillante es el vídeo corto. Snap afirma que el número de personas que publican en Spotlight creció un 130 % interanual y que los espectadores activos diarios aumentaron un 40 %, mientras que la mensajería y la comunicación bidireccional también subieron. Las suscripciones a Snapchat+, Lens+ y Memories Storage superaron los 30 millones, y Snap está ampliando las opciones de colaboración con creadores para las marcas.",
+        "Para clubes y ligas, Snapchat sigue siendo un canal sólido para llegar a los aficionados adolescentes en los mercados occidentales, pero el crecimiento de la audiencia allí se ha estancado y las restricciones de edad podrían reducirla. Los equipos deberían priorizar los clips de Spotlight y las Lenses de AR en lugar de perseguir el reach, seguir la evolución de las prohibiciones para menores en sus mercados clave y plantearse probar colaboraciones con creadores para mantener enganchados a los seguidores más jóvenes."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-11-05T14:33:14.081425+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-11-05T15:30:26.606Z",
+      "tokens": {
+        "in": 1450,
+        "out": 691
+      }
+    }
+  },
+  {
     "id": 193,
     "url": "https://frontofficesports.com/article/high-school-athletic-directors-say-theyre-running-mini-colleges/",
     "source_name": "Front Office Sports",
@@ -564,53 +748,6 @@
     }
   },
   {
-    "id": 83,
-    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces#2",
-    "source_name": "SocialGeek News",
-    "platform": "ai",
-    "title": "CapCut announces ChatGPT plugin to edit videos through conversation",
-    "paragraphs": [
-      "At its CapCut World event in Los Angeles, CapCut, which reports more than 700 million monthly users, unveiled a ChatGPT plugin coming in the next few months. Users will be able to shape an idea in ChatGPT, let CapCut assemble a first cut, and refine it by chatting, such as extending a shot or lowering music under voiceover. Manual timeline edits are understood by the conversation too.",
-      "CapCut also introduced EditPilot on desktop for natural-language edits of complex or repetitive tasks, plus more image, video and audio generation on web and an AI Lab in the mobile app that turns photos and clips into vlogs or recaps.",
-      "For sports social teams, this could speed up matchday recaps, player highlight packages and behind-the-scenes edits, especially for smaller clubs with limited staff. The tool lowers production effort, but storytelling and editorial judgment will still separate standout club content from the rest."
-    ],
-    "relevant": true,
-    "published_at": "2026-10-29T12:12:00+00:00",
-    "created_at": "2026-10-29T12:54:20.149885+00:00",
-    "edited_at": null,
-    "slug": "capcut-announces-chatgpt-plugin-to-edit-videos-through-conversation-83",
-    "meta_title": null,
-    "meta_description": null,
-    "takeaways": [],
-    "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/d111e67e2e467a7e-16x9.jpg",
-    "es": {
-      "faq": [],
-      "model": "claude-sonnet-5-5",
-      "title": "CapCut anuncia un plugin de ChatGPT para editar vídeos a través de una conversación",
-      "tokens": {
-        "in": 1382,
-        "out": 559
-      },
-      "excerpt": "",
-      "cta_text": "",
-      "body_html": "",
-      "cta_title": "",
-      "image_alt": "",
-      "takeaways": [],
-      "meta_title": "",
-      "paragraphs": [
-        "En su evento CapCut World, celebrado en Los Ángeles, CapCut, que asegura tener más de 700 millones de usuarios mensuales, presentó un plugin de ChatGPT que llegará en los próximos meses. Los usuarios podrán dar forma a una idea en ChatGPT, dejar que CapCut monte un primer corte y perfeccionarlo chateando, por ejemplo alargando un plano o bajando la música bajo una voz en off. La conversación también entiende las ediciones manuales hechas en la línea de tiempo.",
-        "CapCut también presentó EditPilot en escritorio, para editar con lenguaje natural tareas complejas o repetitivas, además de más generación de imágenes, vídeo y audio en la web y un AI Lab en la app móvil que convierte fotos y clips en vlogs o resúmenes.",
-        "Para los equipos de redes sociales deportivas, esto podría acelerar los resúmenes del día de partido, los paquetes de mejores jugadas de los jugadores y las ediciones de behind-the-scenes, sobre todo en clubes pequeños con poco personal. La herramienta reduce el esfuerzo de producción, pero la narrativa y el criterio editorial seguirán marcando la diferencia entre el contenido destacado de un club y el resto."
-      ],
-      "image_title": "",
-      "translated_at": "2026-10-29T16:10:15.419Z",
-      "source_changed": "2026-10-29T12:54:20.149885+00:00",
-      "meta_description": ""
-    }
-  },
-  {
     "id": 82,
     "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces",
     "source_name": "SocialGeek News",
@@ -654,6 +791,53 @@
       "image_title": "",
       "translated_at": "2026-10-29T16:10:21.391Z",
       "source_changed": "2026-10-29T12:54:19.971122+00:00",
+      "meta_description": ""
+    }
+  },
+  {
+    "id": 83,
+    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces#2",
+    "source_name": "SocialGeek News",
+    "platform": "ai",
+    "title": "CapCut announces ChatGPT plugin to edit videos through conversation",
+    "paragraphs": [
+      "At its CapCut World event in Los Angeles, CapCut, which reports more than 700 million monthly users, unveiled a ChatGPT plugin coming in the next few months. Users will be able to shape an idea in ChatGPT, let CapCut assemble a first cut, and refine it by chatting, such as extending a shot or lowering music under voiceover. Manual timeline edits are understood by the conversation too.",
+      "CapCut also introduced EditPilot on desktop for natural-language edits of complex or repetitive tasks, plus more image, video and audio generation on web and an AI Lab in the mobile app that turns photos and clips into vlogs or recaps.",
+      "For sports social teams, this could speed up matchday recaps, player highlight packages and behind-the-scenes edits, especially for smaller clubs with limited staff. The tool lowers production effort, but storytelling and editorial judgment will still separate standout club content from the rest."
+    ],
+    "relevant": true,
+    "published_at": "2026-10-29T12:12:00+00:00",
+    "created_at": "2026-10-29T12:54:20.149885+00:00",
+    "edited_at": null,
+    "slug": "capcut-announces-chatgpt-plugin-to-edit-videos-through-conversation-83",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/d111e67e2e467a7e-16x9.jpg",
+    "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
+      "title": "CapCut anuncia un plugin de ChatGPT para editar vídeos a través de una conversación",
+      "tokens": {
+        "in": 1382,
+        "out": 559
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [],
+      "meta_title": "",
+      "paragraphs": [
+        "En su evento CapCut World, celebrado en Los Ángeles, CapCut, que asegura tener más de 700 millones de usuarios mensuales, presentó un plugin de ChatGPT que llegará en los próximos meses. Los usuarios podrán dar forma a una idea en ChatGPT, dejar que CapCut monte un primer corte y perfeccionarlo chateando, por ejemplo alargando un plano o bajando la música bajo una voz en off. La conversación también entiende las ediciones manuales hechas en la línea de tiempo.",
+        "CapCut también presentó EditPilot en escritorio, para editar con lenguaje natural tareas complejas o repetitivas, además de más generación de imágenes, vídeo y audio en la web y un AI Lab en la app móvil que convierte fotos y clips en vlogs o resúmenes.",
+        "Para los equipos de redes sociales deportivas, esto podría acelerar los resúmenes del día de partido, los paquetes de mejores jugadas de los jugadores y las ediciones de behind-the-scenes, sobre todo en clubes pequeños con poco personal. La herramienta reduce el esfuerzo de producción, pero la narrativa y el criterio editorial seguirán marcando la diferencia entre el contenido destacado de un club y el resto."
+      ],
+      "image_title": "",
+      "translated_at": "2026-10-29T16:10:15.419Z",
+      "source_changed": "2026-10-29T12:54:20.149885+00:00",
       "meta_description": ""
     }
   },
