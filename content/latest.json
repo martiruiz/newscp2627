@@ -1,25 +1,25 @@
 {
   "blog": {
-    "title": "Football social media content ideas: build the match preview before kick-off",
-    "href": "blog/football-social-media-content-ideas-matchweek-preview.html",
-    "image": "assets/blog/football-social-media-content-ideas-matchweek-preview.jpg",
-    "date": "2026-11-04"
+    "title": "Sports marketing tools: how to report views, likes and followers to sponsors",
+    "href": "blog/sports-marketing-tools-report-views-likes-followers-sponsors.html",
+    "image": "assets/blog/sports-marketing-tools-report-views-likes-followers-sponsors.jpg",
+    "date": "2026-11-05"
   },
   "news": {
-    "title": "Instagram tests Features, horizontal videos up to 90 minutes linked from Reels",
-    "href": "news/instagram-tests-features-horizontal-videos-up-to-90-minutes-linked-209.html",
-    "image": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/instagram-features-linkedin-2026-11-04.jpg",
-    "platform": "instagram",
+    "title": "YouTube tests lowering creator payout threshold from 100 to 20 dollars",
+    "href": "news/youtube-tests-lowering-creator-payout-threshold-from-100-to-20-dollars-210.html",
+    "image": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/f9e88369fdeb6c17-16x9.jpg",
+    "platform": "youtube",
     "date": "2026-11-05"
   },
   "es": {
     "blog": {
-      "title": "Ideas de contenido de fútbol para redes sociales: construye el avance del partido antes del pitido inicial",
-      "href": "es/blog/football-social-media-content-ideas-matchweek-preview.html"
+      "title": "Herramientas de marketing deportivo: cómo reportar visualizaciones, likes y seguidores a los patrocinadores",
+      "href": "es/blog/sports-marketing-tools-report-views-likes-followers-sponsors.html"
     },
     "news": {
-      "title": "Instagram prueba Features, vídeos horizontales de hasta 90 minutos enlazados desde Reels",
-      "href": "es/news/instagram-tests-features-horizontal-videos-up-to-90-minutes-linked-209.html"
+      "title": "YouTube prueba a reducir el umbral de pago para creadores de 100 a 20 dólares",
+      "href": "es/news/youtube-tests-lowering-creator-payout-threshold-from-100-to-20-dollars-210.html"
     }
   }
 }

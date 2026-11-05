@@ -6,7 +6,17 @@
     <atom:link href="https://sportscontentplaybook.com/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Sports social media content ideas, trends and analysis.</description>
     <language>en</language>
-    <lastBuildDate>Wed, 04 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Thu, 05 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Sports marketing tools: how to report views, likes and followers to sponsors</title>
+      <link>https://sportscontentplaybook.com/blog/sports-marketing-tools-report-views-likes-followers-sponsors.html</link>
+      <guid isPermaLink="true">https://sportscontentplaybook.com/blog/sports-marketing-tools-report-views-likes-followers-sponsors.html</guid>
+      <pubDate>Thu, 05 Nov 2026 08:00:00 GMT</pubDate>
+      <dc:creator>Martí Ruiz</dc:creator>
+      <description>One Reel got 26.2 million views, another got a third of that and three times the likes. Here is how to build a sponsor report that shows both reach and impact.</description>
+      <enclosure url="https://sportscontentplaybook.com/assets/blog/sports-marketing-tools-report-views-likes-followers-sponsors.jpg" length="67804" type="image/jpeg"/>
+      <media:content url="https://sportscontentplaybook.com/assets/blog/sports-marketing-tools-report-views-likes-followers-sponsors.jpg" medium="image" type="image/jpeg"/>
+    </item>
     <item>
       <title>Football social media content ideas: build the match preview before kick-off</title>
       <link>https://sportscontentplaybook.com/blog/football-social-media-content-ideas-matchweek-preview.html</link>
@@ -296,16 +306,6 @@
       <description>Milano Cortina 2026 delivers balanced Instagram storytelling through video, design, and milestone transitions, maintaining narrative continuity from ceremonies to Paralympics with structured, forward-looking communication.</description>
       <enclosure url="https://sportscontentplaybook.com/assets/blog/milano-cortina-2026-balanced-storytelling-on-the-road-to-the-winter-games.jpg" length="561975" type="image/jpeg"/>
       <media:content url="https://sportscontentplaybook.com/assets/blog/milano-cortina-2026-balanced-storytelling-on-the-road-to-the-winter-games.jpg" medium="image" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>Beyond the pitch: turning premium experiences into powerful content</title>
-      <link>https://sportscontentplaybook.com/blog/beyond-the-pitch-turning-premium-experiences-into-powerful-content.html</link>
-      <guid isPermaLink="true">https://sportscontentplaybook.com/blog/beyond-the-pitch-turning-premium-experiences-into-powerful-content.html</guid>
-      <pubDate>Thu, 19 Feb 2026 08:00:00 GMT</pubDate>
-      <dc:creator>Josep</dc:creator>
-      <description>The Padded Seat showcases sports hospitality as premium storytelling, proving in social media in sports that experience-driven content expands value, engagement, and strategic vision beyond match highlights.</description>
-      <enclosure url="https://sportscontentplaybook.com/assets/blog/beyond-the-pitch-turning-premium-experiences-into-powerful-content.jpg" length="355634" type="image/jpeg"/>
-      <media:content url="https://sportscontentplaybook.com/assets/blog/beyond-the-pitch-turning-premium-experiences-into-powerful-content.jpg" medium="image" type="image/jpeg"/>
     </item>
   </channel>
 </rss>
