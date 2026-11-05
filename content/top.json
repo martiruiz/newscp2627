@@ -38,12 +38,6 @@
   {
     "account": "433",
     "account_platform": "instagram",
-    "views": 10325980,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/573/573864.jpg?v=mvuufhp4"
-  },
-  {
-    "account": "433",
-    "account_platform": "instagram",
     "views": 10263030,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/573/573869.jpg?v=mvuufiqh"
   },
@@ -102,12 +96,6 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/582/582593.jpg?v=mvy84rjg"
   },
   {
-    "account": "fcbayern",
-    "account_platform": "instagram",
-    "views": 5783892,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/573/573956.jpg?v=mvuufk0c"
-  },
-  {
     "account": "isabelapagliari",
     "account_platform": "instagram",
     "views": 5223081,
@@ -162,12 +150,6 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/593/593397.jpg?v=mw3anoy3"
   },
   {
-    "account": "fabriziorom",
-    "account_platform": "instagram",
-    "views": 3757333,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/574/574820.jpg?v=mvuuhapx"
-  },
-  {
     "account": "houseofhighlights",
     "account_platform": "instagram",
     "views": 3722258,
@@ -178,5 +160,23 @@
     "account_platform": "tiktok",
     "views": 3700000,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/575/575594.jpg?v=mvw89y3x"
+  },
+  {
+    "account": "433",
+    "account_platform": "instagram",
+    "views": 3604687,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/588/588421.jpg?v=mw1amsso"
+  },
+  {
+    "account": "espn",
+    "account_platform": "tiktok",
+    "views": 3600000,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/582/582382.jpg?v=mvy82yxt"
+  },
+  {
+    "account": "premierleague",
+    "account_platform": "instagram",
+    "views": 3503401,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/583/583972.jpg?v=mvz1k6tv"
   }
 ]
