@@ -21,29 +21,29 @@
     "faq": [],
     "image_url": "https://imgproxy.divecdn.com/8LeGQDw_f9eORO-mjdU1VtnQiZoirSQnZrAdma4AOmQ/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9tdXNlX3ZvaWNlLnBuZw==.webp",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "Meta añade conversaciones de voz y avatares expresivos a sus agentes de IA Muse",
+      "tokens": {
+        "in": 1411,
+        "out": 587
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "Meta está dando a sus agentes de IA Muse la capacidad de hablar. Los usuarios pueden elegir una voz para su agente personal, hacer preguntas en voz alta y recibir respuestas habladas, con opciones de estilos personalizados como un acento neoyorquino o una voz de pirata. El avatar de Muse también reaccionará con gestos y expresiones mientras hablas, y puede mostrarse solo con voz, junto al chat o a pantalla completa.",
         "Meta presenta esta función como una forma de pensar ideas y ensayar, por ejemplo practicando una presentación o un pitch. Para los equipos sociales deportivos, eso convierte a Muse en un sparring rápido: puedes hablar sobre un plan de contenidos para el día de partido, ensayar un pitch a un patrocinador o preparar a un deportista para una rueda de prensa o una entrevista sin tener que escribir prompts detallados.",
         "Conviene mantener las expectativas bajas. Los chatbots anteriores de Meta al estilo de famosos en Messenger, primero en texto y luego con voces de actores, no lograron atraer a los usuarios y se retiraron. Los equipos deberían tratar Muse con voz como una herramienta interna de productividad que probar, y no como un canal de cara a los aficionados en torno al cual merezca la pena construir campañas por ahora."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-06T14:11:35.274775+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-11-06T15:59:09.758Z",
-      "tokens": {
-        "in": 1411,
-        "out": 587
-      }
+      "source_changed": "2026-11-06T14:11:35.274775+00:00",
+      "meta_description": ""
     }
   },
   {

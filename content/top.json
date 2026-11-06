@@ -66,12 +66,6 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/590/590758.jpg?v=mw2mgy1g"
   },
   {
-    "account": "houseofhighlights",
-    "account_platform": "instagram",
-    "views": 6655696,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/577/577019.jpg?v=mvw8ubb5"
-  },
-  {
     "account": "433",
     "account_platform": "instagram",
     "views": 6124702,
@@ -178,5 +172,11 @@
     "account_platform": "instagram",
     "views": 3363238,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/590/590766.jpg?v=mw2mgwa1"
+  },
+  {
+    "account": "wwe",
+    "account_platform": "tiktok",
+    "views": 3100000,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/575/575609.jpg?v=mvw89wv5"
   }
 ]
