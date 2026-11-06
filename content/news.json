@@ -1,5 +1,52 @@
 [
   {
+    "id": 226,
+    "url": "https://www.socialmediatoday.com/news/meta-makes-muse-agents-speak/873959/",
+    "source_name": "Social Media Today",
+    "platform": "ai",
+    "title": "Meta adds voice conversations and expressive avatars to its Muse AI agents",
+    "paragraphs": [
+      "Meta is giving its Muse AI agents the ability to speak. Users can pick a voice for their personal agent, ask questions out loud and get spoken replies, with options for custom styles such as a New York accent or a pirate voice. The Muse avatar will also react with gestures and expressions while you talk, and can be shown as voice only, alongside the chat, or full screen.",
+      "Meta pitches the feature for thinking through ideas and rehearsing, such as practicing a presentation or a pitch. For sports social teams, that makes Muse a quick sparring partner: talk through a matchday content plan, rehearse a sponsor pitch, or prep an athlete for a press conference or interview without typing detailed prompts.",
+      "Expectations should stay modest. Meta's earlier celebrity-style chatbots on Messenger, in text and later voiced by actors, failed to win users and were wound down. Teams should treat voice Muse as an internal productivity tool to test, rather than a fan-facing channel worth building campaigns around for now."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-05T23:13:30+00:00",
+    "created_at": "2026-11-06T14:11:35.274775+00:00",
+    "edited_at": null,
+    "slug": "meta-adds-voice-conversations-and-expressive-avatars-to-its-muse-ai-226",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/8LeGQDw_f9eORO-mjdU1VtnQiZoirSQnZrAdma4AOmQ/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9tdXNlX3ZvaWNlLnBuZw==.webp",
+    "es": {
+      "title": "Meta añade conversaciones de voz y avatares expresivos a sus agentes de IA Muse",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "Meta está dando a sus agentes de IA Muse la capacidad de hablar. Los usuarios pueden elegir una voz para su agente personal, hacer preguntas en voz alta y recibir respuestas habladas, con opciones de estilos personalizados como un acento neoyorquino o una voz de pirata. El avatar de Muse también reaccionará con gestos y expresiones mientras hablas, y puede mostrarse solo con voz, junto al chat o a pantalla completa.",
+        "Meta presenta esta función como una forma de pensar ideas y ensayar, por ejemplo practicando una presentación o un pitch. Para los equipos sociales deportivos, eso convierte a Muse en un sparring rápido: puedes hablar sobre un plan de contenidos para el día de partido, ensayar un pitch a un patrocinador o preparar a un deportista para una rueda de prensa o una entrevista sin tener que escribir prompts detallados.",
+        "Conviene mantener las expectativas bajas. Los chatbots anteriores de Meta al estilo de famosos en Messenger, primero en texto y luego con voces de actores, no lograron atraer a los usuarios y se retiraron. Los equipos deberían tratar Muse con voz como una herramienta interna de productividad que probar, y no como un canal de cara a los aficionados en torno al cual merezca la pena construir campañas por ahora."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-11-06T14:11:35.274775+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-11-06T15:59:09.758Z",
+      "tokens": {
+        "in": 1411,
+        "out": 587
+      }
+    }
+  },
+  {
     "id": 218,
     "url": "https://www.sponconsports.com/p/how-to-price-and-sell-playoff-content",
     "source_name": "SponCon Sports",
@@ -43,6 +90,53 @@
       "image_title": "",
       "translated_at": "2026-11-06T02:28:54.803Z",
       "source_changed": "2026-11-05T23:36:17.47594+00:00",
+      "meta_description": ""
+    }
+  },
+  {
+    "id": 209,
+    "url": "https://socialgeekpro.beehiiv.com/p/instagram-va-a-por-youtube",
+    "source_name": "SocialGeek News",
+    "platform": "instagram",
+    "title": "Instagram tests Features, horizontal videos up to 90 minutes linked from Reels",
+    "paragraphs": [
+      "Instagram is trialling a format called Features that lets creators publish horizontal videos of up to 90 minutes, aimed at podcasts, interviews and entertainment shows. Reels can link straight to the full episode, and a Clips as Reels option cuts segments from a Feature into Reels. Features can surface in Explore and recommendations, and Instagram wants to bring them to TV screens.",
+      "The test is limited to a group of US creators after an earlier trial in Brazil. Monetization remains unclear: unlike YouTube, Instagram has not announced any ad revenue sharing for the format yet, and the move is widely seen as a direct challenge to YouTube's long-form dominance.",
+      "For clubs and leagues already producing podcasts, documentaries, press conferences or long interviews, this opens a second home for long-form content where their biggest audiences already scroll. Teams could cut highlight Reels from a full player interview or matchday show and drive fans to the complete episode without leaving the app. Those without long formats should start planning content that holds attention beyond 30 seconds."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-05T12:13:00+00:00",
+    "created_at": "2026-11-05T14:33:05.619476+00:00",
+    "edited_at": null,
+    "slug": "instagram-tests-features-horizontal-videos-up-to-90-minutes-linked-209",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/instagram-features-linkedin-2026-11-04.jpg",
+    "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
+      "title": "Instagram prueba Features, vídeos horizontales de hasta 90 minutos enlazados desde Reels",
+      "tokens": {
+        "in": 1428,
+        "out": 644
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [],
+      "meta_title": "",
+      "paragraphs": [
+        "Instagram está probando un formato llamado Features que permite a los creadores publicar vídeos horizontales de hasta 90 minutos, pensado para pódcast, entrevistas y programas de entretenimiento. Los Reels pueden enlazar directamente al episodio completo, y una opción llamada Clips as Reels recorta segmentos de un Feature para convertirlos en Reels. Los Features pueden aparecer en Explorar y en las recomendaciones, e Instagram quiere llevarlos también a las pantallas de TV.",
+        "La prueba se limita a un grupo de creadores de EE. UU., tras una prueba anterior en Brasil. La monetización sigue sin estar clara: a diferencia de YouTube, Instagram todavía no ha anunciado ningún reparto de ingresos publicitarios para este formato, y la medida se interpreta ampliamente como un desafío directo al dominio de YouTube en el contenido de larga duración.",
+        "Para los clubes y las ligas que ya producen pódcast, documentales, ruedas de prensa o entrevistas largas, esto abre un segundo hogar para el contenido de formato largo en el lugar donde ya hace scroll su mayor audiencia. Los equipos podrían recortar Reels con los mejores momentos de una entrevista completa a un jugador o de un programa de día de partido, y llevar a los aficionados al episodio completo sin salir de la app. Quienes no tengan formatos largos deberían empezar a planificar contenido que mantenga la atención más allá de los 30 segundos."
+      ],
+      "image_title": "",
+      "translated_at": "2026-11-05T15:30:10.106Z",
+      "source_changed": "2026-11-05T14:33:05.619476+00:00",
       "meta_description": ""
     }
   },
@@ -133,53 +227,6 @@
       "image_title": "",
       "translated_at": "2026-11-05T15:30:20.586Z",
       "source_changed": "2026-11-05T14:33:06.074643+00:00",
-      "meta_description": ""
-    }
-  },
-  {
-    "id": 209,
-    "url": "https://socialgeekpro.beehiiv.com/p/instagram-va-a-por-youtube",
-    "source_name": "SocialGeek News",
-    "platform": "instagram",
-    "title": "Instagram tests Features, horizontal videos up to 90 minutes linked from Reels",
-    "paragraphs": [
-      "Instagram is trialling a format called Features that lets creators publish horizontal videos of up to 90 minutes, aimed at podcasts, interviews and entertainment shows. Reels can link straight to the full episode, and a Clips as Reels option cuts segments from a Feature into Reels. Features can surface in Explore and recommendations, and Instagram wants to bring them to TV screens.",
-      "The test is limited to a group of US creators after an earlier trial in Brazil. Monetization remains unclear: unlike YouTube, Instagram has not announced any ad revenue sharing for the format yet, and the move is widely seen as a direct challenge to YouTube's long-form dominance.",
-      "For clubs and leagues already producing podcasts, documentaries, press conferences or long interviews, this opens a second home for long-form content where their biggest audiences already scroll. Teams could cut highlight Reels from a full player interview or matchday show and drive fans to the complete episode without leaving the app. Those without long formats should start planning content that holds attention beyond 30 seconds."
-    ],
-    "relevant": true,
-    "published_at": "2026-11-05T12:13:00+00:00",
-    "created_at": "2026-11-05T14:33:05.619476+00:00",
-    "edited_at": null,
-    "slug": "instagram-tests-features-horizontal-videos-up-to-90-minutes-linked-209",
-    "meta_title": null,
-    "meta_description": null,
-    "takeaways": [],
-    "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/instagram-features-linkedin-2026-11-04.jpg",
-    "es": {
-      "faq": [],
-      "model": "claude-sonnet-5-5",
-      "title": "Instagram prueba Features, vídeos horizontales de hasta 90 minutos enlazados desde Reels",
-      "tokens": {
-        "in": 1428,
-        "out": 644
-      },
-      "excerpt": "",
-      "cta_text": "",
-      "body_html": "",
-      "cta_title": "",
-      "image_alt": "",
-      "takeaways": [],
-      "meta_title": "",
-      "paragraphs": [
-        "Instagram está probando un formato llamado Features que permite a los creadores publicar vídeos horizontales de hasta 90 minutos, pensado para pódcast, entrevistas y programas de entretenimiento. Los Reels pueden enlazar directamente al episodio completo, y una opción llamada Clips as Reels recorta segmentos de un Feature para convertirlos en Reels. Los Features pueden aparecer en Explorar y en las recomendaciones, e Instagram quiere llevarlos también a las pantallas de TV.",
-        "La prueba se limita a un grupo de creadores de EE. UU., tras una prueba anterior en Brasil. La monetización sigue sin estar clara: a diferencia de YouTube, Instagram todavía no ha anunciado ningún reparto de ingresos publicitarios para este formato, y la medida se interpreta ampliamente como un desafío directo al dominio de YouTube en el contenido de larga duración.",
-        "Para los clubes y las ligas que ya producen pódcast, documentales, ruedas de prensa o entrevistas largas, esto abre un segundo hogar para el contenido de formato largo en el lugar donde ya hace scroll su mayor audiencia. Los equipos podrían recortar Reels con los mejores momentos de una entrevista completa a un jugador o de un programa de día de partido, y llevar a los aficionados al episodio completo sin salir de la app. Quienes no tengan formatos largos deberían empezar a planificar contenido que mantenga la atención más allá de los 30 segundos."
-      ],
-      "image_title": "",
-      "translated_at": "2026-11-05T15:30:10.106Z",
-      "source_changed": "2026-11-05T14:33:05.619476+00:00",
       "meta_description": ""
     }
   },
