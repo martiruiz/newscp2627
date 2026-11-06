@@ -21,29 +21,29 @@
     "faq": [],
     "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/746d2a23-9b10-4d88-b0bb-c4912a3e47a3/Untitled_design__16_.png?t=1793843061",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "La postemporada de la MLB eleva el engagement por post en las redes un 51% y redefine los precios del patrocinio",
+      "tokens": {
+        "in": 1506,
+        "out": 734
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "Un análisis de SponCon Sports y Mondo Metrics sobre 57.239 posts de los 12 clubes de postemporada de la MLB reveló que las interacciones por post aumentaron un 51% y las visualizaciones por post un 26% frente a la temporada regular. Incluso tras ajustar el efecto de que los equipos trasladen más contenido a Instagram y TikTok, el engagement siguió subiendo un 32%. Facebook registró el mayor salto, con un 79% más de interacciones, mientras que los clubes de las World Series lograron de media un aumento del 168%, frente al 13% de los eliminados en la ronda de Wild Card.",
         "La conclusión para los equipos de alianzas y de redes sociales es que el inventario de playoffs merece su propio precio, pero no un recargo generalizado. El autor recomienda que cada club calcule su propio incremento de postemporada por plataforma y, a ser posible, por serie de contenido, y que actualice esas referencias cada año que se clasifique, ya que los algoritmos y el comportamiento de los aficionados cambian. Los equipos sin datos recientes de playoffs pueden usar los resultados de la MLB como referencia inicial.",
         "El momento importa tanto como el precio. En lugar de vender una vez clasificados, los equipos deberían ofrecer paquetes condicionales de postemporada antes del parón del All-Star o incluir extras ronda a ronda en los acuerdos de la temporada regular. Combinar activos que dependen de los resultados, como el contenido tras una victoria, con entregables garantizados protege los ingresos. Un pitcher de los White Sox con micrófono en 2021 muestra cómo las aprobaciones tempranas pueden dar lugar a contenido patrocinado sobresaliente."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-05T23:36:17.47594+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-11-06T02:28:54.803Z",
-      "tokens": {
-        "in": 1506,
-        "out": 734
-      }
+      "source_changed": "2026-11-05T23:36:17.47594+00:00",
+      "meta_description": ""
     }
   },
   {

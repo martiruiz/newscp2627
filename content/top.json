@@ -72,6 +72,12 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/577/577019.jpg?v=mvw8ubb5"
   },
   {
+    "account": "433",
+    "account_platform": "instagram",
+    "views": 6124702,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/593/593397.jpg?v=mw3anoy3"
+  },
+  {
     "account": "espn",
     "account_platform": "tiktok",
     "views": 5800000,
@@ -114,16 +120,16 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/584/584191.jpg?v=mvz1ndvi"
   },
   {
+    "account": "isabelapagliari",
+    "account_platform": "instagram",
+    "views": 3838541,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/593/593088.jpg?v=mw3a10tq"
+  },
+  {
     "account": "espn",
     "account_platform": "tiktok",
     "views": 3800000,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/575/575588.jpg?v=mvw89x3v"
-  },
-  {
-    "account": "433",
-    "account_platform": "instagram",
-    "views": 3775540,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/593/593397.jpg?v=mw3anoy3"
   },
   {
     "account": "houseofhighlights",
@@ -162,21 +168,15 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/588/588417.jpg?v=mw1amtjs"
   },
   {
+    "account": "fenerbahce",
+    "account_platform": "instagram",
+    "views": 3428532,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/593/593849.jpg?v=mw3ashks"
+  },
+  {
     "account": "houseofhighlights",
     "account_platform": "instagram",
     "views": 3363238,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/590/590766.jpg?v=mw2mgwa1"
-  },
-  {
-    "account": "wwe",
-    "account_platform": "tiktok",
-    "views": 3100000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/575/575609.jpg?v=mvw89wv5"
-  },
-  {
-    "account": "fenerbahce",
-    "account_platform": "instagram",
-    "views": 2975164,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/593/593849.jpg?v=mw3ashks"
   }
 ]
