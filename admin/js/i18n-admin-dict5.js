@@ -718,4 +718,6 @@ window.SCPA_DICT = Object.assign(window.SCPA_DICT || {}, {
   "Payment needs action": ["El pago requiere una acción", "El pagament requereix una acció"],
   "Access granted": ["Acceso concedido", "Accés concedit"],
   "Subscription linked": ["Suscripción vinculada", "Subscripció vinculada"],
+  "Show more": ["Ver más", "Veure'n més"],
+  "Ideas": ["Ideas", "Idees"],
 });

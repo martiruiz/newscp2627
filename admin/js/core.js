@@ -243,6 +243,11 @@
         <div class="side-prefs">${window.SCP_THEME?.button || ""}<div class="side-lang" role="group" aria-label="${esc(window.SCPA_t ? window.SCPA_t("Language") : "Language")}" data-i18n-skip>${["en", "es", "ca"].map((l) => `<button type="button" data-admin-lang="${l}" aria-pressed="${(window.SCPA_LANG || "en") === l}">${l.toUpperCase()}</button>`).join("")}</div></div>
       </div>`;
     side.querySelectorAll("[data-theme-toggle]").forEach((b) => window.SCP_THEME.paint(b));
+    // phones: the sections used most, always one tap away (the rest are in the top menu)
+    if (!$(".a-tabbar")) document.body.insertAdjacentHTML("beforeend", `<nav class="a-tabbar" aria-label="Main sections">${[["crm", "CRM"], ["memberships", "Memberships"], ["import", "Import"], ["library", "Library"], ["ideas", "Ideas"]].map(([k, l]) => {
+      const n = NAV.find((x) => x.key === k);
+      return `<a href="${n.href}"${k === pageKey ? ' aria-current="page"' : ""}>${icon(n.icon)}<span>${l}</span></a>`;
+    }).join("")}</nav>`);
     // collapse to an icon rail (remembered in this browser); "[" toggles it, "/" jumps to the section search
     const mini = (on) => {
       document.documentElement.classList.toggle("side-mini", on);
@@ -459,6 +464,7 @@
       this.selects = {};
       el.classList.add("panel", "filters");
       el.innerHTML = `
+        <button class="filters-toggle" type="button" data-f-toggle aria-expanded="false">${icon("filters")}<span>Filters</span><b data-f-count hidden></b>${icon("chevron")}</button>
         <div class="filter-grid">${CATEGORIES.map((c) => `
           <div class="filter-item" data-cat="${c.key}">
             <div class="fhead"><span>${c.label}</span><div class="mode"><button type="button" data-mode="all">ALL</button><button type="button" data-mode="any">ANY</button></div></div>
@@ -486,6 +492,8 @@
           else this.save();
         }));
       }
+      // phones: the filters stay folded behind one button (css: .filters-toggle)
+      $("[data-f-toggle]", el).addEventListener("click", (e) => e.currentTarget.setAttribute("aria-expanded", String(el.classList.toggle("is-open"))));
       const q = $("[data-q]", el), ext = $("[data-ext]", el), from = $("[data-from]", el), to = $("[data-to]", el);
       q.value = this.state.q; if (ext) ext.value = this.state.external_id; from.value = this.state.from; to.value = this.state.to;
       const typed = debounce(() => this.changed(), 350);
@@ -497,8 +505,13 @@
     }
     renderModes() {
       for (const c of CATEGORIES) $$(`[data-cat="${c.key}"] [data-mode]`, this.el).forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.mode === this.state.filters[c.key].mode)));
+      this.renderCount();
     }
-    save() { store.set(this.opts.storageKey, this.state); }
+    renderCount() {
+      const s = this.state, n = Object.values(s.filters).reduce((t, f) => t + f.ids.length, 0) + [s.q, s.external_id, s.from, s.to].filter((v) => (v || "").trim()).length;
+      const b = $("[data-f-count]", this.el); b.textContent = n; b.hidden = !n;
+    }
+    save() { store.set(this.opts.storageKey, this.state); this.renderCount(); }
     changed() { this.save(); this.opts.onChange?.(this.state); }
     clear() {
       this.state = this.empty();
@@ -903,4 +916,52 @@
   ["click", "input", "change", "keyup"].forEach((t) => document.addEventListener(t, () => requestAnimationFrame(() => document.querySelectorAll("select.cs-native").forEach(csSync)), true));
   document.addEventListener("mousedown", (e) => { if (csOpen && !csOpen.menu.contains(e.target) && !csOpen.btn.contains(e.target)) csClose(); }, true);
   addEventListener("resize", csClose); addEventListener("scroll", (e) => { if (csOpen && !csOpen.menu.contains(e.target)) csClose(); }, true);
+
+  // ---------- Phones: a table that doesn't fit reads as cards (.is-cards), each value under its column's name; one that fits stays a table ----------
+  const cardsMq = matchMedia("(max-width: 760px)");
+  function tableCards() {
+    if (!cardsMq.matches) return;
+    for (const t of document.querySelectorAll("table.data, table.au-table")) {
+      if (!t.offsetParent) continue;   // not on screen yet: it's measured when it shows
+      if (!t.classList.contains("is-cards")) {
+        if (t.scrollWidth <= (t.parentElement.clientWidth || innerWidth)) continue;
+        t.classList.add("is-cards");
+      }
+      const heads = [...t.querySelectorAll("thead th")].map((th) => th.textContent.trim());
+      for (const tr of t.querySelectorAll("tbody tr")) {
+        let col = 0, first = false;
+        for (const td of tr.cells) {
+          if (td.colSpan > 1) { td.classList.add("td-wide"); col += td.colSpan; continue; }
+          if (td.dataset.l !== heads[col]) td.dataset.l = heads[col] || "";
+          td.classList.toggle("td-nil", td.textContent.trim() === "—" && !td.querySelector("input, select, button"));
+          if (!first && !td.classList.contains("td-check") && !td.classList.contains("td-actions")) { td.classList.add("td-first"); first = true; }
+          col++;
+        }
+      }
+    }
+    // long lists show 20 at a time
+    for (const box of document.querySelectorAll("table.is-cards > tbody, .nw-list, .bl-grid, .seo-pages")) {
+      const rows = [...box.children];
+      if (box._pmFirst !== rows[0]) { box._pmFirst = rows[0]; box._pmShown = 20; }
+      rows.forEach((r, i) => r.classList.toggle("pm-hide", i >= box._pmShown));
+      const left = rows.length - box._pmShown, host = box.tagName === "TBODY" ? box.parentElement : box;
+      if (left <= 0) { box._pmBtn?.remove(); box._pmBtn = null; continue; }
+      if (!box._pmBtn) {
+        box._pmBtn = document.createElement("button");
+        box._pmBtn.type = "button"; box._pmBtn.className = "btn pm-more"; box._pmBtn.innerHTML = `<span>Show more</span> <small data-i18n-skip></small>`;
+        box._pmBtn.addEventListener("click", () => { box._pmShown += 20; tableCards(); });
+      }
+      if (host.nextElementSibling !== box._pmBtn) host.after(box._pmBtn);
+      $("small", box._pmBtn).textContent = `(${left})`;
+    }
+    // the tab bars slide sideways: the current tab stays in view
+    for (const c of document.querySelectorAll(".ms-tabs [aria-selected='true'], .mcl-tab.is-on, .bl-tab[aria-pressed='true']")) {
+      const box = c.parentElement, r = c.getBoundingClientRect(), bx = box.getBoundingClientRect();
+      if (box.scrollWidth > box.clientWidth && (r.left < bx.left || r.right > bx.right)) box.scrollLeft += r.left - bx.left - (bx.width - r.width) / 2;
+    }
+  }
+  let cardsQueued = false;
+  const queueCards = () => { if (cardsQueued) return; cardsQueued = true; setTimeout(() => { cardsQueued = false; tableCards(); }, 30); };
+  new MutationObserver(queueCards).observe(document.documentElement, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ["hidden", "open", "aria-selected", "aria-pressed"] });
+  cardsMq.addEventListener("change", queueCards);
 })();
