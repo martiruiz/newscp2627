@@ -1,0 +1,50 @@
+{
+ "label": "Nov 2026",
+ "items": [
+  {
+   "img": "xvideo",
+   "brand": "x",
+   "platform": "X",
+   "title": "X pays selected creators for <span class='g'>15 vertical videos</span>.",
+   "para": "Video Kickstart is invite-only: 15 original clips under three minutes on 15 separate days. Clips first shared elsewhere count.",
+   "tip": "Your <span class='g'>Reels and TikToks</span> can double as native X video. Reuse owned clips and test it with a small series.",
+   "date": "1 Nov"
+  },
+  {
+   "img": "linkedin",
+   "brand": "linkedin",
+   "platform": "LinkedIn",
+   "title": "LinkedIn adds <span class='g'>saves and sends</span> to post analytics.",
+   "para": "Creators can now see how many people saved a post or sent it to someone else.",
+   "tip": "For sponsor and B2B content, track <span class='g'>saves and sends</span> as a sign that a post was useful, not just seen.",
+   "date": "3 Nov"
+  },
+  {
+   "img": "metaassistant",
+   "brand": "meta",
+   "platform": "Meta",
+   "title": "Meta's creator assistant now flags <span class='g'>trends</span> and drafts replies.",
+   "para": "It also turns an idea into a storyboard, reviews drafts and now works on the web through Creator Dashboard.",
+   "tip": "Use it for <span class='g'>planning and first drafts</span>, then keep a human check on every reply that goes out in your club's voice.",
+   "date": "2 Nov"
+  },
+  {
+   "img": "threads",
+   "brand": "threads",
+   "platform": "Threads",
+   "title": "Threads tests <span class='g'>Friends</span>, a private list of up to 50.",
+   "para": "Posts are visible only to the list, similar to Close Friends on Instagram. It is a limited test.",
+   "tip": "Watch it for <span class='g'>athlete and staff</span> accounts that want a closer circle. Set club guidelines before players use it.",
+   "date": "29 Oct"
+  },
+  {
+   "img": "tiktokbrand",
+   "brand": "tiktok",
+   "platform": "TikTok",
+   "title": "TikTok opens a <span class='g'>brand safety</span> hub for marketers.",
+   "para": "It gathers a Brand Protection Playbook, AI safety guidance and tools to report copyright and trademark infringement.",
+   "tip": "Review it before <span class='g'>sponsor activations</span> and use the reporting tools against fake or infringing club content.",
+   "date": "2 Nov"
+  }
+ ]
+}
