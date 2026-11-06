@@ -32,7 +32,7 @@
     <div class="head-actions"><a class="btn" href="leads.html">${icon("external")}Leads &amp; Demos</a><button class="btn btn-primary" type="button" data-add>${icon("plus")}Add client</button></div></div>
     <section class="panel crm-today" data-today></section>
     <div class="aud-kpis" data-kpis></div>${filters}
-    <section class="panel ld-crm"><header class="aud-h aud-h-lg"><h2>Pipeline</h2>${info("Every lead as a card in its commercial stage. Drag a card to another column to change its status; click a card for every answer, the demo and notes. The filters above apply here too.")}<span class="spacer"></span><b class="aud-count" data-crm-count></b></header><div class="crm-board" data-board></div></section>
+    <section class="panel ld-crm"><header class="aud-h aud-h-lg"><h2>Pipeline</h2>${info("Every lead as a card in its commercial stage. Drag a card to another column to change its status; click a card for every answer, the demo and notes. The filters above apply here too.")}<span class="spacer"></span><b class="aud-count" data-crm-count></b></header><nav class="crm-stages" data-stages></nav><div class="crm-board" data-board></div></section>
     <section class="panel crm-report" data-report></section>`
   : `<div class="page-head"><div><h1>Leads &amp; Demos</h1><p data-sub>Loading…</p></div>
     <div class="head-actions"><a class="btn" href="crm.html">${icon("columns")}Open the CRM</a><button class="btn" type="button" data-rules>${icon("edit")}Recommendation rules</button>
@@ -90,6 +90,16 @@
           <div class="crm-meta">${trialPill(l)}${l.status === "trial" && !l.seen_at ? `<span class="ld-pill is-gold">● New trial</span>` : ""}${l.status === "trial" && l.trial_end ? `<span class="crm-tag">Trial ends ${fmt(l.trial_end)}</span>` : ""}${l.meeting_at ? `<span class="ld-pill is-gold">Demo · ${fmt(l.meeting_at)}</span>` : ""}${l.phone ? `<span class="crm-tag">Phone</span>` : ""}${(l.message || "").trim() ? `<span class="crm-tag">Message</span>` : ""}<span class="crm-when">${fmt(l.updated_at)}</span></div>${usage(l)}${nextAction(l)}
         </article>`).join("") || `<p class="crm-empty">—</p>`}</div></div>`;
     }).join("");
+    // phones: one chip per stage above the board; tap one to slide to it
+    $("[data-stages]").innerHTML = Object.entries(STATUS).map(([k, label]) => `<button type="button" class="crm-stage ${COLS[k]}" data-stage="${k}"><span class="crm-dot"></span>${label}<b>${num(leads.filter((l) => (l.status || "new") === k).length)}</b></button>`).join("");
+    stageOn();
+  }
+  function stageOn() {
+    const b = $("[data-board]"), left = b.getBoundingClientRect().left, gap = (c) => Math.abs(c.getBoundingClientRect().left - left);
+    const cols = [...b.children], i = cols.reduce((best, c, j) => gap(c) < gap(cols[best]) ? j : best, 0);
+    $$("[data-stage]").forEach((s, j) => s.classList.toggle("is-on", j === i));
+    const on = $$("[data-stage]")[i], nav = $("[data-stages]");
+    if (on && nav.scrollWidth > nav.clientWidth) nav.scrollTo({ left: nav.scrollLeft + on.getBoundingClientRect().left - nav.getBoundingClientRect().left - (nav.clientWidth - on.offsetWidth) / 2, behavior: "smooth" });
   }
   async function setStatus(id, status) {
     const l = leads.find((x) => x.id === id);
@@ -103,6 +113,13 @@
     if (status === "lost" && l && !l.lost_reason) openLead(id);
     return true;
   }
+  let stageT = null;
+  $("[data-board]")?.addEventListener("scroll", () => { clearTimeout(stageT); stageT = setTimeout(stageOn, 80); });
+  main.addEventListener("click", (e) => {
+    const s = e.target.closest?.("[data-stage]"); if (!s) return;
+    const b = $("[data-board]"), col = $(`[data-col="${s.dataset.stage}"]`);
+    b.scrollTo({ left: b.scrollLeft + col.getBoundingClientRect().left - b.getBoundingClientRect().left - 14, behavior: "smooth" });
+  });
   main.addEventListener("dragstart", (e) => { const c = e.target.closest?.("[data-card]"); if (c) { e.dataTransfer.setData("text/plain", c.dataset.card); c.classList.add("is-drag"); } });
   main.addEventListener("dragend", (e) => { e.target.closest?.("[data-card]")?.classList.remove("is-drag"); $$(".crm-col.is-over").forEach((x) => x.classList.remove("is-over")); });
   main.addEventListener("dragover", (e) => { const col = e.target.closest?.("[data-col]"); if (!col) return; e.preventDefault(); $$(".crm-col.is-over").forEach((x) => x !== col && x.classList.remove("is-over")); col.classList.add("is-over"); });
