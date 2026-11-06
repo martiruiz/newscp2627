@@ -1,47 +1,49 @@
 [
   {
-    "id": 210,
-    "url": "https://socialgeekpro.beehiiv.com/p/instagram-va-a-por-youtube#2",
-    "source_name": "SocialGeek News",
-    "platform": "youtube",
-    "title": "YouTube tests lowering creator payout threshold from 100 to 20 dollars",
+    "id": 218,
+    "url": "https://www.sponconsports.com/p/how-to-price-and-sell-playoff-content",
+    "source_name": "SponCon Sports",
+    "platform": "other",
+    "title": "MLB postseason lifts social engagement per post by 51%, reshaping sponsorship pricing",
     "paragraphs": [
-      "YouTube is testing a reduction of the minimum earnings creators must reach before getting paid, cutting it from 100 to 20 dollars. The change would help smaller channels that currently wait months to hit the threshold and receive any income, and is read as an effort to attract and keep emerging creators as Instagram moves into long-form video.",
-      "For sports organizations, faster payouts could encourage more niche fan creators, ex-players and grassroots channels to professionalize. That widens the pool of smaller, highly engaged creators that clubs and sponsors can partner with for targeted campaigns, such as academy content, women's teams coverage or local fan-led shows, often at lower cost than big names."
+      "An analysis by SponCon Sports and Mondo Metrics of 57,239 posts from all 12 MLB postseason clubs found engagements per post rose 51% and views per post 26% versus the regular season. Even after adjusting for teams shifting more content to Instagram and TikTok, engagement still climbed 32%. Facebook showed the largest jump, with engagements up 79%, while World Series clubs averaged a 168% lift compared with 13% for Wild Card exits.",
+      "The takeaway for partnership and social teams is that playoff inventory deserves its own pricing, but not a blanket markup. The author recommends each club calculate its own postseason bump by platform and, ideally, by content series, then refresh those benchmarks every year it qualifies, since algorithms and fan behavior shift. Teams without recent playoff data can use the MLB findings as a starting reference.",
+      "Timing matters as much as price. Rather than selling after clinching, teams should pitch conditional postseason packages by the All-Star break or build round-by-round kickers into regular-season deals. Pairing results-dependent assets, such as post-win content, with guaranteed deliverables protects revenue. A mic'd-up White Sox pitcher in 2021 shows how early approvals can unlock standout sponsored content."
     ],
     "relevant": true,
-    "published_at": "2026-11-05T12:13:00+00:00",
-    "created_at": "2026-11-05T14:33:06.074643+00:00",
+    "published_at": "2026-11-05T15:00:00+00:00",
+    "created_at": "2026-11-05T23:36:17.47594+00:00",
     "edited_at": null,
-    "slug": "youtube-tests-lowering-creator-payout-threshold-from-100-to-20-dollars-210",
+    "slug": "mlb-postseason-lifts-social-engagement-per-post-by-51-reshaping-218",
     "meta_title": null,
     "meta_description": null,
     "takeaways": [],
     "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/f9e88369fdeb6c17-16x9.jpg",
+    "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/746d2a23-9b10-4d88-b0bb-c4912a3e47a3/Untitled_design__16_.png?t=1793843061",
     "es": {
-      "faq": [],
-      "model": "claude-sonnet-5-5",
-      "title": "YouTube prueba a reducir el umbral de pago para creadores de 100 a 20 dólares",
-      "tokens": {
-        "in": 1301,
-        "out": 458
-      },
+      "title": "La postemporada de la MLB eleva el engagement por post en las redes un 51% y redefine los precios del patrocinio",
       "excerpt": "",
-      "cta_text": "",
       "body_html": "",
-      "cta_title": "",
-      "image_alt": "",
-      "takeaways": [],
       "meta_title": "",
-      "paragraphs": [
-        "YouTube está probando una reducción de los ingresos mínimos que los creadores deben alcanzar antes de cobrar, rebajándolos de 100 a 20 dólares. El cambio ayudaría a los canales más pequeños, que actualmente esperan meses hasta alcanzar el umbral y recibir algún ingreso, y se interpreta como un esfuerzo por atraer y retener a creadores emergentes mientras Instagram avanza hacia el vídeo de formato largo.",
-        "Para las organizaciones deportivas, unos pagos más rápidos podrían animar a más creadores de nicho, ex jugadores y canales de base a profesionalizarse. Eso amplía el grupo de creadores más pequeños y con mucho engagement con los que los clubes y los patrocinadores pueden colaborar en campañas segmentadas, como contenido de cantera, cobertura de equipos femeninos o programas locales dirigidos por aficionados, a menudo a un coste menor que el de los grandes nombres."
-      ],
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
       "image_title": "",
-      "translated_at": "2026-11-05T15:30:20.586Z",
-      "source_changed": "2026-11-05T14:33:06.074643+00:00",
-      "meta_description": ""
+      "paragraphs": [
+        "Un análisis de SponCon Sports y Mondo Metrics sobre 57.239 posts de los 12 clubes de postemporada de la MLB reveló que las interacciones por post aumentaron un 51% y las visualizaciones por post un 26% frente a la temporada regular. Incluso tras ajustar el efecto de que los equipos trasladen más contenido a Instagram y TikTok, el engagement siguió subiendo un 32%. Facebook registró el mayor salto, con un 79% más de interacciones, mientras que los clubes de las World Series lograron de media un aumento del 168%, frente al 13% de los eliminados en la ronda de Wild Card.",
+        "La conclusión para los equipos de alianzas y de redes sociales es que el inventario de playoffs merece su propio precio, pero no un recargo generalizado. El autor recomienda que cada club calcule su propio incremento de postemporada por plataforma y, a ser posible, por serie de contenido, y que actualice esas referencias cada año que se clasifique, ya que los algoritmos y el comportamiento de los aficionados cambian. Los equipos sin datos recientes de playoffs pueden usar los resultados de la MLB como referencia inicial.",
+        "El momento importa tanto como el precio. En lugar de vender una vez clasificados, los equipos deberían ofrecer paquetes condicionales de postemporada antes del parón del All-Star o incluir extras ronda a ronda en los acuerdos de la temporada regular. Combinar activos que dependen de los resultados, como el contenido tras una victoria, con entregables garantizados protege los ingresos. Un pitcher de los White Sox con micrófono en 2021 muestra cómo las aprobaciones tempranas pueden dar lugar a contenido patrocinado sobresaliente."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-11-05T23:36:17.47594+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-11-06T02:28:54.803Z",
+      "tokens": {
+        "in": 1506,
+        "out": 734
+      }
     }
   },
   {
@@ -86,6 +88,51 @@
       "image_title": "",
       "translated_at": "2026-11-05T15:30:15.920Z",
       "source_changed": "2026-11-05T14:33:06.48491+00:00",
+      "meta_description": ""
+    }
+  },
+  {
+    "id": 210,
+    "url": "https://socialgeekpro.beehiiv.com/p/instagram-va-a-por-youtube#2",
+    "source_name": "SocialGeek News",
+    "platform": "youtube",
+    "title": "YouTube tests lowering creator payout threshold from 100 to 20 dollars",
+    "paragraphs": [
+      "YouTube is testing a reduction of the minimum earnings creators must reach before getting paid, cutting it from 100 to 20 dollars. The change would help smaller channels that currently wait months to hit the threshold and receive any income, and is read as an effort to attract and keep emerging creators as Instagram moves into long-form video.",
+      "For sports organizations, faster payouts could encourage more niche fan creators, ex-players and grassroots channels to professionalize. That widens the pool of smaller, highly engaged creators that clubs and sponsors can partner with for targeted campaigns, such as academy content, women's teams coverage or local fan-led shows, often at lower cost than big names."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-05T12:13:00+00:00",
+    "created_at": "2026-11-05T14:33:06.074643+00:00",
+    "edited_at": null,
+    "slug": "youtube-tests-lowering-creator-payout-threshold-from-100-to-20-dollars-210",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/f9e88369fdeb6c17-16x9.jpg",
+    "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
+      "title": "YouTube prueba a reducir el umbral de pago para creadores de 100 a 20 dólares",
+      "tokens": {
+        "in": 1301,
+        "out": 458
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [],
+      "meta_title": "",
+      "paragraphs": [
+        "YouTube está probando una reducción de los ingresos mínimos que los creadores deben alcanzar antes de cobrar, rebajándolos de 100 a 20 dólares. El cambio ayudaría a los canales más pequeños, que actualmente esperan meses hasta alcanzar el umbral y recibir algún ingreso, y se interpreta como un esfuerzo por atraer y retener a creadores emergentes mientras Instagram avanza hacia el vídeo de formato largo.",
+        "Para las organizaciones deportivas, unos pagos más rápidos podrían animar a más creadores de nicho, ex jugadores y canales de base a profesionalizarse. Eso amplía el grupo de creadores más pequeños y con mucho engagement con los que los clubes y los patrocinadores pueden colaborar en campañas segmentadas, como contenido de cantera, cobertura de equipos femeninos o programas locales dirigidos por aficionados, a menudo a un coste menor que el de los grandes nombres."
+      ],
+      "image_title": "",
+      "translated_at": "2026-11-05T15:30:20.586Z",
+      "source_changed": "2026-11-05T14:33:06.074643+00:00",
       "meta_description": ""
     }
   },
@@ -701,53 +748,6 @@
     }
   },
   {
-    "id": 82,
-    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces",
-    "source_name": "SocialGeek News",
-    "platform": "facebook",
-    "title": "Facebook tests charging Pages to post links beyond a small monthly quota",
-    "paragraphs": [
-      "Facebook is testing a cap on how many link posts a Page can publish. Some Pages are now limited to two link posts per month, after which a prompt invites them to subscribe through Meta One: $50 a month for eight links, $150 for 20, or $500 for unlimited. Links to compatible affiliates, Creator Storefront and Meta products remain unrestricted. Meta calls it a test, though it has reportedly reached nonprofit and library Pages that were meant to be exempt.",
-      "For clubs and leagues that push fans from Facebook to ticketing, shop or news pages, this signals that outbound traffic is getting more expensive. Social teams should audit how much web traffic Facebook really drives and reserve link posts for high-value moments like ticket drops or kit launches.",
-      "The bigger lesson is to invest in owned channels such as newsletters, apps and membership communities. Native formats like video, photo galleries and in-feed match updates can keep Facebook audiences engaged without relying on links."
-    ],
-    "relevant": true,
-    "published_at": "2026-10-29T12:12:00+00:00",
-    "created_at": "2026-10-29T12:54:19.971122+00:00",
-    "edited_at": null,
-    "slug": "facebook-tests-charging-pages-to-post-links-beyond-a-small-monthly-82",
-    "meta_title": null,
-    "meta_description": null,
-    "takeaways": [],
-    "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/linkedin-meta-links-16x9.jpg",
-    "es": {
-      "faq": [],
-      "model": "claude-sonnet-5-5",
-      "title": "Facebook prueba a cobrar a las Páginas por publicar enlaces más allá de una pequeña cuota mensual",
-      "tokens": {
-        "in": 1400,
-        "out": 620
-      },
-      "excerpt": "",
-      "cta_text": "",
-      "body_html": "",
-      "cta_title": "",
-      "image_alt": "",
-      "takeaways": [],
-      "meta_title": "",
-      "paragraphs": [
-        "Facebook está probando un límite al número de publicaciones con enlace que puede hacer una Página. Algunas Páginas ya están limitadas a dos publicaciones con enlace al mes, y después un aviso les invita a suscribirse a través de Meta One: 50 $ al mes por ocho enlaces, 150 $ por 20 o 500 $ por enlaces ilimitados. Los enlaces a afiliados compatibles, a Creator Storefront y a productos de Meta siguen sin restricciones. Meta lo presenta como una prueba, aunque según se ha informado ha llegado a Páginas de organizaciones sin ánimo de lucro y de bibliotecas que debían estar exentas.",
-        "Para los clubes y las ligas que llevan a los aficionados desde Facebook a páginas de venta de entradas, de la tienda o de noticias, esto indica que el tráfico saliente se está encareciendo. Los equipos de redes sociales deberían analizar cuánto tráfico web genera realmente Facebook y reservar las publicaciones con enlace para momentos de alto valor, como el lanzamiento de entradas o de equipaciones.",
-        "La lección de fondo es invertir en canales propios como newsletters, apps y comunidades de socios. Los formatos nativos, como el vídeo, las galerías de fotos y las actualizaciones del partido en el feed, pueden mantener el engagement de las audiencias de Facebook sin depender de los enlaces."
-      ],
-      "image_title": "",
-      "translated_at": "2026-10-29T16:10:21.391Z",
-      "source_changed": "2026-10-29T12:54:19.971122+00:00",
-      "meta_description": ""
-    }
-  },
-  {
     "id": 84,
     "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces#3",
     "source_name": "SocialGeek News",
@@ -838,6 +838,53 @@
       "image_title": "",
       "translated_at": "2026-10-29T16:10:15.419Z",
       "source_changed": "2026-10-29T12:54:20.149885+00:00",
+      "meta_description": ""
+    }
+  },
+  {
+    "id": 82,
+    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces",
+    "source_name": "SocialGeek News",
+    "platform": "facebook",
+    "title": "Facebook tests charging Pages to post links beyond a small monthly quota",
+    "paragraphs": [
+      "Facebook is testing a cap on how many link posts a Page can publish. Some Pages are now limited to two link posts per month, after which a prompt invites them to subscribe through Meta One: $50 a month for eight links, $150 for 20, or $500 for unlimited. Links to compatible affiliates, Creator Storefront and Meta products remain unrestricted. Meta calls it a test, though it has reportedly reached nonprofit and library Pages that were meant to be exempt.",
+      "For clubs and leagues that push fans from Facebook to ticketing, shop or news pages, this signals that outbound traffic is getting more expensive. Social teams should audit how much web traffic Facebook really drives and reserve link posts for high-value moments like ticket drops or kit launches.",
+      "The bigger lesson is to invest in owned channels such as newsletters, apps and membership communities. Native formats like video, photo galleries and in-feed match updates can keep Facebook audiences engaged without relying on links."
+    ],
+    "relevant": true,
+    "published_at": "2026-10-29T12:12:00+00:00",
+    "created_at": "2026-10-29T12:54:19.971122+00:00",
+    "edited_at": null,
+    "slug": "facebook-tests-charging-pages-to-post-links-beyond-a-small-monthly-82",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/linkedin-meta-links-16x9.jpg",
+    "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
+      "title": "Facebook prueba a cobrar a las Páginas por publicar enlaces más allá de una pequeña cuota mensual",
+      "tokens": {
+        "in": 1400,
+        "out": 620
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [],
+      "meta_title": "",
+      "paragraphs": [
+        "Facebook está probando un límite al número de publicaciones con enlace que puede hacer una Página. Algunas Páginas ya están limitadas a dos publicaciones con enlace al mes, y después un aviso les invita a suscribirse a través de Meta One: 50 $ al mes por ocho enlaces, 150 $ por 20 o 500 $ por enlaces ilimitados. Los enlaces a afiliados compatibles, a Creator Storefront y a productos de Meta siguen sin restricciones. Meta lo presenta como una prueba, aunque según se ha informado ha llegado a Páginas de organizaciones sin ánimo de lucro y de bibliotecas que debían estar exentas.",
+        "Para los clubes y las ligas que llevan a los aficionados desde Facebook a páginas de venta de entradas, de la tienda o de noticias, esto indica que el tráfico saliente se está encareciendo. Los equipos de redes sociales deberían analizar cuánto tráfico web genera realmente Facebook y reservar las publicaciones con enlace para momentos de alto valor, como el lanzamiento de entradas o de equipaciones.",
+        "La lección de fondo es invertir en canales propios como newsletters, apps y comunidades de socios. Los formatos nativos, como el vídeo, las galerías de fotos y las actualizaciones del partido en el feed, pueden mantener el engagement de las audiencias de Facebook sin depender de los enlaces."
+      ],
+      "image_title": "",
+      "translated_at": "2026-10-29T16:10:21.391Z",
+      "source_changed": "2026-10-29T12:54:19.971122+00:00",
       "meta_description": ""
     }
   },
