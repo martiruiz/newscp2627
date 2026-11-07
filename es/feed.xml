@@ -6,7 +6,17 @@
     <atom:link href="https://sportscontentplaybook.com/es/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Ideas, tendencias y análisis de contenido deportivo en redes sociales.</description>
     <language>es</language>
-    <lastBuildDate>Fri, 06 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Sat, 07 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Tendencias de redes sociales en el deporte: por qué Haaland ganó un Instagram Ring</title>
+      <link>https://sportscontentplaybook.com/es/blog/sports-social-media-trends-haaland-instagram-rings.html</link>
+      <guid isPermaLink="true">https://sportscontentplaybook.com/es/blog/sports-social-media-trends-haaland-instagram-rings.html</guid>
+      <pubDate>Sat, 07 Nov 2026 08:00:00 GMT</pubDate>
+      <dc:creator>Martí Ruiz</dc:creator>
+      <description>Haaland es uno de los 25 ganadores de los Instagram Rings 2026, un premio que ignora el número de seguidores. Esto es lo que premia y cinco lecciones para los clubes.</description>
+      <enclosure url="https://sportscontentplaybook.com/assets/blog/sports-social-media-trends-haaland-instagram-rings.jpg" length="62191" type="image/jpeg"/>
+      <media:content url="https://sportscontentplaybook.com/assets/blog/sports-social-media-trends-haaland-instagram-rings.jpg" medium="image" type="image/jpeg"/>
+    </item>
     <item>
       <title>Ideas de contenido deportivo para Instagram: que el jugador cuente la noticia en primera persona</title>
       <link>https://sportscontentplaybook.com/es/blog/sports-instagram-content-ideas-first-person-announcement.html</link>
@@ -296,16 +306,6 @@
       <description>Sports Content Playbook evoluciona para ayudar a equipos deportivos y creadores a descubrir ideas de contenido deportivo más rápido, combinando mayor velocidad, filtros más inteligentes e inspiración estructurada para las estrategias modernas de redes sociales deportivas.</description>
       <enclosure url="https://sportscontentplaybook.com/assets/blog/how-sports-content-playbook-is-evolving-to-help-teams-find-better-sports-content-ideas-faster.jpg" length="455948" type="image/jpeg"/>
       <media:content url="https://sportscontentplaybook.com/assets/blog/how-sports-content-playbook-is-evolving-to-help-teams-find-better-sports-content-ideas-faster.jpg" medium="image" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>El nuevo terreno de juego del vídeo vertical en el deporte</title>
-      <link>https://sportscontentplaybook.com/es/blog/the-new-playing-field-of-vertical-video-in-sport.html</link>
-      <guid isPermaLink="true">https://sportscontentplaybook.com/es/blog/the-new-playing-field-of-vertical-video-in-sport.html</guid>
-      <pubDate>Sun, 08 Mar 2026 08:00:00 GMT</pubDate>
-      <dc:creator>Josep</dc:creator>
-      <description>YouTube Shorts está transformando el descubrimiento de contenido deportivo y convierte el vídeo vertical en un motor de crecimiento, donde unos hooks potentes, el reaprovechamiento del archivo y unos playbooks de contenido deportivo estructurados transforman visualizaciones efímeras en una audiencia sostenible.</description>
-      <enclosure url="https://sportscontentplaybook.com/assets/blog/the-new-playing-field-of-vertical-video-in-sport.jpg" length="431439" type="image/jpeg"/>
-      <media:content url="https://sportscontentplaybook.com/assets/blog/the-new-playing-field-of-vertical-video-in-sport.jpg" medium="image" type="image/jpeg"/>
     </item>
   </channel>
 </rss>
