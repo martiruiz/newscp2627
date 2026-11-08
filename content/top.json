@@ -36,12 +36,6 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/588/588277.jpg?v=mw1alg4a"
   },
   {
-    "account": "premierleague",
-    "account_platform": "instagram",
-    "views": 7616156,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/583/583974.jpg?v=mvz1k74o"
-  },
-  {
     "account": "433",
     "account_platform": "instagram",
     "views": 6877067,
@@ -78,12 +72,6 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/593/593088.jpg?v=mw3a10tq"
   },
   {
-    "account": "nfl",
-    "account_platform": "instagram",
-    "views": 3884923,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/584/584191.jpg?v=mvz1ndvi"
-  },
-  {
     "account": "433",
     "account_platform": "instagram",
     "views": 3604687,
@@ -92,14 +80,14 @@
   {
     "account": "fenerbahce",
     "account_platform": "instagram",
-    "views": 3509896,
+    "views": 3530863,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/593/593849.jpg?v=mw3ashks"
   },
   {
-    "account": "premierleague",
-    "account_platform": "instagram",
-    "views": 3503401,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/583/583972.jpg?v=mvz1k6tv"
+    "account": "insaneshayne",
+    "account_platform": "tiktok",
+    "views": 3500000,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/594/594535.jpg?v=mw3aygc6"
   },
   {
     "account": "433",
@@ -114,10 +102,10 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/590/590766.jpg?v=mw2mgwa1"
   },
   {
-    "account": "insaneshayne",
-    "account_platform": "tiktok",
-    "views": 3100000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/594/594535.jpg?v=mw3aygc6"
+    "account": "houseofhighlights",
+    "account_platform": "instagram",
+    "views": 3123090,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/593/593418.jpg?v=mw3aswuf"
   },
   {
     "account": "manutd",
@@ -126,27 +114,21 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/594/594605.jpg?v=mw3azzxc"
   },
   {
-    "account": "houseofhighlights",
-    "account_platform": "instagram",
-    "views": 3051756,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/593/593418.jpg?v=mw3aswuf"
-  },
-  {
     "account": "insaneshayne1",
     "account_platform": "instagram",
-    "views": 2907705,
+    "views": 2969322,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/593/593149.jpg?v=mw3a118u"
   },
   {
     "account": "433",
     "account_platform": "instagram",
-    "views": 2813811,
+    "views": 2879363,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/593/593403.jpg?v=mw3anoxz"
   },
   {
     "account": "realmadrid",
     "account_platform": "instagram",
-    "views": 2802913,
+    "views": 2851670,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/593/593452.jpg?v=mw3asxp9"
   },
   {
@@ -178,5 +160,23 @@
     "account_platform": "instagram",
     "views": 2492774,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/585/585455.jpg?v=mw19i81k"
+  },
+  {
+    "account": "fenerbahce",
+    "account_platform": "instagram",
+    "views": 2444994,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/591/591089.jpg?v=mw2mi3g2"
+  },
+  {
+    "account": "hulett_brothers",
+    "account_platform": "instagram",
+    "views": 2402451,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/590/590294.jpg?v=mw2m8ei1"
+  },
+  {
+    "account": "realbetisbalompie",
+    "account_platform": "tiktok",
+    "views": 2400000,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/594/594559.jpg?v=mw3azzy4"
   }
 ]
