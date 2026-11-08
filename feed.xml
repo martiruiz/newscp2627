@@ -6,7 +6,17 @@
     <atom:link href="https://sportscontentplaybook.com/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Sports social media content ideas, trends and analysis.</description>
     <language>en</language>
-    <lastBuildDate>Sat, 07 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Sun, 08 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Sports Reels ideas: turn your archive into previews and anniversaries</title>
+      <link>https://sportscontentplaybook.com/blog/sports-reels-ideas-archive-previews-anniversaries.html</link>
+      <guid isPermaLink="true">https://sportscontentplaybook.com/blog/sports-reels-ideas-archive-previews-anniversaries.html</guid>
+      <pubDate>Sun, 08 Nov 2026 08:00:00 GMT</pubDate>
+      <dc:creator>Martí Ruiz</dc:creator>
+      <description>Old footage can outperform new footage when this week gives it a reason to exist. Here are eight archive formats and a simple way to plan them.</description>
+      <enclosure url="https://sportscontentplaybook.com/assets/blog/sports-reels-ideas-archive-previews-anniversaries.jpg" length="64773" type="image/jpeg"/>
+      <media:content url="https://sportscontentplaybook.com/assets/blog/sports-reels-ideas-archive-previews-anniversaries.jpg" medium="image" type="image/jpeg"/>
+    </item>
     <item>
       <title>Sports social media trends: why Haaland won an Instagram Ring</title>
       <link>https://sportscontentplaybook.com/blog/sports-social-media-trends-haaland-instagram-rings.html</link>
@@ -296,16 +306,6 @@
       <description>Sports organizations across Europe and the United States marked International Women’s Day with creative social media content, offering valuable sports content ideas and inspiration for modern sports content creators.</description>
       <enclosure url="https://sportscontentplaybook.com/assets/blog/how-sports-organizations-marked-international-womens-day-on-social-media.jpg" length="184415" type="image/jpeg"/>
       <media:content url="https://sportscontentplaybook.com/assets/blog/how-sports-organizations-marked-international-womens-day-on-social-media.jpg" medium="image" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>How Sports Content Playbook is evolving to help teams find better sports content ideas faster</title>
-      <link>https://sportscontentplaybook.com/blog/how-sports-content-playbook-is-evolving-to-help-teams-find-better-sports-content-ideas-faster.html</link>
-      <guid isPermaLink="true">https://sportscontentplaybook.com/blog/how-sports-content-playbook-is-evolving-to-help-teams-find-better-sports-content-ideas-faster.html</guid>
-      <pubDate>Thu, 12 Mar 2026 08:00:00 GMT</pubDate>
-      <dc:creator>Josep</dc:creator>
-      <description>Sports Content Playbook evolves to help sports teams and creators discover sports content ideas faster, combining improved speed, smarter filters, and structured inspiration for modern sports social media strategies.</description>
-      <enclosure url="https://sportscontentplaybook.com/assets/blog/how-sports-content-playbook-is-evolving-to-help-teams-find-better-sports-content-ideas-faster.jpg" length="455948" type="image/jpeg"/>
-      <media:content url="https://sportscontentplaybook.com/assets/blog/how-sports-content-playbook-is-evolving-to-help-teams-find-better-sports-content-ideas-faster.jpg" medium="image" type="image/jpeg"/>
     </item>
   </channel>
 </rss>
