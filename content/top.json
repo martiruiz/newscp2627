@@ -1,11 +1,5 @@
 [
   {
-    "account": "houseofhighlights",
-    "account_platform": "instagram",
-    "views": 33643929,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/584/584012.jpg?v=mvz1k6gg"
-  },
-  {
     "account": "yushi.95",
     "account_platform": "instagram",
     "views": 16268756,
@@ -56,14 +50,8 @@
   {
     "account": "433",
     "account_platform": "instagram",
-    "views": 6531016,
+    "views": 6611606,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/593/593397.jpg?v=mw3anoy3"
-  },
-  {
-    "account": "premierleague",
-    "account_platform": "instagram",
-    "views": 4742842,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/583/583979.jpg?v=mvz1k8d5"
   },
   {
     "account": "fabriziorom",
@@ -86,7 +74,7 @@
   {
     "account": "isabelapagliari",
     "account_platform": "instagram",
-    "views": 4135351,
+    "views": 4199195,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/593/593088.jpg?v=mw3a10tq"
   },
   {
@@ -168,15 +156,27 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/594/594680.jpg?v=mw3b03dr"
   },
   {
-    "account": "houseofhighlights",
-    "account_platform": "instagram",
-    "views": 2790062,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/584/584010.jpg?v=mvz1k7yx"
-  },
-  {
     "account": "steelers",
     "account_platform": "instagram",
     "views": 2754307,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/595/595128.jpg?v=mw6ioi89"
+  },
+  {
+    "account": "fcbayern",
+    "account_platform": "instagram",
+    "views": 2650333,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/590/590700.jpg?v=mw2mfvs0"
+  },
+  {
+    "account": "manutd",
+    "account_platform": "tiktok",
+    "views": 2600000,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/592/592384.jpg?v=mw2mpbrg"
+  },
+  {
+    "account": "bvb09",
+    "account_platform": "instagram",
+    "views": 2492774,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/585/585455.jpg?v=mw19i81k"
   }
 ]
