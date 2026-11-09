@@ -1,5 +1,99 @@
 [
   {
+    "id": 247,
+    "url": "https://www.sponconsports.com/p/snickers-won-the-pittsburgh-steelers-bye-week",
+    "source_name": "SponCon Sports",
+    "platform": "other",
+    "title": "Steelers and Snickers turn bye week into 8.7M-view sponsored challenge video",
+    "paragraphs": [
+      "The Pittsburgh Steelers used their bye week, which falls at the midpoint of the NFL season, to publish a sponsored video with Snickers. Players took on a popular social challenge: cutting a Snickers bar into two halves of equal weight. The post tied the idea to splitting the season in half and closed by urging fans to satisfy their halftime hunger. Across channels, the content passed 8.7 million views.",
+      "For sports social teams, the lesson is that a familiar trend becomes premium sponsor inventory when timing, wordplay and the product all line up. Calendar moments such as bye weeks, the halfway point of a season or international breaks are often quiet content windows. Building a partner concept around them can fill the gap with something fans want to watch rather than a straightforward advert.",
+      "Clubs can replicate this by mapping their schedule against trending formats and asking which partner products fit naturally inside the challenge itself. Keeping the brand integral to the mechanic, rather than just placing a logo on screen, makes the integration feel organic. A pre-planned list of these moments also gives partnership teams a stronger, more creative pitch when selling digital inventory to sponsors."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-09T15:00:00+00:00",
+    "created_at": "2026-11-09T16:07:16.336367+00:00",
+    "edited_at": null,
+    "slug": "steelers-and-snickers-turn-bye-week-into-8-7m-view-sponsored-247",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/98098f68-a56f-4996-8a5e-2dafad62f661/Untitled_design__19_.png?t=1794083015",
+    "es": {
+      "title": "Steelers y Snickers convierten la semana de descanso en un vídeo patrocinado de 8,7 M de visualizaciones",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "Los Pittsburgh Steelers aprovecharon su bye week, que cae a mitad de la temporada de la NFL, para publicar un vídeo patrocinado con Snickers. Los jugadores se sumaron a un popular reto de las redes sociales: cortar una barrita de Snickers en dos mitades de igual peso. La publicación relacionó la idea con dividir la temporada por la mitad y terminó animando a los aficionados a saciar su hambre del descanso. Entre todos los canales, el contenido superó los 8,7 millones de visualizaciones.",
+        "Para los equipos de redes sociales deportivas, la lección es que una tendencia conocida se convierte en inventario premium para patrocinadores cuando coinciden el momento, el juego de palabras y el producto. Los momentos del calendario, como las semanas de descanso, el ecuador de la temporada o los parones internacionales, suelen ser ventanas tranquilas para el contenido. Construir un concepto con un socio comercial en torno a ellos puede llenar ese hueco con algo que los aficionados quieren ver, en lugar de un anuncio convencional.",
+        "Los clubes pueden replicarlo cruzando su calendario con los formatos en tendencia y preguntándose qué productos de sus socios encajan de forma natural dentro del propio reto. Hacer que la marca sea parte esencial de la mecánica, en lugar de limitarse a poner un logotipo en pantalla, hace que la integración resulte orgánica. Contar con una lista planificada de estos momentos también ofrece a los equipos de patrocinio una propuesta más sólida y creativa a la hora de vender inventario digital a los patrocinadores."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-11-09T16:07:16.336367+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-11-09T17:33:50.032Z",
+      "tokens": {
+        "in": 1463,
+        "out": 699
+      }
+    }
+  },
+  {
+    "id": 248,
+    "url": "https://www.socialmediatoday.com/news/meta-adds-mini-app-creation-option-to-muse/874070/",
+    "source_name": "Social Media Today",
+    "platform": "ai",
+    "title": "Meta's Muse AI agent can now build custom mini apps called Spaces",
+    "paragraphs": [
+      "Meta has added Spaces to its Muse AI agent, letting users turn a request into a dedicated mini app stored in the Muse sidebar for ongoing tracking. Meta's examples include family activity logs, package trackers and product recommendations drawn from Instagram activity. Muse and Meta AI also gain Active Memory, which recalls relevant details from past chats, and Active Focus, which helps agents keep working on a task when obstacles appear.",
+      "For sports social teams, Spaces could act as lightweight dashboards built without developers: a matchday content checklist, a tracker for sponsor deliverables, or a running log of athlete content requests. Expanded memory means the assistant can retain context such as brand tone, posting cadence or campaign details across conversations, reducing repetitive briefing when drafting ideas or planning schedules.",
+      "Teams should test cautiously. Meta reports Muse has passed 10 million downloads, but Sensor Tower data shows retention drops sharply after two weeks, and the article notes wider concerns about autonomous agents overstepping security limits. Keep sensitive club data out of early experiments and treat Spaces as a productivity aid rather than a core workflow tool for now."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-08T22:39:33+00:00",
+    "created_at": "2026-11-09T16:07:25.428119+00:00",
+    "edited_at": null,
+    "slug": "meta-s-muse-ai-agent-can-now-build-custom-mini-apps-called-spaces-248",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/6BTKGiz-L7eEn0YK0uQsGK7oj5NuwoMyuHxitRWYA5Y/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9tZXRhX211c2Vfc3BhY2VzLnBuZw==.webp",
+    "es": {
+      "title": "El agente de IA Muse de Meta ya puede crear mini apps personalizadas llamadas Spaces",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "Meta ha añadido Spaces a su agente de IA Muse, que permite a los usuarios convertir una petición en una mini app propia guardada en la barra lateral de Muse para hacer un seguimiento continuo. Entre los ejemplos de Meta hay registros de actividades familiares, rastreadores de paquetes y recomendaciones de productos basadas en la actividad de Instagram. Muse y Meta AI también incorporan Active Memory, que recuerda detalles relevantes de conversaciones anteriores, y Active Focus, que ayuda a los agentes a seguir trabajando en una tarea cuando aparecen obstáculos.",
+        "Para los equipos sociales deportivos, Spaces podría funcionar como paneles de control ligeros creados sin desarrolladores: una lista de comprobación de contenido para el día de partido, un seguimiento de los entregables para patrocinadores o un registro continuo de las peticiones de contenido de los deportistas. Una memoria ampliada implica que el asistente puede conservar contexto como el tono de la marca, la frecuencia de publicación o los detalles de una campaña a lo largo de varias conversaciones, lo que reduce los briefings repetitivos al redactar ideas o planificar calendarios.",
+        "Los equipos deberían probarlo con cautela. Meta indica que Muse ha superado los 10 millones de descargas, pero los datos de Sensor Tower muestran que la retención cae bruscamente a las dos semanas, y el artículo señala preocupaciones más amplias sobre agentes autónomos que sobrepasan los límites de seguridad. Mantén los datos sensibles del club fuera de los primeros experimentos y trata Spaces como una ayuda de productividad, no como una herramienta central del flujo de trabajo, por ahora."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-11-09T16:07:25.428119+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-11-09T17:33:57.325Z",
+      "tokens": {
+        "in": 1471,
+        "out": 730
+      }
+    }
+  },
+  {
     "id": 226,
     "url": "https://www.socialmediatoday.com/news/meta-makes-muse-agents-speak/873959/",
     "source_name": "Social Media Today",
@@ -141,51 +235,6 @@
     }
   },
   {
-    "id": 211,
-    "url": "https://socialgeekpro.beehiiv.com/p/instagram-va-a-por-youtube#3",
-    "source_name": "SocialGeek News",
-    "platform": "youtube",
-    "title": "Study finds citing sources in YouTube descriptions boosts trust and sharing",
-    "paragraphs": [
-      "A new study shows that YouTube creators who list their sources in video descriptions earn more viewer trust and make audiences more willing to share their content. It also found that adopting newsroom habits, such as citing, adding context and correcting errors, improves how trustworthy news videos are perceived, a lesson that extends beyond journalists to brands and creators.",
-      "Sports channels publishing explainers, tactical analysis, stats breakdowns or transfer and injury updates can apply this directly. Linking official data providers, league statements or original interviews in descriptions helps clubs and athletes stand out from rumor accounts, protect credibility and potentially increase shares among fans who want reliable information."
-    ],
-    "relevant": true,
-    "published_at": "2026-11-05T12:13:00+00:00",
-    "created_at": "2026-11-05T14:33:06.48491+00:00",
-    "edited_at": null,
-    "slug": "study-finds-citing-sources-in-youtube-descriptions-boosts-trust-and-211",
-    "meta_title": null,
-    "meta_description": null,
-    "takeaways": [],
-    "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/f972c0f35f28857c-16x9.jpg",
-    "es": {
-      "faq": [],
-      "model": "claude-sonnet-5-5",
-      "title": "Un estudio revela que citar las fuentes en las descripciones de YouTube aumenta la confianza y las veces que se comparte",
-      "tokens": {
-        "in": 1297,
-        "out": 483
-      },
-      "excerpt": "",
-      "cta_text": "",
-      "body_html": "",
-      "cta_title": "",
-      "image_alt": "",
-      "takeaways": [],
-      "meta_title": "",
-      "paragraphs": [
-        "Un nuevo estudio demuestra que los creadores de YouTube que enumeran sus fuentes en las descripciones de los vídeos ganan más confianza entre los espectadores y logran que las audiencias estén más dispuestas a compartir su contenido. También concluye que adoptar hábitos propios de una redacción, como citar, aportar contexto y corregir errores, mejora la percepción de fiabilidad de los vídeos de noticias, una lección que va más allá de los periodistas y que sirve también para marcas y creadores.",
-        "Los canales deportivos que publican explicativos, análisis tácticos, desgloses de estadísticas o novedades sobre fichajes y lesiones pueden aplicarlo directamente. Enlazar en las descripciones a proveedores oficiales de datos, comunicados de las ligas o entrevistas originales ayuda a clubes y deportistas a diferenciarse de las cuentas de rumores, a proteger su credibilidad y, potencialmente, a lograr que compartan más los aficionados que buscan información fiable."
-      ],
-      "image_title": "",
-      "translated_at": "2026-11-05T15:30:15.920Z",
-      "source_changed": "2026-11-05T14:33:06.48491+00:00",
-      "meta_description": ""
-    }
-  },
-  {
     "id": 210,
     "url": "https://socialgeekpro.beehiiv.com/p/instagram-va-a-por-youtube#2",
     "source_name": "SocialGeek News",
@@ -227,6 +276,51 @@
       "image_title": "",
       "translated_at": "2026-11-05T15:30:20.586Z",
       "source_changed": "2026-11-05T14:33:06.074643+00:00",
+      "meta_description": ""
+    }
+  },
+  {
+    "id": 211,
+    "url": "https://socialgeekpro.beehiiv.com/p/instagram-va-a-por-youtube#3",
+    "source_name": "SocialGeek News",
+    "platform": "youtube",
+    "title": "Study finds citing sources in YouTube descriptions boosts trust and sharing",
+    "paragraphs": [
+      "A new study shows that YouTube creators who list their sources in video descriptions earn more viewer trust and make audiences more willing to share their content. It also found that adopting newsroom habits, such as citing, adding context and correcting errors, improves how trustworthy news videos are perceived, a lesson that extends beyond journalists to brands and creators.",
+      "Sports channels publishing explainers, tactical analysis, stats breakdowns or transfer and injury updates can apply this directly. Linking official data providers, league statements or original interviews in descriptions helps clubs and athletes stand out from rumor accounts, protect credibility and potentially increase shares among fans who want reliable information."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-05T12:13:00+00:00",
+    "created_at": "2026-11-05T14:33:06.48491+00:00",
+    "edited_at": null,
+    "slug": "study-finds-citing-sources-in-youtube-descriptions-boosts-trust-and-211",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/f972c0f35f28857c-16x9.jpg",
+    "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
+      "title": "Un estudio revela que citar las fuentes en las descripciones de YouTube aumenta la confianza y las veces que se comparte",
+      "tokens": {
+        "in": 1297,
+        "out": 483
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [],
+      "meta_title": "",
+      "paragraphs": [
+        "Un nuevo estudio demuestra que los creadores de YouTube que enumeran sus fuentes en las descripciones de los vídeos ganan más confianza entre los espectadores y logran que las audiencias estén más dispuestas a compartir su contenido. También concluye que adoptar hábitos propios de una redacción, como citar, aportar contexto y corregir errores, mejora la percepción de fiabilidad de los vídeos de noticias, una lección que va más allá de los periodistas y que sirve también para marcas y creadores.",
+        "Los canales deportivos que publican explicativos, análisis tácticos, desgloses de estadísticas o novedades sobre fichajes y lesiones pueden aplicarlo directamente. Enlazar en las descripciones a proveedores oficiales de datos, comunicados de las ligas o entrevistas originales ayuda a clubes y deportistas a diferenciarse de las cuentas de rumores, a proteger su credibilidad y, potencialmente, a lograr que compartan más los aficionados que buscan información fiable."
+      ],
+      "image_title": "",
+      "translated_at": "2026-11-05T15:30:15.920Z",
+      "source_changed": "2026-11-05T14:33:06.48491+00:00",
       "meta_description": ""
     }
   },
@@ -795,53 +889,6 @@
     }
   },
   {
-    "id": 84,
-    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces#3",
-    "source_name": "SocialGeek News",
-    "platform": "other",
-    "title": "Gen Z app Posting2 grows with chronological, ad-free, algorithm-free photo feed",
-    "paragraphs": [
-      "Posting2 is a small app built as a throwback to early Instagram: square photos, a chronological feed, no algorithm, no ads and no celebrities, with lots of casual everyday posts. According to Fast Company, it grew from 1,600 beta users in April to 36,671 users by October 21, and Sensor Tower recorded a 42% jump in downloads in September versus August.",
-      "The app is still tiny, but it reflects a slice of Gen Z that wants to see friends' posts without algorithmic curation. For clubs and athletes, it is a reminder that raw, imperfect and authentic content is regaining value.",
-      "Sports teams can lean into this by mixing polished campaigns with low-production moments: dressing room snapshots, player phone photos, training ground candids and fan-shot content that feels personal rather than produced."
-    ],
-    "relevant": true,
-    "published_at": "2026-10-29T12:12:00+00:00",
-    "created_at": "2026-10-29T12:54:20.285329+00:00",
-    "edited_at": null,
-    "slug": "gen-z-app-posting2-grows-with-chronological-ad-free-algorithm-free-84",
-    "meta_title": null,
-    "meta_description": null,
-    "takeaways": [],
-    "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/linkedin-posting2-16x9.jpg",
-    "es": {
-      "faq": [],
-      "model": "claude-sonnet-5-5",
-      "title": "Posting2, la app de la Generación Z, crece con un feed de fotos cronológico, sin anuncios y sin algoritmo",
-      "tokens": {
-        "in": 1352,
-        "out": 518
-      },
-      "excerpt": "",
-      "cta_text": "",
-      "body_html": "",
-      "cta_title": "",
-      "image_alt": "",
-      "takeaways": [],
-      "meta_title": "",
-      "paragraphs": [
-        "Posting2 es una pequeña app concebida como un homenaje a los inicios de Instagram: fotos cuadradas, un feed cronológico, sin algoritmo, sin anuncios y sin famosos, con muchos posts informales del día a día. Según Fast Company, pasó de 1.600 usuarios beta en abril a 36.671 usuarios el 21 de octubre, y Sensor Tower registró un aumento del 42 % en las descargas en septiembre frente a agosto.",
-        "La app sigue siendo diminuta, pero refleja a un sector de la Generación Z que quiere ver las publicaciones de sus amigos sin curación algorítmica. Para clubes y deportistas, es un recordatorio de que el contenido crudo, imperfecto y auténtico está recuperando valor.",
-        "Los equipos deportivos pueden aprovechar esta tendencia combinando campañas muy cuidadas con momentos de baja producción: instantáneas del vestuario, fotos hechas con el móvil de los jugadores, imágenes espontáneas de la ciudad deportiva y contenido grabado por aficionados que resulte personal en lugar de producido."
-      ],
-      "image_title": "",
-      "translated_at": "2026-10-29T16:10:26.722Z",
-      "source_changed": "2026-10-29T12:54:20.285329+00:00",
-      "meta_description": ""
-    }
-  },
-  {
     "id": 83,
     "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces#2",
     "source_name": "SocialGeek News",
@@ -932,6 +979,53 @@
       "image_title": "",
       "translated_at": "2026-10-29T16:10:21.391Z",
       "source_changed": "2026-10-29T12:54:19.971122+00:00",
+      "meta_description": ""
+    }
+  },
+  {
+    "id": 84,
+    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces#3",
+    "source_name": "SocialGeek News",
+    "platform": "other",
+    "title": "Gen Z app Posting2 grows with chronological, ad-free, algorithm-free photo feed",
+    "paragraphs": [
+      "Posting2 is a small app built as a throwback to early Instagram: square photos, a chronological feed, no algorithm, no ads and no celebrities, with lots of casual everyday posts. According to Fast Company, it grew from 1,600 beta users in April to 36,671 users by October 21, and Sensor Tower recorded a 42% jump in downloads in September versus August.",
+      "The app is still tiny, but it reflects a slice of Gen Z that wants to see friends' posts without algorithmic curation. For clubs and athletes, it is a reminder that raw, imperfect and authentic content is regaining value.",
+      "Sports teams can lean into this by mixing polished campaigns with low-production moments: dressing room snapshots, player phone photos, training ground candids and fan-shot content that feels personal rather than produced."
+    ],
+    "relevant": true,
+    "published_at": "2026-10-29T12:12:00+00:00",
+    "created_at": "2026-10-29T12:54:20.285329+00:00",
+    "edited_at": null,
+    "slug": "gen-z-app-posting2-grows-with-chronological-ad-free-algorithm-free-84",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/linkedin-posting2-16x9.jpg",
+    "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
+      "title": "Posting2, la app de la Generación Z, crece con un feed de fotos cronológico, sin anuncios y sin algoritmo",
+      "tokens": {
+        "in": 1352,
+        "out": 518
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [],
+      "meta_title": "",
+      "paragraphs": [
+        "Posting2 es una pequeña app concebida como un homenaje a los inicios de Instagram: fotos cuadradas, un feed cronológico, sin algoritmo, sin anuncios y sin famosos, con muchos posts informales del día a día. Según Fast Company, pasó de 1.600 usuarios beta en abril a 36.671 usuarios el 21 de octubre, y Sensor Tower registró un aumento del 42 % en las descargas en septiembre frente a agosto.",
+        "La app sigue siendo diminuta, pero refleja a un sector de la Generación Z que quiere ver las publicaciones de sus amigos sin curación algorítmica. Para clubes y deportistas, es un recordatorio de que el contenido crudo, imperfecto y auténtico está recuperando valor.",
+        "Los equipos deportivos pueden aprovechar esta tendencia combinando campañas muy cuidadas con momentos de baja producción: instantáneas del vestuario, fotos hechas con el móvil de los jugadores, imágenes espontáneas de la ciudad deportiva y contenido grabado por aficionados que resulte personal en lugar de producido."
+      ],
+      "image_title": "",
+      "translated_at": "2026-10-29T16:10:26.722Z",
+      "source_changed": "2026-10-29T12:54:20.285329+00:00",
       "meta_description": ""
     }
   },
@@ -1923,53 +2017,6 @@
     }
   },
   {
-    "id": 39,
-    "url": "https://www.socialmediatoday.com/news/tiktok-us-shares-q2-account-enforcement-data/833907/",
-    "source_name": "Social Media Today",
-    "platform": "tiktok",
-    "title": "TikTok US removes 14.6 million fake accounts and 781 million fake followers in Q2",
-    "paragraphs": [
-      "TikTok USDS, the US-based group running the app's American operations since January, released its second enforcement report, covering April to June. It removed 14.6 million fake accounts, blocked 64.8 million spam accounts at sign-up, stripped 781.4 million fake followers and stopped 403.2 million fake follow requests, a clear jump on the first quarter. Video removals and livestream warnings or demonetizations also rose.",
-      "Most video takedowns fell under regulated goods and services, a broad category covering gambling, alcohol, counterfeit products and services selling fake likes, views and followers. TikTok also said it disrupted 30 covert networks trying to manipulate engagement, removing more than 76,000 accounts and 4.8 million posts, as it ramps up integrity efforts ahead of the US midterms.",
-      "For sports social teams, larger fake-follower sweeps can cause sudden drops in follower counts, so expect some fluctuation and report engagement rate rather than raw totals to sponsors. Clubs working with betting or alcohol partners should review branded content carefully against TikTok's regulated-goods rules, and anyone tempted by bought growth should note that these services are a prime enforcement target."
-    ],
-    "relevant": true,
-    "published_at": "2026-10-25T22:13:46+00:00",
-    "created_at": "2026-10-27T12:04:45.467727+00:00",
-    "edited_at": null,
-    "slug": "tiktok-us-removes-14-6-million-fake-accounts-and-781-million-fake-39",
-    "meta_title": null,
-    "meta_description": null,
-    "takeaways": [],
-    "faq": [],
-    "image_url": "https://imgproxy.divecdn.com/12K6ogX9lcgDYYC0J9LHBG_Vz43JSghdwOStO8_Cc34/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS90aWt0b2tfdXNkc2p2LnBuZw==.webp",
-    "es": {
-      "faq": [],
-      "model": "claude-sonnet-5-5",
-      "title": "TikTok EE. UU. elimina 14,6 millones de cuentas falsas y 781 millones de seguidores falsos en el segundo trimestre",
-      "tokens": {
-        "in": 1476,
-        "out": 773
-      },
-      "excerpt": "",
-      "cta_text": "",
-      "body_html": "",
-      "cta_title": "",
-      "image_alt": "",
-      "takeaways": [],
-      "meta_title": "",
-      "paragraphs": [
-        "TikTok USDS, el grupo con sede en EE. UU. que gestiona las operaciones estadounidenses de la app desde enero, ha publicado su segundo informe de cumplimiento, que abarca de abril a junio. Eliminó 14,6 millones de cuentas falsas, bloqueó 64,8 millones de cuentas de spam en el registro, retiró 781,4 millones de seguidores falsos y detuvo 403,2 millones de solicitudes de seguimiento falsas, un claro aumento respecto al primer trimestre. También aumentaron las eliminaciones de vídeos y las advertencias o desmonetizaciones en directos.",
-        "La mayoría de las retiradas de vídeos correspondieron a bienes y servicios regulados, una categoría amplia que incluye apuestas, alcohol, productos falsificados y servicios que venden likes, visualizaciones y seguidores falsos. TikTok también explicó que desarticuló 30 redes encubiertas que intentaban manipular el engagement, eliminando más de 76.000 cuentas y 4,8 millones de publicaciones, mientras intensifica sus esfuerzos de integridad de cara a las elecciones de mitad de mandato de EE. UU.",
-        "Para los equipos de redes sociales deportivas, las limpiezas más amplias de seguidores falsos pueden provocar caídas repentinas en el número de seguidores, así que espera cierta fluctuación e informa a los patrocinadores de la tasa de engagement en lugar de los totales brutos. Los clubes que trabajan con socios de apuestas o alcohol deben revisar con cuidado el contenido de marca según las normas de TikTok sobre bienes regulados, y quien se sienta tentado por el crecimiento comprado debe tener en cuenta que estos servicios son un objetivo prioritario de las medidas de cumplimiento."
-      ],
-      "image_title": "",
-      "translated_at": "2026-10-27T13:15:03.983Z",
-      "source_changed": "2026-10-27T12:04:45.467727+00:00",
-      "meta_description": ""
-    }
-  },
-  {
     "id": 17,
     "url": "https://www.socialmediatoday.com/news/tiktok-us-shares-second-quarter-account-enforcement-data/833907/",
     "source_name": "Social Media Today",
@@ -2013,6 +2060,53 @@
       "image_title": "",
       "translated_at": "2026-10-26T22:11:27.862Z",
       "source_changed": "2026-10-26T22:03:14.65779+00:00",
+      "meta_description": ""
+    }
+  },
+  {
+    "id": 39,
+    "url": "https://www.socialmediatoday.com/news/tiktok-us-shares-q2-account-enforcement-data/833907/",
+    "source_name": "Social Media Today",
+    "platform": "tiktok",
+    "title": "TikTok US removes 14.6 million fake accounts and 781 million fake followers in Q2",
+    "paragraphs": [
+      "TikTok USDS, the US-based group running the app's American operations since January, released its second enforcement report, covering April to June. It removed 14.6 million fake accounts, blocked 64.8 million spam accounts at sign-up, stripped 781.4 million fake followers and stopped 403.2 million fake follow requests, a clear jump on the first quarter. Video removals and livestream warnings or demonetizations also rose.",
+      "Most video takedowns fell under regulated goods and services, a broad category covering gambling, alcohol, counterfeit products and services selling fake likes, views and followers. TikTok also said it disrupted 30 covert networks trying to manipulate engagement, removing more than 76,000 accounts and 4.8 million posts, as it ramps up integrity efforts ahead of the US midterms.",
+      "For sports social teams, larger fake-follower sweeps can cause sudden drops in follower counts, so expect some fluctuation and report engagement rate rather than raw totals to sponsors. Clubs working with betting or alcohol partners should review branded content carefully against TikTok's regulated-goods rules, and anyone tempted by bought growth should note that these services are a prime enforcement target."
+    ],
+    "relevant": true,
+    "published_at": "2026-10-25T22:13:46+00:00",
+    "created_at": "2026-10-27T12:04:45.467727+00:00",
+    "edited_at": null,
+    "slug": "tiktok-us-removes-14-6-million-fake-accounts-and-781-million-fake-39",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/12K6ogX9lcgDYYC0J9LHBG_Vz43JSghdwOStO8_Cc34/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS90aWt0b2tfdXNkc2p2LnBuZw==.webp",
+    "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
+      "title": "TikTok EE. UU. elimina 14,6 millones de cuentas falsas y 781 millones de seguidores falsos en el segundo trimestre",
+      "tokens": {
+        "in": 1476,
+        "out": 773
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [],
+      "meta_title": "",
+      "paragraphs": [
+        "TikTok USDS, el grupo con sede en EE. UU. que gestiona las operaciones estadounidenses de la app desde enero, ha publicado su segundo informe de cumplimiento, que abarca de abril a junio. Eliminó 14,6 millones de cuentas falsas, bloqueó 64,8 millones de cuentas de spam en el registro, retiró 781,4 millones de seguidores falsos y detuvo 403,2 millones de solicitudes de seguimiento falsas, un claro aumento respecto al primer trimestre. También aumentaron las eliminaciones de vídeos y las advertencias o desmonetizaciones en directos.",
+        "La mayoría de las retiradas de vídeos correspondieron a bienes y servicios regulados, una categoría amplia que incluye apuestas, alcohol, productos falsificados y servicios que venden likes, visualizaciones y seguidores falsos. TikTok también explicó que desarticuló 30 redes encubiertas que intentaban manipular el engagement, eliminando más de 76.000 cuentas y 4,8 millones de publicaciones, mientras intensifica sus esfuerzos de integridad de cara a las elecciones de mitad de mandato de EE. UU.",
+        "Para los equipos de redes sociales deportivas, las limpiezas más amplias de seguidores falsos pueden provocar caídas repentinas en el número de seguidores, así que espera cierta fluctuación e informa a los patrocinadores de la tasa de engagement en lugar de los totales brutos. Los clubes que trabajan con socios de apuestas o alcohol deben revisar con cuidado el contenido de marca según las normas de TikTok sobre bienes regulados, y quien se sienta tentado por el crecimiento comprado debe tener en cuenta que estos servicios son un objetivo prioritario de las medidas de cumplimiento."
+      ],
+      "image_title": "",
+      "translated_at": "2026-10-27T13:15:03.983Z",
+      "source_changed": "2026-10-27T12:04:45.467727+00:00",
       "meta_description": ""
     }
   },
