@@ -1,0 +1,37 @@
+name: Instagram covers (old posts)
+
+# Every 3 hours: copies the cover of up to 4,000 old Instagram posts that have none (pipeline/library/ig-covers-backlog.mjs),
+# so the Content Library shows a picture instead of Instagram's embed. Newest imports first; stops by itself if Instagram
+# starts holding us back, and when there are no posts left it just ends in a few seconds.
+# "Run workflow" with a limit (e.g. 200) for a test batch.
+on:
+  schedule:
+    - cron: "10 */3 * * *"
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: "Posts in this run"
+        default: "4000"
+
+concurrency:
+  group: ig-covers
+  cancel-in-progress: false
+
+jobs:
+  covers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: pipeline/package-lock.json
+      - run: npm ci
+        working-directory: pipeline
+      - run: node library/ig-covers-backlog.mjs --limit "${{ inputs.limit || '4000' }}"
+        working-directory: pipeline
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
