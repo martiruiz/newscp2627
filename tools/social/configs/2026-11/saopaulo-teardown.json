@@ -1,0 +1,14 @@
+{
+  "label": "São Paulo GP 2026",
+  "slides": [
+    {"type":"cover","kicker":"Post teardown","title":"Mercedes' title night, <span class='g'>three voices.</span>","sub":"The league, the team and the rival each told the São Paulo GP differently.","imgs":["assets/social/2026-11-09/src/mercedes-title.png","assets/social/2026-11-09/src/mclaren-winner.png"]},
+    {"type":"point","kicker":"Mercedes · the title post","handle":"@mercedesamgf1","img":"assets/social/2026-11-09/src/mercedes-title.png","callouts":[{"v":"134.6k","l":"likes"},{"v":"949","l":"comments"},{"v":"5 accounts","l":"on one collab post"}],"body":"“All it takes is all of us”: the champions put the whole team in the frame, not one driver. The caption says “NINTH time”.","tip":"Hypothesis: a team photo shares the credit with the people fans never see."},
+    {"type":"point","kicker":"McLaren · the winner post","handle":"@mclarenf1","img":"assets/social/2026-11-09/src/mclaren-winner.png","callouts":[{"v":"168.1k","l":"likes"},{"v":"1.8k","l":"comments"},{"v":"R20","l":"race label on the graphic"}],"body":"Same race, opposite approach: one driver, a giant “Winner” and a race-result tag. It out-liked Mercedes' title post.","tip":"Hypothesis: a single face is easier to celebrate than a team."},
+    {"type":"point","kicker":"The rival in the comments","title":"McLaren congratulated, <span class='g'>on Mercedes' post</span>","body":"McLaren's “Congratulations! 🧡” on the Mercedes title post drew 746 likes. Ferrari's comment drew 365. Brands such as adidas, WhatsApp, IWC and PepsiCo also commented.","tip":"Hypothesis: rival and sponsor comments turn the comment section into extra content."},
+    {"type":"point","kicker":"The league's account","title":"@f1 posted it too, <span class='g'>at another scale</span>","body":"The F1 title graphic got 1.5M likes and 3.5k comments, against 134.6k and 949 on the team's own post. Mercedes' own comments on it drew 2.2k and 2.9k likes.","tip":"Hypothesis: the league account brings an audience the team does not own."},
+    {"type":"point","kicker":"Mercedes · the arc","title":"Two championships <span class='g'>in three weeks</span>","body":"After Kimi Antonelli's drivers' title in Mexico, Mercedes posted a “two championships in three weeks” reel, and earlier a prize call with Kimi on WhatsApp via the link in bio.","tip":"Hypothesis: linking a title to a brand activation keeps the celebration useful after the final whistle."},
+    {"type":"club","title":"Share the credit: <span class='g'>a group photo</span> works for a big team and for a small club alike."},
+    {"type":"club","title":"Celebrate with partners: <span class='g'>a rival, a sponsor</span> or a league comment costs nothing and extends the post."},
+    {"type":"cta","kicker":"Content Library","big":"See real club posts and <span class='g'>why they worked.</span>","sub":"Book a demo at sportscontentplaybook.com/book-a-call"}
+  ]
+}
