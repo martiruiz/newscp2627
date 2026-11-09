@@ -1,7 +1,7 @@
 name: Instagram covers (old posts)
 
-# Every 3 hours: copies the cover of up to 4,000 old Instagram posts that have none (pipeline/library/ig-covers-backlog.mjs),
-# so the Content Library shows a picture instead of Instagram's embed. Newest imports first; stops by itself if Instagram
+# Every 3 hours: copies the cover of up to 4,000 Instagram posts published since 9 May 2026 that have none (pipeline/library/ig-covers-backlog.mjs),
+# so the Content Library shows a picture instead of Instagram's embed. Newest first; needs supabase/ig-covers-backlog.sql; stops by itself if Instagram
 # starts holding us back, and when there are no posts left it just ends in a few seconds.
 # "Run workflow" with a limit (e.g. 200) for a test batch.
 on:
@@ -30,7 +30,7 @@ jobs:
           cache-dependency-path: pipeline/package-lock.json
       - run: npm ci
         working-directory: pipeline
-      - run: node library/ig-covers-backlog.mjs --limit "${{ inputs.limit || '4000' }}"
+      - run: node library/ig-covers-backlog.mjs --since 2026-05-09 --limit "${{ inputs.limit || '4000' }}"
         working-directory: pipeline
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
