@@ -6,7 +6,17 @@
     <atom:link href="https://sportscontentplaybook.com/es/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Ideas, tendencias y análisis de contenido deportivo en redes sociales.</description>
     <language>es</language>
-    <lastBuildDate>Sun, 08 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 09 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Ideas de Reels deportivos: por qué el momento imprevisto gana al resultado</title>
+      <link>https://sportscontentplaybook.com/es/blog/sports-reels-ideas-unplanned-moments-beat-the-result.html</link>
+      <guid isPermaLink="true">https://sportscontentplaybook.com/es/blog/sports-reels-ideas-unplanned-moments-beat-the-result.html</guid>
+      <pubDate>Mon, 09 Nov 2026 08:00:00 GMT</pubDate>
+      <dc:creator>Martí Ruiz</dc:creator>
+      <description>Una botella de champán rota, un vestuario y un calentamiento superaron al resultado en los datos de esta semana. Aquí tienes el patrón y nueve formatos que cualquier equipo puede copiar.</description>
+      <enclosure url="https://sportscontentplaybook.com/assets/blog/sports-reels-ideas-unplanned-moments-beat-the-result.jpg" length="61556" type="image/jpeg"/>
+      <media:content url="https://sportscontentplaybook.com/assets/blog/sports-reels-ideas-unplanned-moments-beat-the-result.jpg" medium="image" type="image/jpeg"/>
+    </item>
     <item>
       <title>Ideas de Reels deportivos: convierte tu archivo en previas y aniversarios</title>
       <link>https://sportscontentplaybook.com/es/blog/sports-reels-ideas-archive-previews-anniversaries.html</link>
@@ -296,16 +306,6 @@
       <description>El Instagram del Six Nations combina una identidad visual potente con contenido repetitivo centrado en los partidos, usando branding y color coherentes para generar reconocimiento y dejando espacio para formatos de storytelling más creativos y atractivos.</description>
       <enclosure url="https://sportscontentplaybook.com/assets/blog/inside-six-nations-instagram-strategy-structure-branding-and-performance.jpg" length="361886" type="image/jpeg"/>
       <media:content url="https://sportscontentplaybook.com/assets/blog/inside-six-nations-instagram-strategy-structure-branding-and-performance.jpg" medium="image" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>Cómo marcaron las organizaciones deportivas el Día Internacional de la Mujer en las redes sociales</title>
-      <link>https://sportscontentplaybook.com/es/blog/how-sports-organizations-marked-international-womens-day-on-social-media.html</link>
-      <guid isPermaLink="true">https://sportscontentplaybook.com/es/blog/how-sports-organizations-marked-international-womens-day-on-social-media.html</guid>
-      <pubDate>Fri, 13 Mar 2026 08:00:00 GMT</pubDate>
-      <dc:creator>Josep</dc:creator>
-      <description>Organizaciones deportivas de toda Europa y Estados Unidos celebraron el Día Internacional de la Mujer con contenido creativo en redes sociales, ofreciendo ideas de contenido deportivo e inspiración para los creadores de contenido deportivo actuales.</description>
-      <enclosure url="https://sportscontentplaybook.com/assets/blog/how-sports-organizations-marked-international-womens-day-on-social-media.jpg" length="184415" type="image/jpeg"/>
-      <media:content url="https://sportscontentplaybook.com/assets/blog/how-sports-organizations-marked-international-womens-day-on-social-media.jpg" medium="image" type="image/jpeg"/>
     </item>
   </channel>
 </rss>

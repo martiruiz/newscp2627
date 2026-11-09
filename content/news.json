@@ -21,29 +21,29 @@
     "faq": [],
     "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/98098f68-a56f-4996-8a5e-2dafad62f661/Untitled_design__19_.png?t=1794083015",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "Steelers y Snickers convierten la semana de descanso en un vídeo patrocinado de 8,7 M de visualizaciones",
+      "tokens": {
+        "in": 1463,
+        "out": 699
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "Los Pittsburgh Steelers aprovecharon su bye week, que cae a mitad de la temporada de la NFL, para publicar un vídeo patrocinado con Snickers. Los jugadores se sumaron a un popular reto de las redes sociales: cortar una barrita de Snickers en dos mitades de igual peso. La publicación relacionó la idea con dividir la temporada por la mitad y terminó animando a los aficionados a saciar su hambre del descanso. Entre todos los canales, el contenido superó los 8,7 millones de visualizaciones.",
         "Para los equipos de redes sociales deportivas, la lección es que una tendencia conocida se convierte en inventario premium para patrocinadores cuando coinciden el momento, el juego de palabras y el producto. Los momentos del calendario, como las semanas de descanso, el ecuador de la temporada o los parones internacionales, suelen ser ventanas tranquilas para el contenido. Construir un concepto con un socio comercial en torno a ellos puede llenar ese hueco con algo que los aficionados quieren ver, en lugar de un anuncio convencional.",
         "Los clubes pueden replicarlo cruzando su calendario con los formatos en tendencia y preguntándose qué productos de sus socios encajan de forma natural dentro del propio reto. Hacer que la marca sea parte esencial de la mecánica, en lugar de limitarse a poner un logotipo en pantalla, hace que la integración resulte orgánica. Contar con una lista planificada de estos momentos también ofrece a los equipos de patrocinio una propuesta más sólida y creativa a la hora de vender inventario digital a los patrocinadores."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-09T16:07:16.336367+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-11-09T17:33:50.032Z",
-      "tokens": {
-        "in": 1463,
-        "out": 699
-      }
+      "source_changed": "2026-11-09T16:07:16.336367+00:00",
+      "meta_description": ""
     }
   },
   {
@@ -68,29 +68,29 @@
     "faq": [],
     "image_url": "https://imgproxy.divecdn.com/6BTKGiz-L7eEn0YK0uQsGK7oj5NuwoMyuHxitRWYA5Y/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9tZXRhX211c2Vfc3BhY2VzLnBuZw==.webp",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "El agente de IA Muse de Meta ya puede crear mini apps personalizadas llamadas Spaces",
+      "tokens": {
+        "in": 1471,
+        "out": 730
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "Meta ha añadido Spaces a su agente de IA Muse, que permite a los usuarios convertir una petición en una mini app propia guardada en la barra lateral de Muse para hacer un seguimiento continuo. Entre los ejemplos de Meta hay registros de actividades familiares, rastreadores de paquetes y recomendaciones de productos basadas en la actividad de Instagram. Muse y Meta AI también incorporan Active Memory, que recuerda detalles relevantes de conversaciones anteriores, y Active Focus, que ayuda a los agentes a seguir trabajando en una tarea cuando aparecen obstáculos.",
         "Para los equipos sociales deportivos, Spaces podría funcionar como paneles de control ligeros creados sin desarrolladores: una lista de comprobación de contenido para el día de partido, un seguimiento de los entregables para patrocinadores o un registro continuo de las peticiones de contenido de los deportistas. Una memoria ampliada implica que el asistente puede conservar contexto como el tono de la marca, la frecuencia de publicación o los detalles de una campaña a lo largo de varias conversaciones, lo que reduce los briefings repetitivos al redactar ideas o planificar calendarios.",
         "Los equipos deberían probarlo con cautela. Meta indica que Muse ha superado los 10 millones de descargas, pero los datos de Sensor Tower muestran que la retención cae bruscamente a las dos semanas, y el artículo señala preocupaciones más amplias sobre agentes autónomos que sobrepasan los límites de seguridad. Mantén los datos sensibles del club fuera de los primeros experimentos y trata Spaces como una ayuda de productividad, no como una herramienta central del flujo de trabajo, por ahora."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-09T16:07:25.428119+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-11-09T17:33:57.325Z",
-      "tokens": {
-        "in": 1471,
-        "out": 730
-      }
+      "source_changed": "2026-11-09T16:07:25.428119+00:00",
+      "meta_description": ""
     }
   },
   {
