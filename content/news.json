@@ -21,29 +21,29 @@
     "faq": [],
     "image_url": "https://imgproxy.divecdn.com/evsYS_GFtH50RI0eh4S3ZT06hDfwnbxJL0GuV3RwhxQ/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS90aWt0b2tfc3ltcGhvbnRfdXBkYXRlMS5wbmc=.webp",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "TikTok mejora las herramientas de publicidad con IA de Symphony con el último modelo de vídeo Dreamina Seedance",
+      "tokens": {
+        "in": 1469,
+        "out": 701
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "TikTok ha ampliado su suite de creación de anuncios con IA Symphony. Symphony Agent ahora utiliza los modelos Dreamina Seedance más recientes, lo que permite a los anunciantes subir hasta 50 referencias multimodales (imágenes, vídeo y audio) en lugar de 9, y generar clips de hasta 30 segundos por prompt, el doble del límite anterior de 15 segundos. Según TikTok, el resultado es más nítido, con mejor iluminación y personajes más coherentes entre fotogramas.",
         "TikTok también ha lanzado una API de Symphony actualizada para que los anunciantes puedan ejecutar la generación de Symphony dentro de sus propias herramientas de gestión creativa. Además, a partir del 9 de noviembre, los anunciantes de fuera de Norteamérica podrán comprar tokens de BytePlus para acceder a Seedance a través de Symphony. BytePlus es la división de tecnología empresarial de la matriz ByteDance y gestiona sus sistemas de IA.",
         "Para clubes deportivos, ligas y patrocinadores, una biblioteca de referencias más amplia significa poder dar al modelo fotos de equipaciones, imágenes del estadio, recursos del escudo y audio de cánticos para mantener los anuncios con IA fieles a la marca. Los clips más largos, de 30 segundos, encajan con promociones de entradas, merchandising o abonos de temporada de cara a las compras navideñas. Los equipos deberían probar variantes con contenido real de partidos, ya que la forma en que el público recibe el vídeo generado con IA en TikTok puede variar."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-10T14:47:42.680272+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-11-10T16:29:02.590Z",
-      "tokens": {
-        "in": 1469,
-        "out": 701
-      }
+      "source_changed": "2026-11-10T14:47:42.680272+00:00",
+      "meta_description": ""
     }
   },
   {
@@ -68,29 +68,29 @@
     "faq": [],
     "image_url": "https://imgproxy.divecdn.com/YfXlGTm6wGw8AJR70CRfDQ9qVNPD9Bt2MF4s1tOqykg/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9saW5rZWRpbl9yZWNvbW1lbmRhdGlvbl9yZWxldmFuY2UyLnBuZw==.webp",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "LinkedIn detalla el modelo de IA Profile Relevance que determina qué publicaciones de personas ajenas a tu red ven los usuarios",
+      "tokens": {
+        "in": 1479,
+        "out": 742
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "LinkedIn ha explicado un nuevo modelo Profile Relevance que decide qué publicaciones de personas ajenas a la red de un miembro aparecen en su feed. El sistema utiliza resúmenes generados por LLM del perfil y del historial de publicaciones de cada miembro, y después puntúa las publicaciones según factores como el tema, la ubicación, el puesto, la empresa, el sector, la seniority y la formación. En las pruebas, LinkedIn registró un aumento del 0,54 % en las actualizaciones del feed vistas, un incremento del 0,94 % en la tasa de viralidad y una caída del 18,8 % en la tasa de ocultación.",
         "Para las organizaciones deportivas, esto significa que el reach en LinkedIn más allá de los seguidores depende cada vez más de lo claramente que una publicación señale su contexto profesional. Los clubes y las ligas que usan la plataforma para patrocinios, alianzas, contratación o storytelling de negocio deberían ser explícitos con el tema, el sector y la ubicación, para que el modelo pueda conectar el contenido con patrocinadores, agencias, compradores de medios y profesionales del negocio deportivo que todavía no los siguen.",
         "LinkedIn también afirma que el cambio ayuda a los creadores a llegar a audiencias relevantes fuera de su red, y que los miembros más nuevos y menos activos registran un aumento del 17,7 % en el engagement viral. Directivos, personal comercial y deportistas que construyen un perfil profesional pueden beneficiarse si mantienen sus perfiles completos y publican con constancia sobre temas concretos, como resultados de engagement con aficionados o activaciones con socios, en lugar de actualizaciones genéricas."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-10T14:47:52.322085+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-11-10T16:29:09.701Z",
-      "tokens": {
-        "in": 1479,
-        "out": 742
-      }
+      "source_changed": "2026-11-10T14:47:52.322085+00:00",
+      "meta_description": ""
     }
   },
   {
