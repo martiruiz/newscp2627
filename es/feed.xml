@@ -6,7 +6,17 @@
     <atom:link href="https://sportscontentplaybook.com/es/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Ideas, tendencias y análisis de contenido deportivo en redes sociales.</description>
     <language>es</language>
-    <lastBuildDate>Mon, 09 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Tue, 10 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Ideas de contenido para Instagram deportivo: convierte el comunicado de prensa en tres piezas que los aficionados comparten</title>
+      <link>https://sportscontentplaybook.com/es/blog/sports-instagram-content-ideas-press-release-three-pieces.html</link>
+      <guid isPermaLink="true">https://sportscontentplaybook.com/es/blog/sports-instagram-content-ideas-press-release-three-pieces.html</guid>
+      <pubDate>Tue, 10 Nov 2026 08:00:00 GMT</pubDate>
+      <dc:creator>Martí Ruiz</dc:creator>
+      <description>Cuando el College Football Playoff se amplió a 24 equipos, el comunicado oficial consiguió 6.462 likes y el carrusel explicativo de ESPN, 95.200. Así puedes convertir cualquier noticia institucional en tres piezas que los aficionados comparten.</description>
+      <enclosure url="https://sportscontentplaybook.com/assets/blog/sports-instagram-content-ideas-press-release-three-pieces.jpg" length="71726" type="image/jpeg"/>
+      <media:content url="https://sportscontentplaybook.com/assets/blog/sports-instagram-content-ideas-press-release-three-pieces.jpg" medium="image" type="image/jpeg"/>
+    </item>
     <item>
       <title>Ideas de Reels deportivos: por qué el momento imprevisto gana al resultado</title>
       <link>https://sportscontentplaybook.com/es/blog/sports-reels-ideas-unplanned-moments-beat-the-result.html</link>
@@ -296,16 +306,6 @@
       <description>El Atlético de Madrid demuestra cómo convertir un gráfico de día de partido en un activo estratégico puede aumentar el engagement de los aficionados, abrir la puerta a patrocinios flexibles y elevar la ejecución de contenido en las redes sociales del deporte.</description>
       <enclosure url="https://sportscontentplaybook.com/assets/blog/how-atletico-de-madrid-turned-a-gameday-graphic-into-a-high-impact-sponsorship-asset.jpg" length="216017" type="image/jpeg"/>
       <media:content url="https://sportscontentplaybook.com/assets/blog/how-atletico-de-madrid-turned-a-gameday-graphic-into-a-high-impact-sponsorship-asset.jpg" medium="image" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>Por dentro de la estrategia de Instagram del Six Nations: estructura, branding y rendimiento</title>
-      <link>https://sportscontentplaybook.com/es/blog/inside-six-nations-instagram-strategy-structure-branding-and-performance.html</link>
-      <guid isPermaLink="true">https://sportscontentplaybook.com/es/blog/inside-six-nations-instagram-strategy-structure-branding-and-performance.html</guid>
-      <pubDate>Thu, 19 Mar 2026 08:00:00 GMT</pubDate>
-      <dc:creator>Josep</dc:creator>
-      <description>El Instagram del Six Nations combina una identidad visual potente con contenido repetitivo centrado en los partidos, usando branding y color coherentes para generar reconocimiento y dejando espacio para formatos de storytelling más creativos y atractivos.</description>
-      <enclosure url="https://sportscontentplaybook.com/assets/blog/inside-six-nations-instagram-strategy-structure-branding-and-performance.jpg" length="361886" type="image/jpeg"/>
-      <media:content url="https://sportscontentplaybook.com/assets/blog/inside-six-nations-instagram-strategy-structure-branding-and-performance.jpg" medium="image" type="image/jpeg"/>
     </item>
   </channel>
 </rss>

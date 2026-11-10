@@ -1,5 +1,99 @@
 [
   {
+    "id": 263,
+    "url": "https://www.socialmediatoday.com/news/tiktok-updates-its-ai-video-ad-tools/874209/",
+    "source_name": "Social Media Today",
+    "platform": "tiktok",
+    "title": "TikTok upgrades Symphony AI ad tools with latest Dreamina Seedance video model",
+    "paragraphs": [
+      "TikTok has expanded its Symphony AI ad creation suite. The Symphony Agent now taps the newest Dreamina Seedance models, letting advertisers upload up to 50 multimodal references (images, video and audio) instead of 9, and generate clips of up to 30 seconds per prompt, double the earlier 15-second cap. TikTok says output is sharper, with better lighting and more consistent characters across frames.",
+      "TikTok also released an updated Symphony API so advertisers can run Symphony generation inside their own creative management tools. In addition, starting November 9, advertisers outside North America can buy BytePlus tokens to access Seedance through Symphony. BytePlus is the enterprise tech arm of parent company ByteDance and runs its AI systems.",
+      "For sports clubs, leagues and sponsors, the larger reference library means feeding the model kit photos, stadium footage, crest assets and chant audio to keep AI ads on-brand. Longer 30-second clips suit ticketing, merchandise or season-pass promos ahead of holiday shopping. Teams should test variants against real match content, since how audiences receive AI-generated video on TikTok can vary."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-09T23:46:53+00:00",
+    "created_at": "2026-11-10T14:47:42.680272+00:00",
+    "edited_at": null,
+    "slug": "tiktok-upgrades-symphony-ai-ad-tools-with-latest-dreamina-seedance-263",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/evsYS_GFtH50RI0eh4S3ZT06hDfwnbxJL0GuV3RwhxQ/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS90aWt0b2tfc3ltcGhvbnRfdXBkYXRlMS5wbmc=.webp",
+    "es": {
+      "title": "TikTok mejora las herramientas de publicidad con IA de Symphony con el último modelo de vídeo Dreamina Seedance",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "TikTok ha ampliado su suite de creación de anuncios con IA Symphony. Symphony Agent ahora utiliza los modelos Dreamina Seedance más recientes, lo que permite a los anunciantes subir hasta 50 referencias multimodales (imágenes, vídeo y audio) en lugar de 9, y generar clips de hasta 30 segundos por prompt, el doble del límite anterior de 15 segundos. Según TikTok, el resultado es más nítido, con mejor iluminación y personajes más coherentes entre fotogramas.",
+        "TikTok también ha lanzado una API de Symphony actualizada para que los anunciantes puedan ejecutar la generación de Symphony dentro de sus propias herramientas de gestión creativa. Además, a partir del 9 de noviembre, los anunciantes de fuera de Norteamérica podrán comprar tokens de BytePlus para acceder a Seedance a través de Symphony. BytePlus es la división de tecnología empresarial de la matriz ByteDance y gestiona sus sistemas de IA.",
+        "Para clubes deportivos, ligas y patrocinadores, una biblioteca de referencias más amplia significa poder dar al modelo fotos de equipaciones, imágenes del estadio, recursos del escudo y audio de cánticos para mantener los anuncios con IA fieles a la marca. Los clips más largos, de 30 segundos, encajan con promociones de entradas, merchandising o abonos de temporada de cara a las compras navideñas. Los equipos deberían probar variantes con contenido real de partidos, ya que la forma en que el público recibe el vídeo generado con IA en TikTok puede variar."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-11-10T14:47:42.680272+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-11-10T16:29:02.590Z",
+      "tokens": {
+        "in": 1469,
+        "out": 701
+      }
+    }
+  },
+  {
+    "id": 265,
+    "url": "https://www.socialmediatoday.com/news/linkedin-explains-its-improved-content-recommendation-system/874206/",
+    "source_name": "Social Media Today",
+    "platform": "linkedin",
+    "title": "LinkedIn details AI Profile Relevance model shaping which non-connection posts users see",
+    "paragraphs": [
+      "LinkedIn has explained a new Profile Relevance model that decides which posts from people outside a member's network appear in their feed. The system uses LLM-generated summaries of each member's profile and posting history, then scores posts against factors such as topic, location, job title, company, industry, seniority and education. In tests, LinkedIn reported a 0.54% lift in feed updates viewed, a 0.94% rise in viral rate and an 18.8% drop in hide rate.",
+      "For sports organisations, this means LinkedIn reach beyond followers increasingly depends on how clearly a post signals its professional context. Clubs and leagues using the platform for sponsorship, partnerships, hiring or business storytelling should be explicit about topic, industry and location, so the model can match content to sponsors, agencies, media buyers and sports-business professionals who don't yet follow them.",
+      "LinkedIn also says the change helps creators reach relevant audiences outside their network, with newer, less active members seeing a 17.7% increase in viral engagement. Executives, commercial staff and athletes building a business profile can benefit by keeping profiles complete and posting consistently on focused themes, such as fan engagement results or partner activations, rather than generic updates."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-09T23:21:18+00:00",
+    "created_at": "2026-11-10T14:47:52.322085+00:00",
+    "edited_at": null,
+    "slug": "linkedin-details-ai-profile-relevance-model-shaping-which-non-265",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/YfXlGTm6wGw8AJR70CRfDQ9qVNPD9Bt2MF4s1tOqykg/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9saW5rZWRpbl9yZWNvbW1lbmRhdGlvbl9yZWxldmFuY2UyLnBuZw==.webp",
+    "es": {
+      "title": "LinkedIn detalla el modelo de IA Profile Relevance que determina qué publicaciones de personas ajenas a tu red ven los usuarios",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "LinkedIn ha explicado un nuevo modelo Profile Relevance que decide qué publicaciones de personas ajenas a la red de un miembro aparecen en su feed. El sistema utiliza resúmenes generados por LLM del perfil y del historial de publicaciones de cada miembro, y después puntúa las publicaciones según factores como el tema, la ubicación, el puesto, la empresa, el sector, la seniority y la formación. En las pruebas, LinkedIn registró un aumento del 0,54 % en las actualizaciones del feed vistas, un incremento del 0,94 % en la tasa de viralidad y una caída del 18,8 % en la tasa de ocultación.",
+        "Para las organizaciones deportivas, esto significa que el reach en LinkedIn más allá de los seguidores depende cada vez más de lo claramente que una publicación señale su contexto profesional. Los clubes y las ligas que usan la plataforma para patrocinios, alianzas, contratación o storytelling de negocio deberían ser explícitos con el tema, el sector y la ubicación, para que el modelo pueda conectar el contenido con patrocinadores, agencias, compradores de medios y profesionales del negocio deportivo que todavía no los siguen.",
+        "LinkedIn también afirma que el cambio ayuda a los creadores a llegar a audiencias relevantes fuera de su red, y que los miembros más nuevos y menos activos registran un aumento del 17,7 % en el engagement viral. Directivos, personal comercial y deportistas que construyen un perfil profesional pueden beneficiarse si mantienen sus perfiles completos y publican con constancia sobre temas concretos, como resultados de engagement con aficionados o activaciones con socios, en lugar de actualizaciones genéricas."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-11-10T14:47:52.322085+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-11-10T16:29:09.701Z",
+      "tokens": {
+        "in": 1479,
+        "out": 742
+      }
+    }
+  },
+  {
     "id": 247,
     "url": "https://www.sponconsports.com/p/snickers-won-the-pittsburgh-steelers-bye-week",
     "source_name": "SponCon Sports",
@@ -235,51 +329,6 @@
     }
   },
   {
-    "id": 210,
-    "url": "https://socialgeekpro.beehiiv.com/p/instagram-va-a-por-youtube#2",
-    "source_name": "SocialGeek News",
-    "platform": "youtube",
-    "title": "YouTube tests lowering creator payout threshold from 100 to 20 dollars",
-    "paragraphs": [
-      "YouTube is testing a reduction of the minimum earnings creators must reach before getting paid, cutting it from 100 to 20 dollars. The change would help smaller channels that currently wait months to hit the threshold and receive any income, and is read as an effort to attract and keep emerging creators as Instagram moves into long-form video.",
-      "For sports organizations, faster payouts could encourage more niche fan creators, ex-players and grassroots channels to professionalize. That widens the pool of smaller, highly engaged creators that clubs and sponsors can partner with for targeted campaigns, such as academy content, women's teams coverage or local fan-led shows, often at lower cost than big names."
-    ],
-    "relevant": true,
-    "published_at": "2026-11-05T12:13:00+00:00",
-    "created_at": "2026-11-05T14:33:06.074643+00:00",
-    "edited_at": null,
-    "slug": "youtube-tests-lowering-creator-payout-threshold-from-100-to-20-dollars-210",
-    "meta_title": null,
-    "meta_description": null,
-    "takeaways": [],
-    "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/f9e88369fdeb6c17-16x9.jpg",
-    "es": {
-      "faq": [],
-      "model": "claude-sonnet-5-5",
-      "title": "YouTube prueba a reducir el umbral de pago para creadores de 100 a 20 dólares",
-      "tokens": {
-        "in": 1301,
-        "out": 458
-      },
-      "excerpt": "",
-      "cta_text": "",
-      "body_html": "",
-      "cta_title": "",
-      "image_alt": "",
-      "takeaways": [],
-      "meta_title": "",
-      "paragraphs": [
-        "YouTube está probando una reducción de los ingresos mínimos que los creadores deben alcanzar antes de cobrar, rebajándolos de 100 a 20 dólares. El cambio ayudaría a los canales más pequeños, que actualmente esperan meses hasta alcanzar el umbral y recibir algún ingreso, y se interpreta como un esfuerzo por atraer y retener a creadores emergentes mientras Instagram avanza hacia el vídeo de formato largo.",
-        "Para las organizaciones deportivas, unos pagos más rápidos podrían animar a más creadores de nicho, ex jugadores y canales de base a profesionalizarse. Eso amplía el grupo de creadores más pequeños y con mucho engagement con los que los clubes y los patrocinadores pueden colaborar en campañas segmentadas, como contenido de cantera, cobertura de equipos femeninos o programas locales dirigidos por aficionados, a menudo a un coste menor que el de los grandes nombres."
-      ],
-      "image_title": "",
-      "translated_at": "2026-11-05T15:30:20.586Z",
-      "source_changed": "2026-11-05T14:33:06.074643+00:00",
-      "meta_description": ""
-    }
-  },
-  {
     "id": 211,
     "url": "https://socialgeekpro.beehiiv.com/p/instagram-va-a-por-youtube#3",
     "source_name": "SocialGeek News",
@@ -321,6 +370,51 @@
       "image_title": "",
       "translated_at": "2026-11-05T15:30:15.920Z",
       "source_changed": "2026-11-05T14:33:06.48491+00:00",
+      "meta_description": ""
+    }
+  },
+  {
+    "id": 210,
+    "url": "https://socialgeekpro.beehiiv.com/p/instagram-va-a-por-youtube#2",
+    "source_name": "SocialGeek News",
+    "platform": "youtube",
+    "title": "YouTube tests lowering creator payout threshold from 100 to 20 dollars",
+    "paragraphs": [
+      "YouTube is testing a reduction of the minimum earnings creators must reach before getting paid, cutting it from 100 to 20 dollars. The change would help smaller channels that currently wait months to hit the threshold and receive any income, and is read as an effort to attract and keep emerging creators as Instagram moves into long-form video.",
+      "For sports organizations, faster payouts could encourage more niche fan creators, ex-players and grassroots channels to professionalize. That widens the pool of smaller, highly engaged creators that clubs and sponsors can partner with for targeted campaigns, such as academy content, women's teams coverage or local fan-led shows, often at lower cost than big names."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-05T12:13:00+00:00",
+    "created_at": "2026-11-05T14:33:06.074643+00:00",
+    "edited_at": null,
+    "slug": "youtube-tests-lowering-creator-payout-threshold-from-100-to-20-dollars-210",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/f9e88369fdeb6c17-16x9.jpg",
+    "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
+      "title": "YouTube prueba a reducir el umbral de pago para creadores de 100 a 20 dólares",
+      "tokens": {
+        "in": 1301,
+        "out": 458
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [],
+      "meta_title": "",
+      "paragraphs": [
+        "YouTube está probando una reducción de los ingresos mínimos que los creadores deben alcanzar antes de cobrar, rebajándolos de 100 a 20 dólares. El cambio ayudaría a los canales más pequeños, que actualmente esperan meses hasta alcanzar el umbral y recibir algún ingreso, y se interpreta como un esfuerzo por atraer y retener a creadores emergentes mientras Instagram avanza hacia el vídeo de formato largo.",
+        "Para las organizaciones deportivas, unos pagos más rápidos podrían animar a más creadores de nicho, ex jugadores y canales de base a profesionalizarse. Eso amplía el grupo de creadores más pequeños y con mucho engagement con los que los clubes y los patrocinadores pueden colaborar en campañas segmentadas, como contenido de cantera, cobertura de equipos femeninos o programas locales dirigidos por aficionados, a menudo a un coste menor que el de los grandes nombres."
+      ],
+      "image_title": "",
+      "translated_at": "2026-11-05T15:30:20.586Z",
+      "source_changed": "2026-11-05T14:33:06.074643+00:00",
       "meta_description": ""
     }
   },
@@ -2017,53 +2111,6 @@
     }
   },
   {
-    "id": 17,
-    "url": "https://www.socialmediatoday.com/news/tiktok-us-shares-second-quarter-account-enforcement-data/833907/",
-    "source_name": "Social Media Today",
-    "platform": "tiktok",
-    "title": "TikTok US removes over 14 million fake accounts in second-quarter enforcement report",
-    "paragraphs": [
-      "TikTok has released account enforcement data for its US operation covering the second quarter. The platform says it removed more than 14 million fake accounts during the period. It also says it blocked close to 65 million spam accounts before they could be created, stopping them at the sign-up stage.",
-      "For sports social teams, large fake-account purges can cause sudden dips in follower counts and engagement figures. Clubs, leagues and athletes should expect occasional drops and avoid treating them as a loss of real fans. Benchmarking against engaged metrics such as watch time, shares and comments gives a more reliable picture than raw follower totals.",
-      "The data is also useful when talking to sponsors. Partners want to know their activations reach genuine audiences, and platform-level cleanups support that case. Teams can audit their own comment sections and follower bases for bot activity, report spam that targets fan content, and show partners verified audience insights rather than headline follower numbers."
-    ],
-    "relevant": true,
-    "published_at": "2026-10-25T22:13:46+00:00",
-    "created_at": "2026-10-26T22:03:14.65779+00:00",
-    "edited_at": null,
-    "slug": "tiktok-us-removes-over-14-million-fake-accounts-in-second-quarter-17",
-    "meta_title": null,
-    "meta_description": null,
-    "takeaways": [],
-    "faq": [],
-    "image_url": "https://imgproxy.divecdn.com/12K6ogX9lcgDYYC0J9LHBG_Vz43JSghdwOStO8_Cc34/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS90aWt0b2tfdXNkc2p2LnBuZw==.webp",
-    "es": {
-      "faq": [],
-      "model": "claude-haiku-5-5",
-      "title": "TikTok EE. UU. elimina más de 14 millones de cuentas falsas en su informe de moderación del segundo trimestre",
-      "tokens": {
-        "in": 1327,
-        "out": 623
-      },
-      "excerpt": "",
-      "cta_text": "",
-      "body_html": "",
-      "cta_title": "",
-      "image_alt": "",
-      "takeaways": [],
-      "meta_title": "",
-      "paragraphs": [
-        "TikTok ha publicado los datos de moderación de cuentas de su operación en EE. UU. correspondientes al segundo trimestre. La plataforma afirma que eliminó más de 14 millones de cuentas falsas durante el periodo. También asegura que bloqueó cerca de 65 millones de cuentas de spam antes de que pudieran crearse, frenándolas en la fase de registro.",
-        "Para los equipos de redes sociales del deporte, las grandes depuraciones de cuentas falsas pueden provocar caídas repentinas en el número de seguidores y en las cifras de interacción. Clubes, ligas y atletas deben esperar bajadas puntuales y evitar interpretarlas como una pérdida de aficionados reales. Comparar los datos con métricas de interacción real, como el tiempo de visualización, las veces compartido y los comentarios, ofrece una imagen más fiable que el total bruto de seguidores.",
-        "Estos datos también son útiles en las conversaciones con patrocinadores. Los socios quieren saber que sus activaciones llegan a audiencias genuinas, y las limpiezas a nivel de plataforma respaldan ese argumento. Los equipos pueden auditar sus propias secciones de comentarios y bases de seguidores en busca de actividad de bots, denunciar el spam que apunta al contenido de los aficionados y mostrar a los socios datos verificados de la audiencia en lugar de cifras totales de seguidores."
-      ],
-      "image_title": "",
-      "translated_at": "2026-10-26T22:11:27.862Z",
-      "source_changed": "2026-10-26T22:03:14.65779+00:00",
-      "meta_description": ""
-    }
-  },
-  {
     "id": 39,
     "url": "https://www.socialmediatoday.com/news/tiktok-us-shares-q2-account-enforcement-data/833907/",
     "source_name": "Social Media Today",
@@ -2107,6 +2154,53 @@
       "image_title": "",
       "translated_at": "2026-10-27T13:15:03.983Z",
       "source_changed": "2026-10-27T12:04:45.467727+00:00",
+      "meta_description": ""
+    }
+  },
+  {
+    "id": 17,
+    "url": "https://www.socialmediatoday.com/news/tiktok-us-shares-second-quarter-account-enforcement-data/833907/",
+    "source_name": "Social Media Today",
+    "platform": "tiktok",
+    "title": "TikTok US removes over 14 million fake accounts in second-quarter enforcement report",
+    "paragraphs": [
+      "TikTok has released account enforcement data for its US operation covering the second quarter. The platform says it removed more than 14 million fake accounts during the period. It also says it blocked close to 65 million spam accounts before they could be created, stopping them at the sign-up stage.",
+      "For sports social teams, large fake-account purges can cause sudden dips in follower counts and engagement figures. Clubs, leagues and athletes should expect occasional drops and avoid treating them as a loss of real fans. Benchmarking against engaged metrics such as watch time, shares and comments gives a more reliable picture than raw follower totals.",
+      "The data is also useful when talking to sponsors. Partners want to know their activations reach genuine audiences, and platform-level cleanups support that case. Teams can audit their own comment sections and follower bases for bot activity, report spam that targets fan content, and show partners verified audience insights rather than headline follower numbers."
+    ],
+    "relevant": true,
+    "published_at": "2026-10-25T22:13:46+00:00",
+    "created_at": "2026-10-26T22:03:14.65779+00:00",
+    "edited_at": null,
+    "slug": "tiktok-us-removes-over-14-million-fake-accounts-in-second-quarter-17",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/12K6ogX9lcgDYYC0J9LHBG_Vz43JSghdwOStO8_Cc34/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS90aWt0b2tfdXNkc2p2LnBuZw==.webp",
+    "es": {
+      "faq": [],
+      "model": "claude-haiku-5-5",
+      "title": "TikTok EE. UU. elimina más de 14 millones de cuentas falsas en su informe de moderación del segundo trimestre",
+      "tokens": {
+        "in": 1327,
+        "out": 623
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [],
+      "meta_title": "",
+      "paragraphs": [
+        "TikTok ha publicado los datos de moderación de cuentas de su operación en EE. UU. correspondientes al segundo trimestre. La plataforma afirma que eliminó más de 14 millones de cuentas falsas durante el periodo. También asegura que bloqueó cerca de 65 millones de cuentas de spam antes de que pudieran crearse, frenándolas en la fase de registro.",
+        "Para los equipos de redes sociales del deporte, las grandes depuraciones de cuentas falsas pueden provocar caídas repentinas en el número de seguidores y en las cifras de interacción. Clubes, ligas y atletas deben esperar bajadas puntuales y evitar interpretarlas como una pérdida de aficionados reales. Comparar los datos con métricas de interacción real, como el tiempo de visualización, las veces compartido y los comentarios, ofrece una imagen más fiable que el total bruto de seguidores.",
+        "Estos datos también son útiles en las conversaciones con patrocinadores. Los socios quieren saber que sus activaciones llegan a audiencias genuinas, y las limpiezas a nivel de plataforma respaldan ese argumento. Los equipos pueden auditar sus propias secciones de comentarios y bases de seguidores en busca de actividad de bots, denunciar el spam que apunta al contenido de los aficionados y mostrar a los socios datos verificados de la audiencia en lugar de cifras totales de seguidores."
+      ],
+      "image_title": "",
+      "translated_at": "2026-10-26T22:11:27.862Z",
+      "source_changed": "2026-10-26T22:03:14.65779+00:00",
       "meta_description": ""
     }
   },
