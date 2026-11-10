@@ -48,6 +48,12 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/593/593397.jpg?v=mw3anoy3"
   },
   {
+    "account": "liverpoolfc",
+    "account_platform": "instagram",
+    "views": 6533207,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/601/601025.jpg?v=mw952dmw"
+  },
+  {
     "account": "redbull",
     "account_platform": "tiktok",
     "views": 6100000,
@@ -90,16 +96,10 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/593/593088.jpg?v=mw3a10tq"
   },
   {
-    "account": "liverpoolfc",
-    "account_platform": "instagram",
-    "views": 4147664,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/601/601025.jpg?v=mw952dmw"
-  },
-  {
-    "account": "433",
-    "account_platform": "instagram",
-    "views": 3604687,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/588/588421.jpg?v=mw1amsso"
+    "account": "f1",
+    "account_platform": "tiktok",
+    "views": 3900000,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/604/604739.jpg?v=mw99hdjv"
   },
   {
     "account": "fenerbahce",
@@ -156,6 +156,12 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/593/593149.jpg?v=mw3a118u"
   },
   {
+    "account": "fcbarcelona",
+    "account_platform": "instagram",
+    "views": 2944895,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/601/601018.jpg?v=mw952dc1"
+  },
+  {
     "account": "steelers",
     "account_platform": "instagram",
     "views": 2890088,
@@ -172,11 +178,5 @@
     "account_platform": "instagram",
     "views": 2855969,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/608/608396.jpg?v=mw9dk0ba"
-  },
-  {
-    "account": "realmadrid",
-    "account_platform": "instagram",
-    "views": 2851670,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/593/593452.jpg?v=mw3asxp9"
   }
 ]
