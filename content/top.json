@@ -86,6 +86,12 @@
   {
     "account": "fabriziorom",
     "account_platform": "instagram",
+    "views": 5212205,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/610/610413.jpg?v=mwas9sr0"
+  },
+  {
+    "account": "fabriziorom",
+    "account_platform": "instagram",
     "views": 4413500,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/592/592018.jpg?v=mw2mjjyl"
   },
@@ -172,11 +178,5 @@
     "account_platform": "instagram",
     "views": 2851670,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/593/593452.jpg?v=mw3asxp9"
-  },
-  {
-    "account": "nba",
-    "account_platform": "tiktok",
-    "views": 2800000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/594/594680.jpg?v=mw3b03dr"
   }
 ]
