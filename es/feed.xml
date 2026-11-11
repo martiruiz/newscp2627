@@ -6,7 +6,17 @@
     <atom:link href="https://sportscontentplaybook.com/es/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Ideas, tendencias y análisis de contenido deportivo en redes sociales.</description>
     <language>es</language>
-    <lastBuildDate>Tue, 10 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Wed, 11 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Ideas de redes sociales para equipos deportivos: convierte un reencuentro en contenido que los aficionados comparten</title>
+      <link>https://sportscontentplaybook.com/es/blog/social-media-ideas-for-sports-teams-reunion-and-return-content.html</link>
+      <guid isPermaLink="true">https://sportscontentplaybook.com/es/blog/social-media-ideas-for-sports-teams-reunion-and-return-content.html</guid>
+      <pubDate>Wed, 11 Nov 2026 08:00:00 GMT</pubDate>
+      <dc:creator>Martí Ruiz</dc:creator>
+      <description>Un abrazo logró 858.000 visualizaciones y una imagen de «Welcome back» alcanzó 108.500 likes. Así puedes planificar contenido en torno a regresos y partidos de reencuentro.</description>
+      <enclosure url="https://sportscontentplaybook.com/assets/blog/social-media-ideas-for-sports-teams-reunion-and-return-content.jpg" length="67337" type="image/jpeg"/>
+      <media:content url="https://sportscontentplaybook.com/assets/blog/social-media-ideas-for-sports-teams-reunion-and-return-content.jpg" medium="image" type="image/jpeg"/>
+    </item>
     <item>
       <title>Ideas de contenido para Instagram deportivo: convierte el comunicado de prensa en tres piezas que los aficionados comparten</title>
       <link>https://sportscontentplaybook.com/es/blog/sports-instagram-content-ideas-press-release-three-pieces.html</link>
@@ -296,16 +306,6 @@
       <description>Los lanzamientos de naming rights triunfan o fracasan en la ejecución: un mensaje claro, cuentas conectadas, detalles optimizados y un storytelling sostenido son lo que convierte los anuncios de patrocinio en un engagement real con los aficionados.</description>
       <enclosure url="https://sportscontentplaybook.com/assets/blog/sports-content-playbook-how-to-make-sure-your-naming-rights-launch-actually-lands-in-social-media-in-sports.jpg" length="226756" type="image/jpeg"/>
       <media:content url="https://sportscontentplaybook.com/assets/blog/sports-content-playbook-how-to-make-sure-your-naming-rights-launch-actually-lands-in-social-media-in-sports.jpg" medium="image" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>Cómo el Atlético de Madrid convirtió un gráfico de día de partido en un activo de patrocinio de alto impacto</title>
-      <link>https://sportscontentplaybook.com/es/blog/how-atletico-de-madrid-turned-a-gameday-graphic-into-a-high-impact-sponsorship-asset.html</link>
-      <guid isPermaLink="true">https://sportscontentplaybook.com/es/blog/how-atletico-de-madrid-turned-a-gameday-graphic-into-a-high-impact-sponsorship-asset.html</guid>
-      <pubDate>Wed, 25 Mar 2026 08:00:00 GMT</pubDate>
-      <dc:creator>Josep</dc:creator>
-      <description>El Atlético de Madrid demuestra cómo convertir un gráfico de día de partido en un activo estratégico puede aumentar el engagement de los aficionados, abrir la puerta a patrocinios flexibles y elevar la ejecución de contenido en las redes sociales del deporte.</description>
-      <enclosure url="https://sportscontentplaybook.com/assets/blog/how-atletico-de-madrid-turned-a-gameday-graphic-into-a-high-impact-sponsorship-asset.jpg" length="216017" type="image/jpeg"/>
-      <media:content url="https://sportscontentplaybook.com/assets/blog/how-atletico-de-madrid-turned-a-gameday-graphic-into-a-high-impact-sponsorship-asset.jpg" medium="image" type="image/jpeg"/>
     </item>
   </channel>
 </rss>
