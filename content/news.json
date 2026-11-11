@@ -1,5 +1,99 @@
 [
   {
+    "id": 279,
+    "url": "https://www.socialmediatoday.com/news/x-adds-video-clipping/874341/",
+    "source_name": "Social Media Today",
+    "platform": "x",
+    "title": "X launches video clipping so users can reshare credited snippets of longer videos",
+    "paragraphs": [
+      "X has introduced a clipping option for videos lasting two minutes or more. From the repost menu, users can select a segment between 5 and 60 seconds, capped at 30% of the original, and share it with their own commentary. The clip carries an overlay with the creator's handle, a timestamp showing where it sits in the full video, and a tap-through link to the original.",
+      "Both the original poster and the account sharing the clip are credited with resulting impressions, so each can earn through X's Original Creator Rewards program. Creators currently cannot disable clipping; the only way to remove unwanted clips is deleting the original post. Live broadcasts are not yet supported. The feature is live on iOS and Android, with web access to follow.",
+      "For sports teams, this rewards publishing longer videos on X, such as press conferences, behind-the-scenes features or highlight packages, since fans and media can clip key moments while driving traffic back to the full upload. Clubs could also clip partner or player content to add commentary. Because clipping can't be switched off, teams should review long uploads carefully before posting."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-10T23:24:39+00:00",
+    "created_at": "2026-11-11T14:10:51.135287+00:00",
+    "edited_at": null,
+    "slug": "x-launches-video-clipping-so-users-can-reshare-credited-snippets-of-279",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/y7bT3b9AyGsDeM81hdEMgtSxPSjWgiUmYiSRCOe2Nl4/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS94X2NsaXBfaXQucG5n.webp",
+    "es": {
+      "title": "X lanza los clips de vídeo para que los usuarios puedan recompartir fragmentos con crédito de vídeos más largos",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "X ha incorporado una opción de clips para vídeos de dos minutos o más. Desde el menú de repost, los usuarios pueden seleccionar un segmento de entre 5 y 60 segundos, con un máximo del 30 % del original, y compartirlo con su propio comentario. El clip incluye una superposición con el nombre de usuario del creador, una marca de tiempo que indica en qué punto del vídeo completo se sitúa y un enlace para acceder al original con un toque.",
+        "Tanto quien publicó el original como la cuenta que comparte el clip reciben crédito por las impresiones resultantes, de modo que cada uno puede generar ingresos a través del programa Original Creator Rewards de X. Por ahora, los creadores no pueden desactivar los clips; la única forma de eliminar los clips no deseados es borrar la publicación original. Las emisiones en directo todavía no son compatibles. La función ya está disponible en iOS y Android, y llegará próximamente a la versión web.",
+        "Para los equipos deportivos, esto supone un incentivo para publicar vídeos más largos en X, como ruedas de prensa, contenidos de behind-the-scenes o recopilatorios de highlights, ya que aficionados y medios pueden clipear momentos clave y, al mismo tiempo, dirigir tráfico al vídeo completo. Los clubes también podrían clipear contenido de patrocinadores o jugadores para añadir comentarios. Como los clips no se pueden desactivar, los equipos deben revisar con cuidado los vídeos largos antes de publicarlos."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-11-11T14:10:51.135287+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-11-11T15:16:31.869Z",
+      "tokens": {
+        "in": 1418,
+        "out": 661
+      }
+    }
+  },
+  {
+    "id": 280,
+    "url": "https://www.socialmediatoday.com/news/youtube-shares-insight-into-eu-creator-concerns/874340/",
+    "source_name": "Social Media Today",
+    "platform": "youtube",
+    "title": "YouTube survey of 20,000 EU creators highlights demand for studios, support and algorithm transparency",
+    "paragraphs": [
+      "YouTube has released video interviews with European creators that expand on its recent creator consultation, which surveyed 20,000 creators across all 27 EU member states. The initial findings, published in a 17-page Creative Capital report, list five main concerns: more government recognition and support, closer collaboration with traditional industries, more investment in skills training, better access to physical production space such as studios, and clearer information on how recommendation algorithms affect reach.",
+      "YouTube is using the research to engage policymakers. It says it contributed more than $9.3 billion to the European economy in 2025 and supported over 220,000 jobs. For sports organisations, the findings show where creators feel underserved, and those gaps line up with assets many clubs and leagues already have: production facilities, access, and an established traditional media business.",
+      "A club could open its media studio or training ground to selected creators, run joint workshops with its content team, or set up structured creator partnerships that give independent YouTubers a bridge to an established sports brand. The repeated call for algorithm transparency is also a reminder for in-house teams to watch YouTube's guidance on reach closely and to keep testing formats, rather than depending on one style of video to perform."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-10T23:19:43+00:00",
+    "created_at": "2026-11-11T14:11:06.729969+00:00",
+    "edited_at": null,
+    "slug": "youtube-survey-of-20-000-eu-creators-highlights-demand-for-studios-280",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/zh_kdfNNhV-vh_p8D5RDtk0pIaXUE7ZkcIdnB-FL-4Q/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9ldV9jcmVhdGl2ZV9jYXBpdGFsMi5wbmc=.webp",
+    "es": {
+      "title": "La encuesta de YouTube a 20.000 creadores de la UE destaca la demanda de estudios, apoyo y transparencia en el algoritmo",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "YouTube ha publicado entrevistas en vídeo con creadores europeos que amplían su reciente consulta a creadores, en la que se encuestó a 20.000 creadores de los 27 Estados miembros de la UE. Las primeras conclusiones, recogidas en un informe Creative Capital de 17 páginas, enumeran cinco preocupaciones principales: más reconocimiento y apoyo por parte de los gobiernos, una colaboración más estrecha con las industrias tradicionales, más inversión en formación de habilidades, mejor acceso a espacios físicos de producción, como los estudios, e información más clara sobre cómo afectan los algoritmos de recomendación al reach.",
+        "YouTube está utilizando la investigación para dialogar con los responsables políticos. Asegura que en 2025 aportó más de 9.300 millones de dólares a la economía europea y respaldó más de 220.000 empleos. Para las organizaciones deportivas, las conclusiones muestran dónde sienten los creadores que están desatendidos, y esas carencias coinciden con recursos que muchos clubes y ligas ya tienen: instalaciones de producción, acceso y un negocio de medios tradicionales consolidado.",
+        "Un club podría abrir su estudio de medios o su ciudad deportiva a creadores seleccionados, organizar talleres conjuntos con su equipo de contenido o establecer colaboraciones estructuradas con creadores que sirvan de puente entre los YouTubers independientes y una marca deportiva consolidada. La insistente petición de transparencia en el algoritmo también es un recordatorio para los equipos internos: conviene seguir de cerca las directrices de YouTube sobre el reach y seguir probando formatos, en lugar de depender de un solo estilo de vídeo para obtener buenos resultados."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-11-11T14:11:06.729969+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-11-11T15:16:38.883Z",
+      "tokens": {
+        "in": 1465,
+        "out": 752
+      }
+    }
+  },
+  {
     "id": 263,
     "url": "https://www.socialmediatoday.com/news/tiktok-updates-its-ai-video-ad-tools/874209/",
     "source_name": "Social Media Today",
@@ -282,53 +376,6 @@
     }
   },
   {
-    "id": 209,
-    "url": "https://socialgeekpro.beehiiv.com/p/instagram-va-a-por-youtube",
-    "source_name": "SocialGeek News",
-    "platform": "instagram",
-    "title": "Instagram tests Features, horizontal videos up to 90 minutes linked from Reels",
-    "paragraphs": [
-      "Instagram is trialling a format called Features that lets creators publish horizontal videos of up to 90 minutes, aimed at podcasts, interviews and entertainment shows. Reels can link straight to the full episode, and a Clips as Reels option cuts segments from a Feature into Reels. Features can surface in Explore and recommendations, and Instagram wants to bring them to TV screens.",
-      "The test is limited to a group of US creators after an earlier trial in Brazil. Monetization remains unclear: unlike YouTube, Instagram has not announced any ad revenue sharing for the format yet, and the move is widely seen as a direct challenge to YouTube's long-form dominance.",
-      "For clubs and leagues already producing podcasts, documentaries, press conferences or long interviews, this opens a second home for long-form content where their biggest audiences already scroll. Teams could cut highlight Reels from a full player interview or matchday show and drive fans to the complete episode without leaving the app. Those without long formats should start planning content that holds attention beyond 30 seconds."
-    ],
-    "relevant": true,
-    "published_at": "2026-11-05T12:13:00+00:00",
-    "created_at": "2026-11-05T14:33:05.619476+00:00",
-    "edited_at": null,
-    "slug": "instagram-tests-features-horizontal-videos-up-to-90-minutes-linked-209",
-    "meta_title": null,
-    "meta_description": null,
-    "takeaways": [],
-    "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/instagram-features-linkedin-2026-11-04.jpg",
-    "es": {
-      "faq": [],
-      "model": "claude-sonnet-5-5",
-      "title": "Instagram prueba Features, vídeos horizontales de hasta 90 minutos enlazados desde Reels",
-      "tokens": {
-        "in": 1428,
-        "out": 644
-      },
-      "excerpt": "",
-      "cta_text": "",
-      "body_html": "",
-      "cta_title": "",
-      "image_alt": "",
-      "takeaways": [],
-      "meta_title": "",
-      "paragraphs": [
-        "Instagram está probando un formato llamado Features que permite a los creadores publicar vídeos horizontales de hasta 90 minutos, pensado para pódcast, entrevistas y programas de entretenimiento. Los Reels pueden enlazar directamente al episodio completo, y una opción llamada Clips as Reels recorta segmentos de un Feature para convertirlos en Reels. Los Features pueden aparecer en Explorar y en las recomendaciones, e Instagram quiere llevarlos también a las pantallas de TV.",
-        "La prueba se limita a un grupo de creadores de EE. UU., tras una prueba anterior en Brasil. La monetización sigue sin estar clara: a diferencia de YouTube, Instagram todavía no ha anunciado ningún reparto de ingresos publicitarios para este formato, y la medida se interpreta ampliamente como un desafío directo al dominio de YouTube en el contenido de larga duración.",
-        "Para los clubes y las ligas que ya producen pódcast, documentales, ruedas de prensa o entrevistas largas, esto abre un segundo hogar para el contenido de formato largo en el lugar donde ya hace scroll su mayor audiencia. Los equipos podrían recortar Reels con los mejores momentos de una entrevista completa a un jugador o de un programa de día de partido, y llevar a los aficionados al episodio completo sin salir de la app. Quienes no tengan formatos largos deberían empezar a planificar contenido que mantenga la atención más allá de los 30 segundos."
-      ],
-      "image_title": "",
-      "translated_at": "2026-11-05T15:30:10.106Z",
-      "source_changed": "2026-11-05T14:33:05.619476+00:00",
-      "meta_description": ""
-    }
-  },
-  {
     "id": 211,
     "url": "https://socialgeekpro.beehiiv.com/p/instagram-va-a-por-youtube#3",
     "source_name": "SocialGeek News",
@@ -415,6 +462,53 @@
       "image_title": "",
       "translated_at": "2026-11-05T15:30:20.586Z",
       "source_changed": "2026-11-05T14:33:06.074643+00:00",
+      "meta_description": ""
+    }
+  },
+  {
+    "id": 209,
+    "url": "https://socialgeekpro.beehiiv.com/p/instagram-va-a-por-youtube",
+    "source_name": "SocialGeek News",
+    "platform": "instagram",
+    "title": "Instagram tests Features, horizontal videos up to 90 minutes linked from Reels",
+    "paragraphs": [
+      "Instagram is trialling a format called Features that lets creators publish horizontal videos of up to 90 minutes, aimed at podcasts, interviews and entertainment shows. Reels can link straight to the full episode, and a Clips as Reels option cuts segments from a Feature into Reels. Features can surface in Explore and recommendations, and Instagram wants to bring them to TV screens.",
+      "The test is limited to a group of US creators after an earlier trial in Brazil. Monetization remains unclear: unlike YouTube, Instagram has not announced any ad revenue sharing for the format yet, and the move is widely seen as a direct challenge to YouTube's long-form dominance.",
+      "For clubs and leagues already producing podcasts, documentaries, press conferences or long interviews, this opens a second home for long-form content where their biggest audiences already scroll. Teams could cut highlight Reels from a full player interview or matchday show and drive fans to the complete episode without leaving the app. Those without long formats should start planning content that holds attention beyond 30 seconds."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-05T12:13:00+00:00",
+    "created_at": "2026-11-05T14:33:05.619476+00:00",
+    "edited_at": null,
+    "slug": "instagram-tests-features-horizontal-videos-up-to-90-minutes-linked-209",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/instagram-features-linkedin-2026-11-04.jpg",
+    "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
+      "title": "Instagram prueba Features, vídeos horizontales de hasta 90 minutos enlazados desde Reels",
+      "tokens": {
+        "in": 1428,
+        "out": 644
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [],
+      "meta_title": "",
+      "paragraphs": [
+        "Instagram está probando un formato llamado Features que permite a los creadores publicar vídeos horizontales de hasta 90 minutos, pensado para pódcast, entrevistas y programas de entretenimiento. Los Reels pueden enlazar directamente al episodio completo, y una opción llamada Clips as Reels recorta segmentos de un Feature para convertirlos en Reels. Los Features pueden aparecer en Explorar y en las recomendaciones, e Instagram quiere llevarlos también a las pantallas de TV.",
+        "La prueba se limita a un grupo de creadores de EE. UU., tras una prueba anterior en Brasil. La monetización sigue sin estar clara: a diferencia de YouTube, Instagram todavía no ha anunciado ningún reparto de ingresos publicitarios para este formato, y la medida se interpreta ampliamente como un desafío directo al dominio de YouTube en el contenido de larga duración.",
+        "Para los clubes y las ligas que ya producen pódcast, documentales, ruedas de prensa o entrevistas largas, esto abre un segundo hogar para el contenido de formato largo en el lugar donde ya hace scroll su mayor audiencia. Los equipos podrían recortar Reels con los mejores momentos de una entrevista completa a un jugador o de un programa de día de partido, y llevar a los aficionados al episodio completo sin salir de la app. Quienes no tengan formatos largos deberían empezar a planificar contenido que mantenga la atención más allá de los 30 segundos."
+      ],
+      "image_title": "",
+      "translated_at": "2026-11-05T15:30:10.106Z",
+      "source_changed": "2026-11-05T14:33:05.619476+00:00",
       "meta_description": ""
     }
   },
@@ -983,33 +1077,33 @@
     }
   },
   {
-    "id": 83,
-    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces#2",
+    "id": 84,
+    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces#3",
     "source_name": "SocialGeek News",
-    "platform": "ai",
-    "title": "CapCut announces ChatGPT plugin to edit videos through conversation",
+    "platform": "other",
+    "title": "Gen Z app Posting2 grows with chronological, ad-free, algorithm-free photo feed",
     "paragraphs": [
-      "At its CapCut World event in Los Angeles, CapCut, which reports more than 700 million monthly users, unveiled a ChatGPT plugin coming in the next few months. Users will be able to shape an idea in ChatGPT, let CapCut assemble a first cut, and refine it by chatting, such as extending a shot or lowering music under voiceover. Manual timeline edits are understood by the conversation too.",
-      "CapCut also introduced EditPilot on desktop for natural-language edits of complex or repetitive tasks, plus more image, video and audio generation on web and an AI Lab in the mobile app that turns photos and clips into vlogs or recaps.",
-      "For sports social teams, this could speed up matchday recaps, player highlight packages and behind-the-scenes edits, especially for smaller clubs with limited staff. The tool lowers production effort, but storytelling and editorial judgment will still separate standout club content from the rest."
+      "Posting2 is a small app built as a throwback to early Instagram: square photos, a chronological feed, no algorithm, no ads and no celebrities, with lots of casual everyday posts. According to Fast Company, it grew from 1,600 beta users in April to 36,671 users by October 21, and Sensor Tower recorded a 42% jump in downloads in September versus August.",
+      "The app is still tiny, but it reflects a slice of Gen Z that wants to see friends' posts without algorithmic curation. For clubs and athletes, it is a reminder that raw, imperfect and authentic content is regaining value.",
+      "Sports teams can lean into this by mixing polished campaigns with low-production moments: dressing room snapshots, player phone photos, training ground candids and fan-shot content that feels personal rather than produced."
     ],
     "relevant": true,
     "published_at": "2026-10-29T12:12:00+00:00",
-    "created_at": "2026-10-29T12:54:20.149885+00:00",
+    "created_at": "2026-10-29T12:54:20.285329+00:00",
     "edited_at": null,
-    "slug": "capcut-announces-chatgpt-plugin-to-edit-videos-through-conversation-83",
+    "slug": "gen-z-app-posting2-grows-with-chronological-ad-free-algorithm-free-84",
     "meta_title": null,
     "meta_description": null,
     "takeaways": [],
     "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/d111e67e2e467a7e-16x9.jpg",
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/linkedin-posting2-16x9.jpg",
     "es": {
       "faq": [],
       "model": "claude-sonnet-5-5",
-      "title": "CapCut anuncia un plugin de ChatGPT para editar vídeos a través de una conversación",
+      "title": "Posting2, la app de la Generación Z, crece con un feed de fotos cronológico, sin anuncios y sin algoritmo",
       "tokens": {
-        "in": 1382,
-        "out": 559
+        "in": 1352,
+        "out": 518
       },
       "excerpt": "",
       "cta_text": "",
@@ -1019,13 +1113,13 @@
       "takeaways": [],
       "meta_title": "",
       "paragraphs": [
-        "En su evento CapCut World, celebrado en Los Ángeles, CapCut, que asegura tener más de 700 millones de usuarios mensuales, presentó un plugin de ChatGPT que llegará en los próximos meses. Los usuarios podrán dar forma a una idea en ChatGPT, dejar que CapCut monte un primer corte y perfeccionarlo chateando, por ejemplo alargando un plano o bajando la música bajo una voz en off. La conversación también entiende las ediciones manuales hechas en la línea de tiempo.",
-        "CapCut también presentó EditPilot en escritorio, para editar con lenguaje natural tareas complejas o repetitivas, además de más generación de imágenes, vídeo y audio en la web y un AI Lab en la app móvil que convierte fotos y clips en vlogs o resúmenes.",
-        "Para los equipos de redes sociales deportivas, esto podría acelerar los resúmenes del día de partido, los paquetes de mejores jugadas de los jugadores y las ediciones de behind-the-scenes, sobre todo en clubes pequeños con poco personal. La herramienta reduce el esfuerzo de producción, pero la narrativa y el criterio editorial seguirán marcando la diferencia entre el contenido destacado de un club y el resto."
+        "Posting2 es una pequeña app concebida como un homenaje a los inicios de Instagram: fotos cuadradas, un feed cronológico, sin algoritmo, sin anuncios y sin famosos, con muchos posts informales del día a día. Según Fast Company, pasó de 1.600 usuarios beta en abril a 36.671 usuarios el 21 de octubre, y Sensor Tower registró un aumento del 42 % en las descargas en septiembre frente a agosto.",
+        "La app sigue siendo diminuta, pero refleja a un sector de la Generación Z que quiere ver las publicaciones de sus amigos sin curación algorítmica. Para clubes y deportistas, es un recordatorio de que el contenido crudo, imperfecto y auténtico está recuperando valor.",
+        "Los equipos deportivos pueden aprovechar esta tendencia combinando campañas muy cuidadas con momentos de baja producción: instantáneas del vestuario, fotos hechas con el móvil de los jugadores, imágenes espontáneas de la ciudad deportiva y contenido grabado por aficionados que resulte personal en lugar de producido."
       ],
       "image_title": "",
-      "translated_at": "2026-10-29T16:10:15.419Z",
-      "source_changed": "2026-10-29T12:54:20.149885+00:00",
+      "translated_at": "2026-10-29T16:10:26.722Z",
+      "source_changed": "2026-10-29T12:54:20.285329+00:00",
       "meta_description": ""
     }
   },
@@ -1077,33 +1171,33 @@
     }
   },
   {
-    "id": 84,
-    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces#3",
+    "id": 83,
+    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces#2",
     "source_name": "SocialGeek News",
-    "platform": "other",
-    "title": "Gen Z app Posting2 grows with chronological, ad-free, algorithm-free photo feed",
+    "platform": "ai",
+    "title": "CapCut announces ChatGPT plugin to edit videos through conversation",
     "paragraphs": [
-      "Posting2 is a small app built as a throwback to early Instagram: square photos, a chronological feed, no algorithm, no ads and no celebrities, with lots of casual everyday posts. According to Fast Company, it grew from 1,600 beta users in April to 36,671 users by October 21, and Sensor Tower recorded a 42% jump in downloads in September versus August.",
-      "The app is still tiny, but it reflects a slice of Gen Z that wants to see friends' posts without algorithmic curation. For clubs and athletes, it is a reminder that raw, imperfect and authentic content is regaining value.",
-      "Sports teams can lean into this by mixing polished campaigns with low-production moments: dressing room snapshots, player phone photos, training ground candids and fan-shot content that feels personal rather than produced."
+      "At its CapCut World event in Los Angeles, CapCut, which reports more than 700 million monthly users, unveiled a ChatGPT plugin coming in the next few months. Users will be able to shape an idea in ChatGPT, let CapCut assemble a first cut, and refine it by chatting, such as extending a shot or lowering music under voiceover. Manual timeline edits are understood by the conversation too.",
+      "CapCut also introduced EditPilot on desktop for natural-language edits of complex or repetitive tasks, plus more image, video and audio generation on web and an AI Lab in the mobile app that turns photos and clips into vlogs or recaps.",
+      "For sports social teams, this could speed up matchday recaps, player highlight packages and behind-the-scenes edits, especially for smaller clubs with limited staff. The tool lowers production effort, but storytelling and editorial judgment will still separate standout club content from the rest."
     ],
     "relevant": true,
     "published_at": "2026-10-29T12:12:00+00:00",
-    "created_at": "2026-10-29T12:54:20.285329+00:00",
+    "created_at": "2026-10-29T12:54:20.149885+00:00",
     "edited_at": null,
-    "slug": "gen-z-app-posting2-grows-with-chronological-ad-free-algorithm-free-84",
+    "slug": "capcut-announces-chatgpt-plugin-to-edit-videos-through-conversation-83",
     "meta_title": null,
     "meta_description": null,
     "takeaways": [],
     "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/linkedin-posting2-16x9.jpg",
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/d111e67e2e467a7e-16x9.jpg",
     "es": {
       "faq": [],
       "model": "claude-sonnet-5-5",
-      "title": "Posting2, la app de la Generación Z, crece con un feed de fotos cronológico, sin anuncios y sin algoritmo",
+      "title": "CapCut anuncia un plugin de ChatGPT para editar vídeos a través de una conversación",
       "tokens": {
-        "in": 1352,
-        "out": 518
+        "in": 1382,
+        "out": 559
       },
       "excerpt": "",
       "cta_text": "",
@@ -1113,13 +1207,13 @@
       "takeaways": [],
       "meta_title": "",
       "paragraphs": [
-        "Posting2 es una pequeña app concebida como un homenaje a los inicios de Instagram: fotos cuadradas, un feed cronológico, sin algoritmo, sin anuncios y sin famosos, con muchos posts informales del día a día. Según Fast Company, pasó de 1.600 usuarios beta en abril a 36.671 usuarios el 21 de octubre, y Sensor Tower registró un aumento del 42 % en las descargas en septiembre frente a agosto.",
-        "La app sigue siendo diminuta, pero refleja a un sector de la Generación Z que quiere ver las publicaciones de sus amigos sin curación algorítmica. Para clubes y deportistas, es un recordatorio de que el contenido crudo, imperfecto y auténtico está recuperando valor.",
-        "Los equipos deportivos pueden aprovechar esta tendencia combinando campañas muy cuidadas con momentos de baja producción: instantáneas del vestuario, fotos hechas con el móvil de los jugadores, imágenes espontáneas de la ciudad deportiva y contenido grabado por aficionados que resulte personal en lugar de producido."
+        "En su evento CapCut World, celebrado en Los Ángeles, CapCut, que asegura tener más de 700 millones de usuarios mensuales, presentó un plugin de ChatGPT que llegará en los próximos meses. Los usuarios podrán dar forma a una idea en ChatGPT, dejar que CapCut monte un primer corte y perfeccionarlo chateando, por ejemplo alargando un plano o bajando la música bajo una voz en off. La conversación también entiende las ediciones manuales hechas en la línea de tiempo.",
+        "CapCut también presentó EditPilot en escritorio, para editar con lenguaje natural tareas complejas o repetitivas, además de más generación de imágenes, vídeo y audio en la web y un AI Lab en la app móvil que convierte fotos y clips en vlogs o resúmenes.",
+        "Para los equipos de redes sociales deportivas, esto podría acelerar los resúmenes del día de partido, los paquetes de mejores jugadas de los jugadores y las ediciones de behind-the-scenes, sobre todo en clubes pequeños con poco personal. La herramienta reduce el esfuerzo de producción, pero la narrativa y el criterio editorial seguirán marcando la diferencia entre el contenido destacado de un club y el resto."
       ],
       "image_title": "",
-      "translated_at": "2026-10-29T16:10:26.722Z",
-      "source_changed": "2026-10-29T12:54:20.285329+00:00",
+      "translated_at": "2026-10-29T16:10:15.419Z",
+      "source_changed": "2026-10-29T12:54:20.149885+00:00",
       "meta_description": ""
     }
   },
@@ -2111,53 +2205,6 @@
     }
   },
   {
-    "id": 39,
-    "url": "https://www.socialmediatoday.com/news/tiktok-us-shares-q2-account-enforcement-data/833907/",
-    "source_name": "Social Media Today",
-    "platform": "tiktok",
-    "title": "TikTok US removes 14.6 million fake accounts and 781 million fake followers in Q2",
-    "paragraphs": [
-      "TikTok USDS, the US-based group running the app's American operations since January, released its second enforcement report, covering April to June. It removed 14.6 million fake accounts, blocked 64.8 million spam accounts at sign-up, stripped 781.4 million fake followers and stopped 403.2 million fake follow requests, a clear jump on the first quarter. Video removals and livestream warnings or demonetizations also rose.",
-      "Most video takedowns fell under regulated goods and services, a broad category covering gambling, alcohol, counterfeit products and services selling fake likes, views and followers. TikTok also said it disrupted 30 covert networks trying to manipulate engagement, removing more than 76,000 accounts and 4.8 million posts, as it ramps up integrity efforts ahead of the US midterms.",
-      "For sports social teams, larger fake-follower sweeps can cause sudden drops in follower counts, so expect some fluctuation and report engagement rate rather than raw totals to sponsors. Clubs working with betting or alcohol partners should review branded content carefully against TikTok's regulated-goods rules, and anyone tempted by bought growth should note that these services are a prime enforcement target."
-    ],
-    "relevant": true,
-    "published_at": "2026-10-25T22:13:46+00:00",
-    "created_at": "2026-10-27T12:04:45.467727+00:00",
-    "edited_at": null,
-    "slug": "tiktok-us-removes-14-6-million-fake-accounts-and-781-million-fake-39",
-    "meta_title": null,
-    "meta_description": null,
-    "takeaways": [],
-    "faq": [],
-    "image_url": "https://imgproxy.divecdn.com/12K6ogX9lcgDYYC0J9LHBG_Vz43JSghdwOStO8_Cc34/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS90aWt0b2tfdXNkc2p2LnBuZw==.webp",
-    "es": {
-      "faq": [],
-      "model": "claude-sonnet-5-5",
-      "title": "TikTok EE. UU. elimina 14,6 millones de cuentas falsas y 781 millones de seguidores falsos en el segundo trimestre",
-      "tokens": {
-        "in": 1476,
-        "out": 773
-      },
-      "excerpt": "",
-      "cta_text": "",
-      "body_html": "",
-      "cta_title": "",
-      "image_alt": "",
-      "takeaways": [],
-      "meta_title": "",
-      "paragraphs": [
-        "TikTok USDS, el grupo con sede en EE. UU. que gestiona las operaciones estadounidenses de la app desde enero, ha publicado su segundo informe de cumplimiento, que abarca de abril a junio. Eliminó 14,6 millones de cuentas falsas, bloqueó 64,8 millones de cuentas de spam en el registro, retiró 781,4 millones de seguidores falsos y detuvo 403,2 millones de solicitudes de seguimiento falsas, un claro aumento respecto al primer trimestre. También aumentaron las eliminaciones de vídeos y las advertencias o desmonetizaciones en directos.",
-        "La mayoría de las retiradas de vídeos correspondieron a bienes y servicios regulados, una categoría amplia que incluye apuestas, alcohol, productos falsificados y servicios que venden likes, visualizaciones y seguidores falsos. TikTok también explicó que desarticuló 30 redes encubiertas que intentaban manipular el engagement, eliminando más de 76.000 cuentas y 4,8 millones de publicaciones, mientras intensifica sus esfuerzos de integridad de cara a las elecciones de mitad de mandato de EE. UU.",
-        "Para los equipos de redes sociales deportivas, las limpiezas más amplias de seguidores falsos pueden provocar caídas repentinas en el número de seguidores, así que espera cierta fluctuación e informa a los patrocinadores de la tasa de engagement en lugar de los totales brutos. Los clubes que trabajan con socios de apuestas o alcohol deben revisar con cuidado el contenido de marca según las normas de TikTok sobre bienes regulados, y quien se sienta tentado por el crecimiento comprado debe tener en cuenta que estos servicios son un objetivo prioritario de las medidas de cumplimiento."
-      ],
-      "image_title": "",
-      "translated_at": "2026-10-27T13:15:03.983Z",
-      "source_changed": "2026-10-27T12:04:45.467727+00:00",
-      "meta_description": ""
-    }
-  },
-  {
     "id": 17,
     "url": "https://www.socialmediatoday.com/news/tiktok-us-shares-second-quarter-account-enforcement-data/833907/",
     "source_name": "Social Media Today",
@@ -2201,6 +2248,53 @@
       "image_title": "",
       "translated_at": "2026-10-26T22:11:27.862Z",
       "source_changed": "2026-10-26T22:03:14.65779+00:00",
+      "meta_description": ""
+    }
+  },
+  {
+    "id": 39,
+    "url": "https://www.socialmediatoday.com/news/tiktok-us-shares-q2-account-enforcement-data/833907/",
+    "source_name": "Social Media Today",
+    "platform": "tiktok",
+    "title": "TikTok US removes 14.6 million fake accounts and 781 million fake followers in Q2",
+    "paragraphs": [
+      "TikTok USDS, the US-based group running the app's American operations since January, released its second enforcement report, covering April to June. It removed 14.6 million fake accounts, blocked 64.8 million spam accounts at sign-up, stripped 781.4 million fake followers and stopped 403.2 million fake follow requests, a clear jump on the first quarter. Video removals and livestream warnings or demonetizations also rose.",
+      "Most video takedowns fell under regulated goods and services, a broad category covering gambling, alcohol, counterfeit products and services selling fake likes, views and followers. TikTok also said it disrupted 30 covert networks trying to manipulate engagement, removing more than 76,000 accounts and 4.8 million posts, as it ramps up integrity efforts ahead of the US midterms.",
+      "For sports social teams, larger fake-follower sweeps can cause sudden drops in follower counts, so expect some fluctuation and report engagement rate rather than raw totals to sponsors. Clubs working with betting or alcohol partners should review branded content carefully against TikTok's regulated-goods rules, and anyone tempted by bought growth should note that these services are a prime enforcement target."
+    ],
+    "relevant": true,
+    "published_at": "2026-10-25T22:13:46+00:00",
+    "created_at": "2026-10-27T12:04:45.467727+00:00",
+    "edited_at": null,
+    "slug": "tiktok-us-removes-14-6-million-fake-accounts-and-781-million-fake-39",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/12K6ogX9lcgDYYC0J9LHBG_Vz43JSghdwOStO8_Cc34/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS90aWt0b2tfdXNkc2p2LnBuZw==.webp",
+    "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
+      "title": "TikTok EE. UU. elimina 14,6 millones de cuentas falsas y 781 millones de seguidores falsos en el segundo trimestre",
+      "tokens": {
+        "in": 1476,
+        "out": 773
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [],
+      "meta_title": "",
+      "paragraphs": [
+        "TikTok USDS, el grupo con sede en EE. UU. que gestiona las operaciones estadounidenses de la app desde enero, ha publicado su segundo informe de cumplimiento, que abarca de abril a junio. Eliminó 14,6 millones de cuentas falsas, bloqueó 64,8 millones de cuentas de spam en el registro, retiró 781,4 millones de seguidores falsos y detuvo 403,2 millones de solicitudes de seguimiento falsas, un claro aumento respecto al primer trimestre. También aumentaron las eliminaciones de vídeos y las advertencias o desmonetizaciones en directos.",
+        "La mayoría de las retiradas de vídeos correspondieron a bienes y servicios regulados, una categoría amplia que incluye apuestas, alcohol, productos falsificados y servicios que venden likes, visualizaciones y seguidores falsos. TikTok también explicó que desarticuló 30 redes encubiertas que intentaban manipular el engagement, eliminando más de 76.000 cuentas y 4,8 millones de publicaciones, mientras intensifica sus esfuerzos de integridad de cara a las elecciones de mitad de mandato de EE. UU.",
+        "Para los equipos de redes sociales deportivas, las limpiezas más amplias de seguidores falsos pueden provocar caídas repentinas en el número de seguidores, así que espera cierta fluctuación e informa a los patrocinadores de la tasa de engagement en lugar de los totales brutos. Los clubes que trabajan con socios de apuestas o alcohol deben revisar con cuidado el contenido de marca según las normas de TikTok sobre bienes regulados, y quien se sienta tentado por el crecimiento comprado debe tener en cuenta que estos servicios son un objetivo prioritario de las medidas de cumplimiento."
+      ],
+      "image_title": "",
+      "translated_at": "2026-10-27T13:15:03.983Z",
+      "source_changed": "2026-10-27T12:04:45.467727+00:00",
       "meta_description": ""
     }
   },

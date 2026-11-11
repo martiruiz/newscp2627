@@ -36,10 +36,10 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/608/608512.jpg?v=mw9dk9jb"
   },
   {
-    "account": "433",
-    "account_platform": "instagram",
-    "views": 6877067,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/590/590758.jpg?v=mw2mgy1g"
+    "account": "espn",
+    "account_platform": "tiktok",
+    "views": 7000000,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/611/611504.jpg?v=mwat1iht"
   },
   {
     "account": "433",
@@ -78,12 +78,6 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/610/610413.jpg?v=mwas9sr0"
   },
   {
-    "account": "manutd",
-    "account_platform": "tiktok",
-    "views": 4200000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/592/592383.jpg?v=mw2mpcxa"
-  },
-  {
     "account": "isabelapagliari",
     "account_platform": "instagram",
     "views": 4199195,
@@ -114,10 +108,40 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/594/594605.jpg?v=mw3azzxc"
   },
   {
+    "account": "realmadrid",
+    "account_platform": "tiktok",
+    "views": 3200000,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/611/611360.jpg?v=mwat1gxl"
+  },
+  {
+    "account": "realmadrid",
+    "account_platform": "instagram",
+    "views": 3194141,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/609/609712.jpg?v=mwas72vw"
+  },
+  {
     "account": "houseofhighlights",
     "account_platform": "instagram",
     "views": 3123090,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/593/593418.jpg?v=mw3aswuf"
+  },
+  {
+    "account": "espn",
+    "account_platform": "tiktok",
+    "views": 3100000,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/611/611518.jpg?v=mwat1o0w"
+  },
+  {
+    "account": "laliga",
+    "account_platform": "instagram",
+    "views": 3055183,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/609/609665.jpg?v=mwas73ee"
+  },
+  {
+    "account": "nfl",
+    "account_platform": "instagram",
+    "views": 2978113,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/610/610596.jpg?v=mwasp9q6"
   },
   {
     "account": "insaneshayne1",
@@ -126,57 +150,33 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/593/593149.jpg?v=mw3a118u"
   },
   {
+    "account": "fabriziorom",
+    "account_platform": "instagram",
+    "views": 2964000,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/611/611013.jpg?v=mwaspyi8"
+  },
+  {
     "account": "fcbarcelona",
     "account_platform": "instagram",
     "views": 2944895,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/601/601018.jpg?v=mw952dc1"
   },
   {
+    "account": "433",
+    "account_platform": "instagram",
+    "views": 2904109,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/609/609684.jpg?v=mwas74f4"
+  },
+  {
+    "account": "wwe",
+    "account_platform": "tiktok",
+    "views": 2900000,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/611/611536.jpg?v=mwat1pq1"
+  },
+  {
     "account": "steelers",
     "account_platform": "instagram",
     "views": 2890088,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/595/595128.jpg?v=mw6ioi89"
-  },
-  {
-    "account": "433",
-    "account_platform": "instagram",
-    "views": 2879363,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/593/593403.jpg?v=mw3anoxz"
-  },
-  {
-    "account": "nfl",
-    "account_platform": "instagram",
-    "views": 2855969,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/608/608396.jpg?v=mw9dk0ba"
-  },
-  {
-    "account": "realmadrid",
-    "account_platform": "instagram",
-    "views": 2851670,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/593/593452.jpg?v=mw3asxp9"
-  },
-  {
-    "account": "nba",
-    "account_platform": "tiktok",
-    "views": 2800000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/594/594680.jpg?v=mw3b03dr"
-  },
-  {
-    "account": "miamiheat",
-    "account_platform": "instagram",
-    "views": 2768494,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/610/610283.jpg?v=mwas9n23"
-  },
-  {
-    "account": "espn",
-    "account_platform": "tiktok",
-    "views": 2700000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/611/611518.jpg?v=mwat1o0w"
-  },
-  {
-    "account": "liverpoolfc",
-    "account_platform": "instagram",
-    "views": 2654268,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/601/601024.jpg?v=mw952bs7"
   }
 ]
