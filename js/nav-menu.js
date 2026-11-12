@@ -32,6 +32,7 @@
         { icon: "file-text", title: "Blog", href: "blog.html", acc: "244, 114, 182" },
         { icon: "newspaper", title: "Social News", href: "news.html", acc: "255, 92, 92" },
         { icon: "briefcase", title: "Jobs", href: "jobs.html", acc: "52, 211, 153" },
+        { icon: "book-open", title: "SCP Knowledge Base", href: "help/", acc: "96, 165, 250" },
       ],
       featured: { eyebrow: "What is SCP?", title: "Sports Content Playbook in 2 minutes", href: "index.html#what-is-scp" },
     },
@@ -76,6 +77,7 @@
     mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/>',
     search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
     newspaper: '<path d="M15 18h-5M18 14h-8"/><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-4 0v-9a2 2 0 0 1 2-2h2"/><rect x="10" y="6" width="8" height="4" rx="1"/>',
+    "book-open": '<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>',
     briefcase: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
   };
   const icon = (n) => `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ""}</svg>`;
@@ -115,7 +117,6 @@
         </div>
         <div class="mm-rlist">${m.cards.filter(show).map((c) => `<a class="mm-rrow${c.member ? " mm-rrow-gold" : ""}" href="${esc(c.href)}" style="--acc:${c.acc}"><span class="mm-ic">${icon(c.icon)}</span>
           <span class="mm-rrow-t"><b>${esc(c.title)}</b></span>${c.member ? `<span class="mm-rcount" data-rv-n hidden></span>` : `<span class="mm-rarrow" aria-hidden="true">→</span>`}</a>`).join("")}
-          <a class="mm-rfaq" href="help/"><b>SCP Knowledge Base</b><small>Guides and answers to every question you have about SCP.</small></a>
         </div>
       </div>
       ${m.featured ? `<a class="mm-featured mm-featured-sm"${np} href="${esc(m.featured.href)}"><span><i>${esc(m.featured.eyebrow)}</i><b>${esc(m.featured.title)}</b></span>${icon("arrow-up-right")}</a>` : ""}</div>`;
