@@ -176,3 +176,9 @@
 :root[data-theme="light"] .kb-body th { color: #121b33; }
 :root[data-theme="light"] .kb-body th, :root[data-theme="light"] .kb-body td { border-color: rgba(18, 27, 51, 0.1); }
 .kb-results small { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* ---------- Product screenshots ---------- */
+.kb-shot { margin: 22px 0 26px; }
+.kb-shot img { display: block; width: 100%; height: auto; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.9); background: #0e1730; }
+.kb-shot figcaption { margin-top: 10px; color: var(--muted); font-size: 14px; line-height: 1.5; text-align: center; }
+:root[data-theme="light"] .kb-shot img { border-color: rgba(18, 27, 51, 0.12); }

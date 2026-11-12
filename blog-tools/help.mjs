@@ -58,6 +58,49 @@ const T = {
   tryText: ["Start your 7-day free trial and find your next content idea in the Content Library.", "Empieza tu prueba gratis de 7 días y encuentra tu próxima idea de contenido en la Biblioteca."],
   tryBtn: ["Try it for free", "Pruébalo gratis"],
 };
+// Screenshots of the real product (assets/help/<lang>/<name>.jpg, 800×487, captured from the site in each language):
+// which ones each article shows, and after which of its sections (0 = the first)
+const SHOT_TXT = {
+  library: ["The Content Library: the filters on the left, the posts on the right.", "La Biblioteca de contenido: los filtros a la izquierda y los posts a la derecha."],
+  search: ["A sentence search turned into filters: Overperforming, Reel and Signing.", "Una búsqueda escrita como frase, convertida en filtros: Overperforming, Reel y Fichaje."],
+  analysis: ["The AI analysis of a post: summary, hook with its template and why it works.", "El análisis con IA de un post: resumen, hook con su plantilla y por qué funciona."],
+  ready: ["Ready to use: three hook ideas, a shot list and a caption draft.", "Listo para usar: tres ideas de hook, una lista de planos y un borrador del texto."],
+  planner: ["The Content Plan: the week by day and hour, statuses, weekly base and the No date tray.", "El Plan de contenido: la semana por día y hora, estados, base semanal y la bandeja Sin fecha."],
+  "plan-panel": ["The Content Plan panel inside the library: drag posts onto a day or use Fill my week.", "El panel del Plan de contenido dentro de la biblioteca: arrastra posts a un día o usa Llenar mi semana."],
+  plans: ["The plans on the pricing page (monthly prices, per user).", "Los planes en la página de precios (precios mensuales, por usuario)."],
+};
+const SHOTS = {
+  "what-is-sports-content-playbook": [["library", 0], ["analysis", 1]],
+  "how-to-get-started-with-sports-content-playbook": [["library", 1]],
+  "main-features-of-sports-content-playbook": [["library", 0], ["analysis", 1], ["planner", 2]],
+  "find-your-first-content-idea-in-5-minutes": [["search", 1], ["ready", 3]],
+  "how-to-use-the-content-library": [["library", 0], ["analysis", 2]],
+  "how-to-search-and-filter-content-ideas": [["search", 0]],
+  "top-picks-replicable-ideas-and-overperforming": [["library", 0]],
+  "how-to-analyze-a-content-idea": [["analysis", 1], ["ready", 2]],
+  "how-to-adapt-a-content-idea-to-your-club": [["ready", 1]],
+  "how-to-find-trending-sports-content": [["search", 1]],
+  "how-does-ai-work-in-sports-content-playbook": [["analysis", 0], ["ready", 1]],
+  "how-to-generate-content-ideas-with-ai": [["search", 1], ["ready", 2]],
+  "how-to-create-captions-hooks-and-scripts-with-ai": [["ready", 0]],
+  "how-to-get-better-results-from-ai-suggestions": [["analysis", 1]],
+  "how-to-use-the-content-planner": [["planner", 0], ["plan-panel", 2]],
+  "how-to-build-a-monthly-content-plan-for-your-club": [["planner", 1]],
+  "how-to-organize-your-content-workflow-and-team": [["planner", 1]],
+  "starter-plus-and-pro-plans-compared": [["plans", 0]],
+  "how-does-the-7-day-free-trial-work": [["plans", 0]],
+  "how-to-manage-your-subscription-and-billing": [["plans", 0]],
+  "how-to-build-a-sports-content-strategy-with-scp": [["planner", 2]],
+  "how-to-turn-one-content-idea-into-multiple-posts": [["ready", 1], ["plan-panel", 3]],
+};
+const shotSrc = (name, l) => `assets/help/${l}/${name}.jpg`;
+const shot = (name, l) => `<figure class="kb-shot"><img src="${shotSrc(name, l)}" alt="${SHOT_TXT[name][l === "es" ? 1 : 0]}" width="800" height="487" loading="lazy"><figcaption>${SHOT_TXT[name][l === "es" ? 1 : 0]}</figcaption></figure>`;
+// the article's sections with its screenshots placed after the chosen ones (past the last section: after the last)
+const withShots = (a, l) => a[l].body.map((sec, i, all) => {
+  const here = (SHOTS[a.slug] || []).filter(([, at]) => Math.min(at, all.length - 1) === i);
+  return here.length ? { ...sec, html: `${sec.html}\n${here.map(([n]) => shot(n, l)).join("\n")}` } : sec;
+});
+
 const START = ["what-is-sports-content-playbook", "how-to-use-the-content-library", "how-does-ai-work-in-sports-content-playbook", "how-to-set-up-your-club-in-my-club"];
 const START_LABEL = { en: ["Discover SCP", "Explore the Content Library", "Use the AI tools", "Set up My Club"], es: ["Descubre SCP", "Explora la Biblioteca", "Usa las herramientas de IA", "Configura My Club"] };
 
@@ -83,7 +126,7 @@ export function buildHelp({ ROOT, SITE, header, footer, withSiteVersions, write,
     return `<div class="kb-ban${big ? " kb-ban-lg" : ""}" style="--c:${c.c}" aria-hidden="true"><span class="kb-ban-ic">${svg(c.icon)}</span><span class="kb-ban-l">${esc(a[l].label)}</span></div>`;
   };
   const card = (a, l) => `<a class="kb-card" href="${href(a, l)}" data-kb-card>${banner(a, l)}<span class="kb-card-b"><b>${esc(a[l].title)}</b>${a.recommended ? `<em class="kb-rec">${tx("recommended", l)}</em>` : ""}</span></a>`;
-  const head = (l, { title, desc, canonical, altPath, ld = [] }) => `<!doctype html>
+  const head = (l, { title, desc, canonical, altPath, ld = [], image = null }) => `<!doctype html>
 <html lang="${l}" data-page-lang="${l}">
 <head>
   <meta charset="utf-8">
@@ -98,7 +141,7 @@ export function buildHelp({ ROOT, SITE, header, footer, withSiteVersions, write,
   <meta property="og:title" content="${esc(title)}">
   <meta property="og:description" content="${esc(desc)}">
   <meta property="og:url" content="${canonical}">
-  <meta property="og:image" content="${SITE}/assets/hero-library.png">
+  <meta property="og:image" content="${image || `${SITE}/assets/hero-library.png`}">
   <meta name="twitter:card" content="summary_large_image">
 ${ld.map((x) => `  <script type="application/ld+json">${JSON.stringify(x)}</script>`).join("\n")}
   <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-s-32.png">
@@ -106,7 +149,7 @@ ${ld.map((x) => `  <script type="application/ld+json">${JSON.stringify(x)}</scri
   <link rel="apple-touch-icon" href="assets/apple-touch-icon-s.png">
   <link rel="stylesheet" href="css/fonts.css?v=1">
   <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="css/help.css?v=20261112a">
+  <link rel="stylesheet" href="css/help.css?v=20261112b">
   <script src="js/theme.js"></script>
   <script src="js/i18n.js"></script>
 </head>
@@ -141,7 +184,7 @@ ${ld.map((x) => `  <script type="application/ld+json">${JSON.stringify(x)}</scri
       const minutes = Math.max(1, Math.round(bodyWords(a, l) / 220));
       const ld = [
         { "@context": "https://schema.org", "@type": "TechArticle", headline: A.title, description: A.meta_description, inLanguage: l, dateModified: a.updated, datePublished: a.published || a.updated,
-          articleSection: c[l], keywords: (a.keywords || []).join(", "), author: { "@type": "Organization", name: "Sports Content Playbook" },
+          articleSection: c[l], keywords: (a.keywords || []).join(", "), ...(SHOTS[a.slug] ? { image: SHOTS[a.slug].map(([n]) => `${SITE}/${shotSrc(n, l)}`) } : {}), author: { "@type": "Organization", name: "Sports Content Playbook" },
           publisher: { "@type": "Organization", name: "Sports Content Playbook", logo: { "@type": "ImageObject", url: `${SITE}/assets/icon-logo-lg.png` } }, mainEntityOfPage: url },
         { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [
           { "@type": "ListItem", position: 1, name: tx("home", l), item: `${SITE}/${base(l)}` },
@@ -150,7 +193,7 @@ ${ld.map((x) => `  <script type="application/ld+json">${JSON.stringify(x)}</scri
           { "@type": "ListItem", position: 4, name: A.title, item: url }] },
         ...(A.faq?.length ? [{ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: A.faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: plain(f.a) } })) }] : []),
       ];
-      const page = head(l, { title: A.meta_title, desc: A.meta_description, canonical: url, altPath: `help/${a.slug}.html`, ld }) + `
+      const page = head(l, { title: A.meta_title, desc: A.meta_description, canonical: url, altPath: `help/${a.slug}.html`, ld, image: SHOTS[a.slug] ? `${SITE}/${shotSrc(SHOTS[a.slug][0][0], l)}` : null }) + `
   <main class="kb">
     <div class="container kb-wrap">
       <nav class="kb-crumbs" aria-label="Breadcrumb"><a href="${base(l)}help/">${T.kb[0]}</a><span>›</span><a href="${base(l)}help/#${a.cat}">${esc(c[l])}</a></nav>
@@ -161,7 +204,7 @@ ${ld.map((x) => `  <script type="application/ld+json">${JSON.stringify(x)}</scri
           <p class="kb-meta"><span class="kb-tag" style="--c:${c.c}">${esc(c[l])}</span>${a.recommended ? `<span class="kb-tag kb-tag-rec">${tx("recommended", l)}</span>` : ""}<span>${tx("updated", l)} <time datetime="${a.updated}">${fmt(a.updated, l)}</time> · ${minutes} ${tx("minRead", l)}</span></p>
           <p class="kb-lead">${esc(A.summary)}</p>
           <div class="kb-body">
-${A.body.map((s) => `            <section id="${s.id}"><h2>${esc(s.h)}</h2>\n${s.html}\n            </section>`).join("\n")}
+${withShots(a, l).map((s) => `            <section id="${s.id}"><h2>${esc(s.h)}</h2>\n${s.html}\n            </section>`).join("\n")}
 ${A.faq?.length ? `            <section id="faq" class="kb-faq"><h2>${tx("faq", l)}</h2>\n${A.faq.map((f) => `              <details><summary>${esc(f.q)}</summary><p>${f.a}</p></details>`).join("\n")}\n            </section>` : ""}
           </div>
 ${next ? `          <a class="kb-next" href="${href(next, l)}" style="--c:${CATS[next.cat].c}"><span class="kb-next-ic">${svg(CATS[next.cat].icon)}</span><span><em>${tx("next", l)}</em><b>${esc(next[l].title)}</b></span>${svg("arrow", "kb-next-go")}</a>
