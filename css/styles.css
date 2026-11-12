@@ -9811,3 +9811,15 @@ button.org-plan-pick { cursor: pointer; padding-right: 12px; }
   /* a long name wraps inside its row, the remove button stays in */
   .pf-acc .pf-pick { white-space: normal; overflow-wrap: anywhere; }
 }
+
+/* AI analysis v2: how the post performed against its account, and a ready-to-use playbook */
+.an-grid > .an-b-perf, .an-grid > .an-b-play { grid-column: 1 / -1; }
+.an-verdict.is-overperformed { background: rgba(0, 216, 91, 0.12); border-color: rgba(0, 216, 91, 0.35); color: #4ee38a; }
+.an-b-play h4 { margin: 14px 0 6px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.an-b-play h4:first-of-type { margin-top: 2px; }
+.an-hooks { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.an-hooks li { position: relative; padding: 10px 92px 10px 14px; border-radius: 12px; background: var(--bg); border: 0.5px solid var(--border, rgba(255, 255, 255, 0.08)); }
+.an-shots { display: grid; gap: 8px; margin: 0; padding-left: 20px; }
+.an-shots p { margin-top: 2px; color: var(--muted); }
+.an-b-play .an-template { margin-top: 0; }
+@media (max-width: 600px) { .an-hooks li, .an-b-play .an-template { padding-right: 14px; padding-bottom: 48px; } .an-hooks .an-copy, .an-b-play .an-copy { top: auto; bottom: 10px; transform: none; } }

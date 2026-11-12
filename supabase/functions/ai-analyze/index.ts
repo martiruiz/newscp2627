@@ -12,11 +12,13 @@
 // reads it in Spanish and kept inside the analysis (result.es, same shape), so it's made only once per analysis.
 //
 // Secrets: ANTHROPIC_API_KEY; optional AI_MODEL (default claude-sonnet-5-5: faster and cheaper than Opus for this task),
-//          AI_PRICE_IN_PER_MTOK / AI_PRICE_OUT_PER_MTOK (USD per million tokens, to record the real cost).
+//          AI_PRICE_IN_PER_MTOK / AI_PRICE_OUT_PER_MTOK (USD per million tokens; without them, PRICES below records the real cost).
 // SUPABASE_URL, SUPABASE_ANON_KEY and SUPABASE_SERVICE_ROLE_KEY are provided by Supabase.
 import Anthropic from "npm:@anthropic-ai/sdk@0.129.0";
 
-const PROMPT_VERSION = "v1";
+const PROMPT_VERSION = "v1";   // the key unlocks and stored analyses share (billing.sql); the prompt itself is ANALYSIS_VERSION
+const ANALYSIS_VERSION = "v2"; // v2: the post's real numbers against its account, and a ready-to-use playbook
+const PRICES: Record<string, [number, number]> = { "claude-sonnet-5-5": [2, 10], "claude-sonnet-5": [2, 10] }; // USD per million tokens in / out
 const env = (k: string) => Deno.env.get(k) ?? "";
 const CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, apikey, content-type", "Access-Control-Allow-Methods": "POST, OPTIONS" };
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...CORS, "Content-Type": "application/json" } });
@@ -33,6 +35,16 @@ const SYSTEM = `You are the content analyst of Sports Content Playbook (SCP), a 
 You receive one social media post (its image or video cover, its caption and its tags). Explain why it works and how a club could reuse the idea.
 Write in English, concise and specific to what you can see. Never invent numbers or results. Never identify people by their face; only name people when the caption or on-screen text says who they are. Analysis, never criticism.
 For videos you only see the cover image: base the visual breakdown on what the cover and caption show and keep it short.`;
+// v2 adds these rules and the performance + playbook fields; LIVE_V2 says whether members get it (an admin can preview it first)
+const LIVE_V2 = false;
+const SYSTEM_V2 = `
+For a single static image there is no timeline: return an empty visualBreakdown and give every scroll stopper t = 0. For a carousel, t is the slide number.
+
+You also get the post's real numbers and the median of the same account's posts that quarter (Numbers). Use only those numbers.
+performance.verdict: copy the Verdict you are given.
+In performance.explanation say in one or two sentences how the post did against what is usual for this account (quote the multiple, e.g. "3.4x the account's median views") and which element of the post most likely explains it. With "no_data" or "too_early", say so in one sentence and explain nothing else.
+Let the verdict shape whyItWorks: for an underperforming post, explain what still makes it worth studying instead of claiming it worked.
+playbook is what a club's social media team can use today: three hookVariants (opening lines or on-screen texts in the post's spirit, each a different angle, in English, written for any club, no real names), a shotList of 3 to 6 shots or slides to produce (shot: what to film or design; note: one practical tip), and a captionDraft of at most 3 short lines with [placeholders] for the club's own names.`;
 const SCHEMA = {
   type: "object", additionalProperties: false,
   properties: {
@@ -44,13 +56,20 @@ const SCHEMA = {
     visualBreakdown: { type: "array", items: { type: "object", additionalProperties: false, properties: { t: { type: "integer" }, shot: { type: "string" }, onScreenText: { type: "string" }, why: { type: "string" } }, required: ["t", "shot", "onScreenText", "why"] } },
     scrollStoppers: { type: "array", items: { type: "object", additionalProperties: false, properties: { t: { type: "integer" }, moment: { type: "string" }, why: { type: "string" } }, required: ["t", "moment", "why"] } },
     replicable: { type: "object", additionalProperties: false, properties: { is: { type: "boolean" }, howToAdapt: { type: "string" } }, required: ["is", "howToAdapt"] },
+    performance: { type: "object", additionalProperties: false, properties: { verdict: { type: "string", enum: ["overperformed", "in_line", "underperformed", "too_early", "no_data"] }, explanation: { type: "string" } }, required: ["verdict", "explanation"] },
+    playbook: { type: "object", additionalProperties: false, properties: {
+      hookVariants: { type: "array", items: { type: "string" } },
+      shotList: { type: "array", items: { type: "object", additionalProperties: false, properties: { shot: { type: "string" }, note: { type: "string" } }, required: ["shot", "note"] } },
+      captionDraft: { type: "string" } }, required: ["hookVariants", "shotList", "captionDraft"] },
     topics: { type: "array", items: { type: "string" } },
     moment: { type: "string", enum: ["matchday", "signing", "kit", "sponsor", "behind_the_scenes", "fans", "milestone", "community", "ticketing", "training", "humour", "other"] },
     style: { type: "string", enum: ["talking_head", "pov", "meme", "graphic", "montage", "interview", "challenge", "vlog", "live_action", "other"] },
     language: { type: "string" },
   },
-  required: ["summary", "whyItWorks", "hook", "format", "angle", "visualBreakdown", "scrollStoppers", "replicable", "topics", "moment", "style", "language"],
+  required: ["summary", "whyItWorks", "hook", "format", "angle", "visualBreakdown", "scrollStoppers", "replicable", "performance", "playbook", "topics", "moment", "style", "language"],
 };
+const { performance: _p, playbook: _b, ...V1_PROPS } = SCHEMA.properties;
+const SCHEMA_V1 = { ...SCHEMA, properties: V1_PROPS, required: SCHEMA.required.filter((k) => k !== "performance" && k !== "playbook") };
 
 const toBase64 = async (img: Response) => {
   const bytes = new Uint8Array(await img.arrayBuffer());
@@ -96,13 +115,18 @@ const textOf = (a: any) => ({
   scrollStoppers: (a.scrollStoppers || []).map((x: any) => ({ moment: x.moment || "", why: x.why || "" })),
   replicable: { howToAdapt: a.replicable?.howToAdapt || "" },
   topics: (a.topics || []).map(String),
+  ...(a.performance ? { performance: { explanation: a.performance.explanation || "" } } : {}),
+  ...(a.playbook ? { playbook: { hookVariants: (a.playbook.hookVariants || []).map(String), shotList: (a.playbook.shotList || []).map((x: any) => ({ shot: x.shot || "", note: x.note || "" })), captionDraft: a.playbook.captionDraft || "" } } : {}),
 });
 const s = { type: "string" };
 const obj = (keys: string[]) => ({ type: "object", additionalProperties: false, properties: Object.fromEntries(keys.map((k) => [k, s])), required: keys });
-const ES_SCHEMA = { type: "object", additionalProperties: false, required: ["summary", "whyItWorks", "hook", "format", "angle", "visualBreakdown", "scrollStoppers", "replicable", "topics"], properties: {
+const ES_BASE = ["summary", "whyItWorks", "hook", "format", "angle", "visualBreakdown", "scrollStoppers", "replicable", "topics"];
+const esSchema = (a: any) => ({ type: "object", additionalProperties: false, required: [...ES_BASE, ...(a.performance ? ["performance"] : []), ...(a.playbook ? ["playbook"] : [])], properties: {
   summary: s, whyItWorks: s, hook: obj(["category", "template", "whyItWorks"]), format: obj(["category", "type", "visualLayout", "pacing"]), angle: obj(["topic", "angle"]),
   visualBreakdown: { type: "array", items: obj(["shot", "why"]) }, scrollStoppers: { type: "array", items: obj(["moment", "why"]) },
-  replicable: obj(["howToAdapt"]), topics: { type: "array", items: s } } };
+  replicable: obj(["howToAdapt"]), topics: { type: "array", items: s },
+  performance: obj(["explanation"]),
+  playbook: { type: "object", additionalProperties: false, required: ["hookVariants", "shotList", "captionDraft"], properties: { hookVariants: { type: "array", items: s }, shotList: { type: "array", items: obj(["shot", "note"]) }, captionDraft: s } } } });
 
 async function spanish(postId: number, userId: string) {
   // only someone who can read the analysis (their unlock is completed) asks for its Spanish version
@@ -116,7 +140,7 @@ async function spanish(postId: number, userId: string) {
   const src = textOf(a);
   const res: any = await claude.messages.create({
     model: env("TRANSLATE_MODEL") || "claude-sonnet-5-5", max_tokens: 8000,
-    output_config: { format: { type: "json_schema", schema: ES_SCHEMA } },
+    output_config: { format: { type: "json_schema", schema: esSchema(a) } },
     system: TRANSLATE, messages: [{ role: "user", content: JSON.stringify(src) }],
   } as never);
   if (res.stop_reason !== "end_turn") return json({ error: `Translation stopped: ${res.stop_reason}` }, 502);
@@ -129,11 +153,59 @@ async function spanish(postId: number, userId: string) {
     format: { ...a.format, ...t.format },
     angle: { ...a.angle, ...t.angle },
     replicable: { ...a.replicable, ...t.replicable },
+    ...(a.performance ? { performance: { ...a.performance, ...t.performance } } : {}),
     visualBreakdown: (a.visualBreakdown || []).map((x: any, i: number) => ({ ...x, ...(t.visualBreakdown?.[i] || {}) })),
     scrollStoppers: (a.scrollStoppers || []).map((x: any, i: number) => ({ ...x, ...(t.scrollStoppers?.[i] || {}) })),
   };
   await rest(`ai_analyses?id=eq.${row.id}`, { method: "PATCH", body: JSON.stringify({ result: { ...a, es } }), headers: { Prefer: "return=minimal" } });
   return json({ status: "ok", es });
+}
+
+// The verdict comes from the numbers, never from the model: too early under 48 h, then views (or likes + comments) against the account median
+function verdictOf(n: any) {
+  if (!n || n.numbers_counted_hours_after_publishing == null) return "no_data";
+  if (n.numbers_counted_hours_after_publishing < 48) return "too_early";
+  const r = n.views_vs_median ?? n.engagement_vs_median;
+  if (r == null) return "no_data";
+  return r >= 2 ? "overperformed" : r <= 0.5 ? "underperformed" : "in_line";
+}
+
+// Post + image -> Claude -> the analysis and what it cost (v2: with the post's numbers and the playbook)
+async function analyse(postId: number, v2: boolean) {
+  const [post] = await (await rest(`content_ideas?select=id,url,title,cover_url,content_idea_tags(idea_catalog(category,name))&id=eq.${postId}`)).json();
+  if (!post) throw new Error("Post not found");
+  const tags: Record<string, string[]> = {};
+  for (const t of post.content_idea_tags || []) if (t.idea_catalog) (tags[t.idea_catalog.category] ||= []).push(t.idea_catalog.name);
+  const numbers = v2 ? await rpc("post_benchmark", { p_post_id: postId }).catch(() => ({})) : null;
+  const image = (await storedCover(post.cover_url)) || (await coverImage(post.url));
+  if (!image) throw new Error("Couldn't load the post image (removed or private post)");
+
+  // Claude
+  const model = env("AI_MODEL") || "claude-sonnet-5-5";
+  const claude = new Anthropic({ apiKey: env("ANTHROPIC_API_KEY") });
+  const response = await claude.beta.messages.create({
+    model,
+    max_tokens: 16000,
+    betas: ["server-side-fallback-2026-07-01"],
+    fallbacks: "default",
+    output_config: { effort: "medium", format: { type: "json_schema", schema: v2 ? SCHEMA : SCHEMA_V1 } },
+    system: v2 ? SYSTEM + SYSTEM_V2 : SYSTEM,
+    messages: [{ role: "user", content: [
+      { type: "image", source: { type: "base64", media_type: image.type, data: image.data } },
+      { type: "text", text: `Tags: ${JSON.stringify(tags)}\nFormat: ${tags.format?.[0] || "unknown"}${v2 ? `\nMedia: ${numbers?.media_type || "unknown"}\nNumbers: ${JSON.stringify(numbers || {})}\nVerdict: ${verdictOf(numbers)}` : ""}\nCaption:\n${(post.title || "").slice(0, 2000)}` },
+    ] }],
+  } as never);
+  // deno-lint-ignore no-explicit-any
+  const res = response as any;
+  if (res.stop_reason === "refusal" || res.stop_reason === "max_tokens") throw new Error(`Model stopped: ${res.stop_reason}`);
+  const text = res.content.find((b: { type: string }) => b.type === "text")?.text;
+  const analysis = { ...JSON.parse(text), basis: "image", ...(v2 ? { version: ANALYSIS_VERSION } : {}) };
+  if (v2) analysis.performance = { ...analysis.performance, verdict: verdictOf(numbers) };
+  const inTok = res.usage?.input_tokens ?? 0, outTok = res.usage?.output_tokens ?? 0;
+  const [pIn, pOut] = PRICES[res.model || model] || [0, 0];
+  const cost = (inTok * Number(env("AI_PRICE_IN_PER_MTOK") || pIn) + outTok * Number(env("AI_PRICE_OUT_PER_MTOK") || pOut)) / 1e6;
+
+  return { analysis, model: res.model || model, inTok, outTok, cost, numbers };
 }
 
 Deno.serve(async (req) => {
@@ -144,9 +216,15 @@ Deno.serve(async (req) => {
   const userRes = await fetch(`${env("SUPABASE_URL")}/auth/v1/user`, { headers: { apikey: env("SUPABASE_ANON_KEY"), Authorization: req.headers.get("Authorization") ?? "" } });
   if (!userRes.ok) return json({ error: "Not signed in" }, 401);
   const user = await userRes.json();
-  const { post_id, lang } = await req.json().catch(() => ({}));
+  const { post_id, lang, preview } = await req.json().catch(() => ({}));
   const postId = Number(post_id);
   if (!postId) return json({ error: "post_id required" }, 400);
+  // Admins only: the v2 analysis of any post, returned and not stored (nothing unlocked, nothing charged)
+  if (preview) {
+    const admin = await (await fetch(`${env("SUPABASE_URL")}/rest/v1/rpc/is_admin`, { method: "POST", headers: { apikey: env("SUPABASE_ANON_KEY"), Authorization: req.headers.get("Authorization") ?? "", "Content-Type": "application/json" }, body: "{}" })).json().catch(() => false);
+    if (admin !== true) return json({ error: "Admins only" }, 403);
+    return analyse(postId, true).then((r) => json(r)).catch((e) => json({ error: String((e as Error)?.message || e) }, 500));
+  }
   if (lang === "es") return spanish(postId, user.id).catch((e) => json({ error: String((e as Error)?.message || e) }, 500));
 
   // Only someone who has paid (pending unlock) can trigger a generation
@@ -159,37 +237,8 @@ Deno.serve(async (req) => {
   if (!claimed) return json({ status: "pending" });
 
   try {
-    const [post] = await (await rest(`content_ideas?select=id,url,title,cover_url,content_idea_tags(idea_catalog(category,name))&id=eq.${postId}`)).json();
-    if (!post) throw new Error("Post not found");
-    const tags: Record<string, string[]> = {};
-    for (const t of post.content_idea_tags || []) if (t.idea_catalog) (tags[t.idea_catalog.category] ||= []).push(t.idea_catalog.name);
-    const image = (await storedCover(post.cover_url)) || (await coverImage(post.url));
-    if (!image) throw new Error("Couldn't load the post image (removed or private post)");
-
-    // 3. Claude
-    const model = env("AI_MODEL") || "claude-sonnet-5-5";
-    const claude = new Anthropic({ apiKey: env("ANTHROPIC_API_KEY") });
-    const response = await claude.beta.messages.create({
-      model,
-      max_tokens: 16000,
-      betas: ["server-side-fallback-2026-07-01"],
-      fallbacks: "default",
-      output_config: { effort: "medium", format: { type: "json_schema", schema: SCHEMA } },
-      system: SYSTEM,
-      messages: [{ role: "user", content: [
-        { type: "image", source: { type: "base64", media_type: image.type, data: image.data } },
-        { type: "text", text: `Tags: ${JSON.stringify(tags)}\nFormat: ${tags.format?.[0] || "unknown"}\nCaption:\n${(post.title || "").slice(0, 2000)}` },
-      ] }],
-    } as never);
-    // deno-lint-ignore no-explicit-any
-    const res = response as any;
-    if (res.stop_reason === "refusal" || res.stop_reason === "max_tokens") throw new Error(`Model stopped: ${res.stop_reason}`);
-    const text = res.content.find((b: { type: string }) => b.type === "text")?.text;
-    const analysis = { ...JSON.parse(text), basis: "image" };
-    const inTok = res.usage?.input_tokens ?? 0, outTok = res.usage?.output_tokens ?? 0;
-    const cost = (inTok * Number(env("AI_PRICE_IN_PER_MTOK") || 0) + outTok * Number(env("AI_PRICE_OUT_PER_MTOK") || 0)) / 1e6;
-
-    await rpc("complete_generation", { p_post_id: postId, p_prompt_version: PROMPT_VERSION, p_result: analysis, p_model: res.model || model, p_input_tokens: inTok, p_output_tokens: outTok, p_cost_usd: cost, p_source: "api" });
+    const { analysis, model, inTok, outTok, cost } = await analyse(postId, LIVE_V2);
+    await rpc("complete_generation", { p_post_id: postId, p_prompt_version: PROMPT_VERSION, p_result: analysis, p_model: model, p_input_tokens: inTok, p_output_tokens: outTok, p_cost_usd: cost, p_source: "api" });
     return json({ status: "unlocked" });
   } catch (e) {
     // 4. Nobody keeps paying for an analysis that couldn't be generated

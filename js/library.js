@@ -2499,6 +2499,12 @@
   }
   const MOMENT_NAMES = { matchday: "Matchday", signing: "Signing", kit: "Kit", sponsor: "Sponsor", behind_the_scenes: "Behind the scenes", fans: "Fans", milestone: "Milestone", community: "Community", ticketing: "Tickets", training: "Training", humour: "Humour", other: "Other" };
   const STYLE_NAMES = { talking_head: "Talking head", pov: "POV", meme: "Meme", graphic: "Graphic", montage: "Montage", interview: "Interview", challenge: "Challenge", vlog: "Vlog", live_action: "Live action", other: "Other" };
+  const VERDICTS = { overperformed: "Above its usual", in_line: "In line with its usual", underperformed: "Below its usual", too_early: "Too early to judge", no_data: "No numbers yet" };
+  const playbookHtml = (b) => [
+    b.hookVariants?.length ? `<h4>Hook ideas</h4><ul class="an-hooks">${b.hookVariants.map((h) => `<li><p>${esc(h)}</p><button class="an-copy" type="button" data-copy="${esc(h)}">${icon("copy")}Copy</button></li>`).join("")}</ul>` : "",
+    b.shotList?.length ? `<h4>Shot list</h4><ol class="an-shots">${b.shotList.map((x) => `<li><b>${esc(x.shot)}</b>${x.note ? `<p>${esc(x.note)}</p>` : ""}</li>`).join("")}</ol>` : "",
+    b.captionDraft ? `<h4>Caption draft</h4><div class="an-template"><p>${esc(b.captionDraft)}</p><button class="an-copy" type="button" data-copy="${esc(b.captionDraft)}">${icon("copy")}Copy</button></div>` : "",
+  ].join("");
   const block = (title, ico, html, cls = "") => (html ? `<section class="an-block ${cls}"><h3>${icon(ico)}${title}</h3>${html}</section>` : "");
   const stamp = (t, basis) => (basis === "video" ? `${t}s` : Number(t) > 0 ? `#${t}` : "-");
 
@@ -2515,11 +2521,13 @@
         ${a.hook.whyItWorks ? `<p>${esc(a.hook.whyItWorks)}</p>` : ""}
         ${a.hook.template ? `<div class="an-template"><span>Template</span><p>${esc(a.hook.template)}</p><button class="an-copy" type="button" data-copy="${esc(a.hook.template)}">${icon("copy")}Copy</button></div>` : ""}` : "", "an-hook-block an-b-hook")}
       ${block("Why it works", "lightbulb", a.whyItWorks ? `<p>${esc(a.whyItWorks)}</p>` : "", "an-b-why")}
+      ${block("How it performed", "target", a.performance?.explanation ? `<span class="an-chip an-verdict is-${esc(a.performance.verdict)}">${VERDICTS[a.performance.verdict] || ""}</span><p>${esc(a.performance.explanation)}</p>` : "", "an-b-perf")}
       ${block("Format", "layout-grid", facts.length ? `<dl class="an-facts">${facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>` : "", "an-b-format")}
       ${block("Angle", "compass", a.angle?.angle || a.angle?.topic ? `${a.angle.topic ? `<span class="an-chip">${esc(a.angle.topic)}</span>` : ""}<p>${esc(a.angle.angle || "")}</p>` : "", "an-b-angle")}
       ${block(a.basis === "video" ? "Visual breakdown" : "Slide by slide", "clapperboard", a.visualBreakdown?.length ? `<ol class="an-timeline">${a.visualBreakdown.map((v) => `<li><span class="an-t">${stamp(v.t, a.basis)}</span><div><b>${esc(v.shot)}</b>${v.onScreenText ? `<q>${esc(v.onScreenText)}</q>` : ""}${v.why ? `<p>${esc(v.why)}</p>` : ""}</div></li>`).join("")}</ol>` : "", "an-b-slides")}
       ${block("Scroll stoppers", "hand", a.scrollStoppers?.length ? `<ul class="an-stoppers">${a.scrollStoppers.map((v) => `<li><span class="an-t">${stamp(v.t, a.basis)}</span><div><b>${esc(v.moment)}</b>${v.why ? `<p>${esc(v.why)}</p>` : ""}</div></li>`).join("")}</ul>` : "", "an-b-stop")}
       ${block(a.replicable?.is === false ? "Hard to replicate" : "How to adapt it to your club", "repeat", a.replicable?.howToAdapt ? `<p>${esc(a.replicable.howToAdapt)}</p>` : "", "an-adapt an-b-adapt")}
+      ${block("Ready to use", "file-text", a.playbook ? playbookHtml(a.playbook) : "", "an-b-play")}
       </div>`;
   }
   // the analysis' topics: in the "Tags and caption" drop-down under the post
@@ -2611,6 +2619,8 @@
       ${sec(a.basis === "video" ? "Visual breakdown" : "Slide by slide", list(a.visualBreakdown, "shot"))}
       ${sec("Scroll stoppers", list(a.scrollStoppers, "moment"))}
       ${sec(a.replicable?.is === false ? "Hard to replicate" : "How to adapt it to your club", para(a.replicable?.howToAdapt))}
+      ${sec("How it performed", a.performance?.explanation ? `<span class="chip">${T(VERDICTS[a.performance.verdict] || "")}</span>${para(a.performance.explanation)}` : "")}
+      ${sec("Ready to use", a.playbook ? `${a.playbook.hookVariants?.length ? `<b>${T("Hook ideas")}</b><ol>${a.playbook.hookVariants.map((h) => `<li>${esc(h)}</li>`).join("")}</ol>` : ""}${a.playbook.shotList?.length ? `<b>${T("Shot list")}</b><ol>${a.playbook.shotList.map((x) => `<li><b>${esc(x.shot)}</b>${para(x.note)}</li>`).join("")}</ol>` : ""}${a.playbook.captionDraft ? `<div class="tpl"><b>${T("Caption draft")}:</b> ${esc(a.playbook.captionDraft)}</div>` : ""}` : "")}
       </div>
       ${a.topics?.length ? `<p>${a.topics.map((t) => `<span class="chip">${esc(t)}</span>`).join("")}</p>` : ""}
       <footer>Sports Content Playbook · ${esc(new Date().toLocaleDateString(window.SCP_LOC || "en-GB"))}</footer>
