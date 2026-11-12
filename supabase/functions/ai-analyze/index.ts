@@ -41,7 +41,7 @@ Write in English, concise and specific to what you can see. Never invent numbers
 When you only get the cover of a video: base the visual breakdown on what the cover and caption show and keep it short.`;
 // v2 adds these rules and the performance + playbook fields; LIVE_V2 says whether members get it (an admin can preview it first)
 const LIVE_V2 = true;
-const LIVE_VIDEO = false;   // members' video unlocks go through the video worker (needs GH_DISPATCH_TOKEN too)
+const LIVE_VIDEO = true;    // members' video unlocks go through the video worker (needs GH_DISPATCH_TOKEN too)
 const SYSTEM_V2 = `
 When you get Frames instead of a cover, you see the video itself: frames at the given seconds and the automatic transcript of what is said (it may contain mistakes; empty when nobody speaks). Base the hook on the first frame and the first spoken line, visualBreakdown on the frames with their real seconds as t, pacing on how the frames change, and scrollStoppers on the seconds where they happen. Quote spoken words only from the transcript, fixing obvious transcription mistakes (misheard names, joined words).
 For a single static image there is no timeline: return an empty visualBreakdown and give every scroll stopper t = 0. For a carousel, t is the slide number.
