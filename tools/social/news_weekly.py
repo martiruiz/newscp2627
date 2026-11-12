@@ -34,8 +34,11 @@ def pose(n): return 'data:image/png;base64,'+b64(f'av/pose_{n}.png')
 def photo(i):
     im=Image.open(f'../car/img/{i}').convert('RGB'); bio=io.BytesIO(); im.save(bio,'JPEG',quality=90); return 'data:image/jpeg;base64,'+base64.b64encode(bio.getvalue()).decode()
 ARW=lambda c:f'<svg viewBox="0 0 48 48" width="100%" height="100%" fill="none" stroke="{c}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M13 35 L35 13"/><path d="M17 13 H35 V31"/></svg>'
+def ph(path):
+    im=Image.open(HERE+'/../../'+path).convert('RGB'); im.thumbnail((1080,1920)); bio=io.BytesIO(); im.save(bio,'JPEG',quality=88); return 'data:image/jpeg;base64,'+base64.b64encode(bio.getvalue()).decode()
 cfg=json.load(open(sys.argv[1])); OUT=sys.argv[2]; LABEL=cfg['label']
 N=[(i['img'],i['brand'],i['platform'],i['title'],i['para'],i['tip'],i['date']) for i in cfg['items']]; NN=len(N)
+PH=[(i.get('photo'),i.get('photo_y',50)) for i in cfg['items']]; COVER=cfg.get('cover_photo'); CY=cfg.get('cover_photo_y',50)
 UB=list(dict.fromkeys(i[1] for i in N))[:4]
 _pl=list(dict.fromkeys(i[2] for i in N)); PLATS=', '.join(_pl[:-1])+' and '+_pl[-1] if len(_pl)>1 else _pl[0]
 def _load_illus():
@@ -48,6 +51,16 @@ def seg(k,dark):
 def head(dark,label='SCP Social News'):
     return f'<img class="abs" src="data:image/png;base64,{SM}" style="left:80px;top:62px;height:72px"><div class="abs cap" style="right:80px;top:84px;color:{"#aab7d2" if dark else "#55617a"}">{label}</div>'
 def cover():
+    if COVER:
+        tiles=''.join(f'<div style="width:156px;height:156px;border-radius:40px;background:#fff;padding:38px;box-shadow:0 18px 40px rgba(0,0,0,.35)">{brand(n)}</div>' for n in UB)
+        return 'dark',f'''<img class="abs" src="{ph(COVER)}" style="left:-216px;top:-1338px;width:1512px;height:2688px;object-fit:cover">
+<div class="abs" style="left:0;top:0;width:1080px;height:1350px;background:linear-gradient(180deg,rgba(12,19,38,.30) 0%,rgba(12,19,38,.62) 45%,rgba(12,19,38,.92) 100%)"></div>
+{head(True,f'SCP Social News · {LABEL}')}
+<div class="abs" style="left:80px;top:170px;right:80px;height:2px;background:rgba(255,255,255,.25)"></div>
+<div class="abs gd" style="left:62px;top:200px;font-size:470px;font-weight:900;line-height:.9;letter-spacing:-.06em">{NN}</div>
+<div class="abs" style="left:80px;top:640px;width:920px;font-size:104px;font-weight:800;line-height:1.02;letter-spacing:-.03em">platform changes sports teams should <span class="gd">know now.</span></div>
+<div class="abs" style="left:80px;top:1015px;width:900px;font-size:38px;color:#d5dcec;font-weight:500;line-height:1.3">{PLATS}: what changed and what it means for a club.</div>
+<div class="abs" style="left:80px;top:1160px;display:flex;gap:24px;align-items:center">{tiles}<div class="cap gd" style="margin-left:24px">Swipe →</div></div>'''
     tiles=''.join(f'<div style="width:156px;height:156px;border-radius:40px;background:#fff;padding:38px;border:2px solid rgba(18,27,51,.08);box-shadow:0 18px 40px rgba(18,27,51,.12)">{brand(n)}</div>' for n in UB)
     return 'light',f'''{head(False,f'SCP Social News · {LABEL}')}
 <div class="abs" style="left:80px;top:170px;right:80px;height:2px;background:rgba(18,27,51,.14)"></div>
@@ -58,7 +71,8 @@ def cover():
 def news(k,d):
     img,ic,plat,t,p,tip,date=d; pos=2*k-1
     illus=_load_illus()
-    pic=f'<div style="position:absolute;left:0;top:0;width:920px;height:560px;transform-origin:0 0">{illus.ILL[img]() if img in illus.ILL else GENERIC(ic)}</div>'
+    pf,py=PH[k-1]
+    pic=f'<img src="{ph(pf)}" style="position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;object-position:50% {py}%">' if pf else f'<div style="position:absolute;left:0;top:0;width:920px;height:560px;transform-origin:0 0">{illus.ILL[img]() if img in illus.ILL else GENERIC(ic)}</div>'
     return 'light',f'''{head(False)}{seg(pos-1,False)}
 <div class="abs" style="left:80px;top:230px;width:920px;height:560px;border-radius:44px;background:linear-gradient(135deg,#f2f4f9,#e2e8f2);border:2px solid rgba(18,27,51,.07);overflow:hidden;position:absolute">{pic}</div>
 <div class="abs" style="left:80px;top:810px;display:flex;align-items:center;gap:18px"><div style="display:flex;align-items:center;gap:18px;height:84px;padding:0 36px 0 14px;border-radius:42px;background:#fff;border:2px solid rgba(18,27,51,.1);box-shadow:0 12px 30px rgba(18,27,51,.08)"><span style="width:56px;height:56px;border-radius:50%;background:#fff;padding:6px;border:2px solid rgba(18,27,51,.08)">{brand(ic)}</span><span style="font-weight:900;font-size:40px;letter-spacing:.06em;text-transform:uppercase;color:#121b33">{plat}</span></div><span class="cap mu" style="font-size:22px">{date}</span></div>
