@@ -8,6 +8,10 @@ on:
       post_id:
         description: "content_ideas id"
         required: true
+      preview:
+        description: "Only test: print the analysis, store nothing"
+        type: boolean
+        default: false
 
 concurrency:
   group: ai-video-${{ inputs.post_id }}
@@ -37,7 +41,7 @@ jobs:
       - run: pip install -q faster-whisper==1.1.1 yt-dlp
       - run: npm ci
         working-directory: pipeline
-      - run: node library/ai-video.mjs "${{ inputs.post_id }}"
+      - run: node library/ai-video.mjs "${{ inputs.post_id }}" ${{ inputs.preview && '--preview' || '' }}
         working-directory: pipeline
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}

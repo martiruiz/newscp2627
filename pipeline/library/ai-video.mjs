@@ -21,6 +21,7 @@ import { igEmbed, igRef } from "./instagram.mjs";
 loadEnv();
 const postId = Number(process.argv[2]);
 const PREVIEW = process.argv.includes("--preview");
+const why = (e) => String(e.stderr || e.message || e).trim().slice(-600);
 if (!postId) throw new Error("usage: node library/ai-video.mjs <post_id> [--preview]");
 const db = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), "ai-video-"));
@@ -55,14 +56,14 @@ async function videoOf(url) {
     const wav = path.join(dir, "a.wav");
     run("ffmpeg", ["-v", "error", "-y", "-i", file, "-vn", "-ac", "1", "-ar", "16000", wav]);
     speech = JSON.parse(run("python3", ["-I", path.join(path.dirname(fileURLToPath(import.meta.url)), "transcribe.py"), wav]));
-  } catch (e) { console.warn("no transcript:", String(e.message || e).slice(0, 200)); }   // silent clips, music only
+  } catch (e) { console.warn("no transcript:", why(e)); }   // silent clips, music only
   return { duration: Math.round(duration * 10) / 10, frames, transcript: speech.text, language: speech.language };
 }
 
 const { data: post, error } = await db.from("content_ideas").select("id,url").eq("id", postId).single();
 if (error) throw error;
 let video = null;
-try { video = await videoOf(post.url); } catch (e) { console.warn("video unavailable:", String(e.message || e).slice(0, 200)); }
+try { video = await videoOf(post.url); } catch (e) { console.warn("video unavailable:", why(e)); }
 console.log(video ? `${video.frames.length} frames over ${video.duration}s · transcript ${video.transcript.length} chars` : "no video: ai-analyze uses the cover");
 
 const res = await fetch(`${process.env.SUPABASE_URL}/functions/v1/ai-analyze`, {
