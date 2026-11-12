@@ -36,7 +36,7 @@ You receive one social media post (its image or video cover, its caption and its
 Write in English, concise and specific to what you can see. Never invent numbers or results. Never identify people by their face; only name people when the caption or on-screen text says who they are. Analysis, never criticism.
 For videos you only see the cover image: base the visual breakdown on what the cover and caption show and keep it short.`;
 // v2 adds these rules and the performance + playbook fields; LIVE_V2 says whether members get it (an admin can preview it first)
-const LIVE_V2 = false;
+const LIVE_V2 = true;
 const SYSTEM_V2 = `
 For a single static image there is no timeline: return an empty visualBreakdown and give every scroll stopper t = 0. For a carousel, t is the slide number.
 
