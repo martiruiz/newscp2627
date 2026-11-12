@@ -1,0 +1,89 @@
+{
+  "n": 18,
+  "slug": "how-to-use-the-content-planner",
+  "cat": "content-planner",
+  "recommended": true,
+  "updated": "2026-11-12",
+  "next": "how-to-build-a-monthly-content-plan-for-your-club",
+  "keywords": ["Sports Content Planning Tool", "Sports Content Calendar", "Sports Social Media Tools", "Sports Content Ideas"],
+  "en": {
+    "title": "How to use the Content Planner",
+    "label": "Content Plan",
+    "meta_title": "How to use the Content Planner | SCP Knowledge Base",
+    "meta_description": "The Content Plan in Sports Content Playbook (Plus and Pro) is a weekly and monthly calendar: drag library posts, write the caption and track each status.",
+    "summary": "The Content Plan (Content Planner) is the calendar of Sports Content Playbook, included in Plus and Pro. You drag posts from the Content Library onto a day, write the caption and notes, set the type and status (Idea, Planned, In production, Published) and export the week or month as PDF, Excel or a calendar file.",
+    "body": [
+      {
+        "h": "What the Content Plan is",
+        "id": "what-it-is",
+        "html": "<p>The <a href=\"content-plan.html\">Content Plan</a> is a sports content planning tool inside Sports Content Playbook. It has a <strong>Week</strong> view (days × hours) and a <strong>Month</strong> view, a <strong>Today</strong> button and a <strong>New plan</strong> button to keep several plans apart (for example Pre-season, Kit launch or Women's team). Every change is saved automatically.</p><p>Each entry has a status (<strong>Idea</strong>, <strong>Planned</strong>, <strong>In production</strong>, <strong>Published</strong>), a type (Post, Carousel, Reel, Story, YouTube, TikTok), a <strong>Caption</strong>, <strong>Notes</strong> and, if it came from the library, the inspiration post with its original link. Giving an idea a date makes it Planned.</p>"
+      },
+      {
+        "h": "Step by step: plan your first week",
+        "id": "step-by-step",
+        "html": "<ol><li>Open <a href=\"content-plan.html\">Content Plan</a> and choose <strong>Week</strong>. Use <strong>New plan</strong> if you want a separate plan for a campaign.</li><li>Set up your <strong>Weekly base</strong>: the recurring posts you publish every week (for example a Monday result graphic or a Thursday training video). They show as red placeholders until you plan them; click one to turn it into an entry.</li><li>Add a post: click the <strong>+</strong> in a time slot, or use <strong>New idea</strong> in the <strong>No date</strong> tray for ideas without a day yet.</li><li>Bring inspiration in: open <strong>Ideas & inspiration</strong>, open one of your saved boards and drag a post onto a day.</li><li>Open the entry and fill in the type, <strong>Caption</strong> and <strong>Notes</strong>. Move the status forward as the post gets made.</li><li>Click <strong>Download</strong> and choose <strong>PDF</strong>, <strong>Excel</strong> or <strong>Calendar</strong> (.ics for Google, Outlook, Apple). Tick <strong>Include \"No date\" ideas</strong> if you want them in the file.</li></ol>"
+      },
+      {
+        "h": "Planning from the Content Library",
+        "id": "from-the-library",
+        "html": "<p>You don't have to open the planner to fill it. In the <a href=\"content-library.html\">Content Library</a>, the <strong>Content Plan</strong> panel lets you:</p><ul><li>Drag a post onto a day. Shift+click to pick several posts at once.</li><li>Use the <strong>+</strong> on a post to open a mini calendar, which also works on phones.</li><li>Use <strong>Fill my week</strong> to fill empty days with posts from your favourite profiles; the counter shows \"n/7 days with content\".</li></ul><p>If you drag a post you already analysed with AI, the AI's adaptation goes into the entry's notes. The calendar also shows 12 key dates (such as Pre-season on 15 July, Fixture release on 15 August, Halloween or Black Friday); each opens the library filtered to that topic, so you find sports content ideas for it in one click.</p>"
+      },
+      {
+        "h": "Practical example: a women's football team's week",
+        "id": "example",
+        "html": "<p>The social media manager of a women's football team plays on Sundays. Her <strong>Weekly base</strong> has four slots: Monday result, Wednesday training clip, Friday pre-match and Sunday line-up. On Monday morning she opens the library, clicks <strong>Fill my week</strong> to get inspiration for the empty days, swaps two suggestions for posts from her saved board \"Matchday reels\", and writes the captions in each entry. On Friday she moves the pre-match reel to <strong>In production</strong>, and on Sunday night everything is <strong>Published</strong>. She sends the PDF of the week to the coach on Monday.</p>"
+      },
+      {
+        "h": "Limits",
+        "id": "limits",
+        "html": "<ul><li>The Content Plan is part of Plus and Pro (and Enterprise). Starter doesn't include it.</li><li>Plans are private to each user; there is no shared team calendar. To share, export the PDF, Excel or .ics file.</li><li>SCP doesn't publish to your social accounts; the plan is where you organise, not where you post.</li></ul><p>As a sports content calendar linked to real posts, it turns Sports Content Playbook into one of the sports social media tools you use every week. Next: <a href=\"help/how-to-build-a-monthly-content-plan-for-your-club.html\">how to build a monthly content plan for your club</a>.</p>"
+      }
+    ],
+    "faq": [
+      { "q": "Which plans include the Content Plan?", "a": "Plus and Pro, and Enterprise (My Club), which includes everything in Pro. Starter doesn't include it." },
+      { "q": "Can my teammates see my Content Plan?", "a": "No. Plans are private to each user. Share the week or month by downloading it as PDF, Excel or a calendar file." },
+      { "q": "Can I import the plan into Google Calendar?", "a": "Yes. Download it as Calendar (.ics) and open the file in Google Calendar, Outlook or Apple Calendar." },
+      { "q": "Does SCP publish the posts for me?", "a": "No. SCP doesn't connect to your social accounts. The Content Plan organises what you will publish." }
+    ]
+  },
+  "es": {
+    "title": "Cómo usar el planificador de contenido",
+    "label": "Plan de contenido",
+    "meta_title": "Cómo usar el Plan de contenido | SCP Knowledge Base",
+    "meta_description": "El Plan de contenido de Sports Content Playbook (Plus y Pro) es un calendario semanal y mensual donde arrastras posts, escribes el texto y sigues cada estado.",
+    "summary": "El Plan de contenido es el calendario de Sports Content Playbook, incluido en Plus y Pro. Arrastras posts de la Biblioteca de contenido a un día, escribes el texto y las notas, eliges el tipo y el estado (Idea, Planificado, En producción, Publicado) y exportas la semana o el mes en PDF, Excel o archivo de calendario.",
+    "body": [
+      {
+        "h": "Qué es el Plan de contenido",
+        "id": "what-it-is",
+        "html": "<p>El <a href=\"content-plan.html\">Plan de contenido</a> es la herramienta de planificación de contenido deportivo de Sports Content Playbook. Tiene vista <strong>Semana</strong> (días × horas) y vista <strong>Mes</strong>, un botón <strong>Hoy</strong> y un botón <strong>Nuevo plan</strong> para separar varios planes (por ejemplo Pretemporada, Nueva equipación o Femenino). Todos los cambios se guardan solos.</p><p>Cada entrada tiene un estado (<strong>Idea</strong>, <strong>Planificado</strong>, <strong>En producción</strong>, <strong>Publicado</strong>), un tipo (Post, Carrusel, Reel, Story, YouTube, TikTok), un <strong>Texto del post</strong>, <strong>Notas</strong> y, si viene de la biblioteca, el post de inspiración con su enlace original. Si das fecha a una idea, pasa a Planificado.</p>"
+      },
+      {
+        "h": "Paso a paso: planifica tu primera semana",
+        "id": "step-by-step",
+        "html": "<ol><li>Abre el <a href=\"content-plan.html\">Plan de contenido</a> y elige <strong>Semana</strong>. Usa <strong>Nuevo plan</strong> si quieres un plan aparte para una campaña.</li><li>Configura tu <strong>Base semanal</strong>: los posts fijos de cada semana (por ejemplo, el gráfico del resultado del lunes o el vídeo de entrenamiento del jueves). Aparecen en rojo hasta que los planificas; haz clic en uno para convertirlo en entrada.</li><li>Añade un post: pulsa el <strong>+</strong> de una franja horaria o usa <strong>Nueva idea</strong> en la bandeja <strong>Sin fecha</strong> para ideas que aún no tienen día.</li><li>Trae inspiración: abre <strong>Ideas e inspiración</strong>, abre uno de tus tableros guardados y arrastra un post a un día.</li><li>Abre la entrada y rellena el tipo, el <strong>Texto del post</strong> y las <strong>Notas</strong>. Avanza el estado a medida que se produce el post.</li><li>Pulsa <strong>Descargar</strong> y elige <strong>PDF</strong>, <strong>Excel</strong> o <strong>Calendario</strong> (.ics para Google, Outlook, Apple). Marca <strong>Incluir las ideas «Sin fecha»</strong> si las quieres en el archivo.</li></ol>"
+      },
+      {
+        "h": "Planificar desde la Biblioteca de contenido",
+        "id": "from-the-library",
+        "html": "<p>No hace falta abrir el planificador para llenarlo. En la <a href=\"content-library.html\">Biblioteca de contenido</a>, el panel <strong>Plan de contenido</strong> te permite:</p><ul><li>Arrastrar un post a un día. Con Mayús+clic eliges varios a la vez.</li><li>Usar el <strong>+</strong> de un post para abrir un minicalendario, que también funciona en el móvil.</li><li>Usar <strong>Llenar mi semana</strong> para completar los días vacíos con posts de tus perfiles favoritos; el contador muestra cuántos de los 7 días tienen contenido.</li></ul><p>Si arrastras un post que ya analizaste con IA, la adaptación de la IA se guarda en las notas de la entrada. El calendario muestra además 12 fechas clave (como Pretemporada el 15 de julio, Publicación del calendario el 15 de agosto, Halloween o Black Friday); cada una abre la biblioteca filtrada por ese tema, para encontrar ideas de contenido deportivo con un clic.</p>"
+      },
+      {
+        "h": "Ejemplo práctico: la semana de un equipo de fútbol femenino",
+        "id": "example",
+        "html": "<p>La community manager de un equipo de fútbol femenino juega los domingos. Su <strong>Base semanal</strong> tiene cuatro huecos: resultado del lunes, clip de entrenamiento del miércoles, previa del viernes y alineación del domingo. El lunes por la mañana abre la biblioteca, pulsa <strong>Llenar mi semana</strong> para tener inspiración en los días vacíos, cambia dos sugerencias por posts de su tablero «Reels de partido» y escribe los textos en cada entrada. El viernes pasa el reel de la previa a <strong>En producción</strong> y el domingo por la noche todo está <strong>Publicado</strong>. El lunes envía el PDF de la semana al cuerpo técnico.</p>"
+      },
+      {
+        "h": "Límites",
+        "id": "limits",
+        "html": "<ul><li>El Plan de contenido forma parte de Plus y Pro (y de Enterprise). Starter no lo incluye.</li><li>Los planes son privados de cada usuario; no hay un calendario compartido de equipo. Para compartir, exporta el PDF, el Excel o el archivo .ics.</li><li>SCP no publica en tus redes; el plan sirve para organizar, no para publicar.</li></ul><p>Como calendario de contenido deportivo conectado a posts reales, convierte Sports Content Playbook en una herramienta de redes sociales deportivas que usas cada semana. Siguiente: <a href=\"es/help/how-to-build-a-monthly-content-plan-for-your-club.html\">cómo crear un plan de contenido mensual para tu club</a>.</p>"
+      }
+    ],
+    "faq": [
+      { "q": "¿Qué planes incluyen el Plan de contenido?", "a": "Plus y Pro, y Enterprise (My Club), que incluye todo lo de Pro. Starter no lo incluye." },
+      { "q": "¿Mis compañeros pueden ver mi Plan de contenido?", "a": "No. Los planes son privados de cada usuario. Comparte la semana o el mes descargándolos en PDF, Excel o archivo de calendario." },
+      { "q": "¿Puedo importar el plan a Google Calendar?", "a": "Sí. Descárgalo como Calendario (.ics) y abre el archivo en Google Calendar, Outlook o Apple Calendar." },
+      { "q": "¿SCP publica los posts por mí?", "a": "No. SCP no se conecta a tus redes sociales. El Plan de contenido organiza lo que vas a publicar." }
+    ]
+  }
+}

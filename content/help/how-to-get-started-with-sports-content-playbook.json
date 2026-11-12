@@ -1,0 +1,99 @@
+{
+  "n": 2,
+  "slug": "how-to-get-started-with-sports-content-playbook",
+  "cat": "getting-started",
+  "recommended": true,
+  "updated": "2026-11-12",
+  "next": "main-features-of-sports-content-playbook",
+  "keywords": ["Sports Social Media Tools", "Sports Content Ideas", "Social Media Ideas for Sports Teams"],
+  "en": {
+    "title": "How to get started with Sports Content Playbook",
+    "label": "First steps",
+    "meta_title": "Get started with Sports Content Playbook | SCP Knowledge Base",
+    "meta_description": "Sign up, start your 7-day free trial, follow the guided tour and set your favourites in Profile so Sports Content Playbook shows ideas for your club first.",
+    "summary": "To get started with Sports Content Playbook, sign up at signup.html with your email or Google, start the 7-day free trial, follow the 5-step guided tour in the Content Library and fill in your favourites in Profile so the library shows posts relevant to your club first.",
+    "body": [
+      {
+        "h": "1. Create your account",
+        "id": "create-account",
+        "html": "<p>Sports Content Playbook is one of the sports social media tools you can start using in a couple of minutes.</p><ol><li>Go to <a href=\"signup.html\">signup.html</a>.</li><li>Enter your <strong>First name</strong>, <strong>Last name</strong> and <strong>Email</strong>, then click <strong>Continue</strong>. You will receive an email link to finish signing up. Or use <strong>Continue with Google</strong>.</li><li>If you came from a plan card on the pricing page, you will see the <strong>Selected plan</strong> and the 7-day free trial.</li></ol><p>Next time, log in with your email and password or with Google. If you signed up with the email link, set a password in <strong>Profile → Account → Password</strong> (minimum 8 characters). Forgot it? Use <strong>Forgot your password? Set a new one</strong> on the login page to get a reset email.</p>"
+      },
+      {
+        "h": "2. Start your free trial",
+        "id": "start-trial",
+        "html": "<p>After logging in you land in the Content Library. Without a plan, the library appears blurred with the plans on top and a one-click 7-day trial. The trial needs a card, charges €0 today and includes 5 AI analyses. Cancel during the trial and nothing is charged; you get a reminder email before it ends. One trial per person or organisation.</p><p>Not sure which plan? See <a href=\"pricing.html\">pricing</a>: Starter covers the library, Plus adds the Content Creators filter and the Content Plan, and Pro adds the Brands &amp; sponsors filters.</p>"
+      },
+      {
+        "h": "3. Follow the guided tour",
+        "id": "guided-tour",
+        "html": "<p>The first time you open the library, a 5-step tour shows you around:</p><ol><li><strong>Filters</strong>, in the left column.</li><li><strong>Content Creators</strong>.</li><li>The main filters: <strong>Inspiration from</strong>, <strong>Match Day</strong> and <strong>Brands &amp; sponsors</strong>.</li><li><strong>My space</strong>: <strong>My AI analyses</strong>, <strong>Content Plan</strong> and <strong>Saved boards</strong>.</li><li>The buttons on each post.</li></ol><p>You can replay it at any time with the <strong>?</strong> next to <strong>My space</strong>.</p>"
+      },
+      {
+        "h": "4. Personalise your profile",
+        "id": "personalise",
+        "html": "<p>Open <strong>Profile</strong> and fill in your sport, channels and <strong>Favourites</strong>: your favourite network, up to 5 favourite profiles (clubs, leagues or brands) and up to 5 favourite creators. These power three features:</p><ul><li><strong>Favs</strong>: posts from your favourite profiles.</li><li><strong>Clubs like mine</strong>: posts from the competitions and sports in your profile.</li><li><strong>Fill my week</strong>: fills empty days of your Content Plan with posts from your favourites (Plus and Pro).</li></ul><p>You can switch between English and Spanish from the menu or in <strong>Profile → Account → Website language</strong>, which also sets the language of your emails.</p>"
+      },
+      {
+        "h": "Example: a basketball academy's first session",
+        "id": "example",
+        "html": "<p>The communications lead of a basketball academy signs up with Google, starts the trial and follows the tour. In Profile she picks Instagram as favourite network and adds three clubs from her league and two youth-focused clubs she admires. Back in the library, <strong>Favs</strong> now shows their latest posts, and <strong>Clubs like mine</strong> gives her social media ideas for sports teams in her own competition. Ten minutes in, she has saved four sports content ideas to a board called \"November\".</p>"
+      },
+      {
+        "h": "Common first-day mistakes",
+        "id": "mistakes",
+        "html": "<ul><li><strong>Skipping Favourites.</strong> Without them, Favs, Clubs like mine and Fill my week have nothing to work with.</li><li><strong>Spending AI analyses too fast.</strong> The trial includes 5. Filter first, then analyse only the posts you would really adapt.</li><li><strong>Looking for a missing club and giving up.</strong> Ask SCP to add it via <a href=\"contact.html?topic=support\">contact</a>; it is included in every plan.</li></ul><p>Next: <a href=\"help/main-features-of-sports-content-playbook.html\">What are the main features of Sports Content Playbook?</a></p>"
+      }
+    ],
+    "faq": [
+      { "q": "Can I sign up without a password?", "a": "Yes. Use the email link or Continue with Google. You can add a password later in Profile → Account → Password." },
+      { "q": "Why is the library blurred?", "a": "Your account has no active plan yet. Start the 7-day free trial or choose a plan to unlock it." },
+      { "q": "Can I change my email address?", "a": "Not by yourself. Write to info@sportscontentplaybook.com if you need help with your account." },
+      { "q": "How do I see the tour again?", "a": "Click the ? next to My space in the left column of the Content Library." }
+    ]
+  },
+  "es": {
+    "title": "Cómo empezar con Sports Content Playbook",
+    "label": "Primeros pasos",
+    "meta_title": "Empieza con Sports Content Playbook | SCP Knowledge Base",
+    "meta_description": "Regístrate, activa la prueba gratis de 7 días, sigue el tour guiado y elige tus favoritos en el Perfil para que SCP te muestre primero ideas para tu club.",
+    "summary": "Para empezar con Sports Content Playbook, regístrate en signup.html con tu email o con Google, activa la prueba gratis de 7 días, sigue el tour guiado de 5 pasos en la Biblioteca de contenido y rellena tus favoritos en el Perfil para que la biblioteca te muestre primero posts relevantes para tu club.",
+    "body": [
+      {
+        "h": "1. Crea tu cuenta",
+        "id": "create-account",
+        "html": "<p>Sports Content Playbook es una de las herramientas para redes sociales deportivas que puedes empezar a usar en un par de minutos.</p><ol><li>Ve a <a href=\"signup.html\">signup.html</a>.</li><li>Escribe tu <strong>Nombre</strong>, <strong>Apellidos</strong> y <strong>Email</strong> y haz clic en <strong>Continuar</strong>. Recibirás un enlace por email para terminar el registro. O usa <strong>Continuar con Google</strong>.</li><li>Si llegas desde la tarjeta de un plan en la página de precios, verás el <strong>Plan elegido</strong> y la prueba gratis de 7 días.</li></ol><p>Las siguientes veces entra con email y contraseña o con Google. Si te registraste con el enlace por email, crea una contraseña en <strong>Perfil → Cuenta → Contraseña</strong> (mínimo 8 caracteres). ¿La has olvidado? Usa <strong>¿Has olvidado tu contraseña? Crea una nueva</strong> en la pantalla de acceso y te llegará un email para restablecerla.</p>"
+      },
+      {
+        "h": "2. Activa la prueba gratis",
+        "id": "start-trial",
+        "html": "<p>Al entrar llegas a la Biblioteca de contenido. Sin plan, la biblioteca aparece difuminada con los planes encima y una prueba de 7 días a un clic. La prueba pide tarjeta, hoy cobra 0 € e incluye 5 análisis con IA. Si cancelas durante la prueba no se cobra nada, y recibes un email de aviso antes de que termine. Una prueba por persona u organización.</p><p>¿No sabes qué plan elegir? Mira los <a href=\"pricing.html\">precios</a>: Starter cubre la biblioteca, Plus añade el filtro de Creadores de contenido y el Plan de contenido, y Pro añade los filtros de Marcas y patrocinadores.</p>"
+      },
+      {
+        "h": "3. Sigue el tour guiado",
+        "id": "guided-tour",
+        "html": "<p>La primera vez que abres la biblioteca, un tour de 5 pasos te la enseña:</p><ol><li>Los <strong>Filtros</strong>, en la columna izquierda.</li><li><strong>Creadores de contenido</strong>.</li><li>Los filtros principales: <strong>Inspírate en</strong>, <strong>Día de partido</strong> y <strong>Marcas y patrocinadores</strong>.</li><li><strong>Mi espacio</strong>: <strong>Mis análisis IA</strong>, <strong>Plan de contenido</strong> y <strong>Guardados</strong>.</li><li>Los botones de cada post.</li></ol><p>Puedes repetirlo cuando quieras con el <strong>?</strong> que hay junto a <strong>Mi espacio</strong>.</p>"
+      },
+      {
+        "h": "4. Personaliza tu perfil",
+        "id": "personalise",
+        "html": "<p>Abre el <strong>Perfil</strong> y rellena tu deporte, tus canales y tus <strong>Favoritos</strong>: tu red favorita, hasta 5 perfiles favoritos (clubes, ligas o marcas) y hasta 5 creadores favoritos. Con ellos funcionan tres cosas:</p><ul><li><strong>Favs</strong>: posts de tus perfiles favoritos.</li><li><strong>Clubes como el mío</strong>: posts de las competiciones y deportes de tu perfil.</li><li><strong>Llenar mi semana</strong>: llena los días vacíos de tu Plan de contenido con posts de tus favoritos (Plus y Pro).</li></ul><p>Puedes cambiar entre inglés y español desde el menú o en <strong>Perfil → Cuenta → Idioma de la web</strong>, que también fija el idioma de tus emails.</p>"
+      },
+      {
+        "h": "Ejemplo: la primera sesión de una escuela de baloncesto",
+        "id": "example",
+        "html": "<p>La responsable de comunicación de una escuela de baloncesto se registra con Google, activa la prueba y sigue el tour. En el Perfil elige Instagram como red favorita y añade tres clubes de su liga y dos clubes de cantera que admira. De vuelta en la biblioteca, <strong>Favs</strong> ya le muestra sus últimos posts y <strong>Clubes como el mío</strong> le da ideas para equipos de su propia competición. A los diez minutos ya tiene cuatro ideas de contenido deportivo guardadas en un tablero llamado \"Noviembre\".</p>"
+      },
+      {
+        "h": "Errores habituales el primer día",
+        "id": "mistakes",
+        "html": "<ul><li><strong>Saltarse los Favoritos.</strong> Sin ellos, Favs, Clubes como el mío y Llenar mi semana no tienen con qué trabajar.</li><li><strong>Gastar los análisis con IA demasiado rápido.</strong> La prueba incluye 5. Filtra primero y analiza solo los posts que de verdad adaptarías.</li><li><strong>Buscar un club que no está y rendirse.</strong> Pide a SCP que lo añada desde <a href=\"contact.html?topic=support\">contacto</a>; está incluido en todos los planes.</li></ul><p>Siguiente: <a href=\"es/help/main-features-of-sports-content-playbook.html\">¿Cuáles son las funciones principales de Sports Content Playbook?</a></p>"
+      }
+    ],
+    "faq": [
+      { "q": "¿Puedo registrarme sin contraseña?", "a": "Sí. Usa el enlace por email o Continuar con Google. Más adelante puedes crear una contraseña en Perfil → Cuenta → Contraseña." },
+      { "q": "¿Por qué veo la biblioteca difuminada?", "a": "Tu cuenta aún no tiene un plan activo. Activa la prueba gratis de 7 días o elige un plan para desbloquearla." },
+      { "q": "¿Puedo cambiar mi email?", "a": "No por tu cuenta. Escribe a info@sportscontentplaybook.com si necesitas ayuda con tu cuenta." },
+      { "q": "¿Cómo vuelvo a ver el tour?", "a": "Haz clic en el ? que hay junto a Mi espacio, en la columna izquierda de la Biblioteca de contenido." }
+    ]
+  }
+}

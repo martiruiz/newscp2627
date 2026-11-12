@@ -115,7 +115,7 @@
         </div>
         <div class="mm-rlist">${m.cards.filter(show).map((c) => `<a class="mm-rrow${c.member ? " mm-rrow-gold" : ""}" href="${esc(c.href)}" style="--acc:${c.acc}"><span class="mm-ic">${icon(c.icon)}</span>
           <span class="mm-rrow-t"><b>${esc(c.title)}</b></span>${c.member ? `<span class="mm-rcount" data-rv-n hidden></span>` : `<span class="mm-rarrow" aria-hidden="true">→</span>`}</a>`).join("")}
-          <a class="mm-rfaq" href="index.html#faq"><b>Is it made for clubs like mine?</b><small>Yes: real posts from 770+ clubs and 110+ competitions.</small></a>
+          <a class="mm-rfaq" href="help/"><b>SCP Knowledge Base</b><small>Guides and answers to every question you have about SCP.</small></a>
         </div>
       </div>
       ${m.featured ? `<a class="mm-featured mm-featured-sm"${np} href="${esc(m.featured.href)}"><span><i>${esc(m.featured.eyebrow)}</i><b>${esc(m.featured.title)}</b></span>${icon("arrow-up-right")}</a>` : ""}</div>`;

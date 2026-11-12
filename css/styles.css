@@ -9823,3 +9823,10 @@ button.org-plan-pick { cursor: pointer; padding-right: 12px; }
 .an-shots p { margin-top: 2px; color: var(--muted); }
 .an-b-play .an-template { margin-top: 0; }
 @media (max-width: 600px) { .an-hooks li, .an-b-play .an-template { padding-right: 14px; padding-bottom: 48px; } .an-hooks .an-copy, .an-b-play .an-copy { top: auto; bottom: 10px; transform: none; } }
+
+/* Contextual help: a link from the Library, the Content Plan and My Club to their guide in the SCP Knowledge Base (/help/) */
+.kb-ctx { display: inline-grid; place-items: center; flex: none; width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--border, rgba(255, 255, 255, 0.16)); color: var(--muted); font-size: 13px; font-weight: 700; text-decoration: none; }
+.kb-ctx:hover { color: var(--gold); border-color: var(--gold); }
+.kb-ctx-link { color: var(--gold); font-size: 13.5px; font-weight: 600; white-space: nowrap; text-decoration: none; }
+.kb-ctx-link:hover { text-decoration: underline; }
+.mc-title .kb-ctx-link { display: inline-block; margin-top: 4px; }

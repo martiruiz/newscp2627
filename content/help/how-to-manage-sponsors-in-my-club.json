@@ -1,0 +1,99 @@
+{
+  "n": 17,
+  "slug": "how-to-manage-sponsors-in-my-club",
+  "cat": "my-club",
+  "recommended": false,
+  "updated": "2026-11-12",
+  "next": "how-to-use-the-content-planner",
+  "keywords": ["Sports Marketing Tools", "Sports Social Media Strategy", "Social Media Ideas for Sports Teams", "Sports Instagram Content Ideas"],
+  "en": {
+    "title": "How to manage sponsors in My Club",
+    "label": "Sponsors",
+    "meta_title": "How to manage sponsors in My Club | SCP Knowledge Base",
+    "meta_description": "SCP links your sponsors to My Club on request. See every post from a sponsor, or only the ones linked to your club, and find sponsor ideas from other clubs.",
+    "summary": "Sponsors in My Club are added by the Sports Content Playbook team when you send their accounts. Once linked, the Sponsors tab shows every post from a brand or only the posts linked to your club, and the Brands & sponsors filters in the library show how other clubs activate their partners.",
+    "body": [
+      {
+        "h": "How sponsors work in My Club",
+        "id": "how-it-works",
+        "html": "<p>The <strong>Sponsors</strong> tab in <a href=\"my-club.html\">My Club</a> collects the posts of the brands that sponsor your club. You can view them in two modes:</p><ul><li><strong>All the brand's posts</strong>: everything the brand posts, about the club or not.</li><li><strong>Posts linked to the club</strong>: the club's posts where the sponsor is tagged and the brand's posts that mention the club.</li></ul><p>Members can't add or remove sponsors themselves. You send the list to SCP and SCP links the accounts.</p>"
+      },
+      {
+        "h": "Step by step: ask SCP to add or change a sponsor",
+        "id": "request-changes",
+        "html": "<ol><li>Write to SCP from <a href=\"contact.html?topic=support\">the contact page</a> or to your account manager.</li><li>Send the brand's name and its accounts on each network.</li><li>If the sponsor belongs to one section or team only (for example the academy's kit sponsor), say so.</li><li>For a sponsor whose deal has ended, ask SCP to remove it.</li><li>Once linked, the brand appears in the <strong>Sponsors</strong> tab. Posts are uploaded every day.</li></ol>"
+      },
+      {
+        "h": "Step by step: see your sponsors' posts",
+        "id": "step-by-step",
+        "html": "<ol><li>Open <a href=\"my-club.html\">My Club</a> and choose the <strong>Sponsors</strong> tab.</li><li>If you need to, pick a <strong>Section</strong> and a <strong>Team</strong>.</li><li>Tap one or more sponsors, or use <strong>Search a sponsor</strong>.</li><li>Choose <strong>All the brand's posts</strong> or <strong>Posts linked to the club</strong>. If you see \"No posts from these sponsors mention the club yet.\", there are no linked posts for that selection.</li><li>Filter by period or format, save posts to a board in <a href=\"saved.html\">Saved boards</a>, unlock an AI analysis or drag a post to your <a href=\"content-plan.html\">Content Plan</a>.</li></ol>"
+      },
+      {
+        "h": "Find sponsor ideas from other clubs",
+        "id": "other-clubs",
+        "html": "<p>My Club includes everything in Pro, so you also have the <strong>Brands & sponsors</strong> filters in the <a href=\"content-library.html\">Content Library</a>: <strong>Business goal</strong>, <strong>Sponsors</strong>, <strong>Integration</strong> and <strong>Sponsor sector</strong>, plus <strong>Call to action</strong> and <strong>Collaborations</strong>. Use them to see how other clubs integrate partners in their posts. These filters are detected by AI on Instagram posts from October 2026, so they're especially useful for sports Instagram content ideas; older posts are still being analysed.</p>"
+      },
+      {
+        "h": "Practical example: a handball club before a renewal meeting",
+        "id": "example",
+        "html": "<p>A handball club has two main sponsors: an insurance company and a local supermarket. Before the renewal meeting with the supermarket, the marketing manager opens <strong>Sponsors</strong>, taps the supermarket and chooses <strong>Posts linked to the club</strong> with the period <strong>This season</strong>. She saves the posts to a board, checks views and likes on each card and downloads the AI analysis PDF of the two that performed best. Then, in the library, she filters <strong>Sponsor sector</strong> and <strong>Integration</strong> to find what other clubs did with food retail partners, and brings three new ideas to the meeting.</p>"
+      },
+      {
+        "h": "Tips and limits",
+        "id": "tips",
+        "html": "<ul><li>Use <strong>Posts linked to the club</strong> to review the partnership and <strong>All the brand's posts</strong> to learn the brand's tone before you pitch an idea.</li><li>SCP only uses public posts and doesn't connect to your social accounts, so private sponsor reports aren't included.</li><li>Prepare social media ideas for sports teams that your sponsor can also share, and check how they performed in the library first.</li></ul><p>This way Sports Content Playbook works as one of your sports marketing tools and supports a sports social media strategy where sponsors have a clear place. Next: <a href=\"help/how-to-use-the-content-planner.html\">how to use the Content Planner</a>.</p>"
+      }
+    ],
+    "faq": [
+      { "q": "Can I add a sponsor to My Club myself?", "a": "No. Send the brand's name and accounts to SCP through the contact page or your account manager, and SCP links them." },
+      { "q": "What is the difference between the two sponsor modes?", "a": "All the brand's posts shows everything the brand publishes. Posts linked to the club shows the club's posts where the sponsor is tagged and the brand's posts that mention the club." },
+      { "q": "Which plan has the Brands & sponsors filters?", "a": "Pro, and also Enterprise (My Club), because it includes everything in Pro." },
+      { "q": "Does SCP show private sponsor metrics?", "a": "No. SCP uses public posts only and doesn't connect to your social accounts, so it shows the public views and likes of each post." }
+    ]
+  },
+  "es": {
+    "title": "Cómo gestionar patrocinadores en My Club",
+    "label": "Patrocinadores",
+    "meta_title": "Patrocinadores en My Club | SCP Knowledge Base",
+    "meta_description": "SCP vincula tus patrocinadores a My Club cuando se lo pides. Ve todos los posts de una marca, o solo los vinculados al club, y busca ideas de otros clubes.",
+    "summary": "Los patrocinadores de My Club los añade el equipo de Sports Content Playbook cuando le envías sus cuentas. Una vez vinculados, la pestaña Patrocinadores muestra todos los posts de una marca o solo los vinculados a tu club, y los filtros de Marcas y patrocinadores de la biblioteca enseñan cómo activan otros clubes a sus partners.",
+    "body": [
+      {
+        "h": "Cómo funcionan los patrocinadores en My Club",
+        "id": "how-it-works",
+        "html": "<p>La pestaña <strong>Patrocinadores</strong> de <a href=\"my-club.html\">My Club</a> reúne los posts de las marcas que patrocinan tu club. Puedes verlos de dos maneras:</p><ul><li><strong>Todos los contenidos de la marca</strong>: todo lo que publica la marca, hable o no del club.</li><li><strong>Contenidos vinculados al club</strong>: los posts del club donde aparece etiquetado el patrocinador y los posts de la marca que mencionan al club.</li></ul><p>Los miembros no pueden añadir ni quitar patrocinadores por su cuenta. Envías la lista a SCP y SCP vincula las cuentas.</p>"
+      },
+      {
+        "h": "Paso a paso: pide a SCP que añada o cambie un patrocinador",
+        "id": "request-changes",
+        "html": "<ol><li>Escribe a SCP desde <a href=\"contact.html?topic=support\">la página de contacto</a> o a tu account manager.</li><li>Envía el nombre de la marca y sus cuentas en cada red.</li><li>Si el patrocinador es solo de una sección o un equipo (por ejemplo, el de la equipación de la cantera), indícalo.</li><li>Si un acuerdo ha terminado, pide a SCP que lo quite.</li><li>Una vez vinculada, la marca aparece en la pestaña <strong>Patrocinadores</strong>. Los posts se suben cada día.</li></ol>"
+      },
+      {
+        "h": "Paso a paso: ver los posts de tus patrocinadores",
+        "id": "step-by-step",
+        "html": "<ol><li>Abre <a href=\"my-club.html\">My Club</a> y elige la pestaña <strong>Patrocinadores</strong>.</li><li>Si lo necesitas, elige una <strong>Sección</strong> y un <strong>Equipo</strong>.</li><li>Toca uno o más patrocinadores, o usa <strong>Busca un patrocinador</strong>.</li><li>Elige <strong>Todos los contenidos de la marca</strong> o <strong>Contenidos vinculados al club</strong>. Si ves que ningún post de estos patrocinadores menciona aún al club, no hay contenidos vinculados para esa selección.</li><li>Filtra por periodo o formato, guarda posts en un tablero de <a href=\"saved.html\">Guardados</a>, desbloquea un análisis con IA o arrastra un post a tu <a href=\"content-plan.html\">Plan de contenido</a>.</li></ol>"
+      },
+      {
+        "h": "Busca ideas de patrocinio de otros clubes",
+        "id": "other-clubs",
+        "html": "<p>My Club incluye todo lo de Pro, así que también tienes los filtros de <strong>Marcas y patrocinadores</strong> en la <a href=\"content-library.html\">Biblioteca de contenido</a>: <strong>Objetivo de negocio</strong>, <strong>Patrocinadores</strong>, <strong>Integración</strong> y <strong>Sector del patrocinador</strong>, además de <strong>Llamada a la acción</strong> y <strong>Colaboraciones</strong>. Úsalos para ver cómo integran otros clubes a sus partners en los posts. La IA detecta estos filtros en posts de Instagram desde octubre de 2026, así que son especialmente útiles para ideas de contenido deportivo para Instagram; los posts anteriores se están analizando.</p>"
+      },
+      {
+        "h": "Ejemplo práctico: un club de balonmano antes de una renovación",
+        "id": "example",
+        "html": "<p>Un club de balonmano tiene dos patrocinadores principales: una aseguradora y un supermercado local. Antes de la reunión de renovación con el supermercado, la responsable de marketing abre <strong>Patrocinadores</strong>, toca el supermercado y elige <strong>Contenidos vinculados al club</strong> con el periodo <strong>Esta temporada</strong>. Guarda los posts en un tablero, mira las visualizaciones y los likes de cada tarjeta y descarga el PDF del análisis con IA de los dos que mejor funcionaron. Después, en la biblioteca, filtra <strong>Sector del patrocinador</strong> e <strong>Integración</strong> para ver qué hicieron otros clubes con marcas de alimentación, y llega a la reunión con tres ideas nuevas.</p>"
+      },
+      {
+        "h": "Consejos y límites",
+        "id": "tips",
+        "html": "<ul><li>Usa <strong>Contenidos vinculados al club</strong> para revisar el acuerdo y <strong>Todos los contenidos de la marca</strong> para conocer el tono de la marca antes de proponerle una idea.</li><li>SCP solo usa posts públicos y no se conecta a tus cuentas, así que no incluye informes privados del patrocinador.</li><li>Prepara ideas para redes sociales de equipos deportivos que tu patrocinador también pueda compartir, y comprueba antes en la biblioteca cómo funcionaron.</li></ul><p>Así, Sports Content Playbook funciona como herramienta de marketing deportivo y apoya una estrategia de redes sociales deportivas en la que los patrocinadores tienen un sitio claro. Siguiente: <a href=\"es/help/how-to-use-the-content-planner.html\">cómo usar el planificador de contenido</a>.</p>"
+      }
+    ],
+    "faq": [
+      { "q": "¿Puedo añadir un patrocinador a My Club yo mismo?", "a": "No. Envía el nombre y las cuentas de la marca a SCP desde la página de contacto o a tu account manager, y SCP las vincula." },
+      { "q": "¿Qué diferencia hay entre los dos modos de patrocinadores?", "a": "Todos los contenidos de la marca muestra todo lo que publica la marca. Contenidos vinculados al club muestra los posts del club donde aparece etiquetado el patrocinador y los posts de la marca que mencionan al club." },
+      { "q": "¿Qué plan tiene los filtros de Marcas y patrocinadores?", "a": "Pro, y también Enterprise (My Club), porque incluye todo lo de Pro." },
+      { "q": "¿SCP muestra métricas privadas del patrocinador?", "a": "No. SCP usa solo posts públicos y no se conecta a tus cuentas, así que muestra las visualizaciones y los likes públicos de cada post." }
+    ]
+  }
+}

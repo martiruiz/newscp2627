@@ -1,0 +1,79 @@
+{
+  "n": 13,
+  "slug": "how-to-create-captions-hooks-and-scripts-with-ai",
+  "cat": "ai-tools",
+  "recommended": false,
+  "updated": "2026-11-12",
+  "next": "how-to-get-better-results-from-ai-suggestions",
+  "keywords": ["AI Tools for Sports Content Creation", "Sports Reels Ideas", "Sports Content Creation Tools", "Sports Instagram Content Ideas"],
+  "en": {
+    "title": "How to create captions, hooks and scripts with AI",
+    "label": "Hooks & captions",
+    "meta_title": "Captions, hooks and scripts with AI | SCP Knowledge Base",
+    "meta_description": "SCP has no free-text caption generator. Learn to turn an AI analysis' Hook template, Hook ideas, Shot list and Caption draft into your own post, step by step.",
+    "summary": "Sports Content Playbook doesn't have a free-text caption or script generator. Every AI analysis ends with ready-to-use material instead — a reusable Hook template, 3 Hook ideas, a Shot list and a Caption draft with [placeholders] — that you turn into your own hook, short script and caption in a few minutes.",
+    "body": [
+      {
+        "h": "What the AI gives you (and what it doesn't)",
+        "id": "what-the-ai-gives-you",
+        "html": "<p>Sports Content Playbook is one of the AI tools for sports content creation that starts from a real post, not from a blank prompt. When you analyse a post from the library, the AI breaks down why it worked and hands you four pieces of writing you can reuse:</p><ul><li><strong>Hook</strong>: the original hook, its category, why it works and a reusable <strong>Template</strong> with a <strong>Copy</strong> button.</li><li><strong>Hook ideas</strong>: 3 alternative openings, inside <strong>Ready to use</strong>.</li><li><strong>Shot list</strong>: 3 to 6 shots, each with a tip.</li><li><strong>Caption draft</strong>: up to 3 lines with [placeholders] for your club's details, plus the post's topics as hashtags.</li></ul><div class=\"kb-note\"><p>There is no AI chat, no idea generator and no box where you type a prompt to get a caption or script. The writing help in SCP is exactly these four pieces, always tied to a post you chose.</p></div>"
+      },
+      {
+        "h": "Step by step: from an analysis to your hook, script and caption",
+        "id": "step-by-step",
+        "html": "<ol><li>Open the <a href=\"content-library.html\">Content Library</a> and find a post close to what you want to publish. The search box and the <strong>Replicable ideas</strong> filter are a good start.</li><li>Open the post and click <strong>Unlock AI Analysis</strong>, then <strong>View AI Analysis</strong>. This uses 1 analysis from your monthly allowance; reopening it later is free. Videos take about 3 minutes because the AI watches frames of the whole video and reads a transcript.</li><li><strong>Hook</strong>: read why the original hook works, press <strong>Copy</strong> on the <strong>Template</strong> and fill the gaps with your own player, opponent or moment. If it doesn't fit, pick one of the 3 <strong>Hook ideas</strong> in <strong>Ready to use</strong>.</li><li><strong>Script</strong>: use the <strong>Shot list</strong> as the backbone. Write one line per shot: what we see, what is said or shown on screen. For pacing, check the seconds in <strong>Visual breakdown</strong> (or <strong>Slide by slide</strong> for a carousel).</li><li><strong>Caption</strong>: copy the <strong>Caption draft</strong>, replace every [placeholder] with real facts and add the topic hashtags you want.</li><li>On Plus and Pro, drag the analysed post to your <a href=\"content-plan.html\">Content Plan</a>: the AI's adaptation goes into the entry's notes, and you can paste your caption into the <strong>Caption</strong> field.</li></ol>"
+      },
+      {
+        "h": "Practical example: a matchday reel for a second-division club",
+        "id": "example",
+        "html": "<p>The social media manager of a second-division football club wants sports reels ideas for Friday's pre-match. She filters <strong>Match Day</strong> by Pre-match, finds an <strong>Overperforming</strong> reel where a player answers quick questions in the tunnel, and unlocks the analysis.</p><ul><li><strong>Hook</strong>: she copies the template and writes her own version with the captain's name and Sunday's opponent.</li><li><strong>Script</strong>: the shot list has five shots. She turns them into a five-line script for the shoot: wide shot of the tunnel, close-up of the captain, three questions, the last answer, the club crest with the kick-off time.</li><li><strong>Caption</strong>: she fills the [placeholders] of the caption draft with the opponent, the date and the ticket link, and keeps two hashtags.</li></ul><p>Total time: about ten minutes, and every line is based on a format that already worked for a similar club.</p>"
+      },
+      {
+        "h": "Tips and limits",
+        "id": "tips",
+        "html": "<ul><li><strong>Rewrite in your club's voice.</strong> The drafts are a starting point; your fans know how your club sounds.</li><li><strong>Fill every placeholder with real data.</strong> The AI never invents numbers, so scores, dates and names are yours to add and check.</li><li><strong>Adapt per network.</strong> The caption draft is short on purpose. Expand it for sports Instagram content ideas, keep it shorter for TikTok.</li><li><strong>Skip \"Hard to replicate\" posts</strong> if you need something fast; look for <strong>Replicable ideas</strong> instead.</li><li>The analysis is written in English and translated into Spanish the first time someone opens it in Spanish.</li></ul><p>Used this way, SCP works as one of your sports content creation tools for the writing step, not just for inspiration. Next, read <a href=\"help/how-to-get-better-results-from-ai-suggestions.html\">how to get better results from AI suggestions</a>.</p>"
+      }
+    ],
+    "faq": [
+      { "q": "Can Sports Content Playbook write a caption from scratch?", "a": "No. There is no free-text caption or script generator. The AI writes a Caption draft, Hook ideas and a Shot list for each post you analyse, and you adapt them." },
+      { "q": "Do the hook ideas cost extra analyses?", "a": "No. They are part of the AI analysis, which uses 1 analysis from your allowance the first time you open it. Reopening it later is free." },
+      { "q": "Can I save or share the hooks and caption draft?", "a": "Yes. You can download the analysis as a PDF, and on team plans your teammates can read the analyses you unlocked without using their own allowance." },
+      { "q": "Can I get the drafts in Spanish?", "a": "Yes. Switch the website to Spanish and the analysis is translated the first time it is opened in Spanish." }
+    ]
+  },
+  "es": {
+    "title": "Cómo crear textos, hooks y guiones con IA",
+    "label": "Hooks y textos",
+    "meta_title": "Textos, hooks y guiones con IA | SCP Knowledge Base",
+    "meta_description": "SCP no tiene un generador libre de textos. Aprende a convertir la plantilla de hook, las ideas de hook, la lista de planos y el borrador del texto en tu post.",
+    "summary": "Sports Content Playbook no tiene un generador libre de textos ni de guiones. En su lugar, cada análisis con IA termina con material listo para usar —una plantilla de hook reutilizable, 3 ideas de hook, una lista de planos y un borrador del texto con [huecos]— que conviertes en tu propio hook, guion corto y texto en pocos minutos.",
+    "body": [
+      {
+        "h": "Qué te da la IA (y qué no)",
+        "id": "what-the-ai-gives-you",
+        "html": "<p>Sports Content Playbook es una de las herramientas de IA para crear contenido deportivo que parte de un post real, no de un prompt en blanco. Cuando analizas un post de la biblioteca, la IA explica por qué funcionó y te da cuatro piezas de texto reutilizables:</p><ul><li><strong>Hook</strong>: el hook original, su categoría, por qué funciona y una <strong>Plantilla</strong> reutilizable con el botón <strong>Copiar</strong>.</li><li><strong>Ideas de hook</strong>: 3 arranques alternativos, dentro de <strong>Listo para usar</strong>.</li><li><strong>Lista de planos</strong>: de 3 a 6 planos, cada uno con un consejo.</li><li><strong>Borrador del texto</strong>: hasta 3 líneas con [huecos] para los datos de tu club, más los temas del post como hashtags.</li></ul><div class=\"kb-note\"><p>No hay chat con IA, ni generador de ideas, ni una caja donde escribir un prompt para obtener un texto o un guion. La ayuda de escritura de SCP son exactamente estas cuatro piezas, siempre ligadas a un post que tú eliges.</p></div>"
+      },
+      {
+        "h": "Paso a paso: del análisis a tu hook, guion y texto",
+        "id": "step-by-step",
+        "html": "<ol><li>Abre la <a href=\"content-library.html\">Biblioteca de contenido</a> y busca un post parecido a lo que quieres publicar. El buscador y el filtro <strong>Ideas replicables</strong> son un buen punto de partida.</li><li>Abre el post y pulsa <strong>Desbloquear análisis con IA</strong> y luego <strong>Ver análisis con IA</strong>. Gasta 1 análisis de tu cupo mensual; volver a abrirlo después es gratis. Los vídeos tardan unos 3 minutos porque la IA mira fotogramas de todo el vídeo y lee una transcripción.</li><li><strong>Hook</strong>: lee por qué funciona el hook original, pulsa <strong>Copiar</strong> en la <strong>Plantilla</strong> y rellena los huecos con tu jugador, tu rival o tu momento. Si no encaja, elige una de las 3 <strong>Ideas de hook</strong> de <strong>Listo para usar</strong>.</li><li><strong>Guion</strong>: usa la <strong>Lista de planos</strong> como esqueleto. Escribe una línea por plano: qué se ve y qué se dice o aparece en pantalla. Para el ritmo, mira los segundos del <strong>Desglose visual</strong> (o <strong>Slide a slide</strong> en un carrusel).</li><li><strong>Texto</strong>: copia el <strong>Borrador del texto</strong>, sustituye cada [hueco] por datos reales y añade los hashtags de temas que quieras.</li><li>En Plus y Pro, arrastra el post analizado a tu <a href=\"content-plan.html\">Plan de contenido</a>: la adaptación de la IA se guarda en las notas de la entrada y puedes pegar tu texto en el campo <strong>Texto del post</strong>.</li></ol>"
+      },
+      {
+        "h": "Ejemplo práctico: un reel de día de partido para un club de Segunda",
+        "id": "example",
+        "html": "<p>La community manager de un club de fútbol de Segunda busca ideas de reels deportivos para la previa del viernes. Filtra <strong>Día de partido</strong> por Previa, encuentra un reel marcado como <strong>Overperforming</strong> en el que un jugador responde preguntas rápidas en el túnel y desbloquea el análisis.</p><ul><li><strong>Hook</strong>: copia la plantilla y escribe su versión con el nombre del capitán y el rival del domingo.</li><li><strong>Guion</strong>: la lista de planos tiene cinco planos. Los convierte en un guion de cinco líneas para la grabación: plano general del túnel, primer plano del capitán, tres preguntas, la última respuesta y el escudo con la hora del partido.</li><li><strong>Texto</strong>: rellena los [huecos] del borrador con el rival, la fecha y el enlace de entradas, y se queda con dos hashtags.</li></ul><p>Tiempo total: unos diez minutos, y cada línea parte de un formato que ya funcionó en un club parecido.</p>"
+      },
+      {
+        "h": "Consejos y límites",
+        "id": "tips",
+        "html": "<ul><li><strong>Reescribe con la voz de tu club.</strong> Los borradores son un punto de partida; tu afición sabe cómo suena tu club.</li><li><strong>Rellena cada hueco con datos reales.</strong> La IA nunca se inventa cifras: resultados, fechas y nombres los pones y los compruebas tú.</li><li><strong>Adapta el texto a cada red.</strong> El borrador es corto a propósito: alárgalo para Instagram y recórtalo para TikTok.</li><li><strong>Evita los posts \"Difícil de replicar\"</strong> si vas con prisa; busca en <strong>Ideas replicables</strong>.</li><li>El análisis se escribe en inglés y se traduce al español la primera vez que alguien lo abre en español.</li></ul><p>Así, SCP te sirve como herramienta de creación de contenido deportivo también en la fase de escritura, no solo para inspirarte. Después, lee <a href=\"es/help/how-to-get-better-results-from-ai-suggestions.html\">cómo sacar mejores resultados de las sugerencias de la IA</a>.</p>"
+      }
+    ],
+    "faq": [
+      { "q": "¿Sports Content Playbook puede escribir un texto desde cero?", "a": "No. No hay un generador libre de textos ni de guiones. La IA escribe un borrador del texto, ideas de hook y una lista de planos para cada post que analizas, y tú los adaptas." },
+      { "q": "¿Las ideas de hook gastan análisis extra?", "a": "No. Forman parte del análisis con IA, que gasta 1 análisis de tu cupo la primera vez que lo abres. Volver a abrirlo después es gratis." },
+      { "q": "¿Puedo guardar o compartir los hooks y el borrador?", "a": "Sí. Puedes descargar el análisis en PDF y, en los planes de equipo, tus compañeros pueden leer los análisis que tú desbloqueaste sin gastar su cupo." },
+      { "q": "¿Puedo tener los borradores en español?", "a": "Sí. Cambia la web a español y el análisis se traduce la primera vez que se abre en español." }
+    ]
+  }
+}

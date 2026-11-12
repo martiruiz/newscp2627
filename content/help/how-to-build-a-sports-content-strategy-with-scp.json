@@ -1,0 +1,89 @@
+{
+  "n": 24,
+  "slug": "how-to-build-a-sports-content-strategy-with-scp",
+  "cat": "tips",
+  "recommended": false,
+  "updated": "2026-11-12",
+  "next": "how-to-turn-one-content-idea-into-multiple-posts",
+  "keywords": ["Sports Social Media Strategy", "Sports Content Calendar", "Social Media Ideas for Sports Teams", "Sports Content Ideas"],
+  "en": {
+    "title": "How to build a successful sports content strategy with SCP",
+    "label": "Strategy",
+    "meta_title": "Build a sports content strategy | SCP Knowledge Base",
+    "meta_description": "Build a sports social media strategy with Sports Content Playbook: see what works for clubs like yours, set recurring posts, plan key dates, review monthly.",
+    "summary": "With Sports Content Playbook you build a sports social media strategy in five steps: set your profile so the library shows clubs like yours, study what overperforms in your sport and competition, turn the formats that fit you into a weekly base of recurring posts, add key dates to your content calendar, and review the library every month to update the plan.",
+    "body": [
+      {
+        "h": "What a content strategy looks like in SCP",
+        "id": "what-it-is",
+        "html": "<p>A sports social media strategy answers three questions: what you post, how often, and why it should work. Sports Content Playbook helps with the third one, which is usually the hardest: instead of guessing, you look at real posts from 770+ clubs and 110+ competitions, see which ones performed above their account's usual, and read the AI analysis of why.</p><p>SCP uses public posts only. You don't connect your own social accounts, so it won't report your own results; use your networks' native statistics for that. SCP's job is to give you proven sports content ideas and a place to plan them.</p>"
+      },
+      {
+        "h": "Build your strategy step by step",
+        "id": "steps",
+        "html": "<ol><li><strong>Set your reference group.</strong> In <a href=\"profile.html\">Profile</a>, fill in Your sport, your favourite network, 5 favourite profiles (clubs, leagues, brands) and 5 favourite creators. This powers <strong>Favs</strong>, <strong>Clubs like mine</strong> and <strong>Fill my week</strong>.</li><li><strong>Study what works.</strong> In the <a href=\"content-library.html\">Content Library</a>, combine <strong>Overperforming</strong> (posts with at least 2x their account's median that quarter) with your <strong>Sport</strong> and <strong>Competition</strong>, and set the period to <strong>This season</strong>. Save the strongest posts to a board called “Strategy”.</li><li><strong>Find your content pillars.</strong> Look for repeated patterns: the Match Day timeline (Pre-match, Live, Post-match), Transfers, Kit, Season moment, or Brands &amp; sponsors on Pro. Pick 3 to 5 types you can produce every week. <strong>Replicable ideas</strong> shows formats you can recreate with your own players and venue.</li><li><strong>Understand the why.</strong> Run an AI analysis on one post per pillar. Read <strong>Why it works</strong>, the <strong>Hook</strong> and <strong>How to adapt it to your club</strong>, and note the reusable template.</li><li><strong>Turn pillars into a weekly base.</strong> In the <a href=\"content-plan.html\">Content Plan</a> (Plus and Pro), add each pillar to the <strong>Weekly base</strong>. These recurring posts show as red placeholders until you plan them.</li><li><strong>Add key dates.</strong> The Content Plan includes 12 key dates (Pre-season, Fixture release, Halloween, Black Friday, Christmas…); each opens the library filtered to that topic. For a full season view, download the free Sports Content Calendar 2026-27 PDF in <a href=\"free-resources.html\">Free resources</a>.</li><li><strong>Review every month.</strong> Re-run your saved search for Overperforming posts. Overperforming is recomputed every hour, so new winners appear quickly.</li></ol>"
+      },
+      {
+        "h": "Example: a handball federation",
+        "id": "example",
+        "html": "<p>A handball federation runs the accounts of its national teams and its league. The communications lead sets Handball as the sport and five federations and clubs she admires as favourites. In Overperforming for this season she notices that post-match player reactions and short training challenges keep beating their accounts' median. She also filters by <strong>Challenges</strong>, because every Challenges post is also Replicable.</p><p>She defines four pillars: match preview carousel, post-match reaction reel, weekly challenge, and a sponsor post. She analyses one example of each, then builds a Weekly base: preview on Thursday, challenge on Tuesday, reaction after each match, sponsor post on Friday. Before Christmas and the fixture release she drags key-date ideas into the No date tray. Every month she checks Overperforming again and swaps one pillar if a new format is clearly winning. These social media ideas for sports teams become a repeatable plan rather than a weekly scramble.</p>"
+      },
+      {
+        "h": "Common mistakes",
+        "id": "mistakes",
+        "html": "<ul><li><strong>Copying the biggest clubs only.</strong> A post with millions of views from a giant club may not fit your resources. Overperforming compares each post with its own account, so smaller clubs that punch above their weight show up too. Add <strong>Clubs like mine</strong> to stay close to your level.</li><li><strong>Too many pillars.</strong> Five recurring posts you can actually produce beat ten you abandon in a month.</li><li><strong>Spending AI analyses on everything.</strong> Your allowance is monthly (5, 10 or 30). Use filters and the post's own metrics first, then analyse the posts you will really adapt.</li><li><strong>Planning without a calendar.</strong> A sports content calendar with key dates avoids last-minute posts for Christmas or the start of the season.</li></ul><div class=\"kb-note\"><p>Need help with My Club or a strategy for several teams? <a href=\"book-a-call.html\">Book a 30-minute demo</a> with the SCP team.</p></div>"
+      },
+      {
+        "h": "Keep learning",
+        "id": "keep-learning",
+        "html": "<p>The SCP blog publishes one article a day on news, social media trends and sports content ideas, Social News covers daily platform updates for sports teams, and the free newsletter arrives every Monday. Free resources also include The Moment Playbook, a Prompt Pack with 14 prompts and monthly content ideas.</p>"
+      }
+    ],
+    "faq": [
+      { "q": "Does SCP measure the results of my own posts?", "a": "No. Sports Content Playbook works with public posts and you don't connect your accounts. Use your networks' own statistics to track your results and SCP to find what to post next." },
+      { "q": "How often should I review my strategy?", "a": "Once a month works well: re-run your saved Overperforming search for your sport and competition and update your weekly base if a new format is clearly winning." },
+      { "q": "Can I plan key dates without the Content Plan?", "a": "Yes. The free Sports Content Calendar 2026-27 PDF in Free resources lists 28 dates for 9 sports. The Content Plan, on Plus and Pro, adds 12 key dates linked to the library." },
+      { "q": "What if my club isn't in the library?", "a": "Ask SCP to add it through the contact page. Adding accounts is included in every plan." }
+    ]
+  },
+  "es": {
+    "title": "Cómo crear una estrategia de contenido deportivo de éxito con SCP",
+    "label": "Estrategia",
+    "meta_title": "Crea tu estrategia de contenido | SCP Knowledge Base",
+    "meta_description": "Crea tu estrategia de redes sociales deportivas con Sports Content Playbook: mira qué funciona en clubes como el tuyo, fija posts recurrentes y revisa cada mes.",
+    "summary": "Con Sports Content Playbook creas una estrategia de redes sociales deportivas en cinco pasos: configura tu perfil para que la biblioteca te muestre clubes como el tuyo, estudia lo que rinde por encima de lo normal en tu deporte y competición, convierte los formatos que te encajan en una base semanal de posts recurrentes, añade las fechas clave a tu calendario de contenido y revisa la biblioteca cada mes para actualizar el plan.",
+    "body": [
+      {
+        "h": "Cómo es una estrategia de contenido en SCP",
+        "id": "what-it-is",
+        "html": "<p>Una estrategia de redes sociales deportivas responde a tres preguntas: qué publicas, cada cuánto y por qué debería funcionar. Sports Content Playbook te ayuda con la tercera, que suele ser la más difícil: en vez de adivinar, miras posts reales de más de 770 clubes y 110 competiciones, ves cuáles rindieron por encima de lo habitual de su cuenta y lees en el análisis con IA el porqué.</p><p>SCP usa solo posts públicos. No conectas tus redes, así que no te informa de tus propios resultados; para eso usa las estadísticas de cada red. El trabajo de SCP es darte ideas de contenido deportivo probadas y un sitio donde planificarlas.</p>"
+      },
+      {
+        "h": "Crea tu estrategia paso a paso",
+        "id": "steps",
+        "html": "<ol><li><strong>Define tu grupo de referencia.</strong> En <a href=\"profile.html\">Perfil</a>, rellena tu deporte, tu red favorita, 5 perfiles favoritos (clubes, ligas, marcas) y 5 creadores favoritos. Con eso funcionan <strong>Favs</strong>, <strong>Clubes como el mío</strong> y <strong>Llenar mi semana</strong>.</li><li><strong>Estudia lo que funciona.</strong> En la <a href=\"content-library.html\">Biblioteca de contenido</a>, combina <strong>Overperforming</strong> (posts con al menos el doble de la mediana de su cuenta ese trimestre) con <strong>Deporte</strong> y <strong>Competición</strong>, y pon el periodo en <strong>Esta temporada</strong>. Guarda los mejores en un tablero llamado «Estrategia».</li><li><strong>Encuentra tus pilares de contenido.</strong> Busca patrones que se repiten: la línea del Día de partido (previa, directo, post-partido), fichajes, equipaciones, momento de la temporada o, en Pro, Marcas y patrocinadores. Elige de 3 a 5 tipos que puedas producir cada semana. <strong>Ideas replicables</strong> te muestra formatos que puedes recrear con tus jugadores y tus instalaciones.</li><li><strong>Entiende el porqué.</strong> Haz un análisis con IA de un post por pilar. Lee <strong>Por qué funciona</strong>, el <strong>Hook</strong> y <strong>Cómo adaptarlo a tu club</strong>, y apunta la plantilla reutilizable.</li><li><strong>Convierte los pilares en una base semanal.</strong> En el <a href=\"content-plan.html\">Plan de contenido</a> (Plus y Pro), añade cada pilar a la <strong>Base semanal</strong>. Estos posts recurrentes aparecen como huecos en rojo hasta que los planificas.</li><li><strong>Añade las fechas clave.</strong> El Plan de contenido incluye 12 fechas clave (pretemporada, publicación del calendario, Halloween, Black Friday, Navidad…); cada una abre la biblioteca filtrada por ese tema. Para ver toda la temporada, descarga gratis el PDF Sports Content Calendar 2026-27 en <a href=\"free-resources.html\">Recursos gratuitos</a>.</li><li><strong>Revisa cada mes.</strong> Vuelve a abrir tu búsqueda guardada de Overperforming. Se recalcula cada hora, así que los nuevos posts destacados aparecen enseguida.</li></ol>"
+      },
+      {
+        "h": "Ejemplo: una federación de balonmano",
+        "id": "example",
+        "html": "<p>Una federación de balonmano lleva las cuentas de sus selecciones y de su liga. La responsable de comunicación pone balonmano como deporte y cinco federaciones y clubes que admira como favoritos. En Overperforming de esta temporada ve que las reacciones de jugadores tras el partido y los retos cortos en el entrenamiento superan una y otra vez la mediana de sus cuentas. También filtra por <strong>Challenges</strong>, porque todos los posts de Challenges son también <strong>Ideas replicables</strong>.</p><p>Define cuatro pilares: carrusel de previa, reel de reacción post-partido, reto semanal y post de patrocinador. Analiza un ejemplo de cada uno y monta una Base semanal: previa el jueves, reto el martes, reacción después de cada partido y patrocinador el viernes. Antes de Navidad y de la publicación del calendario arrastra ideas de fechas clave a la bandeja Sin fecha. Cada mes revisa Overperforming y cambia un pilar si un formato nuevo gana con claridad. Así sus ideas para redes sociales de equipos deportivos se convierten en un plan repetible y no en una carrera cada semana.</p>"
+      },
+      {
+        "h": "Errores habituales",
+        "id": "mistakes",
+        "html": "<ul><li><strong>Copiar solo a los grandes clubes.</strong> Un post con millones de vistas de un club enorme puede no encajar con tus recursos. Overperforming compara cada post con su propia cuenta, así que también salen clubes pequeños que rinden por encima de lo esperado. Usa <strong>Clubes como el mío</strong> para quedarte cerca de tu nivel.</li><li><strong>Demasiados pilares.</strong> Cinco posts recurrentes que de verdad puedes producir valen más que diez que abandonas en un mes.</li><li><strong>Gastar análisis con IA en todo.</strong> Tu cupo es mensual (5, 10 o 30). Usa antes los filtros y las métricas del post, y analiza solo los que de verdad vas a adaptar.</li><li><strong>Planificar sin calendario.</strong> Un calendario de contenido deportivo con fechas clave evita los posts de última hora en Navidad o al empezar la temporada.</li></ul><div class=\"kb-note\"><p>¿Necesitas ayuda con My Club o una estrategia para varios equipos? <a href=\"book-a-call.html\">Reserva una demo de 30 minutos</a> con el equipo de SCP.</p></div>"
+      },
+      {
+        "h": "Sigue aprendiendo",
+        "id": "keep-learning",
+        "html": "<p>El blog de SCP publica un artículo al día sobre novedades, tendencias en redes sociales e ideas de contenido deportivo, Social News recoge cada día las novedades de las plataformas para equipos deportivos y la newsletter gratuita llega cada lunes. En Recursos gratuitos también tienes The Moment Playbook, un Prompt Pack con 14 prompts e ideas de contenido para cada mes.</p>"
+      }
+    ],
+    "faq": [
+      { "q": "¿SCP mide los resultados de mis propios posts?", "a": "No. Sports Content Playbook trabaja con posts públicos y no conectas tus cuentas. Usa las estadísticas de tus redes para medir tus resultados y SCP para decidir qué publicar después." },
+      { "q": "¿Cada cuánto debería revisar mi estrategia?", "a": "Una vez al mes funciona bien: vuelve a abrir tu búsqueda guardada de Overperforming para tu deporte y competición y actualiza tu base semanal si un formato nuevo gana con claridad." },
+      { "q": "¿Puedo planificar las fechas clave sin el Plan de contenido?", "a": "Sí. El PDF gratuito Sports Content Calendar 2026-27 de Recursos gratuitos tiene 28 fechas para 9 deportes. El Plan de contenido, en Plus y Pro, añade 12 fechas clave conectadas con la biblioteca." },
+      { "q": "¿Y si mi club no está en la biblioteca?", "a": "Pide a SCP que lo añada desde la página de contacto. Añadir cuentas está incluido en todos los planes." }
+    ]
+  }
+}

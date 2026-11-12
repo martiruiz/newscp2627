@@ -1,0 +1,89 @@
+{
+  "n": 21,
+  "slug": "starter-plus-and-pro-plans-compared",
+  "cat": "account-billing",
+  "recommended": false,
+  "updated": "2026-11-12",
+  "next": "how-does-the-7-day-free-trial-work",
+  "keywords": ["Sports Social Media Tools", "Sports Content Planning Tool", "AI Tools for Sports Content Creation", "Sports Marketing Tools"],
+  "en": {
+    "title": "What is the difference between Starter, Plus and Pro?",
+    "label": "Plans compared",
+    "meta_title": "Starter vs Plus vs Pro plans | SCP Knowledge Base",
+    "meta_description": "Compare Sports Content Playbook plans: Starter €9, Plus €19 and Pro €49 a month per user. What each includes, AI analyses per month, and when to pick My Club.",
+    "summary": "Starter (€9/month) gives you the Content Library, search, smart filters, Match Day, Saved boards and 5 AI analyses a month. Plus (€19/month) adds the Content Creators filter, the Content Plan and 10 AI analyses. Pro (€49/month) adds the Brands & sponsors filters and 30 AI analyses. Prices are per user, VAT included, and Enterprise (My Club) is a custom plan from €99/month.",
+    "body": [
+      {
+        "h": "The three plans in one sentence each",
+        "id": "overview",
+        "html": "<p>Sports Content Playbook sits among sports social media tools and sports marketing tools as a research and planning platform. All its plans include the Content Library of real posts from clubs, leagues and brands, and AI analysis, so even Starter gives you AI tools for sports content creation (Hook template, Hook ideas, Shot list and Caption draft inside each analysis). The difference is how many extra tools and how many AI analyses you get:</p><ul><li><strong>Starter</strong>: the library and its filters, to find sports content ideas every week.</li><li><strong>Plus</strong>: Starter plus the Content Creators filter and the Content Plan, a sports content planning tool with weekly and monthly calendars.</li><li><strong>Pro</strong>: Plus plus the Brands &amp; sponsors filters, for teams that sell and activate sponsorships.</li></ul>"
+      },
+      {
+        "h": "Comparison table",
+        "id": "comparison-table",
+        "html": "<table><thead><tr><th></th><th>Starter</th><th>Plus</th><th>Pro</th><th>Enterprise (My Club)</th></tr></thead><tbody><tr><td>Monthly price per user</td><td>€9 (launch, regular €14)</td><td>€19 (launch, regular €25)</td><td>€49</td><td>Custom, from €99</td></tr><tr><td>Yearly price per user</td><td>€90</td><td>€190</td><td>€490</td><td>Custom</td></tr><tr><td>Content Library, search and smart filters</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr><tr><td>Match Day filters</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr><tr><td>Saved boards</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr><tr><td>AI analyses per month</td><td>5</td><td>10</td><td>30</td><td>Everything in Pro</td></tr><tr><td>Content Creators filter</td><td>No</td><td>Yes</td><td>Yes</td><td>Yes</td></tr><tr><td>Content Plan (weekly and monthly calendars)</td><td>No</td><td>Yes</td><td>Yes</td><td>Yes</td></tr><tr><td>Brands &amp; sponsors filters</td><td>No</td><td>No</td><td>Yes</td><td>Yes</td></tr><tr><td>Your club's own private library</td><td>No</td><td>No</td><td>No</td><td>Yes</td></tr></tbody></table><p>Prices are in euros, VAT included, per user. The yearly price works out at about two months free. The Starter and Plus launch prices are available to people who join until 31 December 2026, and you keep them for good. Every plan starts with a 7-day free trial.</p>"
+      },
+      {
+        "h": "How to choose your plan",
+        "id": "choose",
+        "html": "<ol><li>Pick <strong>Starter</strong> if you mainly need inspiration: browsing what works, filtering by sport, competition and Match Day moment, and saving posts to boards.</li><li>Pick <strong>Plus</strong> if you also plan the week: drag posts from the library onto a day, use <strong>Fill my week</strong>, set a <strong>Weekly base</strong> and export the week to PDF, Excel or .ics. Plus also unlocks content creators, useful if you work with influencers or look at creator formats.</li><li>Pick <strong>Pro</strong> if sponsors matter: the Brands &amp; sponsors filters (Business goal, Sponsors, Integration, Sponsor sector) show how other clubs integrate partners, and 30 AI analyses a month cover a busy team.</li><li>Talk to SCP about <strong>Enterprise</strong> if you want My Club: your club's own space with the posts of your players, sponsors, teams and sections, set up with the SCP team. It includes everything in Pro and is explained in a <a href=\"book-a-call.html\">30-minute demo</a>.</li></ol><p>To compare live prices and start a trial, open <a href=\"pricing.html\">pricing.html</a>.</p>"
+      },
+      {
+        "h": "Example: which plan fits which team",
+        "id": "example",
+        "html": "<p>A basketball academy with one person doing social media wants weekly ideas for training videos and player features. Starter is enough: the library, Match Day and 5 AI analyses a month.</p><p>A second-division football club with a manager and a video editor plans every week and wants to see how creators film matchday content. Plus for two users gives each of them the Content Plan and 10 AI analyses.</p><p>A handball federation that must deliver sponsor posts every month chooses Pro, so the team can filter by Sponsor sector and Integration and has 30 AI analyses per user.</p>"
+      },
+      {
+        "h": "Good to know",
+        "id": "good-to-know",
+        "html": "<ul><li>Prices are per user. You can add up to 5 users from the billing page; for more, request a custom plan.</li><li>AI analyses renew monthly from your subscription date and unused ones don't carry over. If you run out, you can buy one-off packs that never expire.</li><li>You can upgrade at any time and it applies straight away, prorated. A downgrade applies at the end of your current period.</li><li>Every plan works only with public posts: you don't connect your own social media accounts.</li></ul><div class=\"kb-note\"><p>Not sure? Start the 7-day trial on Plus or Pro and change plan during the trial: it applies at once and nothing is charged.</p></div>"
+      }
+    ],
+    "faq": [
+      { "q": "Is the Content Plan included in Starter?", "a": "No. The Content Plan is included in Plus and Pro (and Enterprise). Starter includes the Content Library, search, smart filters, Match Day, Saved boards and 5 AI analyses a month." },
+      { "q": "Which plan includes the Brands & sponsors filters?", "a": "Pro and Enterprise. Match Day filters are available on every plan and the Content Creators filter starts with Plus." },
+      { "q": "Are the prices per user or per club?", "a": "Per user, in euros with VAT included. A club with three people on Plus pays three times the Plus price." },
+      { "q": "What does Enterprise add over Pro?", "a": "My Club: a private space with your own club's posts (players, sponsors, teams and sections), set up with the SCP team. It has a custom price from €99/month." }
+    ]
+  },
+  "es": {
+    "title": "¿Qué diferencia hay entre Starter, Plus y Pro?",
+    "label": "Comparativa",
+    "meta_title": "Starter, Plus y Pro comparados | SCP Knowledge Base",
+    "meta_description": "Compara los planes de Sports Content Playbook: Starter 9 €, Plus 19 € y Pro 49 € al mes por usuario. Qué incluye cada uno, análisis IA y cuándo elegir My Club.",
+    "summary": "Starter (9 €/mes) te da la Biblioteca de contenido, el buscador, los filtros inteligentes, Día de partido, Guardados y 5 análisis con IA al mes. Plus (19 €/mes) añade el filtro Content Creators, el Plan de contenido y 10 análisis. Pro (49 €/mes) añade los filtros de Marcas y patrocinadores y 30 análisis. Los precios son por usuario, con IVA incluido, y Enterprise (My Club) es un plan a medida desde 99 €/mes.",
+    "body": [
+      {
+        "h": "Los tres planes en una frase",
+        "id": "overview",
+        "html": "<p>Todos los planes de Sports Content Playbook incluyen la Biblioteca de contenido con posts reales de clubes, ligas y marcas, y el análisis con IA. La diferencia está en las herramientas extra y en cuántos análisis con IA tienes:</p><ul><li><strong>Starter</strong>: la biblioteca y sus filtros, para encontrar ideas de contenido deportivo cada semana.</li><li><strong>Plus</strong>: Starter más el filtro Content Creators y el Plan de contenido, una herramienta de planificación con calendario semanal y mensual.</li><li><strong>Pro</strong>: Plus más los filtros de Marcas y patrocinadores, para equipos que venden y activan patrocinios.</li></ul>"
+      },
+      {
+        "h": "Tabla comparativa",
+        "id": "comparison-table",
+        "html": "<table><thead><tr><th></th><th>Starter</th><th>Plus</th><th>Pro</th><th>Enterprise (My Club)</th></tr></thead><tbody><tr><td>Precio mensual por usuario</td><td>9 € (lanzamiento, normal 14 €)</td><td>19 € (lanzamiento, normal 25 €)</td><td>49 €</td><td>A medida, desde 99 €</td></tr><tr><td>Precio anual por usuario</td><td>90 €</td><td>190 €</td><td>490 €</td><td>A medida</td></tr><tr><td>Biblioteca de contenido, buscador y filtros inteligentes</td><td>Sí</td><td>Sí</td><td>Sí</td><td>Sí</td></tr><tr><td>Filtros de Día de partido</td><td>Sí</td><td>Sí</td><td>Sí</td><td>Sí</td></tr><tr><td>Guardados</td><td>Sí</td><td>Sí</td><td>Sí</td><td>Sí</td></tr><tr><td>Análisis con IA al mes</td><td>5</td><td>10</td><td>30</td><td>Todo lo de Pro</td></tr><tr><td>Filtro Content Creators</td><td>No</td><td>Sí</td><td>Sí</td><td>Sí</td></tr><tr><td>Plan de contenido (calendario semanal y mensual)</td><td>No</td><td>Sí</td><td>Sí</td><td>Sí</td></tr><tr><td>Filtros de Marcas y patrocinadores</td><td>No</td><td>No</td><td>Sí</td><td>Sí</td></tr><tr><td>Biblioteca privada de tu club</td><td>No</td><td>No</td><td>No</td><td>Sí</td></tr></tbody></table><p>Precios en euros, IVA incluido, por usuario. El precio anual equivale a unos dos meses gratis. Los precios de lanzamiento de Starter y Plus están disponibles para quien se apunte hasta el 31 de diciembre de 2026, y los mantienes para siempre. Todos los planes empiezan con 7 días de prueba gratis.</p>"
+      },
+      {
+        "h": "Cómo elegir tu plan",
+        "id": "choose",
+        "html": "<ol><li>Elige <strong>Starter</strong> si sobre todo buscas inspiración: ver qué funciona, filtrar por deporte, competición y momento del Día de partido, y guardar posts en tableros.</li><li>Elige <strong>Plus</strong> si además planificas la semana: arrastrar posts de la biblioteca a un día, usar <strong>Llenar mi semana</strong>, montar una <strong>Base semanal</strong> y exportar la semana a PDF, Excel o .ics. Plus también desbloquea los creadores de contenido, útil si trabajas con influencers o te fijas en sus formatos.</li><li>Elige <strong>Pro</strong> si los patrocinadores importan: los filtros de Marcas y patrocinadores (objetivo de negocio, patrocinadores, integración, sector del patrocinador) muestran cómo integran otros clubes a sus partners, y 30 análisis con IA al mes cubren a un equipo con mucho volumen.</li><li>Habla con SCP sobre <strong>Enterprise</strong> si quieres My Club: el espacio propio de tu club con los posts de tus jugadores, patrocinadores, equipos y secciones, configurado con el equipo de SCP. Incluye todo lo de Pro y te lo explicamos en una <a href=\"book-a-call.html\">demo de 30 minutos</a>.</li></ol><p>Para ver los precios y empezar una prueba, abre <a href=\"pricing.html\">pricing.html</a>.</p>"
+      },
+      {
+        "h": "Ejemplo: qué plan encaja con cada equipo",
+        "id": "example",
+        "html": "<p>Una academia de baloncesto con una sola persona en redes quiere ideas semanales de vídeos de entrenamiento y de jugadores. Le basta Starter: la biblioteca, Día de partido y 5 análisis con IA al mes.</p><p>Un club de fútbol de Segunda con una responsable de redes y un editor de vídeo planifica cada semana y quiere ver cómo graban los creadores el contenido de partido. Plus para dos usuarios les da a ambos el Plan de contenido y 10 análisis con IA.</p><p>Una federación de balonmano que debe entregar posts de patrocinadores cada mes elige Pro, para filtrar por sector del patrocinador e integración y tener 30 análisis con IA por usuario.</p>"
+      },
+      {
+        "h": "Conviene saber",
+        "id": "good-to-know",
+        "html": "<ul><li>Los precios son por usuario. Puedes añadir hasta 5 usuarios desde la página de facturación; para más, pide un plan a medida.</li><li>Los análisis con IA se renuevan cada mes desde la fecha de tu suscripción y los que no usas no se acumulan. Si te quedas sin ellos, puedes comprar packs puntuales que no caducan.</li><li>Puedes subir de plan cuando quieras y se aplica al momento, prorrateado. Bajar de plan se aplica al final del periodo actual.</li><li>Todos los planes trabajan solo con posts públicos: no conectas tus redes sociales.</li></ul><div class=\"kb-note\"><p>¿Dudas? Empieza la prueba de 7 días en Plus o Pro y cambia de plan durante la prueba: se aplica al momento y no se cobra nada.</p></div>"
+      }
+    ],
+    "faq": [
+      { "q": "¿El Plan de contenido está incluido en Starter?", "a": "No. El Plan de contenido está en Plus y Pro (y en Enterprise). Starter incluye la Biblioteca de contenido, el buscador, los filtros inteligentes, Día de partido, Guardados y 5 análisis con IA al mes." },
+      { "q": "¿Qué plan incluye los filtros de Marcas y patrocinadores?", "a": "Pro y Enterprise. Los filtros de Día de partido están en todos los planes y el filtro Content Creators empieza en Plus." },
+      { "q": "¿Los precios son por usuario o por club?", "a": "Por usuario, en euros con IVA incluido. Un club con tres personas en Plus paga tres veces el precio de Plus." },
+      { "q": "¿Qué añade Enterprise respecto a Pro?", "a": "My Club: un espacio privado con los posts de tu propio club (jugadores, patrocinadores, equipos y secciones), configurado con el equipo de SCP. Tiene precio a medida desde 99 €/mes." }
+    ]
+  }
+}

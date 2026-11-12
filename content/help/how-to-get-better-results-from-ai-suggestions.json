@@ -1,0 +1,89 @@
+{
+  "n": 14,
+  "slug": "how-to-get-better-results-from-ai-suggestions",
+  "cat": "ai-tools",
+  "recommended": false,
+  "updated": "2026-11-12",
+  "next": "how-to-set-up-your-club-in-my-club",
+  "keywords": ["AI Tools for Sports Content Creation", "Sports Content Ideas", "Sports Social Media Strategy", "Sports TikTok Content Ideas"],
+  "en": {
+    "title": "How to get better results from AI-generated suggestions",
+    "label": "Better AI results",
+    "meta_title": "Better results from AI suggestions | SCP Knowledge Base",
+    "meta_description": "The AI in Sports Content Playbook works from the post you pick. Choose the right posts, read the verdict and adapt hooks, shots and captions for better results.",
+    "summary": "In Sports Content Playbook the AI suggestions are only as useful as the post you analyse. Pick a post that matches your sport, format and resources, check \"How it performed\" and \"How to adapt it to your club\", then rewrite the Hook ideas, Shot list and Caption draft with your club's real facts and voice.",
+    "body": [
+      {
+        "h": "How the suggestions are made",
+        "id": "how-it-works",
+        "html": "<p>Each AI analysis in Sports Content Playbook is built from one real post. For videos (reels, TikTok, YouTube, Facebook) the AI watches frames of the whole video and reads an automatic transcript; if the video can't be read, it falls back to the cover. The <strong>How it performed</strong> verdict is calculated from the post's real numbers against its own account's median that quarter. The AI never invents numbers and never identifies people by their face.</p><p>There is no prompt to tweak and no chat to ask follow-up questions. That makes the post you choose the main lever: a good match gives you sports content ideas you can actually shoot; a poor match gives you suggestions you'll have to throw away.</p>"
+      },
+      {
+        "h": "Step by step: choose posts that give better suggestions",
+        "id": "step-by-step",
+        "html": "<ol><li>In the <a href=\"content-library.html\">Content Library</a>, narrow the results first: <strong>Sport</strong>, <strong>Competition</strong>, <strong>Format</strong> and <strong>Platform</strong>, plus the <strong>Match Day</strong> timeline if it's for a game.</li><li>Prefer <strong>Overperforming</strong> posts (at least 2x their own account's median) and <strong>Replicable ideas</strong> (easy to copy with your own assets).</li><li>Try a sentence in the search box, such as \"transfer reels with a sponsor that worked\". It turns words into filters and doesn't use any AI analyses.</li><li>Before unlocking, open the post and read <strong>Tags and caption</strong>, and check <strong>More like this</strong> for a closer match.</li><li>Click <strong>Unlock AI Analysis</strong>. Read <strong>How it performed</strong>: \"Too early to judge\" or \"No numbers yet\" means the result isn't proven yet.</li><li>Read <strong>How to adapt it to your club</strong>. If the AI says <strong>Hard to replicate</strong>, keep the hook idea and look for another post for the format.</li></ol>"
+      },
+      {
+        "h": "Practical example: a basketball academy without a video team",
+        "id": "example",
+        "html": "<p>A basketball academy has one coach who films on a phone. Instead of analysing big-club productions, the coach filters <strong>Replicable ideas</strong> and <strong>Challenges</strong>, Sport basketball, Platform TikTok, and finds two short challenge videos with young players. She unlocks both analyses, compares the 3 <strong>Hook ideas</strong> of each, keeps the clearest one and uses the shorter <strong>Shot list</strong>. The result is a set of sports TikTok content ideas the academy can film in one training session, with a caption she rewrote in the academy's tone.</p>"
+      },
+      {
+        "h": "Common mistakes",
+        "id": "common-mistakes",
+        "html": "<ul><li><strong>Analysing posts that don't match your reality.</strong> A suggestion built on a stadium-wide production won't fit a club with no camera operator.</li><li><strong>Publishing the Caption draft as it is.</strong> It has [placeholders] on purpose; fill them with real dates, names and scores.</li><li><strong>Ignoring the verdict.</strong> A post \"Below its usual\" can still teach a hook, but don't copy its whole approach.</li><li><strong>Spending the allowance in the first week.</strong> Starter has 5 analyses a month, Plus 10 and Pro 30; unused ones don't carry over. Packs never expire and are used after the monthly ones.</li><li><strong>Unlocking what a teammate already analysed.</strong> On team plans, check the <strong>My team's</strong> tab in <strong>My AI analyses</strong> first: reading their analyses is free.</li></ul>"
+      },
+      {
+        "h": "Keep what works",
+        "id": "keep-what-works",
+        "html": "<p>A sports social media strategy improves when you reuse what worked. Use <strong>Download PDF</strong> on an analysis to share it, save the original post to a board in <a href=\"saved.html\">Saved boards</a>, and on Plus and Pro drag the analysed post to your <a href=\"content-plan.html\">Content Plan</a>: the AI's adaptation goes into the entry's notes. Used like this, SCP is one of the AI tools for sports content creation that gets more useful the more carefully you pick. To write the final copy, see <a href=\"help/how-to-create-captions-hooks-and-scripts-with-ai.html\">how to create captions, hooks and scripts with AI</a>.</p>"
+      }
+    ],
+    "faq": [
+      { "q": "Can I ask the AI to change a suggestion?", "a": "No. There is no AI chat or prompt box. Analyse a different post that fits better, or edit the hook, shot list and caption draft yourself." },
+      { "q": "Why does the analysis say \"Too early to judge\"?", "a": "The post's numbers were collected less than 48 hours after it was published, so SCP doesn't compare it with the account's median yet." },
+      { "q": "What happens if the AI can't read a video?", "a": "It uses the post's cover instead, so the visual breakdown is based on that image rather than on frames of the video." },
+      { "q": "What if I run out of AI analyses?", "a": "Your allowance renews monthly from your subscription date. You can also buy one-off packs in Profile → Billing & membership → Buy more AI analyses." }
+    ]
+  },
+  "es": {
+    "title": "Cómo sacar mejores resultados de las sugerencias generadas por IA",
+    "label": "Mejor IA",
+    "meta_title": "Mejores resultados con la IA | SCP Knowledge Base",
+    "meta_description": "La IA de Sports Content Playbook parte del post que eliges. Elige bien, lee el veredicto y adapta hooks, planos y textos para sacar mejores resultados.",
+    "summary": "En Sports Content Playbook, las sugerencias de la IA son tan útiles como el post que analizas. Elige un post que encaje con tu deporte, formato y recursos, revisa «Cómo funcionó» y «Cómo adaptarlo a tu club», y reescribe las ideas de hook, la lista de planos y el borrador del texto con los datos reales y la voz de tu club.",
+    "body": [
+      {
+        "h": "Cómo se generan las sugerencias",
+        "id": "how-it-works",
+        "html": "<p>Cada análisis con IA de Sports Content Playbook se construye a partir de un post real. En los vídeos (reels, TikTok, YouTube, Facebook) la IA mira fotogramas de todo el vídeo y lee una transcripción automática; si no puede leer el vídeo, usa la portada. El veredicto de <strong>Cómo funcionó</strong> se calcula con las cifras reales del post frente a la mediana de su propia cuenta en ese trimestre. La IA nunca se inventa cifras ni identifica a nadie por la cara.</p><p>No hay un prompt que retocar ni un chat para hacer preguntas. Por eso el post que eliges es la palanca principal: si encaja, obtienes ideas de contenido deportivo que de verdad puedes grabar; si no, sugerencias que acabarás descartando.</p>"
+      },
+      {
+        "h": "Paso a paso: elige posts que den mejores sugerencias",
+        "id": "step-by-step",
+        "html": "<ol><li>En la <a href=\"content-library.html\">Biblioteca de contenido</a>, acota primero: <strong>Deporte</strong>, <strong>Competición</strong>, <strong>Formato</strong> y <strong>Plataforma</strong>, y la línea de tiempo de <strong>Día de partido</strong> si es para un partido.</li><li>Prioriza los posts <strong>Overperforming</strong> (al menos el doble de la mediana de su cuenta) y las <strong>Ideas replicables</strong> (fáciles de copiar con tus propios recursos).</li><li>Prueba una frase en el buscador, por ejemplo «reels de fichajes con patrocinador que funcionaron». Convierte las palabras en filtros y no gasta análisis con IA.</li><li>Antes de desbloquear, abre el post, lee <strong>Etiquetas y texto del post</strong> y mira <strong>Más como este</strong> por si hay uno más parecido.</li><li>Pulsa <strong>Desbloquear análisis con IA</strong>. Lee <strong>Cómo funcionó</strong>: «Aún es pronto para valorarlo» o «Aún sin datos» significa que el resultado no está demostrado.</li><li>Lee <strong>Cómo adaptarlo a tu club</strong>. Si la IA dice <strong>Difícil de replicar</strong>, quédate con la idea del hook y busca otro post para el formato.</li></ol>"
+      },
+      {
+        "h": "Ejemplo práctico: una academia de baloncesto sin equipo de vídeo",
+        "id": "example",
+        "html": "<p>Una academia de baloncesto tiene una entrenadora que graba con el móvil. En lugar de analizar grandes producciones, filtra <strong>Ideas replicables</strong> y <strong>Challenges</strong> (retos), deporte baloncesto, plataforma TikTok, y encuentra dos vídeos cortos de retos con jugadores jóvenes. Desbloquea los dos análisis, compara las 3 <strong>Ideas de hook</strong> de cada uno, se queda con la más clara y usa la <strong>Lista de planos</strong> más corta. El resultado son ideas de contenido para TikTok que la academia puede grabar en un solo entrenamiento, con un texto reescrito en el tono de la academia.</p>"
+      },
+      {
+        "h": "Errores habituales",
+        "id": "common-mistakes",
+        "html": "<ul><li><strong>Analizar posts que no se parecen a tu realidad.</strong> Una sugerencia basada en una gran producción no sirve a un club sin cámara.</li><li><strong>Publicar el borrador del texto tal cual.</strong> Lleva [huecos] a propósito: rellénalos con fechas, nombres y resultados reales.</li><li><strong>Ignorar el veredicto.</strong> Un post «Por debajo de lo habitual» puede enseñarte un hook, pero no copies todo su enfoque.</li><li><strong>Gastar el cupo la primera semana.</strong> Starter tiene 5 análisis al mes, Plus 10 y Pro 30; los que no usas no se acumulan. Los packs no caducan y se usan después de los mensuales.</li><li><strong>Desbloquear lo que ya analizó un compañero.</strong> En los planes de equipo, mira antes la pestaña <strong>De mi equipo</strong> en <strong>Mis análisis IA</strong>: leer sus análisis es gratis.</li></ul>"
+      },
+      {
+        "h": "Guarda lo que funciona",
+        "id": "keep-what-works",
+        "html": "<p>Una estrategia de redes sociales deportivas mejora cuando reutilizas lo que funcionó. Usa <strong>Descargar PDF</strong> en un análisis para compartirlo, guarda el post original en un tablero de <a href=\"saved.html\">Guardados</a> y, en Plus y Pro, arrastra el post analizado a tu <a href=\"content-plan.html\">Plan de contenido</a>: la adaptación de la IA se guarda en las notas de la entrada. Así, SCP es una de las herramientas de IA para crear contenido deportivo que más rinde cuanto mejor eliges. Para escribir el texto final, lee <a href=\"es/help/how-to-create-captions-hooks-and-scripts-with-ai.html\">cómo crear textos, hooks y guiones con IA</a>.</p>"
+      }
+    ],
+    "faq": [
+      { "q": "¿Puedo pedirle a la IA que cambie una sugerencia?", "a": "No. No hay chat ni caja de prompt. Analiza otro post que encaje mejor o edita tú el hook, la lista de planos y el borrador del texto." },
+      { "q": "¿Por qué el análisis dice «Aún es pronto para valorarlo»?", "a": "Las cifras del post se recogieron menos de 48 horas después de publicarse, así que SCP todavía no lo compara con la mediana de la cuenta." },
+      { "q": "¿Qué pasa si la IA no puede leer un vídeo?", "a": "Usa la portada del post, así que el desglose visual se basa en esa imagen y no en fotogramas del vídeo." },
+      { "q": "¿Y si me quedo sin análisis con IA?", "a": "Tu cupo se renueva cada mes desde la fecha de tu suscripción. También puedes comprar packs sueltos en Perfil → Facturación y membresía → Comprar más análisis con IA." }
+    ]
+  }
+}

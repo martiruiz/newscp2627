@@ -1,0 +1,99 @@
+{
+  "n": 1,
+  "slug": "what-is-sports-content-playbook",
+  "cat": "getting-started",
+  "recommended": true,
+  "updated": "2026-11-12",
+  "next": "how-to-get-started-with-sports-content-playbook",
+  "keywords": ["Sports Content Ideas", "Sports Social Media Tools", "AI Tools for Sports Content Creation", "Sports Content Planning Tool"],
+  "en": {
+    "title": "What is Sports Content Playbook and how does it work?",
+    "label": "Quick intro",
+    "meta_title": "What is Sports Content Playbook? | SCP Knowledge Base",
+    "meta_description": "Sports Content Playbook is a content platform for sports social media teams: 500,000+ real posts, AI analysis of why they worked and a weekly content plan.",
+    "summary": "Sports Content Playbook (SCP) is the content platform for sports social media teams: a library of 500,000+ real posts from 770+ clubs and 110+ competitions, an AI analysis that explains why each post worked, and a weekly Content Plan to schedule your own versions.",
+    "body": [
+      {
+        "h": "What Sports Content Playbook is",
+        "id": "what-it-is",
+        "html": "<p><strong>Sports Content Playbook</strong> (SCP) is one of the sports social media tools built specifically for the people who run the accounts of clubs, leagues, federations, agencies and sports brands. Its promise is simple: know what you will post on Monday. You see what is working for the clubs in your league and make your own version in about 10 minutes.</p><p>Instead of scrolling dozens of accounts every morning, you open one library with thousands of real posts, already tagged and sorted, and you find sports content ideas that have been proven with real audiences.</p>"
+      },
+      {
+        "h": "How it works",
+        "id": "how-it-works",
+        "html": "<p>SCP tracks the best sports accounts every day and adds new posts daily. The library holds more than 500,000 posts from 770+ clubs and 110+ competitions across 17 sports (football, basketball, handball, NFL, MotoGP, NHL, cycling, baseball, tennis and more) and five networks: Instagram, TikTok, YouTube, X and Facebook. These numbers are live and keep growing.</p><p>AI tags every post with filters (format, match-day moment, sponsor, tone and more), so you can narrow the library down to exactly the type of post you need. SCP only uses public posts: you never connect your own social media accounts, and the platform follows the GDPR.</p>"
+      },
+      {
+        "h": "The three tools",
+        "id": "three-tools",
+        "html": "<ol><li><strong>Content Library</strong> (every plan): search and filter real posts, save them to private boards and share a public link to any single post.</li><li><strong>AI analysis</strong> (every plan): one click explains a post's hook, why it works, how it performed against the account's usual numbers and how to adapt it to your club, with ready-to-use hook ideas, a shot list and a caption draft. This is how SCP works as one of the AI tools for sports content creation.</li><li><strong>Content Plan</strong> (Plus and Pro): a sports content planning tool with week and month views where you drag posts from the library onto a day and track each idea from Idea to Published.</li></ol><p>Clubs on the Enterprise plan also get <strong>My Club</strong>, a private space with the posts of their own players, sponsors, teams and competitors, set up together with the SCP team.</p>"
+      },
+      {
+        "h": "Who it is for",
+        "id": "who-it-is-for",
+        "html": "<p>Sports Content Playbook is used by club social media managers, content teams, agencies, leagues, federations and sports brands. If an account your team follows is not in the library yet, you can ask SCP to add it through the <a href=\"contact.html?topic=support\">contact page</a>; this is included in every plan.</p>"
+      },
+      {
+        "h": "A practical example",
+        "id": "example",
+        "html": "<p>A second-division football club has a home game on Saturday and a new kit sponsor. The social media manager opens the library, filters by <strong>Match Day</strong> and their own competition, and finds three pre-match reels from rival clubs that performed well. She runs an AI analysis on one of them, copies the hook template and the shot list, and drags the post into Friday on her Content Plan. The idea is planned before lunch.</p>"
+      },
+      {
+        "h": "What SCP does not do",
+        "id": "limits",
+        "html": "<div class=\"kb-note\"><p>SCP does not publish to your networks, does not connect to your accounts and does not let you download other clubs' videos or images. It shows you what works and helps you plan your own version; you create and post the content with your usual tools.</p></div><p>Next step: <a href=\"help/how-to-get-started-with-sports-content-playbook.html\">How to get started with Sports Content Playbook</a>.</p>"
+      }
+    ],
+    "faq": [
+      { "q": "Do I need to connect my Instagram or TikTok account?", "a": "No. Sports Content Playbook only uses public posts, so you never connect your social media accounts." },
+      { "q": "Which sports and networks are covered?", "a": "17 sports, including football, basketball, handball, NFL, MotoGP, NHL, cycling, baseball and tennis, on Instagram, TikTok, YouTube, X and Facebook." },
+      { "q": "Can I try it before paying?", "a": "Yes. Every plan starts with a 7-day free trial. A card is required, nothing is charged today and you can cancel during the trial without being charged." },
+      { "q": "How often is new content added?", "a": "SCP tracks the best accounts daily, so new posts are added to the library every day." }
+    ]
+  },
+  "es": {
+    "title": "¿Qué es Sports Content Playbook y cómo funciona?",
+    "label": "Introducción",
+    "meta_title": "¿Qué es Sports Content Playbook? | SCP Knowledge Base",
+    "meta_description": "Sports Content Playbook es la plataforma de contenido para equipos de redes deportivas: más de 500.000 posts reales, análisis con IA y un plan semanal.",
+    "summary": "Sports Content Playbook (SCP) es la plataforma de contenido para los equipos de redes sociales del deporte: una biblioteca de más de 500.000 posts reales de 770+ clubes y 110+ competiciones, un análisis con IA que explica por qué funcionó cada post y un Plan de contenido semanal para programar tus propias versiones.",
+    "body": [
+      {
+        "h": "Qué es Sports Content Playbook",
+        "id": "what-it-is",
+        "html": "<p><strong>Sports Content Playbook</strong> (SCP) es una herramienta pensada para quienes llevan las redes sociales de clubes, ligas, federaciones, agencias y marcas deportivas. La promesa es sencilla: saber qué vas a publicar el lunes. Ves lo que funciona a los clubes de tu liga y haces tu propia versión en unos 10 minutos.</p><p>En lugar de revisar decenas de cuentas cada mañana, abres una sola biblioteca con miles de posts reales, ya etiquetados y ordenados, y encuentras ideas de contenido deportivo probadas con audiencias reales.</p>"
+      },
+      {
+        "h": "Cómo funciona",
+        "id": "how-it-works",
+        "html": "<p>SCP sigue a diario las mejores cuentas deportivas y añade posts nuevos cada día. La biblioteca reúne más de 500.000 posts de 770+ clubes y 110+ competiciones de 17 deportes (fútbol, baloncesto, balonmano, NFL, MotoGP, NHL, ciclismo, béisbol, tenis y más) y cinco redes: Instagram, TikTok, YouTube, X y Facebook. Son cifras en directo que siguen creciendo.</p><p>La IA etiqueta cada post con filtros (formato, momento del partido, patrocinador, tono y más) para que puedas quedarte justo con el tipo de post que necesitas. SCP solo usa posts públicos: nunca conectas tus cuentas de redes y la plataforma cumple el RGPD.</p>"
+      },
+      {
+        "h": "Las tres herramientas",
+        "id": "three-tools",
+        "html": "<ol><li><strong>Biblioteca de contenido</strong> (todos los planes): busca y filtra posts reales, guárdalos en tableros privados y comparte un enlace público de cualquier post.</li><li><strong>Análisis con IA</strong> (todos los planes): con un clic te explica el hook, por qué funciona, cómo rindió frente a lo habitual de la cuenta y cómo adaptarlo a tu club, con ideas de hook, lista de planos y borrador del texto listos para usar. Así es como SCP entra en las herramientas de IA para crear contenido deportivo.</li><li><strong>Plan de contenido</strong> (Plus y Pro): un calendario de contenido deportivo con vista semanal y mensual donde arrastras posts de la biblioteca a un día y sigues cada idea desde Idea hasta Publicado.</li></ol><p>Los clubes del plan Enterprise tienen además <strong>My Club</strong>, un espacio privado con los posts de sus jugadores, patrocinadores, equipos y competidores, que se configura junto con el equipo de SCP.</p>"
+      },
+      {
+        "h": "Para quién es",
+        "id": "who-it-is-for",
+        "html": "<p>Usan Sports Content Playbook community managers de clubes, equipos de contenido, agencias, ligas, federaciones y marcas deportivas. Si una cuenta que sigue tu equipo aún no está en la biblioteca, puedes pedir a SCP que la añada desde la <a href=\"contact.html?topic=support\">página de contacto</a>; está incluido en todos los planes.</p>"
+      },
+      {
+        "h": "Un ejemplo práctico",
+        "id": "example",
+        "html": "<p>Un club de fútbol de Segunda juega en casa el sábado y estrena patrocinador en la camiseta. La responsable de redes abre la biblioteca, filtra por <strong>Día de partido</strong> y por su competición, y encuentra tres reels previos al partido de clubes rivales que funcionaron bien. Lanza un análisis con IA de uno de ellos, copia la plantilla del hook y la lista de planos, y arrastra el post al viernes de su Plan de contenido. Antes de comer, la idea ya está planificada.</p>"
+      },
+      {
+        "h": "Lo que SCP no hace",
+        "id": "limits",
+        "html": "<div class=\"kb-note\"><p>SCP no publica en tus redes, no se conecta a tus cuentas y no permite descargar vídeos ni imágenes de otros clubes. Te enseña lo que funciona y te ayuda a planificar tu versión; el contenido lo creas y lo publicas con tus herramientas de siempre.</p></div><p>Siguiente paso: <a href=\"es/help/how-to-get-started-with-sports-content-playbook.html\">Cómo empezar con Sports Content Playbook</a>.</p>"
+      }
+    ],
+    "faq": [
+      { "q": "¿Tengo que conectar mi cuenta de Instagram o TikTok?", "a": "No. Sports Content Playbook solo usa posts públicos, así que nunca conectas tus cuentas de redes sociales." },
+      { "q": "¿Qué deportes y redes incluye?", "a": "17 deportes, entre ellos fútbol, baloncesto, balonmano, NFL, MotoGP, NHL, ciclismo, béisbol y tenis, en Instagram, TikTok, YouTube, X y Facebook." },
+      { "q": "¿Puedo probarlo antes de pagar?", "a": "Sí. Todos los planes empiezan con una prueba gratis de 7 días. Se pide tarjeta, hoy no se cobra nada y si cancelas durante la prueba no se te cobra." },
+      { "q": "¿Cada cuánto se añade contenido nuevo?", "a": "SCP sigue a diario las mejores cuentas, así que cada día entran posts nuevos en la biblioteca." }
+    ]
+  }
+}

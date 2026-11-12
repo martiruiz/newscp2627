@@ -1,0 +1,89 @@
+{
+  "n": 23,
+  "slug": "how-to-manage-your-subscription-and-billing",
+  "cat": "account-billing",
+  "recommended": false,
+  "updated": "2026-11-12",
+  "next": "how-to-build-a-sports-content-strategy-with-scp",
+  "keywords": ["Sports Social Media Tools", "Sports Marketing Tools", "Sports Content Creation Tools"],
+  "en": {
+    "title": "How to manage your subscription and billing",
+    "label": "Billing",
+    "meta_title": "Manage your subscription and billing | SCP Knowledge Base",
+    "meta_description": "Change plan, switch to yearly, update your card, download invoices, add users, buy AI analyses or cancel your Sports Content Playbook membership in one place.",
+    "summary": "You manage your Sports Content Playbook subscription in Profile → Billing & membership. There you can change plan, switch to yearly, update your card and download invoices, add up to 5 users, buy more AI analyses and cancel your membership. Upgrades apply at once (prorated); downgrades and cancellations apply at the end of the period you've paid for.",
+    "body": [
+      {
+        "h": "Where to find your billing page",
+        "id": "where",
+        "html": "<p>Open <a href=\"profile.html\">Profile</a> and choose <strong>Billing &amp; membership</strong>. It shows your plan, price, number of users, next charge, card and any discount, plus how many AI analyses you have left (“X of Y AI analyses left this month · Resets on …”). Below you'll find the table of invoices with a PDF for each one.</p><p>The buttons are <strong>Change plan</strong>, <strong>Switch to yearly</strong>, <strong>Billing details &amp; invoices</strong>, <strong>Buy more AI analyses</strong> and <strong>Cancel membership</strong>.</p>"
+      },
+      {
+        "h": "Common tasks step by step",
+        "id": "steps",
+        "html": "<h3>Change plan</h3><ol><li>Click <strong>Change plan</strong> and pick Starter, Plus or Pro.</li><li>An upgrade applies now and you pay the prorated difference. A downgrade applies at the end of your current period, and you keep your current plan until then.</li><li>A scheduled change can be undone from the same page before it takes effect.</li></ol><h3>Switch to yearly</h3><ol><li>Click <strong>Switch to yearly</strong>. Moving from monthly to yearly applies now, prorated. Yearly costs about two months less than paying monthly for 12 months.</li><li>Going back from yearly to monthly applies at the end of the yearly period.</li></ol><h3>Update your card, billing details or invoices</h3><ol><li>Click <strong>Billing details &amp; invoices</strong>. It opens the secure Stripe portal, where you can change your card, edit the billing details that appear on your invoices and download past invoices.</li></ol><h3>Add or remove users</h3><ol><li>In <strong>Your team</strong>, use the <strong>Users</strong> − / + buttons to set how many users your plan includes. The page shows what the change costs before you confirm. You can have up to 5 users; for more, click <strong>Request a custom plan</strong>.</li><li>With a free seat, type the address in <strong>Colleague's email</strong> and click <strong>Add user</strong>. They get the same plan, with their own account and AI allowance, when they sign in with that email.</li><li>To take someone off, click <strong>Remove</strong> next to their email.</li></ol><h3>Buy more AI analyses</h3><ol><li>Click <strong>Buy more AI analyses</strong> (also available on <a href=\"pricing.html\">pricing.html</a>). Packs are one-off, never expire and are used after your monthly allowance.</li></ol>"
+      },
+      {
+        "h": "Cancel your membership",
+        "id": "cancel",
+        "html": "<ol><li>Click <strong>Cancel membership</strong>. You can leave an optional reason.</li><li>Cancellation takes effect at the end of the period you've paid for (or the end of the trial). There are no further charges.</li><li>About 3 days before your access ends, you receive an email. Until then you can click <strong>Keep my membership</strong> to undo it.</li></ol><p>Your Saved boards and Content Plans are kept, so they're waiting for you if you come back.</p>"
+      },
+      {
+        "h": "Charges, payments and refunds",
+        "id": "charges",
+        "html": "<ul><li>Prices are in euros, VAT included, per user. Euros are the only currency.</li><li>Monthly plans charge on the 1st of each month (Madrid time); the first charge is prorated up to the 1st. Yearly plans renew on their anniversary.</li><li>If a payment fails, you'll see “We couldn't take your last payment”. Click <strong>Update payment method</strong> to add a working card.</li><li>Promo codes are entered at checkout in <strong>Discount code</strong>; codes don't stack unless stated.</li><li>Payments are non-refundable and partial periods aren't refunded. In the EU and UK you have a 14-day right of withdrawal (refund minus the part used) by writing to info@sportscontentplaybook.com. See the <a href=\"terms.html\">terms</a>.</li></ul>"
+      },
+      {
+        "h": "Example: a club that grows its team",
+        "id": "example",
+        "html": "<p>A handball club starts on Starter with one person. After a month, the club wants the Content Plan, so she clicks <strong>Change plan</strong> and picks Plus: it applies straight away and the difference is prorated. In January the club hires a video editor, so she adds him in <strong>Your team</strong>. Happy with the setup, she uses <strong>Switch to yearly</strong> to save about two months, and downloads each invoice in PDF for the club's accountant.</p><p>Comparing sports social media tools or sports marketing tools for your budget? The billing page shows every cost in one place, so you always know what you pay for your sports content creation tools.</p>"
+      }
+    ],
+    "faq": [
+      { "q": "Can I change the email of my account?", "a": "Not by yourself. Write to info@sportscontentplaybook.com and the SCP team will help you." },
+      { "q": "How do I delete my account?", "a": "Write to info@sportscontentplaybook.com asking for deletion. Cancelling your membership alone stops the charges but keeps your account." },
+      { "q": "If I downgrade, do I lose access immediately?", "a": "No. A downgrade applies at the end of your current period, and you keep your current plan's features until then." },
+      { "q": "Where do I get help with a billing problem?", "a": "Use contact.html?topic=support or write to info@sportscontentplaybook.com." }
+    ]
+  },
+  "es": {
+    "title": "Cómo gestionar tu suscripción y tu facturación",
+    "label": "Facturación",
+    "meta_title": "Gestiona tu suscripción y facturación | SCP Knowledge Base",
+    "meta_description": "Cambia de plan, pasa a anual, actualiza tu tarjeta, descarga facturas, añade usuarios, compra análisis con IA o cancela tu membresía de Sports Content Playbook.",
+    "summary": "Gestionas tu suscripción de Sports Content Playbook en Perfil → Facturación y membresía. Desde ahí puedes cambiar de plan, pasar a anual, actualizar la tarjeta y descargar facturas, añadir hasta 5 usuarios, comprar más análisis con IA y cancelar tu membresía. Subir de plan se aplica al momento (prorrateado); bajar de plan y cancelar se aplican al final del periodo pagado.",
+    "body": [
+      {
+        "h": "Dónde está tu página de facturación",
+        "id": "where",
+        "html": "<p>Abre <a href=\"profile.html\">Perfil</a> y elige <strong>Facturación y membresía</strong>. Ahí ves tu plan, el precio, el número de usuarios, el próximo cargo, la tarjeta y cualquier descuento, además de cuántos análisis con IA te quedan este mes y cuándo se renuevan. Debajo está la tabla de facturas, cada una en PDF.</p><p>Los botones son <strong>Cambiar de plan</strong>, <strong>Pasar a anual</strong>, <strong>Datos de facturación y facturas</strong>, <strong>Comprar más análisis con IA</strong> y <strong>Cancelar membresía</strong>.</p>"
+      },
+      {
+        "h": "Tareas habituales paso a paso",
+        "id": "steps",
+        "html": "<h3>Cambiar de plan</h3><ol><li>Pulsa <strong>Cambiar de plan</strong> y elige Starter, Plus o Pro.</li><li>Subir de plan se aplica ahora y pagas la diferencia prorrateada. Bajar de plan se aplica al final del periodo actual y mantienes tu plan hasta entonces.</li><li>Un cambio programado se puede deshacer desde la misma página antes de que se aplique.</li></ol><h3>Pasar a anual</h3><ol><li>Pulsa <strong>Pasar a anual</strong>. Pasar de mensual a anual se aplica ahora, prorrateado. El anual sale unos dos meses más barato que pagar 12 meses.</li><li>Volver de anual a mensual se aplica al final del periodo anual.</li></ol><h3>Actualizar la tarjeta, los datos de facturación o las facturas</h3><ol><li>Pulsa <strong>Datos de facturación y facturas</strong>. Se abre el portal seguro de Stripe, donde puedes cambiar la tarjeta, editar los datos que aparecen en tus facturas y descargar las facturas anteriores.</li></ol><h3>Añadir o quitar usuarios</h3><ol><li>En <strong>Tu equipo</strong>, usa los botones − / + de <strong>Usuarios</strong> para fijar cuántos usuarios incluye tu plan. La página te muestra lo que cuesta el cambio antes de confirmarlo. Puedes tener hasta 5 usuarios; para más, pide un <a href=\"contact.html?topic=custom-plan\">plan a medida</a>.</li><li>Con una plaza libre, escribe la dirección en <strong>Email de tu compañero/a</strong> y pulsa <strong>Añadir usuario</strong>. Tendrá el mismo plan, con su propia cuenta y su cupo de IA, cuando entre con ese email.</li><li>Para quitar a alguien, pulsa <strong>Quitar</strong> junto a su email.</li></ol><h3>Comprar más análisis con IA</h3><ol><li>Pulsa <strong>Comprar más análisis con IA</strong> (también en <a href=\"pricing.html\">pricing.html</a>). Los packs son puntuales, no caducan y se usan después de tu cupo mensual.</li></ol>"
+      },
+      {
+        "h": "Cancelar tu membresía",
+        "id": "cancel",
+        "html": "<ol><li>Pulsa <strong>Cancelar membresía</strong>. Puedes dejar un motivo, si quieres.</li><li>La cancelación se aplica al final del periodo pagado (o al final de la prueba). No hay más cargos.</li><li>Unos 3 días antes de que termine tu acceso recibes un email. Hasta entonces puedes pulsar <strong>Mantener mi membresía</strong> para deshacerla.</li></ol><p>Tus Guardados y tus Planes de contenido se conservan, así que te esperan si vuelves.</p>"
+      },
+      {
+        "h": "Cargos, pagos y reembolsos",
+        "id": "charges",
+        "html": "<ul><li>Los precios son en euros, IVA incluido, por usuario. El euro es la única moneda.</li><li>Los planes mensuales se cobran el día 1 de cada mes (hora de Madrid); el primer cargo se prorratea hasta el día 1. Los planes anuales se renuevan en su aniversario.</li><li>Si falla un pago, verás «No hemos podido cobrar tu último pago». Pulsa <strong>Actualizar método de pago</strong> para añadir una tarjeta que funcione.</li><li>Los códigos promocionales se escriben al pagar en <strong>Código de descuento</strong>; no se acumulan salvo que se indique.</li><li>Los pagos no son reembolsables y no se devuelven periodos parciales. En la UE y el Reino Unido tienes 14 días de derecho de desistimiento (reembolso menos la parte usada) escribiendo a info@sportscontentplaybook.com. Consulta las <a href=\"terms.html\">condiciones</a>.</li></ul>"
+      },
+      {
+        "h": "Ejemplo: un club que amplía su equipo",
+        "id": "example",
+        "html": "<p>Un club de balonmano empieza en Starter con una persona. Al mes, el club quiere el Plan de contenido, así que ella pulsa <strong>Cambiar de plan</strong> y elige Plus: se aplica al momento y la diferencia se prorratea. En enero el club contrata a un editor de vídeo y ella lo añade en <strong>Tu equipo</strong>. Contenta con cómo funciona, usa <strong>Pasar a anual</strong> para ahorrarse unos dos meses y descarga cada factura en PDF para la gestoría del club.</p><p>Si comparas herramientas para redes sociales deportivas con tu presupuesto, la página de facturación te muestra todos los costes en un solo sitio.</p>"
+      }
+    ],
+    "faq": [
+      { "q": "¿Puedo cambiar el email de mi cuenta?", "a": "Tú no. Escribe a info@sportscontentplaybook.com y el equipo de SCP te ayudará." },
+      { "q": "¿Cómo borro mi cuenta?", "a": "Escribe a info@sportscontentplaybook.com pidiendo la eliminación. Cancelar la membresía solo detiene los cargos, pero mantiene la cuenta." },
+      { "q": "Si bajo de plan, ¿pierdo el acceso al momento?", "a": "No. Bajar de plan se aplica al final del periodo actual y mantienes las funciones de tu plan hasta entonces." },
+      { "q": "¿Dónde pido ayuda con un problema de facturación?", "a": "Usa contact.html?topic=support o escribe a info@sportscontentplaybook.com." }
+    ]
+  }
+}

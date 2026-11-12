@@ -1,0 +1,99 @@
+{
+  "n": 7,
+  "slug": "top-picks-replicable-ideas-and-overperforming",
+  "cat": "content-library",
+  "recommended": false,
+  "updated": "2026-11-12",
+  "next": "how-to-analyze-a-content-idea",
+  "keywords": ["Sports Content Ideas", "Social Media Ideas for Sports Teams", "Sports Social Media Strategy", "Sports Reels Ideas"],
+  "en": {
+    "title": "What are Top Picks, Replicable Ideas and Overperforming?",
+    "label": "Special picks",
+    "meta_title": "Top Picks, Replicable, Overperforming | SCP Knowledge Base",
+    "meta_description": "Top Picks, Replicable ideas and Overperforming are three shortcuts in the SCP Content Library to the sports content ideas most worth copying. How each works.",
+    "summary": "Top Picks, Replicable ideas and Overperforming are three special selections in the Sports Content Playbook Content Library: Top Picks are the best posts chosen by the SCP team, Replicable ideas are formats you can recreate with your own assets, and Overperforming are posts that got at least 2x the usual results of their own account.",
+    "body": [
+      {
+        "h": "Three shortcuts to ideas worth copying",
+        "id": "what-they-are",
+        "html": "<p>The Content Library of Sports Content Playbook holds more than 500,000 posts from 770+ clubs and 110+ competitions. Filters by sport, competition or format narrow that down, but they don't tell you which posts are worth your time. These three selections do: each one answers a different question a club's social media team asks before planning the week.</p><ul><li><strong>Top Picks</strong>: which posts are simply the best? (an editorial choice)</li><li><strong>Replicable ideas</strong>: which posts can I copy with what I already have? (an effort filter)</li><li><strong>Overperforming</strong>: which posts did better than expected for their own account? (a numbers filter)</li></ul><p>You can combine them with any other filter, so they work as a quick way to find sports content ideas and social media ideas for sports teams that fit your club.</p>"
+      },
+      {
+        "h": "Top Picks: the best posts, picked by SCP",
+        "id": "top-picks",
+        "html": "<p>Top Picks is an editorial selection made by the SCP team: posts we consider excellent examples of sports social media, whatever the club's size. It is not a button in the filter column. To open it, type <strong>top picks</strong> in the search box (<em>Search: signings, a club, reels…</em>) and press Enter. You can then add filters on top, for example Sport or Platform.</p>"
+      },
+      {
+        "h": "Replicable ideas: easy to copy with your own assets",
+        "id": "replicable-ideas",
+        "html": "<p><strong>Replicable ideas</strong> sits in the <strong>What works</strong> section of the filters. It marks formats you can recreate with your own players, venue and footage, without a big production: no celebrities, no expensive shoots. Every post in <strong>Challenges</strong> (players doing a test, game or contest) is also Replicable. This is the selection to start from when your team is small or you need something for tomorrow.</p>"
+      },
+      {
+        "h": "Overperforming: posts that beat their own account",
+        "id": "overperforming",
+        "html": "<p><strong>Overperforming</strong>, also in <strong>What works</strong>, compares each post with its own account, not with the whole library. That way a small club's post that did very well for that club shows up next to the giants. The rules:</p><ul><li>The post got at least <strong>2x the median</strong> of its account's posts in the same quarter.</li><li>It uses views, or likes + comments when a post has no views.</li><li>Only accounts with 8 or more posts that quarter are counted, so the median is meaningful.</li><li>Posts with lots of views but very few likes are left out.</li><li>The list is recomputed every hour.</li></ul>"
+      },
+      {
+        "h": "How to use them, step by step",
+        "id": "how-to-use",
+        "html": "<ol><li>Open the <a href=\"content-library.html\">Content Library</a>.</li><li>In <strong>Filters</strong>, under <strong>What works</strong>, click <strong>Replicable ideas</strong> or <strong>Overperforming</strong>. For Top Picks, type <strong>top picks</strong> in the search box.</li><li>Add your context from <strong>Inspiration from</strong>: <strong>Sport</strong>, <strong>Competition</strong> or <strong>Club</strong>.</li><li>Choose a period, for example <strong>This month</strong>, and sort by <strong>Latest</strong> or <strong>Most viewed</strong>.</li><li>Open a post, then <strong>Save</strong> it to a board, run an <strong>AI analysis</strong> or drag it to your <strong>Content Plan</strong> (Plus and Pro).</li><li>If you'll come back to this combination, save it from <strong>Saved searches…</strong>.</li></ol>"
+      },
+      {
+        "h": "Example: a second-division football club",
+        "id": "example",
+        "html": "<p>The social media manager of a second-division football club works alone and needs sports reels ideas for a quiet week. She selects <strong>Replicable ideas</strong> + <strong>Overperforming</strong>, Sport: football, Format: reels, period <strong>This month</strong>. The result is a short list of reels that clubs made with their own squad and that beat their account's usual numbers. She saves three to a board called \"Training week\" and analyses the one she likes most. That is a sports social media strategy built on evidence rather than guesswork.</p><div class=\"kb-note\"><p>Overperforming says a post did well for its account. It doesn't guarantee the same result for yours: adapt the idea to your audience. See <a href=\"help/how-to-adapt-a-content-idea-to-your-club.html\">how to adapt a content idea to your club</a>.</p></div>"
+      }
+    ],
+    "faq": [
+      { "q": "Can I combine Replicable ideas and Overperforming?", "a": "Yes. Select both in What works and you get posts that are easy to copy and also beat their account's usual results. You can add any other filter on top." },
+      { "q": "Why is a post from a small club in Overperforming and not a viral post from a big club?", "a": "Overperforming compares each post with the median of its own account that quarter. A big club's post with millions of views can be normal for that account, while a small club's post can be 2x its usual." },
+      { "q": "Where is the Top Picks button?", "a": "There isn't one in the filter column. Type top picks in the library search box to open the selection." },
+      { "q": "How often is Overperforming updated?", "a": "Every hour. Post metrics refresh when a post is played, at most every 6 hours, so very recent posts can enter the list later." }
+    ]
+  },
+  "es": {
+    "title": "¿Qué son Top Picks, Ideas replicables y Overperforming?",
+    "label": "Selecciones",
+    "meta_title": "Top Picks, Ideas replicables y Overperforming | SCP",
+    "meta_description": "Top Picks, Ideas replicables y Overperforming son tres atajos de la biblioteca de SCP hacia las ideas de contenido deportivo que vale la pena copiar.",
+    "summary": "Top Picks, Ideas replicables y Overperforming son tres selecciones especiales de la biblioteca de Sports Content Playbook: Top Picks son los mejores posts elegidos por el equipo de SCP, Ideas replicables son formatos que puedes recrear con tus propios recursos y Overperforming son posts que lograron al menos el doble de los resultados habituales de su propia cuenta.",
+    "body": [
+      {
+        "h": "Tres atajos hacia ideas que vale la pena copiar",
+        "id": "what-they-are",
+        "html": "<p>La biblioteca de contenido de Sports Content Playbook reúne más de 500.000 posts de más de 770 clubes y más de 110 competiciones. Los filtros por deporte, competición o formato reducen la lista, pero no te dicen qué posts merecen tu tiempo. Estas tres selecciones sí: cada una responde a una pregunta distinta que se hace el equipo de redes de un club antes de planificar la semana.</p><ul><li><strong>Top Picks</strong>: ¿cuáles son, sin más, los mejores posts? (una elección editorial)</li><li><strong>Ideas replicables</strong>: ¿qué posts puedo copiar con lo que ya tengo? (un filtro de esfuerzo)</li><li><strong>Overperforming</strong>: ¿qué posts funcionaron mejor de lo esperado para su propia cuenta? (un filtro de números)</li></ul><p>Puedes combinarlas con cualquier otro filtro, así que son una forma rápida de encontrar ideas de contenido deportivo que encajen con tu club.</p>"
+      },
+      {
+        "h": "Top Picks: los mejores posts, elegidos por SCP",
+        "id": "top-picks",
+        "html": "<p>Top Picks es una selección editorial del equipo de SCP: posts que consideramos ejemplos excelentes de redes sociales deportivas, sea cual sea el tamaño del club. No es un botón de la columna de filtros. Para abrirla, escribe <strong>top picks</strong> en el buscador (<em>Busca: fichajes, un club, reels…</em>) y pulsa Intro. Después puedes añadir filtros encima, por ejemplo Deporte o Plataforma.</p>"
+      },
+      {
+        "h": "Ideas replicables: fáciles de copiar con tus propios recursos",
+        "id": "replicable-ideas",
+        "html": "<p><strong>Ideas replicables</strong> está en la sección <strong>Lo que funciona</strong> de los filtros. Marca formatos que puedes recrear con tus propios jugadores, tu estadio y tus imágenes, sin una gran producción: sin famosos ni rodajes caros. Todos los posts de <strong>Challenges</strong> (jugadores haciendo una prueba, un juego o un reto) son también replicables. Es la selección por la que empezar si tu equipo es pequeño o necesitas algo para mañana.</p>"
+      },
+      {
+        "h": "Overperforming: posts que superan a su propia cuenta",
+        "id": "overperforming",
+        "html": "<p><strong>Overperforming</strong>, también en <strong>Lo que funciona</strong>, compara cada post con su propia cuenta, no con toda la biblioteca. Así, el post de un club pequeño que funcionó muy bien para ese club aparece al lado de los grandes. Las reglas:</p><ul><li>El post logró al menos <strong>el doble de la mediana</strong> de los posts de su cuenta en el mismo trimestre.</li><li>Usa visualizaciones, o likes + comentarios cuando el post no tiene visualizaciones.</li><li>Solo cuentan las cuentas con 8 posts o más en ese trimestre, para que la mediana tenga sentido.</li><li>Se excluyen los posts con muchas visualizaciones pero muy pocos likes.</li><li>La lista se recalcula cada hora.</li></ul>"
+      },
+      {
+        "h": "Cómo usarlas, paso a paso",
+        "id": "how-to-use",
+        "html": "<ol><li>Abre la <a href=\"content-library.html\">biblioteca de contenido</a>.</li><li>En <strong>Filtros</strong>, dentro de <strong>Lo que funciona</strong>, haz clic en <strong>Ideas replicables</strong> u <strong>Overperforming</strong>. Para Top Picks, escribe <strong>top picks</strong> en el buscador.</li><li>Añade tu contexto desde <strong>Inspírate en</strong>: <strong>Deporte</strong>, <strong>Competición</strong> o <strong>Club</strong>.</li><li>Elige un periodo, por ejemplo <strong>Este mes</strong>, y ordena por <strong>Más recientes</strong> o <strong>Más vistos</strong>.</li><li>Abre un post y <strong>Guárdalo</strong> en un tablero, pide un <strong>análisis con IA</strong> o arrástralo a tu <strong>Plan de contenido</strong> (Plus y Pro).</li><li>Si vas a volver a esta combinación, guárdala desde <strong>Búsquedas guardadas…</strong>.</li></ol>"
+      },
+      {
+        "h": "Ejemplo: un club de fútbol de Segunda",
+        "id": "example",
+        "html": "<p>La community manager de un club de fútbol de Segunda trabaja sola y necesita ideas de reels deportivos para una semana sin partido. Selecciona <strong>Ideas replicables</strong> + <strong>Overperforming</strong>, Deporte: fútbol, Formato: reels, periodo <strong>Este mes</strong>. El resultado es una lista corta de reels que los clubes hicieron con su propia plantilla y que superaron los números habituales de su cuenta. Guarda tres en un tablero llamado «Semana de entreno» y analiza el que más le gusta. Es una estrategia de redes sociales deportivas basada en datos, no en intuiciones.</p><div class=\"kb-note\"><p>Overperforming dice que un post funcionó bien para su cuenta. No garantiza el mismo resultado en la tuya: adapta la idea a tu público. Mira <a href=\"es/help/how-to-adapt-a-content-idea-to-your-club.html\">cómo adaptar una idea de contenido a tu club</a>.</p></div>"
+      }
+    ],
+    "faq": [
+      { "q": "¿Puedo combinar Ideas replicables y Overperforming?", "a": "Sí. Selecciona las dos en Lo que funciona y verás posts fáciles de copiar que además superaron los resultados habituales de su cuenta. Puedes añadir cualquier otro filtro encima." },
+      { "q": "¿Por qué aparece un post de un club pequeño en Overperforming y no un viral de un club grande?", "a": "Overperforming compara cada post con la mediana de su propia cuenta en ese trimestre. Un post de un club grande con millones de visualizaciones puede ser normal para esa cuenta, mientras que el de un club pequeño puede doblar lo habitual." },
+      { "q": "¿Dónde está el botón de Top Picks?", "a": "No hay botón en la columna de filtros. Escribe top picks en el buscador de la biblioteca para abrir la selección." },
+      { "q": "¿Cada cuánto se actualiza Overperforming?", "a": "Cada hora. Las métricas de los posts se actualizan cuando se reproducen, como mucho cada 6 horas, así que los posts muy recientes pueden entrar en la lista más tarde." }
+    ]
+  }
+}

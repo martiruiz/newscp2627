@@ -13,6 +13,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { buildHelp } from "./help.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CHECK_ONLY = process.argv.includes("--check");
@@ -594,6 +595,9 @@ ${(n.paragraphs || []).slice(0, 2).map((t) => `            <p>${esc(t)}</p>`).jo
         </article>`;
 }
 
+// ---------- SCP Knowledge Base (blog-tools/help.mjs, content/help/*.json) ----------
+const help = buildHelp({ ROOT, SITE, header, footer, withSiteVersions, write, esc, CHECK_ONLY });
+
 // ---------- For Google and AI assistants: Organization + WebSite schema on the home, llms.txt (Admin → SEO) ----------
 const ORG = { name: seo.org_name || "Sports Content Playbook", description: seo.description || "The content platform for sports social media teams: thousands of real posts from clubs, leagues and brands, why they worked and a weekly content plan.",
   logo: seo.logo || `${SITE}/assets/icon-logo-lg.png`, sameAs: (seo.same_as || []).filter(Boolean) };
@@ -601,7 +605,7 @@ const orgLd = [{ "@context": "https://schema.org", "@type": "Organization", "@id
   { "@context": "https://schema.org", "@type": "WebSite", "@id": `${SITE}/#website`, name: ORG.name, url: `${SITE}/`, publisher: { "@id": `${SITE}/#org` }, inLanguage: ["es", "en"] }];
 replaceBetween("index.html", "<!-- SEO-LD:START -->", "<!-- SEO-LD:END -->", `  <script type="application/ld+json">${JSON.stringify(orgLd)}</script>`);
 const KEY_PAGES = [["Home", "", "What Sports Content Playbook is and how it works"], ["Content Library", "content-library.html", "Real posts from sports clubs, leagues and brands, filtered by sport, platform, format and performance"],
-  ["Pricing", "pricing.html", "Plans and prices"], ["Blog", "blog.html", "Sports social media trends, content ideas and news"], ["Social News", "news.html", "Daily updates from Instagram, TikTok, YouTube, X and AI explained for sports teams"], ["Jobs", "jobs.html", "Job offers in sports digital marketing: social media, content, design, video and partnerships"],
+  ["Pricing", "pricing.html", "Plans and prices"], ["SCP Knowledge Base", "help/", "Guides and answers on how to use Sports Content Playbook"], ["Blog", "blog.html", "Sports social media trends, content ideas and news"], ["Social News", "news.html", "Daily updates from Instagram, TikTok, YouTube, X and AI explained for sports teams"], ["Jobs", "jobs.html", "Job offers in sports digital marketing: social media, content, design, video and partnerships"],
   ["Book a demo", "book-a-call.html", "A 30-minute call with the team"], ["Contact", "contact.html", "How to reach us"]];
 write("llms.txt", `# ${ORG.name}
 
@@ -614,7 +618,7 @@ ${KEY_PAGES.map(([t, u, d]) => `- [${t}](${SITE}/${u}): ${d}`).join("\n")}
 ## Blog
 
 ${posts.map((p) => `- [${p.title}](${SITE}/blog/${p.slug}.html): ${p.excerpt}`).join("\n")}
-${news?.length ? `\n## Latest Social News\n\n${news.slice(0, 30).map((n) => `- [${n.title}](${SITE}/news/${n.slug}.html): ${cut(newsDesc(n), 160)}`).join("\n")}\n` : ""}`);
+${help.articles.length ? `\n## SCP Knowledge Base\n\n${help.articles.map((a) => `- [${a.en.title}](${SITE}/help/${a.slug}.html): ${a.en.summary}`).join("\n")}\n` : ""}${news?.length ? `\n## Latest Social News\n\n${news.slice(0, 30).map((n) => `- [${n.title}](${SITE}/news/${n.slug}.html): ${cut(newsDesc(n), 160)}`).join("\n")}\n` : ""}`);
 
 // ---------- The website's main pages (Admin → SEO → Page check): title and description chosen there (seo.pages), and
 // whatever Google needs that a page lacks — canonical, social preview, WebPage schema — written between SEO-META markers ----------
@@ -680,6 +684,7 @@ const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 ${pages.map((p) => `  <url><loc>${SITE}/${p}</loc><lastmod>${today}</lastmod></url>`).join("\n")}
 ${posts.map((p) => `  <url><loc>${SITE}/blog/${p.slug}.html</loc><lastmod>${p.updated || p.date}</lastmod><image:image><image:loc>${SITE}/assets/blog/${p.image.file}</image:loc><image:title>${esc(p.image.title || p.title)}</image:title><image:caption>${esc(p.image.alt)}</image:caption></image:image></url>`).join("\n")}
 ${(news || []).map((n) => `  <url><loc>${SITE}/news/${n.slug}.html</loc><lastmod>${(n.edited_at || n.published_at || n.created_at).slice(0, 10)}</lastmod></url>`).join("\n")}
+${help.urls.map((u) => `  <url><loc>${u.loc}</loc><lastmod>${u.lastmod}</lastmod></url>`).join("\n")}
   <url><loc>${SITE}/es/blog.html</loc><lastmod>${today}</lastmod></url>
   <url><loc>${SITE}/es/news.html</loc><lastmod>${today}</lastmod></url>
 ${posts.filter((p) => p.es).map((p) => `  <url><loc>${SITE}/es/blog/${p.slug}.html</loc><lastmod>${p.updated || p.date}</lastmod></url>`).join("\n")}

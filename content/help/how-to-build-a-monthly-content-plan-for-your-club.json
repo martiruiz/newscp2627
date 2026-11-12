@@ -1,0 +1,79 @@
+{
+  "n": 19,
+  "slug": "how-to-build-a-monthly-content-plan-for-your-club",
+  "cat": "content-planner",
+  "recommended": false,
+  "updated": "2026-11-12",
+  "next": "how-to-organize-your-content-workflow-and-team",
+  "keywords": ["Sports Content Calendar", "Sports Content Planning Tool", "Social Media Ideas for Sports Teams", "Sports Social Media Strategy"],
+  "en": {
+    "title": "How to build a monthly content plan for your club",
+    "label": "Monthly plan",
+    "meta_title": "Monthly content plan for your club | SCP Knowledge Base",
+    "meta_description": "Build a monthly sports content calendar in the SCP Content Plan: mark fixtures and key dates, set a weekly base, fill it from the library and export the month.",
+    "summary": "To build a monthly content plan in Sports Content Playbook, open the Content Plan in Month view, mark your fixtures and the key dates of the month, set a Weekly base of recurring posts, fill the gaps with posts from the Content Library and download the month as PDF, Excel or a calendar file. The Content Plan is included in Plus and Pro.",
+    "body": [
+      {
+        "h": "How a monthly plan works in SCP",
+        "id": "how-it-works",
+        "html": "<p>The <a href=\"content-plan.html\">Content Plan</a> has a <strong>Month</strong> view for the big picture and a <strong>Week</strong> view (days × hours) for the detail. A monthly plan in Sports Content Playbook combines three layers: fixed moments (matches, key dates, sponsor commitments), recurring posts from your <strong>Weekly base</strong>, and one-off ideas taken from real posts in the library. That mix is what turns a sports content calendar into a plan you can actually deliver.</p>"
+      },
+      {
+        "h": "Step by step: your month in 30 minutes",
+        "id": "step-by-step",
+        "html": "<ol><li>Open <a href=\"content-plan.html\">Content Plan</a> and choose <strong>Month</strong>. If the month has its own campaign, create it with <strong>New plan</strong>.</li><li><strong>Mark the fixed moments.</strong> Add an entry for each match day and sponsor commitment. Check the key dates the calendar shows for that month (for example Halloween or Black Friday); each opens the library filtered to that topic.</li><li><strong>Set your Weekly base</strong> with the posts you publish every week. In Week view they appear as red placeholders until you plan them, so no week starts empty.</li><li><strong>Find ideas in the library.</strong> In the <a href=\"content-library.html\">Content Library</a>, filter by your sport and competition, use <strong>Match Day</strong> for the pre-match, live and post-match moments, and save what you like to a board.</li><li><strong>Drag them into the month.</strong> From the library's <strong>Content Plan</strong> panel, drag posts onto a day or use the <strong>+</strong> to open a mini calendar. In the planner, <strong>Ideas & inspiration</strong> lists your saved boards to drag from.</li><li><strong>Park undecided ideas</strong> in the <strong>No date</strong> tray. Giving one a date later makes it Planned.</li><li><strong>Download the month.</strong> In Month view, <strong>Download</strong> exports the month on screen as <strong>PDF</strong>, <strong>Excel</strong> or <strong>Calendar</strong> (.ics), with the option to include \"No date\" ideas.</li></ol>"
+      },
+      {
+        "h": "Practical example: November for a basketball club",
+        "id": "example",
+        "html": "<p>A basketball club in the second tier has four league games in November and a sponsor activation with a local bank. The communications manager:</p><ul><li>Creates a plan called \"November\" and adds the four game days and the bank activation.</li><li>Keeps a Weekly base of four posts: Monday result, Tuesday highlights reel, Thursday training clip, Saturday game-day graphic.</li><li>Opens the Black Friday key date to see what other clubs did, saves two merch posts and drags them onto that week.</li><li>Uses <strong>Replicable ideas</strong> to find two player challenges for the quieter week without games.</li><li>Downloads the month as Excel to share with the coach and the bank's marketing contact, and imports the .ics into the club's Google Calendar.</li></ul><p>Every slot is tied to a real post that already worked, which gives the team social media ideas for sports teams it can trust.</p>"
+      },
+      {
+        "h": "Tips and common mistakes",
+        "id": "tips",
+        "html": "<ul><li><strong>Plan the structure, not every caption.</strong> Fill captions in the Week view a few days ahead, when you know results and line-ups.</li><li><strong>Don't fill every day.</strong> Leave room for news (signings, injuries, results) that you can't plan.</li><li><strong>Check the week every Monday.</strong> In the library, <strong>Fill my week</strong> fills empty days with posts from your favourite profiles, and shows \"n/7 days with content\".</li><li><strong>Use the free calendar too.</strong> The Sports Content Calendar 2026-27 PDF in <a href=\"free-resources.html\">Free resources</a> lists 28 dates for 9 sports to plan the season ahead.</li><li>Plans are private to each user. To share the month with your team, export it.</li></ul><p>A monthly routine like this is the base of a sports social media strategy, and the Content Plan is the sports content planning tool that keeps it in one place. Next: <a href=\"help/how-to-organize-your-content-workflow-and-team.html\">how to organize your content workflow and team</a>.</p>"
+      }
+    ],
+    "faq": [
+      { "q": "Can I export a whole month?", "a": "Yes. Switch to Month view and use Download: the PDF, Excel or .ics file covers the month on screen. In Week view it covers that week." },
+      { "q": "Can I have different monthly plans for the first team and the women's team?", "a": "Yes. Use New plan to create separate plans, for example one per team or campaign, and switch between them." },
+      { "q": "Which key dates does the calendar include?", "a": "Twelve: New Year, Valentine's Day, Women's Day, April Fools, Earth Day, Pride, Pre-season, Fixture release, Halloween, Black Friday, Christmas and Inocentes." },
+      { "q": "Do I need Plus to build a monthly plan?", "a": "Yes. The Content Plan is included in Plus and Pro (and Enterprise). With Starter you can save posts to boards, but you don't have the calendar." }
+    ]
+  },
+  "es": {
+    "title": "Cómo crear un plan de contenido mensual para tu club",
+    "label": "Plan mensual",
+    "meta_title": "Plan de contenido mensual para tu club | SCP Knowledge Base",
+    "meta_description": "Crea tu calendario de contenido deportivo mensual en el Plan de contenido de SCP: partidos y fechas clave, base semanal, ideas de la biblioteca y exportación.",
+    "summary": "Para crear un plan de contenido mensual en Sports Content Playbook, abre el Plan de contenido en vista Mes, marca tus partidos y las fechas clave del mes, configura una Base semanal de posts fijos, llena los huecos con posts de la Biblioteca de contenido y descarga el mes en PDF, Excel o archivo de calendario. El Plan de contenido está incluido en Plus y Pro.",
+    "body": [
+      {
+        "h": "Cómo funciona un plan mensual en SCP",
+        "id": "how-it-works",
+        "html": "<p>El <a href=\"content-plan.html\">Plan de contenido</a> tiene una vista <strong>Mes</strong> para ver el conjunto y una vista <strong>Semana</strong> (días × horas) para el detalle. Un plan mensual en Sports Content Playbook combina tres capas: los momentos fijos (partidos, fechas clave, compromisos con patrocinadores), los posts recurrentes de tu <strong>Base semanal</strong> y las ideas puntuales sacadas de posts reales de la biblioteca. Esa mezcla es la que convierte un calendario de contenido deportivo en un plan que de verdad puedes cumplir.</p>"
+      },
+      {
+        "h": "Paso a paso: tu mes en 30 minutos",
+        "id": "step-by-step",
+        "html": "<ol><li>Abre el <a href=\"content-plan.html\">Plan de contenido</a> y elige <strong>Mes</strong>. Si el mes tiene una campaña propia, créala con <strong>Nuevo plan</strong>.</li><li><strong>Marca los momentos fijos.</strong> Añade una entrada por cada día de partido y compromiso con patrocinadores. Revisa las fechas clave que muestra el calendario ese mes (por ejemplo Halloween o Black Friday); cada una abre la biblioteca filtrada por ese tema.</li><li><strong>Configura tu Base semanal</strong> con los posts que publicas cada semana. En la vista Semana aparecen en rojo hasta que los planificas, así que ninguna semana empieza vacía.</li><li><strong>Busca ideas en la biblioteca.</strong> En la <a href=\"content-library.html\">Biblioteca de contenido</a>, filtra por tu deporte y competición, usa <strong>Día de partido</strong> para la previa, el directo y el post-partido, y guarda lo que te guste en un tablero.</li><li><strong>Arrástralas al mes.</strong> Desde el panel <strong>Plan de contenido</strong> de la biblioteca, arrastra posts a un día o usa el <strong>+</strong> para abrir un minicalendario. En el planificador, <strong>Ideas e inspiración</strong> muestra tus tableros guardados para arrastrar desde ahí.</li><li><strong>Aparca las ideas sin decidir</strong> en la bandeja <strong>Sin fecha</strong>. Cuando les des fecha, pasarán a Planificado.</li><li><strong>Descarga el mes.</strong> En la vista Mes, <strong>Descargar</strong> exporta el mes que tienes en pantalla en <strong>PDF</strong>, <strong>Excel</strong> o <strong>Calendario</strong> (.ics), con la opción de incluir las ideas «Sin fecha».</li></ol>"
+      },
+      {
+        "h": "Ejemplo práctico: noviembre en un club de baloncesto",
+        "id": "example",
+        "html": "<p>Un club de baloncesto de segunda categoría tiene cuatro partidos de liga en noviembre y una activación con un banco local. El responsable de comunicación:</p><ul><li>Crea un plan llamado «Noviembre» y añade los cuatro días de partido y la activación del banco.</li><li>Mantiene una Base semanal de cuatro posts: resultado del lunes, reel de resumen del martes, clip de entrenamiento del jueves y gráfico de día de partido del sábado.</li><li>Abre la fecha clave de Black Friday para ver qué hicieron otros clubes, guarda dos posts de merchandising y los arrastra a esa semana.</li><li>Usa <strong>Ideas replicables</strong> para encontrar dos retos con jugadores para la semana tranquila sin partido.</li><li>Descarga el mes en Excel para compartirlo con el entrenador y con el contacto de marketing del banco, e importa el .ics al Google Calendar del club.</li></ul><p>Cada hueco está ligado a un post real que ya funcionó, y eso le da al equipo ideas para redes sociales de equipos deportivos en las que puede confiar.</p>"
+      },
+      {
+        "h": "Consejos y errores habituales",
+        "id": "tips",
+        "html": "<ul><li><strong>Planifica la estructura, no todos los textos.</strong> Escribe los textos en la vista Semana unos días antes, cuando ya sepas resultados y alineaciones.</li><li><strong>No llenes todos los días.</strong> Deja hueco para la actualidad (fichajes, lesiones, resultados) que no puedes prever.</li><li><strong>Revisa la semana cada lunes.</strong> En la biblioteca, <strong>Llenar mi semana</strong> completa los días vacíos con posts de tus perfiles favoritos y te muestra cuántos de los 7 días tienen contenido.</li><li><strong>Usa también el calendario gratuito.</strong> El PDF Sports Content Calendar 2026-27 de <a href=\"free-resources.html\">Recursos gratuitos</a> recoge 28 fechas de 9 deportes para planificar la temporada.</li><li>Los planes son privados de cada usuario. Para compartir el mes con tu equipo, expórtalo.</li></ul><p>Una rutina mensual así es la base de una estrategia de redes sociales deportivas, y el Plan de contenido es la herramienta de planificación de contenido deportivo que la mantiene en un solo sitio. Siguiente: <a href=\"es/help/how-to-organize-your-content-workflow-and-team.html\">cómo organizar tu flujo de trabajo y tu equipo</a>.</p>"
+      }
+    ],
+    "faq": [
+      { "q": "¿Puedo exportar un mes entero?", "a": "Sí. Cambia a la vista Mes y usa Descargar: el PDF, el Excel o el .ics incluyen el mes que tienes en pantalla. En la vista Semana incluyen esa semana." },
+      { "q": "¿Puedo tener planes mensuales distintos para el primer equipo y el femenino?", "a": "Sí. Usa Nuevo plan para crear planes separados, por ejemplo uno por equipo o por campaña, y cambia entre ellos." },
+      { "q": "¿Qué fechas clave incluye el calendario?", "a": "Doce: Año Nuevo, San Valentín, Día de la Mujer, Día de los Inocentes (abril), Día de la Tierra, Orgullo, Pretemporada, Publicación del calendario, Halloween, Black Friday, Navidad e Inocentes." },
+      { "q": "¿Necesito Plus para crear un plan mensual?", "a": "Sí. El Plan de contenido está incluido en Plus y Pro (y en Enterprise). Con Starter puedes guardar posts en tableros, pero no tienes el calendario." }
+    ]
+  }
+}

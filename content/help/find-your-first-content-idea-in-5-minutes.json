@@ -1,0 +1,89 @@
+{
+  "n": 4,
+  "slug": "find-your-first-content-idea-in-5-minutes",
+  "cat": "getting-started",
+  "recommended": false,
+  "updated": "2026-11-12",
+  "next": "how-to-use-the-content-library",
+  "keywords": ["Sports Content Ideas", "Football Social Media Content Ideas", "Sports Reels Ideas", "Social Media Ideas for Sports Teams"],
+  "en": {
+    "title": "How to find your first content idea in under 5 minutes",
+    "label": "5-min tutorial",
+    "meta_title": "Your first sports content idea in 5 min | SCP Knowledge Base",
+    "meta_description": "A hands-on tutorial: log in, filter the Content Library, save a post to a board and use its AI analysis to adapt the idea to your club, all in under 5 minutes.",
+    "summary": "In under 5 minutes you can go from login to a saved, adapted idea in Sports Content Playbook: search or filter the Content Library for your competition, open a post that performed well, save it to a board, unlock its AI analysis and copy the adaptation, hook template and caption draft for your club.",
+    "body": [
+      {
+        "h": "Before you start",
+        "id": "before-you-start",
+        "html": "<p>You need an active plan or the 7-day free trial (the trial includes 5 AI analyses). The tutorial uses one AI analysis. Every step works on every plan except the optional last one, which needs the Content Plan (Plus or Pro).</p><div class=\"kb-note\"><p>Timing tip: the AI analysis of an image or carousel takes up to a minute; a video takes about 3 minutes because the AI watches the whole video. If you want to stay well under 5 minutes, start the analysis first and save the post while it runs.</p></div>"
+      },
+      {
+        "h": "Step by step (about 5 minutes)",
+        "id": "step-by-step",
+        "html": "<ol><li><strong>Log in (0:00).</strong> Use your email and password or Google. You land directly in the Content Library.</li><li><strong>Narrow the library (0:30).</strong> In the search box (<strong>Search: signings, a club, reels…</strong>) type a sentence like \"post-match reels\" and press Enter: Sports Content Playbook turns your words into filters for free. Then open <strong>Inspiration from</strong> and pick your <strong>Competition</strong>.</li><li><strong>Keep what worked (1:00).</strong> In <strong>What works</strong>, tick <strong>Overperforming</strong> (posts that got at least 2x their account's usual numbers) or <strong>Replicable ideas</strong> (easy to copy with your own assets). Set the period to <strong>This month</strong>.</li><li><strong>Open a post (1:30).</strong> Click a card. Play the embedded post and check <strong>Tags and caption</strong> to see its original text and hashtags.</li><li><strong>Unlock the analysis (2:00).</strong> Click <strong>Unlock AI Analysis</strong>. It uses 1 of your monthly analyses; if generation fails, it isn't counted.</li><li><strong>Save it (2:15).</strong> While the analysis runs, click <strong>Save</strong> and pick a board, or create one with <strong>New board</strong> (for example \"This week\").</li><li><strong>Adapt it (3:00).</strong> Click <strong>View AI Analysis</strong> and go straight to <strong>How to adapt it to your club</strong> and <strong>Ready to use</strong>. Copy the Hook template, pick one of the 3 hook ideas, check the shot list and fill the [placeholders] in the caption draft with your club's names.</li><li><strong>Plan it (4:30, Plus and Pro).</strong> Drag the post onto a day in the <strong>Content Plan</strong> panel, or use the <strong>+</strong> under the card to pick a day. Because it has an analysis, the AI's adaptation is copied into the entry's notes.</li></ol>"
+      },
+      {
+        "h": "Example: a second-division football club",
+        "id": "example",
+        "html": "<p>A social media manager at a second-division football club needs football social media content ideas for Sunday's post-match. She types \"post-match reels\", selects her league in <strong>Competition</strong> and ticks <strong>Overperforming</strong>. The top result is a 20-second dressing-room reel from a rival club. She unlocks the analysis, saves the reel to her \"This week\" board and reads the adaptation: the analysis suggests filming the same shot sequence with her own players and gives three hooks. She copies the caption draft, replaces [player] and [rival] with real names, and drags the post to Sunday. Four and a half minutes.</p>"
+      },
+      {
+        "h": "If you are short on time",
+        "id": "shortcuts",
+        "html": "<ul><li><strong>Use Replicable ideas</strong> when your team has no video editor: these are sports content ideas you can recreate with your own players, venue and footage.</li><li><strong>Sort by Most viewed</strong> for sports reels ideas that already proved they can reach a big audience.</li><li><strong>Check How it performed</strong> in the analysis: \"Above its usual\" means the post really beat that account's median, not just that the account is big.</li><li><strong>Fill your Favourites in Profile</strong> once; afterwards <strong>Favs</strong> and <strong>Clubs like mine</strong> skip the filtering step.</li></ul>"
+      },
+      {
+        "h": "What \"adapted\" means here",
+        "id": "what-adapted-means",
+        "html": "<p>SCP does not create the finished post for you, and there is no free-text caption generator or AI chat. \"Adapted\" means you leave with a concrete plan for your club: the AI's adaptation, a hook, a shot list and a caption draft ready to fill in. You still shoot and publish with your usual tools. If the analysis says <strong>Hard to replicate</strong>, go back to the results and pick another post; that is a useful answer too.</p><p>Next: <a href=\"help/how-to-use-the-content-library.html\">How to use the Content Library</a>, with more social media ideas for sports teams.</p>"
+      }
+    ],
+    "faq": [
+      { "q": "Does this tutorial work during the free trial?", "a": "Yes. The trial gives you the full library and 5 AI analyses. Only the last step, dragging the post to the Content Plan, needs Plus or Pro." },
+      { "q": "What if I open the same analysis again later?", "a": "It's free. Reopening an analysis you already unlocked doesn't use another one; find it in My AI analyses." },
+      { "q": "Can I share the idea with a colleague?", "a": "Yes. Copy the post's Public link: anyone can open that single post without an account, and the link never expires. You can also download the analysis as a PDF." },
+      { "q": "Why did the analysis take longer than a minute?", "a": "Videos (reels, TikTok, YouTube, Facebook) take about 3 minutes because the AI watches frames of the whole video and reads a transcript of what is said." }
+    ]
+  },
+  "es": {
+    "title": "Cómo encontrar tu primera idea de contenido en menos de 5 minutos",
+    "label": "Tutorial 5 min",
+    "meta_title": "Tu primera idea de contenido en 5 min | SCP Knowledge Base",
+    "meta_description": "Tutorial práctico: entra, filtra la Biblioteca de contenido, guarda un post en un tablero y usa su análisis con IA para adaptarlo a tu club en menos de 5 min.",
+    "summary": "En menos de 5 minutos puedes pasar del acceso a una idea guardada y adaptada en Sports Content Playbook: busca o filtra la Biblioteca de contenido por tu competición, abre un post que haya funcionado, guárdalo en un tablero, desbloquea su análisis con IA y copia la adaptación, la plantilla del hook y el borrador del texto para tu club.",
+    "body": [
+      {
+        "h": "Antes de empezar",
+        "id": "before-you-start",
+        "html": "<p>Necesitas un plan activo o la prueba gratis de 7 días (la prueba incluye 5 análisis con IA). El tutorial usa un análisis con IA. Todos los pasos funcionan en cualquier plan salvo el último, opcional, que necesita el Plan de contenido (Plus o Pro).</p><div class=\"kb-note\"><p>Consejo de tiempo: el análisis con IA de una imagen o un carrusel tarda hasta un minuto; el de un vídeo, unos 3 minutos, porque la IA mira el vídeo entero. Si quieres quedarte holgadamente por debajo de 5 minutos, lanza primero el análisis y guarda el post mientras se genera.</p></div>"
+      },
+      {
+        "h": "Paso a paso (unos 5 minutos)",
+        "id": "step-by-step",
+        "html": "<ol><li><strong>Entra (0:00).</strong> Con tu email y contraseña o con Google. Llegas directamente a la Biblioteca de contenido.</li><li><strong>Acota la biblioteca (0:30).</strong> En el buscador (<strong>Busca: fichajes, un club, reels…</strong>) escribe una frase como \"reels post-partido\" y pulsa Intro: Sports Content Playbook convierte tus palabras en filtros gratis. Después abre <strong>Inspírate en</strong> y elige tu <strong>Competición</strong>.</li><li><strong>Quédate con lo que funcionó (1:00).</strong> En <strong>Lo que funciona</strong>, marca <strong>Overperforming</strong> (posts que lograron al menos el doble de lo habitual en su cuenta) o <strong>Ideas replicables</strong> (fáciles de copiar con tus propios recursos). Pon el periodo en <strong>Este mes</strong>.</li><li><strong>Abre un post (1:30).</strong> Haz clic en una tarjeta. Reproduce el post incrustado y mira <strong>Etiquetas y texto del post</strong> para ver el texto original y los hashtags.</li><li><strong>Desbloquea el análisis (2:00).</strong> Haz clic en <strong>Desbloquear análisis con IA</strong>. Usa 1 de tus análisis del mes; si la generación falla, no se cuenta.</li><li><strong>Guárdalo (2:15).</strong> Mientras se genera el análisis, haz clic en <strong>Guardar</strong> y elige un tablero, o crea uno con <strong>Nuevo tablero</strong> (por ejemplo, \"Esta semana\").</li><li><strong>Adáptalo (3:00).</strong> Haz clic en <strong>Ver análisis con IA</strong> y ve directo a <strong>Cómo adaptarlo a tu club</strong> y <strong>Listo para usar</strong>. Copia la plantilla del hook, elige una de las 3 ideas de hook, revisa la lista de planos y rellena los [marcadores] del borrador del texto con los nombres de tu club.</li><li><strong>Planifícalo (4:30, Plus y Pro).</strong> Arrastra el post a un día del panel <strong>Plan de contenido</strong> o usa el <strong>+</strong> que hay bajo la tarjeta para elegir el día. Como tiene análisis, la adaptación de la IA se copia en las notas de la entrada.</li></ol>"
+      },
+      {
+        "h": "Ejemplo: un club de fútbol de Segunda",
+        "id": "example",
+        "html": "<p>La community manager de un club de fútbol de Segunda necesita ideas de contenido para redes de fútbol para el post-partido del domingo. Escribe \"reels post-partido\", selecciona su liga en <strong>Competición</strong> y marca <strong>Overperforming</strong>. El primer resultado es un reel de vestuario de 20 segundos de un club rival. Desbloquea el análisis, guarda el reel en su tablero \"Esta semana\" y lee la adaptación: el análisis propone grabar la misma secuencia de planos con sus jugadores y le da tres hooks. Copia el borrador del texto, cambia [jugador] y [rival] por nombres reales y arrastra el post al domingo. Cuatro minutos y medio.</p>"
+      },
+      {
+        "h": "Si vas justo de tiempo",
+        "id": "shortcuts",
+        "html": "<ul><li><strong>Usa Ideas replicables</strong> si tu equipo no tiene editor de vídeo: son ideas de contenido deportivo que puedes recrear con tus jugadores, tu estadio y tus imágenes.</li><li><strong>Ordena por Más vistos</strong> para encontrar ideas de reels deportivos que ya demostraron que llegan a mucha gente.</li><li><strong>Mira Cómo funcionó</strong> en el análisis: \"Por encima de lo habitual\" significa que el post superó de verdad la mediana de esa cuenta, no solo que la cuenta sea grande.</li><li><strong>Rellena tus Favoritos en el Perfil</strong> una vez; después, <strong>Favs</strong> y <strong>Clubes como el mío</strong> te ahorran el paso de filtrar.</li></ul>"
+      },
+      {
+        "h": "Qué significa \"adaptada\" aquí",
+        "id": "what-adapted-means",
+        "html": "<p>SCP no crea el post terminado por ti, y no hay un generador de textos libre ni un chat de IA. \"Adaptada\" significa que sales con un plan concreto para tu club: la adaptación de la IA, un hook, una lista de planos y un borrador del texto listo para completar. Grabar y publicar lo sigues haciendo con tus herramientas de siempre. Si el análisis dice <strong>Difícil de replicar</strong>, vuelve a los resultados y elige otro post; también es una respuesta útil.</p><p>Siguiente: <a href=\"es/help/how-to-use-the-content-library.html\">Cómo usar la Biblioteca de contenido</a>, con más ideas para las redes de equipos deportivos.</p>"
+      }
+    ],
+    "faq": [
+      { "q": "¿Este tutorial funciona durante la prueba gratis?", "a": "Sí. La prueba te da la biblioteca completa y 5 análisis con IA. Solo el último paso, arrastrar el post al Plan de contenido, necesita Plus o Pro." },
+      { "q": "¿Y si vuelvo a abrir el mismo análisis más tarde?", "a": "Es gratis. Volver a abrir un análisis ya desbloqueado no gasta otro; lo encontrarás en Mis análisis IA." },
+      { "q": "¿Puedo compartir la idea con un compañero?", "a": "Sí. Copia el Enlace público del post: cualquiera puede abrir ese post sin cuenta y el enlace no caduca. También puedes descargar el análisis en PDF." },
+      { "q": "¿Por qué el análisis ha tardado más de un minuto?", "a": "Los vídeos (reels, TikTok, YouTube, Facebook) tardan unos 3 minutos porque la IA mira fotogramas de todo el vídeo y lee una transcripción de lo que se dice." }
+    ]
+  }
+}

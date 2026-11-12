@@ -1,0 +1,99 @@
+{
+  "n": 11,
+  "slug": "how-does-ai-work-in-sports-content-playbook",
+  "cat": "ai-tools",
+  "recommended": true,
+  "updated": "2026-11-12",
+  "next": "how-to-generate-content-ideas-with-ai",
+  "keywords": ["AI Tools for Sports Content Creation", "Sports Social Media Tools", "Sports Content Creation Tools", "Sports Marketing Tools"],
+  "en": {
+    "title": "How does AI work in Sports Content Playbook?",
+    "label": "AI explained",
+    "meta_title": "How AI works in Sports Content Playbook | SCP Knowledge Base",
+    "meta_description": "SCP uses AI in two ways: smart filters that tag every post in the library, and an on-demand AI analysis that explains a post and gives you a version to make.",
+    "summary": "Sports Content Playbook uses AI in two places: smart filters, AI labels that SCP applies to the posts in the library so you can filter by moment, angle or sponsor, and the AI analysis, which you unlock on a single post to get its hook, why it worked, how it performed and a ready-to-use version for your club. SCP has no AI chat or free-text generator.",
+    "body": [
+      {
+        "h": "Two kinds of AI in SCP",
+        "id": "two-kinds",
+        "html": "<p>Most AI tools for sports content creation start from a blank prompt. Sports Content Playbook starts from real posts: more than 500,000 from clubs, leagues and brands. The AI works on top of that library in two ways:</p><ul><li><strong>Smart filters</strong> (automatic, for everyone): SCP's AI tags every post with labels such as format, moment or angle, so you can filter the library. You don't spend anything to use them.</li><li><strong>AI analysis</strong> (on demand): you choose a post and the AI explains it in depth and writes a starting version for your club. Each one uses 1 analysis from your monthly allowance.</li></ul><p>SCP only uses public posts. You don't connect your social accounts, and SCP doesn't need access to them.</p>"
+      },
+      {
+        "h": "Smart filters: AI labels on every post",
+        "id": "smart-filters",
+        "html": "<p>The filters in the <a href=\"content-library.html\">Content Library</a> are filled in by AI. Two sections depend on it most:</p><ul><li><strong>Match Day</strong> (every plan): Pre-match / Live / Post-match timeline, Result, Opponent, Transfers, Kit, Season moment, Campaign moment, Angle and tone, and more.</li><li><strong>Brands &amp; sponsors</strong> (Pro): Business goal, Sponsors, Integration, Sponsor sector, and more.</li></ul><p>These labels are detected by AI on Instagram posts from October 2026; older posts are being analysed. The search box also helps: type a sentence such as <em>transfer reels with a sponsor that worked</em> and it turns your words into filters. That sentence search is free; it doesn't use AI analyses.</p>"
+      },
+      {
+        "h": "AI analysis: how it reads a post",
+        "id": "analysis",
+        "html": "<ul><li><strong>Videos</strong> (reels, TikTok, YouTube, Facebook): the AI watches frames of the whole video and reads an automatic transcript of what is said. It takes about 3 minutes. If the video can't be read, it falls back to the cover.</li><li><strong>Other posts</strong> (images, carousels): up to a minute.</li><li><strong>Numbers</strong>: the <strong>How it performed</strong> verdict isn't the AI's opinion. It is computed from the post's real numbers against the median of its account that quarter.</li><li><strong>Language</strong>: analyses are written in English and translated to Spanish the first time someone opens them in Spanish.</li><li><strong>Limits by design</strong>: the AI never invents numbers and never identifies people by their face.</li></ul><p>What you get: Summary, Hook (with a reusable template), Why it works, How it performed, Format, Angle, Visual breakdown or Slide by slide, Scroll stoppers, How to adapt it to your club, and a <strong>Ready to use</strong> block with 3 hook ideas, a shot list and a caption draft. Details in <a href=\"help/how-to-analyze-a-content-idea.html\">how to analyze a content idea</a>.</p>"
+      },
+      {
+        "h": "Your AI allowance",
+        "id": "allowance",
+        "html": "<ol><li>Each user gets AI analyses every month: <strong>Starter 5</strong>, <strong>Plus 10</strong>, <strong>Pro 30</strong> (5 during the free trial).</li><li>They renew monthly from your subscription date; unused ones don't carry over.</li><li>See what's left in <strong>My space</strong> → <strong>My AI analyses</strong>, or in Profile → <strong>Billing &amp; membership</strong>.</li><li>Need more? <strong>Buy more AI analyses</strong> in Billing &amp; membership or on the <a href=\"pricing.html\">pricing page</a>. Packs never expire and are used after the monthly ones.</li><li>On team plans, analyses unlocked by teammates are free for you to read. Each user still has their own allowance.</li></ol>"
+      },
+      {
+        "h": "Example: a handball federation",
+        "id": "example",
+        "html": "<p>The communications team of a handball federation uses the smart filters every week without spending anything: Match Day → Post-match, Sport: handball, period This month. When a post stands out, one person runs the AI analysis. On their team plan, the rest of the team reads it for free in <strong>My AI analyses</strong> → <strong>My team's</strong>, so the federation's 30 monthly analyses per Pro user go a long way.</p>"
+      },
+      {
+        "h": "What the AI does not do",
+        "id": "limits",
+        "html": "<p>Compared with other sports social media tools, sports marketing tools and sports content creation tools, it helps to be clear about what SCP's AI is not:</p><ul><li>There is no AI chat and no free-text caption, script or idea generator.</li><li>It doesn't publish or schedule posts on your networks.</li><li>It doesn't read your private accounts or analytics.</li></ul><p>The AI's writing help is inside each analysis: the hook template, hook ideas, shot list and caption draft. See <a href=\"help/how-to-generate-content-ideas-with-ai.html\">how to generate content ideas using AI</a> for a workflow that combines everything.</p>"
+      }
+    ],
+    "faq": [
+      { "q": "Do smart filters use my AI analyses?", "a": "No. Smart filters and sentence search are free. Only unlocking an AI analysis on a post uses 1 analysis." },
+      { "q": "Does SCP need access to my social media accounts?", "a": "No. SCP works only with public posts, and you don't connect your accounts." },
+      { "q": "Can the AI be wrong?", "a": "The labels and analyses are generated by AI, so read them with judgement. The How it performed verdict is computed from real numbers, and the AI never invents figures." },
+      { "q": "What happens if an analysis fails?", "a": "If generation fails, the analysis isn't counted against your allowance." }
+    ]
+  },
+  "es": {
+    "title": "¿Cómo funciona la IA en Sports Content Playbook?",
+    "label": "La IA, explicada",
+    "meta_title": "Cómo funciona la IA en Sports Content Playbook | SCP",
+    "meta_description": "SCP usa IA de dos formas: filtros inteligentes que etiquetan cada post de la biblioteca y un análisis bajo demanda que explica un post y te da tu versión.",
+    "summary": "Sports Content Playbook usa la IA en dos sitios: los filtros inteligentes, etiquetas de IA que SCP pone a los posts de la biblioteca para que puedas filtrar por momento, enfoque o patrocinador, y el análisis con IA, que desbloqueas en un post concreto para ver su hook, por qué funcionó, cómo funcionó y una versión lista para usar en tu club. SCP no tiene chat de IA ni generador de texto libre.",
+    "body": [
+      {
+        "h": "Dos tipos de IA en SCP",
+        "id": "two-kinds",
+        "html": "<p>La mayoría de herramientas de IA para crear contenido deportivo parten de un prompt en blanco. Sports Content Playbook parte de posts reales: más de 500.000 de clubes, ligas y marcas. La IA trabaja sobre esa biblioteca de dos formas:</p><ul><li><strong>Filtros inteligentes</strong> (automáticos, para todos): la IA de SCP etiqueta cada post con datos como el formato, el momento o el enfoque, para que puedas filtrar la biblioteca. Usarlos no te cuesta nada.</li><li><strong>Análisis con IA</strong> (bajo demanda): eliges un post y la IA lo explica a fondo y escribe una versión de partida para tu club. Cada uno usa 1 análisis de tu cupo mensual.</li></ul><p>SCP solo usa posts públicos. No conectas tus redes sociales y SCP no necesita acceso a ellas.</p>"
+      },
+      {
+        "h": "Filtros inteligentes: etiquetas de IA en cada post",
+        "id": "smart-filters",
+        "html": "<p>Los filtros de la <a href=\"content-library.html\">biblioteca de contenido</a> los rellena la IA. Dos secciones dependen sobre todo de ella:</p><ul><li><strong>Día de partido</strong> (todos los planes): línea de tiempo Previa / Directo / Post-partido, Resultado, Rival, Fichajes, Equipación, Momento de la temporada, Momento de campaña, Enfoque y tono, y más.</li><li><strong>Marcas y patrocinadores</strong> (Pro): Objetivo de negocio, Patrocinadores, Integración, Sector del patrocinador, y más.</li></ul><p>Estas etiquetas las detecta la IA en los posts de Instagram desde octubre de 2026; los anteriores se están analizando. El buscador también ayuda: escribe una frase como <em>reels de fichajes con patrocinador que funcionaron</em> y convertirá tus palabras en filtros. Esa búsqueda por frases es gratis; no usa análisis con IA.</p>"
+      },
+      {
+        "h": "Análisis con IA: cómo lee un post",
+        "id": "analysis",
+        "html": "<ul><li><strong>Vídeos</strong> (reels, TikTok, YouTube, Facebook): la IA mira fotogramas de todo el vídeo y lee una transcripción automática de lo que se dice. Tarda unos 3 minutos. Si el vídeo no se puede leer, se basa en la portada.</li><li><strong>Otros posts</strong> (imágenes, carruseles): hasta un minuto.</li><li><strong>Números</strong>: el veredicto de <strong>Cómo funcionó</strong> no es una opinión de la IA. Se calcula con los números reales del post frente a la mediana de su cuenta en ese trimestre.</li><li><strong>Idioma</strong>: los análisis se escriben en inglés y se traducen al español la primera vez que alguien los abre en español.</li><li><strong>Límites a propósito</strong>: la IA nunca se inventa números y nunca identifica a personas por su cara.</li></ul><p>Lo que obtienes: Resumen, Hook (con una plantilla reutilizable), Por qué funciona, Cómo funcionó, Formato, Enfoque, Desglose visual o Slide a slide, Lo que frena el scroll, Cómo adaptarlo a tu club y un bloque <strong>Listo para usar</strong> con 3 ideas de hook, una lista de planos y un borrador del texto. Más detalles en <a href=\"es/help/how-to-analyze-a-content-idea.html\">cómo analizar una idea de contenido</a>.</p>"
+      },
+      {
+        "h": "Tu cupo de análisis con IA",
+        "id": "allowance",
+        "html": "<ol><li>Cada usuario tiene análisis con IA cada mes: <strong>Starter 5</strong>, <strong>Plus 10</strong>, <strong>Pro 30</strong> (5 durante la prueba gratuita).</li><li>Se renuevan cada mes desde la fecha de tu suscripción; los que no usas no se acumulan.</li><li>Mira cuántos te quedan en <strong>Mi espacio</strong> → <strong>Mis análisis IA</strong>, o en Perfil → <strong>Facturación y membresía</strong>.</li><li>¿Necesitas más? Pulsa <strong>Comprar más análisis con IA</strong> en Facturación y membresía o ve a la <a href=\"pricing.html\">página de precios</a>. Los packs no caducan y se usan después de los mensuales.</li><li>En los planes de equipo, los análisis que desbloquean tus compañeros los lees gratis. Cada usuario sigue teniendo su propio cupo.</li></ol>"
+      },
+      {
+        "h": "Ejemplo: una federación de balonmano",
+        "id": "example",
+        "html": "<p>El equipo de comunicación de una federación de balonmano usa los filtros inteligentes cada semana sin gastar nada: Día de partido → Post-partido, Deporte: balonmano, periodo Este mes. Cuando un post destaca, una persona pide el análisis con IA. Con su plan de equipo, el resto lo lee gratis en <strong>Mis análisis IA</strong> → <strong>De mi equipo</strong>, así que los 30 análisis mensuales de cada usuario Pro dan para mucho.</p>"
+      },
+      {
+        "h": "Lo que la IA no hace",
+        "id": "limits",
+        "html": "<p>Frente a otras herramientas de redes sociales y de marketing deportivo, conviene tener claro lo que no es la IA de SCP:</p><ul><li>No hay chat de IA ni generador libre de textos, guiones o ideas.</li><li>No publica ni programa posts en tus redes.</li><li>No lee tus cuentas privadas ni tus estadísticas.</li></ul><p>La ayuda de la IA para escribir está dentro de cada análisis: la plantilla del hook, las ideas de hook, la lista de planos y el borrador del texto. Mira <a href=\"es/help/how-to-generate-content-ideas-with-ai.html\">cómo generar ideas de contenido con IA</a> para ver un flujo que lo combina todo.</p>"
+      }
+    ],
+    "faq": [
+      { "q": "¿Los filtros inteligentes gastan mis análisis con IA?", "a": "No. Los filtros inteligentes y la búsqueda por frases son gratis. Solo desbloquear el análisis con IA de un post usa 1 análisis." },
+      { "q": "¿SCP necesita acceso a mis redes sociales?", "a": "No. SCP trabaja solo con posts públicos y no conectas tus cuentas." },
+      { "q": "¿Puede equivocarse la IA?", "a": "Las etiquetas y los análisis los genera una IA, así que léelos con criterio. El veredicto de Cómo funcionó se calcula con números reales y la IA nunca se inventa cifras." },
+      { "q": "¿Qué pasa si un análisis falla?", "a": "Si la generación falla, el análisis no se descuenta de tu cupo." }
+    ]
+  }
+}

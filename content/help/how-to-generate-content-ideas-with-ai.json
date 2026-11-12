@@ -1,0 +1,99 @@
+{
+  "n": 12,
+  "slug": "how-to-generate-content-ideas-with-ai",
+  "cat": "ai-tools",
+  "recommended": true,
+  "updated": "2026-11-12",
+  "next": "how-to-create-captions-hooks-and-scripts-with-ai",
+  "keywords": ["Sports Content Ideas", "AI Tools for Sports Content Creation", "Sports Social Media Content Ideas", "Sports Reels Ideas", "Football Social Media Content Ideas"],
+  "en": {
+    "title": "How to generate content ideas using AI",
+    "label": "AI ideas",
+    "meta_title": "Generate sports content ideas with AI | SCP Knowledge Base",
+    "meta_description": "SCP has no blank-prompt idea generator. Its AI finds proven posts with smart filters and turns one into hook ideas, a shot list and a caption draft for you.",
+    "summary": "Sports Content Playbook doesn't generate ideas from a blank prompt. Instead, its AI helps you find ideas that already worked (sentence search and smart filters, Overperforming, More like this) and then turns the one you choose into your own version: the AI analysis' Ready to use block gives you 3 hook ideas, a shot list and a caption draft for your club.",
+    "body": [
+      {
+        "h": "How SCP's AI gives you ideas",
+        "id": "how-it-works",
+        "html": "<p>There is no box in Sports Content Playbook where you type \"give me ideas for Saturday\" and get a list back: no AI chat and no free-text idea generator. What SCP has is a library of more than 500,000 real posts from clubs, leagues and brands, labelled by AI, and an AI analysis that turns any of them into a plan for your club. The difference matters: every idea you get has already been published by a real account, and you can see how it performed before you spend time on it.</p><p>The workflow has three steps: <strong>describe</strong> what you need, <strong>narrow</strong> to what works, and <strong>convert</strong> one post into your version.</p>"
+      },
+      {
+        "h": "Step 1: describe what you need in a sentence",
+        "id": "describe",
+        "html": "<ol><li>Open the <a href=\"content-library.html\">Content Library</a>.</li><li>In the search box (<em>Search: signings, a club, reels…</em>) type a sentence, for example <em>transfer reels with a sponsor that worked</em>.</li><li>SCP turns your words into filters: here, Transfers, the reel format, sponsor-related filters and Overperforming. Check the active filters in the left column and adjust them.</li><li>Use the suggestion chips under the search box for related searches.</li></ol><p>This sentence search is free; it doesn't use your AI analyses. It works because SCP's AI has already labelled the posts with smart filters such as <strong>Match Day</strong> moments (every plan) and <strong>Brands &amp; sponsors</strong> (Pro).</p>"
+      },
+      {
+        "h": "Step 2: keep only what works",
+        "id": "narrow",
+        "html": "<ul><li><strong>Overperforming</strong> (in <strong>What works</strong>): posts that got at least 2x the median of their own account that quarter.</li><li><strong>Replicable ideas</strong>: formats you can recreate with your own players, venue and footage.</li><li><strong>Clubs like mine</strong> and <strong>Favs</strong>: posts from the competitions, sports and favourite profiles in your Profile.</li><li><strong>More like this</strong> on any post: more versions of the same idea (same format, sport and competition). It's the fastest way to turn one good idea into several.</li></ul>"
+      },
+      {
+        "h": "Step 3: let the AI write your version",
+        "id": "convert",
+        "html": "<ol><li>Open the post you like and click <strong>Unlock AI Analysis</strong> (uses 1 analysis), then <strong>View AI Analysis</strong>.</li><li>Read <strong>How to adapt it to your club</strong>.</li><li>Go to <strong>Ready to use</strong>: pick one of the 3 <strong>Hook ideas</strong>, follow the <strong>Shot list</strong> (3-6 shots with a tip each) and edit the <strong>Caption draft</strong> (up to 3 lines with [placeholders]).</li><li>On Plus and Pro, drag the post to your <strong>Content Plan</strong>; the AI's adaptation goes into the entry's notes. <strong>Fill my week</strong> fills your empty days with posts from your favourites.</li></ol><p>More on writing in <a href=\"help/how-to-create-captions-hooks-and-scripts-with-ai.html\">how to create captions, hooks and scripts with AI</a>.</p>"
+      },
+      {
+        "h": "Example: a week of football ideas in 20 minutes",
+        "id": "example",
+        "html": "<p>A football club's social media manager needs sports content ideas for a week with a Saturday home match and a new sponsor. She looks for football social media content ideas in three searches: <em>matchday preview reels that worked</em>, <em>full-time result carousels</em> and, on Pro, a search for sponsor integrations. From the first she uses <strong>More like this</strong> to get two more sports reels ideas. She analyses the two posts she'll actually make and drags all five to her Content Plan. Result: a full week of sports social media content ideas, each with a real reference and two with a hook, shot list and caption ready.</p>"
+      },
+      {
+        "h": "Tips",
+        "id": "tips",
+        "html": "<ul><li>Search first, analyse later. Filters and sentence search are free; analyses are limited (Starter 5, Plus 10, Pro 30 per month).</li><li>Analyse only the posts you'll really produce. On team plans, teammates' analyses are free to read.</li><li>Want to use your own AI assistant too? The <a href=\"free-resources.html\">free resources</a> include a Prompt Pack with 14 prompts.</li><li>If a club or league you follow is missing, ask SCP to add it via <a href=\"contact.html?topic=support\">contact</a>; it's included in every plan.</li></ul><p>Among AI tools for sports content creation, SCP's approach is to start from proof, not from a blank page.</p>"
+      }
+    ],
+    "faq": [
+      { "q": "Does SCP have an AI idea generator or chat?", "a": "No. SCP's AI labels the library with smart filters and analyses individual posts. Ideas come from real posts, and the analysis gives you hook ideas, a shot list and a caption draft to make your version." },
+      { "q": "Does the sentence search use AI analyses?", "a": "No. It turns your words into filters and is free on every plan." },
+      { "q": "How many ideas can I get from one analysis?", "a": "Each analysis gives 3 hook ideas, a shot list and a caption draft for one post. Use More like this to find variations of the same idea without spending analyses." },
+      { "q": "Can I generate ideas in Spanish?", "a": "Yes. Search works in Spanish, and analyses are translated to Spanish the first time someone opens them in Spanish." }
+    ]
+  },
+  "es": {
+    "title": "Cómo generar ideas de contenido con IA",
+    "label": "Ideas con IA",
+    "meta_title": "Cómo generar ideas de contenido deportivo con IA | SCP",
+    "meta_description": "SCP no genera ideas desde un prompt en blanco. Su IA encuentra posts que ya funcionaron y convierte uno en ideas de hook, lista de planos y borrador del texto.",
+    "summary": "Sports Content Playbook no genera ideas desde un prompt en blanco. Su IA te ayuda a encontrar ideas que ya funcionaron (búsqueda por frases y filtros inteligentes, Overperforming, Más como este) y luego convierte la que elijas en tu propia versión: el bloque Listo para usar del análisis con IA te da 3 ideas de hook, una lista de planos y un borrador del texto para tu club.",
+    "body": [
+      {
+        "h": "Cómo te da ideas la IA de SCP",
+        "id": "how-it-works",
+        "html": "<p>En Sports Content Playbook no hay una caja donde escribas «dame ideas para el sábado» y te devuelva una lista: no hay chat de IA ni generador libre de ideas. Lo que tiene SCP es una biblioteca de más de 500.000 posts reales de clubes, ligas y marcas, etiquetados por IA, y un análisis con IA que convierte cualquiera de ellos en un plan para tu club. La diferencia importa: cada idea que obtienes ya la ha publicado una cuenta real, y puedes ver cómo funcionó antes de dedicarle tiempo.</p><p>El flujo tiene tres pasos: <strong>describe</strong> lo que necesitas, <strong>filtra</strong> lo que funciona y <strong>convierte</strong> un post en tu versión.</p>"
+      },
+      {
+        "h": "Paso 1: describe lo que necesitas con una frase",
+        "id": "describe",
+        "html": "<ol><li>Abre la <a href=\"content-library.html\">biblioteca de contenido</a>.</li><li>En el buscador (<em>Busca: fichajes, un club, reels…</em>) escribe una frase, por ejemplo <em>reels de fichajes con patrocinador que funcionaron</em>.</li><li>SCP convierte tus palabras en filtros: aquí, Fichajes, el formato reel, filtros de patrocinio y Overperforming. Revisa los filtros activos en la columna de la izquierda y ajústalos.</li><li>Usa las sugerencias que aparecen bajo el buscador para búsquedas relacionadas.</li></ol><p>Esta búsqueda por frases es gratis; no usa tus análisis con IA. Funciona porque la IA de SCP ya ha etiquetado los posts con filtros inteligentes como los momentos de <strong>Día de partido</strong> (todos los planes) y <strong>Marcas y patrocinadores</strong> (Pro).</p>"
+      },
+      {
+        "h": "Paso 2: quédate con lo que funciona",
+        "id": "narrow",
+        "html": "<ul><li><strong>Overperforming</strong> (en <strong>Lo que funciona</strong>): posts que lograron al menos el doble de la mediana de su propia cuenta en ese trimestre.</li><li><strong>Ideas replicables</strong>: formatos que puedes recrear con tus jugadores, tu estadio y tus imágenes.</li><li><strong>Clubes como el mío</strong> y <strong>Favs</strong>: posts de las competiciones, deportes y perfiles favoritos de tu Perfil.</li><li><strong>Más como este</strong> en cualquier post: más versiones de la misma idea (mismo formato, deporte y competición). Es la forma más rápida de convertir una buena idea en varias.</li></ul>"
+      },
+      {
+        "h": "Paso 3: deja que la IA escriba tu versión",
+        "id": "convert",
+        "html": "<ol><li>Abre el post que te guste y pulsa <strong>Desbloquear análisis con IA</strong> (usa 1 análisis) y después <strong>Ver análisis con IA</strong>.</li><li>Lee <strong>Cómo adaptarlo a tu club</strong>.</li><li>Ve a <strong>Listo para usar</strong>: elige una de las 3 <strong>Ideas de hook</strong>, sigue la <strong>Lista de planos</strong> (de 3 a 6 planos con un consejo cada uno) y edita el <strong>Borrador del texto</strong> (hasta 3 líneas con [huecos]).</li><li>En Plus y Pro, arrastra el post a tu <strong>Plan de contenido</strong>; la adaptación de la IA va a las notas de la entrada. <strong>Llenar mi semana</strong> rellena tus días vacíos con posts de tus favoritos.</li></ol><p>Más sobre redacción en <a href=\"es/help/how-to-create-captions-hooks-and-scripts-with-ai.html\">cómo crear textos, hooks y guiones con IA</a>.</p>"
+      },
+      {
+        "h": "Ejemplo: una semana de ideas de fútbol en 20 minutos",
+        "id": "example",
+        "html": "<p>La community manager de un club de fútbol necesita ideas de contenido deportivo para una semana con partido en casa el sábado y un patrocinador nuevo. Hace tres búsquedas: <em>reels de previa que funcionaron</em>, <em>carruseles de resultado final</em> y, con Pro, una búsqueda de integraciones de patrocinadores. Desde la primera usa <strong>Más como este</strong> para sacar dos ideas de reels deportivos más. Analiza los dos posts que de verdad va a hacer y arrastra los cinco a su Plan de contenido. Resultado: una semana completa de ideas para redes sociales deportivas, cada una con una referencia real y dos con hook, lista de planos y texto listos.</p>"
+      },
+      {
+        "h": "Consejos",
+        "id": "tips",
+        "html": "<ul><li>Primero busca, luego analiza. Los filtros y la búsqueda por frases son gratis; los análisis son limitados (Starter 5, Plus 10, Pro 30 al mes).</li><li>Analiza solo los posts que vas a producir. En los planes de equipo, los análisis de tus compañeros los lees gratis.</li><li>¿Quieres usar también tu propio asistente de IA? Los <a href=\"free-resources.html\">recursos gratuitos</a> incluyen un Prompt Pack con 14 prompts.</li><li>Si falta un club o una liga que sigues, pide a SCP que lo añada desde <a href=\"contact.html?topic=support\">contacto</a>; está incluido en todos los planes.</li></ul><p>Entre las herramientas de IA para crear contenido deportivo, el enfoque de SCP es partir de pruebas, no de una página en blanco.</p>"
+      }
+    ],
+    "faq": [
+      { "q": "¿SCP tiene un generador de ideas o un chat con IA?", "a": "No. La IA de SCP etiqueta la biblioteca con filtros inteligentes y analiza posts concretos. Las ideas salen de posts reales, y el análisis te da ideas de hook, una lista de planos y un borrador del texto para hacer tu versión." },
+      { "q": "¿La búsqueda por frases usa análisis con IA?", "a": "No. Convierte tus palabras en filtros y es gratis en todos los planes." },
+      { "q": "¿Cuántas ideas saco de un análisis?", "a": "Cada análisis te da 3 ideas de hook, una lista de planos y un borrador del texto para un post. Usa Más como este para encontrar variaciones de la misma idea sin gastar análisis." },
+      { "q": "¿Puedo generar ideas en español?", "a": "Sí. El buscador funciona en español, y los análisis se traducen al español la primera vez que alguien los abre en español." }
+    ]
+  }
+}

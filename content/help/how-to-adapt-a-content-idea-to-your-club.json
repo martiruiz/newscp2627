@@ -1,0 +1,99 @@
+{
+  "n": 9,
+  "slug": "how-to-adapt-a-content-idea-to-your-club",
+  "cat": "content-library",
+  "recommended": false,
+  "updated": "2026-11-12",
+  "next": "how-to-find-trending-sports-content",
+  "keywords": ["Social Media Ideas for Sports Teams", "Football Social Media Content Ideas", "Sports Instagram Content Ideas", "Sports Content Planning Tool"],
+  "en": {
+    "title": "How to adapt a content idea to your club or organization",
+    "label": "Make it yours",
+    "meta_title": "How to adapt a content idea to your club | SCP Knowledge Base",
+    "meta_description": "Turn a post from another club into your own version: use the AI analysis' adaptation, hook template, shot list and caption draft, then plan it in SCP.",
+    "summary": "To adapt a content idea in Sports Content Playbook, run the AI analysis on the post and use its How to adapt it to your club section and its Ready to use block (3 hook ideas, a shot list and a caption draft with placeholders), then drag the post to your Content Plan, where the AI's adaptation goes into the notes.",
+    "body": [
+      {
+        "h": "Adapt, don't copy",
+        "id": "adapt-dont-copy",
+        "html": "<p>A post that worked for another club worked for its audience, with its players and its moment. Your version has to keep what made it work (the hook, the structure, the pacing) and change everything else: your players, your venue, your sponsor, your language. Sports Content Playbook is built for exactly that step, so the social media ideas for sports teams you find become posts that fit yours. It shows you real posts from clubs, leagues and brands, explains why they worked and gives you a starting script for your own. It works the same for a club, a league, a federation, an agency or a sports brand.</p><p>Note that you can't download the original video or image, and you shouldn't reuse the original caption as is. The goal is a new post made with your own assets.</p>"
+      },
+      {
+        "h": "Step 1: pick an idea you can actually make",
+        "id": "pick",
+        "html": "<ol><li>In the <a href=\"content-library.html\">Content Library</a>, open <strong>Filters</strong>.</li><li>Under <strong>What works</strong>, select <strong>Replicable ideas</strong>: formats you can recreate with your own players, venue and footage.</li><li>Under <strong>Inspiration from</strong>, choose your <strong>Sport</strong> and, if you like, a <strong>Competition</strong> or <strong>Club</strong> similar to yours. <strong>Clubs like mine</strong> uses the competitions and sports in your profile.</li><li>Under <strong>Where &amp; how</strong>, pick the <strong>Format</strong> and <strong>Platform</strong> you publish on.</li><li>Open a post and use <strong>More like this</strong> to see other versions of the same idea (same format, sport and competition).</li></ol>"
+      },
+      {
+        "h": "Step 2: let the AI write your starting version",
+        "id": "analyse",
+        "html": "<ol><li>On the post, click <strong>Unlock AI Analysis</strong> (uses 1 analysis), then <strong>View AI Analysis</strong>.</li><li>Read <strong>How to adapt it to your club</strong>. If it says <strong>Hard to replicate</strong>, the idea depends on something you probably don't have; go back and pick another.</li><li>In <strong>Hook</strong>, click <strong>Copy</strong> on the <strong>Template</strong> and fill it with your club's details.</li><li>In <strong>Ready to use</strong>, choose one of the 3 <strong>Hook ideas</strong>, follow the <strong>Shot list</strong> (3-6 shots, each with a tip) and edit the <strong>Caption draft</strong>, replacing every [placeholder].</li></ol><p>See <a href=\"help/how-to-analyze-a-content-idea.html\">how to analyze a content idea</a> for every section of the analysis.</p>"
+      },
+      {
+        "h": "Step 3: put it in your plan",
+        "id": "plan",
+        "html": "<p>On Plus and Pro, the Content Plan is your sports content planning tool. Drag the analysed post onto a day in the <strong>Content Plan</strong> panel of the library (or use the <strong>+</strong> button, which works on phones). The entry keeps the original post as inspiration, with its link, and the AI's adaptation goes into its <strong>Notes</strong>. Set the type (Post, Carousel, Reel, Story, YouTube, TikTok), write your <strong>Caption</strong> and move the status from <strong>Planned</strong> to <strong>In production</strong> and <strong>Published</strong>. On Starter, save the post to a board in <strong>Saved boards</strong> and keep the analysis in <strong>My AI analyses</strong>.</p>"
+      },
+      {
+        "h": "Example: from a big club's reel to a second-division club",
+        "id": "example",
+        "html": "<p>A second-division football club looking for football social media content ideas finds a Replicable reel where a top-flight club's players guess their teammates' baby photos. The analysis says the hook is the first wrong guess and suggests using the club's own squad and training ground. The social media manager copies the hook template, uses the shot list on Thursday's training session and replaces the [placeholders] in the caption draft with the club's hashtag and the next match. For sports Instagram content ideas like this one, the format travels; only the faces and the details change.</p><div class=\"kb-note\"><p>Leagues, federations and brands work the same way: a federation can adapt a club's matchday format to its national team, and a brand can use the <strong>Brands &amp; sponsors</strong> filters (Pro) to see how sponsors are integrated before adapting the idea to its own partnership.</p></div>"
+      },
+      {
+        "h": "Common mistakes",
+        "id": "mistakes",
+        "html": "<ul><li>Choosing a post only because it has huge views. Check <strong>How it performed</strong>: it compares the post with its own account.</li><li>Keeping the original caption or graphics. Use the caption draft and your own assets.</li><li>Skipping the hook. Most of what makes a post replicable is in the first seconds; that's why the analysis gives you a template and three alternatives.</li></ul>"
+      }
+    ],
+    "faq": [
+      { "q": "Can I download the original post's video to edit it?", "a": "No. SCP doesn't let you download posts' videos or images, and bulk copying is against the terms. You recreate the idea with your own footage." },
+      { "q": "What if the analysis says Hard to replicate?", "a": "It means the idea depends on something most clubs don't have, such as a star player or a big production. Use More like this or the Replicable ideas filter to find a version you can make." },
+      { "q": "Does the AI adaptation appear in my Content Plan?", "a": "Yes. When you drag an analysed post to the Content Plan (Plus and Pro), the AI's adaptation is added to the entry's notes." },
+      { "q": "Does this work for leagues, federations and brands?", "a": "Yes. The steps are the same; the analysis' adaptation is written for a club, so read it with your organization's audience in mind." }
+    ]
+  },
+  "es": {
+    "title": "Cómo adaptar una idea de contenido a tu club u organización",
+    "label": "Hazla tuya",
+    "meta_title": "Cómo adaptar una idea de contenido a tu club | SCP",
+    "meta_description": "Convierte el post de otro club en tu propia versión: usa la adaptación del análisis con IA, la plantilla del hook, la lista de planos y el borrador del texto.",
+    "summary": "Para adaptar una idea de contenido en Sports Content Playbook, pide el análisis con IA del post y usa su sección Cómo adaptarlo a tu club y su bloque Listo para usar (3 ideas de hook, una lista de planos y un borrador del texto con huecos); después arrastra el post a tu Plan de contenido, donde la adaptación de la IA se guarda en las notas.",
+    "body": [
+      {
+        "h": "Adapta, no copies",
+        "id": "adapt-dont-copy",
+        "html": "<p>Un post que funcionó para otro club funcionó con su público, sus jugadores y su momento. Tu versión tiene que conservar lo que lo hizo funcionar (el hook, la estructura, el ritmo) y cambiar todo lo demás: tus jugadores, tu estadio, tu patrocinador, tu idioma. Sports Content Playbook está pensado justo para ese paso. Te enseña posts reales de clubes, ligas y marcas, te explica por qué funcionaron y te da un guion de partida para el tuyo. Sirve igual para un club, una liga, una federación, una agencia o una marca deportiva.</p><p>Ten en cuenta que no puedes descargar el vídeo ni la imagen originales, y no deberías reutilizar el texto original tal cual. El objetivo es un post nuevo hecho con tus propios recursos.</p>"
+      },
+      {
+        "h": "Paso 1: elige una idea que de verdad puedas hacer",
+        "id": "pick",
+        "html": "<ol><li>En la <a href=\"content-library.html\">biblioteca de contenido</a>, abre <strong>Filtros</strong>.</li><li>En <strong>Lo que funciona</strong>, selecciona <strong>Ideas replicables</strong>: formatos que puedes recrear con tus jugadores, tu estadio y tus imágenes.</li><li>En <strong>Inspírate en</strong>, elige tu <strong>Deporte</strong> y, si quieres, una <strong>Competición</strong> o un <strong>Club</strong> parecido al tuyo. <strong>Clubes como el mío</strong> usa las competiciones y deportes de tu perfil.</li><li>En <strong>Dónde y cómo</strong>, elige el <strong>Formato</strong> y la <strong>Plataforma</strong> donde publicas.</li><li>Abre un post y usa <strong>Más como este</strong> para ver otras versiones de la misma idea (mismo formato, deporte y competición).</li></ol>"
+      },
+      {
+        "h": "Paso 2: deja que la IA escriba tu versión de partida",
+        "id": "analyse",
+        "html": "<ol><li>En el post, pulsa <strong>Desbloquear análisis con IA</strong> (usa 1 análisis) y después <strong>Ver análisis con IA</strong>.</li><li>Lee <strong>Cómo adaptarlo a tu club</strong>. Si pone <strong>Difícil de replicar</strong>, la idea depende de algo que probablemente no tienes: vuelve atrás y elige otra.</li><li>En <strong>Hook</strong>, pulsa <strong>Copiar</strong> en la <strong>Plantilla</strong> y rellénala con los datos de tu club.</li><li>En <strong>Listo para usar</strong>, elige una de las 3 <strong>Ideas de hook</strong>, sigue la <strong>Lista de planos</strong> (de 3 a 6 planos, cada uno con un consejo) y edita el <strong>Borrador del texto</strong>, sustituyendo cada [hueco].</li></ol><p>Mira <a href=\"es/help/how-to-analyze-a-content-idea.html\">cómo analizar una idea de contenido</a> para conocer cada sección del análisis.</p>"
+      },
+      {
+        "h": "Paso 3: llévala a tu plan",
+        "id": "plan",
+        "html": "<p>En Plus y Pro, el Plan de contenido es tu herramienta para planificar contenido deportivo. Arrastra el post analizado a un día del panel <strong>Plan de contenido</strong> de la biblioteca (o usa el botón <strong>+</strong>, que funciona en el móvil). La entrada guarda el post original como inspiración, con su enlace, y la adaptación de la IA va a sus <strong>Notas</strong>. Elige el tipo (Post, Carrusel, Reel, Story, YouTube, TikTok), escribe tu <strong>Texto del post</strong> y cambia el estado de <strong>Planificado</strong> a <strong>En producción</strong> y <strong>Publicado</strong>. En Starter, guarda el post en un tablero de <strong>Guardados</strong> y conserva el análisis en <strong>Mis análisis IA</strong>.</p>"
+      },
+      {
+        "h": "Ejemplo: del reel de un club grande a un club de Segunda",
+        "id": "example",
+        "html": "<p>Un club de fútbol de Segunda que busca ideas de contenido para redes encuentra un reel replicable en el que los jugadores de un club de Primera adivinan las fotos de bebé de sus compañeros. El análisis dice que el hook es el primer fallo y sugiere usar la plantilla propia y la ciudad deportiva. El community manager copia la plantilla del hook, usa la lista de planos en el entreno del jueves y sustituye los [huecos] del borrador por el hashtag del club y el próximo partido. Con ideas de contenido para Instagram como esta, el formato viaja; solo cambian las caras y los detalles.</p><div class=\"kb-note\"><p>Ligas, federaciones y marcas funcionan igual: una federación puede adaptar el formato de día de partido de un club a su selección, y una marca puede usar los filtros de <strong>Marcas y patrocinadores</strong> (Pro) para ver cómo se integran los patrocinadores antes de adaptar la idea a su propio acuerdo.</p></div>"
+      },
+      {
+        "h": "Errores habituales",
+        "id": "mistakes",
+        "html": "<ul><li>Elegir un post solo porque tiene muchísimas visualizaciones. Mira <strong>Cómo funcionó</strong>: compara el post con su propia cuenta.</li><li>Quedarte con el texto o los grafismos originales. Usa el borrador del texto y tus propios recursos.</li><li>Saltarte el hook. Casi todo lo que hace replicable un post está en los primeros segundos; por eso el análisis te da una plantilla y tres alternativas.</li></ul>"
+      }
+    ],
+    "faq": [
+      { "q": "¿Puedo descargar el vídeo del post original para editarlo?", "a": "No. SCP no permite descargar los vídeos ni las imágenes de los posts, y copiarlos en bloque va contra las condiciones. Recreas la idea con tus propias imágenes." },
+      { "q": "¿Y si el análisis dice Difícil de replicar?", "a": "Significa que la idea depende de algo que la mayoría de clubes no tiene, como una estrella o una gran producción. Usa Más como este o el filtro Ideas replicables para encontrar una versión que puedas hacer." },
+      { "q": "¿La adaptación de la IA aparece en mi Plan de contenido?", "a": "Sí. Cuando arrastras un post analizado al Plan de contenido (Plus y Pro), la adaptación de la IA se añade a las notas de la entrada." },
+      { "q": "¿Sirve para ligas, federaciones y marcas?", "a": "Sí. Los pasos son los mismos; la adaptación del análisis está escrita pensando en un club, así que léela pensando en el público de tu organización." }
+    ]
+  }
+}

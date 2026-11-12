@@ -1,0 +1,89 @@
+{
+  "n": 6,
+  "slug": "how-to-search-and-filter-content-ideas",
+  "cat": "content-library",
+  "recommended": false,
+  "updated": "2026-11-12",
+  "next": "top-picks-replicable-ideas-and-overperforming",
+  "keywords": ["Sports Content Ideas", "Sports Reels Ideas", "Sports Social Media Trends", "Football Social Media Content Ideas"],
+  "en": {
+    "title": "How to search and filter content ideas",
+    "label": "Filters",
+    "meta_title": "Search and filter sports content ideas | SCP Knowledge Base",
+    "meta_description": "Use the search box, sentence search, smart filters, period, sort and saved searches in the Sports Content Playbook library to find sports content ideas.",
+    "summary": "In the Sports Content Playbook library you can type words or a whole sentence in the search box, which turns them into filters for free, then refine with the smart filters in the left column (What works, Match Day, Brands & sponsors, Where & how, Inspiration from), a period and a sort. Save any combination as a saved search or share it as a link.",
+    "body": [
+      {
+        "h": "Search: words or whole sentences",
+        "id": "search",
+        "html": "<p>The search box at the top of the library says <strong>Search: signings, a club, reels…</strong>. You can type a single word, a club name or a format. You can also type a sentence such as \"transfer reels with a sponsor that worked\": Sports Content Playbook turns your words into filters. Sentence search is free and does not use your AI analyses. Suggestion chips under the box offer common searches.</p><p>Tip: type \"top picks\" to see the editorial selection of the best posts chosen by the SCP team; it is not a button in the filter column.</p>"
+      },
+      {
+        "h": "The smart filters",
+        "id": "filters",
+        "html": "<p>AI labels every post, and those labels become the filters in the left column:</p><ul><li><strong>What works</strong>: Favs, Replicable ideas, Content Creators, Overperforming, Views, Publisher type.</li><li><strong>Match Day</strong>: Pre-match / Live / Post-match, Result, Opponent, Transfers, Kit, Season moment, Campaign moment, Angle and tone (and more: Press and comms, Sensitive topics).</li><li><strong>Brands &amp; sponsors</strong> (Pro): Business goal, Sponsors, Integration, Sponsor sector (and Call to action, Collaborations).</li><li><strong>Where &amp; how</strong>: Format, Shape, Length, Language, Platform.</li><li><strong>Inspiration from</strong>: Challenges, Sport, Competition, Club, Team (and City).</li></ul><p><strong>Content Creators</strong> (from Plus) has its own filters: creator type, language, country, gender, followers and accounts. Match Day and Brands &amp; sponsors filters are detected by AI on Instagram posts from October 2026; older posts are still being analysed.</p>"
+      },
+      {
+        "h": "Step by step: build, save and share a search",
+        "id": "step-by-step",
+        "html": "<ol><li>Type a sentence in the search box, or start with one filter in the left column.</li><li>Add filters from other sections. Active filters appear as chips above the feed.</li><li>Choose a period: <strong>This week</strong>, <strong>This month</strong>, <strong>This season</strong>, <strong>All time</strong> or <strong>Custom dates…</strong></li><li>Choose a sort: <strong>Latest</strong>, <strong>Most viewed</strong> or <strong>Surprise me</strong>.</li><li>Click <strong>Save search</strong> and give it a name. Reopen it any time from <strong>Saved searches…</strong></li><li>To share it, use <strong>Copy link to this search</strong>: filters live in the URL, so a colleague with access sees the same results.</li><li>Start again with <strong>Clear all</strong>.</li></ol>"
+      },
+      {
+        "h": "Example: post-match reels after a win",
+        "id": "example",
+        "html": "<p>A second-division football club wins away and wants football social media content ideas for the next morning. The manager types \"post-match reels\", then in <strong>Match Day</strong> picks the win result and in <strong>Inspiration from</strong> her competition. She sets <strong>This season</strong> and sorts by <strong>Most viewed</strong>. She saves it as \"Post-match win\" so the next time the team wins, the sports reels ideas are one click away. To spot sports social media trends, she reopens the same search with <strong>This week</strong> and <strong>Latest</strong>.</p>"
+      },
+      {
+        "h": "Tips and limits",
+        "id": "tips",
+        "html": "<ul><li><strong>Start broad, then narrow.</strong> Two or three filters usually beat six; with too many you may see \"No posts match these filters.\"</li><li><strong>Click a tag</strong> inside a post's <strong>Tags and caption</strong> to filter the library by it.</li><li><strong>Use Favs and Clubs like mine</strong> after setting favourites in Profile to see sports content ideas from accounts like yours first.</li><li><strong>Plan access</strong>: Content Creators from Plus, Brands &amp; sponsors in Pro; Match Day in every plan.</li></ul><p>Next: <a href=\"help/top-picks-replicable-ideas-and-overperforming.html\">What are Top Picks, Replicable Ideas and Overperforming?</a></p>"
+      }
+    ],
+    "faq": [
+      { "q": "Does sentence search use my AI analyses?", "a": "No. Turning a sentence into filters is free. Only unlocking an AI analysis of a post uses your allowance." },
+      { "q": "How do I share a search with my team?", "a": "Filters live in the URL. Use Copy link to this search and send it; anyone with access to the library sees the same results." },
+      { "q": "Why don't I see Match Day filters on some older posts?", "a": "Match Day and Brands & sponsors labels are detected by AI on Instagram posts from October 2026; older posts are still being analysed." },
+      { "q": "Where are Top Picks?", "a": "Type \"top picks\" in the search box. It is an editorial selection by the SCP team, not a button in the filter column." }
+    ]
+  },
+  "es": {
+    "title": "Cómo buscar y filtrar ideas de contenido",
+    "label": "Filtros",
+    "meta_title": "Busca y filtra ideas de contenido | SCP Knowledge Base",
+    "meta_description": "Usa el buscador, la búsqueda por frases, los filtros inteligentes, el periodo, el orden y las búsquedas guardadas de SCP para encontrar ideas de contenido.",
+    "summary": "En la biblioteca de Sports Content Playbook puedes escribir palabras o una frase entera en el buscador, que las convierte en filtros gratis, y después afinar con los filtros inteligentes de la columna izquierda (Lo que funciona, Día de partido, Marcas y patrocinadores, Dónde y cómo, Inspírate en), un periodo y un orden. Guarda cualquier combinación como búsqueda guardada o compártela como enlace.",
+    "body": [
+      {
+        "h": "Buscar: palabras o frases enteras",
+        "id": "search",
+        "html": "<p>El buscador de la parte superior de la biblioteca dice <strong>Busca: fichajes, un club, reels…</strong>. Puedes escribir una palabra, el nombre de un club o un formato. También puedes escribir una frase como \"reels de fichajes con patrocinador que funcionaron\": Sports Content Playbook convierte tus palabras en filtros. La búsqueda por frases es gratis y no gasta tus análisis con IA. Debajo del buscador aparecen sugerencias con búsquedas habituales.</p><p>Consejo: escribe \"top picks\" para ver la selección editorial de los mejores posts elegidos por el equipo de SCP; no es un botón de la columna de filtros.</p>"
+      },
+      {
+        "h": "Los filtros inteligentes",
+        "id": "filters",
+        "html": "<p>La IA etiqueta cada post y esas etiquetas son los filtros de la columna izquierda:</p><ul><li><strong>Lo que funciona</strong>: Favs, Ideas replicables, Creadores de contenido, Overperforming, Visualizaciones, Tipo de publicador.</li><li><strong>Día de partido</strong>: Previa / Directo / Post-partido, Resultado, Rival, Fichajes, Equipación, Momento de la temporada, Momento de campaña, Enfoque y tono (y más: Prensa y comunicación, Temas sensibles).</li><li><strong>Marcas y patrocinadores</strong> (Pro): Objetivo de negocio, Patrocinadores, Integración, Sector del patrocinador (y Llamada a la acción, Colaboraciones).</li><li><strong>Dónde y cómo</strong>: Formato, Proporción, Duración, Idioma, Plataforma.</li><li><strong>Inspírate en</strong>: Challenges, Deporte, Competición, Club, Equipo (y Ciudad).</li></ul><p><strong>Creadores de contenido</strong> (desde Plus) tiene sus propios filtros: tipo de creador, idioma, país, género, seguidores y cuentas. Los filtros de Día de partido y de Marcas y patrocinadores los detecta la IA en los posts de Instagram desde octubre de 2026; los anteriores se están analizando.</p>"
+      },
+      {
+        "h": "Paso a paso: crea, guarda y comparte una búsqueda",
+        "id": "step-by-step",
+        "html": "<ol><li>Escribe una frase en el buscador o empieza con un filtro de la columna izquierda.</li><li>Añade filtros de otras secciones. Los filtros activos aparecen como etiquetas encima del feed.</li><li>Elige un periodo: <strong>Esta semana</strong>, <strong>Este mes</strong>, <strong>Esta temporada</strong>, <strong>Todo</strong> o <strong>Fechas personalizadas…</strong></li><li>Elige un orden: <strong>Más recientes</strong>, <strong>Más vistos</strong> o <strong>Sorpréndeme</strong>.</li><li>Haz clic en <strong>Guardar búsqueda</strong> y ponle un nombre. Vuelve a abrirla cuando quieras desde <strong>Búsquedas guardadas…</strong></li><li>Para compartirla, usa <strong>Copiar el enlace de esta búsqueda</strong>: los filtros van en la URL, así que un compañero con acceso ve los mismos resultados.</li><li>Para empezar de cero, usa <strong>Borrar todo</strong>.</li></ol>"
+      },
+      {
+        "h": "Ejemplo: reels post-partido tras una victoria",
+        "id": "example",
+        "html": "<p>Un club de fútbol de Segunda gana fuera de casa y quiere ideas de contenido para redes de fútbol para la mañana siguiente. La responsable escribe \"reels post-partido\", en <strong>Día de partido</strong> elige el resultado de victoria y en <strong>Inspírate en</strong> su competición. Pone <strong>Esta temporada</strong> y ordena por <strong>Más vistos</strong>. La guarda como \"Post-partido victoria\" para que, la próxima vez que gane el equipo, las ideas de reels deportivos estén a un clic. Para detectar tendencias en redes sociales deportivas, vuelve a abrir la misma búsqueda con <strong>Esta semana</strong> y <strong>Más recientes</strong>.</p>"
+      },
+      {
+        "h": "Consejos y límites",
+        "id": "tips",
+        "html": "<ul><li><strong>Empieza amplio y luego acota.</strong> Dos o tres filtros suelen funcionar mejor que seis; con demasiados puede que no haya ningún post que coincida.</li><li><strong>Haz clic en una etiqueta</strong> dentro de <strong>Etiquetas y texto del post</strong> para filtrar la biblioteca por ella.</li><li><strong>Usa Favs y Clubes como el mío</strong> tras elegir tus favoritos en el Perfil para ver primero ideas de contenido deportivo de cuentas como la tuya.</li><li><strong>Acceso por plan</strong>: Creadores de contenido desde Plus, Marcas y patrocinadores en Pro; Día de partido en todos los planes.</li></ul><p>Siguiente: <a href=\"es/help/top-picks-replicable-ideas-and-overperforming.html\">¿Qué son Top Picks, Ideas replicables y Overperforming?</a></p>"
+      }
+    ],
+    "faq": [
+      { "q": "¿La búsqueda por frases gasta mis análisis con IA?", "a": "No. Convertir una frase en filtros es gratis. Solo desbloquear el análisis con IA de un post gasta tu cupo." },
+      { "q": "¿Cómo comparto una búsqueda con mi equipo?", "a": "Los filtros van en la URL. Usa Copiar el enlace de esta búsqueda y envíalo; cualquiera con acceso a la biblioteca verá los mismos resultados." },
+      { "q": "¿Por qué no veo filtros de Día de partido en algunos posts antiguos?", "a": "Las etiquetas de Día de partido y de Marcas y patrocinadores las detecta la IA en los posts de Instagram desde octubre de 2026; los anteriores se están analizando." },
+      { "q": "¿Dónde están los Top Picks?", "a": "Escribe \"top picks\" en el buscador. Es una selección editorial del equipo de SCP, no un botón de la columna de filtros." }
+    ]
+  }
+}

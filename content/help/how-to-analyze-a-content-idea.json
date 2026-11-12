@@ -1,0 +1,89 @@
+{
+  "n": 8,
+  "slug": "how-to-analyze-a-content-idea",
+  "cat": "content-library",
+  "recommended": true,
+  "updated": "2026-11-12",
+  "next": "how-to-adapt-a-content-idea-to-your-club",
+  "keywords": ["AI Tools for Sports Content Creation", "Sports Content Creation Tools", "Sports Reels Ideas", "Sports Content Ideas"],
+  "en": {
+    "title": "How to analyze a content idea",
+    "label": "AI analysis",
+    "meta_title": "How to analyze a sports post with AI | SCP Knowledge Base",
+    "meta_description": "Open any post in the SCP library and click Unlock AI Analysis to see its hook, why it worked, how it performed and a ready-to-use version for your club.",
+    "summary": "To analyze a content idea in Sports Content Playbook, open the post in the Content Library and click Unlock AI Analysis: the AI breaks down its hook, format and angle, tells you how it performed against its own account and gives you hook ideas, a shot list and a caption draft. Each analysis uses 1 of your monthly AI analyses; reopening it later is free.",
+    "body": [
+      {
+        "h": "What the AI analysis is",
+        "id": "what-it-is",
+        "html": "<p>Finding sports content ideas is easy; knowing why a post worked and how to make your own version is the hard part. The AI analysis of Sports Content Playbook does that work for one post at a time. It is one of the AI tools for sports content creation included in every plan, and it complements the other sports content creation tools you already use, and it is written for the social media team of a club, league, federation or brand.</p><p>For videos (reels, TikTok, YouTube, Facebook) the AI watches frames of the whole video and reads an automatic transcript of what is said. That takes about 3 minutes. Other posts take up to a minute. If a video can't be read, the analysis falls back to the cover image.</p>"
+      },
+      {
+        "h": "How to run an analysis, step by step",
+        "id": "step-by-step",
+        "html": "<ol><li>Open the <a href=\"content-library.html\">Content Library</a> and find a post, for example with <strong>Replicable ideas</strong> or <strong>Overperforming</strong>.</li><li>Click the post to open it, or use the <strong>AI analysis</strong> button on its card.</li><li>Click <strong>Unlock AI Analysis</strong>. This uses 1 analysis from your monthly allowance. If generation fails, it isn't counted.</li><li>When it's ready, click <strong>View AI Analysis</strong>.</li><li>Use <strong>Download PDF</strong> if you want to share it with someone outside SCP.</li><li>Find it again any time in <strong>My space</strong> → <strong>My AI analyses</strong>. Reopening it is free.</li></ol>"
+      },
+      {
+        "h": "What each part of the analysis tells you",
+        "id": "sections",
+        "html": "<ul><li><strong>Summary</strong>: the post in two lines.</li><li><strong>Hook</strong>: the opening text, its category, why it works and a reusable <strong>Template</strong> with a <strong>Copy</strong> button.</li><li><strong>Why it works</strong>: the reasons behind the result.</li><li><strong>How it performed</strong>: a verdict computed from the real numbers against the account's median that quarter: <em>Above its usual</em> (2x or more), <em>In line with its usual</em>, <em>Below its usual</em> (half or less), <em>Too early to judge</em> (counted less than 48 hours after publishing) or <em>No numbers yet</em>.</li><li><strong>Format</strong> and <strong>Angle</strong>: category, type, layout, pacing, moment and style, plus the point of view.</li><li><strong>Visual breakdown</strong> (videos, with seconds) or <strong>Slide by slide</strong> (carousels).</li><li><strong>Scroll stoppers</strong>: what makes people stop.</li><li><strong>How to adapt it to your club</strong>, or <strong>Hard to replicate</strong> when the idea depends on something you probably don't have.</li><li><strong>Ready to use</strong>: 3 <strong>Hook ideas</strong>, a <strong>Shot list</strong> of 3-6 shots with a tip each, and a <strong>Caption draft</strong> of up to 3 lines with [placeholders]. Topics appear as hashtags.</li></ul>"
+      },
+      {
+        "h": "Example: a basketball academy",
+        "id": "example",
+        "html": "<p>A basketball academy wants sports reels ideas for its youth teams. Its coordinator filters by Sport: basketball, Format: reels and <strong>Challenges</strong>, and finds a shooting challenge from a professional club. The analysis shows the hook is a question in the first second, the verdict is <em>Above its usual</em>, and the <strong>Shot list</strong> is four simple shots on a single court. The academy copies the hook template, fills the [placeholders] with its own players' names and records it at the next training session.</p>"
+      },
+      {
+        "h": "Tips and limits",
+        "id": "tips",
+        "html": "<ul><li>Spend analyses on posts you might really copy. Starter includes 5 per month, Plus 10 and Pro 30 (5 in the free trial). They renew monthly and unused ones don't carry over. You can buy one-off packs in Profile → <strong>Billing &amp; membership</strong> → <strong>Buy more AI analyses</strong>.</li><li>On team plans, analyses unlocked by teammates are free for you to read (\"Analysed by {name} from your team\").</li><li>The AI never invents numbers and never identifies people by their face.</li><li>Analyses are written in English and translated to Spanish the first time someone opens them in Spanish.</li><li>You can't download the post's video or image; the analysis is the part you take away.</li></ul><p>Next: <a href=\"help/how-to-adapt-a-content-idea-to-your-club.html\">how to adapt a content idea to your club</a>.</p>"
+      }
+    ],
+    "faq": [
+      { "q": "Does opening an analysis again use another credit?", "a": "No. An analysis uses 1 of your monthly analyses the first time you unlock it; reopening it later is free." },
+      { "q": "How long does an analysis take?", "a": "About 3 minutes for videos, because the AI watches frames of the whole video and reads its transcript. Other posts take up to a minute." },
+      { "q": "What does Too early to judge mean?", "a": "The post's numbers were counted less than 48 hours after it was published, so it's too soon to compare it with its account's usual results." },
+      { "q": "Can I analyse posts that aren't in the library?", "a": "Analyses work on posts in the library. If an account you need is missing, ask SCP to add it through the contact page; it's included in every plan." }
+    ]
+  },
+  "es": {
+    "title": "Cómo analizar una idea de contenido",
+    "label": "Análisis IA",
+    "meta_title": "Cómo analizar un post deportivo con IA | SCP",
+    "meta_description": "Abre cualquier post de la biblioteca de SCP y pulsa Desbloquear análisis con IA para ver su hook, por qué funcionó y una versión lista para usar en tu club.",
+    "summary": "Para analizar una idea de contenido en Sports Content Playbook, abre el post en la biblioteca y pulsa Desbloquear análisis con IA: la IA desglosa su hook, formato y enfoque, te dice cómo funcionó frente a su propia cuenta y te da ideas de hook, una lista de planos y un borrador del texto. Cada análisis usa 1 de tus análisis mensuales; volver a abrirlo después es gratis.",
+    "body": [
+      {
+        "h": "Qué es el análisis con IA",
+        "id": "what-it-is",
+        "html": "<p>Encontrar ideas de contenido deportivo es fácil; saber por qué funcionó un post y cómo hacer tu propia versión es lo difícil. El análisis con IA de Sports Content Playbook hace ese trabajo post a post. Es una de las herramientas de IA para crear contenido deportivo incluidas en todos los planes, pensada para el equipo de redes de un club, una liga, una federación o una marca.</p><p>En los vídeos (reels, TikTok, YouTube, Facebook) la IA mira fotogramas de todo el vídeo y lee una transcripción automática de lo que se dice. Tarda unos 3 minutos. Los demás posts, hasta un minuto. Si un vídeo no se puede leer, el análisis se basa en la portada.</p>"
+      },
+      {
+        "h": "Cómo pedir un análisis, paso a paso",
+        "id": "step-by-step",
+        "html": "<ol><li>Abre la <a href=\"content-library.html\">biblioteca de contenido</a> y busca un post, por ejemplo con <strong>Ideas replicables</strong> u <strong>Overperforming</strong>.</li><li>Haz clic en el post para abrirlo, o usa el botón de <strong>análisis con IA</strong> de su tarjeta.</li><li>Pulsa <strong>Desbloquear análisis con IA</strong>. Usa 1 análisis de tu cupo mensual. Si la generación falla, no se descuenta.</li><li>Cuando esté listo, pulsa <strong>Ver análisis con IA</strong>.</li><li>Usa <strong>Descargar PDF</strong> si quieres compartirlo con alguien de fuera de SCP.</li><li>Encuéntralo cuando quieras en <strong>Mi espacio</strong> → <strong>Mis análisis IA</strong>. Volver a abrirlo es gratis.</li></ol>"
+      },
+      {
+        "h": "Qué te dice cada parte del análisis",
+        "id": "sections",
+        "html": "<ul><li><strong>Resumen</strong>: el post en dos líneas.</li><li><strong>Hook</strong>: el texto de arranque, su categoría, por qué funciona y una <strong>Plantilla</strong> reutilizable con botón de <strong>Copiar</strong>.</li><li><strong>Por qué funciona</strong>: las razones del resultado.</li><li><strong>Cómo funcionó</strong>: un veredicto calculado con los números reales frente a la mediana de la cuenta en ese trimestre: <em>Por encima de lo habitual</em> (el doble o más), <em>En línea con lo habitual</em>, <em>Por debajo de lo habitual</em> (la mitad o menos), <em>Aún es pronto para valorarlo</em> (contado menos de 48 horas después de publicarse) o <em>Aún sin datos</em>.</li><li><strong>Formato</strong> y <strong>Enfoque</strong>: categoría, tipo, composición, ritmo, momento y estilo, más el punto de vista.</li><li><strong>Desglose visual</strong> (vídeos, con segundos) o <strong>Slide a slide</strong> (carruseles).</li><li><strong>Lo que frena el scroll</strong>: lo que hace que la gente se pare.</li><li><strong>Cómo adaptarlo a tu club</strong>, o <strong>Difícil de replicar</strong> cuando la idea depende de algo que probablemente no tienes.</li><li><strong>Listo para usar</strong>: 3 <strong>Ideas de hook</strong>, una <strong>Lista de planos</strong> de 3 a 6 planos con un consejo cada uno y un <strong>Borrador del texto</strong> de hasta 3 líneas con [huecos]. Los temas aparecen como hashtags.</li></ul>"
+      },
+      {
+        "h": "Ejemplo: una escuela de baloncesto",
+        "id": "example",
+        "html": "<p>Una escuela de baloncesto busca ideas de reels deportivos para sus equipos de base. Su coordinador filtra por Deporte: baloncesto, Formato: reels y <strong>Challenges</strong>, y encuentra un reto de tiro de un club profesional. El análisis muestra que el hook es una pregunta en el primer segundo, el veredicto es <em>Por encima de lo habitual</em> y la <strong>Lista de planos</strong> son cuatro planos sencillos en una sola pista. La escuela copia la plantilla del hook, rellena los [huecos] con los nombres de sus jugadores y lo graba en el siguiente entreno.</p>"
+      },
+      {
+        "h": "Consejos y límites",
+        "id": "tips",
+        "html": "<ul><li>Gasta los análisis en posts que de verdad podrías copiar. Starter incluye 5 al mes, Plus 10 y Pro 30 (5 en la prueba gratuita). Se renuevan cada mes y los que no usas no se acumulan. Puedes comprar packs sueltos en Perfil → <strong>Facturación y membresía</strong> → <strong>Comprar más análisis con IA</strong>.</li><li>En los planes de equipo, los análisis que desbloquean tus compañeros los puedes leer gratis («Analizado por {nombre}, de tu equipo»).</li><li>La IA nunca se inventa números y nunca identifica a personas por su cara.</li><li>Los análisis se escriben en inglés y se traducen al español la primera vez que alguien los abre en español.</li><li>No puedes descargar el vídeo ni la imagen del post; lo que te llevas es el análisis.</li></ul><p>Siguiente: <a href=\"es/help/how-to-adapt-a-content-idea-to-your-club.html\">cómo adaptar una idea de contenido a tu club</a>.</p>"
+      }
+    ],
+    "faq": [
+      { "q": "¿Volver a abrir un análisis gasta otro crédito?", "a": "No. Un análisis usa 1 de tus análisis mensuales la primera vez que lo desbloqueas; volver a abrirlo después es gratis." },
+      { "q": "¿Cuánto tarda un análisis?", "a": "Unos 3 minutos en los vídeos, porque la IA mira fotogramas de todo el vídeo y lee su transcripción. Los demás posts tardan hasta un minuto." },
+      { "q": "¿Qué significa Aún es pronto para valorarlo?", "a": "Los números del post se contaron menos de 48 horas después de publicarse, así que es pronto para compararlo con los resultados habituales de su cuenta." },
+      { "q": "¿Puedo analizar posts que no están en la biblioteca?", "a": "Los análisis funcionan con posts de la biblioteca. Si falta una cuenta que necesitas, pide a SCP que la añada desde la página de contacto; está incluido en todos los planes." }
+    ]
+  }
+}

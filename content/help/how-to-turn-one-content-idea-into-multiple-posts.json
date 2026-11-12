@@ -1,0 +1,79 @@
+{
+  "n": 25,
+  "slug": "how-to-turn-one-content-idea-into-multiple-posts",
+  "cat": "tips",
+  "recommended": false,
+  "updated": "2026-11-12",
+  "next": "what-is-sports-content-playbook",
+  "keywords": ["Sports Reels Ideas", "Sports TikTok Content Ideas", "Sports Instagram Content Ideas", "Sports Social Media Content Ideas"],
+  "en": {
+    "title": "How to turn one content idea into multiple social media posts",
+    "label": "One idea, many posts",
+    "meta_title": "Turn one idea into many posts | SCP Knowledge Base",
+    "meta_description": "Turn one sports content idea into a reel, a TikTok, a carousel and stories with Sports Content Playbook: format filters, AI analysis and the Content Plan.",
+    "summary": "In Sports Content Playbook you turn one idea into several posts by hand, with three real features: search the same topic in other formats and platforms with the Format and Platform filters, use the AI analysis (Hook template, Hook ideas, Shot list, Caption draft) as the brief for each version, and plan each version as its own Reel, TikTok, Carousel or Story entry in the Content Plan. SCP does not convert or resize content automatically.",
+    "body": [
+      {
+        "h": "How it works",
+        "id": "how-it-works",
+        "html": "<p>One good idea (a signing, a derby, a kit launch, a player milestone) can feed a whole week if you tell it in the format each network rewards. Sports Content Playbook helps you see how other clubs told the same kind of story as a reel, a TikTok or a carousel, explains why those posts worked, and lets you plan every version side by side.</p><p>What SCP does <em>not</em> do: it doesn't edit, convert or resize your content, it doesn't write captions from scratch, and you can't download other clubs' videos or images. The writing help is inside each AI analysis: a reusable Hook template, 3 Hook ideas, a Shot list and a Caption draft.</p>"
+      },
+      {
+        "h": "Step by step: from one idea to four posts",
+        "id": "steps",
+        "html": "<ol><li><strong>Pick the core idea.</strong> In the <a href=\"content-library.html\">Content Library</a>, type the topic in the search box, for example “transfers”, or use the <strong>Transfers</strong> filter in Match Day. Add <strong>Overperforming</strong> to keep the posts that beat their account's usual.</li><li><strong>See the idea in each format.</strong> In <strong>Where &amp; how</strong>, change <strong>Format</strong> and <strong>Platform</strong> to compare reels, carousels and TikTok posts on the same topic. You can also type a sentence such as “transfer carousels”. On a post you like, <strong>More like this</strong> shows more posts of the same format, sport and competition.</li><li><strong>Analyse one reference per format.</strong> Click <strong>Unlock AI Analysis</strong>. For a video you get a <strong>Visual breakdown</strong> with seconds; for a carousel, <strong>Slide by slide</strong>. Under <strong>Ready to use</strong> you get 3 Hook ideas, a Shot list and a Caption draft with [placeholders].</li><li><strong>Plan each version.</strong> Drag the analysed posts into the Content Plan panel (or use <strong>+</strong> to pick a day on your phone). Each entry keeps the inspiration post and the AI's adaptation in its notes. Open each entry and set the type: <strong>Reel</strong>, <strong>TikTok</strong>, <strong>Carousel</strong> or <strong>Story</strong>.</li><li><strong>Write each caption.</strong> Start from the Caption draft and the Hook ideas, and adapt them per network in the entry's <strong>Caption</strong> field. Move each entry from Planned to In production and Published as you go.</li></ol>"
+      },
+      {
+        "h": "Example: a second-division football club signs a striker",
+        "id": "example",
+        "html": "<p>The club announces a new striker on Wednesday. The social media manager searches “transfers” with Overperforming on and finds three references from her league.</p><ul><li><strong>Reel (Instagram):</strong> an announcement reel. The Shot list gives her 5 shots to film at the stadium: arrival, shirt reveal, first touch on the pitch. This is where most sports reels ideas start, and Instagram is where the club's audience is largest.</li><li><strong>TikTok:</strong> filtering <strong>Platform</strong> to TikTok, she sees that transfer TikToks favour a lighter tone, such as a teammate quiz. She uses one of the 3 Hook ideas as the opening line. Sports TikTok content ideas rarely work as a copy of the reel, so she films a different take the same day.</li><li><strong>Carousel:</strong> the Slide by slide of a reference carousel shows a structure she copies with her own assets: photo, previous clubs, a quote, the shirt number.</li><li><strong>Stories:</strong> SCP doesn't produce stories, so she plans two <strong>Story</strong> entries in the Content Plan, a teaser before the announcement and a share of the reel after, built from the same footage.</li></ul><p>One shoot gives her four pieces in one week of the Content Plan, and the reel and carousel structures become sports Instagram content ideas she can reuse for the next signing.</p>"
+      },
+      {
+        "h": "Tips and limits",
+        "id": "tips",
+        "html": "<ul><li>Plan the shoot once. Merge the Shot lists of your references before filming, so one session covers the reel, the TikTok and the carousel photos.</li><li>Change the hook, not just the size. Each network rewards a different opening; the 3 Hook ideas in the analysis give you alternatives to test.</li><li>Use <strong>Replicable ideas</strong> when your resources are limited: those formats can be recreated with your own players, venue and footage.</li><li>The Content Plan is on Plus and Pro. On Starter, save the references to a board per idea and keep your versions in your own document.</li><li>AI analyses count against your monthly allowance; reopening one you already unlocked is free.</li></ul><div class=\"kb-note\"><p>Looking for more sports social media content ideas to multiply? Check the <a href=\"blog.html\">blog</a> and the monthly ideas in <a href=\"free-resources.html\">Free resources</a>.</p></div>"
+      }
+    ],
+    "faq": [
+      { "q": "Can SCP turn my reel into a carousel automatically?", "a": "No. Sports Content Playbook doesn't edit or convert content. It shows you how others told the same idea in each format and gives you a Shot list, hooks and a Caption draft to produce each version yourself." },
+      { "q": "Can I download the reference videos to reuse them?", "a": "No. You can watch the embedded original post and share its public link, but you cannot download other accounts' videos or images." },
+      { "q": "How do I find the same idea on TikTok?", "a": "Search the topic in the Content Library and set the Platform filter to TikTok. You can combine it with Overperforming or your sport and competition." },
+      { "q": "Does the Caption draft work for every network?", "a": "It is a short draft of up to 3 lines with placeholders, based on the analysed post. Use it as a starting point and adapt the tone and length for each network." }
+    ]
+  },
+  "es": {
+    "title": "Cómo convertir una idea de contenido en varias publicaciones para redes sociales",
+    "label": "Una idea, varios posts",
+    "meta_title": "Una idea, varias publicaciones | SCP Knowledge Base",
+    "meta_description": "Convierte una idea de contenido deportivo en un reel, un TikTok, un carrusel y stories con Sports Content Playbook: filtros de formato, análisis IA y Plan.",
+    "summary": "En Sports Content Playbook conviertes una idea en varias publicaciones a mano, con tres funciones reales: buscar el mismo tema en otros formatos y plataformas con los filtros Formato y Plataforma, usar el análisis con IA (plantilla de hook, Ideas de hook, Lista de planos, Borrador del texto) como guion de cada versión y planificar cada versión como su propia entrada de Reel, TikTok, Carrusel o Story en el Plan de contenido. SCP no convierte ni adapta el contenido automáticamente.",
+    "body": [
+      {
+        "h": "Cómo funciona",
+        "id": "how-it-works",
+        "html": "<p>Una buena idea (un fichaje, un derbi, el lanzamiento de la equipación, un récord de un jugador) puede llenar toda una semana si la cuentas en el formato que premia cada red. Sports Content Playbook te ayuda a ver cómo otros clubes contaron el mismo tipo de historia en reel, en TikTok o en carrusel, te explica por qué funcionaron esos posts y te deja planificar todas las versiones juntas.</p><p>Lo que SCP <em>no</em> hace: no edita, no convierte ni cambia el tamaño de tu contenido, no escribe textos desde cero y no puedes descargar los vídeos ni las imágenes de otros clubes. La ayuda para escribir está dentro de cada análisis con IA: una plantilla de hook reutilizable, 3 Ideas de hook, una Lista de planos y un Borrador del texto.</p>"
+      },
+      {
+        "h": "Paso a paso: de una idea a cuatro publicaciones",
+        "id": "steps",
+        "html": "<ol><li><strong>Elige la idea central.</strong> En la <a href=\"content-library.html\">Biblioteca de contenido</a>, escribe el tema en el buscador, por ejemplo «fichajes», o usa el filtro de fichajes en Día de partido. Añade <strong>Overperforming</strong> para quedarte con los posts que superaron lo habitual de su cuenta.</li><li><strong>Mira la idea en cada formato.</strong> En <strong>Dónde y cómo</strong>, cambia <strong>Formato</strong> y <strong>Plataforma</strong> para comparar reels, carruseles y TikToks del mismo tema. También puedes escribir una frase como «carruseles de fichajes». En un post que te guste, <strong>Más como este</strong> te enseña más posts del mismo formato, deporte y competición.</li><li><strong>Analiza una referencia por formato.</strong> Pulsa <strong>Desbloquear análisis con IA</strong>. En un vídeo tienes el <strong>Desglose visual</strong> con segundos; en un carrusel, <strong>Slide a slide</strong>. En <strong>Listo para usar</strong> tienes 3 Ideas de hook, una Lista de planos y un Borrador del texto con [huecos].</li><li><strong>Planifica cada versión.</strong> Arrastra los posts analizados al panel del Plan de contenido (o usa <strong>+</strong> para elegir un día desde el móvil). Cada entrada guarda el post de inspiración y la adaptación de la IA en sus notas. Abre cada entrada y elige el tipo: <strong>Reel</strong>, <strong>TikTok</strong>, <strong>Carrusel</strong> o <strong>Story</strong>.</li><li><strong>Escribe cada texto.</strong> Parte del Borrador del texto y de las Ideas de hook, y adáptalos a cada red en el campo <strong>Texto del post</strong> de la entrada. Pasa cada entrada de Planificado a En producción y a Publicado según avances.</li></ol>"
+      },
+      {
+        "h": "Ejemplo: un club de fútbol de Segunda ficha a un delantero",
+        "id": "example",
+        "html": "<p>El club anuncia un nuevo delantero el miércoles. La responsable de redes busca «fichajes» con Overperforming activado y encuentra tres referencias de su liga.</p><ul><li><strong>Reel (Instagram):</strong> un reel de presentación. La Lista de planos le da 5 planos para grabar en el estadio: llegada, camiseta, primer toque en el césped. Aquí nacen la mayoría de ideas de reels deportivos, e Instagram es donde el club tiene más audiencia.</li><li><strong>TikTok:</strong> filtrando <strong>Plataforma</strong> por TikTok, ve que los TikToks de fichajes tiran de un tono más ligero, como un quiz con un compañero. Usa una de las 3 Ideas de hook como frase de arranque. Las ideas para TikTok deportivo pocas veces funcionan como copia del reel, así que graba otra versión ese mismo día.</li><li><strong>Carrusel:</strong> el Slide a slide de un carrusel de referencia le da una estructura que copia con su propio material: foto, clubes anteriores, una frase, el dorsal.</li><li><strong>Stories:</strong> SCP no produce stories, así que planifica dos entradas <strong>Story</strong> en el Plan de contenido, un adelanto antes del anuncio y un compartido del reel después, con el mismo material.</li></ul><p>Una sola grabación y cuatro piezas para Instagram y TikTok, todas visibles en una semana del Plan de contenido.</p>"
+      },
+      {
+        "h": "Consejos y límites",
+        "id": "tips",
+        "html": "<ul><li>Planifica una sola grabación. Junta las Listas de planos de tus referencias antes de grabar, para que una sesión cubra el reel, el TikTok y las fotos del carrusel.</li><li>Cambia el hook, no solo el tamaño. Cada red premia un arranque distinto; las 3 Ideas de hook del análisis te dan alternativas para probar.</li><li>Usa <strong>Ideas replicables</strong> si tienes pocos recursos: son formatos que puedes recrear con tus jugadores, tus instalaciones y tus imágenes.</li><li>El Plan de contenido está en Plus y Pro. En Starter, guarda las referencias en un tablero por idea y lleva tus versiones en tu propio documento.</li><li>Los análisis con IA gastan tu cupo mensual; volver a abrir uno ya desbloqueado es gratis.</li></ul><div class=\"kb-note\"><p>¿Buscas más ideas de contenido para redes sociales deportivas que multiplicar? Mira el <a href=\"blog.html\">blog</a> y las ideas mensuales de <a href=\"free-resources.html\">Recursos gratuitos</a>.</p></div>"
+      }
+    ],
+    "faq": [
+      { "q": "¿SCP puede convertir mi reel en un carrusel automáticamente?", "a": "No. Sports Content Playbook no edita ni convierte contenido. Te muestra cómo otros contaron la misma idea en cada formato y te da una Lista de planos, hooks y un Borrador del texto para producir cada versión tú." },
+      { "q": "¿Puedo descargar los vídeos de referencia para reutilizarlos?", "a": "No. Puedes ver el post original insertado y compartir su enlace público, pero no puedes descargar vídeos ni imágenes de otras cuentas." },
+      { "q": "¿Cómo encuentro la misma idea en TikTok?", "a": "Busca el tema en la Biblioteca de contenido y pon el filtro Plataforma en TikTok. Puedes combinarlo con Overperforming o con tu deporte y tu competición." },
+      { "q": "¿El Borrador del texto sirve para todas las redes?", "a": "Es un borrador corto de hasta 3 líneas con huecos, basado en el post analizado. Úsalo como punto de partida y adapta el tono y la longitud a cada red." }
+    ]
+  }
+}

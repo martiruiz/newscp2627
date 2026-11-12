@@ -20,7 +20,7 @@
   // Blog / Social News exist in both languages (<html data-page-lang>, /es/… = Spanish, blog-tools/build.mjs): people go to
   // the address of their language; search engines stay on the page they asked for (its other language is in hreflang)
   const pageLang = root.dataset.pageLang;
-  const pageIn = (l) => { const m = location.pathname.match(/^(.*?\/)(?:es\/)?((?:blog|news)(?:\.html|\/[^/]+\.html))$/); return m ? `${m[1]}${l === "es" ? "es/" : ""}${m[2]}${location.search}${location.hash}` : null; };
+  const pageIn = (l) => { const m = location.pathname.match(/^(.*?\/)(?:es\/)?((?:blog|news)(?:\.html|\/[^/]+\.html)|help\/(?:[^/]+\.html)?)$/); return m ? `${m[1]}${l === "es" ? "es/" : ""}${m[2]}${location.search}${location.hash}` : null; };
   if (LANGS.includes(pageLang) && pageLang !== lang) {
     if (/bot|crawl|spider|slurp|bing|yandex|baidu|duckduck|facebookexternalhit|lighthouse|headless/i.test(navigator.userAgent) || !pageIn(lang)) lang = pageLang;
     else { location.replace(pageIn(lang)); lang = pageLang; }

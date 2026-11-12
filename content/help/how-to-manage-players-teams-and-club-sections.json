@@ -1,0 +1,89 @@
+{
+  "n": 16,
+  "slug": "how-to-manage-players-teams-and-club-sections",
+  "cat": "my-club",
+  "recommended": false,
+  "updated": "2026-11-12",
+  "next": "how-to-manage-sponsors-in-my-club",
+  "keywords": ["Social Media Ideas for Sports Teams", "Football Social Media Content Ideas", "Sports Social Media Tools"],
+  "en": {
+    "title": "How to manage players, teams and club sections",
+    "label": "Players & teams",
+    "meta_title": "Manage players, teams and sections | SCP Knowledge Base",
+    "meta_description": "In My Club, the SCP team adds and changes your players, teams and sections on request. Learn what to send and how to filter your posts by section and team.",
+    "summary": "In My Club, players, teams and sections are managed by the Sports Content Playbook team on request: you send the changes (new signings, departures, a new team or section) and SCP updates them. You then use the Players tab and the Section and Team filters to see exactly the posts you need.",
+    "body": [
+      {
+        "h": "How players, teams and sections work",
+        "id": "how-it-works",
+        "html": "<p>Your club's space in My Club is organised in <strong>sections</strong> (for example football, basketball or the academy) and, inside each section, <strong>teams</strong> (first team, women's team, U19…). Each player account is linked to the team it plays in. Accounts that aren't tied to one section, such as the club's main profile, show in every section.</p><p>Members can't add, move or remove players, teams or sections themselves. The SCP team does it when you ask, so the structure stays clean for everyone in your club.</p>"
+      },
+      {
+        "h": "Step by step: see the posts of a team or a group of players",
+        "id": "step-by-step",
+        "html": "<ol><li>Open <a href=\"my-club.html\">My Club</a> and choose the <strong>Players</strong> tab.</li><li>Open <strong>Section</strong> and pick one, or keep <strong>All sections</strong>. Each section shows how many players it has.</li><li>Open <strong>Team</strong> and pick one, or keep <strong>All teams</strong>. If you haven't picked a section, you'll see \"Choose a section to see its teams\".</li><li>Tap one or more players to see only their posts. Use <strong>Search a player</strong> to find someone quickly.</li><li>Use the same filters as in the <a href=\"content-library.html\">Content Library</a> (format, platform, period…), save posts to a board, unlock an AI analysis or drag a post to your <a href=\"content-plan.html\">Content Plan</a>.</li></ol><p>The <strong>Club profiles</strong>, <strong>Competitors</strong> and <strong>Content creators</strong> tabs work the same way.</p>"
+      },
+      {
+        "h": "Step by step: ask SCP to add or change players, teams or sections",
+        "id": "request-changes",
+        "html": "<ol><li>Write to SCP from <a href=\"contact.html?topic=support\">the contact page</a> or to your account manager.</li><li>For a <strong>new player</strong>: name, account on each network, and the team and section.</li><li>For a <strong>departure or a move</strong>: the player and whether to remove them or move them to another team.</li><li>For a <strong>new team or section</strong>: its name, the section it belongs to and its accounts.</li><li>Once SCP has linked them, the names appear in the tabs. A name marked \"Account linked, no posts imported yet\" fills up as SCP uploads its posts, which happens every day.</li></ol><div class=\"kb-note\"><p>Tip: send changes in one list at key moments (start of the season, end of the transfer window) instead of one by one.</p></div>"
+      },
+      {
+        "h": "Practical example: a football club at the start of the season",
+        "id": "example",
+        "html": "<p>A second-division football club signs five players, loses two and creates a new U19 team in its academy. The comms manager sends SCP a single message with the five new accounts (first team), the two players to remove and the U19 squad's accounts. Once it's done, she opens <strong>Players</strong>, picks <strong>Section</strong> Football and <strong>Team</strong> First team, and taps the five new signings. In one view she sees how each of them presents themselves on social media, which gives her football social media content ideas for the welcome posts: who already films behind-the-scenes, who prefers photos, who speaks to camera.</p>"
+      },
+      {
+        "h": "Tips",
+        "id": "tips",
+        "html": "<ul><li>Filter by team before a match to see what your players posted that week and reshare or plan around it.</li><li>Combine <strong>Players</strong> with the <strong>Match Day</strong> filters to find social media ideas for sports teams around a specific moment.</li><li>Compare your team with a rival in <strong>Competitors</strong> using the same period.</li></ul><p>This is how My Club turns Sports Content Playbook into one of the sports social media tools built around your own squad. Next: <a href=\"help/how-to-manage-sponsors-in-my-club.html\">how to manage sponsors in My Club</a>.</p>"
+      }
+    ],
+    "faq": [
+      { "q": "Can I add a player to My Club myself?", "a": "No. Send the player's name, accounts and team to SCP through the contact page or your account manager, and SCP links them." },
+      { "q": "Can I see several players at once?", "a": "Yes. In the Players tab, tap as many players as you want and you'll see the posts of all of them together." },
+      { "q": "Why does a player say \"Account linked, no posts imported yet\"?", "a": "The account is already linked, but its posts haven't been uploaded yet. SCP uploads your club's posts every day." },
+      { "q": "Can I have sections for other sports?", "a": "Yes. Sections can be the first team, the women's team, the academy or other sports; ask SCP to create them." }
+    ]
+  },
+  "es": {
+    "title": "Cómo gestionar jugadores, equipos y secciones del club",
+    "label": "Jugadores y equipos",
+    "meta_title": "Jugadores, equipos y secciones | SCP Knowledge Base",
+    "meta_description": "En My Club, el equipo de SCP añade y cambia tus jugadores, equipos y secciones cuando se lo pides. Aprende qué enviar y cómo filtrar por sección y equipo.",
+    "summary": "En My Club, los jugadores, equipos y secciones los gestiona el equipo de Sports Content Playbook cuando se lo pides: envías los cambios (fichajes, bajas, un equipo o una sección nuevos) y SCP los actualiza. Después usas la pestaña Jugadores y los filtros Sección y Equipo para ver justo los posts que necesitas.",
+    "body": [
+      {
+        "h": "Cómo funcionan jugadores, equipos y secciones",
+        "id": "how-it-works",
+        "html": "<p>El espacio de tu club en My Club se organiza en <strong>secciones</strong> (por ejemplo fútbol, baloncesto o la cantera) y, dentro de cada sección, en <strong>equipos</strong> (primer equipo, femenino, juvenil…). Cada cuenta de jugador está vinculada al equipo en el que juega. Las cuentas que no pertenecen a una sección, como el perfil principal del club, aparecen en todas.</p><p>Los miembros no pueden añadir, mover ni quitar jugadores, equipos o secciones por su cuenta. Lo hace el equipo de SCP cuando se lo pides, para que la estructura quede limpia para todo tu club.</p>"
+      },
+      {
+        "h": "Paso a paso: ver los posts de un equipo o de un grupo de jugadores",
+        "id": "step-by-step",
+        "html": "<ol><li>Abre <a href=\"my-club.html\">My Club</a> y elige la pestaña <strong>Jugadores</strong>.</li><li>Abre <strong>Sección</strong> y elige una, o deja <strong>Todas las secciones</strong>. Cada sección muestra cuántos jugadores tiene.</li><li>Abre <strong>Equipo</strong> y elige uno, o deja <strong>Todos los equipos</strong>. Si no has elegido sección, verás «Elige una sección para ver sus equipos».</li><li>Toca uno o más jugadores para ver solo sus posts. Usa <strong>Busca un jugador</strong> para encontrar a alguien rápido.</li><li>Usa los mismos filtros que en la <a href=\"content-library.html\">Biblioteca de contenido</a> (formato, plataforma, periodo…), guarda posts en un tablero, desbloquea un análisis con IA o arrastra un post a tu <a href=\"content-plan.html\">Plan de contenido</a>.</li></ol><p>Las pestañas <strong>Perfiles</strong>, <strong>Competidores</strong> y <strong>Creadores de contenido</strong> funcionan igual.</p>"
+      },
+      {
+        "h": "Paso a paso: pide a SCP que añada o cambie jugadores, equipos o secciones",
+        "id": "request-changes",
+        "html": "<ol><li>Escribe a SCP desde <a href=\"contact.html?topic=support\">la página de contacto</a> o a tu account manager.</li><li>Para un <strong>jugador nuevo</strong>: nombre, cuenta en cada red, y equipo y sección.</li><li>Para una <strong>baja o un cambio</strong>: el jugador y si hay que quitarlo o pasarlo a otro equipo.</li><li>Para un <strong>equipo o sección nuevos</strong>: el nombre, la sección a la que pertenece y sus cuentas.</li><li>Cuando SCP los vincula, los nombres aparecen en las pestañas. Un nombre marcado como «Cuenta vinculada, aún sin publicaciones importadas» se llena a medida que SCP sube sus posts, cosa que hace cada día.</li></ol><div class=\"kb-note\"><p>Consejo: envía los cambios en una sola lista en los momentos clave (inicio de temporada, cierre del mercado) en lugar de uno a uno.</p></div>"
+      },
+      {
+        "h": "Ejemplo práctico: un club de fútbol al empezar la temporada",
+        "id": "example",
+        "html": "<p>Un club de fútbol de Segunda ficha a cinco jugadores, pierde a dos y crea un nuevo juvenil en su cantera. La responsable de comunicación envía a SCP un solo mensaje con las cinco cuentas nuevas (primer equipo), los dos jugadores que hay que quitar y las cuentas de la plantilla juvenil. Cuando está hecho, abre <strong>Jugadores</strong>, elige <strong>Sección</strong> Fútbol y <strong>Equipo</strong> Primer equipo y toca los cinco fichajes. En una sola vista ve cómo se presenta cada uno en redes, y eso le da ideas de contenido de fútbol para redes sociales para los posts de bienvenida: quién ya graba su día a día, quién prefiere fotos y quién habla a cámara.</p>"
+      },
+      {
+        "h": "Consejos",
+        "id": "tips",
+        "html": "<ul><li>Filtra por equipo antes de un partido para ver qué han publicado tus jugadores esa semana y compartirlo o planificar a partir de ello.</li><li>Combina <strong>Jugadores</strong> con los filtros de <strong>Día de partido</strong> para encontrar ideas para redes sociales de equipos deportivos en un momento concreto.</li><li>Compara a tu equipo con un rival en <strong>Competidores</strong> usando el mismo periodo.</li></ul><p>Así, My Club convierte Sports Content Playbook en una herramienta de redes sociales deportivas construida alrededor de tu propia plantilla. Siguiente: <a href=\"es/help/how-to-manage-sponsors-in-my-club.html\">cómo gestionar patrocinadores en My Club</a>.</p>"
+      }
+    ],
+    "faq": [
+      { "q": "¿Puedo añadir un jugador a My Club yo mismo?", "a": "No. Envía el nombre, las cuentas y el equipo del jugador a SCP desde la página de contacto o a tu account manager, y SCP lo vincula." },
+      { "q": "¿Puedo ver varios jugadores a la vez?", "a": "Sí. En la pestaña Jugadores, toca todos los que quieras y verás los posts de todos juntos." },
+      { "q": "¿Por qué un jugador dice «Cuenta vinculada, aún sin publicaciones importadas»?", "a": "La cuenta ya está vinculada, pero sus posts aún no se han subido. SCP sube los posts de tu club cada día." },
+      { "q": "¿Puedo tener secciones de otros deportes?", "a": "Sí. Las secciones pueden ser el primer equipo, el femenino, la cantera u otros deportes; pide a SCP que las cree." }
+    ]
+  }
+}

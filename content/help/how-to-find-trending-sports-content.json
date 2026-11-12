@@ -1,0 +1,99 @@
+{
+  "n": 10,
+  "slug": "how-to-find-trending-sports-content",
+  "cat": "content-library",
+  "recommended": false,
+  "updated": "2026-11-12",
+  "next": "how-does-ai-work-in-sports-content-playbook",
+  "keywords": ["Sports Social Media Trends", "Sports TikTok Content Ideas", "Sports Reels Ideas", "Sports Instagram Content Ideas"],
+  "en": {
+    "title": "How to find trending content and creative inspiration",
+    "label": "Trends",
+    "meta_title": "How to find trending sports content | SCP Knowledge Base",
+    "meta_description": "Find what is working right now in sports social media: combine This week, Most viewed and Overperforming in the SCP library, plus Social News and the blog.",
+    "summary": "Sports Content Playbook has no single \"trending\" tab: to see what is working right now, filter the Content Library by a recent period (This week or This month), sort by Most viewed and add Overperforming, then narrow by platform and format. For platform news and sports social media trends, read Social News and the blog.",
+    "body": [
+      {
+        "h": "How SCP shows you what's trending",
+        "id": "how-it-works",
+        "html": "<p>Sports Content Playbook tracks the best accounts in sports every day and adds new posts to the library daily: clubs, leagues and brands on Instagram, TikTok, YouTube, X and Facebook. A trend, in practice, is a format or idea that several accounts are using now and that is getting results. The library gives you three ways to see that:</p><ul><li><strong>Period</strong>: <strong>This week</strong> or <strong>This month</strong> to see only recent posts.</li><li><strong>Sort</strong>: <strong>Most viewed</strong> to bring the biggest numbers to the top.</li><li><strong>Overperforming</strong>: posts that got at least 2x the median of their own account in the same quarter, recomputed every hour. This is the best signal that something is working beyond the account's usual reach.</li></ul>"
+      },
+      {
+        "h": "Step by step: what's working this week",
+        "id": "step-by-step",
+        "html": "<ol><li>Open the <a href=\"content-library.html\">Content Library</a>.</li><li>Set the period to <strong>This week</strong>.</li><li>Change the sort to <strong>Most viewed</strong>.</li><li>In <strong>Filters</strong> → <strong>What works</strong>, click <strong>Overperforming</strong>.</li><li>In <strong>Where &amp; how</strong>, choose a <strong>Platform</strong> (for example TikTok or Instagram) and a <strong>Format</strong>.</li><li>Add your <strong>Sport</strong> from <strong>Inspiration from</strong>, or leave it open to see what works in other sports.</li><li>Save the combination from <strong>Saved searches…</strong> so you can reopen it every Monday.</li></ol>"
+      },
+      {
+        "h": "Ideas by platform",
+        "id": "by-platform",
+        "html": "<ul><li><strong>Sports TikTok content ideas</strong>: Platform: TikTok + Overperforming + This month. Add <strong>Challenges</strong> to see tests, games and contests with players, a format that is also Replicable.</li><li><strong>Sports reels ideas</strong>: Platform: Instagram + Format: reels + <strong>Replicable ideas</strong> to keep only what you can make with your own assets.</li><li><strong>Sports Instagram content ideas</strong> beyond video: Format: carousel and sort by <strong>Most viewed</strong>. The AI analysis of a carousel includes a slide-by-slide breakdown.</li><li><strong>Content Creators</strong> (from Plus): formats from creators, filtered by creator type, language, country, gender and followers. Useful to see what creators do before clubs adopt it.</li></ul>"
+      },
+      {
+        "h": "Creative inspiration when you're stuck",
+        "id": "inspiration",
+        "html": "<ul><li>Sort by <strong>Surprise me</strong> to break your usual search habits.</li><li>Look outside your sport: remove the <strong>Sport</strong> filter and see what basketball, NFL or cycling accounts are doing with the same format.</li><li>Open a post you like and click <strong>More like this</strong> (same format, sport and competition).</li><li>Type <strong>top picks</strong> in the search box for the SCP team's editorial selection.</li><li>Outside the library: <a href=\"news.html\">Social News</a> covers daily platform updates for sports teams (Instagram, TikTok, X, YouTube…), the <a href=\"blog.html\">blog</a> publishes an article a day including sports social media trends, and the free weekly newsletter arrives every Monday.</li></ul>"
+      },
+      {
+        "h": "Example: a basketball club's Monday",
+        "id": "example",
+        "html": "<p>Every Monday, the content lead of a basketball club opens a saved search: This week, Most viewed, Overperforming, Platform: TikTok. She sees that three accounts in other sports posted the same kind of locker-room challenge and that all three beat their usual numbers. She opens one, runs the AI analysis, and drags it to Wednesday in her Content Plan. Then she clears the Platform filter, switches to Instagram and repeats.</p>"
+      },
+      {
+        "h": "Things to keep in mind",
+        "id": "limits",
+        "html": "<ul><li>Metrics refresh when a post is played, at most every 6 hours, so this week's numbers are still moving.</li><li>A post counted less than 48 hours after publishing shows <em>Too early to judge</em> in its AI analysis.</li><li>Most viewed favours big accounts. Overperforming balances that by comparing each post with its own account.</li></ul>"
+      }
+    ],
+    "faq": [
+      { "q": "Is there a trending section in SCP?", "a": "Not as a separate tab. You see what's trending by combining a recent period, the Most viewed sort and the Overperforming filter in the Content Library." },
+      { "q": "How fresh is the library?", "a": "New posts are added daily from the accounts SCP tracks, and the Overperforming selection is recomputed every hour." },
+      { "q": "Where can I read about platform changes?", "a": "In Social News, which publishes daily platform updates for sports teams, and in the blog's Social media trends articles." },
+      { "q": "Can I get trends without opening the library?", "a": "The free weekly newsletter arrives every Monday, and the blog publishes one article a day." }
+    ]
+  },
+  "es": {
+    "title": "Cómo encontrar contenido en tendencia e inspiración creativa",
+    "label": "Tendencias",
+    "meta_title": "Cómo encontrar contenido deportivo en tendencia | SCP",
+    "meta_description": "Descubre qué funciona ahora en redes deportivas: combina Esta semana, Más vistos y Overperforming en la biblioteca de SCP, y sigue las noticias y el blog.",
+    "summary": "Sports Content Playbook no tiene una pestaña de «tendencias»: para ver lo que funciona ahora, filtra la biblioteca por un periodo reciente (Esta semana o Este mes), ordena por Más vistos y añade Overperforming; después afina por plataforma y formato. Para novedades de las plataformas y tendencias en redes sociales deportivas, lee Noticias de Social Media y el blog.",
+    "body": [
+      {
+        "h": "Cómo te enseña SCP lo que es tendencia",
+        "id": "how-it-works",
+        "html": "<p>Sports Content Playbook sigue cada día las mejores cuentas del deporte y añade posts nuevos a diario: clubes, ligas y marcas en Instagram, TikTok, YouTube, X y Facebook. Una tendencia, en la práctica, es un formato o una idea que varias cuentas están usando ahora y que da resultados. La biblioteca te da tres formas de verlo:</p><ul><li><strong>Período</strong>: <strong>Esta semana</strong> o <strong>Este mes</strong> para ver solo posts recientes.</li><li><strong>Ordenar</strong>: <strong>Más vistos</strong> para subir arriba los números más grandes.</li><li><strong>Overperforming</strong>: posts que lograron al menos el doble de la mediana de su propia cuenta en el mismo trimestre, recalculados cada hora. Es la mejor señal de que algo funciona más allá del alcance habitual de la cuenta.</li></ul>"
+      },
+      {
+        "h": "Paso a paso: qué funciona esta semana",
+        "id": "step-by-step",
+        "html": "<ol><li>Abre la <a href=\"content-library.html\">biblioteca de contenido</a>.</li><li>Pon el periodo en <strong>Esta semana</strong>.</li><li>Cambia el orden a <strong>Más vistos</strong>.</li><li>En <strong>Filtros</strong> → <strong>Lo que funciona</strong>, haz clic en <strong>Overperforming</strong>.</li><li>En <strong>Dónde y cómo</strong>, elige una <strong>Plataforma</strong> (por ejemplo TikTok o Instagram) y un <strong>Formato</strong>.</li><li>Añade tu <strong>Deporte</strong> desde <strong>Inspírate en</strong>, o déjalo abierto para ver qué funciona en otros deportes.</li><li>Guarda la combinación desde <strong>Búsquedas guardadas…</strong> para reabrirla cada lunes.</li></ol>"
+      },
+      {
+        "h": "Ideas por plataforma",
+        "id": "by-platform",
+        "html": "<ul><li><strong>Ideas de contenido deportivo para TikTok</strong>: Plataforma: TikTok + Overperforming + Este mes. Añade <strong>Challenges</strong> para ver pruebas, juegos y retos con jugadores, un formato que además es replicable.</li><li><strong>Ideas de reels deportivos</strong>: Plataforma: Instagram + Formato: reels + <strong>Ideas replicables</strong> para quedarte solo con lo que puedes hacer con tus propios recursos.</li><li><strong>Ideas de contenido deportivo para Instagram</strong> más allá del vídeo: Formato: carrusel y orden <strong>Más vistos</strong>. El análisis con IA de un carrusel incluye un desglose slide a slide.</li><li><strong>Creadores de contenido</strong> (desde Plus): formatos de creadores, filtrados por tipo de creador, idioma, país, género y seguidores. Útil para ver qué hacen los creadores antes de que lo adopten los clubes.</li></ul>"
+      },
+      {
+        "h": "Inspiración creativa cuando te atascas",
+        "id": "inspiration",
+        "html": "<ul><li>Ordena por <strong>Sorpréndeme</strong> para romper tus búsquedas de siempre.</li><li>Mira fuera de tu deporte: quita el filtro <strong>Deporte</strong> y mira qué hacen cuentas de baloncesto, NFL o ciclismo con el mismo formato.</li><li>Abre un post que te guste y pulsa <strong>Más como este</strong> (mismo formato, deporte y competición).</li><li>Escribe <strong>top picks</strong> en el buscador para ver la selección editorial del equipo de SCP.</li><li>Fuera de la biblioteca: <a href=\"news.html\">Noticias de Social Media</a> (Social News) cubre a diario las novedades de las plataformas para equipos deportivos (Instagram, TikTok, X, YouTube…), el <a href=\"blog.html\">blog</a> publica un artículo al día, también sobre tendencias en redes sociales, y la newsletter semanal gratuita llega cada lunes.</li></ul>"
+      },
+      {
+        "h": "Ejemplo: el lunes de un club de baloncesto",
+        "id": "example",
+        "html": "<p>Cada lunes, la responsable de contenido de un club de baloncesto abre una búsqueda guardada: Esta semana, Más vistos, Overperforming, Plataforma: TikTok. Ve que tres cuentas de otros deportes publicaron el mismo tipo de reto en el vestuario y que las tres superaron sus números habituales. Abre uno, pide el análisis con IA y lo arrastra al miércoles de su Plan de contenido. Después quita el filtro de Plataforma, cambia a Instagram y repite.</p>"
+      },
+      {
+        "h": "Ten en cuenta",
+        "id": "limits",
+        "html": "<ul><li>Las métricas se actualizan cuando se reproduce un post, como mucho cada 6 horas, así que los números de esta semana todavía se mueven.</li><li>Un post contado menos de 48 horas después de publicarse muestra <em>Aún es pronto para valorarlo</em> en su análisis con IA.</li><li>Más vistos favorece a las cuentas grandes. Overperforming lo equilibra comparando cada post con su propia cuenta.</li></ul>"
+      }
+    ],
+    "faq": [
+      { "q": "¿Hay una sección de tendencias en SCP?", "a": "No como pestaña aparte. Ves lo que es tendencia combinando un periodo reciente, el orden Más vistos y el filtro Overperforming en la biblioteca." },
+      { "q": "¿Cada cuánto se actualiza la biblioteca?", "a": "Se añaden posts nuevos a diario de las cuentas que sigue SCP, y la selección Overperforming se recalcula cada hora." },
+      { "q": "¿Dónde puedo leer sobre cambios en las plataformas?", "a": "En Noticias de Social Media (Social News), que publica a diario las novedades de las plataformas para equipos deportivos, y en los artículos de tendencias del blog." },
+      { "q": "¿Puedo recibir tendencias sin abrir la biblioteca?", "a": "La newsletter semanal gratuita llega cada lunes, y el blog publica un artículo al día." }
+    ]
+  }
+}

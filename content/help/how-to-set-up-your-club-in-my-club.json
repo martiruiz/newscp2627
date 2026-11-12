@@ -1,0 +1,89 @@
+{
+  "n": 15,
+  "slug": "how-to-set-up-your-club-in-my-club",
+  "cat": "my-club",
+  "recommended": true,
+  "updated": "2026-11-12",
+  "next": "how-to-manage-players-teams-and-club-sections",
+  "keywords": ["Sports Social Media Tools", "Sports Marketing Tools", "Social Media Ideas for Sports Teams", "Sports Social Media Strategy"],
+  "en": {
+    "title": "How to set up your club in My Club",
+    "label": "My Club setup",
+    "meta_title": "How to set up your club in My Club | SCP Knowledge Base",
+    "meta_description": "My Club is set up with the Sports Content Playbook team: send your club's accounts, players, sponsors and sections, and SCP links them and uploads posts daily.",
+    "summary": "My Club isn't self-serve: the Sports Content Playbook team sets it up with you. You send the club's official accounts, players, sponsors, sections and the emails of your team; SCP links the accounts, creates the sections, adds the members and uploads your club's posts every day into a private space.",
+    "body": [
+      {
+        "h": "What My Club is",
+        "id": "what-it-is",
+        "html": "<p>My Club is the Enterprise space of Sports Content Playbook: a private library with the posts of your own club, its players, sponsors, teams and sections (first team, women's team, academy, other sports), plus your competitors and the content creators linked to you. It has the same filters, saving and AI analysis as the <a href=\"content-library.html\">Content Library</a>, and it includes everything in Pro.</p><p>A space can also be a competition, an agency or a federation; it then shows as \"My competition\", \"My agency\" or \"My federation\". Only your club's marketing and communications team can see it.</p>"
+      },
+      {
+        "h": "Step by step: getting your club's space set up",
+        "id": "step-by-step",
+        "html": "<ol><li><strong>Book a demo</strong> at <a href=\"book-a-call.html\">book-a-call.html</a> (30 minutes) or write to us from <a href=\"contact.html?topic=support\">the contact page</a>. Enterprise has a custom price, from €99/month, and a 7-day trial that SCP sets up for you.</li><li><strong>Prepare your list of accounts</strong>: the club's official profiles on each network, the accounts of each section, your players' accounts (and which team they play in), your sponsors' accounts, the competitors you want to follow and the content creators who work with the club.</li><li><strong>Send the emails of your team</strong>: the people in marketing and communications who should have access. Members are added by SCP.</li><li><strong>SCP links the accounts and creates the sections and teams.</strong> From then on SCP uploads your club's posts every day.</li><li><strong>Sign in with the email SCP added</strong> and open <a href=\"my-club.html\">My Club</a>. You'll see the tabs <strong>Club profiles</strong>, <strong>Competitors</strong>, <strong>Players</strong>, <strong>Content creators</strong> and <strong>Sponsors</strong>, with the <strong>Section</strong> and <strong>Team</strong> filters.</li></ol><div class=\"kb-note\"><p>If you open My Club and see \"Your account isn't linked to a club yet. Write to us and we'll set up your club's space.\", your email hasn't been linked yet. Write to SCP or use <strong>Book a demo</strong>.</p></div>"
+      },
+      {
+        "h": "What you see and do once it's ready",
+        "id": "once-ready",
+        "html": "<ul><li><strong>Club profiles</strong>: your official accounts' posts, filtered by section and team.</li><li><strong>Players</strong>, <strong>Sponsors</strong>, <strong>Competitors</strong> and <strong>Content creators</strong>: tap one or more names to see only their posts.</li><li>Filter, save to <a href=\"saved.html\">Saved boards</a> and unlock AI analyses exactly as in the library. On team plans, analyses unlocked by a teammate are free to read.</li><li>Drag posts to your <a href=\"content-plan.html\">Content Plan</a>, which is included because My Club includes everything in Pro.</li></ul><p>A tab only appears when it has linked accounts, and a name marked \"Account linked, no posts imported yet\" will fill up as SCP uploads its posts.</p>"
+      },
+      {
+        "h": "Practical example: a multi-sport club",
+        "id": "example",
+        "html": "<p>A club with a football first team, a women's team, an academy and a basketball section sends SCP one list: the club's Instagram, TikTok and YouTube, the basketball section's own Instagram, 40 player accounts grouped by team, six sponsors and three rival clubs. SCP creates the sections Football and Basketball with their teams and adds the four people in the comms department. On Monday the social media manager opens My Club, picks <strong>Section</strong> Football and <strong>Team</strong> Women's team, and sees in one place what the players and sponsors posted over the weekend. That's where the social media ideas for sports teams that fit this club come from.</p>"
+      },
+      {
+        "h": "Limits worth knowing",
+        "id": "limits",
+        "html": "<ul><li>Members can't add accounts, players, teams or sponsors themselves. To add or change anything, ask SCP through the contact page or your account manager.</li><li>Posts are uploaded daily, not in real time.</li><li>The AI inside My Club is the same AI analysis as in the library; there is no separate AI tool for your club.</li></ul><p>Used together with the library, My Club makes Sports Content Playbook one of the sports social media tools and sports marketing tools that shows your own club next to the rest, which helps you build a sports social media strategy on real data. Next: <a href=\"help/how-to-manage-players-teams-and-club-sections.html\">how to manage players, teams and club sections</a>.</p>"
+      }
+    ],
+    "faq": [
+      { "q": "Can I set up My Club myself?", "a": "No. Setup is done with the SCP team: you send the accounts and the team's emails, and SCP links them, creates the sections and adds the members." },
+      { "q": "Which plan includes My Club?", "a": "Enterprise, with a custom price from €99/month that is explained in a 30-minute demo. It includes everything in Pro." },
+      { "q": "Who can see my club's space?", "a": "Only the members SCP adds, normally your club's marketing and communications team. The space is private." },
+      { "q": "Can a league, agency or federation use My Club?", "a": "Yes. The space can be a club, a competition, an agency or a federation, and shows as My competition, My agency or My federation." }
+    ]
+  },
+  "es": {
+    "title": "Cómo configurar tu club en My Club",
+    "label": "Configurar My Club",
+    "meta_title": "Cómo configurar tu club en My Club | SCP Knowledge Base",
+    "meta_description": "My Club se configura con el equipo de Sports Content Playbook: envías las cuentas, jugadores, patrocinadores y secciones del club, y SCP lo vincula todo.",
+    "summary": "My Club no se configura por tu cuenta: lo prepara el equipo de Sports Content Playbook contigo. Envías las cuentas oficiales del club, los jugadores, patrocinadores, secciones y los correos de tu equipo; SCP vincula las cuentas, crea las secciones, añade a los miembros y sube cada día los posts de tu club a un espacio privado.",
+    "body": [
+      {
+        "h": "Qué es My Club",
+        "id": "what-it-is",
+        "html": "<p>My Club es el espacio Enterprise de Sports Content Playbook: una biblioteca privada con los posts de tu propio club, sus jugadores, patrocinadores, equipos y secciones (primer equipo, femenino, cantera, otros deportes), además de tus competidores y los creadores de contenido vinculados a ti. Tiene los mismos filtros, guardados y análisis con IA que la <a href=\"content-library.html\">Biblioteca de contenido</a>, e incluye todo lo de Pro.</p><p>Un espacio también puede ser una competición, una agencia o una federación; entonces aparece como «Mi competición», «Mi agencia» o «Mi federación». Solo lo ve el equipo de marketing y comunicación de tu club.</p>"
+      },
+      {
+        "h": "Paso a paso: cómo se prepara el espacio de tu club",
+        "id": "step-by-step",
+        "html": "<ol><li><strong>Reserva una demo</strong> en <a href=\"book-a-call.html\">book-a-call.html</a> (30 minutos) o escríbenos desde <a href=\"contact.html?topic=support\">la página de contacto</a>. Enterprise tiene precio a medida, desde 99 €/mes, y una prueba de 7 días que prepara SCP.</li><li><strong>Prepara la lista de cuentas</strong>: los perfiles oficiales del club en cada red, las cuentas de cada sección, las de tus jugadores (y en qué equipo juegan), las de tus patrocinadores, los competidores que quieres seguir y los creadores de contenido que trabajan con el club.</li><li><strong>Envía los correos de tu equipo</strong>: las personas de marketing y comunicación que deben tener acceso. Los miembros los añade SCP.</li><li><strong>SCP vincula las cuentas y crea las secciones y los equipos.</strong> A partir de ahí, SCP sube cada día los posts de tu club.</li><li><strong>Entra con el correo que añadió SCP</strong> y abre <a href=\"my-club.html\">My Club</a>. Verás las pestañas <strong>Perfiles</strong>, <strong>Competidores</strong>, <strong>Jugadores</strong>, <strong>Creadores de contenido</strong> y <strong>Patrocinadores</strong>, con los filtros <strong>Sección</strong> y <strong>Equipo</strong>.</li></ol><div class=\"kb-note\"><p>Si abres My Club y ves «Tu cuenta aún no está vinculada a ningún club. Escríbenos y prepararemos el espacio de tu club.», tu correo todavía no está vinculado. Escribe a SCP o usa <strong>Reserva una demo</strong>.</p></div>"
+      },
+      {
+        "h": "Qué ves y qué haces cuando está listo",
+        "id": "once-ready",
+        "html": "<ul><li><strong>Perfiles</strong>: los posts de tus cuentas oficiales, filtrados por sección y equipo.</li><li><strong>Jugadores</strong>, <strong>Patrocinadores</strong>, <strong>Competidores</strong> y <strong>Creadores de contenido</strong>: toca uno o más nombres para ver solo sus posts.</li><li>Filtra, guarda en <a href=\"saved.html\">Guardados</a> y desbloquea análisis con IA igual que en la biblioteca. En los planes de equipo, los análisis que desbloquea un compañero se leen gratis.</li><li>Arrastra posts a tu <a href=\"content-plan.html\">Plan de contenido</a>, incluido porque My Club incluye todo lo de Pro.</li></ul><p>Una pestaña solo aparece si tiene cuentas vinculadas, y un nombre marcado como «Cuenta vinculada, aún sin publicaciones importadas» se irá llenando a medida que SCP suba sus posts.</p>"
+      },
+      {
+        "h": "Ejemplo práctico: un club polideportivo",
+        "id": "example",
+        "html": "<p>Un club con primer equipo de fútbol, equipo femenino, cantera y sección de baloncesto envía a SCP una sola lista: el Instagram, TikTok y YouTube del club, el Instagram propio de la sección de baloncesto, 40 cuentas de jugadores agrupadas por equipo, seis patrocinadores y tres clubes rivales. SCP crea las secciones Fútbol y Baloncesto con sus equipos y añade a las cuatro personas del departamento de comunicación. El lunes, la community manager abre My Club, elige <strong>Sección</strong> Fútbol y <strong>Equipo</strong> Femenino, y ve en un solo sitio lo que publicaron jugadoras y patrocinadores el fin de semana. De ahí salen las ideas para redes sociales de equipos deportivos que encajan con este club.</p>"
+      },
+      {
+        "h": "Límites que conviene conocer",
+        "id": "limits",
+        "html": "<ul><li>Los miembros no pueden añadir cuentas, jugadores, equipos ni patrocinadores por su cuenta. Para añadir o cambiar algo, pídeselo a SCP desde la página de contacto o a tu account manager.</li><li>Los posts se suben cada día, no en tiempo real.</li><li>La IA de My Club es el mismo análisis con IA de la biblioteca; no hay otra herramienta de IA para tu club.</li></ul><p>Junto con la biblioteca, My Club convierte Sports Content Playbook en una herramienta de redes sociales deportivas que pone a tu club al lado del resto, y eso te ayuda a construir tu estrategia de redes sociales deportivas con datos reales. Siguiente: <a href=\"es/help/how-to-manage-players-teams-and-club-sections.html\">cómo gestionar jugadores, equipos y secciones del club</a>.</p>"
+      }
+    ],
+    "faq": [
+      { "q": "¿Puedo configurar My Club yo mismo?", "a": "No. La configuración se hace con el equipo de SCP: tú envías las cuentas y los correos del equipo, y SCP las vincula, crea las secciones y añade a los miembros." },
+      { "q": "¿Qué plan incluye My Club?", "a": "Enterprise, con precio a medida desde 99 €/mes que se explica en una demo de 30 minutos. Incluye todo lo de Pro." },
+      { "q": "¿Quién puede ver el espacio de mi club?", "a": "Solo los miembros que añade SCP, normalmente el equipo de marketing y comunicación del club. El espacio es privado." },
+      { "q": "¿Una liga, agencia o federación puede usar My Club?", "a": "Sí. El espacio puede ser un club, una competición, una agencia o una federación, y aparece como Mi competición, Mi agencia o Mi federación." }
+    ]
+  }
+}

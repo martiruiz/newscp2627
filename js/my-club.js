@@ -253,6 +253,7 @@
           <div class="mc-title">
             <span class="mc-eyebrow">${esc(t(typeOf(club)[0]))}</span>
             <h1>${esc(club.name)}</h1>
+            <a class="kb-ctx-link" href="help/how-to-set-up-your-club-in-my-club.html" target="_blank" rel="noopener">${esc(t("How My Club works"))} →</a>
           </div>
           ${st.club.trial_ends ? (() => { const d = Math.max(1, Math.ceil((new Date(st.club.trial_ends) - Date.now()) / 864e5));   // a 7-day trial (Admin → My Club → Members)
             return `<a class="mc-trial" href="book-a-call.html?for=clubs" data-cta="my-club-trial"><b>${esc(t(d === 1 ? "Trial: 1 day left" : "Trial: {n} days left", { n: d }))}</b><span>${esc(t("Book a demo"))} →</span></a>`; })() : ""}
