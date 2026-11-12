@@ -38,7 +38,7 @@ jobs:
           path: ~/.cache/huggingface
           key: whisper-base-v1
       - run: command -v ffmpeg || (sudo apt-get update -q && sudo apt-get install -yq ffmpeg)
-      - run: pip install -q faster-whisper==1.1.1 yt-dlp
+      - run: pip install -q faster-whisper==1.1.1 "yt-dlp[default,curl-cffi]"
       - run: npm ci
         working-directory: pipeline
       - run: node library/ai-video.mjs "${{ inputs.post_id }}" ${{ inputs.preview && '--preview' || '' }}
