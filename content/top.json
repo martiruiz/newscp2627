@@ -48,12 +48,6 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/611/611504.jpg?v=mwat1iht"
   },
   {
-    "account": "433",
-    "account_platform": "instagram",
-    "views": 6653383,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/593/593397.jpg?v=mw3anoy3"
-  },
-  {
     "account": "liverpoolfc",
     "account_platform": "instagram",
     "views": 6533207,
@@ -78,6 +72,12 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/600/600285.jpg?v=mw94vrbr"
   },
   {
+    "account": "houseofhighlights",
+    "account_platform": "instagram",
+    "views": 5289705,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/612/612900.jpg?v=mwc9rnfm"
+  },
+  {
     "account": "fabriziorom",
     "account_platform": "instagram",
     "views": 5212205,
@@ -88,12 +88,6 @@
     "account_platform": "instagram",
     "views": 4879784,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/613/613044.jpg?v=mwc9ur61"
-  },
-  {
-    "account": "isabelapagliari",
-    "account_platform": "instagram",
-    "views": 4199195,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/593/593088.jpg?v=mw3a10tq"
   },
   {
     "account": "fcbarcelona",
@@ -132,6 +126,12 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/611/611518.jpg?v=mwat1o0w"
   },
   {
+    "account": "espn",
+    "account_platform": "tiktok",
+    "views": 3100000,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/614/614555.jpg?v=mwcb8gre"
+  },
+  {
     "account": "laliga",
     "account_platform": "instagram",
     "views": 3055183,
@@ -156,6 +156,12 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/610/610596.jpg?v=mwasp9q6"
   },
   {
+    "account": "houseofhighlights",
+    "account_platform": "instagram",
+    "views": 2966384,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/612/612902.jpg?v=mwc9rnb5"
+  },
+  {
     "account": "fabriziorom",
     "account_platform": "instagram",
     "views": 2964000,
@@ -172,11 +178,5 @@
     "account_platform": "instagram",
     "views": 2931070,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/614/614279.jpg?v=mwca6y76"
-  },
-  {
-    "account": "433",
-    "account_platform": "instagram",
-    "views": 2904109,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/609/609684.jpg?v=mwas74f4"
   }
 ]
