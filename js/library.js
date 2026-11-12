@@ -2664,7 +2664,7 @@
     <p>${tx("Your monthly analyses renew on {date}. Need more now?", { date: ai.ent?.cycle_end ? new Date(ai.ent.cycle_end).toLocaleDateString(window.SCP_LOC || "en-GB", { day: "numeric", month: "long" }) : tx("your next billing date") })}</p>
     <div class="ai-empty-actions"><a class="btn btn-gold" href="pricing.html#packs">Buy an analysis pack</a><a class="btn btn-outline" href="pricing.html">Upgrade your plan</a></div></div>`;
   function generating(text = "Unlocking the analysis…") {
-    area().innerHTML = `<div class="ai-working"><span class="ai-spinner"></span><div><b>${text}</b><p>Reading the post, the hook and the format. This can take up to a minute.</p></div></div>`;
+    area().innerHTML = `<div class="ai-working"><span class="ai-spinner"></span><div><b>${text}</b><p>Reading the post, the hook and the format. This takes up to a minute, or about three for a video (we watch the whole video).</p></div></div>`;
   }
   async function loadUnlocked(n) {
     const { data } = await db.rpc("get_unlocked_analysis", { p_post_id: n });
@@ -2688,7 +2688,7 @@
       body: JSON.stringify({ post_id: n }),
     }).then((r) => r.json()).then((d) => { if (d?.status === "unlocked" || d?.status === "failed") done = true; }).catch(() => null);
     const started = Date.now();
-    while (Date.now() - started < 150000) {
+    while (Date.now() - started < 300000) {   // videos: GitHub Actions reads the video first
       for (let t = 0; t < 15 && !done; t++) await new Promise((r) => setTimeout(r, 100));   // up to 1.5 s, or at once when the function answers
       done = false;
       if (!area()) return;

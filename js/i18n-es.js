@@ -1779,6 +1779,7 @@ window.SCP_ES = {
   "Upgrade your plan": "Mejorar tu plan",
   "Unlocking the analysis…": "Desbloqueando el análisis…",
   "Reading the post, the hook and the format. This can take up to a minute.": "Leyendo el post, el gancho y el formato. Puede tardar hasta un minuto.",
+  "Reading the post, the hook and the format. This takes up to a minute, or about three for a video (we watch the whole video).": "Leyendo el post, el gancho y el formato. Tarda hasta un minuto, o unos tres en un vídeo (vemos el vídeo entero).",
   "We couldn't generate this analysis": "No se ha podido generar este análisis",
   "Your credit has been refunded. Please try again in a few minutes.": "Te hemos devuelto el crédito. Inténtalo de nuevo en unos minutos.",
   "Try again — 1 credit": "Reintentar — 1 crédito",

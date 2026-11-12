@@ -8,6 +8,10 @@
 //   4. on any error refunds every pending unlock of that post (fail_generation).
 // Other users who unlock the same post later get the stored analysis without any API call.
 //
+// Videos: when GH_DISPATCH_TOKEN is set, a video unlock starts the GitHub Actions workflow "AI video analysis"
+// (pipeline/library/ai-video.mjs), which posts back frames + transcript with the x-worker-key header; the analysis
+// is made from them (basis "video"). If the workflow can't start or can't read the video, the cover is used.
+//
 // POST { post_id, lang: "es" }: the Spanish version of an analysis the caller has unlocked, made the first time someone
 // reads it in Spanish and kept inside the analysis (result.es, same shape), so it's made only once per analysis.
 //
@@ -34,10 +38,12 @@ const rpc = async (fn: string, args: unknown) => {
 const SYSTEM = `You are the content analyst of Sports Content Playbook (SCP), a platform for the social media teams of sports clubs, leagues, athletes and sports brands.
 You receive one social media post (its image or video cover, its caption and its tags). Explain why it works and how a club could reuse the idea.
 Write in English, concise and specific to what you can see. Never invent numbers or results. Never identify people by their face; only name people when the caption or on-screen text says who they are. Analysis, never criticism.
-For videos you only see the cover image: base the visual breakdown on what the cover and caption show and keep it short.`;
+When you only get the cover of a video: base the visual breakdown on what the cover and caption show and keep it short.`;
 // v2 adds these rules and the performance + playbook fields; LIVE_V2 says whether members get it (an admin can preview it first)
 const LIVE_V2 = true;
+const LIVE_VIDEO = false;   // members' video unlocks go through the video worker (needs GH_DISPATCH_TOKEN too)
 const SYSTEM_V2 = `
+When you get Frames instead of a cover, you see the video itself: frames at the given seconds and the automatic transcript of what is said (it may contain mistakes; empty when nobody speaks). Base the hook on the first frame and the first spoken line, visualBreakdown on the frames with their real seconds as t, pacing on how the frames change, and scrollStoppers on the seconds where they happen. Quote spoken words only from the transcript, fixing obvious transcription mistakes (misheard names, joined words).
 For a single static image there is no timeline: return an empty visualBreakdown and give every scroll stopper t = 0. For a carousel, t is the slide number.
 
 You also get the post's real numbers and the median of the same account's posts that quarter (Numbers). Use only those numbers.
@@ -170,15 +176,20 @@ function verdictOf(n: any) {
   return r >= 2 ? "overperformed" : r <= 0.5 ? "underperformed" : "in_line";
 }
 
-// Post + image -> Claude -> the analysis and what it cost (v2: with the post's numbers and the playbook)
-async function analyse(postId: number, v2: boolean) {
+// Post + image (or video frames) -> Claude -> the analysis and what it cost (v2: with the post's numbers and the playbook)
+type Video = { duration: number; frames: { t: number; data: string }[]; transcript: string; language: string | null } | null;
+async function analyse(postId: number, v2: boolean, video: Video = null) {
   const [post] = await (await rest(`content_ideas?select=id,url,title,cover_url,content_idea_tags(idea_catalog(category,name))&id=eq.${postId}`)).json();
   if (!post) throw new Error("Post not found");
   const tags: Record<string, string[]> = {};
   for (const t of post.content_idea_tags || []) if (t.idea_catalog) (tags[t.idea_catalog.category] ||= []).push(t.idea_catalog.name);
   const numbers = v2 ? await rpc("post_benchmark", { p_post_id: postId }).catch(() => ({})) : null;
-  const image = (await storedCover(post.cover_url)) || (await coverImage(post.url));
-  if (!image) throw new Error("Couldn't load the post image (removed or private post)");
+  const frames = video?.frames?.length ? video.frames : null;
+  const image = frames ? null : (await storedCover(post.cover_url)) || (await coverImage(post.url));
+  if (!frames && !image) throw new Error("Couldn't load the post image (removed or private post)");
+  const visual = frames
+    ? frames.flatMap((f) => [{ type: "text", text: `Frame at ${f.t}s` }, { type: "image", source: { type: "base64", media_type: "image/jpeg", data: f.data } }])
+    : [{ type: "image", source: { type: "base64", media_type: image!.type, data: image!.data } }];
 
   // Claude
   const model = env("AI_MODEL") || "claude-sonnet-5-5";
@@ -191,15 +202,15 @@ async function analyse(postId: number, v2: boolean) {
     output_config: { effort: "medium", format: { type: "json_schema", schema: v2 ? SCHEMA : SCHEMA_V1 } },
     system: v2 ? SYSTEM + SYSTEM_V2 : SYSTEM,
     messages: [{ role: "user", content: [
-      { type: "image", source: { type: "base64", media_type: image.type, data: image.data } },
-      { type: "text", text: `Tags: ${JSON.stringify(tags)}\nFormat: ${tags.format?.[0] || "unknown"}${v2 ? `\nMedia: ${numbers?.media_type || "unknown"}\nNumbers: ${JSON.stringify(numbers || {})}\nVerdict: ${verdictOf(numbers)}` : ""}\nCaption:\n${(post.title || "").slice(0, 2000)}` },
+      ...visual,
+      { type: "text", text: `${frames ? `Frames: ${frames.length} over ${video!.duration}s\nTranscript (${video!.language || "none"}): ${video!.transcript || "(nobody speaks)"}\n` : ""}Tags: ${JSON.stringify(tags)}\nFormat: ${tags.format?.[0] || "unknown"}${v2 ? `\nMedia: ${numbers?.media_type || "unknown"}\nNumbers: ${JSON.stringify(numbers || {})}\nVerdict: ${verdictOf(numbers)}` : ""}\nCaption:\n${(post.title || "").slice(0, 2000)}` },
     ] }],
   } as never);
   // deno-lint-ignore no-explicit-any
   const res = response as any;
   if (res.stop_reason === "refusal" || res.stop_reason === "max_tokens") throw new Error(`Model stopped: ${res.stop_reason}`);
   const text = res.content.find((b: { type: string }) => b.type === "text")?.text;
-  const analysis = { ...JSON.parse(text), basis: "image", ...(v2 ? { version: ANALYSIS_VERSION } : {}) };
+  const analysis = { ...JSON.parse(text), basis: frames ? "video" : "image", ...(v2 ? { version: ANALYSIS_VERSION } : {}) };
   if (v2) analysis.performance = { ...analysis.performance, verdict: verdictOf(numbers) };
   const inTok = res.usage?.input_tokens ?? 0, outTok = res.usage?.output_tokens ?? 0;
   const [pIn, pOut] = PRICES[res.model || model] || [0, 0];
@@ -208,9 +219,54 @@ async function analyse(postId: number, v2: boolean) {
   return { analysis, model: res.model || model, inTok, outTok, cost, numbers };
 }
 
+// A video post (reel, TikTok, YouTube, Facebook video): its analysis can come from the video itself
+const VIDEO_URL = /instagram\.com\/(?:[\w.]+\/)?reel\/|tiktok\.com\/|youtube\.com\/|youtu\.be\/|facebook\.com\/.*\/videos?\/|fb\.watch\//i;
+async function isVideo(postId: number) {
+  const [p] = await (await rest(`content_ideas?select=url,media_type&id=eq.${postId}`)).json();
+  return !!p && (p.media_type === "reel" || p.media_type === "video" || VIDEO_URL.test(p.url || ""));
+}
+// Starts the GitHub Actions workflow that reads the video; false when it can't (no token, GitHub down): use the cover
+async function startVideoWorker(postId: number) {
+  if (!env("GH_DISPATCH_TOKEN")) return false;
+  const r = await fetch("https://api.github.com/repos/martiruiz/newscp2627/actions/workflows/ai-video.yml/dispatches", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${env("GH_DISPATCH_TOKEN")}`, Accept: "application/vnd.github+json", "User-Agent": "scp-ai-analyze", "Content-Type": "application/json" },
+    body: JSON.stringify({ ref: "main", inputs: { post_id: String(postId) } }),
+  }).catch(() => null);
+  return r?.status === 204;
+}
+
+// The worker sends the service key (legacy JWT or new secret key, whichever pipeline/.env and GitHub hold): it is the
+// worker if the database accepts that key for a function only the service role may run
+async function isWorker(req: Request) {
+  const key = req.headers.get("x-worker-key") || "";
+  if (!key) return false;
+  const r = await fetch(`${env("SUPABASE_URL")}/rest/v1/rpc/post_benchmark`, {
+    method: "POST", body: JSON.stringify({ p_post_id: 0 }),
+    headers: { apikey: key, "Content-Type": "application/json", ...(key.startsWith("sb_") ? {} : { Authorization: `Bearer ${key}` }) },
+  }).catch(() => null);
+  return r?.ok === true;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: CORS });
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
+
+  // The video worker (ai-video.mjs) posts back the frames and the transcript; with preview it only returns the analysis
+  if (await isWorker(req)) {
+    const { post_id, video, preview } = await req.json().catch(() => ({}));
+    const postId = Number(post_id);
+    if (!postId) return json({ error: "post_id required" }, 400);
+    if (preview) return analyse(postId, true, video).then((r) => json(r)).catch((e) => json({ error: String((e as Error)?.message || e) }, 500));
+    try {
+      const r = await analyse(postId, LIVE_V2, video).catch(() => (video ? analyse(postId, LIVE_V2) : Promise.reject(new Error("no analysis"))));
+      await rpc("complete_generation", { p_post_id: postId, p_prompt_version: PROMPT_VERSION, p_result: r.analysis, p_model: r.model, p_input_tokens: r.inTok, p_output_tokens: r.outTok, p_cost_usd: r.cost, p_source: "api" });
+      return json({ status: "unlocked", basis: r.analysis.basis });
+    } catch (e) {
+      await rpc("fail_generation", { p_post_id: postId, p_prompt_version: PROMPT_VERSION, p_error: String((e as Error)?.message || e) }).catch(() => null);
+      return json({ status: "failed" }, 500);
+    }
+  }
 
   // 1. Who is calling?
   const userRes = await fetch(`${env("SUPABASE_URL")}/auth/v1/user`, { headers: { apikey: env("SUPABASE_ANON_KEY"), Authorization: req.headers.get("Authorization") ?? "" } });
@@ -235,6 +291,9 @@ Deno.serve(async (req) => {
   // 2. One generation per post: if someone else is already generating it, the browser just keeps polling
   const claimed = await rpc("claim_generation", { p_post_id: postId, p_prompt_version: PROMPT_VERSION });
   if (!claimed) return json({ status: "pending" });
+
+  // Videos: the workflow reads the video and posts the analysis back; the browser keeps polling
+  if (LIVE_VIDEO && await isVideo(postId) && await startVideoWorker(postId)) return json({ status: "pending" });
 
   try {
     const { analysis, model, inTok, outTok, cost } = await analyse(postId, LIVE_V2);
