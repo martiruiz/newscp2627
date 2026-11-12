@@ -6,7 +6,17 @@
     <atom:link href="https://sportscontentplaybook.com/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Sports social media content ideas, trends and analysis.</description>
     <language>en</language>
-    <lastBuildDate>Wed, 11 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Thu, 12 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Sports Reels ideas: turn a meme into a Reel fans share</title>
+      <link>https://sportscontentplaybook.com/blog/sports-reels-ideas-turn-a-meme-into-a-reel-fans-share.html</link>
+      <guid isPermaLink="true">https://sportscontentplaybook.com/blog/sports-reels-ideas-turn-a-meme-into-a-reel-fans-share.html</guid>
+      <pubDate>Thu, 12 Nov 2026 08:00:00 GMT</pubDate>
+      <dc:creator>Martí Ruiz</dc:creator>
+      <description>A club answered a meme about itself with its own archive and got 1.3M views. Here is the pattern, and a 48-hour plan any team can copy.</description>
+      <enclosure url="https://sportscontentplaybook.com/assets/blog/sports-reels-ideas-turn-a-meme-into-a-reel-fans-share.jpg" length="57445" type="image/jpeg"/>
+      <media:content url="https://sportscontentplaybook.com/assets/blog/sports-reels-ideas-turn-a-meme-into-a-reel-fans-share.jpg" medium="image" type="image/jpeg"/>
+    </item>
     <item>
       <title>Social media ideas for sports teams: turn a reunion into content fans share</title>
       <link>https://sportscontentplaybook.com/blog/social-media-ideas-for-sports-teams-reunion-and-return-content.html</link>
@@ -296,16 +306,6 @@
       <description>Olympique Lyonnais shows how smart, persistent branding in social media in sports can increase sponsor visibility, improve fan engagement and create more valuable digital content without disrupting the viewing experience.</description>
       <enclosure url="https://sportscontentplaybook.com/assets/blog/the-smart-way-to-keep-sponsors-visible-in-social-media-in-sports-without-ruining-the-content.jpg" length="411928" type="image/jpeg"/>
       <media:content url="https://sportscontentplaybook.com/assets/blog/the-smart-way-to-keep-sponsors-visible-in-social-media-in-sports-without-ruining-the-content.jpg" medium="image" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>Sports Content Playbook: how to make sure your naming rights launch actually lands in social media in sports</title>
-      <link>https://sportscontentplaybook.com/blog/sports-content-playbook-how-to-make-sure-your-naming-rights-launch-actually-lands-in-social-media-in-sports.html</link>
-      <guid isPermaLink="true">https://sportscontentplaybook.com/blog/sports-content-playbook-how-to-make-sure-your-naming-rights-launch-actually-lands-in-social-media-in-sports.html</guid>
-      <pubDate>Thu, 02 Apr 2026 08:00:00 GMT</pubDate>
-      <dc:creator>Josep</dc:creator>
-      <description>Naming rights launches succeed or fail in execution: clear messaging, connected accounts, optimized details, and sustained storytelling are what transform sponsorship announcements into meaningful fan engagement.</description>
-      <enclosure url="https://sportscontentplaybook.com/assets/blog/sports-content-playbook-how-to-make-sure-your-naming-rights-launch-actually-lands-in-social-media-in-sports.jpg" length="226756" type="image/jpeg"/>
-      <media:content url="https://sportscontentplaybook.com/assets/blog/sports-content-playbook-how-to-make-sure-your-naming-rights-launch-actually-lands-in-social-media-in-sports.jpg" medium="image" type="image/jpeg"/>
     </item>
   </channel>
 </rss>

@@ -60,12 +60,6 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/601/601025.jpg?v=mw952dmw"
   },
   {
-    "account": "realmadrid",
-    "account_platform": "instagram",
-    "views": 5935503,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/600/600286.jpg?v=mw94vr9j"
-  },
-  {
     "account": "bleacherreport",
     "account_platform": "instagram",
     "views": 5857025,
@@ -76,12 +70,6 @@
     "account_platform": "instagram",
     "views": 5834794,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/613/613182.jpg?v=mwca2i1k"
-  },
-  {
-    "account": "realmadrid",
-    "account_platform": "instagram",
-    "views": 5553934,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/600/600285.jpg?v=mw94vrbr"
   },
   {
     "account": "houseofhighlights",
@@ -178,5 +166,17 @@
     "account_platform": "instagram",
     "views": 2966384,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/612/612902.jpg?v=mwc9rnb5"
+  },
+  {
+    "account": "fabriziorom",
+    "account_platform": "instagram",
+    "views": 2964000,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/611/611013.jpg?v=mwaspyi8"
+  },
+  {
+    "account": "fcbarcelona",
+    "account_platform": "instagram",
+    "views": 2944895,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/601/601018.jpg?v=mw952dc1"
   }
 ]

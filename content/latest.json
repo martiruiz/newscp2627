@@ -1,25 +1,25 @@
 {
   "blog": {
-    "title": "Social media ideas for sports teams: turn a reunion into content fans share",
-    "href": "blog/social-media-ideas-for-sports-teams-reunion-and-return-content.html",
-    "image": "assets/blog/social-media-ideas-for-sports-teams-reunion-and-return-content.jpg",
-    "date": "2026-11-11"
+    "title": "Sports Reels ideas: turn a meme into a Reel fans share",
+    "href": "blog/sports-reels-ideas-turn-a-meme-into-a-reel-fans-share.html",
+    "image": "assets/blog/sports-reels-ideas-turn-a-meme-into-a-reel-fans-share.jpg",
+    "date": "2026-11-12"
   },
   "news": {
-    "title": "X launches video clipping so users can reshare credited snippets of longer videos",
-    "href": "news/x-launches-video-clipping-so-users-can-reshare-credited-snippets-of-279.html",
-    "image": "https://imgproxy.divecdn.com/y7bT3b9AyGsDeM81hdEMgtSxPSjWgiUmYiSRCOe2Nl4/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS94X2NsaXBfaXQucG5n.webp",
-    "platform": "x",
-    "date": "2026-11-10"
+    "title": "Mercedes F1's Antonelli title interview shows how YouTube packaging makes or breaks sponsored content",
+    "href": "news/mercedes-f1-s-antonelli-title-interview-shows-how-youtube-packaging-294.html",
+    "image": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/20235294-fd88-4131-a9ee-a8a7ff568557/Untitled_design__21_.png?t=1794331470",
+    "platform": "youtube",
+    "date": "2026-11-12"
   },
   "es": {
     "blog": {
-      "title": "Ideas de redes sociales para equipos deportivos: convierte un reencuentro en contenido que los aficionados comparten",
-      "href": "es/blog/social-media-ideas-for-sports-teams-reunion-and-return-content.html"
+      "title": "Ideas de Reels deportivos: convierte un meme en un Reel que los aficionados compartan",
+      "href": "es/blog/sports-reels-ideas-turn-a-meme-into-a-reel-fans-share.html"
     },
     "news": {
-      "title": "X lanza los clips de vídeo para que los usuarios puedan recompartir fragmentos con crédito de vídeos más largos",
-      "href": "es/news/x-launches-video-clipping-so-users-can-reshare-credited-snippets-of-279.html"
+      "title": "La entrevista a Antonelli tras su título con Mercedes F1 demuestra que el packaging en YouTube puede hacer o deshacer el contenido patrocinado",
+      "href": "es/news/mercedes-f1-s-antonelli-title-interview-shows-how-youtube-packaging-294.html"
     }
   }
 }
