@@ -12,12 +12,6 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/607/607868.jpg?v=mw9ch7yo"
   },
   {
-    "account": "realmadrid",
-    "account_platform": "instagram",
-    "views": 10732698,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/600/600282.jpg?v=mw94vsra"
-  },
-  {
     "account": "houseofhighlights",
     "account_platform": "instagram",
     "views": 10073351,
@@ -178,5 +172,11 @@
     "account_platform": "instagram",
     "views": 2944895,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/601/601018.jpg?v=mw952dc1"
+  },
+  {
+    "account": "fabriziorom",
+    "account_platform": "instagram",
+    "views": 2931070,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/614/614279.jpg?v=mwca6y76"
   }
 ]

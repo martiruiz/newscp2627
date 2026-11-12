@@ -21,29 +21,29 @@
     "faq": [],
     "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/20235294-fd88-4131-a9ee-a8a7ff568557/Untitled_design__21_.png?t=1794331470",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "La entrevista a Antonelli tras su título con Mercedes F1 demuestra que el packaging en YouTube puede hacer o deshacer el contenido patrocinado",
+      "tokens": {
+        "in": 1539,
+        "out": 825
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "Tras convertirse Kimi Antonelli en el Campeón del Mundo más joven de la historia de la Fórmula 1, Mercedes publicó una entrevista exclusiva en su videopódcast patrocinado por Nu. A pesar de contar con un canal de más de 2M de suscriptores, el episodio de 30 minutos logró unas 30K visualizaciones y nueve comentarios en seis días. Su título comenzaba con el nombre de la serie y el número del episodio, y la miniatura estaba saturada con el branding del programa y el logo de Nu. La entrevista de la propia F1, planteada con claridad como la primera entrevista del campeón, alcanzó 935K visualizaciones en una semana.",
         "El estratega de YouTube Gen Kimura sostuvo que Mercedes no empezó con el valor: YouTube se mueve por la intención, así que los espectadores necesitan un motivo para hacer clic. También calificó el número de suscriptores como una métrica de vanidad y explicó que las marcas miran cada vez más el suelo de visualizaciones constante de un canal. Mientras tanto, el anuncio de Mercedes en Instagram y sus clips generaron 2,9M de visualizaciones y más de 727K interacciones, un recordatorio de que hay que medir el valor para el patrocinador en todo el paquete de contenido.",
         "Para clubes y ligas, las lecciones son prácticas: define el título y la miniatura antes de producir, no pongas logos de patrocinadores en las miniaturas cuando ya están integrados en el vídeo y crea formatos originales pensados primero para YouTube en lugar de volcar contenido que ya existe. Los Philadelphia Eagles publican la menor cantidad de vídeos de la NFL y aun así lideran en visualizaciones por vídeo al adaptar formatos de creadores al acceso a los jugadores. Fija el precio de los patrocinios según el rendimiento realista en visualizaciones, no según el total de suscriptores."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-12T15:04:49.228261+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-11-12T16:53:55.040Z",
-      "tokens": {
-        "in": 1539,
-        "out": 825
-      }
+      "source_changed": "2026-11-12T15:04:49.228261+00:00",
+      "meta_description": ""
     }
   },
   {
@@ -68,29 +68,29 @@
     "faq": [],
     "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/manual-2026-11-11-1.jpg",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "TikTok lanza Social MCP para gestionar la presencia de marca mediante conversaciones con IA",
+      "tokens": {
+        "in": 1344,
+        "out": 522
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "TikTok ha presentado Social MCP, una herramienta que permite a las marcas hacer social listening, análisis de tendencias y seguimiento del sentimiento de la audiencia a través de una conversación directa con IA. Está diseñada para detectar oportunidades antes de que se vuelvan virales, pasar de los insights a ideas de contenido y estrategia, e identificar vídeos orgánicos que están funcionando bien para convertirlos en Spark Ads.",
         "Para los equipos de redes sociales deportivas, esto podría acortar la distancia entre un momento viral en día de partido y una respuesta planificada. Un club podría preguntar a la herramienta qué conversaciones de aficionados están creciendo en torno a un fichaje o una rivalidad, ajustar su plan de contenidos en tiempo real e impulsar rápidamente sus clips orgánicos de mejor rendimiento como Spark Ads para patrocinadores o para campañas de entradas y merchandising.",
         "La clave está en mantener el criterio humano en el proceso: la IA puede sacar a la superficie las tendencias, pero es el equipo quien decide cuáles encajan con la voz y los valores del club."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-12T15:05:04.236378+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-11-12T16:54:00.482Z",
-      "tokens": {
-        "in": 1344,
-        "out": 522
-      }
+      "source_changed": "2026-11-12T15:05:04.236378+00:00",
+      "meta_description": ""
     }
   },
   {
@@ -114,28 +114,28 @@
     "faq": [],
     "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/d222c491c3e6614e-16x9.jpg",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "El borrador de normas de la UE obligaría a los influencers a etiquetar claramente el contenido patrocinado",
+      "tokens": {
+        "in": 1262,
+        "out": 416
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "El borrador de la Ley de Equidad Digital (Digital Fairness Act) de la Unión Europea busca que los influencers etiqueten claramente el contenido patrocinado. También se espera que la propuesta incluya medidas para limitar el uso compulsivo de las plataformas online.",
         "Las organizaciones deportivas que pagan a deportistas, embajadores o creadores para promocionar a sus socios deberían revisar sus prácticas de transparencia antes de que las normas tomen forma. Los clubes que activan patrocinios a través de cuentas de jugadores o colaboraciones con creadores necesitarán etiquetas publicitarias claras y coherentes en contratos y briefs, algo que además protege la confianza de los aficionados. Planificar ahora formatos conformes a la normativa evita cambios de última hora en las campañas en los mercados de la UE."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-12T15:05:05.26406+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-11-12T16:54:05.321Z",
-      "tokens": {
-        "in": 1262,
-        "out": 416
-      }
+      "source_changed": "2026-11-12T15:05:05.26406+00:00",
+      "meta_description": ""
     }
   },
   {
@@ -160,29 +160,29 @@
     "faq": [],
     "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/manual-2026-11-11-2.jpg",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "Instagram prueba Features, vídeos horizontales de hasta 90 minutos, para competir con YouTube",
+      "tokens": {
+        "in": 1365,
+        "out": 529
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "Instagram está probando un formato llamado Features que permite a los creadores subir vídeos horizontales de hasta 90 minutos, pensado para pódcasts, entrevistas y programas de entretenimiento. Los usuarios podrán saltar de un Reel corto directamente al vídeo completo sin salir de la app. La prueba se está realizando con creadores seleccionados en EE. UU. tras pruebas previas en Brasil, con un flujo de subida independiente y clips de fragmentos publicados como Reels.",
         "Para clubes, ligas y deportistas, esto abre un camino para alojar contenido de formato largo donde ya se encuentra gran parte de su audiencia. Ruedas de prensa completas, documentales entre bastidores, pódcasts de clubes o análisis extendidos de partidos podrían estar en Instagram, con Reels cortos que funcionen como tráilers y lleven a los aficionados al vídeo completo.",
         "Los equipos deberían planificar ya flujos de trabajo de clip a vídeo completo, de modo que cada pieza larga venga con fragmentos listos para publicar, y valorar nuevo inventario para patrocinadores en torno a los formatos más largos."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-12T15:05:04.855566+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-11-12T16:54:11.153Z",
-      "tokens": {
-        "in": 1365,
-        "out": 529
-      }
+      "source_changed": "2026-11-12T15:05:04.855566+00:00",
+      "meta_description": ""
     }
   },
   {
@@ -207,29 +207,29 @@
     "faq": [],
     "image_url": "https://imgproxy.divecdn.com/xGcte1bVNuj51RzfjKmlpubxAzOeCAHKjY5LzFALLDw/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9saW5rZWRpbl9sb2dvMi5qcGc=.webp",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "LinkedIn prueba una función que muestra cuántas veces vuelve cada persona a visitar tu perfil",
+      "tokens": {
+        "in": 1421,
+        "out": 643
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "LinkedIn está probando un indicador de visitantes frecuentes para los suscriptores de Premium, según un reportaje de Wired. Además de la lista actual de quién ha visto un perfil, la función mostraría cuántas veces ha vuelto una persona concreta a esa página en un periodo determinado. LinkedIn confirmó a Wired que la función está en fase de pruebas, pero no compartió más detalles, como las fechas o una posible disponibilidad más amplia.",
         "Algunos profesionales del marketing ya consideran a quienes visitan un perfil como una fuente de leads cualificados, y un contador de visitas repetidas podría indicar un mayor interés. También hay preocupaciones sobre la privacidad: las visitas frecuentes pueden deberse a una curiosidad no profesional, aunque los usuarios pueden limitar la visibilidad de su perfil solo a sus contactos y no tienen ninguna obligación de ponerse en contacto con nadie que aparezca en la lista.",
         "En el caso de las organizaciones deportivas, el personal comercial y de partnerships podría usar las visitas repetidas como señal para hacer un seguimiento oportuno a posibles patrocinadores, compradores de hospitality B2B o socios de medios. Los deportistas que construyen su marca personal podrían detectar a marcas o agencias que los visitan una y otra vez. Los equipos deberían mantener un acercamiento profesional y sin presión, usando esta señal como contexto y no como motivo para una prospección agresiva."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-12T15:05:15.709558+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-11-12T16:54:17.358Z",
-      "tokens": {
-        "in": 1421,
-        "out": 643
-      }
+      "source_changed": "2026-11-12T15:05:15.709558+00:00",
+      "meta_description": ""
     }
   },
   {
