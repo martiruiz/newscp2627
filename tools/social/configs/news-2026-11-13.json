@@ -1,0 +1,50 @@
+{
+ "label": "Nov 2026",
+ "items": [
+  {
+   "img": "x_clips",
+   "brand": "x",
+   "platform": "X",
+   "title": "X lets users <span class='g'>clip</span> 5 to 60 seconds of your video.",
+   "para": "Clips from videos of two minutes or more carry the creator's handle and a link back to the original.",
+   "tip": "Post <span class='g'>full-length</span> press conferences and match reviews: fan clips point back to your account.",
+   "date": "10 Nov"
+  },
+  {
+   "img": "tiktok_mcp",
+   "brand": "tiktok",
+   "platform": "TikTok",
+   "title": "TikTok's <span class='g'>Social MCP</span> lets brands ask AI about trends.",
+   "para": "Brands can run social listening, trend analysis and sentiment tracking through a conversation with AI.",
+   "tip": "Test it on one signing or rivalry to see which <span class='g'>fan conversations</span> are rising.",
+   "date": "12 Nov"
+  },
+  {
+   "img": "symphony",
+   "brand": "tiktok",
+   "platform": "TikTok",
+   "title": "Symphony now makes AI ad videos of <span class='g'>30&nbsp;seconds</span>.",
+   "para": "The Seedance upgrade takes up to 50 references, up from 9, and doubles the earlier 15-second cap.",
+   "tip": "Try AI drafts for <span class='g'>sponsor and ticket</span> ads, using club-approved footage as references.",
+   "date": "9 Nov"
+  },
+  {
+   "img": "linkedin_rel",
+   "brand": "linkedin",
+   "platform": "LinkedIn",
+   "title": "LinkedIn matches posts to <span class='g'>profile context</span>.",
+   "para": "A Profile Relevance model scores non-connection posts on topic, location, job title, company and industry.",
+   "tip": "Make the <span class='g'>professional context</span> clear in sponsorship and hiring posts.",
+   "date": "9 Nov"
+  },
+  {
+   "img": "muse",
+   "brand": "meta",
+   "platform": "Meta",
+   "title": "Meta's Muse now builds <span class='g'>mini apps</span> called Spaces.",
+   "para": "A request becomes a mini app stored in the Muse sidebar, such as a tracker or an activity log.",
+   "tip": "Prototype a <span class='g'>matchday checklist</span> or a sponsor-deliverables tracker in a Space.",
+   "date": "8 Nov"
+  }
+ ]
+}
