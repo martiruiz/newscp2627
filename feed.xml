@@ -6,7 +6,17 @@
     <atom:link href="https://sportscontentplaybook.com/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Sports social media content ideas, trends and analysis.</description>
     <language>en</language>
-    <lastBuildDate>Thu, 12 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Fri, 13 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Sports social media trends: X now pays for clips, and long video becomes an asset</title>
+      <link>https://sportscontentplaybook.com/blog/sports-social-media-trends-x-clips-tool-pays-creators.html</link>
+      <guid isPermaLink="true">https://sportscontentplaybook.com/blog/sports-social-media-trends-x-clips-tool-pays-creators.html</guid>
+      <pubDate>Fri, 13 Nov 2026 08:00:00 GMT</pubDate>
+      <dc:creator>Martí Ruiz</dc:creator>
+      <description>X has launched a clips tool where both the clipper and the owner of the original video can earn from views. Here is what it means for sports teams.</description>
+      <enclosure url="https://sportscontentplaybook.com/assets/blog/sports-social-media-trends-x-clips-tool-pays-creators.jpg" length="71502" type="image/jpeg"/>
+      <media:content url="https://sportscontentplaybook.com/assets/blog/sports-social-media-trends-x-clips-tool-pays-creators.jpg" medium="image" type="image/jpeg"/>
+    </item>
     <item>
       <title>Sports Reels ideas: turn a meme into a Reel fans share</title>
       <link>https://sportscontentplaybook.com/blog/sports-reels-ideas-turn-a-meme-into-a-reel-fans-share.html</link>
@@ -296,16 +306,6 @@
       <description>California Legion shows how authentic locker room rituals can outperform forced sponsorships. Here is the framework sports teams can use to build smarter branded content.</description>
       <enclosure url="https://sportscontentplaybook.com/assets/blog/why-the-best-sponsored-sports-content-starts-with-the-moment-not-the-brand.jpg" length="533801" type="image/jpeg"/>
       <media:content url="https://sportscontentplaybook.com/assets/blog/why-the-best-sponsored-sports-content-starts-with-the-moment-not-the-brand.jpg" medium="image" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>The smart way to keep sponsors visible in social media in sports without ruining the content</title>
-      <link>https://sportscontentplaybook.com/blog/the-smart-way-to-keep-sponsors-visible-in-social-media-in-sports-without-ruining-the-content.html</link>
-      <guid isPermaLink="true">https://sportscontentplaybook.com/blog/the-smart-way-to-keep-sponsors-visible-in-social-media-in-sports-without-ruining-the-content.html</guid>
-      <pubDate>Sat, 18 Apr 2026 08:00:00 GMT</pubDate>
-      <dc:creator>Josep</dc:creator>
-      <description>Olympique Lyonnais shows how smart, persistent branding in social media in sports can increase sponsor visibility, improve fan engagement and create more valuable digital content without disrupting the viewing experience.</description>
-      <enclosure url="https://sportscontentplaybook.com/assets/blog/the-smart-way-to-keep-sponsors-visible-in-social-media-in-sports-without-ruining-the-content.jpg" length="411928" type="image/jpeg"/>
-      <media:content url="https://sportscontentplaybook.com/assets/blog/the-smart-way-to-keep-sponsors-visible-in-social-media-in-sports-without-ruining-the-content.jpg" medium="image" type="image/jpeg"/>
     </item>
   </channel>
 </rss>
