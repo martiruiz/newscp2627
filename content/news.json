@@ -21,29 +21,29 @@
     "faq": [],
     "image_url": "https://frontofficesports.com/wp-content/uploads/2025/06/Kenny-Headshot-1-scaled-e1750774512761.jpeg?quality=80&w=1024",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "La NBA amplía su colaboración con el creador Kenny Beecham y Enjoy Basketball",
+      "tokens": {
+        "in": 1473,
+        "out": 654
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "La NBA ha ampliado su acuerdo de contenido con el creador Kenny Beecham y su marca Enjoy Basketball. Un piloto de tres episodios de Enjoy the NBA Trivia Show se convierte en una temporada de ocho episodios en NBA TV, la app de la NBA y el canal de YouTube de Enjoy Basketball. Otros programas de la marca se emitirán en las plataformas de la liga, y los creadores también tendrán acceso a material oficial de la NBA.",
         "El acuerdo incluye un programa en directo en el festival para aficionados NBA Crossover durante el fin de semana del All-Star en Phoenix, así como apariciones habituales de Beecham y Pierre Andresen como invitados en The Association, de NBA TV. Enjoy Basketball tiene 142.000 suscriptores en YouTube, mientras que la comunidad personal de Beecham es mayor en X. Él asegura que el grupo seguirá criticando a la liga cuando no esté de acuerdo, y que la NBA valora esa autenticidad.",
         "Para los equipos de redes sociales deportivas, este es un modelo para tratar a los creadores independientes como socios de distribución y programación, y no como influencers puntuales. Los clubes y las ligas pueden empezar con un piloto pequeño, desbloquear material oficial y vincular las series a momentos clave como derbis o eventos All-Star. Dejar a los creadores margen para opiniones sinceras ayuda a mantener la confianza de las audiencias que los hacen valiosos desde el principio."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-12T23:33:21.997893+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-11-13T01:07:08.450Z",
-      "tokens": {
-        "in": 1473,
-        "out": 654
-      }
+      "source_changed": "2026-11-12T23:33:21.997893+00:00",
+      "meta_description": ""
     }
   },
   {
