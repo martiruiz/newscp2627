@@ -84,16 +84,16 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/610/610413.jpg?v=mwas9sr0"
   },
   {
+    "account": "redbull",
+    "account_platform": "tiktok",
+    "views": 5200000,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/617/617938.png?v=mwdohj7k"
+  },
+  {
     "account": "houseofhighlights",
     "account_platform": "instagram",
     "views": 4879784,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/613/613044.jpg?v=mwc9ur61"
-  },
-  {
-    "account": "redbull",
-    "account_platform": "tiktok",
-    "views": 4600000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/617/617938.png?v=mwdohj7k"
   },
   {
     "account": "fabriziorom",
@@ -116,7 +116,7 @@
   {
     "account": "onefootball",
     "account_platform": "instagram",
-    "views": 3808030,
+    "views": 3873661,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/615/615559.jpg?v=mwdiw4ag"
   },
   {
@@ -162,16 +162,16 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/609/609665.jpg?v=mwas73ee"
   },
   {
-    "account": "lakers",
-    "account_platform": "tiktok",
-    "views": 3000000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/617/617760.jpg?v=mwdoh7xq"
-  },
-  {
     "account": "espn",
     "account_platform": "tiktok",
     "views": 3000000,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/614/614771.jpg?v=mwcb9hp3"
+  },
+  {
+    "account": "lakers",
+    "account_platform": "tiktok",
+    "views": 3000000,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/617/617760.jpg?v=mwdoh7xq"
   },
   {
     "account": "england",
