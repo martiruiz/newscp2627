@@ -6,7 +6,17 @@
     <atom:link href="https://sportscontentplaybook.com/es/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Ideas, tendencias y análisis de contenido deportivo en redes sociales.</description>
     <language>es</language>
-    <lastBuildDate>Fri, 13 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Sat, 14 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Ideas de Reels deportivos: convierte las llegadas y los calentamientos en tu formato para los días sin partido</title>
+      <link>https://sportscontentplaybook.com/es/blog/sports-reels-ideas-arrivals-warm-ups-non-match-days.html</link>
+      <guid isPermaLink="true">https://sportscontentplaybook.com/es/blog/sports-reels-ideas-arrivals-warm-ups-non-match-days.html</guid>
+      <pubDate>Sat, 14 Nov 2026 08:00:00 GMT</pubDate>
+      <dc:creator>Martí Ruiz</dc:creator>
+      <description>Esta semana, algunos de los Reels más vistos del deporte no tenían ningún gol ni ningún punto jugado. Este es el patrón que hay detrás de las llegadas y los calentamientos, y cómo copiarlo.</description>
+      <enclosure url="https://sportscontentplaybook.com/assets/blog/sports-reels-ideas-arrivals-warm-ups-non-match-days.jpg" length="67774" type="image/jpeg"/>
+      <media:content url="https://sportscontentplaybook.com/assets/blog/sports-reels-ideas-arrivals-warm-ups-non-match-days.jpg" medium="image" type="image/jpeg"/>
+    </item>
     <item>
       <title>Tendencias de redes sociales deportivas: X ya paga por los clips y el vídeo largo se convierte en un activo</title>
       <link>https://sportscontentplaybook.com/es/blog/sports-social-media-trends-x-clips-tool-pays-creators.html</link>
@@ -296,16 +306,6 @@
       <description>Los Seattle Seahawks transformaron la cobertura del draft centrándose en las llamadas emotivas a los jugadores. Este artículo analiza la estrategia y ofrece un marco para replicarla en el contenido deportivo.</description>
       <enclosure url="https://sportscontentplaybook.com/assets/blog/how-the-seattle-seahawks-turned-draft-calls-into-high-impact-content.jpg" length="250878" type="image/jpeg"/>
       <media:content url="https://sportscontentplaybook.com/assets/blog/how-the-seattle-seahawks-turned-draft-calls-into-high-impact-content.jpg" medium="image" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>Por qué el mejor contenido deportivo patrocinado empieza por el momento, no por la marca</title>
-      <link>https://sportscontentplaybook.com/es/blog/why-the-best-sponsored-sports-content-starts-with-the-moment-not-the-brand.html</link>
-      <guid isPermaLink="true">https://sportscontentplaybook.com/es/blog/why-the-best-sponsored-sports-content-starts-with-the-moment-not-the-brand.html</guid>
-      <pubDate>Sat, 25 Apr 2026 08:00:00 GMT</pubDate>
-      <dc:creator>Josep</dc:creator>
-      <description>California Legion demuestra cómo los rituales auténticos del vestuario pueden superar a los patrocinios forzados. Este es el framework que los equipos deportivos pueden usar para crear contenido de marca más inteligente.</description>
-      <enclosure url="https://sportscontentplaybook.com/assets/blog/why-the-best-sponsored-sports-content-starts-with-the-moment-not-the-brand.jpg" length="533801" type="image/jpeg"/>
-      <media:content url="https://sportscontentplaybook.com/assets/blog/why-the-best-sponsored-sports-content-starts-with-the-moment-not-the-brand.jpg" medium="image" type="image/jpeg"/>
     </item>
   </channel>
 </rss>

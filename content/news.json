@@ -47,6 +47,100 @@
     }
   },
   {
+    "id": 333,
+    "url": "https://www.socialmediatoday.com/news/metas-edits-app-gets-speed-curves-and-auto-audio-balancing/874586/",
+    "source_name": "Social Media Today",
+    "platform": "instagram",
+    "title": "Meta's Edits app adds speed curves, auto audio balancing and text timing controls",
+    "paragraphs": [
+      "Meta has rolled out a new batch of features for Edits, its video editing app tied to Instagram. Creators can now apply speed curves to vary playback speed within a clip, choosing from presets or building their own. An auto-adjust tool balances audio levels across video elements, and new controls let users set how long text animations stay on screen and how fast they loop.",
+      "Edits also now lets users pick which topics they want to see more or less of in its Inspiration tab, similar to Meta's Your Algorithm tool for feeds. The update continues Meta's near-biweekly release cadence for the app, which has also recently arrived on desktop, giving editors a larger workspace.",
+      "For sports social teams, speed curves are a natural fit for highlight Reels: slow down the moment a shot hits the net or a tackle lands, then snap back to full speed. Auto audio balancing helps when mixing crowd noise, commentary and music, while text timing controls make score overlays and sponsor tags cleaner. Tuning the Inspiration tab toward sports topics can surface fresh format ideas."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-12T22:27:56+00:00",
+    "created_at": "2026-11-14T13:26:05.652092+00:00",
+    "edited_at": null,
+    "slug": "meta-s-edits-app-adds-speed-curves-auto-audio-balancing-and-text-333",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/mOl83e-2toQTGM-IjR7muMiC4PGpwlT8dWl9LCCMKrY/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9lZGl0c191cGRhdGUzLnBuZw==.webp",
+    "es": {
+      "title": "La app Edits de Meta añade curvas de velocidad, equilibrado automático de audio y controles de tiempo para el texto",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "Meta ha lanzado un nuevo conjunto de funciones para Edits, su app de edición de vídeo vinculada a Instagram. Ahora los creadores pueden aplicar curvas de velocidad para variar la velocidad de reproducción dentro de un clip, eligiendo entre ajustes predefinidos o creando las suyas propias. Una herramienta de ajuste automático equilibra los niveles de audio entre los distintos elementos del vídeo, y unos nuevos controles permiten definir cuánto tiempo permanecen en pantalla las animaciones de texto y a qué velocidad se repiten en bucle.",
+        "Edits también permite ahora elegir qué temas quieres ver más o menos en su pestaña Inspiration, de forma similar a la herramienta Your Algorithm de Meta para los feeds. La actualización mantiene el ritmo de lanzamientos casi quincenal de Meta para la app, que además ha llegado hace poco al escritorio y ofrece a los editores un espacio de trabajo más grande.",
+        "Para los equipos de redes sociales deportivas, las curvas de velocidad encajan de forma natural en los Reels de resúmenes: ralentiza el momento en que un disparo entra en la red o en que llega una entrada, y vuelve después a la velocidad normal. El equilibrado automático de audio ayuda al mezclar el ruido del público, los comentarios y la música, mientras que los controles de tiempo del texto hacen que los marcadores y las etiquetas de patrocinadores se vean más limpios. Ajustar la pestaña Inspiration hacia temas deportivos puede ayudarte a descubrir ideas de formatos nuevas."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-11-14T13:26:05.652092+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-11-14T15:10:35.710Z",
+      "tokens": {
+        "in": 1427,
+        "out": 698
+      }
+    }
+  },
+  {
+    "id": 334,
+    "url": "https://www.socialmediatoday.com/news/instagram-experiments-with-new-sports-feature/874585/",
+    "source_name": "Social Media Today",
+    "platform": "instagram",
+    "title": "Instagram tests feature letting users pick favorite sports and leagues for updates",
+    "paragraphs": [
+      "Instagram appears to be testing a sports preferences option, spotted by app researcher Alessandro Paluzzi. Users would choose from a list of major sports and tailor which league updates they receive. Instagram would then use those choices to surface real-time sports updates and show more sports content to interested users. The move follows Threads adding sports-focused elements to capture live event discussion. Instagram has not commented on the test.",
+      "For clubs and leagues, this could mean that fans who declare an interest in a sport or league are more likely to be shown related posts, including live moments. If the feature launches, teams should lean into timely, real-time content around matches, such as quick results graphics, goal clips and reaction Reels, so they are well placed to benefit from any boost in sports-focused distribution.",
+      "Meta has repeatedly highlighted sports as a major engagement driver across its apps, including growing interest in women's sport, with the top 10 women athletes drawing 128 million combined followers on Instagram. Women's teams and athletes in particular should watch this test closely and consider how consistent, fast-turnaround match-day posting could help them reach new, opted-in audiences."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-12T22:20:57+00:00",
+    "created_at": "2026-11-14T13:26:13.67928+00:00",
+    "edited_at": null,
+    "slug": "instagram-tests-feature-letting-users-pick-favorite-sports-and-334",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/khXojiOkU45p_DhxBB-X7_0fg02ZofYtf9B72T512hU/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9pbnN0YWdyYW1fYnJhbmRfbG9nby5wbmc=.webp",
+    "es": {
+      "title": "Instagram prueba una función que permite a los usuarios elegir sus deportes y ligas favoritos para recibir novedades",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "Instagram parece estar probando una opción de preferencias deportivas, detectada por el investigador de apps Alessandro Paluzzi. Los usuarios podrían elegir de una lista de los principales deportes y personalizar de qué ligas reciben novedades. Instagram usaría después esas elecciones para mostrar actualizaciones deportivas en tiempo real y más contenido deportivo a los usuarios interesados. El movimiento llega después de que Threads incorporara elementos centrados en el deporte para captar la conversación sobre eventos en directo. Instagram no ha comentado nada sobre la prueba.",
+        "Para clubes y ligas, esto podría significar que a los aficionados que declaren interés en un deporte o una liga se les muestren con más probabilidad publicaciones relacionadas, incluidos momentos en directo. Si la función se lanza, los equipos deberían apostar por contenido oportuno y en tiempo real en torno a los partidos, como gráficos de resultados rápidos, clips de goles y Reels de reacción, para estar bien posicionados y beneficiarse de cualquier impulso en la distribución de contenido deportivo.",
+        "Meta ha destacado en repetidas ocasiones el deporte como un gran motor de engagement en sus apps, incluido el creciente interés por el deporte femenino, con las 10 mejores atletas atrayendo 128 millones de seguidores combinados en Instagram. Los equipos y las atletas femeninas, en particular, deberían seguir esta prueba de cerca y plantearse cómo una publicación constante y ágil en los días de partido podría ayudarles a llegar a nuevas audiencias que han elegido seguir ese contenido."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-11-14T13:26:13.67928+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-11-14T15:10:41.525Z",
+      "tokens": {
+        "in": 1446,
+        "out": 698
+      }
+    }
+  },
+  {
     "id": 310,
     "url": "https://frontofficesports.com/article/kenny-beecham-enjoy-basketball-expand-nba-content-deal/",
     "source_name": "Front Office Sports",
@@ -141,33 +235,32 @@
     }
   },
   {
-    "id": 296,
-    "url": "https://socialgeekpro.beehiiv.com/p/espa-a-estudia-suspender-tiktok#2",
+    "id": 297,
+    "url": "https://socialgeekpro.beehiiv.com/p/espa-a-estudia-suspender-tiktok#3",
     "source_name": "SocialGeek News",
-    "platform": "instagram",
-    "title": "Instagram tests Features, horizontal videos up to 90 minutes, to rival YouTube",
+    "platform": "other",
+    "title": "EU draft rules would require influencers to clearly label sponsored content",
     "paragraphs": [
-      "Instagram is testing a format called Features that lets creators upload horizontal videos of up to 90 minutes, aimed at podcasts, interviews and entertainment shows. Viewers will be able to jump from a short Reel straight to the full video without leaving the app. The test is running with selected creators in the US after earlier trials in Brazil, with a separate upload flow and snippet clips published as Reels.",
-      "For clubs, leagues and athletes, this opens a path to host long-form content where much of their audience already lives. Full press conferences, behind-the-scenes documentaries, club podcasts or extended match analysis could sit on Instagram, with short Reels acting as trailers that drive fans to the complete video.",
-      "Teams should plan clip-to-full-video workflows now, so every long piece comes with ready-made snippets, and consider new sponsor inventory around longer formats."
+      "The European Union's draft Digital Fairness Act seeks to make influencers clearly label sponsored content. The proposal is also expected to include measures to limit compulsive use of online platforms.",
+      "Sports organisations that pay athletes, ambassadors or creators to promote partners should review their disclosure practices before the rules take shape. Clubs activating sponsorships through player accounts or creator collaborations will need clear, consistent ad labels in contracts and briefs, which also protects fan trust. Planning compliant formats now avoids last-minute changes to campaigns across EU markets."
     ],
     "relevant": true,
     "published_at": "2026-11-12T12:13:00+00:00",
-    "created_at": "2026-11-12T15:05:04.855566+00:00",
+    "created_at": "2026-11-12T15:05:05.26406+00:00",
     "edited_at": null,
-    "slug": "instagram-tests-features-horizontal-videos-up-to-90-minutes-to-rival-296",
+    "slug": "eu-draft-rules-would-require-influencers-to-clearly-label-sponsored-297",
     "meta_title": null,
     "meta_description": null,
     "takeaways": [],
     "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/manual-2026-11-11-2.jpg",
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/d222c491c3e6614e-16x9.jpg",
     "es": {
       "faq": [],
       "model": "claude-sonnet-5-5",
-      "title": "Instagram prueba Features, vídeos horizontales de hasta 90 minutos, para competir con YouTube",
+      "title": "El borrador de normas de la UE obligaría a los influencers a etiquetar claramente el contenido patrocinado",
       "tokens": {
-        "in": 1365,
-        "out": 529
+        "in": 1262,
+        "out": 416
       },
       "excerpt": "",
       "cta_text": "",
@@ -177,13 +270,12 @@
       "takeaways": [],
       "meta_title": "",
       "paragraphs": [
-        "Instagram está probando un formato llamado Features que permite a los creadores subir vídeos horizontales de hasta 90 minutos, pensado para pódcasts, entrevistas y programas de entretenimiento. Los usuarios podrán saltar de un Reel corto directamente al vídeo completo sin salir de la app. La prueba se está realizando con creadores seleccionados en EE. UU. tras pruebas previas en Brasil, con un flujo de subida independiente y clips de fragmentos publicados como Reels.",
-        "Para clubes, ligas y deportistas, esto abre un camino para alojar contenido de formato largo donde ya se encuentra gran parte de su audiencia. Ruedas de prensa completas, documentales entre bastidores, pódcasts de clubes o análisis extendidos de partidos podrían estar en Instagram, con Reels cortos que funcionen como tráilers y lleven a los aficionados al vídeo completo.",
-        "Los equipos deberían planificar ya flujos de trabajo de clip a vídeo completo, de modo que cada pieza larga venga con fragmentos listos para publicar, y valorar nuevo inventario para patrocinadores en torno a los formatos más largos."
+        "El borrador de la Ley de Equidad Digital (Digital Fairness Act) de la Unión Europea busca que los influencers etiqueten claramente el contenido patrocinado. También se espera que la propuesta incluya medidas para limitar el uso compulsivo de las plataformas online.",
+        "Las organizaciones deportivas que pagan a deportistas, embajadores o creadores para promocionar a sus socios deberían revisar sus prácticas de transparencia antes de que las normas tomen forma. Los clubes que activan patrocinios a través de cuentas de jugadores o colaboraciones con creadores necesitarán etiquetas publicitarias claras y coherentes en contratos y briefs, algo que además protege la confianza de los aficionados. Planificar ahora formatos conformes a la normativa evita cambios de última hora en las campañas en los mercados de la UE."
       ],
       "image_title": "",
-      "translated_at": "2026-11-12T16:54:11.153Z",
-      "source_changed": "2026-11-12T15:05:04.855566+00:00",
+      "translated_at": "2026-11-12T16:54:05.321Z",
+      "source_changed": "2026-11-12T15:05:05.26406+00:00",
       "meta_description": ""
     }
   },
@@ -235,32 +327,33 @@
     }
   },
   {
-    "id": 297,
-    "url": "https://socialgeekpro.beehiiv.com/p/espa-a-estudia-suspender-tiktok#3",
+    "id": 296,
+    "url": "https://socialgeekpro.beehiiv.com/p/espa-a-estudia-suspender-tiktok#2",
     "source_name": "SocialGeek News",
-    "platform": "other",
-    "title": "EU draft rules would require influencers to clearly label sponsored content",
+    "platform": "instagram",
+    "title": "Instagram tests Features, horizontal videos up to 90 minutes, to rival YouTube",
     "paragraphs": [
-      "The European Union's draft Digital Fairness Act seeks to make influencers clearly label sponsored content. The proposal is also expected to include measures to limit compulsive use of online platforms.",
-      "Sports organisations that pay athletes, ambassadors or creators to promote partners should review their disclosure practices before the rules take shape. Clubs activating sponsorships through player accounts or creator collaborations will need clear, consistent ad labels in contracts and briefs, which also protects fan trust. Planning compliant formats now avoids last-minute changes to campaigns across EU markets."
+      "Instagram is testing a format called Features that lets creators upload horizontal videos of up to 90 minutes, aimed at podcasts, interviews and entertainment shows. Viewers will be able to jump from a short Reel straight to the full video without leaving the app. The test is running with selected creators in the US after earlier trials in Brazil, with a separate upload flow and snippet clips published as Reels.",
+      "For clubs, leagues and athletes, this opens a path to host long-form content where much of their audience already lives. Full press conferences, behind-the-scenes documentaries, club podcasts or extended match analysis could sit on Instagram, with short Reels acting as trailers that drive fans to the complete video.",
+      "Teams should plan clip-to-full-video workflows now, so every long piece comes with ready-made snippets, and consider new sponsor inventory around longer formats."
     ],
     "relevant": true,
     "published_at": "2026-11-12T12:13:00+00:00",
-    "created_at": "2026-11-12T15:05:05.26406+00:00",
+    "created_at": "2026-11-12T15:05:04.855566+00:00",
     "edited_at": null,
-    "slug": "eu-draft-rules-would-require-influencers-to-clearly-label-sponsored-297",
+    "slug": "instagram-tests-features-horizontal-videos-up-to-90-minutes-to-rival-296",
     "meta_title": null,
     "meta_description": null,
     "takeaways": [],
     "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/d222c491c3e6614e-16x9.jpg",
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/manual-2026-11-11-2.jpg",
     "es": {
       "faq": [],
       "model": "claude-sonnet-5-5",
-      "title": "El borrador de normas de la UE obligaría a los influencers a etiquetar claramente el contenido patrocinado",
+      "title": "Instagram prueba Features, vídeos horizontales de hasta 90 minutos, para competir con YouTube",
       "tokens": {
-        "in": 1262,
-        "out": 416
+        "in": 1365,
+        "out": 529
       },
       "excerpt": "",
       "cta_text": "",
@@ -270,12 +363,13 @@
       "takeaways": [],
       "meta_title": "",
       "paragraphs": [
-        "El borrador de la Ley de Equidad Digital (Digital Fairness Act) de la Unión Europea busca que los influencers etiqueten claramente el contenido patrocinado. También se espera que la propuesta incluya medidas para limitar el uso compulsivo de las plataformas online.",
-        "Las organizaciones deportivas que pagan a deportistas, embajadores o creadores para promocionar a sus socios deberían revisar sus prácticas de transparencia antes de que las normas tomen forma. Los clubes que activan patrocinios a través de cuentas de jugadores o colaboraciones con creadores necesitarán etiquetas publicitarias claras y coherentes en contratos y briefs, algo que además protege la confianza de los aficionados. Planificar ahora formatos conformes a la normativa evita cambios de última hora en las campañas en los mercados de la UE."
+        "Instagram está probando un formato llamado Features que permite a los creadores subir vídeos horizontales de hasta 90 minutos, pensado para pódcasts, entrevistas y programas de entretenimiento. Los usuarios podrán saltar de un Reel corto directamente al vídeo completo sin salir de la app. La prueba se está realizando con creadores seleccionados en EE. UU. tras pruebas previas en Brasil, con un flujo de subida independiente y clips de fragmentos publicados como Reels.",
+        "Para clubes, ligas y deportistas, esto abre un camino para alojar contenido de formato largo donde ya se encuentra gran parte de su audiencia. Ruedas de prensa completas, documentales entre bastidores, pódcasts de clubes o análisis extendidos de partidos podrían estar en Instagram, con Reels cortos que funcionen como tráilers y lleven a los aficionados al vídeo completo.",
+        "Los equipos deberían planificar ya flujos de trabajo de clip a vídeo completo, de modo que cada pieza larga venga con fragmentos listos para publicar, y valorar nuevo inventario para patrocinadores en torno a los formatos más largos."
       ],
       "image_title": "",
-      "translated_at": "2026-11-12T16:54:05.321Z",
-      "source_changed": "2026-11-12T15:05:05.26406+00:00",
+      "translated_at": "2026-11-12T16:54:11.153Z",
+      "source_changed": "2026-11-12T15:05:04.855566+00:00",
       "meta_description": ""
     }
   },
@@ -703,51 +797,6 @@
     }
   },
   {
-    "id": 211,
-    "url": "https://socialgeekpro.beehiiv.com/p/instagram-va-a-por-youtube#3",
-    "source_name": "SocialGeek News",
-    "platform": "youtube",
-    "title": "Study finds citing sources in YouTube descriptions boosts trust and sharing",
-    "paragraphs": [
-      "A new study shows that YouTube creators who list their sources in video descriptions earn more viewer trust and make audiences more willing to share their content. It also found that adopting newsroom habits, such as citing, adding context and correcting errors, improves how trustworthy news videos are perceived, a lesson that extends beyond journalists to brands and creators.",
-      "Sports channels publishing explainers, tactical analysis, stats breakdowns or transfer and injury updates can apply this directly. Linking official data providers, league statements or original interviews in descriptions helps clubs and athletes stand out from rumor accounts, protect credibility and potentially increase shares among fans who want reliable information."
-    ],
-    "relevant": true,
-    "published_at": "2026-11-05T12:13:00+00:00",
-    "created_at": "2026-11-05T14:33:06.48491+00:00",
-    "edited_at": null,
-    "slug": "study-finds-citing-sources-in-youtube-descriptions-boosts-trust-and-211",
-    "meta_title": null,
-    "meta_description": null,
-    "takeaways": [],
-    "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/f972c0f35f28857c-16x9.jpg",
-    "es": {
-      "faq": [],
-      "model": "claude-sonnet-5-5",
-      "title": "Un estudio revela que citar las fuentes en las descripciones de YouTube aumenta la confianza y las veces que se comparte",
-      "tokens": {
-        "in": 1297,
-        "out": 483
-      },
-      "excerpt": "",
-      "cta_text": "",
-      "body_html": "",
-      "cta_title": "",
-      "image_alt": "",
-      "takeaways": [],
-      "meta_title": "",
-      "paragraphs": [
-        "Un nuevo estudio demuestra que los creadores de YouTube que enumeran sus fuentes en las descripciones de los vídeos ganan más confianza entre los espectadores y logran que las audiencias estén más dispuestas a compartir su contenido. También concluye que adoptar hábitos propios de una redacción, como citar, aportar contexto y corregir errores, mejora la percepción de fiabilidad de los vídeos de noticias, una lección que va más allá de los periodistas y que sirve también para marcas y creadores.",
-        "Los canales deportivos que publican explicativos, análisis tácticos, desgloses de estadísticas o novedades sobre fichajes y lesiones pueden aplicarlo directamente. Enlazar en las descripciones a proveedores oficiales de datos, comunicados de las ligas o entrevistas originales ayuda a clubes y deportistas a diferenciarse de las cuentas de rumores, a proteger su credibilidad y, potencialmente, a lograr que compartan más los aficionados que buscan información fiable."
-      ],
-      "image_title": "",
-      "translated_at": "2026-11-05T15:30:15.920Z",
-      "source_changed": "2026-11-05T14:33:06.48491+00:00",
-      "meta_description": ""
-    }
-  },
-  {
     "id": 210,
     "url": "https://socialgeekpro.beehiiv.com/p/instagram-va-a-por-youtube#2",
     "source_name": "SocialGeek News",
@@ -836,6 +885,51 @@
       "image_title": "",
       "translated_at": "2026-11-05T15:30:10.106Z",
       "source_changed": "2026-11-05T14:33:05.619476+00:00",
+      "meta_description": ""
+    }
+  },
+  {
+    "id": 211,
+    "url": "https://socialgeekpro.beehiiv.com/p/instagram-va-a-por-youtube#3",
+    "source_name": "SocialGeek News",
+    "platform": "youtube",
+    "title": "Study finds citing sources in YouTube descriptions boosts trust and sharing",
+    "paragraphs": [
+      "A new study shows that YouTube creators who list their sources in video descriptions earn more viewer trust and make audiences more willing to share their content. It also found that adopting newsroom habits, such as citing, adding context and correcting errors, improves how trustworthy news videos are perceived, a lesson that extends beyond journalists to brands and creators.",
+      "Sports channels publishing explainers, tactical analysis, stats breakdowns or transfer and injury updates can apply this directly. Linking official data providers, league statements or original interviews in descriptions helps clubs and athletes stand out from rumor accounts, protect credibility and potentially increase shares among fans who want reliable information."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-05T12:13:00+00:00",
+    "created_at": "2026-11-05T14:33:06.48491+00:00",
+    "edited_at": null,
+    "slug": "study-finds-citing-sources-in-youtube-descriptions-boosts-trust-and-211",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/f972c0f35f28857c-16x9.jpg",
+    "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
+      "title": "Un estudio revela que citar las fuentes en las descripciones de YouTube aumenta la confianza y las veces que se comparte",
+      "tokens": {
+        "in": 1297,
+        "out": 483
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [],
+      "meta_title": "",
+      "paragraphs": [
+        "Un nuevo estudio demuestra que los creadores de YouTube que enumeran sus fuentes en las descripciones de los vídeos ganan más confianza entre los espectadores y logran que las audiencias estén más dispuestas a compartir su contenido. También concluye que adoptar hábitos propios de una redacción, como citar, aportar contexto y corregir errores, mejora la percepción de fiabilidad de los vídeos de noticias, una lección que va más allá de los periodistas y que sirve también para marcas y creadores.",
+        "Los canales deportivos que publican explicativos, análisis tácticos, desgloses de estadísticas o novedades sobre fichajes y lesiones pueden aplicarlo directamente. Enlazar en las descripciones a proveedores oficiales de datos, comunicados de las ligas o entrevistas originales ayuda a clubes y deportistas a diferenciarse de las cuentas de rumores, a proteger su credibilidad y, potencialmente, a lograr que compartan más los aficionados que buscan información fiable."
+      ],
+      "image_title": "",
+      "translated_at": "2026-11-05T15:30:15.920Z",
+      "source_changed": "2026-11-05T14:33:06.48491+00:00",
       "meta_description": ""
     }
   },
@@ -1404,53 +1498,6 @@
     }
   },
   {
-    "id": 83,
-    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces#2",
-    "source_name": "SocialGeek News",
-    "platform": "ai",
-    "title": "CapCut announces ChatGPT plugin to edit videos through conversation",
-    "paragraphs": [
-      "At its CapCut World event in Los Angeles, CapCut, which reports more than 700 million monthly users, unveiled a ChatGPT plugin coming in the next few months. Users will be able to shape an idea in ChatGPT, let CapCut assemble a first cut, and refine it by chatting, such as extending a shot or lowering music under voiceover. Manual timeline edits are understood by the conversation too.",
-      "CapCut also introduced EditPilot on desktop for natural-language edits of complex or repetitive tasks, plus more image, video and audio generation on web and an AI Lab in the mobile app that turns photos and clips into vlogs or recaps.",
-      "For sports social teams, this could speed up matchday recaps, player highlight packages and behind-the-scenes edits, especially for smaller clubs with limited staff. The tool lowers production effort, but storytelling and editorial judgment will still separate standout club content from the rest."
-    ],
-    "relevant": true,
-    "published_at": "2026-10-29T12:12:00+00:00",
-    "created_at": "2026-10-29T12:54:20.149885+00:00",
-    "edited_at": null,
-    "slug": "capcut-announces-chatgpt-plugin-to-edit-videos-through-conversation-83",
-    "meta_title": null,
-    "meta_description": null,
-    "takeaways": [],
-    "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/d111e67e2e467a7e-16x9.jpg",
-    "es": {
-      "faq": [],
-      "model": "claude-sonnet-5-5",
-      "title": "CapCut anuncia un plugin de ChatGPT para editar vídeos a través de una conversación",
-      "tokens": {
-        "in": 1382,
-        "out": 559
-      },
-      "excerpt": "",
-      "cta_text": "",
-      "body_html": "",
-      "cta_title": "",
-      "image_alt": "",
-      "takeaways": [],
-      "meta_title": "",
-      "paragraphs": [
-        "En su evento CapCut World, celebrado en Los Ángeles, CapCut, que asegura tener más de 700 millones de usuarios mensuales, presentó un plugin de ChatGPT que llegará en los próximos meses. Los usuarios podrán dar forma a una idea en ChatGPT, dejar que CapCut monte un primer corte y perfeccionarlo chateando, por ejemplo alargando un plano o bajando la música bajo una voz en off. La conversación también entiende las ediciones manuales hechas en la línea de tiempo.",
-        "CapCut también presentó EditPilot en escritorio, para editar con lenguaje natural tareas complejas o repetitivas, además de más generación de imágenes, vídeo y audio en la web y un AI Lab en la app móvil que convierte fotos y clips en vlogs o resúmenes.",
-        "Para los equipos de redes sociales deportivas, esto podría acelerar los resúmenes del día de partido, los paquetes de mejores jugadas de los jugadores y las ediciones de behind-the-scenes, sobre todo en clubes pequeños con poco personal. La herramienta reduce el esfuerzo de producción, pero la narrativa y el criterio editorial seguirán marcando la diferencia entre el contenido destacado de un club y el resto."
-      ],
-      "image_title": "",
-      "translated_at": "2026-10-29T16:10:15.419Z",
-      "source_changed": "2026-10-29T12:54:20.149885+00:00",
-      "meta_description": ""
-    }
-  },
-  {
     "id": 84,
     "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces#3",
     "source_name": "SocialGeek News",
@@ -1494,6 +1541,53 @@
       "image_title": "",
       "translated_at": "2026-10-29T16:10:26.722Z",
       "source_changed": "2026-10-29T12:54:20.285329+00:00",
+      "meta_description": ""
+    }
+  },
+  {
+    "id": 83,
+    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces#2",
+    "source_name": "SocialGeek News",
+    "platform": "ai",
+    "title": "CapCut announces ChatGPT plugin to edit videos through conversation",
+    "paragraphs": [
+      "At its CapCut World event in Los Angeles, CapCut, which reports more than 700 million monthly users, unveiled a ChatGPT plugin coming in the next few months. Users will be able to shape an idea in ChatGPT, let CapCut assemble a first cut, and refine it by chatting, such as extending a shot or lowering music under voiceover. Manual timeline edits are understood by the conversation too.",
+      "CapCut also introduced EditPilot on desktop for natural-language edits of complex or repetitive tasks, plus more image, video and audio generation on web and an AI Lab in the mobile app that turns photos and clips into vlogs or recaps.",
+      "For sports social teams, this could speed up matchday recaps, player highlight packages and behind-the-scenes edits, especially for smaller clubs with limited staff. The tool lowers production effort, but storytelling and editorial judgment will still separate standout club content from the rest."
+    ],
+    "relevant": true,
+    "published_at": "2026-10-29T12:12:00+00:00",
+    "created_at": "2026-10-29T12:54:20.149885+00:00",
+    "edited_at": null,
+    "slug": "capcut-announces-chatgpt-plugin-to-edit-videos-through-conversation-83",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/d111e67e2e467a7e-16x9.jpg",
+    "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
+      "title": "CapCut anuncia un plugin de ChatGPT para editar vídeos a través de una conversación",
+      "tokens": {
+        "in": 1382,
+        "out": 559
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [],
+      "meta_title": "",
+      "paragraphs": [
+        "En su evento CapCut World, celebrado en Los Ángeles, CapCut, que asegura tener más de 700 millones de usuarios mensuales, presentó un plugin de ChatGPT que llegará en los próximos meses. Los usuarios podrán dar forma a una idea en ChatGPT, dejar que CapCut monte un primer corte y perfeccionarlo chateando, por ejemplo alargando un plano o bajando la música bajo una voz en off. La conversación también entiende las ediciones manuales hechas en la línea de tiempo.",
+        "CapCut también presentó EditPilot en escritorio, para editar con lenguaje natural tareas complejas o repetitivas, además de más generación de imágenes, vídeo y audio en la web y un AI Lab en la app móvil que convierte fotos y clips en vlogs o resúmenes.",
+        "Para los equipos de redes sociales deportivas, esto podría acelerar los resúmenes del día de partido, los paquetes de mejores jugadas de los jugadores y las ediciones de behind-the-scenes, sobre todo en clubes pequeños con poco personal. La herramienta reduce el esfuerzo de producción, pero la narrativa y el criterio editorial seguirán marcando la diferencia entre el contenido destacado de un club y el resto."
+      ],
+      "image_title": "",
+      "translated_at": "2026-10-29T16:10:15.419Z",
+      "source_changed": "2026-10-29T12:54:20.149885+00:00",
       "meta_description": ""
     }
   },
