@@ -68,29 +68,29 @@
     "faq": [],
     "image_url": "https://imgproxy.divecdn.com/mOl83e-2toQTGM-IjR7muMiC4PGpwlT8dWl9LCCMKrY/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9lZGl0c191cGRhdGUzLnBuZw==.webp",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "La app Edits de Meta añade curvas de velocidad, equilibrado automático de audio y controles de tiempo para el texto",
+      "tokens": {
+        "in": 1427,
+        "out": 698
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "Meta ha lanzado un nuevo conjunto de funciones para Edits, su app de edición de vídeo vinculada a Instagram. Ahora los creadores pueden aplicar curvas de velocidad para variar la velocidad de reproducción dentro de un clip, eligiendo entre ajustes predefinidos o creando las suyas propias. Una herramienta de ajuste automático equilibra los niveles de audio entre los distintos elementos del vídeo, y unos nuevos controles permiten definir cuánto tiempo permanecen en pantalla las animaciones de texto y a qué velocidad se repiten en bucle.",
         "Edits también permite ahora elegir qué temas quieres ver más o menos en su pestaña Inspiration, de forma similar a la herramienta Your Algorithm de Meta para los feeds. La actualización mantiene el ritmo de lanzamientos casi quincenal de Meta para la app, que además ha llegado hace poco al escritorio y ofrece a los editores un espacio de trabajo más grande.",
         "Para los equipos de redes sociales deportivas, las curvas de velocidad encajan de forma natural en los Reels de resúmenes: ralentiza el momento en que un disparo entra en la red o en que llega una entrada, y vuelve después a la velocidad normal. El equilibrado automático de audio ayuda al mezclar el ruido del público, los comentarios y la música, mientras que los controles de tiempo del texto hacen que los marcadores y las etiquetas de patrocinadores se vean más limpios. Ajustar la pestaña Inspiration hacia temas deportivos puede ayudarte a descubrir ideas de formatos nuevas."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-14T13:26:05.652092+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-11-14T15:10:35.710Z",
-      "tokens": {
-        "in": 1427,
-        "out": 698
-      }
+      "source_changed": "2026-11-14T13:26:05.652092+00:00",
+      "meta_description": ""
     }
   },
   {
@@ -115,29 +115,29 @@
     "faq": [],
     "image_url": "https://imgproxy.divecdn.com/khXojiOkU45p_DhxBB-X7_0fg02ZofYtf9B72T512hU/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9pbnN0YWdyYW1fYnJhbmRfbG9nby5wbmc=.webp",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "Instagram prueba una función que permite a los usuarios elegir sus deportes y ligas favoritos para recibir novedades",
+      "tokens": {
+        "in": 1446,
+        "out": 698
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "Instagram parece estar probando una opción de preferencias deportivas, detectada por el investigador de apps Alessandro Paluzzi. Los usuarios podrían elegir de una lista de los principales deportes y personalizar de qué ligas reciben novedades. Instagram usaría después esas elecciones para mostrar actualizaciones deportivas en tiempo real y más contenido deportivo a los usuarios interesados. El movimiento llega después de que Threads incorporara elementos centrados en el deporte para captar la conversación sobre eventos en directo. Instagram no ha comentado nada sobre la prueba.",
         "Para clubes y ligas, esto podría significar que a los aficionados que declaren interés en un deporte o una liga se les muestren con más probabilidad publicaciones relacionadas, incluidos momentos en directo. Si la función se lanza, los equipos deberían apostar por contenido oportuno y en tiempo real en torno a los partidos, como gráficos de resultados rápidos, clips de goles y Reels de reacción, para estar bien posicionados y beneficiarse de cualquier impulso en la distribución de contenido deportivo.",
         "Meta ha destacado en repetidas ocasiones el deporte como un gran motor de engagement en sus apps, incluido el creciente interés por el deporte femenino, con las 10 mejores atletas atrayendo 128 millones de seguidores combinados en Instagram. Los equipos y las atletas femeninas, en particular, deberían seguir esta prueba de cerca y plantearse cómo una publicación constante y ágil en los días de partido podría ayudarles a llegar a nuevas audiencias que han elegido seguir ese contenido."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-14T13:26:13.67928+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-11-14T15:10:41.525Z",
-      "tokens": {
-        "in": 1446,
-        "out": 698
-      }
+      "source_changed": "2026-11-14T13:26:13.67928+00:00",
+      "meta_description": ""
     }
   },
   {
