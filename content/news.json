@@ -21,29 +21,29 @@
     "faq": [],
     "image_url": "https://frontofficesports.com/wp-content/uploads/2026/11/2026-08-28T234745Z_542421178_MT1USATODAY29682748_RTRMADP_3_NFL-WASHINGTON-COMMANDERS-AT-BALTIMORE-RAVENS-scaled.jpg?quality=80&w=1024",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "NFL, Commanders y ESPN usan colaboraciones de Instagram para promocionar el casting de Sam Hartman en The Bachelor",
+      "tokens": {
+        "in": 1513,
+        "out": 757
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "Sam Hartman, quarterback del practice squad de los Washington Commanders, ha sido anunciado como protagonista de la temporada 30 de The Bachelor de ABC. Justo después de la revelación en Good Morning America, la NFL, los Commanders y ESPN publicaron posts en colaboración en Instagram con ABC y la cuenta oficial del programa, además de contenido similar en TikTok. El clip en cámara lenta de la carrera de 40 yardas de Hartman en el Combine de la NFL superó el millón de visualizaciones a mediodía, mientras que las fotos estáticas del equipo y de ESPN reunieron más de 400.000 likes en conjunto.",
         "El impulso encaja en una estrategia más amplia de la NFL: la liga ya había comentado que está ampliando el contenido dirigido a público femenino, incluidos vídeos de la concentración de pretemporada con quarterbacks y sus parejas. ESPN también prevé seguir coordinándose con las marcas hermanas de Disney en contenido de The Bachelor que resulte relevante para sus fans. Los antiguos programas universitarios de Hartman, Wake Forest y Notre Dame, también se sumaron.",
         "Para los equipos de redes sociales deportivas, la lección es que los momentos de cruce con propiedades de entretenimiento pueden llegar a audiencias mucho más allá de los aficionados más fieles. Los posts en colaboración con las cuentas oficiales de un programa multiplican el reach, y el material de archivo, como los clips del Combine, se puede reutilizar al instante. Los clubes y las universidades deberían identificar los proyectos de sus jugadores fuera del campo, preparar los recursos con antelación y coordinarse con sus socios para aprovechar la ola del anuncio en cuestión de horas."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-13T23:30:05.015027+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-11-14T03:19:39.720Z",
-      "tokens": {
-        "in": 1513,
-        "out": 757
-      }
+      "source_changed": "2026-11-13T23:30:05.015027+00:00",
+      "meta_description": ""
     }
   },
   {
