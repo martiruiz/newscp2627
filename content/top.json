@@ -60,12 +60,6 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/611/611504.jpg?v=mwat1iht"
   },
   {
-    "account": "liverpoolfc",
-    "account_platform": "instagram",
-    "views": 6533207,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/601/601025.jpg?v=mw952dmw"
-  },
-  {
     "account": "houseofhighlights",
     "account_platform": "instagram",
     "views": 6126660,
@@ -144,12 +138,6 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/615/615559.jpg?v=mwdiw4ag"
   },
   {
-    "account": "f1",
-    "account_platform": "tiktok",
-    "views": 3900000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/604/604739.jpg?v=mw99hdjv"
-  },
-  {
     "account": "fabriziorom",
     "account_platform": "instagram",
     "views": 3768549,
@@ -178,5 +166,17 @@
     "account_platform": "instagram",
     "views": 3264223,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/612/612903.jpg?v=mwc9roik"
+  },
+  {
+    "account": "realmadrid",
+    "account_platform": "tiktok",
+    "views": 3200000,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/611/611360.jpg?v=mwat1gxl"
+  },
+  {
+    "account": "realmadrid",
+    "account_platform": "instagram",
+    "views": 3194141,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/609/609712.jpg?v=mwas72vw"
   }
 ]
