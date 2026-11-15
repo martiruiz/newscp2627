@@ -6,7 +6,17 @@
     <atom:link href="https://sportscontentplaybook.com/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Sports social media content ideas, trends and analysis.</description>
     <language>en</language>
-    <lastBuildDate>Sat, 14 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Sun, 15 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Sports Reels ideas: use speed curves in Edits to choose the moment fans replay</title>
+      <link>https://sportscontentplaybook.com/blog/sports-reels-ideas-speed-curves-edits-highlights.html</link>
+      <guid isPermaLink="true">https://sportscontentplaybook.com/blog/sports-reels-ideas-speed-curves-edits-highlights.html</guid>
+      <pubDate>Sun, 15 Nov 2026 08:00:00 GMT</pubDate>
+      <dc:creator>Martí Ruiz</dc:creator>
+      <description>Edits now includes speed curves and automatic audio balance. The tool is no longer the excuse: what matters is which moment you choose to slow down.</description>
+      <enclosure url="https://sportscontentplaybook.com/assets/blog/sports-reels-ideas-speed-curves-edits-highlights.jpg" length="70444" type="image/jpeg"/>
+      <media:content url="https://sportscontentplaybook.com/assets/blog/sports-reels-ideas-speed-curves-edits-highlights.jpg" medium="image" type="image/jpeg"/>
+    </item>
     <item>
       <title>Sports Reels ideas: make arrivals and warm-ups your non-match-day format</title>
       <link>https://sportscontentplaybook.com/blog/sports-reels-ideas-arrivals-warm-ups-non-match-days.html</link>
@@ -296,16 +306,6 @@
       <description>Most sports teams approached Mother’s Day with static graphics. This article analyzes why emotional video storytelling created stronger fan engagement and what clubs can learn from it.</description>
       <enclosure url="https://sportscontentplaybook.com/assets/blog/what-sports-teams-got-right-and-wrong-on-mothers-day-content.jpg" length="238720" type="image/jpeg"/>
       <media:content url="https://sportscontentplaybook.com/assets/blog/what-sports-teams-got-right-and-wrong-on-mothers-day-content.jpg" medium="image" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>How the Seattle Seahawks turned draft calls into high-impact content</title>
-      <link>https://sportscontentplaybook.com/blog/how-the-seattle-seahawks-turned-draft-calls-into-high-impact-content.html</link>
-      <guid isPermaLink="true">https://sportscontentplaybook.com/blog/how-the-seattle-seahawks-turned-draft-calls-into-high-impact-content.html</guid>
-      <pubDate>Sat, 02 May 2026 08:00:00 GMT</pubDate>
-      <dc:creator>Josep</dc:creator>
-      <description>The Seattle Seahawks transformed draft coverage by focusing on emotional player calls. This article breaks down the strategy and offers a framework to replicate it across sports content.</description>
-      <enclosure url="https://sportscontentplaybook.com/assets/blog/how-the-seattle-seahawks-turned-draft-calls-into-high-impact-content.jpg" length="250878" type="image/jpeg"/>
-      <media:content url="https://sportscontentplaybook.com/assets/blog/how-the-seattle-seahawks-turned-draft-calls-into-high-impact-content.jpg" medium="image" type="image/jpeg"/>
     </item>
   </channel>
 </rss>
