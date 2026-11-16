@@ -6,7 +6,17 @@
     <atom:link href="https://sportscontentplaybook.com/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Sports social media content ideas, trends and analysis.</description>
     <language>en</language>
-    <lastBuildDate>Sun, 15 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 16 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Sports social media strategy: make your fans the asset and check sponsor fit</title>
+      <link>https://sportscontentplaybook.com/blog/sports-social-media-strategy-fans-as-asset-sponsor-fit.html</link>
+      <guid isPermaLink="true">https://sportscontentplaybook.com/blog/sports-social-media-strategy-fans-as-asset-sponsor-fit.html</guid>
+      <pubDate>Mon, 16 Nov 2026 08:00:00 GMT</pubDate>
+      <dc:creator>Martí Ruiz</dc:creator>
+      <description>A stadium noise meter Reel reached 2.1 million views, and the same week a club's sponsorship decision followed its members. Here is the content pattern behind it.</description>
+      <enclosure url="https://sportscontentplaybook.com/assets/blog/sports-social-media-strategy-fans-as-asset-sponsor-fit.jpg" length="70415" type="image/jpeg"/>
+      <media:content url="https://sportscontentplaybook.com/assets/blog/sports-social-media-strategy-fans-as-asset-sponsor-fit.jpg" medium="image" type="image/jpeg"/>
+    </item>
     <item>
       <title>Sports Reels ideas: use speed curves in Edits to choose the moment fans replay</title>
       <link>https://sportscontentplaybook.com/blog/sports-reels-ideas-speed-curves-edits-highlights.html</link>
@@ -296,16 +306,6 @@
       <description>MotoGP transformed the Catalan Grand Prix into a culturally driven digital experience through localized storytelling, regional athletes, and platform-native content that strengthened fan engagement.</description>
       <enclosure url="https://sportscontentplaybook.com/assets/blog/how-motogp-turned-the-catalan-gp-into-a-local-first-digital-experience.jpg" length="228262" type="image/jpeg"/>
       <media:content url="https://sportscontentplaybook.com/assets/blog/how-motogp-turned-the-catalan-gp-into-a-local-first-digital-experience.jpg" medium="image" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>What sports teams got right and wrong on Mother’s Day content</title>
-      <link>https://sportscontentplaybook.com/blog/what-sports-teams-got-right-and-wrong-on-mothers-day-content.html</link>
-      <guid isPermaLink="true">https://sportscontentplaybook.com/blog/what-sports-teams-got-right-and-wrong-on-mothers-day-content.html</guid>
-      <pubDate>Wed, 13 May 2026 08:00:00 GMT</pubDate>
-      <dc:creator>Josep</dc:creator>
-      <description>Most sports teams approached Mother’s Day with static graphics. This article analyzes why emotional video storytelling created stronger fan engagement and what clubs can learn from it.</description>
-      <enclosure url="https://sportscontentplaybook.com/assets/blog/what-sports-teams-got-right-and-wrong-on-mothers-day-content.jpg" length="238720" type="image/jpeg"/>
-      <media:content url="https://sportscontentplaybook.com/assets/blog/what-sports-teams-got-right-and-wrong-on-mothers-day-content.jpg" medium="image" type="image/jpeg"/>
     </item>
   </channel>
 </rss>

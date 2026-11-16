@@ -6,7 +6,17 @@
     <atom:link href="https://sportscontentplaybook.com/es/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Ideas, tendencias y análisis de contenido deportivo en redes sociales.</description>
     <language>es</language>
-    <lastBuildDate>Sun, 15 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 16 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Estrategia de redes sociales deportivas: haz de tus aficionados el activo y comprueba el encaje del patrocinador</title>
+      <link>https://sportscontentplaybook.com/es/blog/sports-social-media-strategy-fans-as-asset-sponsor-fit.html</link>
+      <guid isPermaLink="true">https://sportscontentplaybook.com/es/blog/sports-social-media-strategy-fans-as-asset-sponsor-fit.html</guid>
+      <pubDate>Mon, 16 Nov 2026 08:00:00 GMT</pubDate>
+      <dc:creator>Martí Ruiz</dc:creator>
+      <description>Un Reel con un sonómetro en el estadio alcanzó 2,1 millones de visualizaciones y, esa misma semana, la decisión de patrocinio de un club siguió la voz de sus socios. Este es el patrón de contenido que hay detrás.</description>
+      <enclosure url="https://sportscontentplaybook.com/assets/blog/sports-social-media-strategy-fans-as-asset-sponsor-fit.jpg" length="70415" type="image/jpeg"/>
+      <media:content url="https://sportscontentplaybook.com/assets/blog/sports-social-media-strategy-fans-as-asset-sponsor-fit.jpg" medium="image" type="image/jpeg"/>
+    </item>
     <item>
       <title>Ideas para Reels deportivos: usa las curvas de velocidad de Edits para elegir el momento que los fans repiten</title>
       <link>https://sportscontentplaybook.com/es/blog/sports-reels-ideas-speed-curves-edits-highlights.html</link>
@@ -296,16 +306,6 @@
       <description>MotoGP transformó el Gran Premio de Cataluña en una experiencia digital impulsada por la cultura mediante un storytelling localizado, pilotos de la región y contenido nativo de cada plataforma que reforzó el engagement de los aficionados.</description>
       <enclosure url="https://sportscontentplaybook.com/assets/blog/how-motogp-turned-the-catalan-gp-into-a-local-first-digital-experience.jpg" length="228262" type="image/jpeg"/>
       <media:content url="https://sportscontentplaybook.com/assets/blog/how-motogp-turned-the-catalan-gp-into-a-local-first-digital-experience.jpg" medium="image" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>Qué hicieron bien y mal los equipos deportivos en sus contenidos del Día de la Madre</title>
-      <link>https://sportscontentplaybook.com/es/blog/what-sports-teams-got-right-and-wrong-on-mothers-day-content.html</link>
-      <guid isPermaLink="true">https://sportscontentplaybook.com/es/blog/what-sports-teams-got-right-and-wrong-on-mothers-day-content.html</guid>
-      <pubDate>Wed, 13 May 2026 08:00:00 GMT</pubDate>
-      <dc:creator>Josep</dc:creator>
-      <description>La mayoría de los equipos deportivos abordaron el Día de la Madre con gráficos estáticos. Este artículo analiza por qué el storytelling emocional en vídeo generó más engagement entre los aficionados y qué pueden aprender los clubes de ello.</description>
-      <enclosure url="https://sportscontentplaybook.com/assets/blog/what-sports-teams-got-right-and-wrong-on-mothers-day-content.jpg" length="238720" type="image/jpeg"/>
-      <media:content url="https://sportscontentplaybook.com/assets/blog/what-sports-teams-got-right-and-wrong-on-mothers-day-content.jpg" medium="image" type="image/jpeg"/>
     </item>
   </channel>
 </rss>

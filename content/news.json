@@ -1,5 +1,52 @@
 [
   {
+    "id": 343,
+    "url": "https://www.sponconsports.com/p/how-the-la-chargers-win-on-youtube",
+    "source_name": "SponCon Sports",
+    "platform": "youtube",
+    "title": "Chargers and American Airlines draw 485K YouTube views with road-trip catering episode",
+    "paragraphs": [
+      "The Los Angeles Chargers released a new episode of their American Airlines-backed YouTube series Everything It Takes, this time following how an NFL team gets fed on the way to a road game. The 15-minute film covers meals being loaded onto the plane and how players stay fuelled across the trip, with the airline appearing naturally throughout alongside on-screen branding.",
+      "Despite a difficult season on the field, the episode passed 485K YouTube views within four days. The lesson for sports social teams is that a strong behind-the-scenes concept can carry audience interest regardless of results, and that a sponsor earns more credible exposure when it is woven into the story itself rather than added as a logo or a pre-roll mention.",
+      "Clubs, leagues and athletes can map their own operational processes, such as travel, nutrition, kit preparation or equipment, to partners that already play a role in them. A recurring long-form YouTube series built around those routines gives sponsors returning inventory, and the longer episodes can also be cut into short clips for other platforms."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-16T15:00:00+00:00",
+    "created_at": "2026-11-16T15:35:55.603116+00:00",
+    "edited_at": null,
+    "slug": "chargers-and-american-airlines-draw-485k-youtube-views-with-road-trip-343",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/43809196-4f8c-4185-a2d6-3594c2c148dd/Untitled_design__23_.png?t=1794686068",
+    "es": {
+      "title": "Los Chargers y American Airlines logran 485K visualizaciones en YouTube con un episodio sobre el catering en los viajes a partidos fuera de casa",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "Los Angeles Chargers han estrenado un nuevo episodio de Everything It Takes, su serie de YouTube patrocinada por American Airlines, en el que esta vez se muestra cómo se alimenta un equipo de la NFL de camino a un partido a domicilio. El documental de 15 minutos recorre cómo se cargan las comidas en el avión y cómo se mantienen los jugadores con energía durante todo el viaje, con la aerolínea presente de forma natural a lo largo del vídeo junto a su marca en pantalla.",
+        "A pesar de una temporada complicada en el campo, el episodio superó las 485K visualizaciones en YouTube en cuatro días. La lección para los equipos de redes sociales deportivas es que un buen concepto de behind-the-scenes puede mantener el interés de la audiencia independientemente de los resultados, y que un patrocinador logra una exposición más creíble cuando se integra en la propia historia en lugar de añadirse como un logo o una mención en pre-roll.",
+        "Clubes, ligas y deportistas pueden identificar sus propios procesos operativos, como los viajes, la nutrición, la preparación de la equipación o el material, y vincularlos con los socios que ya participan en ellos. Una serie recurrente de formato largo en YouTube construida en torno a esas rutinas ofrece a los patrocinadores inventario que se repite, y los episodios más largos también pueden recortarse en clips cortos para otras plataformas."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-11-16T15:35:55.603116+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-11-16T18:39:30.542Z",
+      "tokens": {
+        "in": 1416,
+        "out": 637
+      }
+    }
+  },
+  {
     "id": 325,
     "url": "https://frontofficesports.com/article/sports-world-swoops-in-on-sam-hartman-bachelor-season/",
     "source_name": "Front Office Sports",
@@ -235,32 +282,33 @@
     }
   },
   {
-    "id": 297,
-    "url": "https://socialgeekpro.beehiiv.com/p/espa-a-estudia-suspender-tiktok#3",
+    "id": 296,
+    "url": "https://socialgeekpro.beehiiv.com/p/espa-a-estudia-suspender-tiktok#2",
     "source_name": "SocialGeek News",
-    "platform": "other",
-    "title": "EU draft rules would require influencers to clearly label sponsored content",
+    "platform": "instagram",
+    "title": "Instagram tests Features, horizontal videos up to 90 minutes, to rival YouTube",
     "paragraphs": [
-      "The European Union's draft Digital Fairness Act seeks to make influencers clearly label sponsored content. The proposal is also expected to include measures to limit compulsive use of online platforms.",
-      "Sports organisations that pay athletes, ambassadors or creators to promote partners should review their disclosure practices before the rules take shape. Clubs activating sponsorships through player accounts or creator collaborations will need clear, consistent ad labels in contracts and briefs, which also protects fan trust. Planning compliant formats now avoids last-minute changes to campaigns across EU markets."
+      "Instagram is testing a format called Features that lets creators upload horizontal videos of up to 90 minutes, aimed at podcasts, interviews and entertainment shows. Viewers will be able to jump from a short Reel straight to the full video without leaving the app. The test is running with selected creators in the US after earlier trials in Brazil, with a separate upload flow and snippet clips published as Reels.",
+      "For clubs, leagues and athletes, this opens a path to host long-form content where much of their audience already lives. Full press conferences, behind-the-scenes documentaries, club podcasts or extended match analysis could sit on Instagram, with short Reels acting as trailers that drive fans to the complete video.",
+      "Teams should plan clip-to-full-video workflows now, so every long piece comes with ready-made snippets, and consider new sponsor inventory around longer formats."
     ],
     "relevant": true,
     "published_at": "2026-11-12T12:13:00+00:00",
-    "created_at": "2026-11-12T15:05:05.26406+00:00",
+    "created_at": "2026-11-12T15:05:04.855566+00:00",
     "edited_at": null,
-    "slug": "eu-draft-rules-would-require-influencers-to-clearly-label-sponsored-297",
+    "slug": "instagram-tests-features-horizontal-videos-up-to-90-minutes-to-rival-296",
     "meta_title": null,
     "meta_description": null,
     "takeaways": [],
     "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/d222c491c3e6614e-16x9.jpg",
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/manual-2026-11-11-2.jpg",
     "es": {
       "faq": [],
       "model": "claude-sonnet-5-5",
-      "title": "El borrador de normas de la UE obligaría a los influencers a etiquetar claramente el contenido patrocinado",
+      "title": "Instagram prueba Features, vídeos horizontales de hasta 90 minutos, para competir con YouTube",
       "tokens": {
-        "in": 1262,
-        "out": 416
+        "in": 1365,
+        "out": 529
       },
       "excerpt": "",
       "cta_text": "",
@@ -270,12 +318,13 @@
       "takeaways": [],
       "meta_title": "",
       "paragraphs": [
-        "El borrador de la Ley de Equidad Digital (Digital Fairness Act) de la Unión Europea busca que los influencers etiqueten claramente el contenido patrocinado. También se espera que la propuesta incluya medidas para limitar el uso compulsivo de las plataformas online.",
-        "Las organizaciones deportivas que pagan a deportistas, embajadores o creadores para promocionar a sus socios deberían revisar sus prácticas de transparencia antes de que las normas tomen forma. Los clubes que activan patrocinios a través de cuentas de jugadores o colaboraciones con creadores necesitarán etiquetas publicitarias claras y coherentes en contratos y briefs, algo que además protege la confianza de los aficionados. Planificar ahora formatos conformes a la normativa evita cambios de última hora en las campañas en los mercados de la UE."
+        "Instagram está probando un formato llamado Features que permite a los creadores subir vídeos horizontales de hasta 90 minutos, pensado para pódcasts, entrevistas y programas de entretenimiento. Los usuarios podrán saltar de un Reel corto directamente al vídeo completo sin salir de la app. La prueba se está realizando con creadores seleccionados en EE. UU. tras pruebas previas en Brasil, con un flujo de subida independiente y clips de fragmentos publicados como Reels.",
+        "Para clubes, ligas y deportistas, esto abre un camino para alojar contenido de formato largo donde ya se encuentra gran parte de su audiencia. Ruedas de prensa completas, documentales entre bastidores, pódcasts de clubes o análisis extendidos de partidos podrían estar en Instagram, con Reels cortos que funcionen como tráilers y lleven a los aficionados al vídeo completo.",
+        "Los equipos deberían planificar ya flujos de trabajo de clip a vídeo completo, de modo que cada pieza larga venga con fragmentos listos para publicar, y valorar nuevo inventario para patrocinadores en torno a los formatos más largos."
       ],
       "image_title": "",
-      "translated_at": "2026-11-12T16:54:05.321Z",
-      "source_changed": "2026-11-12T15:05:05.26406+00:00",
+      "translated_at": "2026-11-12T16:54:11.153Z",
+      "source_changed": "2026-11-12T15:05:04.855566+00:00",
       "meta_description": ""
     }
   },
@@ -327,33 +376,32 @@
     }
   },
   {
-    "id": 296,
-    "url": "https://socialgeekpro.beehiiv.com/p/espa-a-estudia-suspender-tiktok#2",
+    "id": 297,
+    "url": "https://socialgeekpro.beehiiv.com/p/espa-a-estudia-suspender-tiktok#3",
     "source_name": "SocialGeek News",
-    "platform": "instagram",
-    "title": "Instagram tests Features, horizontal videos up to 90 minutes, to rival YouTube",
+    "platform": "other",
+    "title": "EU draft rules would require influencers to clearly label sponsored content",
     "paragraphs": [
-      "Instagram is testing a format called Features that lets creators upload horizontal videos of up to 90 minutes, aimed at podcasts, interviews and entertainment shows. Viewers will be able to jump from a short Reel straight to the full video without leaving the app. The test is running with selected creators in the US after earlier trials in Brazil, with a separate upload flow and snippet clips published as Reels.",
-      "For clubs, leagues and athletes, this opens a path to host long-form content where much of their audience already lives. Full press conferences, behind-the-scenes documentaries, club podcasts or extended match analysis could sit on Instagram, with short Reels acting as trailers that drive fans to the complete video.",
-      "Teams should plan clip-to-full-video workflows now, so every long piece comes with ready-made snippets, and consider new sponsor inventory around longer formats."
+      "The European Union's draft Digital Fairness Act seeks to make influencers clearly label sponsored content. The proposal is also expected to include measures to limit compulsive use of online platforms.",
+      "Sports organisations that pay athletes, ambassadors or creators to promote partners should review their disclosure practices before the rules take shape. Clubs activating sponsorships through player accounts or creator collaborations will need clear, consistent ad labels in contracts and briefs, which also protects fan trust. Planning compliant formats now avoids last-minute changes to campaigns across EU markets."
     ],
     "relevant": true,
     "published_at": "2026-11-12T12:13:00+00:00",
-    "created_at": "2026-11-12T15:05:04.855566+00:00",
+    "created_at": "2026-11-12T15:05:05.26406+00:00",
     "edited_at": null,
-    "slug": "instagram-tests-features-horizontal-videos-up-to-90-minutes-to-rival-296",
+    "slug": "eu-draft-rules-would-require-influencers-to-clearly-label-sponsored-297",
     "meta_title": null,
     "meta_description": null,
     "takeaways": [],
     "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/manual-2026-11-11-2.jpg",
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/d222c491c3e6614e-16x9.jpg",
     "es": {
       "faq": [],
       "model": "claude-sonnet-5-5",
-      "title": "Instagram prueba Features, vídeos horizontales de hasta 90 minutos, para competir con YouTube",
+      "title": "El borrador de normas de la UE obligaría a los influencers a etiquetar claramente el contenido patrocinado",
       "tokens": {
-        "in": 1365,
-        "out": 529
+        "in": 1262,
+        "out": 416
       },
       "excerpt": "",
       "cta_text": "",
@@ -363,13 +411,12 @@
       "takeaways": [],
       "meta_title": "",
       "paragraphs": [
-        "Instagram está probando un formato llamado Features que permite a los creadores subir vídeos horizontales de hasta 90 minutos, pensado para pódcasts, entrevistas y programas de entretenimiento. Los usuarios podrán saltar de un Reel corto directamente al vídeo completo sin salir de la app. La prueba se está realizando con creadores seleccionados en EE. UU. tras pruebas previas en Brasil, con un flujo de subida independiente y clips de fragmentos publicados como Reels.",
-        "Para clubes, ligas y deportistas, esto abre un camino para alojar contenido de formato largo donde ya se encuentra gran parte de su audiencia. Ruedas de prensa completas, documentales entre bastidores, pódcasts de clubes o análisis extendidos de partidos podrían estar en Instagram, con Reels cortos que funcionen como tráilers y lleven a los aficionados al vídeo completo.",
-        "Los equipos deberían planificar ya flujos de trabajo de clip a vídeo completo, de modo que cada pieza larga venga con fragmentos listos para publicar, y valorar nuevo inventario para patrocinadores en torno a los formatos más largos."
+        "El borrador de la Ley de Equidad Digital (Digital Fairness Act) de la Unión Europea busca que los influencers etiqueten claramente el contenido patrocinado. También se espera que la propuesta incluya medidas para limitar el uso compulsivo de las plataformas online.",
+        "Las organizaciones deportivas que pagan a deportistas, embajadores o creadores para promocionar a sus socios deberían revisar sus prácticas de transparencia antes de que las normas tomen forma. Los clubes que activan patrocinios a través de cuentas de jugadores o colaboraciones con creadores necesitarán etiquetas publicitarias claras y coherentes en contratos y briefs, algo que además protege la confianza de los aficionados. Planificar ahora formatos conformes a la normativa evita cambios de última hora en las campañas en los mercados de la UE."
       ],
       "image_title": "",
-      "translated_at": "2026-11-12T16:54:11.153Z",
-      "source_changed": "2026-11-12T15:05:04.855566+00:00",
+      "translated_at": "2026-11-12T16:54:05.321Z",
+      "source_changed": "2026-11-12T15:05:05.26406+00:00",
       "meta_description": ""
     }
   },
@@ -797,51 +844,6 @@
     }
   },
   {
-    "id": 210,
-    "url": "https://socialgeekpro.beehiiv.com/p/instagram-va-a-por-youtube#2",
-    "source_name": "SocialGeek News",
-    "platform": "youtube",
-    "title": "YouTube tests lowering creator payout threshold from 100 to 20 dollars",
-    "paragraphs": [
-      "YouTube is testing a reduction of the minimum earnings creators must reach before getting paid, cutting it from 100 to 20 dollars. The change would help smaller channels that currently wait months to hit the threshold and receive any income, and is read as an effort to attract and keep emerging creators as Instagram moves into long-form video.",
-      "For sports organizations, faster payouts could encourage more niche fan creators, ex-players and grassroots channels to professionalize. That widens the pool of smaller, highly engaged creators that clubs and sponsors can partner with for targeted campaigns, such as academy content, women's teams coverage or local fan-led shows, often at lower cost than big names."
-    ],
-    "relevant": true,
-    "published_at": "2026-11-05T12:13:00+00:00",
-    "created_at": "2026-11-05T14:33:06.074643+00:00",
-    "edited_at": null,
-    "slug": "youtube-tests-lowering-creator-payout-threshold-from-100-to-20-dollars-210",
-    "meta_title": null,
-    "meta_description": null,
-    "takeaways": [],
-    "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/f9e88369fdeb6c17-16x9.jpg",
-    "es": {
-      "faq": [],
-      "model": "claude-sonnet-5-5",
-      "title": "YouTube prueba a reducir el umbral de pago para creadores de 100 a 20 dólares",
-      "tokens": {
-        "in": 1301,
-        "out": 458
-      },
-      "excerpt": "",
-      "cta_text": "",
-      "body_html": "",
-      "cta_title": "",
-      "image_alt": "",
-      "takeaways": [],
-      "meta_title": "",
-      "paragraphs": [
-        "YouTube está probando una reducción de los ingresos mínimos que los creadores deben alcanzar antes de cobrar, rebajándolos de 100 a 20 dólares. El cambio ayudaría a los canales más pequeños, que actualmente esperan meses hasta alcanzar el umbral y recibir algún ingreso, y se interpreta como un esfuerzo por atraer y retener a creadores emergentes mientras Instagram avanza hacia el vídeo de formato largo.",
-        "Para las organizaciones deportivas, unos pagos más rápidos podrían animar a más creadores de nicho, ex jugadores y canales de base a profesionalizarse. Eso amplía el grupo de creadores más pequeños y con mucho engagement con los que los clubes y los patrocinadores pueden colaborar en campañas segmentadas, como contenido de cantera, cobertura de equipos femeninos o programas locales dirigidos por aficionados, a menudo a un coste menor que el de los grandes nombres."
-      ],
-      "image_title": "",
-      "translated_at": "2026-11-05T15:30:20.586Z",
-      "source_changed": "2026-11-05T14:33:06.074643+00:00",
-      "meta_description": ""
-    }
-  },
-  {
     "id": 209,
     "url": "https://socialgeekpro.beehiiv.com/p/instagram-va-a-por-youtube",
     "source_name": "SocialGeek News",
@@ -885,6 +887,51 @@
       "image_title": "",
       "translated_at": "2026-11-05T15:30:10.106Z",
       "source_changed": "2026-11-05T14:33:05.619476+00:00",
+      "meta_description": ""
+    }
+  },
+  {
+    "id": 210,
+    "url": "https://socialgeekpro.beehiiv.com/p/instagram-va-a-por-youtube#2",
+    "source_name": "SocialGeek News",
+    "platform": "youtube",
+    "title": "YouTube tests lowering creator payout threshold from 100 to 20 dollars",
+    "paragraphs": [
+      "YouTube is testing a reduction of the minimum earnings creators must reach before getting paid, cutting it from 100 to 20 dollars. The change would help smaller channels that currently wait months to hit the threshold and receive any income, and is read as an effort to attract and keep emerging creators as Instagram moves into long-form video.",
+      "For sports organizations, faster payouts could encourage more niche fan creators, ex-players and grassroots channels to professionalize. That widens the pool of smaller, highly engaged creators that clubs and sponsors can partner with for targeted campaigns, such as academy content, women's teams coverage or local fan-led shows, often at lower cost than big names."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-05T12:13:00+00:00",
+    "created_at": "2026-11-05T14:33:06.074643+00:00",
+    "edited_at": null,
+    "slug": "youtube-tests-lowering-creator-payout-threshold-from-100-to-20-dollars-210",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/f9e88369fdeb6c17-16x9.jpg",
+    "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
+      "title": "YouTube prueba a reducir el umbral de pago para creadores de 100 a 20 dólares",
+      "tokens": {
+        "in": 1301,
+        "out": 458
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [],
+      "meta_title": "",
+      "paragraphs": [
+        "YouTube está probando una reducción de los ingresos mínimos que los creadores deben alcanzar antes de cobrar, rebajándolos de 100 a 20 dólares. El cambio ayudaría a los canales más pequeños, que actualmente esperan meses hasta alcanzar el umbral y recibir algún ingreso, y se interpreta como un esfuerzo por atraer y retener a creadores emergentes mientras Instagram avanza hacia el vídeo de formato largo.",
+        "Para las organizaciones deportivas, unos pagos más rápidos podrían animar a más creadores de nicho, ex jugadores y canales de base a profesionalizarse. Eso amplía el grupo de creadores más pequeños y con mucho engagement con los que los clubes y los patrocinadores pueden colaborar en campañas segmentadas, como contenido de cantera, cobertura de equipos femeninos o programas locales dirigidos por aficionados, a menudo a un coste menor que el de los grandes nombres."
+      ],
+      "image_title": "",
+      "translated_at": "2026-11-05T15:30:20.586Z",
+      "source_changed": "2026-11-05T14:33:06.074643+00:00",
       "meta_description": ""
     }
   },
@@ -1498,33 +1545,33 @@
     }
   },
   {
-    "id": 84,
-    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces#3",
+    "id": 82,
+    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces",
     "source_name": "SocialGeek News",
-    "platform": "other",
-    "title": "Gen Z app Posting2 grows with chronological, ad-free, algorithm-free photo feed",
+    "platform": "facebook",
+    "title": "Facebook tests charging Pages to post links beyond a small monthly quota",
     "paragraphs": [
-      "Posting2 is a small app built as a throwback to early Instagram: square photos, a chronological feed, no algorithm, no ads and no celebrities, with lots of casual everyday posts. According to Fast Company, it grew from 1,600 beta users in April to 36,671 users by October 21, and Sensor Tower recorded a 42% jump in downloads in September versus August.",
-      "The app is still tiny, but it reflects a slice of Gen Z that wants to see friends' posts without algorithmic curation. For clubs and athletes, it is a reminder that raw, imperfect and authentic content is regaining value.",
-      "Sports teams can lean into this by mixing polished campaigns with low-production moments: dressing room snapshots, player phone photos, training ground candids and fan-shot content that feels personal rather than produced."
+      "Facebook is testing a cap on how many link posts a Page can publish. Some Pages are now limited to two link posts per month, after which a prompt invites them to subscribe through Meta One: $50 a month for eight links, $150 for 20, or $500 for unlimited. Links to compatible affiliates, Creator Storefront and Meta products remain unrestricted. Meta calls it a test, though it has reportedly reached nonprofit and library Pages that were meant to be exempt.",
+      "For clubs and leagues that push fans from Facebook to ticketing, shop or news pages, this signals that outbound traffic is getting more expensive. Social teams should audit how much web traffic Facebook really drives and reserve link posts for high-value moments like ticket drops or kit launches.",
+      "The bigger lesson is to invest in owned channels such as newsletters, apps and membership communities. Native formats like video, photo galleries and in-feed match updates can keep Facebook audiences engaged without relying on links."
     ],
     "relevant": true,
     "published_at": "2026-10-29T12:12:00+00:00",
-    "created_at": "2026-10-29T12:54:20.285329+00:00",
+    "created_at": "2026-10-29T12:54:19.971122+00:00",
     "edited_at": null,
-    "slug": "gen-z-app-posting2-grows-with-chronological-ad-free-algorithm-free-84",
+    "slug": "facebook-tests-charging-pages-to-post-links-beyond-a-small-monthly-82",
     "meta_title": null,
     "meta_description": null,
     "takeaways": [],
     "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/linkedin-posting2-16x9.jpg",
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/linkedin-meta-links-16x9.jpg",
     "es": {
       "faq": [],
       "model": "claude-sonnet-5-5",
-      "title": "Posting2, la app de la Generación Z, crece con un feed de fotos cronológico, sin anuncios y sin algoritmo",
+      "title": "Facebook prueba a cobrar a las Páginas por publicar enlaces más allá de una pequeña cuota mensual",
       "tokens": {
-        "in": 1352,
-        "out": 518
+        "in": 1400,
+        "out": 620
       },
       "excerpt": "",
       "cta_text": "",
@@ -1534,13 +1581,13 @@
       "takeaways": [],
       "meta_title": "",
       "paragraphs": [
-        "Posting2 es una pequeña app concebida como un homenaje a los inicios de Instagram: fotos cuadradas, un feed cronológico, sin algoritmo, sin anuncios y sin famosos, con muchos posts informales del día a día. Según Fast Company, pasó de 1.600 usuarios beta en abril a 36.671 usuarios el 21 de octubre, y Sensor Tower registró un aumento del 42 % en las descargas en septiembre frente a agosto.",
-        "La app sigue siendo diminuta, pero refleja a un sector de la Generación Z que quiere ver las publicaciones de sus amigos sin curación algorítmica. Para clubes y deportistas, es un recordatorio de que el contenido crudo, imperfecto y auténtico está recuperando valor.",
-        "Los equipos deportivos pueden aprovechar esta tendencia combinando campañas muy cuidadas con momentos de baja producción: instantáneas del vestuario, fotos hechas con el móvil de los jugadores, imágenes espontáneas de la ciudad deportiva y contenido grabado por aficionados que resulte personal en lugar de producido."
+        "Facebook está probando un límite al número de publicaciones con enlace que puede hacer una Página. Algunas Páginas ya están limitadas a dos publicaciones con enlace al mes, y después un aviso les invita a suscribirse a través de Meta One: 50 $ al mes por ocho enlaces, 150 $ por 20 o 500 $ por enlaces ilimitados. Los enlaces a afiliados compatibles, a Creator Storefront y a productos de Meta siguen sin restricciones. Meta lo presenta como una prueba, aunque según se ha informado ha llegado a Páginas de organizaciones sin ánimo de lucro y de bibliotecas que debían estar exentas.",
+        "Para los clubes y las ligas que llevan a los aficionados desde Facebook a páginas de venta de entradas, de la tienda o de noticias, esto indica que el tráfico saliente se está encareciendo. Los equipos de redes sociales deberían analizar cuánto tráfico web genera realmente Facebook y reservar las publicaciones con enlace para momentos de alto valor, como el lanzamiento de entradas o de equipaciones.",
+        "La lección de fondo es invertir en canales propios como newsletters, apps y comunidades de socios. Los formatos nativos, como el vídeo, las galerías de fotos y las actualizaciones del partido en el feed, pueden mantener el engagement de las audiencias de Facebook sin depender de los enlaces."
       ],
       "image_title": "",
-      "translated_at": "2026-10-29T16:10:26.722Z",
-      "source_changed": "2026-10-29T12:54:20.285329+00:00",
+      "translated_at": "2026-10-29T16:10:21.391Z",
+      "source_changed": "2026-10-29T12:54:19.971122+00:00",
       "meta_description": ""
     }
   },
@@ -1592,33 +1639,33 @@
     }
   },
   {
-    "id": 82,
-    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces",
+    "id": 84,
+    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces#3",
     "source_name": "SocialGeek News",
-    "platform": "facebook",
-    "title": "Facebook tests charging Pages to post links beyond a small monthly quota",
+    "platform": "other",
+    "title": "Gen Z app Posting2 grows with chronological, ad-free, algorithm-free photo feed",
     "paragraphs": [
-      "Facebook is testing a cap on how many link posts a Page can publish. Some Pages are now limited to two link posts per month, after which a prompt invites them to subscribe through Meta One: $50 a month for eight links, $150 for 20, or $500 for unlimited. Links to compatible affiliates, Creator Storefront and Meta products remain unrestricted. Meta calls it a test, though it has reportedly reached nonprofit and library Pages that were meant to be exempt.",
-      "For clubs and leagues that push fans from Facebook to ticketing, shop or news pages, this signals that outbound traffic is getting more expensive. Social teams should audit how much web traffic Facebook really drives and reserve link posts for high-value moments like ticket drops or kit launches.",
-      "The bigger lesson is to invest in owned channels such as newsletters, apps and membership communities. Native formats like video, photo galleries and in-feed match updates can keep Facebook audiences engaged without relying on links."
+      "Posting2 is a small app built as a throwback to early Instagram: square photos, a chronological feed, no algorithm, no ads and no celebrities, with lots of casual everyday posts. According to Fast Company, it grew from 1,600 beta users in April to 36,671 users by October 21, and Sensor Tower recorded a 42% jump in downloads in September versus August.",
+      "The app is still tiny, but it reflects a slice of Gen Z that wants to see friends' posts without algorithmic curation. For clubs and athletes, it is a reminder that raw, imperfect and authentic content is regaining value.",
+      "Sports teams can lean into this by mixing polished campaigns with low-production moments: dressing room snapshots, player phone photos, training ground candids and fan-shot content that feels personal rather than produced."
     ],
     "relevant": true,
     "published_at": "2026-10-29T12:12:00+00:00",
-    "created_at": "2026-10-29T12:54:19.971122+00:00",
+    "created_at": "2026-10-29T12:54:20.285329+00:00",
     "edited_at": null,
-    "slug": "facebook-tests-charging-pages-to-post-links-beyond-a-small-monthly-82",
+    "slug": "gen-z-app-posting2-grows-with-chronological-ad-free-algorithm-free-84",
     "meta_title": null,
     "meta_description": null,
     "takeaways": [],
     "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/linkedin-meta-links-16x9.jpg",
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/linkedin-posting2-16x9.jpg",
     "es": {
       "faq": [],
       "model": "claude-sonnet-5-5",
-      "title": "Facebook prueba a cobrar a las Páginas por publicar enlaces más allá de una pequeña cuota mensual",
+      "title": "Posting2, la app de la Generación Z, crece con un feed de fotos cronológico, sin anuncios y sin algoritmo",
       "tokens": {
-        "in": 1400,
-        "out": 620
+        "in": 1352,
+        "out": 518
       },
       "excerpt": "",
       "cta_text": "",
@@ -1628,13 +1675,13 @@
       "takeaways": [],
       "meta_title": "",
       "paragraphs": [
-        "Facebook está probando un límite al número de publicaciones con enlace que puede hacer una Página. Algunas Páginas ya están limitadas a dos publicaciones con enlace al mes, y después un aviso les invita a suscribirse a través de Meta One: 50 $ al mes por ocho enlaces, 150 $ por 20 o 500 $ por enlaces ilimitados. Los enlaces a afiliados compatibles, a Creator Storefront y a productos de Meta siguen sin restricciones. Meta lo presenta como una prueba, aunque según se ha informado ha llegado a Páginas de organizaciones sin ánimo de lucro y de bibliotecas que debían estar exentas.",
-        "Para los clubes y las ligas que llevan a los aficionados desde Facebook a páginas de venta de entradas, de la tienda o de noticias, esto indica que el tráfico saliente se está encareciendo. Los equipos de redes sociales deberían analizar cuánto tráfico web genera realmente Facebook y reservar las publicaciones con enlace para momentos de alto valor, como el lanzamiento de entradas o de equipaciones.",
-        "La lección de fondo es invertir en canales propios como newsletters, apps y comunidades de socios. Los formatos nativos, como el vídeo, las galerías de fotos y las actualizaciones del partido en el feed, pueden mantener el engagement de las audiencias de Facebook sin depender de los enlaces."
+        "Posting2 es una pequeña app concebida como un homenaje a los inicios de Instagram: fotos cuadradas, un feed cronológico, sin algoritmo, sin anuncios y sin famosos, con muchos posts informales del día a día. Según Fast Company, pasó de 1.600 usuarios beta en abril a 36.671 usuarios el 21 de octubre, y Sensor Tower registró un aumento del 42 % en las descargas en septiembre frente a agosto.",
+        "La app sigue siendo diminuta, pero refleja a un sector de la Generación Z que quiere ver las publicaciones de sus amigos sin curación algorítmica. Para clubes y deportistas, es un recordatorio de que el contenido crudo, imperfecto y auténtico está recuperando valor.",
+        "Los equipos deportivos pueden aprovechar esta tendencia combinando campañas muy cuidadas con momentos de baja producción: instantáneas del vestuario, fotos hechas con el móvil de los jugadores, imágenes espontáneas de la ciudad deportiva y contenido grabado por aficionados que resulte personal en lugar de producido."
       ],
       "image_title": "",
-      "translated_at": "2026-10-29T16:10:21.391Z",
-      "source_changed": "2026-10-29T12:54:19.971122+00:00",
+      "translated_at": "2026-10-29T16:10:26.722Z",
+      "source_changed": "2026-10-29T12:54:20.285329+00:00",
       "meta_description": ""
     }
   },
