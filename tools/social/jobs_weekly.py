@@ -25,6 +25,7 @@ body{{width:1080px;height:1350px;position:relative;overflow:hidden;font-family:H
 AREA={'social':('Social media','megaphone'),'content':('Content','pen-nib'),'design':('Design','palette'),'video':('Video','video-camera'),'marketing':('Marketing','chart-line-up'),'partnerships':('Partnerships','handshake')}
 TYPE={'full-time':'Full-time','internship':'Internship'}
 cfg=json.load(open(sys.argv[1])); LOGOS=sys.argv[2]; OUT=sys.argv[3]; RANGE=cfg['range']
+_n=[AREA[a][0].lower() for a in AREA if any(j['area']==a for j in cfg['jobs'])]; AREAS=', '.join(_n[:-1])+' and '+_n[-1]
 J=[(j['id'],j['title'],j['company'],j['location'],j['type'],j['area'],j['added']) for j in cfg['jobs']]; NJ=len(J)
 
 def pitch(color,op,x,y,r):
@@ -40,7 +41,7 @@ def cover():
 <div class="abs" style="left:80px;top:170px;right:80px;height:2px;background:rgba(255,255,255,.14)"></div>
 <div class="abs gd" style="left:62px;top:200px;font-size:470px;font-weight:900;line-height:.9;letter-spacing:-.06em">{NJ}</div>
 <div class="abs" style="left:80px;top:640px;width:900px;font-size:104px;font-weight:800;line-height:1.02;letter-spacing:-.03em">sports marketing jobs to put on <span class="gd">your radar.</span></div>
-<div class="abs" style="left:80px;top:1015px;width:760px;font-size:38px;color:#aab7d2;font-weight:500;line-height:1.3">New this week on SCP: social, content, design, video and partnerships.</div>
+<div class="abs" style="left:80px;top:1015px;width:760px;font-size:38px;color:#aab7d2;font-weight:500;line-height:1.3">New this week on SCP: {AREAS}.</div>
 <div class="abs" style="left:80px;top:1150px;display:flex;gap:24px">{tiles}</div>
 <div class="abs cap gd" style="right:80px;top:1062px">Swipe →</div>'''
 def job(k,j):
@@ -52,7 +53,7 @@ def job(k,j):
 <div class="abs" style="right:60px;top:210px;font-size:430px;font-weight:900;line-height:.9;letter-spacing:-.06em;color:transparent;-webkit-text-stroke:3px rgba(18,27,51,.10)">{k:02d}</div>
 <div class="abs" style="left:80px;top:270px;width:230px;height:230px;border-radius:58px;background:#fff;padding:20px;box-shadow:0 24px 60px rgba(18,27,51,.14);border:2px solid rgba(18,27,51,.06)"><img src="{lg(id_)}" style="width:100%;height:100%;border-radius:40px;object-fit:cover"></div>
 <div class="abs" style="left:80px;top:560px;display:flex;align-items:center;gap:16px"><span style="width:38px;height:38px;color:#b87a0c">{icon(ai)}</span><span class="cap gl">{an}</span></div>
-<div class="abs" style="left:80px;top:610px;width:920px;height:330px;display:flex;flex-direction:column;justify-content:flex-start;gap:22px"><div style="font-size:{90 if len(t)<=40 else 76}px;font-weight:800;line-height:1.03;letter-spacing:-.03em">{t}</div><div style="font-size:50px;font-weight:600;color:#55617a;display:flex;align-items:center;gap:20px"><i style="width:56px;height:4px;background:#f0b84a;border-radius:2px"></i>{co}</div></div>
+<div class="abs" style="left:80px;top:610px;width:920px;height:330px;display:flex;flex-direction:column;justify-content:flex-start;gap:22px"><div style="font-size:{90 if len(t)<=40 else 76}px;font-weight:800;line-height:1.03;letter-spacing:-.03em">{t}</div><div style="font-size:{50 if len(co)<=30 else 40}px;font-weight:600;color:#55617a;display:flex;align-items:center;gap:20px"><i style="width:56px;height:4px;background:#f0b84a;border-radius:2px;flex:none"></i>{co}</div></div>
 <div class="spec" style="top:{940 if len(t)<=40 else 960}px"><div><div class="cap">Location</div><p>{loc}</p></div><div><div class="cap">Contract</div><p>{TYPE[ty]}</p></div><div><div class="cap">Added</div><p>{add}</p></div></div>
 <div class="abs" style="left:80px;right:80px;bottom:56px;height:108px;border-radius:34px;background:#121b33;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 28px 0 48px"><div><div style="font-size:36px;font-weight:700">Apply on SCP Jobs</div><div style="font-size:24px;color:#8d9bb8;font-weight:500;margin-top:4px">sportscontentplaybook.com/jobs</div></div><div style="width:76px;height:76px;border-radius:50%;border:2px solid #f0b84a;padding:19px"><svg viewBox="0 0 48 48" width="100%" height="100%" fill="none" stroke="#f0b84a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M13 35 L35 13"/><path d="M17 13 H35 V31"/></svg></div></div>'''
 def cta():
