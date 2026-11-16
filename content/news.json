@@ -21,29 +21,29 @@
     "faq": [],
     "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/43809196-4f8c-4185-a2d6-3594c2c148dd/Untitled_design__23_.png?t=1794686068",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "Los Chargers y American Airlines logran 485K visualizaciones en YouTube con un episodio sobre el catering en los viajes a partidos fuera de casa",
+      "tokens": {
+        "in": 1416,
+        "out": 637
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "Los Angeles Chargers han estrenado un nuevo episodio de Everything It Takes, su serie de YouTube patrocinada por American Airlines, en el que esta vez se muestra cómo se alimenta un equipo de la NFL de camino a un partido a domicilio. El documental de 15 minutos recorre cómo se cargan las comidas en el avión y cómo se mantienen los jugadores con energía durante todo el viaje, con la aerolínea presente de forma natural a lo largo del vídeo junto a su marca en pantalla.",
         "A pesar de una temporada complicada en el campo, el episodio superó las 485K visualizaciones en YouTube en cuatro días. La lección para los equipos de redes sociales deportivas es que un buen concepto de behind-the-scenes puede mantener el interés de la audiencia independientemente de los resultados, y que un patrocinador logra una exposición más creíble cuando se integra en la propia historia en lugar de añadirse como un logo o una mención en pre-roll.",
         "Clubes, ligas y deportistas pueden identificar sus propios procesos operativos, como los viajes, la nutrición, la preparación de la equipación o el material, y vincularlos con los socios que ya participan en ellos. Una serie recurrente de formato largo en YouTube construida en torno a esas rutinas ofrece a los patrocinadores inventario que se repite, y los episodios más largos también pueden recortarse en clips cortos para otras plataformas."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-16T15:35:55.603116+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-11-16T18:39:30.542Z",
-      "tokens": {
-        "in": 1416,
-        "out": 637
-      }
+      "source_changed": "2026-11-16T15:35:55.603116+00:00",
+      "meta_description": ""
     }
   },
   {
