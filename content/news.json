@@ -21,29 +21,29 @@
     "faq": [],
     "image_url": "https://imgproxy.divecdn.com/Lc2RKVfighs_Sqbs97Ht0Mrr2tpnb939iwLAQg_-tGg/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9pbnN0YWdyYW1faXBob25lX2R1by5wbmc=.webp",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "Instagram lanza una app dedicada para el iPhone Duo plegable de Apple con Reels en paralelo",
+      "tokens": {
+        "in": 1439,
+        "out": 683
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "Instagram ha lanzado una versión de su app creada específicamente para el iPhone Duo, que aprovecha la pantalla más grande del dispositivo cuando está desplegado. El feed principal se abre en un formato más ancho, los Reels muestran el vídeo y sus comentarios uno junto al otro mientras la reproducción continúa, los botones de control pasan a una barra lateral y los mensajes se abren en un diseño de dos columnas. Cuando el teléfono está plegado, las Stories y los Reels mantienen su formato vertical habitual.",
         "Para los equipos de redes sociales deportivas, la vista de Reels en paralelo coloca la sección de comentarios al mismo nivel que el propio clip. Por eso merece la pena sembrar la conversación desde el principio: respuestas fijadas desde la cuenta del club, mensajes que pidan a los aficionados predecir un resultado o puntuar un gol, y respuestas rápidas a los comentarios más destacados pueden pasar a formar parte de la experiencia de visualización en lugar de ser un añadido de última hora.",
         "El formato se limita a quienes tienen un Duo, así que todavía no debería motivar un replanteamiento completo del contenido. Aun así, los equipos deberían mantener los Reels verticales como opción por defecto y comprobar que los gráficos y los textos clave siguen siendo legibles en las presentaciones más anchas del feed. Instagram también llevó hace poco su app Edits al Duo, lo que indica que las herramientas de creación y visualización pensadas para plegables se están convirtiendo en parte de la hoja de ruta de la plataforma."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-17T01:51:30.858007+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-11-17T04:31:28.172Z",
-      "tokens": {
-        "in": 1439,
-        "out": 683
-      }
+      "source_changed": "2026-11-17T01:51:30.858007+00:00",
+      "meta_description": ""
     }
   },
   {
@@ -68,29 +68,29 @@
     "faq": [],
     "image_url": "https://imgproxy.divecdn.com/SSmr7-k0NsdEpZ19y4vQB_hwCHmmnZxaNg3gQ1ogw6c/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS94X2pvYnNfSVY1OHhNVy5wbmc=.webp",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "X prueba una sección de experiencia laboral que permite a los usuarios incluir su trayectoria profesional en el perfil",
+      "tokens": {
+        "in": 1432,
+        "out": 695
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "X está experimentando con un elemento de experiencia laboral en los perfiles de usuario, que permite añadir el historial profesional, según imágenes compartidas por el investigador de apps Radu Oncescu. X no ha anunciado oficialmente la función. Recuerda a su anterior apuesta por el empleo: las ofertas de trabajo para organizaciones verificadas se lanzaron en agosto de 2023, y X informó de más de 750.000 puestos abiertos en junio de 2024, aunque desde entonces su perfil de contratación y su buscador de empleo han quedado inactivos.",
         "La prueba podría indicar un nuevo intento de competir con LinkedIn y de reconectar a quienes buscan empleo con las marcas. Una lectura más escéptica es que X quiere datos profesionales más ricos, que podrían alimentar con información de audiencia a xAI. En cualquier caso, los perfiles de X podrían incluir pronto más contexto profesional, lo que cambiaría cómo se presentan las cuentas y cómo los usuarios juzgan su credibilidad.",
         "Para las organizaciones deportivas, merece la pena seguirlo de cerca. Los deportistas podrían mostrar su trayectoria, desde la cantera y los clubes anteriores hasta las internacionalidades con la selección, y ofrecer a los aficionados una biografía rápida en su perfil. Los clubes y las ligas podrían animar a entrenadores, analistas y personal de medios a completar su historial, reforzando la credibilidad del contenido experto. Si las funciones de empleo regresan, X también podría convertirse en un canal adicional para captar talento digital y comercial."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-17T01:51:40.350729+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-11-17T04:31:34.729Z",
-      "tokens": {
-        "in": 1432,
-        "out": 695
-      }
+      "source_changed": "2026-11-17T01:51:40.350729+00:00",
+      "meta_description": ""
     }
   },
   {
