@@ -6,7 +6,17 @@
     <atom:link href="https://sportscontentplaybook.com/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Sports social media content ideas, trends and analysis.</description>
     <language>en</language>
-    <lastBuildDate>Mon, 16 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Tue, 17 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Sports social media strategy: turn your routines into a sponsored YouTube series</title>
+      <link>https://sportscontentplaybook.com/blog/sports-social-media-strategy-sponsor-routines-youtube-series.html</link>
+      <guid isPermaLink="true">https://sportscontentplaybook.com/blog/sports-social-media-strategy-sponsor-routines-youtube-series.html</guid>
+      <pubDate>Tue, 17 Nov 2026 08:00:00 GMT</pubDate>
+      <dc:creator>Martí Ruiz</dc:creator>
+      <description>A road-trip catering film drew 485K YouTube views in four days. Here is the pattern behind it and how any team can apply it to routines, partners and short clips.</description>
+      <enclosure url="https://sportscontentplaybook.com/assets/blog/sports-social-media-strategy-sponsor-routines-youtube-series.jpg" length="139233" type="image/jpeg"/>
+      <media:content url="https://sportscontentplaybook.com/assets/blog/sports-social-media-strategy-sponsor-routines-youtube-series.jpg" medium="image" type="image/jpeg"/>
+    </item>
     <item>
       <title>Sports social media strategy: make your fans the asset and check sponsor fit</title>
       <link>https://sportscontentplaybook.com/blog/sports-social-media-strategy-fans-as-asset-sponsor-fit.html</link>
@@ -296,16 +306,6 @@
       <description>The EuroLeague combined informative and emotional storytelling during the Final Four, creating a structured digital narrative that strengthened fan engagement throughout the entire event weekend.</description>
       <enclosure url="https://sportscontentplaybook.com/assets/blog/how-the-euroleague-balanced-information-and-emotion-during-the-final-four.jpg" length="278847" type="image/jpeg"/>
       <media:content url="https://sportscontentplaybook.com/assets/blog/how-the-euroleague-balanced-information-and-emotion-during-the-final-four.jpg" medium="image" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>How MotoGP turned the Catalan GP into a local-first digital experience</title>
-      <link>https://sportscontentplaybook.com/blog/how-motogp-turned-the-catalan-gp-into-a-local-first-digital-experience.html</link>
-      <guid isPermaLink="true">https://sportscontentplaybook.com/blog/how-motogp-turned-the-catalan-gp-into-a-local-first-digital-experience.html</guid>
-      <pubDate>Thu, 21 May 2026 08:00:00 GMT</pubDate>
-      <dc:creator>Josep</dc:creator>
-      <description>MotoGP transformed the Catalan Grand Prix into a culturally driven digital experience through localized storytelling, regional athletes, and platform-native content that strengthened fan engagement.</description>
-      <enclosure url="https://sportscontentplaybook.com/assets/blog/how-motogp-turned-the-catalan-gp-into-a-local-first-digital-experience.jpg" length="228262" type="image/jpeg"/>
-      <media:content url="https://sportscontentplaybook.com/assets/blog/how-motogp-turned-the-catalan-gp-into-a-local-first-digital-experience.jpg" medium="image" type="image/jpeg"/>
     </item>
   </channel>
 </rss>

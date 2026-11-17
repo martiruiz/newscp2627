@@ -6,12 +6,6 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/614/614768.jpg?v=mwcb9hup"
   },
   {
-    "account": "433",
-    "account_platform": "instagram",
-    "views": 20281684,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/612/612879.jpg?v=mwc9rogt"
-  },
-  {
     "account": "fabriziorom",
     "account_platform": "instagram",
     "views": 14115141,
@@ -70,12 +64,6 @@
     "account_platform": "instagram",
     "views": 6126660,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/613/613044.jpg?v=mwc9ur61"
-  },
-  {
-    "account": "espnfc",
-    "account_platform": "instagram",
-    "views": 5834794,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/613/613182.jpg?v=mwca2i1k"
   },
   {
     "account": "mancity",
@@ -162,21 +150,33 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/616/616332.jpg?v=mwdiw7bj"
   },
   {
-    "account": "nfl",
-    "account_platform": "tiktok",
-    "views": 4200000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/630/630478.jpg?v=mwju17vx"
-  },
-  {
     "account": "espn",
     "account_platform": "tiktok",
     "views": 4200000,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/614/614764.jpg?v=mwcb9h6z"
   },
   {
+    "account": "nfl",
+    "account_platform": "tiktok",
+    "views": 4200000,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/630/630478.jpg?v=mwju17vx"
+  },
+  {
     "account": "celtics",
     "account_platform": "tiktok",
     "views": 4200000,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/614/614637.jpg?v=mwcb99mo"
+  },
+  {
+    "account": "onefootball",
+    "account_platform": "instagram",
+    "views": 3914307,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/615/615559.jpg?v=mwdiw4ag"
+  },
+  {
+    "account": "mancity",
+    "account_platform": "instagram",
+    "views": 3888957,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/622/622130.jpg?v=mwi5ps7x"
   }
 ]
