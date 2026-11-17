@@ -1,5 +1,99 @@
 [
   {
+    "id": 353,
+    "url": "https://www.socialmediatoday.com/news/instagram-launches-iphone-duo-native-app/874830/",
+    "source_name": "Social Media Today",
+    "platform": "instagram",
+    "title": "Instagram launches dedicated app for Apple's foldable iPhone Duo with side-by-side Reels",
+    "paragraphs": [
+      "Instagram has released a version of its app built specifically for the iPhone Duo, using the device's larger unfolded display. The main feed opens in a wider format, Reels show the video and its comments next to each other while playback continues, control buttons move to a sidebar, and messages open in a two-column layout. When the phone is folded, Stories and Reels keep their usual vertical format.",
+      "For sports social teams, the side-by-side Reels view puts the comment section on equal footing with the clip itself. That makes it worth seeding conversation early: pinned replies from the club account, prompts asking fans to predict a result or rate a goal, and quick responses to top comments can all become part of the viewing experience rather than an afterthought.",
+      "The format is limited to Duo owners, so it should not drive a full content rethink yet. Still, teams should keep vertical Reels as the default while checking that key graphics and captions remain readable in wider feed presentations. Instagram also brought its Edits app to the Duo recently, signalling that foldable-friendly creation and viewing tools are becoming part of the platform's roadmap."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-16T22:07:04+00:00",
+    "created_at": "2026-11-17T01:51:30.858007+00:00",
+    "edited_at": null,
+    "slug": "instagram-launches-dedicated-app-for-apple-s-foldable-iphone-duo-with-353",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/Lc2RKVfighs_Sqbs97Ht0Mrr2tpnb939iwLAQg_-tGg/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9pbnN0YWdyYW1faXBob25lX2R1by5wbmc=.webp",
+    "es": {
+      "title": "Instagram lanza una app dedicada para el iPhone Duo plegable de Apple con Reels en paralelo",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "Instagram ha lanzado una versión de su app creada específicamente para el iPhone Duo, que aprovecha la pantalla más grande del dispositivo cuando está desplegado. El feed principal se abre en un formato más ancho, los Reels muestran el vídeo y sus comentarios uno junto al otro mientras la reproducción continúa, los botones de control pasan a una barra lateral y los mensajes se abren en un diseño de dos columnas. Cuando el teléfono está plegado, las Stories y los Reels mantienen su formato vertical habitual.",
+        "Para los equipos de redes sociales deportivas, la vista de Reels en paralelo coloca la sección de comentarios al mismo nivel que el propio clip. Por eso merece la pena sembrar la conversación desde el principio: respuestas fijadas desde la cuenta del club, mensajes que pidan a los aficionados predecir un resultado o puntuar un gol, y respuestas rápidas a los comentarios más destacados pueden pasar a formar parte de la experiencia de visualización en lugar de ser un añadido de última hora.",
+        "El formato se limita a quienes tienen un Duo, así que todavía no debería motivar un replanteamiento completo del contenido. Aun así, los equipos deberían mantener los Reels verticales como opción por defecto y comprobar que los gráficos y los textos clave siguen siendo legibles en las presentaciones más anchas del feed. Instagram también llevó hace poco su app Edits al Duo, lo que indica que las herramientas de creación y visualización pensadas para plegables se están convirtiendo en parte de la hoja de ruta de la plataforma."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-11-17T01:51:30.858007+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-11-17T04:31:28.172Z",
+      "tokens": {
+        "in": 1439,
+        "out": 683
+      }
+    }
+  },
+  {
+    "id": 354,
+    "url": "https://www.socialmediatoday.com/news/x-tests-adding-professional-histories-to-user-profiles/874827/",
+    "source_name": "Social Media Today",
+    "platform": "x",
+    "title": "X tests work experience section that lets users list career history on profiles",
+    "paragraphs": [
+      "X is experimenting with a work experience element on user profiles, letting people add their professional history, according to images shared by app researcher Radu Oncescu. X has not officially announced the feature. It echoes the platform's earlier job push: job listings for verified organizations launched in August 2023, and X reported more than 750,000 open roles by June 2024, though its hiring profile and job search have since gone dormant.",
+      "The test may signal a renewed attempt to compete with LinkedIn and reconnect job seekers with brands. A more skeptical reading is that X wants richer professional data, potentially feeding audience insights into xAI. Either way, profiles on X could soon carry more career context, changing how accounts present themselves and how users judge credibility.",
+      "For sports organizations, this is worth watching. Athletes could showcase their career path, from academy and former clubs to national team caps, giving fans a quick biography on their profile. Clubs and leagues could encourage coaches, analysts and media staff to fill in their histories, strengthening credibility around expert content. If job features return, X could also become an extra channel for recruiting digital and commercial talent."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-16T22:03:39+00:00",
+    "created_at": "2026-11-17T01:51:40.350729+00:00",
+    "edited_at": null,
+    "slug": "x-tests-work-experience-section-that-lets-users-list-career-history-354",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/SSmr7-k0NsdEpZ19y4vQB_hwCHmmnZxaNg3gQ1ogw6c/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS94X2pvYnNfSVY1OHhNVy5wbmc=.webp",
+    "es": {
+      "title": "X prueba una sección de experiencia laboral que permite a los usuarios incluir su trayectoria profesional en el perfil",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "X está experimentando con un elemento de experiencia laboral en los perfiles de usuario, que permite añadir el historial profesional, según imágenes compartidas por el investigador de apps Radu Oncescu. X no ha anunciado oficialmente la función. Recuerda a su anterior apuesta por el empleo: las ofertas de trabajo para organizaciones verificadas se lanzaron en agosto de 2023, y X informó de más de 750.000 puestos abiertos en junio de 2024, aunque desde entonces su perfil de contratación y su buscador de empleo han quedado inactivos.",
+        "La prueba podría indicar un nuevo intento de competir con LinkedIn y de reconectar a quienes buscan empleo con las marcas. Una lectura más escéptica es que X quiere datos profesionales más ricos, que podrían alimentar con información de audiencia a xAI. En cualquier caso, los perfiles de X podrían incluir pronto más contexto profesional, lo que cambiaría cómo se presentan las cuentas y cómo los usuarios juzgan su credibilidad.",
+        "Para las organizaciones deportivas, merece la pena seguirlo de cerca. Los deportistas podrían mostrar su trayectoria, desde la cantera y los clubes anteriores hasta las internacionalidades con la selección, y ofrecer a los aficionados una biografía rápida en su perfil. Los clubes y las ligas podrían animar a entrenadores, analistas y personal de medios a completar su historial, reforzando la credibilidad del contenido experto. Si las funciones de empleo regresan, X también podría convertirse en un canal adicional para captar talento digital y comercial."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-11-17T01:51:40.350729+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-11-17T04:31:34.729Z",
+      "tokens": {
+        "in": 1432,
+        "out": 695
+      }
+    }
+  },
+  {
     "id": 343,
     "url": "https://www.sponconsports.com/p/how-the-la-chargers-win-on-youtube",
     "source_name": "SponCon Sports",
@@ -282,53 +376,6 @@
     }
   },
   {
-    "id": 296,
-    "url": "https://socialgeekpro.beehiiv.com/p/espa-a-estudia-suspender-tiktok#2",
-    "source_name": "SocialGeek News",
-    "platform": "instagram",
-    "title": "Instagram tests Features, horizontal videos up to 90 minutes, to rival YouTube",
-    "paragraphs": [
-      "Instagram is testing a format called Features that lets creators upload horizontal videos of up to 90 minutes, aimed at podcasts, interviews and entertainment shows. Viewers will be able to jump from a short Reel straight to the full video without leaving the app. The test is running with selected creators in the US after earlier trials in Brazil, with a separate upload flow and snippet clips published as Reels.",
-      "For clubs, leagues and athletes, this opens a path to host long-form content where much of their audience already lives. Full press conferences, behind-the-scenes documentaries, club podcasts or extended match analysis could sit on Instagram, with short Reels acting as trailers that drive fans to the complete video.",
-      "Teams should plan clip-to-full-video workflows now, so every long piece comes with ready-made snippets, and consider new sponsor inventory around longer formats."
-    ],
-    "relevant": true,
-    "published_at": "2026-11-12T12:13:00+00:00",
-    "created_at": "2026-11-12T15:05:04.855566+00:00",
-    "edited_at": null,
-    "slug": "instagram-tests-features-horizontal-videos-up-to-90-minutes-to-rival-296",
-    "meta_title": null,
-    "meta_description": null,
-    "takeaways": [],
-    "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/manual-2026-11-11-2.jpg",
-    "es": {
-      "faq": [],
-      "model": "claude-sonnet-5-5",
-      "title": "Instagram prueba Features, vídeos horizontales de hasta 90 minutos, para competir con YouTube",
-      "tokens": {
-        "in": 1365,
-        "out": 529
-      },
-      "excerpt": "",
-      "cta_text": "",
-      "body_html": "",
-      "cta_title": "",
-      "image_alt": "",
-      "takeaways": [],
-      "meta_title": "",
-      "paragraphs": [
-        "Instagram está probando un formato llamado Features que permite a los creadores subir vídeos horizontales de hasta 90 minutos, pensado para pódcasts, entrevistas y programas de entretenimiento. Los usuarios podrán saltar de un Reel corto directamente al vídeo completo sin salir de la app. La prueba se está realizando con creadores seleccionados en EE. UU. tras pruebas previas en Brasil, con un flujo de subida independiente y clips de fragmentos publicados como Reels.",
-        "Para clubes, ligas y deportistas, esto abre un camino para alojar contenido de formato largo donde ya se encuentra gran parte de su audiencia. Ruedas de prensa completas, documentales entre bastidores, pódcasts de clubes o análisis extendidos de partidos podrían estar en Instagram, con Reels cortos que funcionen como tráilers y lleven a los aficionados al vídeo completo.",
-        "Los equipos deberían planificar ya flujos de trabajo de clip a vídeo completo, de modo que cada pieza larga venga con fragmentos listos para publicar, y valorar nuevo inventario para patrocinadores en torno a los formatos más largos."
-      ],
-      "image_title": "",
-      "translated_at": "2026-11-12T16:54:11.153Z",
-      "source_changed": "2026-11-12T15:05:04.855566+00:00",
-      "meta_description": ""
-    }
-  },
-  {
     "id": 295,
     "url": "https://socialgeekpro.beehiiv.com/p/espa-a-estudia-suspender-tiktok",
     "source_name": "SocialGeek News",
@@ -372,6 +419,53 @@
       "image_title": "",
       "translated_at": "2026-11-12T16:54:00.482Z",
       "source_changed": "2026-11-12T15:05:04.236378+00:00",
+      "meta_description": ""
+    }
+  },
+  {
+    "id": 296,
+    "url": "https://socialgeekpro.beehiiv.com/p/espa-a-estudia-suspender-tiktok#2",
+    "source_name": "SocialGeek News",
+    "platform": "instagram",
+    "title": "Instagram tests Features, horizontal videos up to 90 minutes, to rival YouTube",
+    "paragraphs": [
+      "Instagram is testing a format called Features that lets creators upload horizontal videos of up to 90 minutes, aimed at podcasts, interviews and entertainment shows. Viewers will be able to jump from a short Reel straight to the full video without leaving the app. The test is running with selected creators in the US after earlier trials in Brazil, with a separate upload flow and snippet clips published as Reels.",
+      "For clubs, leagues and athletes, this opens a path to host long-form content where much of their audience already lives. Full press conferences, behind-the-scenes documentaries, club podcasts or extended match analysis could sit on Instagram, with short Reels acting as trailers that drive fans to the complete video.",
+      "Teams should plan clip-to-full-video workflows now, so every long piece comes with ready-made snippets, and consider new sponsor inventory around longer formats."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-12T12:13:00+00:00",
+    "created_at": "2026-11-12T15:05:04.855566+00:00",
+    "edited_at": null,
+    "slug": "instagram-tests-features-horizontal-videos-up-to-90-minutes-to-rival-296",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/manual-2026-11-11-2.jpg",
+    "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
+      "title": "Instagram prueba Features, vídeos horizontales de hasta 90 minutos, para competir con YouTube",
+      "tokens": {
+        "in": 1365,
+        "out": 529
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [],
+      "meta_title": "",
+      "paragraphs": [
+        "Instagram está probando un formato llamado Features que permite a los creadores subir vídeos horizontales de hasta 90 minutos, pensado para pódcasts, entrevistas y programas de entretenimiento. Los usuarios podrán saltar de un Reel corto directamente al vídeo completo sin salir de la app. La prueba se está realizando con creadores seleccionados en EE. UU. tras pruebas previas en Brasil, con un flujo de subida independiente y clips de fragmentos publicados como Reels.",
+        "Para clubes, ligas y deportistas, esto abre un camino para alojar contenido de formato largo donde ya se encuentra gran parte de su audiencia. Ruedas de prensa completas, documentales entre bastidores, pódcasts de clubes o análisis extendidos de partidos podrían estar en Instagram, con Reels cortos que funcionen como tráilers y lleven a los aficionados al vídeo completo.",
+        "Los equipos deberían planificar ya flujos de trabajo de clip a vídeo completo, de modo que cada pieza larga venga con fragmentos listos para publicar, y valorar nuevo inventario para patrocinadores en torno a los formatos más largos."
+      ],
+      "image_title": "",
+      "translated_at": "2026-11-12T16:54:11.153Z",
+      "source_changed": "2026-11-12T15:05:04.855566+00:00",
       "meta_description": ""
     }
   },
@@ -844,33 +938,32 @@
     }
   },
   {
-    "id": 209,
-    "url": "https://socialgeekpro.beehiiv.com/p/instagram-va-a-por-youtube",
+    "id": 211,
+    "url": "https://socialgeekpro.beehiiv.com/p/instagram-va-a-por-youtube#3",
     "source_name": "SocialGeek News",
-    "platform": "instagram",
-    "title": "Instagram tests Features, horizontal videos up to 90 minutes linked from Reels",
+    "platform": "youtube",
+    "title": "Study finds citing sources in YouTube descriptions boosts trust and sharing",
     "paragraphs": [
-      "Instagram is trialling a format called Features that lets creators publish horizontal videos of up to 90 minutes, aimed at podcasts, interviews and entertainment shows. Reels can link straight to the full episode, and a Clips as Reels option cuts segments from a Feature into Reels. Features can surface in Explore and recommendations, and Instagram wants to bring them to TV screens.",
-      "The test is limited to a group of US creators after an earlier trial in Brazil. Monetization remains unclear: unlike YouTube, Instagram has not announced any ad revenue sharing for the format yet, and the move is widely seen as a direct challenge to YouTube's long-form dominance.",
-      "For clubs and leagues already producing podcasts, documentaries, press conferences or long interviews, this opens a second home for long-form content where their biggest audiences already scroll. Teams could cut highlight Reels from a full player interview or matchday show and drive fans to the complete episode without leaving the app. Those without long formats should start planning content that holds attention beyond 30 seconds."
+      "A new study shows that YouTube creators who list their sources in video descriptions earn more viewer trust and make audiences more willing to share their content. It also found that adopting newsroom habits, such as citing, adding context and correcting errors, improves how trustworthy news videos are perceived, a lesson that extends beyond journalists to brands and creators.",
+      "Sports channels publishing explainers, tactical analysis, stats breakdowns or transfer and injury updates can apply this directly. Linking official data providers, league statements or original interviews in descriptions helps clubs and athletes stand out from rumor accounts, protect credibility and potentially increase shares among fans who want reliable information."
     ],
     "relevant": true,
     "published_at": "2026-11-05T12:13:00+00:00",
-    "created_at": "2026-11-05T14:33:05.619476+00:00",
+    "created_at": "2026-11-05T14:33:06.48491+00:00",
     "edited_at": null,
-    "slug": "instagram-tests-features-horizontal-videos-up-to-90-minutes-linked-209",
+    "slug": "study-finds-citing-sources-in-youtube-descriptions-boosts-trust-and-211",
     "meta_title": null,
     "meta_description": null,
     "takeaways": [],
     "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/instagram-features-linkedin-2026-11-04.jpg",
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/f972c0f35f28857c-16x9.jpg",
     "es": {
       "faq": [],
       "model": "claude-sonnet-5-5",
-      "title": "Instagram prueba Features, vídeos horizontales de hasta 90 minutos enlazados desde Reels",
+      "title": "Un estudio revela que citar las fuentes en las descripciones de YouTube aumenta la confianza y las veces que se comparte",
       "tokens": {
-        "in": 1428,
-        "out": 644
+        "in": 1297,
+        "out": 483
       },
       "excerpt": "",
       "cta_text": "",
@@ -880,13 +973,12 @@
       "takeaways": [],
       "meta_title": "",
       "paragraphs": [
-        "Instagram está probando un formato llamado Features que permite a los creadores publicar vídeos horizontales de hasta 90 minutos, pensado para pódcast, entrevistas y programas de entretenimiento. Los Reels pueden enlazar directamente al episodio completo, y una opción llamada Clips as Reels recorta segmentos de un Feature para convertirlos en Reels. Los Features pueden aparecer en Explorar y en las recomendaciones, e Instagram quiere llevarlos también a las pantallas de TV.",
-        "La prueba se limita a un grupo de creadores de EE. UU., tras una prueba anterior en Brasil. La monetización sigue sin estar clara: a diferencia de YouTube, Instagram todavía no ha anunciado ningún reparto de ingresos publicitarios para este formato, y la medida se interpreta ampliamente como un desafío directo al dominio de YouTube en el contenido de larga duración.",
-        "Para los clubes y las ligas que ya producen pódcast, documentales, ruedas de prensa o entrevistas largas, esto abre un segundo hogar para el contenido de formato largo en el lugar donde ya hace scroll su mayor audiencia. Los equipos podrían recortar Reels con los mejores momentos de una entrevista completa a un jugador o de un programa de día de partido, y llevar a los aficionados al episodio completo sin salir de la app. Quienes no tengan formatos largos deberían empezar a planificar contenido que mantenga la atención más allá de los 30 segundos."
+        "Un nuevo estudio demuestra que los creadores de YouTube que enumeran sus fuentes en las descripciones de los vídeos ganan más confianza entre los espectadores y logran que las audiencias estén más dispuestas a compartir su contenido. También concluye que adoptar hábitos propios de una redacción, como citar, aportar contexto y corregir errores, mejora la percepción de fiabilidad de los vídeos de noticias, una lección que va más allá de los periodistas y que sirve también para marcas y creadores.",
+        "Los canales deportivos que publican explicativos, análisis tácticos, desgloses de estadísticas o novedades sobre fichajes y lesiones pueden aplicarlo directamente. Enlazar en las descripciones a proveedores oficiales de datos, comunicados de las ligas o entrevistas originales ayuda a clubes y deportistas a diferenciarse de las cuentas de rumores, a proteger su credibilidad y, potencialmente, a lograr que compartan más los aficionados que buscan información fiable."
       ],
       "image_title": "",
-      "translated_at": "2026-11-05T15:30:10.106Z",
-      "source_changed": "2026-11-05T14:33:05.619476+00:00",
+      "translated_at": "2026-11-05T15:30:15.920Z",
+      "source_changed": "2026-11-05T14:33:06.48491+00:00",
       "meta_description": ""
     }
   },
@@ -936,32 +1028,33 @@
     }
   },
   {
-    "id": 211,
-    "url": "https://socialgeekpro.beehiiv.com/p/instagram-va-a-por-youtube#3",
+    "id": 209,
+    "url": "https://socialgeekpro.beehiiv.com/p/instagram-va-a-por-youtube",
     "source_name": "SocialGeek News",
-    "platform": "youtube",
-    "title": "Study finds citing sources in YouTube descriptions boosts trust and sharing",
+    "platform": "instagram",
+    "title": "Instagram tests Features, horizontal videos up to 90 minutes linked from Reels",
     "paragraphs": [
-      "A new study shows that YouTube creators who list their sources in video descriptions earn more viewer trust and make audiences more willing to share their content. It also found that adopting newsroom habits, such as citing, adding context and correcting errors, improves how trustworthy news videos are perceived, a lesson that extends beyond journalists to brands and creators.",
-      "Sports channels publishing explainers, tactical analysis, stats breakdowns or transfer and injury updates can apply this directly. Linking official data providers, league statements or original interviews in descriptions helps clubs and athletes stand out from rumor accounts, protect credibility and potentially increase shares among fans who want reliable information."
+      "Instagram is trialling a format called Features that lets creators publish horizontal videos of up to 90 minutes, aimed at podcasts, interviews and entertainment shows. Reels can link straight to the full episode, and a Clips as Reels option cuts segments from a Feature into Reels. Features can surface in Explore and recommendations, and Instagram wants to bring them to TV screens.",
+      "The test is limited to a group of US creators after an earlier trial in Brazil. Monetization remains unclear: unlike YouTube, Instagram has not announced any ad revenue sharing for the format yet, and the move is widely seen as a direct challenge to YouTube's long-form dominance.",
+      "For clubs and leagues already producing podcasts, documentaries, press conferences or long interviews, this opens a second home for long-form content where their biggest audiences already scroll. Teams could cut highlight Reels from a full player interview or matchday show and drive fans to the complete episode without leaving the app. Those without long formats should start planning content that holds attention beyond 30 seconds."
     ],
     "relevant": true,
     "published_at": "2026-11-05T12:13:00+00:00",
-    "created_at": "2026-11-05T14:33:06.48491+00:00",
+    "created_at": "2026-11-05T14:33:05.619476+00:00",
     "edited_at": null,
-    "slug": "study-finds-citing-sources-in-youtube-descriptions-boosts-trust-and-211",
+    "slug": "instagram-tests-features-horizontal-videos-up-to-90-minutes-linked-209",
     "meta_title": null,
     "meta_description": null,
     "takeaways": [],
     "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/f972c0f35f28857c-16x9.jpg",
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/instagram-features-linkedin-2026-11-04.jpg",
     "es": {
       "faq": [],
       "model": "claude-sonnet-5-5",
-      "title": "Un estudio revela que citar las fuentes en las descripciones de YouTube aumenta la confianza y las veces que se comparte",
+      "title": "Instagram prueba Features, vídeos horizontales de hasta 90 minutos enlazados desde Reels",
       "tokens": {
-        "in": 1297,
-        "out": 483
+        "in": 1428,
+        "out": 644
       },
       "excerpt": "",
       "cta_text": "",
@@ -971,12 +1064,13 @@
       "takeaways": [],
       "meta_title": "",
       "paragraphs": [
-        "Un nuevo estudio demuestra que los creadores de YouTube que enumeran sus fuentes en las descripciones de los vídeos ganan más confianza entre los espectadores y logran que las audiencias estén más dispuestas a compartir su contenido. También concluye que adoptar hábitos propios de una redacción, como citar, aportar contexto y corregir errores, mejora la percepción de fiabilidad de los vídeos de noticias, una lección que va más allá de los periodistas y que sirve también para marcas y creadores.",
-        "Los canales deportivos que publican explicativos, análisis tácticos, desgloses de estadísticas o novedades sobre fichajes y lesiones pueden aplicarlo directamente. Enlazar en las descripciones a proveedores oficiales de datos, comunicados de las ligas o entrevistas originales ayuda a clubes y deportistas a diferenciarse de las cuentas de rumores, a proteger su credibilidad y, potencialmente, a lograr que compartan más los aficionados que buscan información fiable."
+        "Instagram está probando un formato llamado Features que permite a los creadores publicar vídeos horizontales de hasta 90 minutos, pensado para pódcast, entrevistas y programas de entretenimiento. Los Reels pueden enlazar directamente al episodio completo, y una opción llamada Clips as Reels recorta segmentos de un Feature para convertirlos en Reels. Los Features pueden aparecer en Explorar y en las recomendaciones, e Instagram quiere llevarlos también a las pantallas de TV.",
+        "La prueba se limita a un grupo de creadores de EE. UU., tras una prueba anterior en Brasil. La monetización sigue sin estar clara: a diferencia de YouTube, Instagram todavía no ha anunciado ningún reparto de ingresos publicitarios para este formato, y la medida se interpreta ampliamente como un desafío directo al dominio de YouTube en el contenido de larga duración.",
+        "Para los clubes y las ligas que ya producen pódcast, documentales, ruedas de prensa o entrevistas largas, esto abre un segundo hogar para el contenido de formato largo en el lugar donde ya hace scroll su mayor audiencia. Los equipos podrían recortar Reels con los mejores momentos de una entrevista completa a un jugador o de un programa de día de partido, y llevar a los aficionados al episodio completo sin salir de la app. Quienes no tengan formatos largos deberían empezar a planificar contenido que mantenga la atención más allá de los 30 segundos."
       ],
       "image_title": "",
-      "translated_at": "2026-11-05T15:30:15.920Z",
-      "source_changed": "2026-11-05T14:33:06.48491+00:00",
+      "translated_at": "2026-11-05T15:30:10.106Z",
+      "source_changed": "2026-11-05T14:33:05.619476+00:00",
       "meta_description": ""
     }
   },
@@ -1545,6 +1639,53 @@
     }
   },
   {
+    "id": 84,
+    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces#3",
+    "source_name": "SocialGeek News",
+    "platform": "other",
+    "title": "Gen Z app Posting2 grows with chronological, ad-free, algorithm-free photo feed",
+    "paragraphs": [
+      "Posting2 is a small app built as a throwback to early Instagram: square photos, a chronological feed, no algorithm, no ads and no celebrities, with lots of casual everyday posts. According to Fast Company, it grew from 1,600 beta users in April to 36,671 users by October 21, and Sensor Tower recorded a 42% jump in downloads in September versus August.",
+      "The app is still tiny, but it reflects a slice of Gen Z that wants to see friends' posts without algorithmic curation. For clubs and athletes, it is a reminder that raw, imperfect and authentic content is regaining value.",
+      "Sports teams can lean into this by mixing polished campaigns with low-production moments: dressing room snapshots, player phone photos, training ground candids and fan-shot content that feels personal rather than produced."
+    ],
+    "relevant": true,
+    "published_at": "2026-10-29T12:12:00+00:00",
+    "created_at": "2026-10-29T12:54:20.285329+00:00",
+    "edited_at": null,
+    "slug": "gen-z-app-posting2-grows-with-chronological-ad-free-algorithm-free-84",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/linkedin-posting2-16x9.jpg",
+    "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
+      "title": "Posting2, la app de la Generación Z, crece con un feed de fotos cronológico, sin anuncios y sin algoritmo",
+      "tokens": {
+        "in": 1352,
+        "out": 518
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [],
+      "meta_title": "",
+      "paragraphs": [
+        "Posting2 es una pequeña app concebida como un homenaje a los inicios de Instagram: fotos cuadradas, un feed cronológico, sin algoritmo, sin anuncios y sin famosos, con muchos posts informales del día a día. Según Fast Company, pasó de 1.600 usuarios beta en abril a 36.671 usuarios el 21 de octubre, y Sensor Tower registró un aumento del 42 % en las descargas en septiembre frente a agosto.",
+        "La app sigue siendo diminuta, pero refleja a un sector de la Generación Z que quiere ver las publicaciones de sus amigos sin curación algorítmica. Para clubes y deportistas, es un recordatorio de que el contenido crudo, imperfecto y auténtico está recuperando valor.",
+        "Los equipos deportivos pueden aprovechar esta tendencia combinando campañas muy cuidadas con momentos de baja producción: instantáneas del vestuario, fotos hechas con el móvil de los jugadores, imágenes espontáneas de la ciudad deportiva y contenido grabado por aficionados que resulte personal en lugar de producido."
+      ],
+      "image_title": "",
+      "translated_at": "2026-10-29T16:10:26.722Z",
+      "source_changed": "2026-10-29T12:54:20.285329+00:00",
+      "meta_description": ""
+    }
+  },
+  {
     "id": 82,
     "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces",
     "source_name": "SocialGeek News",
@@ -1635,53 +1776,6 @@
       "image_title": "",
       "translated_at": "2026-10-29T16:10:15.419Z",
       "source_changed": "2026-10-29T12:54:20.149885+00:00",
-      "meta_description": ""
-    }
-  },
-  {
-    "id": 84,
-    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces#3",
-    "source_name": "SocialGeek News",
-    "platform": "other",
-    "title": "Gen Z app Posting2 grows with chronological, ad-free, algorithm-free photo feed",
-    "paragraphs": [
-      "Posting2 is a small app built as a throwback to early Instagram: square photos, a chronological feed, no algorithm, no ads and no celebrities, with lots of casual everyday posts. According to Fast Company, it grew from 1,600 beta users in April to 36,671 users by October 21, and Sensor Tower recorded a 42% jump in downloads in September versus August.",
-      "The app is still tiny, but it reflects a slice of Gen Z that wants to see friends' posts without algorithmic curation. For clubs and athletes, it is a reminder that raw, imperfect and authentic content is regaining value.",
-      "Sports teams can lean into this by mixing polished campaigns with low-production moments: dressing room snapshots, player phone photos, training ground candids and fan-shot content that feels personal rather than produced."
-    ],
-    "relevant": true,
-    "published_at": "2026-10-29T12:12:00+00:00",
-    "created_at": "2026-10-29T12:54:20.285329+00:00",
-    "edited_at": null,
-    "slug": "gen-z-app-posting2-grows-with-chronological-ad-free-algorithm-free-84",
-    "meta_title": null,
-    "meta_description": null,
-    "takeaways": [],
-    "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/linkedin-posting2-16x9.jpg",
-    "es": {
-      "faq": [],
-      "model": "claude-sonnet-5-5",
-      "title": "Posting2, la app de la Generación Z, crece con un feed de fotos cronológico, sin anuncios y sin algoritmo",
-      "tokens": {
-        "in": 1352,
-        "out": 518
-      },
-      "excerpt": "",
-      "cta_text": "",
-      "body_html": "",
-      "cta_title": "",
-      "image_alt": "",
-      "takeaways": [],
-      "meta_title": "",
-      "paragraphs": [
-        "Posting2 es una pequeña app concebida como un homenaje a los inicios de Instagram: fotos cuadradas, un feed cronológico, sin algoritmo, sin anuncios y sin famosos, con muchos posts informales del día a día. Según Fast Company, pasó de 1.600 usuarios beta en abril a 36.671 usuarios el 21 de octubre, y Sensor Tower registró un aumento del 42 % en las descargas en septiembre frente a agosto.",
-        "La app sigue siendo diminuta, pero refleja a un sector de la Generación Z que quiere ver las publicaciones de sus amigos sin curación algorítmica. Para clubes y deportistas, es un recordatorio de que el contenido crudo, imperfecto y auténtico está recuperando valor.",
-        "Los equipos deportivos pueden aprovechar esta tendencia combinando campañas muy cuidadas con momentos de baja producción: instantáneas del vestuario, fotos hechas con el móvil de los jugadores, imágenes espontáneas de la ciudad deportiva y contenido grabado por aficionados que resulte personal en lugar de producido."
-      ],
-      "image_title": "",
-      "translated_at": "2026-10-29T16:10:26.722Z",
-      "source_changed": "2026-10-29T12:54:20.285329+00:00",
       "meta_description": ""
     }
   },
