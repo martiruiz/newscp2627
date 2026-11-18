@@ -47,6 +47,53 @@
     }
   },
   {
+    "id": 382,
+    "url": "https://www.socialmediatoday.com/news/pinterest-shares-its-first-creators-to-watch-list/874969/",
+    "source_name": "Social Media Today",
+    "platform": "pinterest",
+    "title": "Pinterest names its first 20 Creators to Watch for 2027",
+    "paragraphs": [
+      "Pinterest has released its inaugural list of 20 global creators to watch in 2027, published as part of its wider trend forecast for the coming year. The selection spans categories such as fashion, beauty and home, and is meant to show users and marketers which trend setters are shaping activity on the platform. Pinterest says 83% of its users feel in-app trends are informed by expert opinions.",
+      "The list arrives a month after Pinterest began letting brands sponsor creator Pins, giving marketers a paid route to amplify creator content. Together, the two moves signal that Pinterest wants brands to treat its creators as campaign partners, not just sources of inspiration.",
+      "For sports teams and sports brands, this is a useful shortlist for lifestyle-led partnerships. A club launching a new kit, fan merchandise or a matchday hospitality offer could brief a fashion or home creator to style products in an authentic way, then use sponsored creator Pins to extend reach. Athletes with lifestyle brands can also watch these creators to spot emerging aesthetics before they go mainstream."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-17T20:39:19+00:00",
+    "created_at": "2026-11-18T15:34:07.397574+00:00",
+    "edited_at": null,
+    "slug": "pinterest-names-its-first-20-creators-to-watch-for-2027-382",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/T9j5MN5EkTLT5ubnQpEBbNm-IHvPbA5UAJodIH9puVs/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9waW50ZXJlc3RfY3JlYXRvcnNfdG9fd2F0Y2hfMjAyNy5wbmc=.webp",
+    "es": {
+      "title": "Pinterest presenta sus primeros 20 Creators to Watch para 2027",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "Pinterest ha publicado su primera lista de 20 creadores globales a seguir en 2027, dentro de su previsión de tendencias más amplia para el próximo año. La selección abarca categorías como moda, belleza y hogar, y busca mostrar a usuarios y marketers qué referentes de tendencias están marcando la actividad en la plataforma. Pinterest asegura que el 83 % de sus usuarios cree que las tendencias dentro de la app están influidas por la opinión de expertos.",
+        "La lista llega un mes después de que Pinterest empezara a permitir que las marcas patrocinen Pins de creadores, lo que ofrece a los marketers una vía de pago para amplificar el contenido de los creadores. En conjunto, ambos movimientos indican que Pinterest quiere que las marcas vean a sus creadores como socios de campaña, y no solo como fuentes de inspiración.",
+        "Para los equipos deportivos y las marcas deportivas, es una preselección útil para colaboraciones basadas en el estilo de vida. Un club que lance una nueva equipación, merchandising para aficionados o una oferta de hospitality para el día de partido podría encargar a un creador de moda o de hogar que presente los productos de forma auténtica y, después, usar Pins patrocinados de creadores para ampliar el reach. Los deportistas con marcas de estilo de vida también pueden seguir a estos creadores para detectar estéticas emergentes antes de que lleguen al gran público."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-11-18T15:34:07.397574+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-11-18T17:19:54.298Z",
+      "tokens": {
+        "in": 1422,
+        "out": 613
+      }
+    }
+  },
+  {
     "id": 377,
     "url": "https://frontofficesports.com/article/pat-mcafee-adds-punt-catching-competition-to-monday-night-countdown/",
     "source_name": "Front Office Sports",
@@ -517,53 +564,6 @@
     }
   },
   {
-    "id": 295,
-    "url": "https://socialgeekpro.beehiiv.com/p/espa-a-estudia-suspender-tiktok",
-    "source_name": "SocialGeek News",
-    "platform": "tiktok",
-    "title": "TikTok launches Social MCP to manage brand presence through AI conversations",
-    "paragraphs": [
-      "TikTok has introduced Social MCP, a tool that lets brands run social listening, trend analysis and audience sentiment tracking through a direct conversation with AI. It is designed to spot opportunities before they go viral, move from insights to content ideas and strategy, and identify organic videos that are performing well so they can be turned into Spark Ads.",
-      "For sports social teams, this could shorten the gap between a viral moment on matchday and a planned response. A club could ask the tool which fan conversations are rising around a signing or rivalry, adjust its content plan in real time, and quickly boost its best-performing organic clips as Spark Ads for sponsors or ticket and merchandise campaigns.",
-      "The key is to keep human judgement in the loop: AI can surface the trends, but the team still decides which ones fit the club's voice and values."
-    ],
-    "relevant": true,
-    "published_at": "2026-11-12T12:13:00+00:00",
-    "created_at": "2026-11-12T15:05:04.236378+00:00",
-    "edited_at": null,
-    "slug": "tiktok-launches-social-mcp-to-manage-brand-presence-through-ai-295",
-    "meta_title": null,
-    "meta_description": null,
-    "takeaways": [],
-    "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/manual-2026-11-11-1.jpg",
-    "es": {
-      "faq": [],
-      "model": "claude-sonnet-5-5",
-      "title": "TikTok lanza Social MCP para gestionar la presencia de marca mediante conversaciones con IA",
-      "tokens": {
-        "in": 1344,
-        "out": 522
-      },
-      "excerpt": "",
-      "cta_text": "",
-      "body_html": "",
-      "cta_title": "",
-      "image_alt": "",
-      "takeaways": [],
-      "meta_title": "",
-      "paragraphs": [
-        "TikTok ha presentado Social MCP, una herramienta que permite a las marcas hacer social listening, análisis de tendencias y seguimiento del sentimiento de la audiencia a través de una conversación directa con IA. Está diseñada para detectar oportunidades antes de que se vuelvan virales, pasar de los insights a ideas de contenido y estrategia, e identificar vídeos orgánicos que están funcionando bien para convertirlos en Spark Ads.",
-        "Para los equipos de redes sociales deportivas, esto podría acortar la distancia entre un momento viral en día de partido y una respuesta planificada. Un club podría preguntar a la herramienta qué conversaciones de aficionados están creciendo en torno a un fichaje o una rivalidad, ajustar su plan de contenidos en tiempo real e impulsar rápidamente sus clips orgánicos de mejor rendimiento como Spark Ads para patrocinadores o para campañas de entradas y merchandising.",
-        "La clave está en mantener el criterio humano en el proceso: la IA puede sacar a la superficie las tendencias, pero es el equipo quien decide cuáles encajan con la voz y los valores del club."
-      ],
-      "image_title": "",
-      "translated_at": "2026-11-12T16:54:00.482Z",
-      "source_changed": "2026-11-12T15:05:04.236378+00:00",
-      "meta_description": ""
-    }
-  },
-  {
     "id": 296,
     "url": "https://socialgeekpro.beehiiv.com/p/espa-a-estudia-suspender-tiktok#2",
     "source_name": "SocialGeek News",
@@ -607,6 +607,53 @@
       "image_title": "",
       "translated_at": "2026-11-12T16:54:11.153Z",
       "source_changed": "2026-11-12T15:05:04.855566+00:00",
+      "meta_description": ""
+    }
+  },
+  {
+    "id": 295,
+    "url": "https://socialgeekpro.beehiiv.com/p/espa-a-estudia-suspender-tiktok",
+    "source_name": "SocialGeek News",
+    "platform": "tiktok",
+    "title": "TikTok launches Social MCP to manage brand presence through AI conversations",
+    "paragraphs": [
+      "TikTok has introduced Social MCP, a tool that lets brands run social listening, trend analysis and audience sentiment tracking through a direct conversation with AI. It is designed to spot opportunities before they go viral, move from insights to content ideas and strategy, and identify organic videos that are performing well so they can be turned into Spark Ads.",
+      "For sports social teams, this could shorten the gap between a viral moment on matchday and a planned response. A club could ask the tool which fan conversations are rising around a signing or rivalry, adjust its content plan in real time, and quickly boost its best-performing organic clips as Spark Ads for sponsors or ticket and merchandise campaigns.",
+      "The key is to keep human judgement in the loop: AI can surface the trends, but the team still decides which ones fit the club's voice and values."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-12T12:13:00+00:00",
+    "created_at": "2026-11-12T15:05:04.236378+00:00",
+    "edited_at": null,
+    "slug": "tiktok-launches-social-mcp-to-manage-brand-presence-through-ai-295",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/manual-2026-11-11-1.jpg",
+    "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
+      "title": "TikTok lanza Social MCP para gestionar la presencia de marca mediante conversaciones con IA",
+      "tokens": {
+        "in": 1344,
+        "out": 522
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [],
+      "meta_title": "",
+      "paragraphs": [
+        "TikTok ha presentado Social MCP, una herramienta que permite a las marcas hacer social listening, análisis de tendencias y seguimiento del sentimiento de la audiencia a través de una conversación directa con IA. Está diseñada para detectar oportunidades antes de que se vuelvan virales, pasar de los insights a ideas de contenido y estrategia, e identificar vídeos orgánicos que están funcionando bien para convertirlos en Spark Ads.",
+        "Para los equipos de redes sociales deportivas, esto podría acortar la distancia entre un momento viral en día de partido y una respuesta planificada. Un club podría preguntar a la herramienta qué conversaciones de aficionados están creciendo en torno a un fichaje o una rivalidad, ajustar su plan de contenidos en tiempo real e impulsar rápidamente sus clips orgánicos de mejor rendimiento como Spark Ads para patrocinadores o para campañas de entradas y merchandising.",
+        "La clave está en mantener el criterio humano en el proceso: la IA puede sacar a la superficie las tendencias, pero es el equipo quien decide cuáles encajan con la voz y los valores del club."
+      ],
+      "image_title": "",
+      "translated_at": "2026-11-12T16:54:00.482Z",
+      "source_changed": "2026-11-12T15:05:04.236378+00:00",
       "meta_description": ""
     }
   },
@@ -1124,51 +1171,6 @@
     }
   },
   {
-    "id": 210,
-    "url": "https://socialgeekpro.beehiiv.com/p/instagram-va-a-por-youtube#2",
-    "source_name": "SocialGeek News",
-    "platform": "youtube",
-    "title": "YouTube tests lowering creator payout threshold from 100 to 20 dollars",
-    "paragraphs": [
-      "YouTube is testing a reduction of the minimum earnings creators must reach before getting paid, cutting it from 100 to 20 dollars. The change would help smaller channels that currently wait months to hit the threshold and receive any income, and is read as an effort to attract and keep emerging creators as Instagram moves into long-form video.",
-      "For sports organizations, faster payouts could encourage more niche fan creators, ex-players and grassroots channels to professionalize. That widens the pool of smaller, highly engaged creators that clubs and sponsors can partner with for targeted campaigns, such as academy content, women's teams coverage or local fan-led shows, often at lower cost than big names."
-    ],
-    "relevant": true,
-    "published_at": "2026-11-05T12:13:00+00:00",
-    "created_at": "2026-11-05T14:33:06.074643+00:00",
-    "edited_at": null,
-    "slug": "youtube-tests-lowering-creator-payout-threshold-from-100-to-20-dollars-210",
-    "meta_title": null,
-    "meta_description": null,
-    "takeaways": [],
-    "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/f9e88369fdeb6c17-16x9.jpg",
-    "es": {
-      "faq": [],
-      "model": "claude-sonnet-5-5",
-      "title": "YouTube prueba a reducir el umbral de pago para creadores de 100 a 20 dólares",
-      "tokens": {
-        "in": 1301,
-        "out": 458
-      },
-      "excerpt": "",
-      "cta_text": "",
-      "body_html": "",
-      "cta_title": "",
-      "image_alt": "",
-      "takeaways": [],
-      "meta_title": "",
-      "paragraphs": [
-        "YouTube está probando una reducción de los ingresos mínimos que los creadores deben alcanzar antes de cobrar, rebajándolos de 100 a 20 dólares. El cambio ayudaría a los canales más pequeños, que actualmente esperan meses hasta alcanzar el umbral y recibir algún ingreso, y se interpreta como un esfuerzo por atraer y retener a creadores emergentes mientras Instagram avanza hacia el vídeo de formato largo.",
-        "Para las organizaciones deportivas, unos pagos más rápidos podrían animar a más creadores de nicho, ex jugadores y canales de base a profesionalizarse. Eso amplía el grupo de creadores más pequeños y con mucho engagement con los que los clubes y los patrocinadores pueden colaborar en campañas segmentadas, como contenido de cantera, cobertura de equipos femeninos o programas locales dirigidos por aficionados, a menudo a un coste menor que el de los grandes nombres."
-      ],
-      "image_title": "",
-      "translated_at": "2026-11-05T15:30:20.586Z",
-      "source_changed": "2026-11-05T14:33:06.074643+00:00",
-      "meta_description": ""
-    }
-  },
-  {
     "id": 209,
     "url": "https://socialgeekpro.beehiiv.com/p/instagram-va-a-por-youtube",
     "source_name": "SocialGeek News",
@@ -1212,6 +1214,51 @@
       "image_title": "",
       "translated_at": "2026-11-05T15:30:10.106Z",
       "source_changed": "2026-11-05T14:33:05.619476+00:00",
+      "meta_description": ""
+    }
+  },
+  {
+    "id": 210,
+    "url": "https://socialgeekpro.beehiiv.com/p/instagram-va-a-por-youtube#2",
+    "source_name": "SocialGeek News",
+    "platform": "youtube",
+    "title": "YouTube tests lowering creator payout threshold from 100 to 20 dollars",
+    "paragraphs": [
+      "YouTube is testing a reduction of the minimum earnings creators must reach before getting paid, cutting it from 100 to 20 dollars. The change would help smaller channels that currently wait months to hit the threshold and receive any income, and is read as an effort to attract and keep emerging creators as Instagram moves into long-form video.",
+      "For sports organizations, faster payouts could encourage more niche fan creators, ex-players and grassroots channels to professionalize. That widens the pool of smaller, highly engaged creators that clubs and sponsors can partner with for targeted campaigns, such as academy content, women's teams coverage or local fan-led shows, often at lower cost than big names."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-05T12:13:00+00:00",
+    "created_at": "2026-11-05T14:33:06.074643+00:00",
+    "edited_at": null,
+    "slug": "youtube-tests-lowering-creator-payout-threshold-from-100-to-20-dollars-210",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/f9e88369fdeb6c17-16x9.jpg",
+    "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
+      "title": "YouTube prueba a reducir el umbral de pago para creadores de 100 a 20 dólares",
+      "tokens": {
+        "in": 1301,
+        "out": 458
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [],
+      "meta_title": "",
+      "paragraphs": [
+        "YouTube está probando una reducción de los ingresos mínimos que los creadores deben alcanzar antes de cobrar, rebajándolos de 100 a 20 dólares. El cambio ayudaría a los canales más pequeños, que actualmente esperan meses hasta alcanzar el umbral y recibir algún ingreso, y se interpreta como un esfuerzo por atraer y retener a creadores emergentes mientras Instagram avanza hacia el vídeo de formato largo.",
+        "Para las organizaciones deportivas, unos pagos más rápidos podrían animar a más creadores de nicho, ex jugadores y canales de base a profesionalizarse. Eso amplía el grupo de creadores más pequeños y con mucho engagement con los que los clubes y los patrocinadores pueden colaborar en campañas segmentadas, como contenido de cantera, cobertura de equipos femeninos o programas locales dirigidos por aficionados, a menudo a un coste menor que el de los grandes nombres."
+      ],
+      "image_title": "",
+      "translated_at": "2026-11-05T15:30:20.586Z",
+      "source_changed": "2026-11-05T14:33:06.074643+00:00",
       "meta_description": ""
     }
   },
@@ -1780,6 +1827,53 @@
     }
   },
   {
+    "id": 83,
+    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces#2",
+    "source_name": "SocialGeek News",
+    "platform": "ai",
+    "title": "CapCut announces ChatGPT plugin to edit videos through conversation",
+    "paragraphs": [
+      "At its CapCut World event in Los Angeles, CapCut, which reports more than 700 million monthly users, unveiled a ChatGPT plugin coming in the next few months. Users will be able to shape an idea in ChatGPT, let CapCut assemble a first cut, and refine it by chatting, such as extending a shot or lowering music under voiceover. Manual timeline edits are understood by the conversation too.",
+      "CapCut also introduced EditPilot on desktop for natural-language edits of complex or repetitive tasks, plus more image, video and audio generation on web and an AI Lab in the mobile app that turns photos and clips into vlogs or recaps.",
+      "For sports social teams, this could speed up matchday recaps, player highlight packages and behind-the-scenes edits, especially for smaller clubs with limited staff. The tool lowers production effort, but storytelling and editorial judgment will still separate standout club content from the rest."
+    ],
+    "relevant": true,
+    "published_at": "2026-10-29T12:12:00+00:00",
+    "created_at": "2026-10-29T12:54:20.149885+00:00",
+    "edited_at": null,
+    "slug": "capcut-announces-chatgpt-plugin-to-edit-videos-through-conversation-83",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/d111e67e2e467a7e-16x9.jpg",
+    "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
+      "title": "CapCut anuncia un plugin de ChatGPT para editar vídeos a través de una conversación",
+      "tokens": {
+        "in": 1382,
+        "out": 559
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [],
+      "meta_title": "",
+      "paragraphs": [
+        "En su evento CapCut World, celebrado en Los Ángeles, CapCut, que asegura tener más de 700 millones de usuarios mensuales, presentó un plugin de ChatGPT que llegará en los próximos meses. Los usuarios podrán dar forma a una idea en ChatGPT, dejar que CapCut monte un primer corte y perfeccionarlo chateando, por ejemplo alargando un plano o bajando la música bajo una voz en off. La conversación también entiende las ediciones manuales hechas en la línea de tiempo.",
+        "CapCut también presentó EditPilot en escritorio, para editar con lenguaje natural tareas complejas o repetitivas, además de más generación de imágenes, vídeo y audio en la web y un AI Lab en la app móvil que convierte fotos y clips en vlogs o resúmenes.",
+        "Para los equipos de redes sociales deportivas, esto podría acelerar los resúmenes del día de partido, los paquetes de mejores jugadas de los jugadores y las ediciones de behind-the-scenes, sobre todo en clubes pequeños con poco personal. La herramienta reduce el esfuerzo de producción, pero la narrativa y el criterio editorial seguirán marcando la diferencia entre el contenido destacado de un club y el resto."
+      ],
+      "image_title": "",
+      "translated_at": "2026-10-29T16:10:15.419Z",
+      "source_changed": "2026-10-29T12:54:20.149885+00:00",
+      "meta_description": ""
+    }
+  },
+  {
     "id": 84,
     "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces#3",
     "source_name": "SocialGeek News",
@@ -1870,53 +1964,6 @@
       "image_title": "",
       "translated_at": "2026-10-29T16:10:21.391Z",
       "source_changed": "2026-10-29T12:54:19.971122+00:00",
-      "meta_description": ""
-    }
-  },
-  {
-    "id": 83,
-    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces#2",
-    "source_name": "SocialGeek News",
-    "platform": "ai",
-    "title": "CapCut announces ChatGPT plugin to edit videos through conversation",
-    "paragraphs": [
-      "At its CapCut World event in Los Angeles, CapCut, which reports more than 700 million monthly users, unveiled a ChatGPT plugin coming in the next few months. Users will be able to shape an idea in ChatGPT, let CapCut assemble a first cut, and refine it by chatting, such as extending a shot or lowering music under voiceover. Manual timeline edits are understood by the conversation too.",
-      "CapCut also introduced EditPilot on desktop for natural-language edits of complex or repetitive tasks, plus more image, video and audio generation on web and an AI Lab in the mobile app that turns photos and clips into vlogs or recaps.",
-      "For sports social teams, this could speed up matchday recaps, player highlight packages and behind-the-scenes edits, especially for smaller clubs with limited staff. The tool lowers production effort, but storytelling and editorial judgment will still separate standout club content from the rest."
-    ],
-    "relevant": true,
-    "published_at": "2026-10-29T12:12:00+00:00",
-    "created_at": "2026-10-29T12:54:20.149885+00:00",
-    "edited_at": null,
-    "slug": "capcut-announces-chatgpt-plugin-to-edit-videos-through-conversation-83",
-    "meta_title": null,
-    "meta_description": null,
-    "takeaways": [],
-    "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/d111e67e2e467a7e-16x9.jpg",
-    "es": {
-      "faq": [],
-      "model": "claude-sonnet-5-5",
-      "title": "CapCut anuncia un plugin de ChatGPT para editar vídeos a través de una conversación",
-      "tokens": {
-        "in": 1382,
-        "out": 559
-      },
-      "excerpt": "",
-      "cta_text": "",
-      "body_html": "",
-      "cta_title": "",
-      "image_alt": "",
-      "takeaways": [],
-      "meta_title": "",
-      "paragraphs": [
-        "En su evento CapCut World, celebrado en Los Ángeles, CapCut, que asegura tener más de 700 millones de usuarios mensuales, presentó un plugin de ChatGPT que llegará en los próximos meses. Los usuarios podrán dar forma a una idea en ChatGPT, dejar que CapCut monte un primer corte y perfeccionarlo chateando, por ejemplo alargando un plano o bajando la música bajo una voz en off. La conversación también entiende las ediciones manuales hechas en la línea de tiempo.",
-        "CapCut también presentó EditPilot en escritorio, para editar con lenguaje natural tareas complejas o repetitivas, además de más generación de imágenes, vídeo y audio en la web y un AI Lab en la app móvil que convierte fotos y clips en vlogs o resúmenes.",
-        "Para los equipos de redes sociales deportivas, esto podría acelerar los resúmenes del día de partido, los paquetes de mejores jugadas de los jugadores y las ediciones de behind-the-scenes, sobre todo en clubes pequeños con poco personal. La herramienta reduce el esfuerzo de producción, pero la narrativa y el criterio editorial seguirán marcando la diferencia entre el contenido destacado de un club y el resto."
-      ],
-      "image_title": "",
-      "translated_at": "2026-10-29T16:10:15.419Z",
-      "source_changed": "2026-10-29T12:54:20.149885+00:00",
       "meta_description": ""
     }
   },
@@ -2908,53 +2955,6 @@
     }
   },
   {
-    "id": 17,
-    "url": "https://www.socialmediatoday.com/news/tiktok-us-shares-second-quarter-account-enforcement-data/833907/",
-    "source_name": "Social Media Today",
-    "platform": "tiktok",
-    "title": "TikTok US removes over 14 million fake accounts in second-quarter enforcement report",
-    "paragraphs": [
-      "TikTok has released account enforcement data for its US operation covering the second quarter. The platform says it removed more than 14 million fake accounts during the period. It also says it blocked close to 65 million spam accounts before they could be created, stopping them at the sign-up stage.",
-      "For sports social teams, large fake-account purges can cause sudden dips in follower counts and engagement figures. Clubs, leagues and athletes should expect occasional drops and avoid treating them as a loss of real fans. Benchmarking against engaged metrics such as watch time, shares and comments gives a more reliable picture than raw follower totals.",
-      "The data is also useful when talking to sponsors. Partners want to know their activations reach genuine audiences, and platform-level cleanups support that case. Teams can audit their own comment sections and follower bases for bot activity, report spam that targets fan content, and show partners verified audience insights rather than headline follower numbers."
-    ],
-    "relevant": true,
-    "published_at": "2026-10-25T22:13:46+00:00",
-    "created_at": "2026-10-26T22:03:14.65779+00:00",
-    "edited_at": null,
-    "slug": "tiktok-us-removes-over-14-million-fake-accounts-in-second-quarter-17",
-    "meta_title": null,
-    "meta_description": null,
-    "takeaways": [],
-    "faq": [],
-    "image_url": "https://imgproxy.divecdn.com/12K6ogX9lcgDYYC0J9LHBG_Vz43JSghdwOStO8_Cc34/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS90aWt0b2tfdXNkc2p2LnBuZw==.webp",
-    "es": {
-      "faq": [],
-      "model": "claude-haiku-5-5",
-      "title": "TikTok EE. UU. elimina más de 14 millones de cuentas falsas en su informe de moderación del segundo trimestre",
-      "tokens": {
-        "in": 1327,
-        "out": 623
-      },
-      "excerpt": "",
-      "cta_text": "",
-      "body_html": "",
-      "cta_title": "",
-      "image_alt": "",
-      "takeaways": [],
-      "meta_title": "",
-      "paragraphs": [
-        "TikTok ha publicado los datos de moderación de cuentas de su operación en EE. UU. correspondientes al segundo trimestre. La plataforma afirma que eliminó más de 14 millones de cuentas falsas durante el periodo. También asegura que bloqueó cerca de 65 millones de cuentas de spam antes de que pudieran crearse, frenándolas en la fase de registro.",
-        "Para los equipos de redes sociales del deporte, las grandes depuraciones de cuentas falsas pueden provocar caídas repentinas en el número de seguidores y en las cifras de interacción. Clubes, ligas y atletas deben esperar bajadas puntuales y evitar interpretarlas como una pérdida de aficionados reales. Comparar los datos con métricas de interacción real, como el tiempo de visualización, las veces compartido y los comentarios, ofrece una imagen más fiable que el total bruto de seguidores.",
-        "Estos datos también son útiles en las conversaciones con patrocinadores. Los socios quieren saber que sus activaciones llegan a audiencias genuinas, y las limpiezas a nivel de plataforma respaldan ese argumento. Los equipos pueden auditar sus propias secciones de comentarios y bases de seguidores en busca de actividad de bots, denunciar el spam que apunta al contenido de los aficionados y mostrar a los socios datos verificados de la audiencia en lugar de cifras totales de seguidores."
-      ],
-      "image_title": "",
-      "translated_at": "2026-10-26T22:11:27.862Z",
-      "source_changed": "2026-10-26T22:03:14.65779+00:00",
-      "meta_description": ""
-    }
-  },
-  {
     "id": 39,
     "url": "https://www.socialmediatoday.com/news/tiktok-us-shares-q2-account-enforcement-data/833907/",
     "source_name": "Social Media Today",
@@ -2998,6 +2998,53 @@
       "image_title": "",
       "translated_at": "2026-10-27T13:15:03.983Z",
       "source_changed": "2026-10-27T12:04:45.467727+00:00",
+      "meta_description": ""
+    }
+  },
+  {
+    "id": 17,
+    "url": "https://www.socialmediatoday.com/news/tiktok-us-shares-second-quarter-account-enforcement-data/833907/",
+    "source_name": "Social Media Today",
+    "platform": "tiktok",
+    "title": "TikTok US removes over 14 million fake accounts in second-quarter enforcement report",
+    "paragraphs": [
+      "TikTok has released account enforcement data for its US operation covering the second quarter. The platform says it removed more than 14 million fake accounts during the period. It also says it blocked close to 65 million spam accounts before they could be created, stopping them at the sign-up stage.",
+      "For sports social teams, large fake-account purges can cause sudden dips in follower counts and engagement figures. Clubs, leagues and athletes should expect occasional drops and avoid treating them as a loss of real fans. Benchmarking against engaged metrics such as watch time, shares and comments gives a more reliable picture than raw follower totals.",
+      "The data is also useful when talking to sponsors. Partners want to know their activations reach genuine audiences, and platform-level cleanups support that case. Teams can audit their own comment sections and follower bases for bot activity, report spam that targets fan content, and show partners verified audience insights rather than headline follower numbers."
+    ],
+    "relevant": true,
+    "published_at": "2026-10-25T22:13:46+00:00",
+    "created_at": "2026-10-26T22:03:14.65779+00:00",
+    "edited_at": null,
+    "slug": "tiktok-us-removes-over-14-million-fake-accounts-in-second-quarter-17",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/12K6ogX9lcgDYYC0J9LHBG_Vz43JSghdwOStO8_Cc34/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS90aWt0b2tfdXNkc2p2LnBuZw==.webp",
+    "es": {
+      "faq": [],
+      "model": "claude-haiku-5-5",
+      "title": "TikTok EE. UU. elimina más de 14 millones de cuentas falsas en su informe de moderación del segundo trimestre",
+      "tokens": {
+        "in": 1327,
+        "out": 623
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [],
+      "meta_title": "",
+      "paragraphs": [
+        "TikTok ha publicado los datos de moderación de cuentas de su operación en EE. UU. correspondientes al segundo trimestre. La plataforma afirma que eliminó más de 14 millones de cuentas falsas durante el periodo. También asegura que bloqueó cerca de 65 millones de cuentas de spam antes de que pudieran crearse, frenándolas en la fase de registro.",
+        "Para los equipos de redes sociales del deporte, las grandes depuraciones de cuentas falsas pueden provocar caídas repentinas en el número de seguidores y en las cifras de interacción. Clubes, ligas y atletas deben esperar bajadas puntuales y evitar interpretarlas como una pérdida de aficionados reales. Comparar los datos con métricas de interacción real, como el tiempo de visualización, las veces compartido y los comentarios, ofrece una imagen más fiable que el total bruto de seguidores.",
+        "Estos datos también son útiles en las conversaciones con patrocinadores. Los socios quieren saber que sus activaciones llegan a audiencias genuinas, y las limpiezas a nivel de plataforma respaldan ese argumento. Los equipos pueden auditar sus propias secciones de comentarios y bases de seguidores en busca de actividad de bots, denunciar el spam que apunta al contenido de los aficionados y mostrar a los socios datos verificados de la audiencia en lugar de cifras totales de seguidores."
+      ],
+      "image_title": "",
+      "translated_at": "2026-10-26T22:11:27.862Z",
+      "source_changed": "2026-10-26T22:03:14.65779+00:00",
       "meta_description": ""
     }
   },

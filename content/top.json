@@ -20,7 +20,7 @@
   {
     "account": "england",
     "account_platform": "instagram",
-    "views": 7995762,
+    "views": 8048275,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/629/629874.jpg?v=mwjtwfok"
   },
   {
@@ -42,22 +42,16 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/627/627198.jpg?v=mwi644ap"
   },
   {
-    "account": "redbull",
+    "account": "nfl",
     "account_platform": "tiktok",
-    "views": 5500000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/617/617938.png?v=mwdohj7k"
+    "views": 5600000,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/630/630478.jpg?v=mwju17vx"
   },
   {
     "account": "houseofhighlights",
     "account_platform": "instagram",
     "views": 5448036,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/630/630051.jpg?v=mwjtxbgf"
-  },
-  {
-    "account": "nfl",
-    "account_platform": "tiktok",
-    "views": 5300000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/630/630478.jpg?v=mwju17vx"
   },
   {
     "account": "433",
@@ -86,7 +80,7 @@
   {
     "account": "espn",
     "account_platform": "tiktok",
-    "views": 4400000,
+    "views": 4700000,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/630/630434.jpg?v=mwju12zx"
   },
   {
@@ -108,6 +102,12 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/616/616332.jpg?v=mwdiw7bj"
   },
   {
+    "account": "bleacherreport",
+    "account_platform": "instagram",
+    "views": 3953647,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/630/630043.jpg?v=mwjtxawx"
+  },
+  {
     "account": "onefootball",
     "account_platform": "instagram",
     "views": 3914307,
@@ -118,12 +118,6 @@
     "account_platform": "instagram",
     "views": 3904497,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/630/630061.jpg?v=mwjtxb9x"
-  },
-  {
-    "account": "bleacherreport",
-    "account_platform": "instagram",
-    "views": 3895614,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/630/630043.jpg?v=mwjtxawx"
   },
   {
     "account": "mancity",
@@ -178,5 +172,11 @@
     "account_platform": "instagram",
     "views": 2592645,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/616/616882.jpg?v=mwdo489z"
+  },
+  {
+    "account": "fcbarcelona",
+    "account_platform": "tiktok",
+    "views": 2500000,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/630/630231.jpg?v=mwju0uv6"
   }
 ]

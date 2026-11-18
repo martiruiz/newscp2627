@@ -6,7 +6,17 @@
     <atom:link href="https://sportscontentplaybook.com/es/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Ideas, tendencias y análisis de contenido deportivo en redes sociales.</description>
     <language>es</language>
-    <lastBuildDate>Tue, 17 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Wed, 18 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Estrategia de redes sociales deportivas: convierte los Reels copiados en audiencia con la Protección de contenido de Instagram</title>
+      <link>https://sportscontentplaybook.com/es/blog/sports-social-media-strategy-instagram-content-protection.html</link>
+      <guid isPermaLink="true">https://sportscontentplaybook.com/es/blog/sports-social-media-strategy-instagram-content-protection.html</guid>
+      <pubDate>Wed, 18 Nov 2026 08:00:00 GMT</pubDate>
+      <dc:creator>Martí Ruiz</dc:creator>
+      <description>La nueva Protección de contenido de Instagram encuentra copias de tus Reels y te permite bloquearlas o añadir un enlace de «original de». Así pueden usarla los equipos deportivos.</description>
+      <enclosure url="https://sportscontentplaybook.com/assets/blog/sports-social-media-strategy-instagram-content-protection.jpg" length="79893" type="image/jpeg"/>
+      <media:content url="https://sportscontentplaybook.com/assets/blog/sports-social-media-strategy-instagram-content-protection.jpg" medium="image" type="image/jpeg"/>
+    </item>
     <item>
       <title>Estrategia de redes sociales deportivas: convierte tus rutinas en una serie patrocinada de YouTube</title>
       <link>https://sportscontentplaybook.com/es/blog/sports-social-media-strategy-sponsor-routines-youtube-series.html</link>
@@ -296,16 +306,6 @@
       <description>El ascenso de Tim Payne, de 4.000 a 4 millones de seguidores, muestra cómo la autenticidad, la participación y la narración comunitaria pueden crear uno de los fenómenos digitales más poderosos del deporte</description>
       <enclosure url="https://sportscontentplaybook.com/assets/blog/how-an-unknown-footballer-became-one-of-the-world-cups-biggest-social-media-stories.jpg" length="183006" type="image/jpeg"/>
       <media:content url="https://sportscontentplaybook.com/assets/blog/how-an-unknown-footballer-became-one-of-the-world-cups-biggest-social-media-stories.jpg" medium="image" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>Cómo la EuroLeague equilibró información y emoción durante la Final Four</title>
-      <link>https://sportscontentplaybook.com/es/blog/how-the-euroleague-balanced-information-and-emotion-during-the-final-four.html</link>
-      <guid isPermaLink="true">https://sportscontentplaybook.com/es/blog/how-the-euroleague-balanced-information-and-emotion-during-the-final-four.html</guid>
-      <pubDate>Fri, 29 May 2026 08:00:00 GMT</pubDate>
-      <dc:creator>Josep</dc:creator>
-      <description>La EuroLeague combinó el storytelling informativo y el emocional durante la Final Four, creando una narrativa digital estructurada que reforzó el engagement de los aficionados durante todo el fin de semana del evento.</description>
-      <enclosure url="https://sportscontentplaybook.com/assets/blog/how-the-euroleague-balanced-information-and-emotion-during-the-final-four.jpg" length="278847" type="image/jpeg"/>
-      <media:content url="https://sportscontentplaybook.com/assets/blog/how-the-euroleague-balanced-information-and-emotion-during-the-final-four.jpg" medium="image" type="image/jpeg"/>
     </item>
   </channel>
 </rss>
