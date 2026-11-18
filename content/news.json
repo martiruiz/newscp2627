@@ -68,29 +68,29 @@
     "faq": [],
     "image_url": "https://imgproxy.divecdn.com/T9j5MN5EkTLT5ubnQpEBbNm-IHvPbA5UAJodIH9puVs/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9waW50ZXJlc3RfY3JlYXRvcnNfdG9fd2F0Y2hfMjAyNy5wbmc=.webp",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "Pinterest presenta sus primeros 20 Creators to Watch para 2027",
+      "tokens": {
+        "in": 1422,
+        "out": 613
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "Pinterest ha publicado su primera lista de 20 creadores globales a seguir en 2027, dentro de su previsión de tendencias más amplia para el próximo año. La selección abarca categorías como moda, belleza y hogar, y busca mostrar a usuarios y marketers qué referentes de tendencias están marcando la actividad en la plataforma. Pinterest asegura que el 83 % de sus usuarios cree que las tendencias dentro de la app están influidas por la opinión de expertos.",
         "La lista llega un mes después de que Pinterest empezara a permitir que las marcas patrocinen Pins de creadores, lo que ofrece a los marketers una vía de pago para amplificar el contenido de los creadores. En conjunto, ambos movimientos indican que Pinterest quiere que las marcas vean a sus creadores como socios de campaña, y no solo como fuentes de inspiración.",
         "Para los equipos deportivos y las marcas deportivas, es una preselección útil para colaboraciones basadas en el estilo de vida. Un club que lance una nueva equipación, merchandising para aficionados o una oferta de hospitality para el día de partido podría encargar a un creador de moda o de hogar que presente los productos de forma auténtica y, después, usar Pins patrocinados de creadores para ampliar el reach. Los deportistas con marcas de estilo de vida también pueden seguir a estos creadores para detectar estéticas emergentes antes de que lleguen al gran público."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-18T15:34:07.397574+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-11-18T17:19:54.298Z",
-      "tokens": {
-        "in": 1422,
-        "out": 613
-      }
+      "source_changed": "2026-11-18T15:34:07.397574+00:00",
+      "meta_description": ""
     }
   },
   {
