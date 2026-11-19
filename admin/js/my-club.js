@@ -459,6 +459,7 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
       res.innerHTML = data.length ? data.map((g, i) => `<div class="mcl-lb-g">
           <p class="mcl-sp-h">${g.avatar ? `<img src="${esc(g.avatar)}" alt="">` : ""}${esc(g.name)}</p>
           ${g.tag ? `<button type="button" class="mcl-sp-item${sel.tag?.id === g.tag.id ? " is-on" : ""}" data-lb-tag="${i}"><b>Library tag · ${esc(g.tag.name)}</b><small>${esc(g.tag.category)}</small><span>${num(g.tag.posts)} posts</span></button>` : ""}
+          ${g.tag?.category === "competition" ? `<button type="button" class="mcl-sp-item mcl-lb-league" data-lb-league="${i}">${icon("plus")}<b>Add all its clubs as competitors</b><small>Pick which ones next</small></button>` : ""}
           ${g.accounts.map((a) => { const k = `${a.platform}|${a.handle}`; return `<button type="button" class="mcl-sp-item${sel.accounts.has(k) ? " is-on" : ""}" data-lb-acc="${esc(k)}" data-lb-g="${i}"><b>${esc(PF[a.platform] || a.platform)} @${esc(a.handle)}</b><span>${num(a.posts)} posts</span></button>`; }).join("")}
         </div>`).join("") : `<p class="muted">Nothing in the library with that name.</p>`;
       sum();
@@ -476,7 +477,54 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
       res.innerHTML = `<p class="muted">Searching…</p>`;
       timer = setTimeout(async () => { try { data = await rpc("admin_library_profiles", { p_q: q }); draw(); } catch (x) { fail(/admin_library_profiles/.test(x.message) ? new Error("Run supabase/my-club-library-add.sql in Supabase first.") : x); } }, 350);
     });
+    // a whole competition: its clubs (supabase/my-club-league-competitors.sql), each ticked or not, added as competitors
+    let league = null;
+    const drawLeague = () => {
+      const on = league.clubs.filter((c) => c.on).length;
+      res.innerHTML = `<div class="mcl-lg"><div class="mcl-lg-h"><button type="button" class="btn btn-sm btn-ghost" data-lg-back>← Back to the search</button><b>${esc(league.name)}</b><span class="muted">${num(league.clubs.length)} clubs</span>
+          <span class="spacer"></span><button type="button" class="btn btn-sm" data-lg-all="1">All</button><button type="button" class="btn btn-sm" data-lg-all="0">None</button></div>
+        ${league.clubs.length ? `<div class="mcl-lg-list">${league.clubs.map((c, i) => `<label class="mcl-lg-it${c.already ? " is-done" : ""}"><input type="checkbox" data-lg-i="${i}"${c.on ? " checked" : ""}${c.already ? " disabled" : ""}>
+            ${c.logo ? `<img src="${esc(c.logo)}" alt="" loading="lazy">` : `<span class="mcl-ini">${esc(c.name.slice(0, 2).toUpperCase())}</span>`}
+            <span><b>${esc(c.name)}</b><small>${c.already ? "Already a competitor" : `${num(c.posts)} posts`}</small></span></label>`).join("")}</div>
+          <p class="muted mcl-lg-tip">Clubs whose posts are mostly tagged with ${esc(league.name)}. Clubs with few posts start unticked: they're often the same club under another name.</p>
+          <button type="button" class="btn btn-primary" data-lg-add${on ? "" : " disabled"}>${icon("plus")}Add ${num(on)} club${on === 1 ? "" : "s"} as competitors</button>`
+        : `<p class="muted">No clubs found for this competition in the library.</p>`}</div>`;
+    };
+    res.addEventListener("change", (e) => { const i = e.target.dataset?.lgI; if (i != null && league) { league.clubs[Number(i)].on = e.target.checked; drawLeague(); } });
+    res.addEventListener("click", async (e) => {
+      const lg = e.target.closest("[data-lb-league]");
+      if (lg) {
+        const g = data[Number(lg.dataset.lbLeague)];
+        res.innerHTML = `<p class="muted">Finding ${esc(g.tag.name)}'s clubs…</p>`;
+        try {
+          const own = club.club.name.toLowerCase();
+          const clubs = await rpc("admin_competition_clubs", { p_club: cur, p_comp: g.tag.id });
+          league = { name: g.tag.name, clubs: clubs.map((c) => ({ ...c, on: !c.already && c.posts >= 500 && c.name.toLowerCase() !== own })) };
+          drawLeague();
+        } catch (x) { fail(/admin_competition_clubs/.test(x.message) ? new Error("Run supabase/my-club-league-competitors.sql in Supabase first.") : x); draw(); }
+        return;
+      }
+      if (e.target.closest("[data-lg-back]")) { league = null; return draw(); }
+      const all = e.target.closest("[data-lg-all]");
+      if (all) { league.clubs.forEach((c) => { if (!c.already) c.on = all.dataset.lgAll === "1"; }); return drawLeague(); }
+      const add = e.target.closest("[data-lg-add]");
+      if (add) {
+        const scope = el.querySelector("[data-lb-scope]").value, picked = league.clubs.filter((c) => c.on && !c.already);
+        add.disabled = true;
+        let n = 0;
+        for (const c of picked) {
+          add.innerHTML = `<span class="spinner sm"></span> ${num(n)} / ${num(picked.length)}`;
+          try {
+            const r = await rpc("admin_club_add_from_library", { p_club: cur, p: { kind: "competitor", name: c.name, photo_url: c.logo || "", tag_id: c.id, accounts: [],
+              section_id: scope.startsWith("s") ? scope.slice(1) : null, team_id: scope.startsWith("t") ? scope.slice(1) : null } });
+            if (r.ok) n++;
+          } catch {}
+        }
+        m.close(); A.toast(`${num(n)} clubs of ${league.name} added as competitors`); return loadClubs(cur);
+      }
+    });
     res.addEventListener("click", (e) => {
+      if (league || e.target.closest("[data-lb-league]")) return;   // the competition's clubs list has its own clicks (above)
       const t = e.target.closest("[data-lb-tag]"), a = e.target.closest("[data-lb-acc]");
       if (t) { const g = data[Number(t.dataset.lbTag)]; if (sel.tag?.id === g.tag.id) sel.tag = null; else if (sel.tag || sel.accounts.size) sel.tag = g.tag; else take(g); }
       if (a) { const k = a.dataset.lbAcc, g = data[Number(a.dataset.lbG)];

@@ -2472,3 +2472,20 @@ tr[data-row].is-open td:first-child { box-shadow: inset 3px 0 0 var(--accent, #f
 .mcl-trials-all { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin: 10px 18px 0; padding: 10px 14px; border-radius: 12px; background: rgba(240, 184, 74, 0.08); border: 1px solid rgba(240, 184, 74, 0.3); font-size: 13.5px; }
 .mcl-sub { margin: 18px 18px 8px; font-size: 14px; font-weight: 600; }
 .mcl-sub small { font-weight: 400; }
+
+/* My Club → Add from the library → a competition: all its clubs as competitors, each ticked or not */
+.mcl-lb-league { border-style: dashed !important; color: var(--accent-text, var(--accent)); }
+.mcl-lb-league svg { width: 15px; height: 15px; }
+.mcl-lg { display: grid; gap: 10px; }
+.mcl-lg-h { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.mcl-lg-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 6px; max-height: 320px; overflow-y: auto; padding: 2px; }
+.mcl-lg-it { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 10px; border: 1px solid var(--border); background: var(--panel); cursor: pointer; min-width: 0; }
+.mcl-lg-it:has(input:checked) { border-color: var(--accent); }
+.mcl-lg-it.is-done { opacity: 0.55; cursor: default; }
+.mcl-lg-it img, .mcl-lg-it .mcl-ini { flex: none; width: 28px; height: 28px; border-radius: 8px; object-fit: contain; background: #fff; }
+.mcl-lg-it .mcl-ini { background: var(--panel-2); display: grid; place-items: center; font-size: 11px; font-weight: 700; }
+.mcl-lg-it > span { min-width: 0; }
+.mcl-lg-it b, .mcl-lg-it small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mcl-lg-it b { font-size: 13px; } .mcl-lg-it small { color: var(--muted); font-size: 11.5px; }
+.mcl-lg-tip { margin: 0; font-size: 12.5px; }
+.mcl-lg [data-lg-add] { justify-self: start; }
