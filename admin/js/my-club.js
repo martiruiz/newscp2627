@@ -120,12 +120,12 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
           ${KINDS.map(([k, one]) => `<button class="btn${k === "player" ? " btn-primary" : ""}" type="button" data-add-person="${k}">${icon("plus")}Add ${one.toLowerCase()}</button>`).join("")}
           <button class="btn" type="button" data-add-library="player">${icon("library")}From the library</button>
           <button class="btn" type="button" data-add-sponsor>${icon("library")}Sponsor from the library</button>
+          <label class="btn mcl-import" title="The scraping CSV of this club's posts: its players' and sponsors' posts go to its My Club">${icon("import")}Import content<input type="file" accept=".csv,.txt,text/csv" hidden data-posts-file></label>
           <span class="spacer"></span>
           <details class="mcl-more"><summary class="btn btn-ghost">More${icon("chevron")}</summary>
             <div class="mcl-more-menu">
               <label class="mcl-more-it">${icon("import")}<span><b>Upload Excel</b><small>Many players and sponsors at once</small></span><input type="file" accept=".xlsx,.xls,.csv" hidden data-file></label>
               <button class="mcl-more-it" type="button" data-template>${icon("download")}<span><b>Excel template</b><small>The columns the Excel needs</small></span></button>
-              <a class="mcl-more-it" href="import.html?club=${cur}">${icon("import")}<span><b>Import posts (CSV)</b><small>The daily scraping file, for this club</small></span></a>
               <button class="mcl-more-it" type="button" data-scraper>${icon("download")}<span><b>Accounts for the scraper</b><small>This club's accounts with no posts yet</small></span></button>
             </div></details>
         </div>
@@ -701,6 +701,12 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
       if (e.target.matches("[data-logo-file]")) { const file = e.target.files[0]; e.target.value = ""; if (file) await uploadLogo(file); return; }
       if (e.target.matches("[data-menu-file]")) { const file = e.target.files[0]; e.target.value = ""; if (file) await uploadMenuImg(file); return; }
       if (e.target.matches("[data-menu-url]")) return setMenuImg(e.target.value.trim());
+      // Import content: the CSV goes to the import wizard for this club (handed over in IndexedDB: it can be many MB)
+      if (e.target.matches("[data-posts-file]")) {
+        const file = e.target.files[0]; e.target.value = ""; if (!file) return;
+        await handOff(file);
+        return (location.href = `import.html?club=${cur}&file=1`);
+      }
       if (e.target.dataset.active) { await rpc("admin_club_edit", { p_what: "person", p_id: Number(e.target.dataset.active), p: { active: e.target.checked } }); return loadClub(); }
       if (e.target.matches("[data-file]")) {
         const file = e.target.files[0]; e.target.value = ""; if (!file) return;
@@ -731,6 +737,14 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
     } catch (x) { fail(x); }
   });
 
+  function handOff(file) {
+    return new Promise((ok, ko) => {
+      const rq = indexedDB.open("scp-admin-handoff", 1);
+      rq.onupgradeneeded = () => rq.result.createObjectStore("files");
+      rq.onerror = () => ko(rq.error);
+      rq.onsuccess = () => { const tx = rq.result.transaction("files", "readwrite"); tx.objectStore("files").put(file, "import"); tx.oncomplete = () => ok(); tx.onerror = () => ko(tx.error); };
+    });
+  }
   loadClubs();
   // from the website's club picker (superadmins): admin/my-club.html?new=1 opens the "New club" form straight away
   if (new URLSearchParams(location.search).get("new")) { history.replaceState(null, "", location.pathname); main.querySelector("[data-new]")?.click(); }

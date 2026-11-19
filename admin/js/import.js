@@ -859,5 +859,25 @@
     return () => { stopped = true; };
   }
 
-  if (club) showWizard(); else showHistory();
+  // Admin → My Club → "Import content": the file chosen there (?file=1), handed over in IndexedDB, ready to analyse
+  function takeHandOff() {
+    return new Promise((ok) => {
+      const rq = indexedDB.open("scp-admin-handoff", 1);
+      rq.onupgradeneeded = () => rq.result.createObjectStore("files");
+      rq.onerror = () => ok(null);
+      rq.onsuccess = () => {
+        const tx = rq.result.transaction("files", "readwrite"), st = tx.objectStore("files"), g = st.get("import");
+        g.onsuccess = () => { st.delete("import"); ok(g.result || null); };
+        g.onerror = () => ok(null);
+      };
+    });
+  }
+  if (club) {
+    showWizard();
+    if (new URLSearchParams(location.search).get("file")) {
+      history.replaceState(null, "", `import.html?club=${club.id}`);
+      const f = await takeHandOff();
+      if (f) { wizard.file = f; renderUpload(); }
+    }
+  } else showHistory();
 })();
