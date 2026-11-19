@@ -77,6 +77,8 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
 
   async function loadClub() {
     try { club = await rpc("admin_club", { p_club: cur }); } catch (e) { return fail(e); }
+    // e-mails invited without an SCP account yet (supabase/my-club-trials.sql): theirs as soon as they sign up
+    try { club.invites = await rpc("admin_club_invites", { p_club: cur }); } catch { club.invites = []; }
     // each account's last imported post (supabase/my-club-daily.sql), to see that the daily scraping keeps it fresh
     const last = new Map();
     try { for (const a of await rpc("admin_club_accounts")) last.set(`${a.platform}|${a.handle}`, a.last_post); } catch {}
@@ -106,7 +108,7 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
     const nPlayers = people.filter((p) => p.kind === "player").length, nSponsors = people.filter((p) => p.kind === "sponsor").length;
     const nPosts = people.reduce((n, p) => n + p.accounts.reduce((m, a) => m + (a.posts || 0), 0), 0);
     let tab = "people"; try { tab = localStorage.getItem("scp-mcl-tab") || "people"; } catch {}
-    const tabs = [["people", "Linked accounts", people.length], ["members", "Members", club.members.length], ["settings", "Club settings", null]];
+    const tabs = [["people", "Linked accounts", people.length], ["members", "Members", club.members.length + club.invites.length], ["settings", "Club settings", null]];
     $("[data-club]").innerHTML = `
       <section class="mcl-hero"${c.colors?.primary ? ` style="--c1:${esc(c.colors.primary)};--c2:${esc(c.colors.secondary || c.colors.primary)}"` : ""}>
         <span class="mcl-hero-logo">${c.logo_url ? `<img src="${esc(c.logo_url)}" alt="">` : `<span>${esc(c.name.slice(0, 2).toUpperCase())}</span>`}</span>
@@ -146,17 +148,26 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
       </div>
 
       <div class="mcl-pane" data-pane="members"${tab === "members" ? "" : " hidden"}>
-        <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Members</h2>${info("Who can open this club's space, by the e-mail of their SCP account (a free account is enough). A member gets every feature while they're a member; a trial lasts 7 days. Each account only sees its own club.")}</header>
+        <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Members</h2>${info("Who can open this club's space, by the e-mail of their SCP account (a free account is enough). A member gets every feature while they're a member; a free trial lasts 7, 14 or 30 days and can be extended. E-mails without an account are invited and get their access when they sign up. Each account only sees its own club.")}</header>
         <p class="mcl-help">Members see ${esc(c.name)}'s My Club: its players' and sponsors' posts, only for them.</p>
         ${club.members.length ? `<div class="table-wrap"><table class="data mcl-table"><thead><tr><th>E-mail</th><th>Access</th><th>Until</th><th></th></tr></thead><tbody>
           ${club.members.map((m) => `<tr${m.live ? "" : ' class="is-off"'}><td><b>${esc(m.email)}</b></td>
-            <td>${!m.live ? `<span class="status status-analyzed">${m.trial ? "Trial ended" : "Ended"}</span>` : m.trial ? `<span class="status status-importing">7-day trial</span>` : `<span class="status status-completed">Member</span>`}${m.live && !m.access ? ` <span class="status status-failed" title="This account has no library access, so it can't open the club. Remove it and add it again.">No access</span>` : ""}</td>
+            <td>${!m.live ? `<span class="status status-analyzed">${m.trial ? "Trial ended" : "Ended"}</span>` : m.trial ? `<span class="status status-importing">Free trial</span>` : `<span class="status status-completed">Member</span>`}${m.live && !m.access ? ` <span class="status status-failed" title="This account has no library access, so it can't open the club. Remove it and add it again.">No access</span>` : ""}</td>
             <td>${m.ends_at ? `${esc(new Date(m.ends_at).toLocaleDateString())} <small class="muted">${m.live ? `(${Math.max(1, Math.ceil((new Date(m.ends_at) - Date.now()) / 864e5))} d)` : ""}</small>` : `<span class="muted">—</span>`}</td>
             <td class="td-actions">${m.trial ? `<button class="btn btn-sm" type="button" data-access="extend" data-email="${esc(m.email)}" title="7 more days">+7 days</button><button class="btn btn-sm" type="button" data-access="member" data-email="${esc(m.email)}" title="Full member, no end">Make member</button>` : ""}<button class="icon-btn" type="button" title="Remove" aria-label="Remove" data-access="remove" data-email="${esc(m.email)}">${icon("trash")}</button></td></tr>`).join("")}
           </tbody></table></div>` : `<p class="muted">Nobody yet.</p>`}
-        <form class="mcl-add" data-member><input class="input" type="email" name="email" placeholder="name@club.com" required>
-          <select class="select" name="kind"><option value="member">Member</option><option value="trial">7-day trial</option></select>
-          <button class="btn" type="submit">${icon("plus")}Add</button></form></section>
+        ${club.members.some((m) => m.live && m.trial) ? `<div class="mcl-trials-all"><span>${num(club.members.filter((m) => m.live && m.trial).length)} on a free trial</span><button class="btn btn-sm" type="button" data-trials-extend>${icon("plus")}7 more days for all of them</button></div>` : ""}
+        ${club.invites.length ? `<h3 class="mcl-sub">Invited, without an SCP account yet <small class="muted">· their access starts the day they sign up with this e-mail</small></h3>
+          <div class="table-wrap"><table class="data mcl-table"><thead><tr><th>E-mail</th><th>Access</th><th>Invited</th><th></th></tr></thead><tbody>
+          ${club.invites.map((i) => `<tr><td><b>${esc(i.email)}</b></td><td><span class="status status-analyzed">${i.trial ? `${i.days}-day trial` : "Member"} · waiting</span></td>
+            <td>${esc(new Date(i.created_at).toLocaleDateString())}</td>
+            <td class="td-actions"><button class="btn btn-sm" type="button" data-invite-copy="${esc(i.email)}" data-days="${i.trial ? i.days : ""}">${icon("copy")}Copy invitation</button><button class="icon-btn" type="button" title="Remove" aria-label="Remove" data-uninvite="${esc(i.email)}">${icon("trash")}</button></td></tr>`).join("")}
+          </tbody></table></div>` : ""}
+        <form class="mcl-add mcl-add-many" data-member>
+          <label class="mcl-add-l">Give access to the club's staff<small>One or more e-mails (one per line, or separated by commas). Without an SCP account yet? They're invited: their access starts when they sign up.</small>
+            <textarea class="input" name="emails" rows="3" placeholder="name@club.com&#10;press@club.com" required></textarea></label>
+          <div class="mcl-add-row"><select class="select" name="kind"><option value="trial:7">Free trial · 7 days</option><option value="trial:14">Free trial · 14 days</option><option value="trial:30">Free trial · 30 days</option><option value="member">Member (no end)</option></select>
+          <button class="btn btn-primary" type="submit">${icon("plus")}Give access</button></div></form></section>
       </div>
 
       <div class="mcl-pane" data-pane="settings"${tab === "settings" ? "" : " hidden"}>
@@ -615,6 +626,13 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
         if (!(await A.confirmDialog({ title: `Delete ${club.club.name}?`, text: "Deletes the club's space, sections, teams, players, sponsors and members. The posts stay in the library.", confirm: "Delete", danger: true }))) return;
         await rpc("admin_club_edit", { p_what: "club_delete", p_id: cur }); cur = null; A.toast("Club deleted"); return loadClubs();
       }
+      if (b.matches("[data-trials-extend]")) { const n = await rpc("admin_club_extend_trials", { p_club: cur, p_days: 7 }); A.toast(`${n} trial${n === 1 ? "" : "s"} extended by 7 days`); return loadClubs(cur); }
+      if (b.dataset.uninvite) { await rpc("admin_club_access_bulk", { p_club: cur, p_emails: [b.dataset.uninvite], p_action: "uninvite" }); A.toast("Invitation removed"); return loadClubs(cur); }
+      if (b.dataset.inviteCopy) {   // the text to send them (nothing is e-mailed from here): sign up with this e-mail and My Club opens
+        const days = b.dataset.days;
+        const text = `Hola!\n\nTe hemos dado acceso a My Club de ${club.club.name} en Sports Content Playbook${days ? ` (prueba gratuita de ${days} días)` : ""}.\n\nCrea tu cuenta con este e-mail (${b.dataset.inviteCopy}) aquí: https://sportscontentplaybook.com/signup.html\nEn cuanto entres, verás My Club en el menú.`;
+        await navigator.clipboard.writeText(text); return A.toast("Invitation copied: paste it in an e-mail or WhatsApp");
+      }
       if (b.dataset.access) {
         if (b.dataset.access === "remove" && !(await A.confirmDialog({ title: `Remove ${b.dataset.email}?`, text: "They lose access to this club's space (and the features it gave them).", confirm: "Remove", danger: true }))) return;
         const r = await rpc("admin_club_access", { p_club: cur, p_email: b.dataset.email, p_action: b.dataset.access });
@@ -731,10 +749,14 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
         await rpc("admin_club_save", { p: { id: cur, name: f.name.value, logo_url: f.logo_url.value, menu_image_url: f.menu_image_url.value, accounts, active: f.active.checked, colors, kind: f.kind.value } });
         A.toast("Saved"); return loadClubs(cur);
       }
-      if (f.matches("[data-member]")) {
-        const r = await rpc("admin_club_access", { p_club: cur, p_email: f.email.value, p_action: f.kind.value });
-        if (!r.ok) return fail(new Error(r.error));
-        A.toast(f.kind.value === "trial" ? "7-day trial given" : "Member added"); return loadClubs(cur);
+      if (f.matches("[data-member]")) {   // several e-mails at once (supabase/my-club-trials.sql)
+        const emails = f.emails.value.split(/[\s,;]+/).map((x) => x.trim()).filter(Boolean);
+        if (!emails.length) return;
+        const [action, days] = f.kind.value.split(":");
+        const r = await rpc("admin_club_access_bulk", { p_club: cur, p_emails: emails, p_action: action, p_days: Number(days) || 7 });
+        const what = action === "trial" ? `${days}-day trial` : "membership";
+        const msg = [r.added.length && `${r.added.length} with a ${what}`, r.invited.length && `${r.invited.length} invited (no account yet)`, r.skipped.length && `${r.skipped.length} skipped: ${r.skipped.map((x) => `${x.email} (${x.why})`).join(", ")}`].filter(Boolean).join(" · ");
+        A.toast(msg || "Nothing to add", r.skipped.length ? "err" : undefined); return loadClubs(cur);
       }
     } catch (x) { fail(x); }
   });
