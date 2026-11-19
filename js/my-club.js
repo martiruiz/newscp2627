@@ -260,6 +260,7 @@
           ${st.club.trial_ends ? (() => { const d = Math.max(1, Math.ceil((new Date(st.club.trial_ends) - Date.now()) / 864e5));   // a 7-day trial (Admin → My Club → Members)
             return `<a class="mc-trial" href="book-a-call.html?for=clubs" data-cta="my-club-trial"><b>${esc(t(d === 1 ? "Trial: 1 day left" : "Trial: {n} days left", { n: d }))}</b><span>${esc(t("Book a demo"))} →</span></a>`; })() : ""}
           ${club.accounts?.length ? `<div class="mc-profiles">${club.accounts.map((a) => `<a class="mc-prof" href="${esc((URL_OF[a.platform] || URL_OF.instagram)(a.handle))}" target="_blank" rel="noopener" title="${esc(a.platform)}">${svg(NET[a.platform] || NET.instagram)}<span>@${esc(a.handle)}</span></a>`).join("")}</div>` : ""}
+          <div class="mc-refresh" data-mc-refresh></div>
           ${st.clubs.length > 1 ? `<div class="mc-side"><div class="mc-clubpick" data-mc-pick>
               <button type="button" class="mc-cp-btn" aria-haspopup="listbox" aria-expanded="false" data-mc-pick-btn><small>${esc(t("Club"))}</small>${crest(club)}<b>${esc(club.name)}</b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
               <ul class="mc-cp-list" role="listbox" hidden>${st.clubs.map((c) => `<li><button type="button" role="option" aria-selected="${c.id === club.id}" data-mc-club-pick="${c.id}">${crest(c)}<span>${esc(c.name)}</span>${c.id === club.id ? `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>` : ""}</button></li>`).join("")}${st.isSuper ? `<li class="mc-cp-new"><a href="admin/my-club.html?new=1"><span class="mc-cp-plus" aria-hidden="true">+</span><span>${esc(t("New club"))}</span></a></li>` : ""}</ul>
@@ -267,7 +268,35 @@
         </div>
       </div>`;
     bar();
+    refreshUi();
   }
+
+  // "Update views and likes": every post of the club (Instagram, TikTok, YouTube) queued; views-cron reads them first,
+  // slowly so no platform blocks it, and this shows how far it is (supabase/my-club-views-refresh.sql)
+  let refreshTimer = 0;
+  async function refreshUi(r) {
+    const el = document.querySelector("[data-mc-refresh]"); if (!el || !st.club) return;
+    clearTimeout(refreshTimer);
+    if (!r) { const q = await db.rpc("club_refresh_status", { p_club: st.club.id }); r = q.data || {}; }
+    const pending = Number(r.pending) || 0, total = Number(r.total) || 0, done = total - pending;
+    const since = r.requested_at ? Math.round((Date.now() - new Date(r.requested_at)) / 36e5) : null;
+    const ico = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 4v5h-5"/></svg>`;
+    if (pending > 0) {   // working on it: how many are done, with a bar
+      el.innerHTML = `<div class="mc-rf is-busy" title="${esc(t("Read slowly from each network so none blocks it. You can leave the page: it keeps going."))}">${ico}<span><b>${esc(t("Updating views and likes"))}</b><small>${esc(t("{a} of {b} posts", { a: done.toLocaleString(), b: total.toLocaleString() }))}</small><i class="mc-rf-bar"><i style="width:${Math.round((done / total) * 100)}%"></i></i></span></div>`;
+      refreshTimer = setTimeout(() => refreshUi(), 60000);
+    } else {
+      el.innerHTML = `<button type="button" class="mc-rf" data-mc-refresh-go>${ico}<span><b>${esc(t("Update views and likes"))}</b><small>${esc(total && since != null ? t(since < 1 ? "Updated less than an hour ago" : since < 48 ? "Updated {n} h ago" : "Updated {n} days ago", { n: since < 48 ? since : Math.round(since / 24) }) : t("Every post of the club"))}</small></span></button>`;
+    }
+  }
+  document.addEventListener("click", async (e) => {
+    const go = e.target.closest("[data-mc-refresh-go]"); if (!go || !st.club) return;
+    go.disabled = true;
+    const { data, error } = await db.rpc("club_refresh_views", { p_club: st.club.id });
+    if (error) { go.disabled = false; return alert(t("Couldn't start the update. Try again in a moment.")); }
+    if (data?.error === "already") alert(t("The club's posts were updated less than 12 hours ago. You can update them again from {time}.", { time: new Date(data.next).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) }));
+    else if (data?.ok && !data.queued) alert(t("Every post is already up to date (read in the last 6 hours)."));
+    refreshUi(data);
+  });
 
   // the filters, in the Content Library's glass bar: Club · Players · Sponsors (whose posts) and Section · Team, each
   // opening its panel under the bar (my-club.html .mc-crumb, where the library has its own bar)
