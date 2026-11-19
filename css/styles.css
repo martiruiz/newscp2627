@@ -9943,3 +9943,8 @@ button.org-plan-pick { cursor: pointer; padding-right: 12px; }
 .mc-netb svg { width: 11px; height: 11px; }
 .mc-person.is-crest .mc-ph img { object-fit: contain; padding: 4px; background: #fff; }
 .mc-netb svg { fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+/* My Club club picker: "New club" at the end, for superadmins (opens Admin → My Club with the form) */
+.mc-cp-new { margin-top: 4px; padding-top: 4px; border-top: 1px solid var(--line); }
+.mc-cp-new a { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 10px; color: var(--gold); font: 600 14px var(--font-body); text-decoration: none; }
+.mc-cp-new a:hover { background: rgba(var(--fg), 0.06); }
+.mc-cp-plus { display: grid; place-items: center; width: 28px; height: 28px; flex: none; border-radius: 8px; border: 1px dashed currentColor; font-size: 17px; line-height: 1; }

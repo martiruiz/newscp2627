@@ -36,7 +36,8 @@
     const saved = store.get();
     const askTab = new URLSearchParams(location.search).get("tab");   // the menu's shortcuts: my-club.html?tab=sponsors…
     st.tab = TABS.includes(askTab) ? askTab : TABS.includes(saved.tab) ? saved.tab : "players";
-    const { data, error } = await db.rpc("my_clubs");
+    const [{ data, error }, me] = await Promise.all([db.rpc("my_clubs"), window.SCP_AUTH?.getProfile?.().catch(() => null)]);
+    st.isSuper = me?.profile?.role === "superadmin";   // superadmins can start a new club from the club picker
     if (error) return fail(/my_clubs|does not exist|schema cache/i.test(error.message) ? "My Club isn't set up yet (run supabase/my-club.sql)." : "Couldn't load your club right now. Try again in a moment.");
     // Superadmin → "View as" a plan: the page as a member of that plan without a club sees it
     st.clubs = window.SCP_viewAs?.() && !window.SCP_VIEW_AS_PLANS?.[window.SCP_viewAs()]?.club ? [] : data || [];
@@ -261,7 +262,7 @@
           ${club.accounts?.length ? `<div class="mc-profiles">${club.accounts.map((a) => `<a class="mc-prof" href="${esc((URL_OF[a.platform] || URL_OF.instagram)(a.handle))}" target="_blank" rel="noopener" title="${esc(a.platform)}">${svg(NET[a.platform] || NET.instagram)}<span>@${esc(a.handle)}</span></a>`).join("")}</div>` : ""}
           ${st.clubs.length > 1 ? `<div class="mc-side"><div class="mc-clubpick" data-mc-pick>
               <button type="button" class="mc-cp-btn" aria-haspopup="listbox" aria-expanded="false" data-mc-pick-btn><small>${esc(t("Club"))}</small>${crest(club)}<b>${esc(club.name)}</b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
-              <ul class="mc-cp-list" role="listbox" hidden>${st.clubs.map((c) => `<li><button type="button" role="option" aria-selected="${c.id === club.id}" data-mc-club-pick="${c.id}">${crest(c)}<span>${esc(c.name)}</span>${c.id === club.id ? `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>` : ""}</button></li>`).join("")}</ul>
+              <ul class="mc-cp-list" role="listbox" hidden>${st.clubs.map((c) => `<li><button type="button" role="option" aria-selected="${c.id === club.id}" data-mc-club-pick="${c.id}">${crest(c)}<span>${esc(c.name)}</span>${c.id === club.id ? `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>` : ""}</button></li>`).join("")}${st.isSuper ? `<li class="mc-cp-new"><a href="admin/my-club.html?new=1"><span class="mc-cp-plus" aria-hidden="true">+</span><span>${esc(t("New club"))}</span></a></li>` : ""}</ul>
             </div></div>` : ""}
         </div>
       </div>`;

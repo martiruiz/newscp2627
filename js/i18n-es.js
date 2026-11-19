@@ -1190,6 +1190,7 @@ window.SCP_ES = {
   "My Club": "Mi club",
   "Section": "Sección",
   "Whole club": "Todo el club",
+  "New club": "Nuevo club",
   "All sections": "Todas las secciones",
   "All teams": "Todos los equipos",
   "Choose a section to see its teams": "Elige una sección para ver sus equipos",

@@ -732,4 +732,6 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
   });
 
   loadClubs();
+  // from the website's club picker (superadmins): admin/my-club.html?new=1 opens the "New club" form straight away
+  if (new URLSearchParams(location.search).get("new")) { history.replaceState(null, "", location.pathname); main.querySelector("[data-new]")?.click(); }
 })();
