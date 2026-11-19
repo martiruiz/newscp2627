@@ -183,7 +183,7 @@
     // the club's own profiles ("Club" tab), with their posts in SCP (supabase/my-club-daily.sql)
     const pr = await db.rpc("club_profiles", { p_club: st.club.id });
     // a library tag (platform "library": the club's posts in the Content Library, supabase/my-club-library-add.sql) goes by its name
-    st.profiles = pr.error ? [] : (pr.data || []).map((a) => ({ id: `${a.platform}:${a.handle}`, name: a.platform === "library" ? a.handle : `@${a.handle}`, platform: a.platform, section_id: a.section_id, posts: a.posts }));
+    st.profiles = pr.error ? [] : (pr.data || []).map((a) => ({ id: `${a.platform}:${a.handle}`, name: a.platform === "library" ? a.handle : `@${a.handle}`, platform: a.platform, photo: a.photo, section_id: a.section_id, posts: a.posts }));
     // the last section / team, only if it still exists (and the team belongs to the section)
     const sec = data.sections.find((s) => s.id === saved.section);
     st.section = sec ? sec.id : null;
@@ -354,8 +354,8 @@
           ${st.people.size ? `<button type="button" class="mc-clear" data-mc-clear>${esc(t("Clear"))} · ${st.people.size}</button>` : `<small class="mc-tip">${esc(t(TXT[st.tab].tip))}</small>`}
           ${list.length > 6 ? `<label class="mc-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" value="${esc(st.q)}" placeholder="${esc(t(TXT[st.tab].search))}" data-mc-q></label>` : ""}
         </div>
-        ${list.length ? `<div class="mc-chips">${shown.map((p) => `<button type="button" class="mc-person${p.posts ? "" : " is-empty"}${st.tab === "sponsors" ? " is-brand" : ""}" aria-pressed="${st.people.has(p.id)}" data-mc-person="${p.id}" title="${esc(p.posts ? t("{n} posts", { n: p.posts }) : t("Account linked, no posts imported yet"))}">
-            <span class="mc-ph">${p.platform ? `<span class="mc-av mc-net">${svg(NET[p.platform] || NET.instagram)}</span>` : p.photo_url ? `<img src="${esc(p.photo_url)}" alt="" loading="lazy">` : `<span class="mc-av">${esc(initials(p.name))}</span>`}<span class="mc-tick">${svg(ICON.check)}</span></span>
+        ${list.length ? `<div class="mc-chips">${shown.map((p) => `<button type="button" class="mc-person${p.posts ? "" : " is-empty"}${st.tab === "sponsors" ? " is-brand" : ""}${st.tab === "competitors" ? " is-crest" : ""}" aria-pressed="${st.people.has(p.id)}" data-mc-person="${p.id}" title="${esc(p.posts ? t("{n} posts", { n: p.posts }) : t("Account linked, no posts imported yet"))}">
+            <span class="mc-ph">${p.photo ? `<img src="${esc(p.photo)}" alt="" loading="lazy" referrerpolicy="no-referrer">${p.platform !== "library" ? `<span class="mc-netb">${svg(NET[p.platform] || NET.instagram)}</span>` : ""}` : p.platform ? `<span class="mc-av mc-net">${svg(NET[p.platform] || NET.instagram)}</span>` : p.photo_url ? `<img src="${esc(p.photo_url)}" alt="" loading="lazy">` : `<span class="mc-av">${esc(initials(p.name))}</span>`}<span class="mc-tick">${svg(ICON.check)}</span></span>
             <span class="mc-person-tx"><b>${esc(p.name)}</b><small>${p.global && st.tab === "sponsors" ? `<em>${esc(t("Global sponsor"))}</em>` : esc(p.posts ? t("{n} posts", { n: p.posts }) : t("No posts yet"))}</small></span></button>`).join("")}</div>`
           : `<p class="mc-none">${esc(t(TXT[st.tab].none))}</p>`}
         ${st.tab === "sponsors" && list.length ? `<div class="mc-mode" role="group" aria-label="${esc(t("Which posts"))}">

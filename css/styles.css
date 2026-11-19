@@ -9936,3 +9936,10 @@ button.org-plan-pick { cursor: pointer; padding-right: 12px; }
 .mcb-k2 { margin-top: 16px !important; }
 .mcb-row .mcb-sep { margin: 6px 2px; }
 .mcb-row .mcb-scope .lfb-tx b { max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* My Club panels: real pictures — the club accounts' Instagram profile pictures (with their network in a small badge)
+   and the competitors' crests (whole, on white, never cropped) */
+.mc-netb { position: absolute; left: -3px; bottom: -3px; display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: #121b33; color: #fff; box-shadow: 0 0 0 2px #121b33; }
+.mc-netb svg { width: 11px; height: 11px; }
+.mc-person.is-crest .mc-ph img { object-fit: contain; padding: 4px; background: #fff; }
+.mc-netb svg { fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
