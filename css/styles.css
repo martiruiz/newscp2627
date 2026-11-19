@@ -9843,3 +9843,19 @@ button.org-plan-pick { cursor: pointer; padding-right: 12px; }
 .lf-skel i::after { content: ""; position: absolute; inset: 0; transform: translateX(-100%); animation: skelShine 1.3s ease-in-out infinite;
   background: linear-gradient(90deg, transparent, rgba(var(--fg), 0.06), transparent); }
 @media (prefers-reduced-motion: reduce) { .lf-skel i::after { animation: none; } }
+
+/* My Club menu for a club's own members (js/nav-menu.js clubPanel): their club and a way into each part of it */
+.mm-clubp-crown.has-logo { overflow: hidden; background: #fff; }
+.mm-clubp-crown.has-logo img { width: 100%; height: 100%; object-fit: cover; }
+.mm-clubp-links { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.mm-clubp-links a { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 44px; padding: 0 14px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); color: var(--text) !important; font-size: 13.5px; font-weight: 600; text-decoration: none; transition: border-color .15s, background .15s; }
+.mm-clubp-links a i { font-style: normal; color: var(--muted); }
+.mm-clubp-links a:hover { border-color: rgba(240, 184, 74, .5); background: rgba(240, 184, 74, .08); }
+.mm-clubp-links a:hover i { color: var(--gold); }
+.mm-clubp-more { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; color: var(--muted); font-size: 12.5px; }
+.mm-clubp-more a { color: var(--muted) !important; text-decoration: underline; text-underline-offset: 3px; }
+.mm-clubp-more a:hover { color: var(--gold) !important; }
+
+/* Language filters: the flag fills its square, edge to edge (no white frame), in the chips of "Your search" and in the lists */
+.is-flag { background: transparent !important; padding: 0 !important; }
+.is-flag img { width: 100% !important; height: 100% !important; object-fit: cover !important; border-radius: inherit; }

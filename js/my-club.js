@@ -34,11 +34,12 @@
     if (!box) return;
     if (!db) return fail("The club space isn't connected yet.");
     const saved = store.get();
-    st.tab = TABS.includes(saved.tab) ? saved.tab : "players";
+    const askTab = new URLSearchParams(location.search).get("tab");   // the menu's shortcuts: my-club.html?tab=sponsors…
+    st.tab = TABS.includes(askTab) ? askTab : TABS.includes(saved.tab) ? saved.tab : "players";
     const { data, error } = await db.rpc("my_clubs");
     if (error) return fail(/my_clubs|does not exist|schema cache/i.test(error.message) ? "My Club isn't set up yet (run supabase/my-club.sql)." : "Couldn't load your club right now. Try again in a moment.");
     // Superadmin → "View as" a plan: the page as a member of that plan without a club sees it
-    st.clubs = window.SCP_viewAs?.() ? [] : data || [];
+    st.clubs = window.SCP_viewAs?.() && !window.SCP_VIEW_AS_PLANS?.[window.SCP_viewAs()]?.club ? [] : data || [];
     if (!st.clubs.length) return fail("Your account isn't linked to a club yet. Write to us and we'll set up your club's space.", true);
     st.club = st.clubs.find((c) => c.id === saved.club) || st.clubs[0];
     await openClub(saved);

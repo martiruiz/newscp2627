@@ -126,7 +126,7 @@
       <div class="mm-clubp-vis"><span class="mm-clubp-crown" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 7l5 4 5-7 5 7 5-4-2 12H4z"/></svg></span>
         <p class="mm-clubp-t">Your club, with its own library</p><p class="mm-clubp-s">The most complete plan, tailored to your club.</p></div>
       <div class="mm-clubp-body"><ul>${["First team, sections and academy", "Your players' and sponsors' posts, in one place", "We upload your club's posts every day", "Private: only your marketing and communications team can see it"].map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
-        <a class="lock-go is-best mm-clubp-go" href="book-a-call.html?for=clubs" data-cta="menu-my-club"><span>Try it 7 days</span><i aria-hidden="true">→</i></a></div></div>`;
+        <a class="lock-go is-best mm-clubp-go" href="book-a-call.html?for=clubs" data-cta="menu-my-club" data-club-cta><span>Try it 7 days</span><i aria-hidden="true">→</i></a></div></div>`;
     if (m.type === "grid") return `<div class="mm-panel mm-grid" id="${id}" role="region" aria-label="${esc(m.label)}">
       <p class="mm-eyebrow">${esc(m.eyebrow)}</p><p class="mm-title">${esc(m.title)} <em>${esc(m.highlight)}</em></p>
       <div class="mm-cols">${m.items.filter(show).map((i) => `<a class="mm-item" href="${esc(i.href)}"><span class="mm-ic">${icon(i.icon)}</span><span><b>${esc(i.title)}</b><small>${esc(i.desc)}</small></span></a>`).join("")}</div></div>`;
@@ -222,7 +222,9 @@
   // Visitors: Home · Library · Plan · Pricing and, the only one highlighted, Try it free (Library and Plan go to their explanation on the home).
   // Members: their daily tools, Library · AI analyses · Plan · Boards · Account; with a club, agency… of their own, My Club takes the place of AI analyses.
   const here = location.pathname.split("/").pop() || "index.html";
-  const hasClub = () => { try { return localStorage.getItem("scp-has-club") === "1"; } catch { return false; } };
+  // superadmin "View as" a plan without a club (Starter, Plus, Pro, No plan): the menu as those members see it
+  const asNoClub = () => { const v = window.SCP_viewAs?.(); return !!v && !window.SCP_VIEW_AS_PLANS?.[v]?.club; };
+  const hasClub = () => { try { return !asNoClub() && localStorage.getItem("scp-has-club") === "1"; } catch { return false; } };
   const barTabs = () => (signedIn ? [
     { label: "Library", href: "content-library.html", ic: "layout-grid" },
     hasClub() ? { label: "My Club", href: "my-club.html", ic: "crown", club: true } : { label: "AI", href: "content-library.html?ai=mine", ic: "sparkles" },
@@ -260,15 +262,44 @@
   new MutationObserver(() => document.documentElement.classList.toggle("nav-lock", nav.classList.contains("is-open"))).observe(nav, { attributes: true, attributeFilter: ["class"] });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && nav.classList.contains("is-open") && !nav.classList.contains("mm-open")) nav.querySelector("[data-nav-toggle]")?.click(); });
 
+  // My Club's panel for members. With a club of their own: no trial offer — their club and a way into each part of it,
+  // the guide and how to ask for a new player or sponsor. With a plan but no club: a demo instead of "Try it 7 days".
+  function clubPanel(club) {
+    const p = links.querySelector(".mm-clubp");
+    if (!p) return;
+    if (asNoClub()) club = null;
+    if (club) {
+      const go = [["Club posts", "club"], ["Players", "players"], ["Sponsors", "sponsors"], ["Competitors", "competitors"]];
+      p.classList.add("mm-clubp-mine");
+      p.innerHTML = `<div class="mm-clubp-vis"><span class="mm-clubp-crown${club.logo ? " has-logo" : ""}" aria-hidden="true">${club.logo ? `<img src="${esc(club.logo)}" alt="">` : `<svg viewBox="0 0 24 24"><path d="M2 7l5 4 5-7 5 7 5-4-2 12H4z"/></svg>`}</span>
+        <p class="mm-clubp-t">${esc(club.name)}</p><p class="mm-clubp-s">Your club's private library, updated every day.</p></div>
+      <div class="mm-clubp-body"><div class="mm-clubp-links">${go.map(([t, tab]) => `<a href="my-club.html?tab=${tab}"><span>${esc(t)}</span><i aria-hidden="true">→</i></a>`).join("")}</div>
+        <a class="lock-go is-best mm-clubp-go" href="my-club.html" data-cta="menu-my-club-open"><span>Open My Club</span><i aria-hidden="true">→</i></a>
+        <p class="mm-clubp-more"><a href="help/how-to-set-up-your-club-in-my-club.html">How My Club works</a><span>·</span><a href="contact.html?topic=support">Add a player or sponsor</a></p></div>`;
+      return;
+    }
+    let plan = null;
+    try { plan = localStorage.getItem("scp-navplan"); } catch {}
+    const cta = p.querySelector("[data-club-cta]");
+    if (cta && plan === "1") { cta.querySelector("span").textContent = "See it in a 30-min demo"; cta.dataset.cta = "menu-my-club-demo"; }
+  }
+
   // a member whose space is a competition, an agency or a federation (clubs.kind, Admin → My Club): "My competition"…
   (async () => {
     const db = window.SCP_AUTH?.client;
     if (!member || !db) return;
-    let kind = null, known = null;
-    try { kind = sessionStorage.getItem("scp-space-kind"); known = localStorage.getItem("scp-has-club"); } catch {}
-    if (kind == null || known == null) {
+    let kind = null, known = null, club = null;
+    try { kind = sessionStorage.getItem("scp-space-kind"); known = localStorage.getItem("scp-has-club"); club = JSON.parse(localStorage.getItem("scp-club") || "null"); } catch {}
+    clubPanel(club);
+    if (kind == null || known == null || (known === "1" && !club)) {
       const { data } = await db.rpc("my_clubs").then((r) => r, () => ({}));
-      if (data) { const had = hasClub(); try { localStorage.setItem("scp-has-club", data.length ? "1" : "0"); } catch {} if (had !== hasClub()) drawBar(); }
+      if (data) {
+        const had = hasClub();
+        club = data[0] ? { name: data[0].name, logo: data[0].logo_url || "", n: data.length } : null;
+        try { localStorage.setItem("scp-has-club", data.length ? "1" : "0"); localStorage.setItem("scp-club", JSON.stringify(club)); } catch {}
+        if (had !== hasClub()) drawBar();
+        clubPanel(club);
+      }
       const kinds = [...new Set((data || []).map((c) => c.kind || "club"))];
       kind = kinds.length === 1 ? kinds[0] : "club";   // several kinds (superadmins): the general name
       try { sessionStorage.setItem("scp-space-kind", kind); } catch {}

@@ -233,7 +233,7 @@
     galician: svgFlag(`<rect width="40" height="26" fill="#fff"/><path d="M0 0L40 26" stroke="#0099cc" stroke-width="7"/>`),
     basque: svgFlag(`<rect width="40" height="26" fill="#d52b1e"/><path d="M0 0L40 26M40 0L0 26" stroke="#009b48" stroke-width="4"/><path d="M20 0v26M0 13h40" stroke="#fff" stroke-width="4"/>`),
   };
-  const flagOf = (name) => { const n = name.toLowerCase(), c = FLAG[n]; return c ? `https://flagcdn.com/w40/${c}.png` : OWN_FLAG[n] || (n === "emoji only" ? symbol("😀") : symbol("🌐")); };
+  const flagOf = (name) => { const n = name.toLowerCase(), c = FLAG[n]; return c ? `https://flagcdn.com/w80/${c}.png` : OWN_FLAG[n] || (n === "emoji only" ? symbol("😀") : symbol("🌐")); };
 
   // ---------- Catalog (values + totals; logos from library-filters.sql) ----------
   async function loadCatalog() {
@@ -312,7 +312,9 @@
     const words = String(name).replace(/[^\p{L}\p{N} ]/gu, " ").split(/\s+/).filter((w) => w && !/^(fc|cf|club|de|the|ac|as|sc|afc|cd|ud|rc)$/i.test(w));
     return (words.length > 1 ? words.slice(0, 3).map((w) => w[0]).join("") : (words[0] || name).slice(0, 4)).toUpperCase();
   };
-  const crestImg = (v, cls = "lf-crest") => `<span class="${cls}">${v.logo ? `<img src="${esc(v.logo)}" alt="" loading="lazy">` : `<b>${esc(initials(v.name))}</b>`}</span>`;
+  // a language's flag fills its whole square (no white frame around it); crests and logos keep their margin
+  const isFlag = (v) => !!v.logo && (/flagcdn\.com/.test(v.logo) || Object.values(OWN_FLAG).includes(v.logo));
+  const crestImg = (v, cls = "lf-crest") => `<span class="${cls}${isFlag(v) ? " is-flag" : ""}">${v.logo ? `<img src="${esc(v.logo)}" alt="" loading="lazy">` : `<b>${esc(initials(v.name))}</b>`}</span>`;
 
   // values not shown in the column's lists (repeated elsewhere, or dropped: collab "Influencer / creator", "Athlete takeover")
   const REPEATED = { entity: ["clubs", "competitions", "content creators"], collab: ["influencer / creator", "athlete takeover"] };

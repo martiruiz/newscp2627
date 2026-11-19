@@ -10,6 +10,8 @@ const VIEW_AS_PLANS = {
   library: { name: "Starter", ai: true, planner: false, units: 5, perms: ["library.matchday"] },
   library_planner: { name: "Plus", ai: true, planner: true, units: 10, perms: ["library.creators", "library.matchday"] },
   all_access: { name: "Pro", ai: true, planner: true, units: 30, perms: ["library.creators", "library.matchday", "library.brands"] },
+  // a My Club client: everything in Pro plus their club (my-club.js and the menu keep the clubs; with the other plans they hide them)
+  enterprise: { name: "Enterprise (My Club)", ai: true, planner: true, units: 30, perms: ["library.creators", "library.matchday", "library.brands"], club: true },
 };
 window.SCP_VIEW_AS_PLANS = VIEW_AS_PLANS;
 window.SCP_viewAs = () => { try { const v = localStorage.getItem("scp-view-as"); return VIEW_AS_PLANS[v] ? v : null; } catch { return null; } };
