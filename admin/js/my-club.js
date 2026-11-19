@@ -149,32 +149,46 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
 
       <div class="mcl-pane" data-pane="members"${tab === "members" ? "" : " hidden"}>
         <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Members</h2>${info("Who can open this club's space, by the e-mail of their SCP account (a free account is enough). A member gets every feature while they're a member; a free trial lasts 7, 14 or 30 days and can be extended. E-mails without an account are invited and get their access when they sign up. Each account only sees its own club.")}</header>
-        <p class="mcl-help">Members see ${esc(c.name)}'s My Club: its players' and sponsors' posts, only for them.</p>
-        ${club.members.length ? `<div class="table-wrap"><table class="data mcl-table"><thead><tr><th>E-mail</th><th>Access</th><th>Until</th><th></th></tr></thead><tbody>
-          ${club.members.map((m) => `<tr${m.live ? "" : ' class="is-off"'}><td><b>${esc(m.email)}</b></td>
-            <td>${!m.live ? `<span class="status status-analyzed">${m.trial ? "Trial ended" : "Ended"}</span>` : m.trial ? `<span class="status status-importing">Free trial</span>` : `<span class="status status-completed">Member</span>`}${m.live && !m.access ? ` <span class="status status-failed" title="This account has no library access, so it can't open the club. Remove it and add it again.">No access</span>` : ""}</td>
-            <td>${m.ends_at ? `${esc(new Date(m.ends_at).toLocaleDateString())} <small class="muted">${m.live ? `(${Math.max(1, Math.ceil((new Date(m.ends_at) - Date.now()) / 864e5))} d)` : ""}</small>` : `<span class="muted">—</span>`}</td>
-            <td class="td-actions">${m.trial ? `<button class="btn btn-sm" type="button" data-access="extend" data-email="${esc(m.email)}" title="7 more days">+7 days</button><button class="btn btn-sm" type="button" data-access="member" data-email="${esc(m.email)}" title="Full member, no end">Make member</button>` : ""}<button class="icon-btn" type="button" title="Remove" aria-label="Remove" data-access="remove" data-email="${esc(m.email)}">${icon("trash")}</button></td></tr>`).join("")}
-          </tbody></table></div>` : `<p class="muted">Nobody yet.</p>`}
-        ${club.members.some((m) => m.live && m.trial) ? `<div class="mcl-trials-all"><span>${num(club.members.filter((m) => m.live && m.trial).length)} on a free trial</span><button class="btn btn-sm" type="button" data-trials-extend>${icon("plus")}7 more days for all of them</button></div>` : ""}
-        ${club.invites.length ? `<h3 class="mcl-sub">Invited, without an SCP account yet <small class="muted">· their access starts the day they sign up with this e-mail</small></h3>
-          <div class="table-wrap"><table class="data mcl-table"><thead><tr><th>E-mail</th><th>Access</th><th>Invited</th><th></th></tr></thead><tbody>
-          ${club.invites.map((i) => `<tr><td><b>${esc(i.email)}</b></td><td><span class="status status-analyzed">${i.trial ? `${i.days}-day trial` : "Member"} · waiting</span></td>
-            <td>${esc(new Date(i.created_at).toLocaleDateString())}</td>
-            <td class="td-actions"><button class="btn btn-sm" type="button" data-invite-copy="${esc(i.email)}" data-days="${i.trial ? i.days : ""}">${icon("copy")}Copy invitation</button><button class="icon-btn" type="button" title="Remove" aria-label="Remove" data-uninvite="${esc(i.email)}">${icon("trash")}</button></td></tr>`).join("")}
-          </tbody></table></div>` : ""}
-        <form class="mcl-add mcl-add-many" data-member>
-          <label class="mcl-add-l">Give access to the club's staff<small>One or more e-mails (one per line, or separated by commas). Without an SCP account yet? They're invited: their access starts when they sign up.</small>
-            <textarea class="input" name="emails" rows="3" placeholder="name@club.com&#10;press@club.com" required></textarea></label>
-          <div class="mcl-add-row"><select class="select" name="kind"><option value="trial:7">Free trial · 7 days</option><option value="trial:14">Free trial · 14 days</option><option value="trial:30">Free trial · 30 days</option><option value="member">Member (no end)</option></select>
-          <button class="btn btn-primary" type="submit">${icon("plus")}Give access</button></div></form></section>
+        ${(() => {   // Members: who's in (members, trials with the days left, invitations) and, beside it, giving access
+          const live = club.members.filter((m) => m.live), trials = live.filter((m) => m.trial);
+          const left = (d) => Math.max(1, Math.ceil((new Date(d) - Date.now()) / 864e5));
+          const ini = (e) => esc(e.slice(0, 1).toUpperCase());
+          const row = (m) => {
+            const total = m.trial && m.ends_at ? Math.max(left(m.ends_at), Math.round((new Date(m.ends_at) - new Date(m.created_at || Date.now())) / 864e5) || 7) : 0;
+            const state = !m.live ? `<span class="status status-analyzed">${m.trial ? "Trial ended" : "Ended"}</span>` : m.trial ? `<span class="status status-importing">Free trial</span>` : `<span class="status status-completed">Member</span>`;
+            return `<li class="mcl-mem${m.live ? "" : " is-off"}"><span class="mcl-mem-av">${ini(m.email)}</span>
+              <span class="mcl-mem-tx"><b title="${esc(m.email)}">${esc(m.email)}</b>
+                <small>${state}${m.live && !m.access ? ` <span class="status status-failed" title="This account has no library access, so it can't open the club. Remove it and add it again.">No access</span>` : ""}
+                ${m.ends_at ? `<span class="mcl-mem-when">${m.live ? `${left(m.ends_at)} days left · ` : ""}until ${esc(new Date(m.ends_at).toLocaleDateString())}</span>` : `<span class="mcl-mem-when">No end</span>`}</small>
+                ${m.live && m.trial && m.ends_at ? `<i class="mcl-mem-bar"><i style="width:${Math.min(100, Math.round((left(m.ends_at) / total) * 100))}%"></i></i>` : ""}</span>
+              <span class="mcl-mem-act">${m.trial ? `<button class="btn btn-sm" type="button" data-access="extend" data-email="${esc(m.email)}" title="7 more days">+7 days</button><button class="btn btn-sm" type="button" data-access="member" data-email="${esc(m.email)}" title="Full member, no end">Make member</button>` : ""}<button class="icon-btn" type="button" title="Remove" aria-label="Remove" data-access="remove" data-email="${esc(m.email)}">${icon("trash")}</button></span></li>`;
+          };
+          const inv = (i) => `<li class="mcl-mem is-invite"><span class="mcl-mem-av">${icon("mail")}</span>
+              <span class="mcl-mem-tx"><b title="${esc(i.email)}">${esc(i.email)}</b><small><span class="status status-analyzed">${i.trial ? `${i.days}-day trial` : "Member"} · waiting for sign-up</span><span class="mcl-mem-when">invited ${esc(new Date(i.created_at).toLocaleDateString())}</span></small></span>
+              <span class="mcl-mem-act"><button class="btn btn-sm" type="button" data-invite-copy="${esc(i.email)}" data-days="${i.trial ? i.days : ""}">${icon("copy")}Copy invitation</button><button class="icon-btn" type="button" title="Remove" aria-label="Remove" data-uninvite="${esc(i.email)}">${icon("trash")}</button></span></li>`;
+          const opts = [["trial:7", "7 days", "Free trial"], ["trial:14", "14 days", "Free trial"], ["trial:30", "30 days", "Free trial"], ["member", "Member", "No end"]];
+          return `<div class="mcl-mems">
+            <div class="mcl-mems-list">
+              <div class="mcl-mems-kpi"><span><b>${num(live.length - trials.length)}</b>members</span><span><b>${num(trials.length)}</b>on a free trial</span><span><b>${num(club.invites.length)}</b>invited</span>
+                ${trials.length ? `<button class="btn btn-sm" type="button" data-trials-extend>${icon("plus")}7 more days for all of them</button>` : ""}</div>
+              ${club.members.length || club.invites.length ? `<ul class="mcl-mem-ul">${club.members.map(row).join("")}${club.invites.map(inv).join("")}</ul>`
+                : `<div class="mcl-mems-empty"><span class="mcl-mems-ic">${icon("users")}</span><b>Nobody in ${esc(c.name)}'s My Club yet</b><p>Give the club's communication team a free trial: they'll see their players' and sponsors' posts, only for them.</p></div>`}
+            </div>
+            <form class="mcl-give" data-member>
+              <div class="mcl-give-h"><span class="mcl-mems-ic">${icon("plus")}</span><span><b>Give access to the club's staff</b><small>Without an SCP account yet? They're invited: their access starts when they sign up.</small></span></div>
+              <label class="mcl-give-l">E-mails <em data-em-count></em><textarea class="input" name="emails" rows="4" placeholder="press@club.com&#10;marketing@club.com" required></textarea><small>One per line, or separated by commas.</small></label>
+              <div class="mcl-give-l">Access<div class="mcl-give-opts">${opts.map(([v, l, sub], i) => `<label class="mcl-give-opt"><input type="radio" name="kind" value="${v}"${i === 0 ? " checked" : ""}><b>${l}</b><small>${sub}</small></label>`).join("")}</div></div>
+              <button class="btn btn-primary mcl-give-go" type="submit">${icon("plus")}Give access</button>
+            </form>
+          </div>`;
+        })()}</section>
       </div>
 
       <div class="mcl-pane" data-pane="settings"${tab === "settings" ? "" : " hidden"}>
         <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>Club settings</h2>${info("Name, logo and profiles shown on the club's page. The club's profiles (as many per network as it has) also tell which sponsor posts are “linked to the club”: the ones that mention one of them.")}</header>
         <form class="mcl-form mcl-set" data-form>
           <div class="mcl-set-card">
-            <div class="mcl-set-h"><b>Identity</b><small>The crest and the name the club's members see.</small></div>
+            <div class="mcl-set-h"><span class="mcl-set-ic">${icon("crown")}</span><b>Identity</b><small>The crest and the name the club's members see.</small></div>
             <div class="mcl-ident">
               <label class="mcl-crest-up" title="Upload logo"><span class="mcl-logo-prev" data-logo-prev>${c.logo_url ? `<img src="${esc(c.logo_url)}" alt="">` : `<span>${esc(c.name.slice(0, 2).toUpperCase())}</span>`}</span>
                 <span class="mcl-crest-ov">${icon("import")}Change</span><input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden data-logo-file></label>
@@ -190,7 +204,7 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
             </div>
           </div>
           <div class="mcl-set-card">
-            <div class="mcl-set-h"><b>Menu image</b><small>The picture behind the crest in the website menu (My Club), for the club's members. A vertical or square photo of the club works best. Empty: the default picture.</small></div>
+            <div class="mcl-set-h"><span class="mcl-set-ic">${icon("eye")}</span><b>Menu image</b><small>The picture behind the crest in the website menu (My Club), for the club's members. A vertical or square photo of the club works best. Empty: the default picture.</small></div>
             <div class="mcl-menuimg">
               <div class="mcl-menu-prev${c.menu_image_url ? "" : " is-default"}" data-menu-prev style="${c.menu_image_url ? `background-image:url(&quot;${esc(c.menu_image_url)}&quot;)` : ""}"><span class="mcl-menu-crest">${c.logo_url ? `<img src="${esc(c.logo_url)}" alt="">` : ""}</span><b>${esc(c.name)}</b></div>
               <div class="mcl-logo-act">
@@ -201,7 +215,7 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
             </div>
           </div>
           <div class="mcl-set-card">
-            <div class="mcl-set-h"><b>Colours</b><small>The club's page takes them: buttons, tabs, its header. Empty: taken from the crest.</small></div>
+            <div class="mcl-set-h"><span class="mcl-set-ic">${icon("sparkles")}</span><b>Colours</b><small>The club's page takes them: buttons, tabs, its header. Empty: taken from the crest.</small></div>
             <div class="mcl-colors">
               <label class="mcl-swatch"><input type="color" name="color1" value="${esc(c.colors?.primary || "#f0b84a")}" data-color-set="${c.colors?.primary ? 1 : ""}"><span><b>Primary</b><small class="mono" data-hex="color1">${esc(c.colors?.primary || "from the crest")}</small></span></label>
               <label class="mcl-swatch"><input type="color" name="color2" value="${esc(c.colors?.secondary || "#121b33")}" data-color-set="${c.colors?.secondary ? 1 : ""}"><span><b>Secondary</b><small class="mono" data-hex="color2">${esc(c.colors?.secondary || "from the crest")}</small></span></label>
@@ -210,19 +224,20 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
             <div class="mcl-cprev" data-cprev style="--c1:${esc(c.colors?.primary || "#f0b84a")};--c2:${esc(c.colors?.secondary || "#121b33")}"><span>${esc(c.name)}</span></div>
           </div>
           <div class="mcl-set-card">
-            <div class="mcl-set-h"><b>Sections</b> <em class="mcl-count">${num(club.sections.length)}</em><small>In this order in the client's Section filter (Primer equipo masculino, Femenino, Cantera…). Each profile and library tag goes in its section in Linked accounts.</small></div>
+            <div class="mcl-set-h"><span class="mcl-set-ic">${icon("columns")}</span><b>Sections</b> <em class="mcl-count">${num(club.sections.length)}</em><small>In this order in the client's Section filter (Primer equipo masculino, Femenino, Cantera…). Each profile and library tag goes in its section in Linked accounts.</small></div>
             <div class="mcl-secs">${club.sections.map((x, i) => `<div class="mcl-sec-row"><input class="input input-sm" value="${esc(x.name)}" data-sec-name="${x.id}" aria-label="Section name">
               <button class="icon-btn" type="button" title="Up" aria-label="Up" data-sec-move="up" data-sec="${x.id}"${i ? "" : " disabled"}>↑</button><button class="icon-btn" type="button" title="Down" aria-label="Down" data-sec-move="down" data-sec="${x.id}"${i < club.sections.length - 1 ? "" : " disabled"}>↓</button>
               <button class="icon-btn" type="button" title="Delete" aria-label="Delete" data-sec-del="${x.id}">${icon("trash")}</button></div>`).join("") || `<p class="muted">No sections yet.</p>`}
               <div class="mcl-sec-row"><input class="input input-sm" placeholder="New section (e.g. Primer equipo masculino)" data-sec-new><button class="btn btn-ghost btn-sm" type="button" data-sec-add>${icon("plus")}Add section</button></div></div>
           </div>
-          <div class="mcl-set-card">
-            <div class="mcl-set-h"><b>Club profiles</b> <em class="mcl-count">${num((c.accounts || []).length)}</em><small>The club's own accounts. They also tell which sponsor posts are linked to the club (the ones that mention them).</small></div>
+          <div class="mcl-set-card is-wide">
+            <div class="mcl-set-h"><span class="mcl-set-ic">${icon("globe")}</span><b>Club profiles</b> <em class="mcl-count">${num((c.accounts || []).length)}</em><small>The club's own accounts. They also tell which sponsor posts are linked to the club (the ones that mention them).</small></div>
             <div class="mcl-accs"><div data-accs>${(c.accounts?.length ? c.accounts : [{ platform: "instagram", handle: "" }]).map(accRow).join("")}</div>
               <button class="btn btn-ghost btn-sm mcl-acc-add" type="button" data-acc-add>${icon("plus")}Add profile</button></div>
           </div>
           <div class="mcl-set-bar">
             <label class="mcl-switch"><input type="checkbox" name="active"${c.active ? " checked" : ""}><i></i><span>Active<small>Members can open the club's space</small></span></label>
+            <span class="mcl-dirty">Unsaved changes</span>
             <span class="spacer"></span>
             <button class="btn btn-ghost mcl-del" type="button" data-club-del>${icon("trash")}Delete club</button>
             <button class="btn btn-primary" type="submit">Save changes</button>
@@ -809,6 +824,15 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
     } catch (x) { fail(x); }
   });
 
+  // Club settings: the save bar says when something changed and isn't saved yet
+  const dirty = (e) => { const f = e.target.closest?.("[data-form]"); if (f) f.classList.add("is-dirty"); };
+  main.addEventListener("input", dirty); main.addEventListener("change", dirty);
+  // Members → Give access: how many e-mails are in the box
+  main.addEventListener("input", (e) => {
+    if (!e.target.matches("[data-member] textarea")) return;
+    const n = e.target.value.split(/[\s,;]+/).filter((x) => x.includes("@")).length;
+    const c = main.querySelector("[data-em-count]"); if (c) c.textContent = n ? `· ${n}` : "";
+  });
   // the club search: hides the clubs whose name doesn't match
   main.addEventListener("input", (e) => {
     if (!e.target.matches("[data-club-q]")) return;

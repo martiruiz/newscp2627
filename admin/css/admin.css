@@ -2489,3 +2489,67 @@ tr[data-row].is-open td:first-child { box-shadow: inset 3px 0 0 var(--accent, #f
 .mcl-lg-it b { font-size: 13px; } .mcl-lg-it small { color: var(--muted); font-size: 11.5px; }
 .mcl-lg-tip { margin: 0; font-size: 12.5px; }
 .mcl-lg [data-lg-add] { justify-self: start; }
+
+/* My Club → Members, premium: who's in on the left (KPIs, people with avatar, state and the trial's days left), giving
+   access on the right (e-mails with a live count, access as option cards). Same colours as the rest of the admin. */
+.mcl-mems { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 16px; padding: 4px 18px 16px; align-items: start; }
+@media (max-width: 980px) { .mcl-mems { grid-template-columns: minmax(0, 1fr); } }
+.mcl-mems-kpi { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 12px; }
+.mcl-mems-kpi > span { display: inline-flex; align-items: baseline; gap: 6px; padding: 8px 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--panel-2); color: var(--muted); font-size: 12.5px; }
+.mcl-mems-kpi > span b { color: var(--text); font-size: 18px; font-weight: 700; }
+.mcl-mems-kpi .btn { margin-left: auto; }
+.mcl-mem-ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.mcl-mem { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 12px; border-radius: 14px; border: 1px solid var(--border); background: var(--panel); transition: border-color .15s; }
+.mcl-mem:hover { border-color: rgba(240, 184, 74, 0.35); }
+.mcl-mem.is-off { opacity: .55; }
+.mcl-mem-av { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(140deg, rgba(240, 184, 74, .35), rgba(240, 184, 74, .08)); color: var(--accent); font-weight: 700; font-size: 15px; }
+.mcl-mem.is-invite .mcl-mem-av { background: var(--panel-2); color: var(--muted); border: 1px dashed var(--border); }
+.mcl-mem-av svg { width: 17px; height: 17px; }
+.mcl-mem-tx { min-width: 0; display: grid; gap: 4px; }
+.mcl-mem-tx b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
+.mcl-mem-tx small { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; color: var(--muted); font-size: 12px; }
+.mcl-mem-bar { display: block; height: 4px; border-radius: 4px; background: var(--panel-2); overflow: hidden; max-width: 260px; }
+.mcl-mem-bar > i { display: block; height: 100%; border-radius: inherit; background: var(--amber, var(--accent)); }
+.mcl-mem-act { display: flex; gap: 6px; align-items: center; }
+@media (max-width: 640px) { .mcl-mem { grid-template-columns: 40px minmax(0, 1fr); } .mcl-mem-act { grid-column: 1 / -1; flex-wrap: wrap; } }
+.mcl-mems-empty { display: grid; justify-items: center; gap: 6px; padding: 36px 20px; border-radius: 16px; border: 1px dashed var(--border); text-align: center; }
+.mcl-mems-empty p { margin: 0; max-width: 380px; color: var(--muted); font-size: 13px; }
+.mcl-mems-ic { display: grid; place-items: center; flex: none; width: 40px; height: 40px; border-radius: 12px; background: rgba(240, 184, 74, .12); color: var(--accent); }
+.mcl-mems-ic svg { width: 19px; height: 19px; }
+.mcl-give { display: grid; gap: 14px; padding: 16px; border-radius: 16px; border: 1px solid rgba(240, 184, 74, .28); background: linear-gradient(180deg, rgba(240, 184, 74, .06), transparent 60%), var(--panel); }
+.mcl-give-h { display: flex; gap: 12px; align-items: flex-start; }
+.mcl-give-h b { display: block; font-size: 15px; }
+.mcl-give-h small { display: block; margin-top: 3px; color: var(--muted); font-size: 12.5px; line-height: 1.45; }
+.mcl-give-l { display: grid; gap: 6px; font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.mcl-give-l em { font-style: normal; color: var(--accent); }
+.mcl-give-l > small { text-transform: none; letter-spacing: 0; font-weight: 400; }
+.mcl-give textarea.input { min-height: 96px; resize: vertical; font: 400 14px var(--font); text-transform: none; letter-spacing: 0; color: var(--text); }
+.mcl-give-opts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.mcl-give-opt { position: relative; display: grid; gap: 2px; padding: 10px 6px; border-radius: 12px; border: 1px solid var(--border); background: var(--panel-2); text-align: center; cursor: pointer; text-transform: none; letter-spacing: 0; transition: border-color .15s, background .15s; }
+.mcl-give-opt input { position: absolute; opacity: 0; pointer-events: none; }
+.mcl-give-opt b { color: var(--text); font-size: 14px; }
+.mcl-give-opt small { color: var(--muted); font-size: 11px; font-weight: 500; }
+.mcl-give-opt:has(input:checked) { border-color: var(--accent); background: rgba(240, 184, 74, .1); }
+.mcl-give-opt:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+.mcl-give-go { justify-content: center; width: 100%; height: 44px; }
+
+/* My Club → Club settings, premium: cards in two columns (profiles across), each with its icon; the save bar stays at
+   the bottom of the screen and says when there are unsaved changes. Same colours. */
+.mcl-set { max-width: none; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+.mcl-set .mcl-set-card.is-wide, .mcl-set .mcl-set-bar { grid-column: 1 / -1; }
+@media (max-width: 1100px) { .mcl-set { grid-template-columns: minmax(0, 1fr); } }
+.mcl-set-card { background: var(--panel); transition: border-color .15s; }
+.mcl-set-card:hover { border-color: rgba(240, 184, 74, .3); }
+.mcl-set-h { display: grid; grid-template-columns: 40px auto minmax(0, 1fr); column-gap: 12px; row-gap: 2px; align-items: center; }
+.mcl-set-h .mcl-set-ic { grid-row: 1 / span 2; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: rgba(240, 184, 74, .12); color: var(--accent); }
+.mcl-set-h .mcl-set-ic svg { width: 18px; height: 18px; }
+.mcl-set-h > b { grid-column: 2; }
+.mcl-set-h > em { grid-column: 3; justify-self: start; }
+.mcl-set-h > small { grid-column: 2 / -1; flex-basis: auto; line-height: 1.45; }
+.mcl-set .mcl-set-bar { position: sticky; bottom: 12px; z-index: 5; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px 16px; border-radius: 16px; border: 1px solid var(--border);
+  background: rgba(18, 27, 51, .86); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: 0 18px 40px -20px rgba(0, 0, 0, .7); }
+:root[data-theme="light"] .mcl-set .mcl-set-bar { background: rgba(255, 255, 255, .9); }
+.mcl-dirty { display: none; align-items: center; gap: 6px; color: var(--accent); font-size: 13px; font-weight: 600; }
+.mcl-dirty::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+.mcl-set.is-dirty .mcl-dirty { display: inline-flex; }
+.mcl-set.is-dirty .mcl-set-bar { border-color: rgba(240, 184, 74, .45); }
