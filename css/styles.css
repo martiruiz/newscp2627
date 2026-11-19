@@ -9878,3 +9878,9 @@ button.org-plan-pick { cursor: pointer; padding-right: 12px; }
 .mc-cp-crest { overflow: hidden; padding: 0 !important; }
 .mc-cp-crest img { width: 100% !important; height: 100% !important; object-fit: cover !important; padding: 0 !important; border-radius: inherit; }
 .mm-clubp-links.is-odd a:first-child { grid-column: 1 / -1; }   /* an odd number of parts: the club's posts take the whole row */
+/* the club's panel: its texts wrap (the nav around it doesn't) and the right column never grows past the panel */
+.mm-clubp-mine { grid-template-columns: 260px minmax(0, 1fr); white-space: normal; }
+.mm-clubp-mine .mm-clubp-body, .mm-clubp-mine .mm-clubp-help a, .mm-clubp-mine .mm-clubp-help a > span:last-child, .mm-clubp-mine .mm-clubp-links a { min-width: 0; }
+.mm-clubp-mine .mm-clubp-links a span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mm-clubp-mine .mm-clubp-help a { align-items: flex-start; }
+@media (max-width: 1180px) { .mm-clubp-mine { grid-template-columns: minmax(0, 1fr); } }
