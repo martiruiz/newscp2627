@@ -2344,7 +2344,9 @@
     // horizontal videos (YouTube, Facebook videos) need wide cards: 3 columns at most
     const ytOnly = pfs.length === 1 && (pfs[0] === "youtube" || (pfs[0] === "facebook" && fmts.length === 1 && fmts[0] === "video"));
     if (ytOnly) { const n = Math.min(6, Math.floor((w + GAP) / (150 + GAP))); return -Math.max(2, n - (n % 2)); }   // negative: lanes of the YouTube grid (even)
-    return Math.max(1, Math.min(6, Math.floor((w + GAP) / (240 + GAP))));
+    // Facebook only: its posts are scaled-down 500 px embeds, too small to read in narrow columns: 3 columns at most
+    const most = pfs.length === 1 && pfs[0] === "facebook" ? 3 : 6;
+    return Math.max(1, Math.min(most, Math.floor((w + GAP) / (240 + GAP))));
   }
   function buildColumns(n) {
     grid.innerHTML = "";
