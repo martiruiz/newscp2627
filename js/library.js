@@ -1866,6 +1866,14 @@
       if (!chipsFor(s).length) return showEmpty("The library is empty for now — posts appear here after the first import.");
       return showEmpty("No posts match these filters.");
     }
+    // Facebook posts shown as posted: their measured height first, so each card is placed at its real size
+    const fbIds = rows.filter((p) => platformOf(p) === "facebook" && p.embed_h === undefined && asPostedOf(p)).map((p) => Number(p.id));
+    if (fbIds.length && db) {
+      const { data: hs } = await db.from("content_ideas").select("id,embed_h").in("id", fbIds);
+      if (my !== token) return;
+      const byId = new Map((hs || []).map((x) => [String(x.id), x.embed_h]));
+      rows.forEach((p) => { if (byId.has(String(p.id))) p.embed_h = byId.get(String(p.id)); });
+    }
     addCards(rows);
     rows.forEach((p) => cache.set(String(p.id), p));
     offset += rows.length;
@@ -1992,7 +2000,12 @@
   // the bottom): the frame is drawn at 500 px and scaled to the card (fbScale). A post (post.php) adds its header, text
   // and counts (~190 px at 500) to the picture; a video (video.php) is just the video.
   const FB_W = 500, fbIsPost = (p) => !/\/(reel|videos?)\//.test(p.url || "");
-  const fbBox = (p, r) => r + (fbIsPost(p) ? 190 / FB_W : 0);
+  // its real height, measured once (content_ideas.embed_h, pipeline/library/fb_measure.py), else an estimate
+  const fbBox = (p, r) => (Number(p.embed_h) > 0 ? p.embed_h / FB_W : r + (fbIsPost(p) ? 190 / FB_W : 0));
+  // Facebook alone: each post as Facebook shows it, at its exact size. Mixed with other networks: a card like the
+  // others (its cover and the footer), the post itself only while it has no cover yet
+  const fbOnly = () => { const n = [...(selected.platform || [])].map((id) => catalog?.byId.get(id)?.name.toLowerCase()); return n.length === 1 && n[0] === "facebook"; };
+  const asPostedOf = (p, pf = platformOf(p)) => pf === "x" || pf === "linkedin" || (pf === "facebook" && (fbOnly() || !p.cover_url));
   function shape(p) {
     const pf = platformOf(p);
     if (pf === "facebook") return { ratio: fbBox(p, Number(p.media_ratio) || fbRatio(p)) };
@@ -2085,8 +2098,8 @@
     // strip at the bottom that says why (on hover) and opens the post on Instagram in a new window
     const igNote = pf === "instagram" && p.ig_blocked ? `<a class="lib-ignote" href="${esc(p.url || "")}" target="_blank" rel="noopener">${icon("music")}<span>${tx("Music with copyright · Watch on Instagram")}</span>${icon("external-link")}<span class="lib-igtip" role="tooltip">${tx("This reel uses licensed music, and Instagram only lets it play inside its app. That's why it can't be watched here: it opens on Instagram in a new window.")}</span></a>` : "";
 
-    // X, LinkedIn and Facebook: always the post itself, so the text can be read and videos played in place
-    const asPosted = pf === "x" || pf === "linkedin" || pf === "facebook";
+    // X, LinkedIn (and Facebook, see asPostedOf): the post itself, so the text can be read and videos played in place
+    const asPosted = asPostedOf(p, pf);
     if (p.cover_url && !asPosted) {
       return `
       <article class="lib-card has-cover" data-id="${esc(p.id)}">
@@ -2451,7 +2464,7 @@
     const goneCheck = [];
     [...tpl.content.children].forEach((el, i) => {
       const pfi = platformOf(rows[i]);
-      const asPosted = ["x", "linkedin", "facebook"].includes(pfi);
+      const asPosted = asPostedOf(rows[i], pfi);
       const ratio = (rows[i].cover_url && !asPosted ? mediaRatio(rows[i]) : shape(rows[i]).ratio) + (asPosted ? 0 : 0.2);   // + the footer
       const pe = { el, ratio };
       placed.push(pe);
@@ -2467,7 +2480,7 @@
           if (!img.naturalWidth) return;
           const r = Math.min(16 / 9, Math.max(9 / 16, img.naturalHeight / img.naturalWidth));
           rows[i].media_ratio = r;
-          pe.ratio = fbBox(rows[i], r);
+          pe.ratio = asPosted ? fbBox(rows[i], r) : r;   // the embed, or its cover card
           const m = el.querySelector(".lib-media");
           if (m) { m.style.aspectRatio = `1 / ${pe.ratio.toFixed(4)}`; m.style.setProperty("--fbh", `${Math.round(FB_W * pe.ratio)}px`); }
         };
