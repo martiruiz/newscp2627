@@ -238,13 +238,16 @@
   // ---------- Catalog (values + totals; logos from library-filters.sql) ----------
   async function loadCatalog() {
     // The catalog is bigger than the 1,000 rows the API returns per request: read it page by page
+    // (the first page alone, then six at a time in parallel: ~11 pages arrive in two rounds instead of one after another)
     const allCatalog = async () => {
       const out = [];
-      for (let from = 0; ; from += 1000) {
-        const r = await db.rpc("catalog_with_counts").range(from, from + 999);
-        if (r.error) return { data: out.length ? out : null, error: out.length ? null : r.error };
-        out.push(...(r.data || []));
-        if (!r.data || r.data.length < 1000) return { data: out, error: null };
+      for (let from = 0, n = 1; ; from += n * 1000, n = 6) {
+        const rs = await Promise.all(Array.from({ length: n }, (_, i) => db.rpc("catalog_with_counts").range(from + i * 1000, from + i * 1000 + 999)));
+        for (const r of rs) {
+          if (r.error) return { data: out.length ? out : null, error: out.length ? null : r.error };
+          out.push(...(r.data || []));
+          if (!r.data || r.data.length < 1000) return { data: out, error: null };
+        }
       }
     };
     const [{ data, error }, logos] = await Promise.all([
@@ -1803,15 +1806,18 @@
   const cache = new Map();
 
   window.addEventListener("scp-lib-scope", () => load(true));   // My Club changed the selection
+  // skeleton cards while the posts load (different heights, like the real grid)
+  function skeletons() {
+    const H = [1.25, 1.78, 1, 1.5, 0.9, 1.78, 1.25, 1.1, 1.6];
+    cols.forEach((c, i) => { for (let k = 0; k < 2; k++) c.insertAdjacentHTML("beforeend", `<div class="lib-skel" style="aspect-ratio:1/${H[(i * 2 + k) % H.length]}"><i></i><span></span></div>`); });
+  }
   async function load(reset) {
     const s = state();
     renderActive(s);
     if (reset) syncLink(s);
     if (reset) {
       offset = 0; resetGrid(); empty.hidden = true; note.hidden = true;
-      // skeleton cards while the posts load (different heights, like the real grid)
-      const H = [1.25, 1.78, 1, 1.5, 0.9, 1.78, 1.25, 1.1, 1.6];
-      cols.forEach((c, i) => { for (let k = 0; k < 2; k++) c.insertAdjacentHTML("beforeend", `<div class="lib-skel" style="aspect-ratio:1/${H[(i * 2 + k) % H.length]}"><i></i><span></span></div>`); });
+      skeletons();
     }
     if (!db) return showNote("Content isn't connected yet.");
     const my = ++token;
@@ -2912,7 +2918,11 @@
   $("[data-clear]").addEventListener("click", clearAll);
 
   if (!db) return load(true);
-  Promise.all([Promise.all([loadCatalog(), loadViews().catch(() => {})]).then(() => { renderFacets(); drawSugg(); }).catch(() => {}), boards.load(), loadSavedSearches(), loadMe().catch(() => {}), loadAi().catch(() => {})]).then(() => {
+  // the page shows the shape of what is coming at once: skeleton cards (the filters' skeleton is in the HTML)
+  resetGrid(); skeletons();
+  // the Views histogram doesn't hold the posts back: it draws its filter when it arrives
+  loadViews().then(() => { if (catalog) renderFacets(); }).catch(() => {});
+  Promise.all([loadCatalog().then(() => { renderFacets(); drawSugg(); }).catch(() => {}), boards.load(), loadSavedSearches(), loadMe().catch(() => {}), loadAi().catch(() => {})]).then(() => {
     // favourite network (catalog value "platform") goes first in "For you", and its tile first in the filters
     const pv = me.favPlatform && (catalog?.byCat?.platform || []).find((v) => v.name.toLowerCase() === me.favPlatform);
     if (pv && !me.boost.includes(pv.id)) { me.boost = [pv.id, ...me.boost]; renderFacets(); }

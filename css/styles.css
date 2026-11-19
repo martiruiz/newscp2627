@@ -9830,3 +9830,16 @@ button.org-plan-pick { cursor: pointer; padding-right: 12px; }
 .kb-ctx-link { color: var(--gold); font-size: 13.5px; font-weight: 600; white-space: nowrap; text-decoration: none; }
 .kb-ctx-link:hover { text-decoration: underline; }
 .mc-title .kb-ctx-link { display: inline-block; margin-top: 4px; }
+
+/* Library loading: the filter column's skeleton, in the HTML until the filters arrive (renderFacets replaces it) */
+.lf-skel { display: grid; gap: 10px; padding: 4px 2px; }
+.lf-skel i, .lf-skel-chips i, .lf-skel-tiles i { position: relative; display: block; overflow: hidden; border-radius: 14px; background: rgba(var(--fg), 0.05); }
+.lf-skel-chips, .lf-skel-tiles { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 4px; }
+.lf-skel-chips i { width: 72px; height: 26px; border-radius: 999px; }
+.lf-skel-chips i:nth-child(2n) { width: 96px; }
+.lf-skel-row { height: 46px; }
+.lf-skel-box { height: 132px; }
+.lf-skel-tiles i { flex: 1; height: 64px; }
+.lf-skel i::after { content: ""; position: absolute; inset: 0; transform: translateX(-100%); animation: skelShine 1.3s ease-in-out infinite;
+  background: linear-gradient(90deg, transparent, rgba(var(--fg), 0.06), transparent); }
+@media (prefers-reduced-motion: reduce) { .lf-skel i::after { animation: none; } }
