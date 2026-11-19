@@ -29,7 +29,17 @@ arg = lambda k, d: int(sys.argv[sys.argv.index(k) + 1]) if k in sys.argv else d
 LIMIT, WORKERS = arg("--limit", 10**9), arg("--workers", 4)
 
 
-def rest(path, body=None, method=None):
+def rest(path, body=None, method=None, tries=4):
+    for k in range(tries):   # a passing database or network hiccup: try again a little later
+        try:
+            return rest_once(path, body, method)
+        except Exception:
+            if k == tries - 1:
+                raise
+            __import__("time").sleep(5 * (k + 1))
+
+
+def rest_once(path, body=None, method=None):
     req = urllib.request.Request(f"{BASE}/rest/v1/{path}", data=json.dumps(body).encode() if body is not None else None, method=method,
                                  headers={"apikey": KEY, "Authorization": f"Bearer {KEY}", "Content-Type": "application/json"})
     with urllib.request.urlopen(req, timeout=60) as r:

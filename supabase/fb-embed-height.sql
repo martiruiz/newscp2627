@@ -2,8 +2,9 @@
 -- counts), measured once in a headless browser (pipeline/library/fb_measure.py), so each card in the Content Library
 -- (js/library.js, Facebook only) takes the post's exact size. 0 = could not be measured (the card keeps its estimate).
 alter table public.content_ideas add column if not exists embed_h smallint;
-create index if not exists content_ideas_fb_embed_todo_idx on public.content_ideas (published_at desc)
-  where account_platform = 'facebook' and embed_h is null;
+drop index if exists public.content_ideas_fb_embed_todo_idx;   -- the order fb_measure.py reads them in (nulls last)
+create index content_ideas_fb_embed_todo_idx on public.content_ideas (published_at desc nulls last)
+  where account_platform = 'facebook' and embed_h is null and unavailable_at is null;
 
 create or replace function public.apply_fb_embed_h(p_rows jsonb)
 returns int language sql security definer set search_path = public as $$
