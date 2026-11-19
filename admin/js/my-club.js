@@ -57,6 +57,22 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
     A.toast("Logo uploaded. Press Save to keep it.");
   }
 
+  // the picture behind the crest in the website menu's My Club panel (js/nav-menu.js); empty = the default one
+  const setMenuImg = (url) => {
+    const f = $("[data-form]"); f.menu_image_url.value = url;
+    $("[data-menu-prev]").style.backgroundImage = url ? `url("${url.replace(/"/g, "%22")}")` : "";
+    $("[data-menu-prev]").classList.toggle("is-default", !url);
+  };
+  async function uploadMenuImg(file) {
+    if (file.size > 3145728) return fail(new Error("The image must be 3 MB or less."));
+    const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z]/g, "");
+    const path = `clubs/menu-${cur}-${Date.now()}.${ext}`;
+    const { error } = await A.db.storage.from("logos").upload(path, file, { contentType: file.type, upsert: true });
+    if (error) return fail(new Error(error.message));
+    setMenuImg(A.db.storage.from("logos").getPublicUrl(path).data.publicUrl);
+    A.toast("Image uploaded. Press Save to keep it.");
+  }
+
   async function loadClub() {
     try { club = await rpc("admin_club", { p_club: cur }); } catch (e) { return fail(e); }
     // each account's last imported post (supabase/my-club-daily.sql), to see that the daily scraping keeps it fresh
@@ -157,6 +173,17 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
                   ${c.logo_url ? `<button class="btn btn-ghost btn-sm" type="button" data-logo-clear>Remove logo</button>` : ""}
                   <details class="mcl-logo-link"><summary>Paste an image link</summary><input class="input input-sm" name="logo_url" value="${esc(c.logo_url || "")}" placeholder="https://…/crest.png"></details>
                 </div>
+              </div>
+            </div>
+          </div>
+          <div class="mcl-set-card">
+            <div class="mcl-set-h"><b>Menu image</b><small>The picture behind the crest in the website menu (My Club), for the club's members. A vertical or square photo of the club works best. Empty: the default picture.</small></div>
+            <div class="mcl-menuimg">
+              <div class="mcl-menu-prev${c.menu_image_url ? "" : " is-default"}" data-menu-prev style="${c.menu_image_url ? `background-image:url(&quot;${esc(c.menu_image_url)}&quot;)` : ""}"><span class="mcl-menu-crest">${c.logo_url ? `<img src="${esc(c.logo_url)}" alt="">` : ""}</span><b>${esc(c.name)}</b></div>
+              <div class="mcl-logo-act">
+                <label class="btn btn-sm">${icon("import")}Upload image<input type="file" accept="image/png,image/jpeg,image/webp" hidden data-menu-file></label>
+                <button class="btn btn-ghost btn-sm" type="button" data-menu-clear>Use the default</button>
+                <details class="mcl-logo-link"><summary>Paste an image link</summary><input class="input input-sm" name="menu_image_url" value="${esc(c.menu_image_url || "")}" placeholder="https://…/photo.jpg" data-menu-url></details>
               </div>
             </div>
           </div>
@@ -549,6 +576,7 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
       if (b.matches("[data-acc-del]")) return b.closest(".mcl-acc-row").remove();
       if (b.dataset.logoLib) return setLogo(b.dataset.logoLib);
       if (b.matches("[data-logo-clear]")) return setLogo("");
+      if (b.matches("[data-menu-clear]")) return setMenuImg("");
       if (b.matches("[data-scraper]")) return scraperFile();
       if (b.dataset.scrape) return scrapeNow(b.dataset.scrape, b);
       if (b.matches("[data-scrape-all]")) return scrapeAll(b);
@@ -671,6 +699,8 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
       if (e.target.dataset.personSec) { await rpc("admin_club_person_section", { p_person: Number(e.target.dataset.personSec), p_section: e.target.value ? Number(e.target.value) : null }); return A.toast("Section saved"); }
       if (e.target.dataset.setSec) { await rpc("admin_club_set_section", { p_club: cur, p: JSON.parse(e.target.dataset.setSec), p_section: e.target.value ? Number(e.target.value) : null }); return A.toast("Section saved"); }
       if (e.target.matches("[data-logo-file]")) { const file = e.target.files[0]; e.target.value = ""; if (file) await uploadLogo(file); return; }
+      if (e.target.matches("[data-menu-file]")) { const file = e.target.files[0]; e.target.value = ""; if (file) await uploadMenuImg(file); return; }
+      if (e.target.matches("[data-menu-url]")) return setMenuImg(e.target.value.trim());
       if (e.target.dataset.active) { await rpc("admin_club_edit", { p_what: "person", p_id: Number(e.target.dataset.active), p: { active: e.target.checked } }); return loadClub(); }
       if (e.target.matches("[data-file]")) {
         const file = e.target.files[0]; e.target.value = ""; if (!file) return;
@@ -690,7 +720,7 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
       if (f.matches("[data-form]")) {
         const accounts = [...f.querySelectorAll(".mcl-acc-row")].map((r) => ({ platform: r.querySelector("[name=acc_platform]").value, handle: r.querySelector("[name=acc_handle]").value.trim(), section_id: r.querySelector("[name=acc_section]").value || null })).filter((a) => a.handle);
         const colors = f.color1.dataset.colorSet || f.color2.dataset.colorSet ? { primary: f.color1.value, secondary: f.color2.value } : {};
-        await rpc("admin_club_save", { p: { id: cur, name: f.name.value, logo_url: f.logo_url.value, accounts, active: f.active.checked, colors, kind: f.kind.value } });
+        await rpc("admin_club_save", { p: { id: cur, name: f.name.value, logo_url: f.logo_url.value, menu_image_url: f.menu_image_url.value, accounts, active: f.active.checked, colors, kind: f.kind.value } });
         A.toast("Saved"); return loadClubs(cur);
       }
       if (f.matches("[data-member]")) {

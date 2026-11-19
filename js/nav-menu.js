@@ -77,6 +77,7 @@
     mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/>',
     search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
     newspaper: '<path d="M15 18h-5M18 14h-8"/><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-4 0v-9a2 2 0 0 1 2-2h2"/><rect x="10" y="6" width="8" height="4" rx="1"/>',
+    "user-plus": '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/>',
     "book-open": '<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>',
     briefcase: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
   };
@@ -271,11 +272,14 @@
     if (club) {
       const go = [["Club posts", "club"], ["Players", "players"], ["Sponsors", "sponsors"], ["Competitors", "competitors"]];
       p.classList.add("mm-clubp-mine");
-      p.innerHTML = `<div class="mm-clubp-vis"><span class="mm-clubp-crown${club.logo ? " has-logo" : ""}" aria-hidden="true">${club.logo ? `<img src="${esc(club.logo)}" alt="">` : `<svg viewBox="0 0 24 24"><path d="M2 7l5 4 5-7 5 7 5-4-2 12H4z"/></svg>`}</span>
+      p.innerHTML = `<div class="mm-clubp-vis"${club.img ? ` style="--club-img:url('${esc(club.img).replace(/'/g, "%27")}')"` : ""}><span class="mm-clubp-crown${club.logo ? " has-logo" : ""}" aria-hidden="true">${club.logo ? `<img src="${esc(club.logo)}" alt="">` : `<svg viewBox="0 0 24 24"><path d="M2 7l5 4 5-7 5 7 5-4-2 12H4z"/></svg>`}</span>
         <p class="mm-clubp-t">${esc(club.name)}</p><p class="mm-clubp-s">Your club's private library, updated every day.</p></div>
       <div class="mm-clubp-body"><div class="mm-clubp-links">${go.map(([t, tab]) => `<a href="my-club.html?tab=${tab}"><span>${esc(t)}</span><i aria-hidden="true">→</i></a>`).join("")}</div>
-        <a class="lock-go is-best mm-clubp-go" href="my-club.html" data-cta="menu-my-club-open"><span>Open My Club</span><i aria-hidden="true">→</i></a>
-        <p class="mm-clubp-more"><a href="help/how-to-set-up-your-club-in-my-club.html">How My Club works</a><span>·</span><a href="contact.html?topic=support">Add a player or sponsor</a></p></div>`;
+        <a class="mm-clubp-open" href="my-club.html" data-cta="menu-my-club-open"><span>Open My Club</span><i aria-hidden="true">→</i></a>
+        <div class="mm-clubp-help">
+          <a href="help/how-to-set-up-your-club-in-my-club.html"><span class="mm-ic">${icon("book-open")}</span><span><b>How My Club works</b><small>The guide, step by step</small></span></a>
+          <a href="contact.html?topic=support"><span class="mm-ic">${icon("user-plus")}</span><span><b>Add a player or sponsor</b><small>We add it to your club</small></span></a>
+        </div></div>`;
       return;
     }
     let plan = null;
@@ -288,14 +292,15 @@
   (async () => {
     const db = window.SCP_AUTH?.client;
     if (!member || !db) return;
-    let kind = null, known = null, club = null;
-    try { kind = sessionStorage.getItem("scp-space-kind"); known = localStorage.getItem("scp-has-club"); club = JSON.parse(localStorage.getItem("scp-club") || "null"); } catch {}
+    // the club is drawn at once from this browser's copy, then asked again (one small call) so the admin's changes show
+    let kind = null, club = null;
+    try { club = JSON.parse(localStorage.getItem("scp-club") || "null"); } catch {}
     clubPanel(club);
-    if (kind == null || known == null || (known === "1" && !club)) {
+    {
       const { data } = await db.rpc("my_clubs").then((r) => r, () => ({}));
       if (data) {
         const had = hasClub();
-        club = data[0] ? { name: data[0].name, logo: data[0].logo_url || "", n: data.length } : null;
+        club = data[0] ? { name: data[0].name, logo: data[0].logo_url || "", img: data[0].menu_image_url || "", n: data.length } : null;
         try { localStorage.setItem("scp-has-club", data.length ? "1" : "0"); localStorage.setItem("scp-club", JSON.stringify(club)); } catch {}
         if (had !== hasClub()) drawBar();
         clubPanel(club);

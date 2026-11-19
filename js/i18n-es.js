@@ -2590,6 +2590,8 @@ window.SCP_ES = {
   "Club posts": "Posts del club",
   "Open My Club": "Abrir My Club",
   "Add a player or sponsor": "Añadir un jugador o patrocinador",
+  "The guide, step by step": "La guía, paso a paso",
+  "We add it to your club": "Lo añadimos a tu club",
   "See it in a 30-min demo": "Velo en una demo de 30 min",
   "Enterprise (My Club)": "Enterprise (My Club)",
   "Help: how to search and filter": "Ayuda: cómo buscar y filtrar",

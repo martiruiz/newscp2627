@@ -2437,3 +2437,15 @@ tr[data-row].is-open td:first-child { box-shadow: inset 3px 0 0 var(--accent, #f
   .ms-form, .ms-form label, .bl-form, .nw-form, .bl-form label, .nw-form label { grid-template-columns: minmax(0, 1fr); }
   .cs-btn { max-width: 100%; }
 }
+
+/* My Club → Club settings → Menu image: a preview of the club's panel in the website menu */
+.mcl-menuimg { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px; }
+.mcl-menu-prev { position: relative; display: flex; flex-direction: column; justify-content: flex-end; gap: 6px; width: 220px; height: 170px; padding: 14px; border-radius: 14px; overflow: hidden; color: #fff;
+  background: center / cover no-repeat #0b1226; box-shadow: inset 0 0 0 1px var(--border); }
+.mcl-menu-prev::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8,12,24,.1) 15%, rgba(8,12,24,.95) 85%); }
+.mcl-menu-prev.is-default { background-image: url("../../assets/admin-login.webp"); }
+.mcl-menu-prev > * { position: relative; }
+.mcl-menu-crest { display: grid; place-items: center; width: 34px; height: 34px; margin-bottom: auto; border-radius: 50%; overflow: hidden; background: #fff; }
+.mcl-menu-crest:empty { display: none; }
+.mcl-menu-crest img { width: 100%; height: 100%; object-fit: cover; }
+.mcl-menu-prev b { font-size: 15px; }
