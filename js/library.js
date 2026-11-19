@@ -2057,9 +2057,10 @@
     const name = PLATFORM_NAMES[pf] || "the platform";
     const fav = favClub ? `<span class="lib-badge lib-badge-fav" tabindex="0">${icon("star")}<span class="lib-fav-lbl">${tx("Following")}</span><span class="lib-tip" role="tooltip">${tx("{club} is one of your favourite profiles (Favs). Change them in Profile → Favourites.", { club: esc(favClub.name || "") })}</span></span>` : "";
     const corner = `<div class="lib-corner">${pf ? `<span class="lib-pfchip" title="${esc(PLATFORM_NAMES[pf] || pf)}"><i class="lf-pfi is-brand lf-pf-${esc(pf)}" style="-webkit-mask-image:url(assets/pf-${esc(pf)}.svg);mask-image:url(assets/pf-${esc(pf)}.svg)"></i></span>` : ""}${fav}</div>`;
+    // the grip sits on its own at the post's top right: drag it to the Content Plan or a saved board (or click it to select)
     const rail = `
+          <button class="lib-grip" type="button" draggable="true" data-pp-grip="${esc(p.id)}" data-tip="${esc(tx("Drag to your Content Plan or a board"))}" aria-label="${esc(tx("Drag to your Content Plan or a board"))}">${icon("grip-vertical")}</button>
           <div class="lib-rail">
-            <button class="lib-grip" type="button" data-pp-grip="${esc(p.id)}" data-tip="${esc(tx("Drag to your Content Plan"))}" aria-label="${esc(tx("Drag to your Content Plan"))}">${icon("grip-vertical")}</button>
             ${saveBtn(p.id)}
             <button class="lib-ai" type="button" data-open="${esc(p.id)}" data-tip="${esc(tx("AI analysis"))}" aria-label="${esc(tx("AI analysis"))}">${icon("sparkles")}</button>
             <button class="lib-share" type="button" data-share-post="${esc(p.id)}" data-tip="${esc(tx("Public link to this post"))}" aria-label="${esc(tx("Public link to this post"))}">${icon("link")}</button>

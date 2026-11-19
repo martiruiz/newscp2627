@@ -974,6 +974,7 @@ window.SCP_ES = {
   "Favourite social network": "Red social favorita",
   "its posts come first in your Content Library": "sus posts salen primero en tu Biblioteca de contenido",
   "Drag to your Content Plan": "Arrastra a tu Content Plan",
+  "Drag to your Content Plan or a board": "Arrastra a tu Content Plan o a un tablero",
   "Open on {pf}": "Abrir en {pf}",
   "Following": "Sigues",
   "Music with copyright · Watch on Instagram": "Música con derechos · Ver en Instagram",

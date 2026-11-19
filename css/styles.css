@@ -6378,7 +6378,6 @@ th .org-kd { display: flex; justify-content: center; margin: 4px auto 0; width: 
 }
 
 /* Content Library: "Saved boards" side panel (js/boards-panel.js) — same column as the Content Plan */
-.boards-open .lib-grip { display: none !important; }
 .saved-link[aria-pressed="true"] { border-color: var(--gold); color: var(--gold); }
 .sbp-scroll { gap: 12px; }
 .sbp-bar { min-height: 40px; font-size: 13px; color: var(--muted); }
@@ -9884,3 +9883,19 @@ button.org-plan-pick { cursor: pointer; padding-right: 12px; }
 .mm-clubp-mine .mm-clubp-links a span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .mm-clubp-mine .mm-clubp-help a { align-items: flex-start; }
 @media (max-width: 1180px) { .mm-clubp-mine { grid-template-columns: minmax(0, 1fr); } }
+
+/* Post cards: views and likes always as on hover — stacked, each with its icon instead of its word — so they never fold and unfold */
+.lib-foot-stats { flex-direction: column; gap: 1px; }
+.lib-foot-views small { display: none; }
+.lib-foot-views b::before { display: inline-block; }
+
+/* Drag grip: on its own at the top right of every post (the platform chip and favourite sit top left), shown on hover
+   like the other actions and always while the Content Plan or the saved boards are open; drag it onto either */
+.lib-card .lib-grip { display: inline-flex; position: absolute; top: 10px; right: 10px; z-index: 6; width: 30px; height: 30px; border-radius: 10px;
+  opacity: 0; transition: opacity 0.2s; }
+.lib-card:hover .lib-grip, .lib-card:focus-within .lib-grip, .plan-open .lib-card .lib-grip, .lib-card.is-selected .lib-grip { opacity: 1; }
+.lib-card .lib-grip:active { cursor: grabbing; }
+.lib-card .lib-grip[data-tip]::after { content: attr(data-tip); position: absolute; right: 0; top: calc(100% + 6px); white-space: nowrap; padding: 5px 9px; border-radius: 8px;
+  background: rgba(10, 15, 30, 0.92); color: #f1f4f9; font: 500 11.5px var(--font-body); pointer-events: none; opacity: 0; transition: opacity 0.15s; }
+.lib-card .lib-grip:hover::after { opacity: 1; }
+@media (hover: none) { .lib-card .lib-grip { opacity: 1; } }

@@ -549,7 +549,10 @@
     setTimeout(() => { ghostEl?.remove(); ghostEl = null; }, 0);
   }
   document.addEventListener("dragstart", (e) => {
-    if (!S.open || !e.target.closest) return;
+    if (!e.target.closest) return;
+    // dragging a card's grip with no panel open opens the Content Plan to drop it on (after the drag has started)
+    if (!S.open && e.target.closest("[data-pp-grip]") && !lib.classList.contains("boards-open")) { S.open = true; setTimeout(open, 0); }
+    if (!S.open) return;
     const ent = e.target.closest("[data-pp-entry]");
     if (ent) {
       e.dataTransfer.setData("text/scp-entry", ent.dataset.ppEntry);
