@@ -2589,3 +2589,46 @@ tr[data-row].is-open td:first-child { box-shadow: inset 3px 0 0 var(--accent, #f
 @media (max-width: 1180px) { .mcl-pcard { grid-template-columns: minmax(0, 1fr) 190px auto; } .mcl-pc-accs { grid-column: 1 / -1; grid-row: 2; } }
 @media (max-width: 640px) { .mcl-pcard { grid-template-columns: minmax(0, 1fr) auto; } .mcl-pc-sec { grid-column: 1 / -1; } }
 .mcl-switch-sm input:checked + i::after { transform: translateX(16px); }
+
+/* My Club → Linked accounts: "Scrape new profiles" — paste accounts, pick how, one button (adds and collects) */
+.mcl-quick { display: grid; gap: 12px; margin: 0 0 16px; padding: 16px 18px; border-radius: 16px; border: 1px solid rgba(240, 184, 74, .3); background: linear-gradient(180deg, rgba(240, 184, 74, .07), transparent 70%), var(--panel); }
+.mcl-quick-h { display: flex; gap: 12px; align-items: flex-start; }
+.mcl-quick-h .mcl-set-ic { display: grid; place-items: center; flex: none; width: 38px; height: 38px; border-radius: 11px; background: rgba(240, 184, 74, .14); color: var(--accent); }
+.mcl-quick-h .mcl-set-ic svg { width: 18px; height: 18px; }
+.mcl-quick-h b { display: block; font-size: 15px; }
+.mcl-quick-h small { display: block; margin-top: 2px; color: var(--muted); font-size: 12.5px; line-height: 1.45; }
+.mcl-quick-row { display: grid; grid-template-columns: minmax(220px, 1fr) 170px 180px 130px auto; gap: 10px; align-items: end; }
+.mcl-quick-row label { display: grid; gap: 5px; font-size: 11.5px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.mcl-quick-row .select { text-transform: none; letter-spacing: 0; }
+.mcl-quick-row textarea.input { min-height: 42px; height: 42px; resize: vertical; font: 400 14px var(--font); }
+.mcl-quick-go { height: 42px; white-space: nowrap; }
+@media (max-width: 1100px) { .mcl-quick-row { grid-template-columns: 1fr 1fr 1fr; } .mcl-quick-row textarea.input { grid-column: 1 / -1; } .mcl-quick-go { grid-column: 1 / -1; } }
+@media (max-width: 640px) { .mcl-quick-row { grid-template-columns: 1fr; } }
+
+/* My Club → Linked accounts, premium layout: one "Add" menu instead of seven buttons, sections as chips, the club's
+   accounts with their network mark, and the kinds with nobody yet as small tiles in one row (not empty panels) */
+.mcl-addmenu > summary { list-style: none; }
+.mcl-addmenu > summary::-webkit-details-marker { display: none; }
+.mcl-addmenu > summary svg:last-child { width: 14px; height: 14px; margin-left: 2px; transition: transform .2s; }
+.mcl-addmenu[open] > summary svg:last-child { transform: rotate(180deg); }
+.mcl-addmenu .mcl-more-menu { left: 0; right: auto; min-width: 300px; }
+.mcl-secchips { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0 0 14px; }
+.mcl-secchips-l { margin-right: 4px; color: var(--muted); font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
+.mcl-secchip { display: inline-flex; align-items: baseline; gap: 6px; padding: 5px 11px; border-radius: 999px; border: 1px solid var(--border); background: var(--panel); font-size: 12.5px; font-weight: 600; }
+.mcl-secchip small { color: var(--muted); font-weight: 400; font-size: 11.5px; }
+.mcl-clubaccs { display: flex; flex-wrap: wrap; gap: 8px; padding: 6px 18px 16px; }
+.mcl-acc-club { margin: 0; padding: 4px 6px 4px 4px; gap: 7px; border-radius: 12px; background: var(--panel); }
+.mcl-acc-club .mcl-chip-sec { border: 0; border-radius: 8px; padding: 2px 6px; background: var(--panel-2); color: var(--muted); font-size: 11.5px; }
+.mcl-acc-club .mcl-acc-tag { color: var(--text) !important; }
+.mcl-acc-club small { color: var(--muted); font-size: 11px; }
+.mcl-pf-tag { background: rgba(240, 184, 74, .16); color: var(--accent); }
+.mcl-pf svg { width: 11px; height: 11px; }
+.mcl-kempty { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; margin-bottom: 16px; }
+.mcl-ke { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 16px; border: 1px dashed var(--border); background: var(--panel); transition: border-color .15s; }
+.mcl-ke:hover { border-color: rgba(240, 184, 74, .4); }
+.mcl-ke .mcl-set-ic { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border-radius: 11px; background: rgba(240, 184, 74, .12); color: var(--accent); }
+.mcl-ke .mcl-set-ic svg { width: 17px; height: 17px; }
+.mcl-ke-tx { flex: 1; min-width: 0; }
+.mcl-ke-tx b { display: block; font-size: 14px; }
+.mcl-ke-tx small { color: var(--muted); font-size: 12px; }
+.mcl-ke-act { display: flex; gap: 4px; }

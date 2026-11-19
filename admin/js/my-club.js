@@ -96,7 +96,7 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
           <div class="mcl-pc-who">${p.photo_url ? `<img class="mcl-pc-ph${kind === "sponsor" || kind === "competitor" ? " is-logo" : ""}" src="${esc(p.photo_url)}" alt="" loading="lazy">` : `<span class="mcl-pc-ph mcl-pc-ini">${esc(p.name.charAt(0).toUpperCase())}</span>`}
             <span class="mcl-pc-name"><b title="${esc(p.name)}">${esc(p.name)}</b><small>${total ? `${num(total)} posts` : "No posts yet"} · ${num(p.accounts.length)} account${p.accounts.length === 1 ? "" : "s"}</small></span></div>
           <div class="mcl-pc-sec" title="Internal: the client only filters by it">${personSec(p)}</div>
-          <div class="mcl-pc-accs">${p.accounts.length ? p.accounts.map((a) => `<span class="mcl-acc${a.posts ? "" : " is-zero"}"><i class="mcl-pf mcl-pf-${esc(a.platform)}">${esc((PF[a.platform] || a.platform).slice(0, 2))}</i>@${esc(a.handle)}<b title="${esc(last.get(`${a.platform}|${a.handle}`) ? `Last post imported ${age(last.get(`${a.platform}|${a.handle}`))}` : "")}">${a.posts ? num(a.posts) : "not scraped yet"}</b>${CAN_SCRAPE.has(a.platform) ? scrapeBtn(a) : ""}</span>`).join("") : `<span class="muted">No accounts</span>`}</div>
+          <div class="mcl-pc-accs">${p.accounts.length ? p.accounts.map((a) => `<span class="mcl-acc${a.posts ? "" : " is-zero"}"><i class="mcl-pf mcl-pf-${esc(a.platform)}">${esc(PFS[a.platform] || a.platform.slice(0, 2))}</i>@${esc(a.handle)}<b title="${esc(last.get(`${a.platform}|${a.handle}`) ? `Last post imported ${age(last.get(`${a.platform}|${a.handle}`))}` : "")}">${a.posts ? num(a.posts) : "not scraped yet"}</b>${CAN_SCRAPE.has(a.platform) ? scrapeBtn(a) : ""}</span>`).join("") : `<span class="muted">No accounts</span>`}</div>
           <div class="mcl-pc-act"><label class="mcl-switch mcl-switch-sm" title="Active"><input type="checkbox" aria-label="Active" data-active="${p.id}"${p.active ? " checked" : ""}><i></i></label>
             ${p.accounts.some((a) => CAN_SCRAPE.has(a.platform)) ? `<button class="btn btn-sm mcl-row-scrape" type="button" data-scrape-person="${p.id}" title="Scrape the last 10 posts of each of its Instagram / TikTok accounts">${icon("download")}Scrape</button>` : ""}<button class="icon-btn" type="button" title="Delete" aria-label="Delete" data-del="${p.id}">${icon("trash")}</button></div>
         </li>`; }).join("")}</ul>`;
@@ -123,9 +123,12 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
 
       <div class="mcl-pane" data-pane="people"${tab === "people" ? "" : " hidden"}>
         <div class="mcl-toolbar">
-          ${KINDS.map(([k, one]) => `<button class="btn${k === "player" ? " btn-primary" : ""}" type="button" data-add-person="${k}">${icon("plus")}Add ${one.toLowerCase()}</button>`).join("")}
-          <button class="btn" type="button" data-add-library="player">${icon("library")}From the library</button>
-          <button class="btn" type="button" data-add-sponsor>${icon("library")}Sponsor from the library</button>
+          <details class="mcl-more mcl-addmenu"><summary class="btn btn-primary">${icon("plus")}Add${icon("chevron")}</summary>
+            <div class="mcl-more-menu">
+              ${KINDS.map(([k, one]) => `<button class="mcl-more-it" type="button" data-add-person="${k}">${icon("plus")}<span><b>${one} by hand</b><small>Name, section and its accounts</small></span></button>`).join("")}
+              <button class="mcl-more-it" type="button" data-add-library="player">${icon("library")}<span><b>From the library</b><small>A club, competition, player or creator already in SCP</small></span></button>
+              <button class="mcl-more-it" type="button" data-add-sponsor>${icon("library")}<span><b>Sponsor from the library</b><small>A brand already in SCP</small></span></button>
+            </div></details>
           <label class="btn mcl-import" title="The scraping CSV of this club's posts: its players' and sponsors' posts go to its My Club">${icon("import")}Import content<input type="file" accept=".csv,.txt,text/csv" hidden data-posts-file></label>
           <span class="spacer"></span>
           <details class="mcl-more"><summary class="btn btn-ghost">More${icon("chevron")}</summary>
@@ -140,13 +143,26 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
             ${CAN_SCRAPE.has(a.platform) ? scrapeBtn(a) : `<small class="muted">not collected here yet: use the scraping Excel</small>`}
             <button class="mcl-pend-x" type="button" data-dismiss="${esc(`${a.platform}|${a.handle}`)}" title="Discard: don't ask for it again">✕</button></li>`).join("")}</ul></div>
           ${pendingIg > 1 ? `<button class="btn btn-primary btn-sm" type="button" data-scrape-all>${icon("download")}Scrape all ${num(pendingIg)}</button>` : ""}</div>` : ""}
+        <form class="mcl-quick" data-quick-scrape>
+          <div class="mcl-quick-h"><span class="mcl-set-ic">${icon("download")}</span><span><b>Scrape new profiles</b><small>Paste one or more Instagram / TikTok accounts (@user or link, one per line): they're added to ${esc(c.name)} and their last 10 posts are collected right away.</small></span></div>
+          <div class="mcl-quick-row">
+            <textarea class="input" name="handles" rows="2" placeholder="@lamineyamal&#10;https://www.tiktok.com/@fcbarcelona" required></textarea>
+            <label>Add as<select class="select" name="kind">${[["player", "Player"], ["sponsor", "Sponsor"], ["competitor", "Competitor"], ["creator", "Content creator"], ["account", `${(TYPES.find((x) => x[0] === c.kind) || TYPES[0])[1]} account`]].map(([v, l]) => `<option value="${v}">${esc(l)}</option>`).join("")}</select></label>
+            <label>Section<select class="select" name="section"><option value="">Whole ${esc((TYPES.find((x) => x[0] === c.kind) || TYPES[0])[1].toLowerCase())}</option>${club.sections.map((x) => `<option value="${esc(x.name)}">${esc(x.name)}</option>`).join("")}</select></label>
+            <label title="For accounts pasted as @user (links say their network)">Network<select class="select" name="net"><option value="instagram">Instagram</option><option value="tiktok">TikTok</option></select></label>
+            <button class="btn btn-primary mcl-quick-go" type="submit">${icon("download")}Add and scrape</button>
+          </div>
+        </form>
         <div class="mcl-live" data-live hidden></div>
-        ${club.sections.length ? `<p class="mcl-sum">${club.sections.map((x) => `<b>${esc(x.name)}</b> ${x.teams.map((t) => esc(t.name)).join(", ") || "—"}`).join(" · ")}</p>` : ""}
+        ${club.sections.length ? `<div class="mcl-secchips"><span class="mcl-secchips-l">Sections</span>${club.sections.map((x) => `<span class="mcl-secchip">${esc(x.name)}${x.teams.length ? `<small>${x.teams.map((t) => esc(t.name)).join(", ")}</small>` : ""}</span>`).join("")}</div>` : ""}
         <section class="panel mcl-panel mcl-kpanel"><header class="aud-h aud-h-lg"><span class="mcl-set-ic">${icon("crown")}</span><h2>${esc((TYPES.find((x) => x[0] === c.kind) || TYPES[0])[1])} account</h2><span class="aud-count">${num((c.accounts || []).length + (c.library_tags || []).length)}</span>${info("The space's own profiles (Club settings) and its library tags. Their posts show in the client's first tab.")}<span class="spacer"></span><button class="btn btn-sm" type="button" data-add-library="account">${icon("library")}From the library</button></header>
-          ${(c.accounts || []).length || (c.library_tags || []).length ? `<div class="mcl-clubaccs">${(c.library_tags || []).map((t) => `<span class="mcl-acc">Library tag · <b>${esc(t.name)}</b> · ${num(t.posts)} posts${secSel({ tag_id: t.id }, t.section_id)}<button type="button" title="Remove" aria-label="Remove" data-tag-del="${t.id}">✕</button></span>`).join("")}${(c.accounts || []).map((a) => `<span class="mcl-acc">${esc(PF[a.platform] || a.platform)} @${esc(a.handle)}${secSel({ platform: a.platform, handle: a.handle }, a.section_id)}${CAN_SCRAPE.has(a.platform) ? scrapeBtn(a, true) : ""}</span>`).join("")}</div>`
+          ${(c.accounts || []).length || (c.library_tags || []).length ? `<div class="mcl-clubaccs">${(c.library_tags || []).map((t) => `<span class="mcl-acc mcl-acc-club"><i class="mcl-pf mcl-pf-tag">${icon("library")}</i><b class="mcl-acc-tag">${esc(t.name)}</b><small>library tag</small><b> · ${num(t.posts)} posts${secSel({ tag_id: t.id }, t.section_id)}<button type="button" title="Remove" aria-label="Remove" data-tag-del="${t.id}">✕</button></span>`).join("")}${(c.accounts || []).map((a) => `<span class="mcl-acc mcl-acc-club"><i class="mcl-pf mcl-pf-${esc(a.platform)}">${esc(PFS[a.platform] || a.platform.slice(0, 2))}</i>@${esc(a.handle)}${secSel({ platform: a.platform, handle: a.handle }, a.section_id)}${CAN_SCRAPE.has(a.platform) ? scrapeBtn(a, true) : ""}</span>`).join("")}</div>`
             : `<p class="panel-pad muted">None yet. Add it from the library, or its profiles in Club settings.</p>`}</section>
-        ${KINDS.map(([k, , many]) => `<section class="panel mcl-panel mcl-kpanel"><header class="aud-h aud-h-lg"><span class="mcl-set-ic">${icon({ competitor: "briefcase", player: "users", creator: "sparkles", sponsor: "tag" }[k] || "users")}</span><h2>${many}</h2><span class="aud-count">${num(people.filter((p) => p.kind === k).length)}</span>
+        ${KINDS.filter(([k]) => people.some((p) => p.kind === k)).map(([k, , many]) => `<section class="panel mcl-panel mcl-kpanel"><header class="aud-h aud-h-lg"><span class="mcl-set-ic">${icon({ competitor: "briefcase", player: "users", creator: "sparkles", sponsor: "tag" }[k] || "users")}</span><h2>${many}</h2><span class="aud-count">${num(people.filter((p) => p.kind === k).length)}</span>
           <span class="spacer"></span><button class="btn btn-sm" type="button" ${k === "sponsor" ? "data-add-sponsor" : `data-add-library="${k}"`}>${icon("library")}From the library</button><button class="btn btn-sm btn-ghost" type="button" data-add-person="${k}">${icon("plus")}By hand</button></header>${table(k)}</section>`).join("")}
+        ${(() => { const empty = KINDS.filter(([k]) => !people.some((p) => p.kind === k)); return empty.length ? `<div class="mcl-kempty">${empty.map(([k, one, many]) => `<div class="mcl-ke"><span class="mcl-set-ic">${icon({ competitor: "briefcase", player: "users", creator: "sparkles", sponsor: "tag" }[k] || "users")}</span>
+          <span class="mcl-ke-tx"><b>${many}</b><small>None yet</small></span>
+          <span class="mcl-ke-act"><button class="btn btn-sm" type="button" ${k === "sponsor" ? "data-add-sponsor" : `data-add-library="${k}"`}>${icon("library")}From the library</button><button class="btn btn-sm btn-ghost" type="button" data-add-person="${k}" title="Add ${one.toLowerCase()} by hand">${icon("plus")}</button></span></div>`).join("")}</div>` : ""; })()}
       </div>
 
       <div class="mcl-pane" data-pane="members"${tab === "members" ? "" : " hidden"}>
@@ -420,6 +436,8 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
     return `<button class="mcl-scrape${a.posts ? " is-again" : ""}" type="button" data-scrape="${esc(k)}"${clubAcc ? " data-club-acc" : ""} title="${a.posts ? "Collect its last 10 posts again (new ones are added)" : "Bright Data collects its last 10 posts"}">${icon(a.posts ? "undo" : "download")}${a.posts ? "Update" : "Scrape"}</button>`;
   }
   // the library's entity of each kind (a competitor can be a club, a competition…: none)
+  // the networks' short marks on the account chips
+  const PFS = { instagram: "IG", tiktok: "TT", youtube: "YT", facebook: "FB", x: "X", linkedin: "in", threads: "@" };
   const ENTITY = { player: "Player", sponsor: "Brand", creator: "Content Creators", competitor: "" };
   const people_kind = (handle) => ENTITY[club.people.find((p) => p.accounts.some((a) => a.handle === handle))?.kind] ?? "Player";
 
@@ -813,6 +831,27 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
         const colors = f.color1.dataset.colorSet || f.color2.dataset.colorSet ? { primary: f.color1.value, secondary: f.color2.value } : {};
         await rpc("admin_club_save", { p: { id: cur, name: f.name.value, logo_url: f.logo_url.value, menu_image_url: f.menu_image_url.value, accounts, active: f.active.checked, colors, kind: f.kind.value } });
         A.toast("Saved"); return loadClubs(cur);
+      }
+      if (f.matches("[data-quick-scrape]")) {   // Scrape new profiles: add each account to the club, then collect its posts
+        const accs = [...new Map(f.handles.value.split(/[\s,;]+/).map((x) => x.trim()).filter(Boolean).map((x) => {
+          const tt = /tiktok\.com\/@?([\w.]+)/i.exec(x), ig = /instagram\.com\/([\w.]+)/i.exec(x);
+          const platform = tt ? "tiktok" : ig ? "instagram" : f.net.value;
+          const handle = (tt?.[1] || ig?.[1] || x.replace(/^@/, "")).toLowerCase();
+          return [`${platform}|${handle}`, { platform, handle }];
+        }).filter(([, a]) => /^[\w.]{1,30}$/.test(a.handle) && !["p", "reel", "reels", "tv", "explore", "stories"].includes(a.handle))).values()];
+        if (!accs.length) return fail(new Error("Paste an Instagram or TikTok account (@user or link)."));
+        const kind = f.kind.value, go = f.querySelector(".mcl-quick-go");
+        go.disabled = true; go.innerHTML = `<span class="spinner sm"></span> Adding ${num(accs.length)}…`;
+        if (kind === "account") await rpc("admin_club_add_from_library", { p_club: cur, p: { kind: "account", accounts: accs } });
+        else await rpc("admin_club_import", { p_club: cur, p_rows: accs.map((a) => ({ type: kind, name: a.handle, section: f.section.value, team: "", [a.platform]: a.handle })) });
+        A.toast(`${num(accs.length)} account${accs.length === 1 ? "" : "s"} added: collecting their posts…`);
+        await loadClub();
+        const btns = accs.map((a) => $(`[data-scrape="${CSS.escape(`${a.platform}|${a.handle}`)}"]`, main)).filter(Boolean);
+        $("[data-live]", main)?.scrollIntoView({ block: "start", behavior: "smooth" });
+        let i = 0;
+        const next = async () => { while (i < btns.length) { const b = btns[i++]; await scrapeNow(b.dataset.scrape, b, true).catch(() => {}); } };
+        await Promise.all([next(), next(), next()]);
+        return loadClub();
       }
       if (f.matches("[data-member]")) {   // several e-mails at once (supabase/my-club-trials.sql)
         const emails = f.emails.value.split(/[\s,;]+/).map((x) => x.trim()).filter(Boolean);
