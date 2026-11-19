@@ -36,16 +36,16 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/627/627198.jpg?v=mwi644ap"
   },
   {
+    "account": "houseofhighlights",
+    "account_platform": "instagram",
+    "views": 5760201,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/630/630051.jpg?v=mwjtxbgf"
+  },
+  {
     "account": "nfl",
     "account_platform": "tiktok",
     "views": 5600000,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/630/630478.jpg?v=mwju17vx"
-  },
-  {
-    "account": "houseofhighlights",
-    "account_platform": "instagram",
-    "views": 5448036,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/630/630051.jpg?v=mwjtxbgf"
   },
   {
     "account": "433",
@@ -68,7 +68,7 @@
   {
     "account": "433",
     "account_platform": "instagram",
-    "views": 4725896,
+    "views": 4785538,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/630/630039.jpg?v=mwjtxbnr"
   },
   {
@@ -104,7 +104,7 @@
   {
     "account": "fabriziorom",
     "account_platform": "instagram",
-    "views": 3904497,
+    "views": 3951818,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/630/630061.jpg?v=mwjtxb9x"
   },
   {
@@ -118,12 +118,6 @@
     "account_platform": "tiktok",
     "views": 3500000,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/627/627163.jpg?v=mwi63two"
-  },
-  {
-    "account": "lakers",
-    "account_platform": "tiktok",
-    "views": 3300000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/617/617760.jpg?v=mwdoh7xq"
   },
   {
     "account": "realmadrid",
@@ -178,5 +172,11 @@
     "account_platform": "tiktok",
     "views": 2300000,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/630/630451.jpg?v=mwju17r7"
+  },
+  {
+    "account": "realmadrid",
+    "account_platform": "instagram",
+    "views": 2255134,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/622/622127.jpg?v=mwi5poem"
   }
 ]
