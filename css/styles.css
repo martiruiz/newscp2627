@@ -9877,3 +9877,4 @@ button.org-plan-pick { cursor: pointer; padding-right: 12px; }
 /* My Club's club picker: each crest fills its square, edge to edge (no white margin) */
 .mc-cp-crest { overflow: hidden; padding: 0 !important; }
 .mc-cp-crest img { width: 100% !important; height: 100% !important; object-fit: cover !important; padding: 0 !important; border-radius: inherit; }
+.mm-clubp-links.is-odd a:first-child { grid-column: 1 / -1; }   /* an odd number of parts: the club's posts take the whole row */

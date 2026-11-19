@@ -38,3 +38,14 @@ begin
     execute replace(d, '''logo_url'', c.logo_url,', '''logo_url'', c.logo_url, ''menu_image_url'', c.menu_image_url,');
   end if;
 end $$;
+
+-- my_clubs: + kinds, the kinds of people each club has (player, sponsor, competitor, creator), so the menu only links
+-- to the tabs the club's page shows
+create or replace function public.my_clubs()
+returns jsonb language sql stable security definer set search_path = public as $$
+  select coalesce(jsonb_agg(jsonb_build_object('id', c.id, 'name', c.name, 'logo_url', c.logo_url, 'kind', c.kind, 'menu_image_url', c.menu_image_url,
+      'kinds', (select coalesce(jsonb_agg(distinct p.kind), '[]'::jsonb) from public.club_people p where p.club_id = c.id and p.active),
+      'trial_ends', (select m.ends_at from public.club_members m where m.club_id = c.id and m.user_id = auth.uid() and m.trial)) order by c.name), '[]'::jsonb)
+  from public.clubs c
+  where c.active and public.club_can_view(c.id);   -- admins: every club (to set them up and check them)
+$$;

@@ -270,11 +270,13 @@
     if (!p) return;
     if (asNoClub()) club = null;
     if (club) {
-      const go = [["Club posts", "club"], ["Players", "players"], ["Sponsors", "sponsors"], ["Competitors", "competitors"]];
+      // only the parts this club has (the page shows a tab only when it has people of that kind); the club's posts always
+      const go = [["Club posts", "club"], ["Players", "players", "player"], ["Sponsors", "sponsors", "sponsor"], ["Competitors", "competitors", "competitor"], ["Content creators", "creators", "creator"]]
+        .filter(([, , k]) => !k || (club.kinds || []).includes(k));
       p.classList.add("mm-clubp-mine");
       p.innerHTML = `<div class="mm-clubp-vis"${club.img ? ` style="--club-img:url('${esc(club.img).replace(/'/g, "%27")}')"` : ""}><span class="mm-clubp-crown${club.logo ? " has-logo" : ""}" aria-hidden="true">${club.logo ? `<img src="${esc(club.logo)}" alt="">` : `<svg viewBox="0 0 24 24"><path d="M2 7l5 4 5-7 5 7 5-4-2 12H4z"/></svg>`}</span>
         <p class="mm-clubp-t">${esc(club.name)}</p><p class="mm-clubp-s">Your club's private library, updated every day.</p></div>
-      <div class="mm-clubp-body"><div class="mm-clubp-links">${go.map(([t, tab]) => `<a href="my-club.html?tab=${tab}"><span>${esc(t)}</span><i aria-hidden="true">→</i></a>`).join("")}</div>
+      <div class="mm-clubp-body"><div class="mm-clubp-links${go.length % 2 ? " is-odd" : ""}">${go.map(([t, tab]) => `<a href="my-club.html?tab=${tab}"><span>${esc(t)}</span><i aria-hidden="true">→</i></a>`).join("")}</div>
         <a class="mm-clubp-open" href="my-club.html" data-cta="menu-my-club-open"><span>Open My Club</span><i aria-hidden="true">→</i></a>
         <div class="mm-clubp-help">
           <a href="help/how-to-set-up-your-club-in-my-club.html"><span class="mm-ic">${icon("book-open")}</span><span><b>How My Club works</b><small>The guide, step by step</small></span></a>
@@ -291,16 +293,18 @@
   // a member whose space is a competition, an agency or a federation (clubs.kind, Admin → My Club): "My competition"…
   (async () => {
     const db = window.SCP_AUTH?.client;
-    if (!member || !db) return;
-    // the club is drawn at once from this browser's copy, then asked again (one small call) so the admin's changes show
+    if (!signedIn) return;
+    // the club is drawn at once from this browser's copy (also on the blog and other pages without the database),
+    // then asked again (one small call) so the admin's changes show
     let kind = null, club = null;
     try { club = JSON.parse(localStorage.getItem("scp-club") || "null"); } catch {}
     clubPanel(club);
+    if (!member || !db) return;
     {
       const { data } = await db.rpc("my_clubs").then((r) => r, () => ({}));
       if (data) {
         const had = hasClub();
-        club = data[0] ? { name: data[0].name, logo: data[0].logo_url || "", img: data[0].menu_image_url || "", n: data.length } : null;
+        club = data[0] ? { name: data[0].name, logo: data[0].logo_url || "", img: data[0].menu_image_url || "", kinds: data[0].kinds || [], n: data.length } : null;
         try { localStorage.setItem("scp-has-club", data.length ? "1" : "0"); localStorage.setItem("scp-club", JSON.stringify(club)); } catch {}
         if (had !== hasClub()) drawBar();
         clubPanel(club);
