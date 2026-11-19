@@ -16,6 +16,18 @@ const TT_POSTS = "gd_lu702nij2f790tmv9h";   // Bright Data: TikTok posts (discov
 const bd = (path: string, init: RequestInit = {}) =>
   fetch(`${BD}${path}`, { ...init, headers: { Authorization: `Bearer ${env("BRIGHTDATA_API_KEY")}`, "Content-Type": "application/json", ...(init.headers || {}) } });
 
+// the twice-a-day re-scrape (pipeline/library/club-rescrape.mjs, GitHub Actions): x-worker-key = a service key, checked
+// by calling an RPC only the service role can run (same check as ai-analyze)
+async function isWorker(req: Request) {
+  const key = req.headers.get("x-worker-key") || "";
+  if (!key) return false;
+  const r = await fetch(`${env("SUPABASE_URL")}/rest/v1/rpc/post_benchmark`, {
+    method: "POST", body: JSON.stringify({ p_post_id: 0 }),
+    headers: { apikey: key, "Content-Type": "application/json", ...(key.startsWith("sb_") ? {} : { Authorization: `Bearer ${key}` }) },
+  }).catch(() => null);
+  return r?.ok === true;
+}
+
 async function superadmin(req: Request) {
   const token = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
   if (!token) return false;
@@ -108,7 +120,7 @@ function tiktokRow(p: Rec, handle: string) {
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
-  if (!(await superadmin(req))) return json({ error: "Not allowed" }, 403);
+  if (!(await isWorker(req)) && !(await superadmin(req))) return json({ error: "Not allowed" }, 403);
   if (!env("BRIGHTDATA_API_KEY")) return json({ error: "Bright Data isn't connected: set the BRIGHTDATA_API_KEY secret in Supabase." }, 503);
   const b = await req.json().catch(() => ({}));
 

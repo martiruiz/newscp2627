@@ -1,0 +1,43 @@
+name: My Club re-scrape (every 12 h)
+
+# 9:00 and 21:00 Madrid time: the Instagram / TikTok profiles scraped from My Club are scraped again (their last 10
+# posts, Bright Data through the Edge Function club-scrape) and imported into their club's My Club; then their covers.
+# GitHub's clock is UTC: it runs at both UTC hours of each (summer and winter time) and the script only works when it's
+# 9 or 21 in Madrid (pipeline/library/club-rescrape.mjs). "Run workflow" with "now" for a run at any hour.
+on:
+  schedule:
+    - cron: "2 7,8,19,20 * * *"
+  workflow_dispatch:
+    inputs:
+      now:
+        description: "Run now, whatever the hour"
+        type: boolean
+        default: false
+
+concurrency:
+  group: club-rescrape
+  cancel-in-progress: false
+
+jobs:
+  rescrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: pipeline/package-lock.json
+      - run: npm ci
+        working-directory: pipeline
+      - run: node library/club-rescrape.mjs ${{ inputs.now && '--now' || '' }}
+        working-directory: pipeline
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      - run: node library/covers.mjs --new 1
+        working-directory: pipeline
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
