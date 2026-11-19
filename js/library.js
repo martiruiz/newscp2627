@@ -1971,6 +1971,9 @@
     const media = frame?.closest(".lib-media");
     if (media) { media.style.aspectRatio = "auto"; media.style.height = `${Math.ceil(h)}px`; media.classList.add("is-sized"); }
   });
+  const fbScale = new ResizeObserver((es) => es.forEach((e) => e.target.style.setProperty("--fbs", (e.contentRect.width / FB_W).toFixed(4))));
+  new MutationObserver(() => document.querySelectorAll(".lib-media.is-fb:not([data-fbs])").forEach((m) => { m.dataset.fbs = ""; if (m.offsetWidth) m.style.setProperty("--fbs", (m.offsetWidth / FB_W).toFixed(4)); fbScale.observe(m); }))
+    .observe(document.body, { childList: true, subtree: true });
   const saveBtn = (id) => boards.button(id);
   const tagChips = (p, cats) => cats.flatMap((c) => (p.tags?.[c] || []).map((v) => `<button type="button" class="lib-tag" data-tag="${c}:${v.id}" title="${esc(CAT_LABEL[c])}">${esc(pretty(v.name))}</button>`)).join("");
 
@@ -1985,9 +1988,14 @@
   // Facebook: reels vertical like a reel (9:16), other videos horizontal (16:9), photo posts as before
   const fbRatio = (p) => (/facebook\.com\/reel\//.test(p.url || "") || /^reels?$/i.test(first(p, "format")) ? 16 / 9
     : /facebook\.com\/(?:[^/]+\/videos|watch)\b/.test(p.url || "") || /^video$/i.test(first(p, "format")) ? 9 / 16 : 1.2);
+  // Facebook draws its embeds 500 px wide whatever the frame's width (a narrower card showed only its left part, cut at
+  // the bottom): the frame is drawn at 500 px and scaled to the card (fbScale). A post (post.php) adds its header, text
+  // and counts (~190 px at 500) to the picture; a video (video.php) is just the video.
+  const FB_W = 500, fbIsPost = (p) => !/\/(reel|videos?)\//.test(p.url || "");
+  const fbBox = (p, r) => r + (fbIsPost(p) ? 190 / FB_W : 0);
   function shape(p) {
     const pf = platformOf(p);
-    if (pf === "facebook") return { ratio: Number(p.media_ratio) || fbRatio(p) };
+    if (pf === "facebook") return { ratio: fbBox(p, Number(p.media_ratio) || fbRatio(p)) };
     if (pf === "youtube") return { ratio: isShort(p) ? 1.78 : 0.5625 };
     if (PLATFORM_RATIO[pf]) return { ratio: PLATFORM_RATIO[pf] };
     const box = Number(p.media_ratio) || 1.25;
@@ -2106,7 +2114,7 @@
       const zoomStyle = sh.zoom ? ` style="--zoom:${sh.zoom.toFixed(4)};--inset:${((1 - sh.boxFrac) / 2 * 100).toFixed(3)}%"` : "";
       return `
       <article class="lib-card is-embed" data-id="${esc(p.id)}">
-        <div class="lib-media${sh.zoom ? " is-reel" : ""}" style="aspect-ratio: 1 / ${sh.ratio.toFixed(4)}">
+        <div class="lib-media${sh.zoom ? " is-reel" : ""}${pf === "facebook" ? " is-fb" : ""}" style="aspect-ratio: 1 / ${sh.ratio.toFixed(4)}${pf === "facebook" ? `;--fbh:${Math.round(FB_W * sh.ratio)}px` : ""}">
           <div class="lib-zoom"${zoomStyle}><iframe class="lib-frame${pf === "instagram" ? " is-ig" : ""}" src="${esc(src)}" loading="lazy" title="${esc(who || "Post")}" scrolling="no" allow="encrypted-media; picture-in-picture; fullscreen"></iframe></div>
           ${asPosted
             // the tweet's own video / image stays clickable (plays in place); its header, text and bottom open the detail
@@ -2388,9 +2396,9 @@
         if (!w || !ratio) return;
         if (ratio < 0) return w.el.remove();   // no longer on Facebook: marked unavailable, out of the library
         const k = Math.min(16 / 9, Math.max(9 / 16, ratio));
-        w.row.media_ratio = k; w.pe.ratio = k;
+        w.row.media_ratio = k; w.pe.ratio = fbBox(w.row, k);
         const m = w.el.querySelector(".lib-media");
-        if (m) m.style.aspectRatio = `1 / ${k.toFixed(4)}`;
+        if (m) { m.style.aspectRatio = `1 / ${w.pe.ratio.toFixed(4)}`; m.style.setProperty("--fbh", `${Math.round(FB_W * w.pe.ratio)}px`); }
       });
     }
   }
@@ -2457,9 +2465,9 @@
           if (!img.naturalWidth) return;
           const r = Math.min(16 / 9, Math.max(9 / 16, img.naturalHeight / img.naturalWidth));
           rows[i].media_ratio = r;
+          pe.ratio = fbBox(rows[i], r);
           const m = el.querySelector(".lib-media");
-          if (m) m.style.aspectRatio = `1 / ${r.toFixed(4)}`;
-          pe.ratio = r;
+          if (m) { m.style.aspectRatio = `1 / ${pe.ratio.toFixed(4)}`; m.style.setProperty("--fbh", `${Math.round(FB_W * pe.ratio)}px`); }
         };
         img.src = rows[i].cover_url;
       }

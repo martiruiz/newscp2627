@@ -9899,3 +9899,7 @@ button.org-plan-pick { cursor: pointer; padding-right: 12px; }
   background: rgba(10, 15, 30, 0.92); color: #f1f4f9; font: 500 11.5px var(--font-body); pointer-events: none; opacity: 0; transition: opacity 0.15s; }
 .lib-card .lib-grip:hover::after { opacity: 1; }
 @media (hover: none) { .lib-card .lib-grip { opacity: 1; } }
+
+/* Facebook embeds: drawn at Facebook's own 500 px width and scaled down to the card (js/library.js fbScale), so the
+   whole post shows — never just its left part cut at the bottom */
+.lib-card.is-embed .lib-media.is-fb .lib-frame { width: 500px; height: var(--fbh, 600px); transform: scale(var(--fbs, 0.58)); transform-origin: 0 0; }
