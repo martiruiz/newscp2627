@@ -8,7 +8,7 @@
   {
     "account": "espn",
     "account_platform": "tiktok",
-    "views": 9600000,
+    "views": 10000000,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/630/630441.jpg?v=mwju11a9"
   },
   {
@@ -30,16 +30,16 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/622/622025.jpg?v=mwi5pt9s"
   },
   {
-    "account": "mancity",
-    "account_platform": "tiktok",
-    "views": 5800000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/627/627198.jpg?v=mwi644ap"
-  },
-  {
     "account": "nfl",
     "account_platform": "tiktok",
     "views": 5800000,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/630/630478.jpg?v=mwju17vx"
+  },
+  {
+    "account": "mancity",
+    "account_platform": "tiktok",
+    "views": 5800000,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/627/627198.jpg?v=mwi644ap"
   },
   {
     "account": "houseofhighlights",
@@ -92,7 +92,7 @@
   {
     "account": "espn",
     "account_platform": "tiktok",
-    "views": 4100000,
+    "views": 4300000,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/630/630450.jpg?v=mwju1715"
   },
   {
@@ -126,16 +126,16 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/630/630230.jpg?v=mwju0wo7"
   },
   {
+    "account": "fcbarcelona",
+    "account_platform": "tiktok",
+    "views": 2900000,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/630/630231.jpg?v=mwju0uv6"
+  },
+  {
     "account": "espn",
     "account_platform": "tiktok",
     "views": 2800000,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/627/627293.jpg?v=mwi63o2v"
-  },
-  {
-    "account": "fcbarcelona",
-    "account_platform": "tiktok",
-    "views": 2800000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/630/630231.jpg?v=mwju0uv6"
   },
   {
     "account": "fabriziorom",
@@ -146,7 +146,7 @@
   {
     "account": "houseofhighlights",
     "account_platform": "instagram",
-    "views": 2332313,
+    "views": 2339331,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/630/630049.jpg?v=mwjtxcw1"
   },
   {

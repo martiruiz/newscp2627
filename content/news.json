@@ -1,5 +1,287 @@
 [
   {
+    "id": 397,
+    "url": "https://www.sponconsports.com/p/six-changes-i-d-make-to-sports-partnerships-in-2027",
+    "source_name": "SponCon Sports",
+    "platform": "other",
+    "title": "Why sports organizations should align content and partnerships teams to grow sponsorship revenue",
+    "paragraphs": [
+      "In his Sponcon Sports newsletter, consultant Alex Kopilow argues that the most neglected relationship in sports organizations is the one between content and partnerships teams. Drawing on his consulting work and time at the Chicago White Sox, he says sellers often pitch formats content teams cannot deliver, while partnerships staff miss sellable ideas because they never hear what content is planning.",
+      "He proposes six changes for 2027: cross-attending each other's weekly meetings, bringing content staff into pitches and discovery sessions, building a shared digital inventory, sharing pitch updates and deal values, educating each other on goals and metrics, and giving the wider marketing department a shared digital sponsorship revenue target with a team bonus, provided audience and content standards are maintained.",
+      "For club and league social teams, the takeaway is practical: ask to sit in on partner conversations, learn how sponsors measure success, and turn in-venue assets like signage or branded bars into social-native formats rather than simple recaps. Keeping a joint list of reapproved concepts and tracking deal value helps content creators show their commercial impact and suggest extensions such as YouTube series or creator collaborations."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-19T15:00:00+00:00",
+    "created_at": "2026-11-19T15:40:05.065778+00:00",
+    "edited_at": null,
+    "slug": "why-sports-organizations-should-align-content-and-partnerships-teams-397",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/efbd0ad6-a8ee-42af-b2ff-5c28a5bea2ae/Untitled_Design__25_.png?t=1794969975",
+    "es": {
+      "title": "Por qué las organizaciones deportivas deberían alinear los equipos de contenido y de partnerships para aumentar los ingresos por patrocinio",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "En su newsletter Sponcon Sports, el consultor Alex Kopilow sostiene que la relación más descuidada en las organizaciones deportivas es la que existe entre los equipos de contenido y de partnerships. Basándose en su trabajo como consultor y en su etapa en los Chicago White Sox, asegura que los vendedores suelen proponer formatos que los equipos de contenido no pueden entregar, mientras que el personal de partnerships pierde ideas vendibles porque nunca se entera de lo que está planeando contenido.",
+        "Propone seis cambios para 2027: asistir de forma cruzada a las reuniones semanales del otro equipo, incorporar al personal de contenido a las propuestas comerciales y a las sesiones de descubrimiento, crear un inventario digital compartido, compartir las novedades de las propuestas y el valor de los acuerdos, formarse mutuamente en objetivos y métricas, y fijar para el departamento de marketing en su conjunto un objetivo compartido de ingresos por patrocinio digital con un bono de equipo, siempre que se mantengan los estándares de audiencia y de contenido.",
+        "Para los equipos de redes sociales de clubes y ligas, la conclusión es práctica: pide participar en las conversaciones con los partners, aprende cómo miden el éxito los patrocinadores y convierte los activos del estadio, como la cartelería o los bares de marca, en formatos nativos de redes sociales en lugar de simples resúmenes. Mantener una lista conjunta de conceptos ya aprobados y hacer seguimiento del valor de los acuerdos ayuda a los creadores de contenido a demostrar su impacto comercial y a sugerir ampliaciones, como series en YouTube o colaboraciones con creadores."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-11-19T15:40:05.065778+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-11-19T17:27:05.904Z",
+      "tokens": {
+        "in": 1465,
+        "out": 737
+      }
+    }
+  },
+  {
+    "id": 399,
+    "url": "https://socialgeekpro.beehiiv.com/p/ya-tenemos-gta-vi#2",
+    "source_name": "SocialGeek News",
+    "platform": "other",
+    "title": "Twitch brings back Hosting and tests shoppable ads at TwitchCon",
+    "paragraphs": [
+      "At TwitchCon, Twitch announced that Hosting is returning, with tests starting at the end of the year: an offline channel can show another live stream with shared chat, and 'Host Trains' rotate audiences across chosen channels. Streamers will also be able to invite up to seven viewers into Luna games using their phones as controllers, and a new apprentice moderator role can time out users but not ban them.",
+      "On the business side, shoppable ads are in desktop beta for US and Canadian advertisers, letting viewers add products to a cart mid-stream. A skippable ad format enters open beta in December, with international shopping planned for early 2027. Twitch says creators landing sponsorships have quadrupled in a year, while total payouts have doubled.",
+      "For esports teams, clubs and athletes who stream, Hosting and Host Trains are a simple way to share audiences with partner creators or squad members. Sports brands can treat live streams as both a showcase and a store, and sponsorships with gaming streamers look increasingly attractive as live viewing grows."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-19T12:13:00+00:00",
+    "created_at": "2026-11-19T15:40:23.071854+00:00",
+    "edited_at": null,
+    "slug": "twitch-brings-back-hosting-and-tests-shoppable-ads-at-twitchcon-399",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/a0ddc3d2de3394f6-16x9.jpg",
+    "es": {
+      "title": "Twitch recupera el Hosting y prueba anuncios con compra integrada en la TwitchCon",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "En la TwitchCon, Twitch anunció que vuelve el Hosting, con pruebas que empezarán a finales de año: un canal offline podrá mostrar otro directo con chat compartido, y los «Host Trains» rotarán audiencias entre canales elegidos. Los streamers también podrán invitar hasta a siete espectadores a partidas de Luna usando sus móviles como mandos, y un nuevo rol de moderador aprendiz podrá aplicar suspensiones temporales a usuarios, pero no banearlos.",
+        "En el plano comercial, los anuncios con compra integrada están en beta para escritorio para anunciantes de Estados Unidos y Canadá, y permiten a los espectadores añadir productos a un carrito durante el directo. Un formato de anuncio que se puede saltar entra en beta abierta en diciembre, y las compras internacionales están previstas para principios de 2027. Twitch asegura que los creadores que consiguen patrocinios se han cuadruplicado en un año, mientras que los pagos totales se han duplicado.",
+        "Para los equipos de esports, los clubes y los deportistas que hacen streaming, el Hosting y los Host Trains son una forma sencilla de compartir audiencia con creadores aliados o miembros del equipo. Las marcas deportivas pueden tratar los directos como escaparate y tienda a la vez, y los patrocinios con streamers de gaming resultan cada vez más atractivos a medida que crece el consumo en directo."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-11-19T15:40:23.071854+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-11-19T17:27:12.035Z",
+      "tokens": {
+        "in": 1417,
+        "out": 622
+      }
+    }
+  },
+  {
+    "id": 398,
+    "url": "https://socialgeekpro.beehiiv.com/p/ya-tenemos-gta-vi",
+    "source_name": "SocialGeek News",
+    "platform": "instagram",
+    "title": "Instagram lets creators tag Amazon affiliate products directly in Reels and feed posts",
+    "paragraphs": [
+      "Instagram now allows creators to tag Amazon products with affiliate links inside their content, up to 30 products per Reel and 20 per feed post. Once a creator connects an Amazon account through the Professional Dashboard, affiliate attribution is added automatically. Instagram takes no cut; Amazon continues paying creators for qualifying purchases.",
+      "For sports, this cuts the friction of the old 'link in bio' approach. Athletes can tag the boots, recovery gear or training equipment they actually use in a workout Reel, and fans can buy without leaving the video. Recommendation content becomes a direct revenue line for athletes and creators.",
+      "Clubs and sports brands selling merchandise or equipment on Amazon gain a new reason for creators to feature their products. Social teams should check eligibility, brief ambassador athletes on tagging, and plan gear-focused formats such as matchday kit bags, 'what I use every day' clips or unboxings."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-19T12:13:00+00:00",
+    "created_at": "2026-11-19T15:40:22.869766+00:00",
+    "edited_at": null,
+    "slug": "instagram-lets-creators-tag-amazon-affiliate-products-directly-in-398",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/f3138a84737293f6-16x9.jpg",
+    "es": {
+      "title": "Instagram permite a los creadores etiquetar productos afiliados de Amazon directamente en Reels y publicaciones del feed",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "Instagram ya permite a los creadores etiquetar productos de Amazon con enlaces de afiliado dentro de sus contenidos, hasta 30 productos por Reel y 20 por publicación del feed. Una vez que el creador conecta una cuenta de Amazon a través del Panel profesional, la atribución de afiliado se añade automáticamente. Instagram no se lleva ninguna comisión; Amazon sigue pagando a los creadores por las compras que cumplan los requisitos.",
+        "En el deporte, esto reduce la fricción del antiguo enfoque del «enlace en la bio». Los deportistas pueden etiquetar las botas, el material de recuperación o el equipamiento de entrenamiento que realmente usan en un Reel de entrenamiento, y los aficionados pueden comprar sin salir del vídeo. Los contenidos de recomendación se convierten en una fuente directa de ingresos para deportistas y creadores.",
+        "Los clubes y las marcas deportivas que venden merchandising o equipamiento en Amazon ganan un nuevo motivo para que los creadores muestren sus productos. Los equipos de redes sociales deberían comprobar la elegibilidad, explicar a los deportistas embajadores cómo etiquetar y planificar formatos centrados en el equipamiento, como las bolsas de equipación del día de partido, vídeos de «lo que uso cada día» o unboxings."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-11-19T15:40:22.869766+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-11-19T17:27:17.767Z",
+      "tokens": {
+        "in": 1394,
+        "out": 606
+      }
+    }
+  },
+  {
+    "id": 400,
+    "url": "https://socialgeekpro.beehiiv.com/p/ya-tenemos-gta-vi#3",
+    "source_name": "SocialGeek News",
+    "platform": "youtube",
+    "title": "YouTube public view counts now estimate people watching together on TV",
+    "paragraphs": [
+      "YouTube's public counters now include an estimate of people watching a video together on a TV screen, covering long-form videos, Shorts and live streams. Previously accumulated totals are not being recalculated, and creator payouts are unchanged by the update.",
+      "Sports content is often watched in groups, from highlights on the living-room TV to live shows and watch-alongs, so clubs and leagues may see visible view numbers rise on connected-TV content. Social teams should note the change date when comparing performance over time and when reporting reach to sponsors, since older figures will not be adjusted.",
+      "It also strengthens the case for producing TV-friendly formats: longer match recaps, documentaries and live pre-match shows designed for shared viewing can now better reflect their real audience in public metrics."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-19T12:13:00+00:00",
+    "created_at": "2026-11-19T15:40:23.40064+00:00",
+    "edited_at": null,
+    "slug": "youtube-public-view-counts-now-estimate-people-watching-together-on-tv-400",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/eae8d166eeaa528b-16x9.jpg",
+    "es": {
+      "title": "Los contadores públicos de visualizaciones de YouTube ya estiman a las personas que ven contenido juntas en la tele",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "Los contadores públicos de YouTube ahora incluyen una estimación de las personas que ven un vídeo juntas en una pantalla de televisión, tanto en vídeos de formato largo como en Shorts y directos. Los totales acumulados hasta ahora no se recalculan y los pagos a los creadores no cambian con esta actualización.",
+        "El contenido deportivo se suele ver en grupo, desde los resúmenes en la tele del salón hasta los programas en directo y los watch-alongs, así que clubes y ligas podrían ver subir las cifras visibles de visualizaciones en el contenido de la tele conectada. Los equipos de redes sociales deberían anotar la fecha del cambio al comparar el rendimiento a lo largo del tiempo y al informar del reach a los patrocinadores, ya que las cifras anteriores no se ajustarán.",
+        "También refuerza el argumento para producir formatos pensados para la tele: resúmenes de partidos más largos, documentales y programas previos en directo diseñados para verse en compañía ahora pueden reflejar mejor su audiencia real en las métricas públicas."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-11-19T15:40:23.40064+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-11-19T17:27:22.760Z",
+      "tokens": {
+        "in": 1319,
+        "out": 503
+      }
+    }
+  },
+  {
+    "id": 401,
+    "url": "https://www.socialmediatoday.com/news/tiktok-releases-2026-music-impact-report/875144/",
+    "source_name": "Social Media Today",
+    "platform": "tiktok",
+    "title": "TikTok Music Impact Report links viral moments to 94% of Billboard Global 200 hits",
+    "paragraphs": [
+      "TikTok has released its 2026 Music Impact Report, built on a Luminate study of more than 4,000 U.S. users. It finds 45% of U.S. TikTok users discover new music in the app, ahead of YouTube, Instagram and Facebook. The headline claim: 94% of songs entering the Billboard Global 200 in 2025 went viral on TikTok first, up from 84% the year before.",
+      "The report also says songs with a viral TikTok moment stay on the chart four times longer, and that U.S. music listeners on TikTok are 78% more likely than the general population to pay for streaming. Most emerging artists surveyed see a clear link between TikTok engagement and activity on streaming services.",
+      "For sports social teams, the takeaway is that trending audio is a cultural signal worth tracking closely. Clubs and athletes can spot rising tracks early for training clips, walkout videos and matchday edits, ride trends before they peak, and use music partnerships or stadium playlists to connect with artists gaining momentum, always checking licensing rules for commercial accounts."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-18T22:19:18+00:00",
+    "created_at": "2026-11-19T15:40:31.218185+00:00",
+    "edited_at": null,
+    "slug": "tiktok-music-impact-report-links-viral-moments-to-94-of-billboard-401",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/T3-mecL_TJ7Md__fR7C7nXGvh47ssliJIMxoJO5FRo4/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS90aWt0b2tfbXVzaWNfMjAyNl8yLnBuZw==.webp",
+    "es": {
+      "title": "El TikTok Music Impact Report vincula los momentos virales con el 94 % de los éxitos del Billboard Global 200",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "TikTok ha publicado su Music Impact Report 2026, basado en un estudio de Luminate con más de 4.000 usuarios de EE. UU. Según el informe, el 45 % de los usuarios estadounidenses de TikTok descubre música nueva en la app, por delante de YouTube, Instagram y Facebook. La afirmación principal: el 94 % de las canciones que entraron en el Billboard Global 200 en 2025 se hicieron virales primero en TikTok, frente al 84 % del año anterior.",
+        "El informe también señala que las canciones con un momento viral en TikTok permanecen en la lista cuatro veces más tiempo, y que los oyentes de música de EE. UU. en TikTok tienen un 78 % más de probabilidades que la población general de pagar por streaming. La mayoría de los artistas emergentes encuestados ven un vínculo claro entre el engagement en TikTok y la actividad en los servicios de streaming.",
+        "Para los equipos de redes sociales deportivas, la conclusión es que el audio en tendencia es una señal cultural que merece un seguimiento cercano. Los clubes y los deportistas pueden detectar pronto temas en ascenso para vídeos de entrenamientos, salidas al campo y ediciones del día de partido, subirse a las tendencias antes de que alcancen su punto álgido y recurrir a colaboraciones musicales o a playlists del estadio para conectar con artistas que están ganando impulso, comprobando siempre las normas de licencias en las cuentas comerciales."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-11-19T15:40:31.218185+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-11-19T17:27:28.741Z",
+      "tokens": {
+        "in": 1434,
+        "out": 647
+      }
+    }
+  },
+  {
+    "id": 405,
+    "url": "https://www.socialmediatoday.com/news/linkedin-adds-another-in-stream-game/875119/",
+    "source_name": "Social Media Today",
+    "platform": "linkedin",
+    "title": "LinkedIn launches Sumbreak, its ninth in-app puzzle game, to boost daily engagement",
+    "paragraphs": [
+      "LinkedIn has released Sumbreak, a math puzzle in which players merge matching numbered tiles that add together until only one tile remains. It is the platform's ninth in-stream game. Members can challenge others, leaderboards now support favorites for comparing scores with chosen connections, bonus puzzles reward daily returners, and games are easier to find in the updated interface.",
+      "LinkedIn says billions of puzzles have been solved since games arrived in May 2024. In March 2025 it reported millions of professionals playing daily, with 84% of players returning the next day. The aim is clear: habitual daily visits and more conversation, driven by friendly rivalry rather than purely professional networking.",
+      "For sports organisations, this shows LinkedIn audiences respond to lighter, competitive formats. Commercial and partnerships teams could borrow the mechanic with daily stat-based quizzes or number puzzles built on club records, posted as recurring series. Staff, executives and athletes might also use leaderboard rivalries as a playful touchpoint with sponsors and B2B contacts, keeping the brand visible in feeds that users now open every day."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-18T19:22:14+00:00",
+    "created_at": "2026-11-19T15:41:00.069275+00:00",
+    "edited_at": null,
+    "slug": "linkedin-launches-sumbreak-its-ninth-in-app-puzzle-game-to-boost-405",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/Yje1BrTSDIhuZedNCUGiIp_a0AdqLOG7t8V2FpTRG_0/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9zdW1icmVhay5wbmc=.webp",
+    "es": {
+      "title": "LinkedIn lanza Sumbreak, su noveno juego de puzles integrado en la app, para impulsar el engagement diario",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "LinkedIn ha lanzado Sumbreak, un puzle matemático en el que los jugadores fusionan fichas numeradas iguales que se suman entre sí hasta que solo queda una ficha. Es el noveno juego de la plataforma dentro del feed. Los miembros pueden retar a otros, las clasificaciones ahora admiten favoritos para comparar puntuaciones con contactos elegidos, los puzles extra recompensan a quienes vuelven cada día y es más fácil encontrar los juegos en la interfaz actualizada.",
+        "LinkedIn asegura que se han resuelto miles de millones de puzles desde que los juegos llegaron en mayo de 2024. En marzo de 2025 informó de que millones de profesionales juegan a diario, y de que el 84 % de los jugadores vuelve al día siguiente. El objetivo está claro: visitas diarias habituales y más conversación, impulsadas por la rivalidad amistosa y no solo por el networking estrictamente profesional.",
+        "Para las organizaciones deportivas, esto demuestra que las audiencias de LinkedIn responden a formatos más ligeros y competitivos. Los equipos comerciales y de alianzas podrían adaptar la mecánica con quizzes diarios basados en estadísticas o puzles numéricos construidos a partir de los récords del club, publicados como series recurrentes. El personal, los directivos y los deportistas también podrían usar las rivalidades de las clasificaciones como un punto de contacto divertido con patrocinadores y contactos B2B, manteniendo la marca visible en feeds que los usuarios abren ahora cada día."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-11-19T15:41:00.069275+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-11-19T17:27:35.229Z",
+      "tokens": {
+        "in": 1458,
+        "out": 684
+      }
+    }
+  },
+  {
     "id": 373,
     "url": "https://frontofficesports.com/videos/ryan-clark-on-the-aikman-booth-situation/",
     "source_name": "Front Office Sports",
@@ -564,53 +846,6 @@
     }
   },
   {
-    "id": 296,
-    "url": "https://socialgeekpro.beehiiv.com/p/espa-a-estudia-suspender-tiktok#2",
-    "source_name": "SocialGeek News",
-    "platform": "instagram",
-    "title": "Instagram tests Features, horizontal videos up to 90 minutes, to rival YouTube",
-    "paragraphs": [
-      "Instagram is testing a format called Features that lets creators upload horizontal videos of up to 90 minutes, aimed at podcasts, interviews and entertainment shows. Viewers will be able to jump from a short Reel straight to the full video without leaving the app. The test is running with selected creators in the US after earlier trials in Brazil, with a separate upload flow and snippet clips published as Reels.",
-      "For clubs, leagues and athletes, this opens a path to host long-form content where much of their audience already lives. Full press conferences, behind-the-scenes documentaries, club podcasts or extended match analysis could sit on Instagram, with short Reels acting as trailers that drive fans to the complete video.",
-      "Teams should plan clip-to-full-video workflows now, so every long piece comes with ready-made snippets, and consider new sponsor inventory around longer formats."
-    ],
-    "relevant": true,
-    "published_at": "2026-11-12T12:13:00+00:00",
-    "created_at": "2026-11-12T15:05:04.855566+00:00",
-    "edited_at": null,
-    "slug": "instagram-tests-features-horizontal-videos-up-to-90-minutes-to-rival-296",
-    "meta_title": null,
-    "meta_description": null,
-    "takeaways": [],
-    "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/manual-2026-11-11-2.jpg",
-    "es": {
-      "faq": [],
-      "model": "claude-sonnet-5-5",
-      "title": "Instagram prueba Features, vídeos horizontales de hasta 90 minutos, para competir con YouTube",
-      "tokens": {
-        "in": 1365,
-        "out": 529
-      },
-      "excerpt": "",
-      "cta_text": "",
-      "body_html": "",
-      "cta_title": "",
-      "image_alt": "",
-      "takeaways": [],
-      "meta_title": "",
-      "paragraphs": [
-        "Instagram está probando un formato llamado Features que permite a los creadores subir vídeos horizontales de hasta 90 minutos, pensado para pódcasts, entrevistas y programas de entretenimiento. Los usuarios podrán saltar de un Reel corto directamente al vídeo completo sin salir de la app. La prueba se está realizando con creadores seleccionados en EE. UU. tras pruebas previas en Brasil, con un flujo de subida independiente y clips de fragmentos publicados como Reels.",
-        "Para clubes, ligas y deportistas, esto abre un camino para alojar contenido de formato largo donde ya se encuentra gran parte de su audiencia. Ruedas de prensa completas, documentales entre bastidores, pódcasts de clubes o análisis extendidos de partidos podrían estar en Instagram, con Reels cortos que funcionen como tráilers y lleven a los aficionados al vídeo completo.",
-        "Los equipos deberían planificar ya flujos de trabajo de clip a vídeo completo, de modo que cada pieza larga venga con fragmentos listos para publicar, y valorar nuevo inventario para patrocinadores en torno a los formatos más largos."
-      ],
-      "image_title": "",
-      "translated_at": "2026-11-12T16:54:11.153Z",
-      "source_changed": "2026-11-12T15:05:04.855566+00:00",
-      "meta_description": ""
-    }
-  },
-  {
     "id": 295,
     "url": "https://socialgeekpro.beehiiv.com/p/espa-a-estudia-suspender-tiktok",
     "source_name": "SocialGeek News",
@@ -699,6 +934,53 @@
       "image_title": "",
       "translated_at": "2026-11-12T16:54:05.321Z",
       "source_changed": "2026-11-12T15:05:05.26406+00:00",
+      "meta_description": ""
+    }
+  },
+  {
+    "id": 296,
+    "url": "https://socialgeekpro.beehiiv.com/p/espa-a-estudia-suspender-tiktok#2",
+    "source_name": "SocialGeek News",
+    "platform": "instagram",
+    "title": "Instagram tests Features, horizontal videos up to 90 minutes, to rival YouTube",
+    "paragraphs": [
+      "Instagram is testing a format called Features that lets creators upload horizontal videos of up to 90 minutes, aimed at podcasts, interviews and entertainment shows. Viewers will be able to jump from a short Reel straight to the full video without leaving the app. The test is running with selected creators in the US after earlier trials in Brazil, with a separate upload flow and snippet clips published as Reels.",
+      "For clubs, leagues and athletes, this opens a path to host long-form content where much of their audience already lives. Full press conferences, behind-the-scenes documentaries, club podcasts or extended match analysis could sit on Instagram, with short Reels acting as trailers that drive fans to the complete video.",
+      "Teams should plan clip-to-full-video workflows now, so every long piece comes with ready-made snippets, and consider new sponsor inventory around longer formats."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-12T12:13:00+00:00",
+    "created_at": "2026-11-12T15:05:04.855566+00:00",
+    "edited_at": null,
+    "slug": "instagram-tests-features-horizontal-videos-up-to-90-minutes-to-rival-296",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/manual-2026-11-11-2.jpg",
+    "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
+      "title": "Instagram prueba Features, vídeos horizontales de hasta 90 minutos, para competir con YouTube",
+      "tokens": {
+        "in": 1365,
+        "out": 529
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [],
+      "meta_title": "",
+      "paragraphs": [
+        "Instagram está probando un formato llamado Features que permite a los creadores subir vídeos horizontales de hasta 90 minutos, pensado para pódcasts, entrevistas y programas de entretenimiento. Los usuarios podrán saltar de un Reel corto directamente al vídeo completo sin salir de la app. La prueba se está realizando con creadores seleccionados en EE. UU. tras pruebas previas en Brasil, con un flujo de subida independiente y clips de fragmentos publicados como Reels.",
+        "Para clubes, ligas y deportistas, esto abre un camino para alojar contenido de formato largo donde ya se encuentra gran parte de su audiencia. Ruedas de prensa completas, documentales entre bastidores, pódcasts de clubes o análisis extendidos de partidos podrían estar en Instagram, con Reels cortos que funcionen como tráilers y lleven a los aficionados al vídeo completo.",
+        "Los equipos deberían planificar ya flujos de trabajo de clip a vídeo completo, de modo que cada pieza larga venga con fragmentos listos para publicar, y valorar nuevo inventario para patrocinadores en torno a los formatos más largos."
+      ],
+      "image_title": "",
+      "translated_at": "2026-11-12T16:54:11.153Z",
+      "source_changed": "2026-11-12T15:05:04.855566+00:00",
       "meta_description": ""
     }
   },
@@ -1827,6 +2109,53 @@
     }
   },
   {
+    "id": 82,
+    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces",
+    "source_name": "SocialGeek News",
+    "platform": "facebook",
+    "title": "Facebook tests charging Pages to post links beyond a small monthly quota",
+    "paragraphs": [
+      "Facebook is testing a cap on how many link posts a Page can publish. Some Pages are now limited to two link posts per month, after which a prompt invites them to subscribe through Meta One: $50 a month for eight links, $150 for 20, or $500 for unlimited. Links to compatible affiliates, Creator Storefront and Meta products remain unrestricted. Meta calls it a test, though it has reportedly reached nonprofit and library Pages that were meant to be exempt.",
+      "For clubs and leagues that push fans from Facebook to ticketing, shop or news pages, this signals that outbound traffic is getting more expensive. Social teams should audit how much web traffic Facebook really drives and reserve link posts for high-value moments like ticket drops or kit launches.",
+      "The bigger lesson is to invest in owned channels such as newsletters, apps and membership communities. Native formats like video, photo galleries and in-feed match updates can keep Facebook audiences engaged without relying on links."
+    ],
+    "relevant": true,
+    "published_at": "2026-10-29T12:12:00+00:00",
+    "created_at": "2026-10-29T12:54:19.971122+00:00",
+    "edited_at": null,
+    "slug": "facebook-tests-charging-pages-to-post-links-beyond-a-small-monthly-82",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/linkedin-meta-links-16x9.jpg",
+    "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
+      "title": "Facebook prueba a cobrar a las Páginas por publicar enlaces más allá de una pequeña cuota mensual",
+      "tokens": {
+        "in": 1400,
+        "out": 620
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [],
+      "meta_title": "",
+      "paragraphs": [
+        "Facebook está probando un límite al número de publicaciones con enlace que puede hacer una Página. Algunas Páginas ya están limitadas a dos publicaciones con enlace al mes, y después un aviso les invita a suscribirse a través de Meta One: 50 $ al mes por ocho enlaces, 150 $ por 20 o 500 $ por enlaces ilimitados. Los enlaces a afiliados compatibles, a Creator Storefront y a productos de Meta siguen sin restricciones. Meta lo presenta como una prueba, aunque según se ha informado ha llegado a Páginas de organizaciones sin ánimo de lucro y de bibliotecas que debían estar exentas.",
+        "Para los clubes y las ligas que llevan a los aficionados desde Facebook a páginas de venta de entradas, de la tienda o de noticias, esto indica que el tráfico saliente se está encareciendo. Los equipos de redes sociales deberían analizar cuánto tráfico web genera realmente Facebook y reservar las publicaciones con enlace para momentos de alto valor, como el lanzamiento de entradas o de equipaciones.",
+        "La lección de fondo es invertir en canales propios como newsletters, apps y comunidades de socios. Los formatos nativos, como el vídeo, las galerías de fotos y las actualizaciones del partido en el feed, pueden mantener el engagement de las audiencias de Facebook sin depender de los enlaces."
+      ],
+      "image_title": "",
+      "translated_at": "2026-10-29T16:10:21.391Z",
+      "source_changed": "2026-10-29T12:54:19.971122+00:00",
+      "meta_description": ""
+    }
+  },
+  {
     "id": 83,
     "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces#2",
     "source_name": "SocialGeek News",
@@ -1917,53 +2246,6 @@
       "image_title": "",
       "translated_at": "2026-10-29T16:10:26.722Z",
       "source_changed": "2026-10-29T12:54:20.285329+00:00",
-      "meta_description": ""
-    }
-  },
-  {
-    "id": 82,
-    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces",
-    "source_name": "SocialGeek News",
-    "platform": "facebook",
-    "title": "Facebook tests charging Pages to post links beyond a small monthly quota",
-    "paragraphs": [
-      "Facebook is testing a cap on how many link posts a Page can publish. Some Pages are now limited to two link posts per month, after which a prompt invites them to subscribe through Meta One: $50 a month for eight links, $150 for 20, or $500 for unlimited. Links to compatible affiliates, Creator Storefront and Meta products remain unrestricted. Meta calls it a test, though it has reportedly reached nonprofit and library Pages that were meant to be exempt.",
-      "For clubs and leagues that push fans from Facebook to ticketing, shop or news pages, this signals that outbound traffic is getting more expensive. Social teams should audit how much web traffic Facebook really drives and reserve link posts for high-value moments like ticket drops or kit launches.",
-      "The bigger lesson is to invest in owned channels such as newsletters, apps and membership communities. Native formats like video, photo galleries and in-feed match updates can keep Facebook audiences engaged without relying on links."
-    ],
-    "relevant": true,
-    "published_at": "2026-10-29T12:12:00+00:00",
-    "created_at": "2026-10-29T12:54:19.971122+00:00",
-    "edited_at": null,
-    "slug": "facebook-tests-charging-pages-to-post-links-beyond-a-small-monthly-82",
-    "meta_title": null,
-    "meta_description": null,
-    "takeaways": [],
-    "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/linkedin-meta-links-16x9.jpg",
-    "es": {
-      "faq": [],
-      "model": "claude-sonnet-5-5",
-      "title": "Facebook prueba a cobrar a las Páginas por publicar enlaces más allá de una pequeña cuota mensual",
-      "tokens": {
-        "in": 1400,
-        "out": 620
-      },
-      "excerpt": "",
-      "cta_text": "",
-      "body_html": "",
-      "cta_title": "",
-      "image_alt": "",
-      "takeaways": [],
-      "meta_title": "",
-      "paragraphs": [
-        "Facebook está probando un límite al número de publicaciones con enlace que puede hacer una Página. Algunas Páginas ya están limitadas a dos publicaciones con enlace al mes, y después un aviso les invita a suscribirse a través de Meta One: 50 $ al mes por ocho enlaces, 150 $ por 20 o 500 $ por enlaces ilimitados. Los enlaces a afiliados compatibles, a Creator Storefront y a productos de Meta siguen sin restricciones. Meta lo presenta como una prueba, aunque según se ha informado ha llegado a Páginas de organizaciones sin ánimo de lucro y de bibliotecas que debían estar exentas.",
-        "Para los clubes y las ligas que llevan a los aficionados desde Facebook a páginas de venta de entradas, de la tienda o de noticias, esto indica que el tráfico saliente se está encareciendo. Los equipos de redes sociales deberían analizar cuánto tráfico web genera realmente Facebook y reservar las publicaciones con enlace para momentos de alto valor, como el lanzamiento de entradas o de equipaciones.",
-        "La lección de fondo es invertir en canales propios como newsletters, apps y comunidades de socios. Los formatos nativos, como el vídeo, las galerías de fotos y las actualizaciones del partido en el feed, pueden mantener el engagement de las audiencias de Facebook sin depender de los enlaces."
-      ],
-      "image_title": "",
-      "translated_at": "2026-10-29T16:10:21.391Z",
-      "source_changed": "2026-10-29T12:54:19.971122+00:00",
       "meta_description": ""
     }
   },

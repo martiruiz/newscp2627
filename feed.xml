@@ -6,7 +6,17 @@
     <atom:link href="https://sportscontentplaybook.com/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Sports social media content ideas, trends and analysis.</description>
     <language>en</language>
-    <lastBuildDate>Wed, 18 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Thu, 19 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Football social media content ideas: film the locker room, not just the scoreboard</title>
+      <link>https://sportscontentplaybook.com/blog/football-social-media-content-ideas-locker-room-over-scoreboard.html</link>
+      <guid isPermaLink="true">https://sportscontentplaybook.com/blog/football-social-media-content-ideas-locker-room-over-scoreboard.html</guid>
+      <pubDate>Thu, 19 Nov 2026 08:00:00 GMT</pubDate>
+      <dc:creator>Martí Ruiz</dc:creator>
+      <description>After a 7-0 win, the Reel that flew was not the highlights but a locker-room farewell. Here are twelve ideas to film people, not just scores.</description>
+      <enclosure url="https://sportscontentplaybook.com/assets/blog/football-social-media-content-ideas-locker-room-over-scoreboard.jpg" length="70391" type="image/jpeg"/>
+      <media:content url="https://sportscontentplaybook.com/assets/blog/football-social-media-content-ideas-locker-room-over-scoreboard.jpg" medium="image" type="image/jpeg"/>
+    </item>
     <item>
       <title>Sports social media strategy: turn copied Reels into an audience with Instagram's Content protection</title>
       <link>https://sportscontentplaybook.com/blog/sports-social-media-strategy-instagram-content-protection.html</link>
@@ -296,16 +306,6 @@
       <description>The Philadelphia Flyers proved that sponsored content can outperform any organic post when the activation creates genuine fan value. Here is the framework behind that success.</description>
       <enclosure url="https://sportscontentplaybook.com/assets/blog/why-the-best-sponsored-content-creates-the-moment-instead-of-interrupting-it.jpg" length="327013" type="image/jpeg"/>
       <media:content url="https://sportscontentplaybook.com/assets/blog/why-the-best-sponsored-content-creates-the-moment-instead-of-interrupting-it.jpg" medium="image" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>Social media in sports: how an unknown footballer became one of the World Cup’s biggest stories</title>
-      <link>https://sportscontentplaybook.com/blog/how-an-unknown-footballer-became-one-of-the-world-cups-biggest-social-media-stories.html</link>
-      <guid isPermaLink="true">https://sportscontentplaybook.com/blog/how-an-unknown-footballer-became-one-of-the-world-cups-biggest-social-media-stories.html</guid>
-      <pubDate>Sat, 06 Jun 2026 08:00:00 GMT</pubDate>
-      <dc:creator>Josep</dc:creator>
-      <description>Tim Payne’s rise from 4,000 to 4 million followers shows how authenticity, participation, and community storytelling can create one of the most powerful digital phenomena in sports</description>
-      <enclosure url="https://sportscontentplaybook.com/assets/blog/how-an-unknown-footballer-became-one-of-the-world-cups-biggest-social-media-stories.jpg" length="183006" type="image/jpeg"/>
-      <media:content url="https://sportscontentplaybook.com/assets/blog/how-an-unknown-footballer-became-one-of-the-world-cups-biggest-social-media-stories.jpg" medium="image" type="image/jpeg"/>
     </item>
   </channel>
 </rss>
