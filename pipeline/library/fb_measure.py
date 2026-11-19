@@ -59,11 +59,17 @@ BIGGEST = """[...document.images, ...[...document.querySelectorAll('video[poster
   .sort((a, b) => b.naturalWidth * b.naturalHeight - a.naturalWidth * a.naturalHeight)[0]?.src || null"""
 
 
+GONE = """![...document.images].some(i => /^https:\\/\\/scontent/.test(i.src)) && /no longer available|isn.t available|ya no est. disponible|no est. disponible|n.est plus disponible|non . pi. disponibile|n.o est. mais dispon.vel|nicht mehr verf.gbar/i.test(document.body.innerText)"""
+
+
 async def measure(ctx, row):
     url, pg = row["url"] or "", await ctx.new_page()
     try:
         await pg.goto(src(url), wait_until="domcontentloaded", timeout=20000)
         await pg.wait_for_timeout(1500)
+        # removed or made private: Facebook's "this post is no longer available" box (any language) instead of the post
+        if await pg.evaluate(GONE):
+            return -1, None
         h = await pg.evaluate("Math.max(0, ...[...document.body.querySelectorAll('*')].map(e => e.getBoundingClientRect().bottom))")
         cover = None
         if not row.get("cover_url"):
@@ -103,7 +109,7 @@ def image_size(b):   # JPEG / PNG / WebP width and height from the bytes
 
 
 async def main():
-    done = covers = 0
+    done = covers = gone = 0
     async with async_playwright() as p:
         browser = await p.chromium.launch()
         ctx = await browser.new_context(viewport={"width": 500, "height": 900}, locale="en-US")
@@ -117,6 +123,10 @@ async def main():
                 part = rows[k:k + WORKERS]
                 res = await asyncio.gather(*(measure(ctx, r) for r in part))
                 for r, (h, cover) in zip(part, res):
+                    if h < 0:   # no longer on Facebook: out of the library (as fb-shape and covers.mjs do)
+                        rest(f"content_ideas?id=eq.{r['id']}", {"unavailable_at": __import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat()}, "PATCH")
+                        gone += 1
+                        h = 0
                     out.append({"id": r["id"], "h": h})
                     url = None
                     try:
@@ -134,7 +144,7 @@ async def main():
                 rest("rpc/apply_media_shape", {"p_rows": shapes})
             rest("rpc/apply_fb_embed_h", {"p_rows": out})
             done += len(out)
-            print(f"{done} measured · {covers} new covers · {sum(1 for o in out if not o['h'])} failed in this batch", flush=True)
+            print(f"{done} measured · {covers} new covers · {gone} removed from Facebook · {sum(1 for o in out if not o['h'])} failed in this batch", flush=True)
         await browser.close()
     print(f"Done: {done} Facebook embeds measured.")
 
