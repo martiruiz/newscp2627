@@ -144,9 +144,9 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
             <button class="mcl-pend-x" type="button" data-dismiss="${esc(`${a.platform}|${a.handle}`)}" title="Discard: don't ask for it again">✕</button></li>`).join("")}</ul></div>
           ${pendingIg > 1 ? `<button class="btn btn-primary btn-sm" type="button" data-scrape-all>${icon("download")}Scrape all ${num(pendingIg)}</button>` : ""}</div>` : ""}
         <form class="mcl-quick" data-quick-scrape>
-          <div class="mcl-quick-h"><span class="mcl-set-ic">${icon("download")}</span><span><b>Scrape new profiles</b><small>Paste one or more Instagram / TikTok accounts (@user or link, one per line): they're added to ${esc(c.name)} and their last 10 posts are collected right away.</small></span></div>
+          <div class="mcl-quick-h"><span class="mcl-set-ic">${icon("download")}</span><span><b>Scrape new profiles</b><small>Paste one or more Instagram / TikTok accounts (@user or link, separated by commas): they're added to ${esc(c.name)} and their last 10 posts are collected right away.</small></span></div>
           <div class="mcl-quick-row">
-            <textarea class="input" name="handles" rows="2" placeholder="@lamineyamal&#10;https://www.tiktok.com/@fcbarcelona" required></textarea>
+            <input class="input" name="handles" type="text" placeholder="@lamineyamal, tiktok.com/@fcbarcelona…" autocomplete="off" required data-quick-in>
             <label>Add as<select class="select" name="kind">${[["player", "Player"], ["sponsor", "Sponsor"], ["competitor", "Competitor"], ["creator", "Content creator"], ["account", `${(TYPES.find((x) => x[0] === c.kind) || TYPES[0])[1]} account`]].map(([v, l]) => `<option value="${v}">${esc(l)}</option>`).join("")}</select></label>
             <label>Section<select class="select" name="section"><option value="">Whole ${esc((TYPES.find((x) => x[0] === c.kind) || TYPES[0])[1].toLowerCase())}</option>${club.sections.map((x) => `<option value="${esc(x.name)}">${esc(x.name)}</option>`).join("")}</select></label>
             <label title="For accounts pasted as @user (links say their network)">Network<select class="select" name="net"><option value="instagram">Instagram</option><option value="tiktok">TikTok</option></select></label>
@@ -868,6 +868,15 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
   // Club settings: the save bar says when something changed and isn't saved yet
   const dirty = (e) => { const f = e.target.closest?.("[data-form]"); if (f) f.classList.add("is-dirty"); };
   main.addEventListener("input", dirty); main.addEventListener("change", dirty);
+  // Scrape new profiles: a list pasted in several lines fits the one-line box as "a, b, c"
+  main.addEventListener("paste", (e) => {
+    if (!e.target.matches?.("[data-quick-in]")) return;
+    const txt = e.clipboardData?.getData("text") || "";
+    if (!/\n/.test(txt)) return;
+    e.preventDefault();
+    const el = e.target, add = txt.split(/\s*[\r\n]+\s*/).filter(Boolean).join(", ");
+    el.setRangeText((el.value && el.selectionStart > 0 && !/[,\s]$/.test(el.value.slice(0, el.selectionStart)) ? ", " : "") + add, el.selectionStart, el.selectionEnd, "end");
+  });
   // Members → Give access: how many e-mails are in the box
   main.addEventListener("input", (e) => {
     if (!e.target.matches("[data-member] textarea")) return;
