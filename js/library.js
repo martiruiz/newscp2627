@@ -360,12 +360,13 @@
   // how many posts Favs shows (the same filters the button turns on), asked once per set of favourites
   let favsN = null, favsKey = "";
   async function loadFavsN(f, pf) {
-    const key = [...f.map((v) => v.id), pf?.id].join(",");
+    const sc = window.SCP_LIB_SCOPE?.ids || null;   // My Club: only the club's posts in view
+    const key = [...f.map((v) => v.id), pf?.id, sc ? `${sc.length}:${sc[0]}:${sc[sc.length - 1]}` : ""].join(",");
     if (key === favsKey) return;
     favsKey = key; favsN = null;
     const facets = {};
     [...f, ...(pf ? [pf] : [])].forEach((v) => (facets[v.category] = [...(facets[v.category] || []), v.id]));
-    const { data } = await fetchIdeas({ ...queryArgs({ facets, period: "all" }), p_order: "latest", p_seed: "", p_ids: null, p_limit: 1, p_offset: 0 }).catch(() => ({}));
+    const { data } = await fetchIdeas({ ...queryArgs({ facets, period: "all" }), p_order: "latest", p_seed: "", p_ids: sc, p_limit: 1, p_offset: 0 }).catch(() => ({}));
     if (key !== favsKey || data?.total == null) return;
     favsN = data.total;
     const n = $(".lf-sp-favs [data-favs-n]");
@@ -1598,7 +1599,7 @@
   // Live counts: how many posts each value would show with the other filters applied.
   // Categories with a selection are counted without their own filter (values within a category are OR'ed).
   let countToken = 0;
-  async function refreshCounts(args) {
+  async function refreshCounts(args, clubIds = null) {
     const my = ++countToken;
     const active = CATEGORIES.filter((c) => selected[c.key].size).map((c) => c.key);
     // one row per filter value: more than the API's 1,000 rows per request, so read page by page
@@ -1612,6 +1613,8 @@
       }
     };
     const call = async (filters) => {
+      // My Club: only the club's posts in view (supabase/my-club-filter-counts.sql)
+      if (clubIds) return pages("club_filter_counts", { p_ids: clubIds, p_filters: filters, p_q: args.p_q ?? null, p_from: args.p_from ?? null, p_to: args.p_to ?? null });
       const r = useAdminSearch ? { error: { message: "schema cache" } } : await pages("library_filter_counts", { ...args, p_filters: filters });
       return r.error && /schema cache|does not exist/i.test(r.error.message) ? db.rpc("available_filter_counts", { ...args, p_filters: filters }) : r;
     };
@@ -1849,7 +1852,7 @@
       if (scope && !ui.aiMode && !ui.acct && !ui.fol) return showEmpty(tx(scope.empty || "No posts yet."));
       return showEmpty(tx(!ui.aiMode ? (ui.fol && !ui.acct ? "No creators' posts in this followers range yet." : "No posts from this account yet.") : ui.aiMode === "team" ? "Your team hasn't analysed any post yet." : "You haven't analysed any post yet. Open a post and press “Unlock AI Analysis”."));
     }
-    if (reset) refreshCounts(args);
+    if (reset) refreshCounts(args, scope?.ids && !ui.aiMode && !ui.acct && !ui.fol ? scope.ids : null);
     const boost = s.order === "foryou" ? { p_boost: me.boost, p_boost2: me.boost2 } : {};
     const { data, error } = await fetchIdeas({ ...args, p_order: s.order, p_seed: seed, p_ids: ids, p_limit: PAGE, p_offset: offset, ...boost });
     if (my !== token) return;
