@@ -9903,3 +9903,9 @@ button.org-plan-pick { cursor: pointer; padding-right: 12px; }
 /* Facebook embeds: drawn at Facebook's own 500 px width and scaled down to the card (js/library.js fbScale), so the
    whole post shows — never just its left part cut at the bottom */
 .lib-card.is-embed .lib-media.is-fb .lib-frame { width: 500px; height: var(--fbh, 600px); transform: scale(var(--fbs, 0.58)); transform-origin: 0 0; }
+
+/* My Club panel: "How My Club works" and "Add a player or sponsor" one under the other, full width (side by side they
+   didn't fit the right column and were cut) */
+.mm-clubp-mine .mm-clubp-help { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+.mm-clubp-mine .mm-clubp-help a { align-items: center; }
+.mm-clubp-mine .mm-clubp-help b, .mm-clubp-mine .mm-clubp-help small { white-space: normal; overflow-wrap: anywhere; }
