@@ -90,14 +90,16 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
     const table = (kind) => {
       const list = people.filter((p) => p.kind === kind);
       if (!list.length) return `<p class="panel-pad muted">None yet. Search it in the library or add it by hand (buttons on the right).</p>`;
-      return `<div class="table-wrap"><table class="data mcl-table"><thead><tr><th>${kindOf(kind)[1]}</th><th title="Internal: the client only filters by it">Section</th><th>Accounts</th><th>Active</th><th></th></tr></thead><tbody>
-        ${list.map((p) => `<tr${p.active ? "" : ' class="is-off"'}>
-          <td><div class="ld-person">${p.photo_url ? `<img class="mcl-ph" src="${esc(p.photo_url)}" alt="">` : `<span class="ld-av">${esc(p.name.charAt(0).toUpperCase())}</span>`}<span><b>${esc(p.name)}</b></span></div></td>
-          <td>${personSec(p)}</td>
-          <td>${p.accounts.length ? p.accounts.map((a) => `<span class="mcl-acc${a.posts ? "" : " is-zero"}">${esc(PF[a.platform] || a.platform)} @${esc(a.handle)} · <b title="${esc(last.get(`${a.platform}|${a.handle}`) ? `Last post imported ${age(last.get(`${a.platform}|${a.handle}`))}` : "")}">${a.posts ? num(a.posts) + " posts" : "not scraped yet"}</b>${CAN_SCRAPE.has(a.platform) ? scrapeBtn(a) : ""}</span>`).join("") : `<span class="muted">—</span>`}</td>
-          <td><input class="check" type="checkbox" aria-label="Active" data-active="${p.id}"${p.active ? " checked" : ""}></td>
-          <td class="td-actions">${p.accounts.some((a) => CAN_SCRAPE.has(a.platform)) ? `<button class="btn btn-sm mcl-row-scrape" type="button" data-scrape-person="${p.id}" title="Scrape the last 10 posts of each of its Instagram / TikTok accounts">${icon("download")}Scrape</button>` : ""}<button class="icon-btn" type="button" title="Delete" aria-label="Delete" data-del="${p.id}">${icon("trash")}</button></td></tr>`).join("")}
-        </tbody></table></div>`;
+      // one card per person: picture, name and posts, section, accounts (posts or "not scraped yet", scrape), active, actions
+      return `<ul class="mcl-pcards">${list.map((p) => { const total = p.accounts.reduce((n, a) => n + (a.posts || 0), 0);
+        return `<li class="mcl-pcard${p.active ? "" : " is-off"}">
+          <div class="mcl-pc-who">${p.photo_url ? `<img class="mcl-pc-ph${kind === "sponsor" || kind === "competitor" ? " is-logo" : ""}" src="${esc(p.photo_url)}" alt="" loading="lazy">` : `<span class="mcl-pc-ph mcl-pc-ini">${esc(p.name.charAt(0).toUpperCase())}</span>`}
+            <span class="mcl-pc-name"><b title="${esc(p.name)}">${esc(p.name)}</b><small>${total ? `${num(total)} posts` : "No posts yet"} · ${num(p.accounts.length)} account${p.accounts.length === 1 ? "" : "s"}</small></span></div>
+          <div class="mcl-pc-sec" title="Internal: the client only filters by it">${personSec(p)}</div>
+          <div class="mcl-pc-accs">${p.accounts.length ? p.accounts.map((a) => `<span class="mcl-acc${a.posts ? "" : " is-zero"}"><i class="mcl-pf mcl-pf-${esc(a.platform)}">${esc((PF[a.platform] || a.platform).slice(0, 2))}</i>@${esc(a.handle)}<b title="${esc(last.get(`${a.platform}|${a.handle}`) ? `Last post imported ${age(last.get(`${a.platform}|${a.handle}`))}` : "")}">${a.posts ? num(a.posts) : "not scraped yet"}</b>${CAN_SCRAPE.has(a.platform) ? scrapeBtn(a) : ""}</span>`).join("") : `<span class="muted">No accounts</span>`}</div>
+          <div class="mcl-pc-act"><label class="mcl-switch mcl-switch-sm" title="Active"><input type="checkbox" aria-label="Active" data-active="${p.id}"${p.active ? " checked" : ""}><i></i></label>
+            ${p.accounts.some((a) => CAN_SCRAPE.has(a.platform)) ? `<button class="btn btn-sm mcl-row-scrape" type="button" data-scrape-person="${p.id}" title="Scrape the last 10 posts of each of its Instagram / TikTok accounts">${icon("download")}Scrape</button>` : ""}<button class="icon-btn" type="button" title="Delete" aria-label="Delete" data-del="${p.id}">${icon("trash")}</button></div>
+        </li>`; }).join("")}</ul>`;
     };
     // a person's section, changed right here (internal: the client only filters by it); a team counts as its section
     const teamSec = new Map(club.sections.flatMap((x) => x.teams.map((t) => [t.id, x.id])));
@@ -140,10 +142,10 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
           ${pendingIg > 1 ? `<button class="btn btn-primary btn-sm" type="button" data-scrape-all>${icon("download")}Scrape all ${num(pendingIg)}</button>` : ""}</div>` : ""}
         <div class="mcl-live" data-live hidden></div>
         ${club.sections.length ? `<p class="mcl-sum">${club.sections.map((x) => `<b>${esc(x.name)}</b> ${x.teams.map((t) => esc(t.name)).join(", ") || "—"}`).join(" · ")}</p>` : ""}
-        <section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>${esc((TYPES.find((x) => x[0] === c.kind) || TYPES[0])[1])} account</h2><span class="aud-count">${num((c.accounts || []).length + (c.library_tags || []).length)}</span>${info("The space's own profiles (Club settings) and its library tags. Their posts show in the client's first tab.")}<span class="spacer"></span><button class="btn btn-sm" type="button" data-add-library="account">${icon("library")}From the library</button></header>
+        <section class="panel mcl-panel mcl-kpanel"><header class="aud-h aud-h-lg"><span class="mcl-set-ic">${icon("crown")}</span><h2>${esc((TYPES.find((x) => x[0] === c.kind) || TYPES[0])[1])} account</h2><span class="aud-count">${num((c.accounts || []).length + (c.library_tags || []).length)}</span>${info("The space's own profiles (Club settings) and its library tags. Their posts show in the client's first tab.")}<span class="spacer"></span><button class="btn btn-sm" type="button" data-add-library="account">${icon("library")}From the library</button></header>
           ${(c.accounts || []).length || (c.library_tags || []).length ? `<div class="mcl-clubaccs">${(c.library_tags || []).map((t) => `<span class="mcl-acc">Library tag · <b>${esc(t.name)}</b> · ${num(t.posts)} posts${secSel({ tag_id: t.id }, t.section_id)}<button type="button" title="Remove" aria-label="Remove" data-tag-del="${t.id}">✕</button></span>`).join("")}${(c.accounts || []).map((a) => `<span class="mcl-acc">${esc(PF[a.platform] || a.platform)} @${esc(a.handle)}${secSel({ platform: a.platform, handle: a.handle }, a.section_id)}${CAN_SCRAPE.has(a.platform) ? scrapeBtn(a, true) : ""}</span>`).join("")}</div>`
             : `<p class="panel-pad muted">None yet. Add it from the library, or its profiles in Club settings.</p>`}</section>
-        ${KINDS.map(([k, , many]) => `<section class="panel mcl-panel"><header class="aud-h aud-h-lg"><h2>${many}</h2><span class="aud-count">${num(people.filter((p) => p.kind === k).length)}</span>
+        ${KINDS.map(([k, , many]) => `<section class="panel mcl-panel mcl-kpanel"><header class="aud-h aud-h-lg"><span class="mcl-set-ic">${icon({ competitor: "briefcase", player: "users", creator: "sparkles", sponsor: "tag" }[k] || "users")}</span><h2>${many}</h2><span class="aud-count">${num(people.filter((p) => p.kind === k).length)}</span>
           <span class="spacer"></span><button class="btn btn-sm" type="button" ${k === "sponsor" ? "data-add-sponsor" : `data-add-library="${k}"`}>${icon("library")}From the library</button><button class="btn btn-sm btn-ghost" type="button" data-add-person="${k}">${icon("plus")}By hand</button></header>${table(k)}</section>`).join("")}
       </div>
 

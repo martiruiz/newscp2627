@@ -93,6 +93,8 @@ window.SCPA_DICT = Object.assign(window.SCPA_DICT || {}, {
   "Import content": ["Importar contenido", "Importar contingut"],
   "Search a club": ["Busca un club", "Cerca un club"],
   "Unsaved changes": ["Cambios sin guardar", "Canvis sense desar"],
+  "No posts yet": ["Aún sin posts", "Encara sense posts"],
+  "No accounts": ["Sin cuentas", "Sense comptes"],
   "Menu image": ["Imagen del menú", "Imatge del menú"],
   "Upload image": ["Subir imagen", "Pujar imatge"],
   "Use the default": ["Usar la predeterminada", "Fer servir la predeterminada"],

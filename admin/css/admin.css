@@ -2553,3 +2553,39 @@ tr[data-row].is-open td:first-child { box-shadow: inset 3px 0 0 var(--accent, #f
 .mcl-dirty::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
 .mcl-set.is-dirty .mcl-dirty { display: inline-flex; }
 .mcl-set.is-dirty .mcl-set-bar { border-color: rgba(240, 184, 74, .45); }
+
+/* My Club → Linked accounts, premium: an icon on each section's header, and each player / sponsor / competitor / creator
+   as a card (picture with a gold ring, name and posts, section, accounts as chips, active switch and actions). */
+.mcl-kpanel > .aud-h { gap: 12px; }
+.mcl-kpanel > .aud-h .mcl-set-ic { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border-radius: 11px; background: rgba(240, 184, 74, .12); color: var(--accent); }
+.mcl-kpanel > .aud-h .mcl-set-ic svg { width: 17px; height: 17px; }
+.mcl-pcards { list-style: none; margin: 0; padding: 4px 18px 16px; display: grid; gap: 8px; }
+.mcl-pcard { display: grid; grid-template-columns: minmax(180px, 240px) 190px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 10px 12px; border-radius: 14px; border: 1px solid var(--border); background: var(--panel); transition: border-color .15s; }
+.mcl-pcard:hover { border-color: rgba(240, 184, 74, .35); }
+.mcl-pcard.is-off { opacity: .55; }
+.mcl-pc-who { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.mcl-pc-ph { flex: none; width: 44px; height: 44px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 2px var(--panel), 0 0 0 3.5px rgba(240, 184, 74, .55); }
+.mcl-pc-ph.is-logo { object-fit: contain; padding: 4px; background: #fff; border-radius: 12px; }
+.mcl-pc-ini { display: grid; place-items: center; background: linear-gradient(140deg, rgba(240, 184, 74, .35), rgba(240, 184, 74, .08)); color: var(--accent); font-weight: 700; font-size: 16px; }
+.mcl-pc-name { min-width: 0; }
+.mcl-pc-name b, .mcl-pc-name small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mcl-pc-name b { font-size: 14.5px; }
+.mcl-pc-name small { color: var(--muted); font-size: 12px; margin-top: 2px; }
+.mcl-pc-sec .select { width: 100%; }
+.mcl-pc-accs { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
+.mcl-pc-accs .mcl-acc { margin: 0; padding: 3px 4px 3px 4px; gap: 6px; }
+.mcl-pc-accs .mcl-acc b { padding: 1px 7px; border-radius: 999px; background: rgba(34, 197, 94, .12); font-size: 11.5px; }
+.mcl-pc-accs .mcl-acc.is-zero b { background: rgba(240, 184, 74, .12); }
+.mcl-pf { display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--panel-3, var(--panel-2)); font: 700 9px var(--font); font-style: normal; text-transform: uppercase; color: var(--muted); }
+.mcl-pf-instagram { background: linear-gradient(135deg, #f58529, #dd2a7b 55%, #8134af); color: #fff; }
+.mcl-pf-tiktok { background: #111; color: #fff; box-shadow: inset 0 0 0 1px rgba(255,255,255,.2); }
+.mcl-pf-youtube { background: #e62117; color: #fff; }
+.mcl-pf-facebook { background: #1877f2; color: #fff; }
+.mcl-pf-x { background: #000; color: #fff; box-shadow: inset 0 0 0 1px rgba(255,255,255,.2); }
+.mcl-pf-linkedin { background: #0a66c2; color: #fff; }
+.mcl-pc-act { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
+.mcl-switch-sm i { width: 36px; height: 20px; }
+.mcl-switch-sm i::after { width: 14px; height: 14px; }
+@media (max-width: 1180px) { .mcl-pcard { grid-template-columns: minmax(0, 1fr) 190px auto; } .mcl-pc-accs { grid-column: 1 / -1; grid-row: 2; } }
+@media (max-width: 640px) { .mcl-pcard { grid-template-columns: minmax(0, 1fr) auto; } .mcl-pc-sec { grid-column: 1 / -1; } }
+.mcl-switch-sm input:checked + i::after { transform: translateX(16px); }

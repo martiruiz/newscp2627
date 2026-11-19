@@ -35,3 +35,12 @@ begin
         (select public.ig_photo(a.handle) from public.club_person_accounts a where a.person_id = p.id and a.platform = ''instagram'' limit 1)) as photo_url,');
   end if;
 end $$;
+
+-- Admin → My Club shows the same pictures (admin_club's people)
+do $$ declare d text := pg_get_functiondef('public.admin_club(bigint)'::regprocedure);
+begin
+  if position('ig_photo' in d) = 0 and position('''photo_url'', p.photo_url, ''active''' in d) > 0 then
+    execute replace(d, '''photo_url'', p.photo_url, ''active''',
+      '''photo_url'', coalesce(p.photo_url, (select v.logo_url from public.idea_catalog v where v.id = p.catalog_value_id), (select public.ig_photo(a.handle) from public.club_person_accounts a where a.person_id = p.id and a.platform = ''instagram'' limit 1)), ''active''');
+  end if;
+end $$;
