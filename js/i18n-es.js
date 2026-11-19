@@ -1189,6 +1189,7 @@ window.SCP_ES = {
   "Tap one or more sponsors to see only theirs": "Toca uno o varios patrocinadores para ver solo los suyos",
   "My Club": "Mi club",
   "Section": "Sección",
+  "Whole club": "Todo el club",
   "All sections": "Todas las secciones",
   "All teams": "Todos los equipos",
   "Choose a section to see its teams": "Elige una sección para ver sus equipos",

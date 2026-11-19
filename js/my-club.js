@@ -270,30 +270,37 @@
 
   // the filters, in the Content Library's glass bar: Club · Players · Sponsors (whose posts) and Section · Team, each
   // opening its panel under the bar (my-club.html .mc-crumb, where the library has its own bar)
-  const BAR_ICON = { club: "shield", competitors: "vs", players: "user", creators: "cam", sponsors: "deal", section: "grid", team: "shirt" };
-  // the tabs this space has: its accounts always, the others only with people in them; Section / Team only with sections
-  const barTabs = () => [["club", typeOf(st.space.club)[1]], ["competitors", "Competitors"], ["players", "Players"], ["creators", "Content creators"], ["sponsors", "Sponsors"], ["section", "Section"], ["team", "Team"]]
+  const BAR_ICON = { club: "shield", competitors: "vs", players: "user", creators: "cam", sponsors: "deal", scope: "grid" };
+  // the tabs this space has (whose posts: one at a time): its accounts always, the others only with people in them;
+  // then, apart, one selector for where (section, and its team when it has teams), only when the club has sections
+  const barTabs = () => [["club", typeOf(st.space.club)[1]], ["competitors", "Competitors"], ["players", "Players"], ["creators", "Content creators"], ["sponsors", "Sponsors"], ["scope", "Whole club"]]
     .filter(([k]) => k === "club" || (KIND[k] ? st.space.people.some((p) => p.kind === KIND[k]) : st.space.sections.length > 0));
+  // how many accounts each tab has (the club's profiles, or its people of that kind)
+  const tabCount = (k) => k === "club" ? (st.profiles || []).length : KIND[k] ? st.space.people.filter((p) => p.kind === KIND[k]).length : null;
   let BAR = [];
   function bar() {
     const el = document.querySelector("[data-mc-crumb]"); if (!el || !st.space) return;
     BAR = barTabs();
     const sec = section(), team = sec?.teams.find((x) => x.id === st.team);
-    const val = { section: sec?.name, team: team?.name };
+    // the scope selector says where: "Whole club", or the section (› its team)
+    const where = sec ? [t(sec.name), team && t(team.name)].filter(Boolean).join(" › ") : t("Whole club");
     const oi = BAR.findIndex(([k]) => k === st.open);
     let row = el.querySelector(".mcb-row");
     if (row?.dataset.sig !== BAR.map(([k]) => k).join()) row = null;   // another space, other tabs
     if (!row) {
-      el.innerHTML = `<button type="button" class="mcb-toggle" aria-expanded="false" data-mcb-toggle><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><b></b><svg class="mcb-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="mcb"><div class="lfb-row lfb-glass mcb-row" role="toolbar" aria-label="${esc(t("Filters"))}" style="--n:${BAR.length}"><span class="lfb-lens"></span>${BAR.map(([k, l], i) => `<button type="button" class="lfb-btn" data-mcb="${k}" aria-expanded="false" style="--i:${i}"><span class="lfb-ic">${svg(ICON[BAR_ICON[k]])}</span><span class="lfb-tx"><b>${esc(t(l))}</b></span><em hidden></em></button>`).join("")}</div></div><div data-mcb-host></div>`;
+      el.innerHTML = `<button type="button" class="mcb-toggle" aria-expanded="false" data-mcb-toggle><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><b></b><svg class="mcb-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="mcb"><div class="lfb-row lfb-glass mcb-row" role="toolbar" aria-label="${esc(t("Filters"))}" style="--n:${BAR.length}"><span class="lfb-lens"></span>${BAR.map(([k, l], i) => k === "scope"
+        ? `<span class="mcb-sep" aria-hidden="true"></span><button type="button" class="lfb-btn mcb-scope" data-mcb="scope" aria-expanded="false" aria-haspopup="true" style="--i:${i}"><span class="lfb-ic">${svg(ICON[BAR_ICON[k]])}</span><span class="lfb-tx"><small>${esc(t("Section"))}</small><b></b></span><svg class="mcb-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>`
+        : `<button type="button" class="lfb-btn" data-mcb="${k}" aria-expanded="false" style="--i:${i}"><span class="lfb-ic">${svg(ICON[BAR_ICON[k]])}</span><span class="lfb-tx"><b>${esc(t(l))}</b></span><i class="mcb-n"></i><em hidden></em></button>`).join("")}</div></div><div data-mcb-host></div>`;
       row = el.querySelector(".mcb-row");
       row.dataset.sig = BAR.map(([k]) => k).join();
     }
     BAR.forEach(([k, l], i) => {
       const b = row.querySelectorAll("[data-mcb]")[i], em = b.querySelector("em");
       const n = st.tab === k && st.people.size ? st.people.size : "";   // how many people picked in the current tab
-      b.querySelector("b").textContent = val[k] ? t(val[k]) : t(l);   // Section / Team: the one picked, in its place
-      b.classList.toggle("is-cur", st.tab === k || !!val[k]); b.classList.toggle("is-open", st.open === k); b.setAttribute("aria-expanded", String(st.open === k));
-      em.hidden = !n; em.textContent = n;
+      if (k === "scope") { b.querySelector("b").textContent = where; b.classList.toggle("is-set", !!sec); }
+      else { b.querySelector("b").textContent = t(l); const c = tabCount(k); b.querySelector(".mcb-n").textContent = c || ""; }
+      b.classList.toggle("is-cur", st.tab === k); b.classList.toggle("is-open", st.open === k); b.setAttribute("aria-expanded", String(st.open === k));
+      if (em) { em.hidden = !n; em.textContent = n; }
     });
     const lens = row.querySelector(".lfb-lens");
     if (oi >= 0) {
@@ -304,7 +311,7 @@
     const host = el.querySelector("[data-mcb-host]");
     host.innerHTML = st.open ? `<div class="mcb-pan" role="dialog" aria-label="${esc(t(BAR[oi][1]))}">${panel()}</div>` : "";
     // the folded bar's button says where you are (tab · section · team)
-    el.querySelector("[data-mcb-toggle] b").textContent = [BAR.find(([k]) => k === st.tab)?.[1], val.section, val.team].filter(Boolean).map((x) => t(x)).join(" · ");
+    el.querySelector("[data-mcb-toggle] b").textContent = [t(BAR.find(([k]) => k === st.tab)?.[1] || ""), sec && where].filter(Boolean).join(" · ");
     fit();
   }
 
@@ -334,6 +341,9 @@
   function panel() {
     const sec = section();
     const seg = (attr, id, label, on, n, ic = "") => `<button type="button" class="mc-seg-b" ${attr}="${id ?? ""}" aria-pressed="${on}">${ic}<span>${esc(label)}</span>${n != null ? `<i>${n}</i>` : ""}</button>`;
+    // where: the whole club or one section; its teams under it, only when it has some
+    if (st.open === "scope") return `<p class="mcb-k">${esc(t("Section"))}</p><div class="mc-seg" role="group">${seg("data-mc-section", "", t("Whole club"), !st.section, null)}${st.space.sections.map((s) => seg("data-mc-section", s.id, s.name, st.section === s.id, countIn(s.id), sportIcon(s.name))).join("")}</div>`
+      + (sec?.teams.length ? `<p class="mcb-k mcb-k2">${esc(t("Team"))} · ${esc(t(sec.name))}</p><div class="mc-teams" role="group">${seg("data-mc-team", "", t("All teams"), !st.team, null)}${sec.teams.map((x) => seg("data-mc-team", x.id, x.name, st.team === x.id, countIn(null, x.id))).join("")}</div>` : "");
     if (st.open === "section") return `<p class="mcb-k">${esc(t("Section"))}</p><div class="mc-seg" role="group">${seg("data-mc-section", "", t("All sections"), !st.section, null)}${st.space.sections.map((s) => seg("data-mc-section", s.id, s.name, st.section === s.id, countIn(s.id), sportIcon(s.name))).join("")}</div>`;
     if (st.open === "team") return `<p class="mcb-k">${esc(t("Team"))}${sec ? ` · ${esc(t(sec.name))}` : ""}</p>${sec ? `<div class="mc-teams" role="group">${seg("data-mc-team", "", t("All teams"), !st.team, null)}${sec.teams.map((x) => seg("data-mc-team", x.id, x.name, st.team === x.id, countIn(null, x.id))).join("")}</div>`
       : `<p class="mc-hint">${esc(t("Choose a section to see its teams"))}</p><div class="mc-seg" role="group">${st.space.sections.map((s) => seg("data-mc-section", s.id, s.name, false, countIn(s.id), sportIcon(s.name))).join("")}</div>`}`;
@@ -402,7 +412,7 @@
     }
     const b = e.target.closest("[data-mc-section], [data-mc-team], [data-mc-person], [data-mc-clear], [data-mc-linked]");
     if (!b) return;
-    if (b.matches("[data-mc-section]")) { st.section = Number(b.dataset.mcSection) || null; st.team = null; st.people.clear(); st.open = st.open === "team" && st.section ? "team" : null; }   // another section: its own teams
+    if (b.matches("[data-mc-section]")) { st.section = Number(b.dataset.mcSection) || null; st.team = null; st.people.clear(); st.open = section()?.teams.length ? "scope" : null; }   // a section with teams: pick one of them next
     else if (b.matches("[data-mc-team]")) { st.team = Number(b.dataset.mcTeam) || null; st.people.clear(); st.open = null; }
     else if (b.matches("[data-mc-person]")) { const id = st.tab === "club" ? b.dataset.mcPerson : Number(b.dataset.mcPerson); st.people.has(id) ? st.people.delete(id) : st.people.add(id); }
     else if (b.matches("[data-mc-clear]")) st.people.clear();
