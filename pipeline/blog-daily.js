@@ -56,7 +56,7 @@ for (const url of urls) {
     pages.push({ url, text, og });
   } catch (e) { console.warn(`  ! ${url}: ${e.message}`); }
 }
-const pictures = pages.filter((p) => p.og);
+const pictures = pages.filter((p) => p.og && new URL(p.url).pathname.length > 1);   // a home page's picture is the site's logo
 
 // ---------- 2. Claude writes the post ----------
 const kw = cfg.keywords.map((k, i) => `${i + 1}. ${k.keyword}`).join("\n");
@@ -74,15 +74,16 @@ Write ONE new post in English, from the material you are given:
   primary_keyword: one keyword from #6–#15 that best matches the topic, used in the title or meta_title, meta_description, the first paragraph, one <h2> and image_alt.
 - Add 1–2 natural inline sentences showing how SCP helps with this exact topic, linking to pricing.html or signup.html.
 - meta_title ≤ 60 characters, meta_description ≤ 150 characters. slug: kebab-case, includes the primary keyword idea. faq: 3–4 questions with short answers. takeaways: 3–5 one-sentence points. cta_title + cta_text: a mid-article box tailored to the topic.
-- cover: the number of the source picture that best illustrates the post (0 if none fits).`;
+- cover: the number of the source picture that best illustrates the post (0 if none fits).
+- image_query: 2 to 5 English words to find a real photo of the topic on Wikimedia Commons when no source picture fits: a concrete photographic subject (the club, stadium, athlete, competition or scene the post is about, e.g. "Atlético de Madrid Metropolitano", "football fans tifo", "Formula One pit stop"), never an abstract idea.`;
 
 const SCHEMA = {
   type: "object", additionalProperties: false,
-  required: ["slug", "title", "meta_title", "meta_description", "type", "primary_keyword", "excerpt", "cta_title", "cta_text", "body_html", "references", "sources", "faq", "takeaways", "image_alt", "cover"],
+  required: ["slug", "title", "meta_title", "meta_description", "type", "primary_keyword", "excerpt", "cta_title", "cta_text", "body_html", "references", "sources", "faq", "takeaways", "image_alt", "cover", "image_query"],
   properties: {
     slug: { type: "string" }, title: { type: "string" }, meta_title: { type: "string" }, meta_description: { type: "string" },
     type: { type: "string", enum: Object.keys(cfg.types) }, primary_keyword: { type: "string" }, excerpt: { type: "string" },
-    cta_title: { type: "string" }, cta_text: { type: "string" }, body_html: { type: "string" }, image_alt: { type: "string" }, cover: { type: "integer" },
+    cta_title: { type: "string" }, cta_text: { type: "string" }, body_html: { type: "string" }, image_alt: { type: "string" }, cover: { type: "integer" }, image_query: { type: "string" },
     references: { type: "array", items: { type: "object", additionalProperties: false, required: ["name", "url"], properties: { name: { type: "string" }, url: { type: "string" } } } },
     sources: { type: "array", items: { type: "object", additionalProperties: false, required: ["name", "url"], properties: { name: { type: "string" }, url: { type: "string" } } } },
     faq: { type: "array", items: { type: "object", additionalProperties: false, required: ["q", "a"], properties: { q: { type: "string" }, a: { type: "string" } } } },
@@ -121,11 +122,19 @@ const save = (out) => {
   };
   const jsonPath = path.join(ROOT, "content/blog", `${out.slug}.json`);
   fs.writeFileSync(jsonPath, `${JSON.stringify(post, null, 2)}\n`);
-  // the cover: the source's photo (its credit printed under it), or the branded SCP cover when there is none
+  // the cover: the source's photo, else a real photo of the topic from Wikimedia Commons (credit printed under both),
+  // and the branded SCP cover only when neither exists
   try {
     if (pic) execFileSync("python3", [path.join(ROOT, "blog-tools/photo.py"), jsonPath, pic.og], { stdio: "inherit" });
     else throw new Error("no source picture");
   } catch (e) {
+    // a real photo of the topic from Wikimedia Commons (free licence; author and licence printed under it)
+    try {
+      if (!out.image_query) throw new Error("no image query");
+      execFileSync("python3", [path.join(ROOT, "blog-tools/commons.py"), "--post", jsonPath, out.image_query], { stdio: "inherit" });
+      Object.assign(post, JSON.parse(fs.readFileSync(jsonPath, "utf8")));
+      return { post, jsonPath };
+    } catch (e2) { console.warn(`  no Commons photo for "${out.image_query}" (${e2.message})`); }
     console.warn(`  cover from the source failed (${e.message}): branded cover`);
     post.image.credit = { author: "Sports Content Playbook", source_url: "https://sportscontentplaybook.com" };
     fs.writeFileSync(jsonPath, `${JSON.stringify(post, null, 2)}\n`);
