@@ -91,6 +91,7 @@ window.SCPA_DICT = Object.assign(window.SCPA_DICT || {}, {
   "Search a brand: its scraped accounts (their posts) and its sponsor tag (the club's posts where it appears).": ["Busca una marca: sus cuentas scrapeadas (sus posts) y su etiqueta de patrocinador (los posts del club donde aparece).", "Cerca una marca: els seus comptes scrapejats (els seus posts) i la seva etiqueta de patrocinador (els posts del club on surt)."],
   "Import posts (CSV)": ["Importar posts (CSV)", "Importar posts (CSV)"],
   "Import content": ["Importar contenido", "Importar contingut"],
+  "Search a club": ["Busca un club", "Cerca un club"],
   "Importing for {a}: its players' and sponsors' posts go to its My Club, private and tagged.": ["Importando para {a}: los posts de sus jugadores y patrocinadores van a su Mi club, privados y etiquetados.", "Important per a {a}: els posts dels seus jugadors i patrocinadors van al seu El meu club, privats i etiquetats."],
   "Every post is from an account of the club.": ["Todos los posts son de cuentas del club.", "Tots els posts són de comptes del club."],
   "All sections": ["Todas las secciones", "Totes les seccions"],

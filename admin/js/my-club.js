@@ -32,9 +32,11 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
   async function loadClubs(pick) {
     try { clubs = await rpc("admin_clubs"); } catch (e) { $("[data-clubs]").innerHTML = `<p class="panel-pad muted">${esc(e.message)}</p>`; return; }
     cur = pick ?? cur ?? clubs[0]?.id ?? null;
-    $("[data-clubs]").innerHTML = clubs.length ? clubs.map((c) => `<button type="button" class="mcl-club${c.id === cur ? " is-on" : ""}" data-pick="${c.id}">
+    // every club visible at once (a grid, no sideways scrolling), with a search box once there are many
+    const search = clubs.length > 8 ? `<label class="mcl-club-q">${icon("search")}<input class="input" type="search" placeholder="Search a club" data-club-q autocomplete="off"></label>` : "";
+    $("[data-clubs]").innerHTML = clubs.length ? search + clubs.map((c) => `<button type="button" class="mcl-club${c.id === cur ? " is-on" : ""}" data-pick="${c.id}" data-name="${esc(c.name.toLowerCase())}">
         ${c.logo_url ? `<img src="${esc(c.logo_url)}" alt="">` : `<span class="mcl-ini">${esc(c.name.slice(0, 2).toUpperCase())}</span>`}
-        <span><b>${esc(c.name)}</b><small>${esc((TYPES.find((x) => x[0] === c.kind) || TYPES[0])[1])} · ${num(c.players)} players · ${num(c.sponsors)} sponsors · ${num(c.members)} members${c.trials ? ` · ${num(c.trials)} trial` : ""}${c.active ? "" : " · off"}</small></span></button>`).join("")
+        <span><b title="${esc(c.name)}">${esc(c.name)}</b><small>${num(c.players)} players · ${num(c.sponsors)} sponsors · ${num(c.members)} members${c.trials ? ` · ${num(c.trials)} trial` : ""}${c.active ? "" : " · off"}</small></span></button>`).join("")
       : `<p class="muted">No clubs yet. Press “New club”.</p>`;
     if (cur) loadClub(); else $("[data-club]").innerHTML = "";
   }
@@ -737,6 +739,12 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
     } catch (x) { fail(x); }
   });
 
+  // the club search: hides the clubs whose name doesn't match
+  main.addEventListener("input", (e) => {
+    if (!e.target.matches("[data-club-q]")) return;
+    const q = e.target.value.trim().toLowerCase();
+    main.querySelectorAll(".mcl-club").forEach((b) => { b.hidden = !!q && !b.dataset.name.includes(q); });
+  });
   function handOff(file) {
     return new Promise((ok, ko) => {
       const rq = indexedDB.open("scp-admin-handoff", 1);

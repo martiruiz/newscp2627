@@ -2449,3 +2449,15 @@ tr[data-row].is-open td:first-child { box-shadow: inset 3px 0 0 var(--accent, #f
 .mcl-menu-crest:empty { display: none; }
 .mcl-menu-crest img { width: 100%; height: 100%; object-fit: cover; }
 .mcl-menu-prev b { font-size: 15px; }
+
+/* My Club: every club in view at once — a compact grid that wraps (no sideways scrolling), long names cut with "…",
+   and a search box above once there are more than 8 clubs */
+.mcl-clubs { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 8px; flex-wrap: initial; overflow: visible; padding-bottom: 0; }
+.mcl-club { flex: initial; min-width: 0; padding: 7px 10px 7px 7px; }
+.mcl-club[hidden] { display: none; }
+.mcl-club > span { min-width: 0; }
+.mcl-club b, .mcl-club small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mcl-club img, .mcl-club .mcl-ini { flex: none; width: 34px; height: 34px; }
+.mcl-club-q { grid-column: 1 / -1; position: relative; display: block; max-width: 360px; }
+.mcl-club-q svg { position: absolute; left: 12px; top: 50%; width: 16px; height: 16px; transform: translateY(-50%); fill: none; stroke: var(--muted); stroke-width: 2; stroke-linecap: round; pointer-events: none; }
+.mcl-club-q .input { padding-left: 36px; }
