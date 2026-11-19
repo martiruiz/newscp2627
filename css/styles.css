@@ -7313,9 +7313,7 @@ section[id], :target { scroll-margin-top: 92px; }
 :root[data-theme="light"] .my-club-page .feed { background:
     radial-gradient(1200px 460px at 50% -10%, rgba(214, 150, 30, 0.12), transparent 70%),
     radial-gradient(700px 520px at 100% 30%, rgba(214, 150, 30, 0.05), transparent 70%); }
-/* the main library's shortcuts that don't apply to a club: quick bar, smart picks (Favs, Replicable ideas, Creators, Overperforming) */
-.my-club-page .lib-head .lfb, .my-club-page .lf-quick { display: none !important; }
-.my-club-page [data-facets] > .lf-sec:has(.lf-sp) { display: none; }
+/* My Club keeps every filter of the Content Library (quick bar, smart picks, views…); its club bar goes on a row of its own */
 /* top bar: club · tab · section / team */
 .mc-crumb { display: none; }
 .my-club-page .mc-crumb { display: flex; align-items: center; gap: 12px; min-width: 0; padding: 8px 18px; border-bottom: 1px solid var(--line-soft); background: linear-gradient(90deg, rgba(240, 184, 74, 0.1), transparent 70%); }
@@ -9948,3 +9946,6 @@ button.org-plan-pick { cursor: pointer; padding-right: 12px; }
 .mc-cp-new a { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 10px; color: var(--gold); font: 600 14px var(--font-body); text-decoration: none; }
 .mc-cp-new a:hover { background: rgba(var(--fg), 0.06); }
 .mc-cp-plus { display: grid; place-items: center; width: 28px; height: 28px; flex: none; border-radius: 8px; border: 1px dashed currentColor; font-size: 17px; line-height: 1; }
+
+/* My Club: the library's quick bar stays where it is and the club bar (whose posts · section) gets its own row under it */
+@media (min-width: 961px) { .my-club-page .lib-head .mc-crumb { grid-column: 1 / -1; grid-row: 2; } }
