@@ -21,123 +21,29 @@
     "faq": [],
     "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/efbd0ad6-a8ee-42af-b2ff-5c28a5bea2ae/Untitled_Design__25_.png?t=1794969975",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "Por qué las organizaciones deportivas deberían alinear los equipos de contenido y de partnerships para aumentar los ingresos por patrocinio",
+      "tokens": {
+        "in": 1465,
+        "out": 737
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "En su newsletter Sponcon Sports, el consultor Alex Kopilow sostiene que la relación más descuidada en las organizaciones deportivas es la que existe entre los equipos de contenido y de partnerships. Basándose en su trabajo como consultor y en su etapa en los Chicago White Sox, asegura que los vendedores suelen proponer formatos que los equipos de contenido no pueden entregar, mientras que el personal de partnerships pierde ideas vendibles porque nunca se entera de lo que está planeando contenido.",
         "Propone seis cambios para 2027: asistir de forma cruzada a las reuniones semanales del otro equipo, incorporar al personal de contenido a las propuestas comerciales y a las sesiones de descubrimiento, crear un inventario digital compartido, compartir las novedades de las propuestas y el valor de los acuerdos, formarse mutuamente en objetivos y métricas, y fijar para el departamento de marketing en su conjunto un objetivo compartido de ingresos por patrocinio digital con un bono de equipo, siempre que se mantengan los estándares de audiencia y de contenido.",
         "Para los equipos de redes sociales de clubes y ligas, la conclusión es práctica: pide participar en las conversaciones con los partners, aprende cómo miden el éxito los patrocinadores y convierte los activos del estadio, como la cartelería o los bares de marca, en formatos nativos de redes sociales en lugar de simples resúmenes. Mantener una lista conjunta de conceptos ya aprobados y hacer seguimiento del valor de los acuerdos ayuda a los creadores de contenido a demostrar su impacto comercial y a sugerir ampliaciones, como series en YouTube o colaboraciones con creadores."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-19T15:40:05.065778+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-11-19T17:27:05.904Z",
-      "tokens": {
-        "in": 1465,
-        "out": 737
-      }
-    }
-  },
-  {
-    "id": 399,
-    "url": "https://socialgeekpro.beehiiv.com/p/ya-tenemos-gta-vi#2",
-    "source_name": "SocialGeek News",
-    "platform": "other",
-    "title": "Twitch brings back Hosting and tests shoppable ads at TwitchCon",
-    "paragraphs": [
-      "At TwitchCon, Twitch announced that Hosting is returning, with tests starting at the end of the year: an offline channel can show another live stream with shared chat, and 'Host Trains' rotate audiences across chosen channels. Streamers will also be able to invite up to seven viewers into Luna games using their phones as controllers, and a new apprentice moderator role can time out users but not ban them.",
-      "On the business side, shoppable ads are in desktop beta for US and Canadian advertisers, letting viewers add products to a cart mid-stream. A skippable ad format enters open beta in December, with international shopping planned for early 2027. Twitch says creators landing sponsorships have quadrupled in a year, while total payouts have doubled.",
-      "For esports teams, clubs and athletes who stream, Hosting and Host Trains are a simple way to share audiences with partner creators or squad members. Sports brands can treat live streams as both a showcase and a store, and sponsorships with gaming streamers look increasingly attractive as live viewing grows."
-    ],
-    "relevant": true,
-    "published_at": "2026-11-19T12:13:00+00:00",
-    "created_at": "2026-11-19T15:40:23.071854+00:00",
-    "edited_at": null,
-    "slug": "twitch-brings-back-hosting-and-tests-shoppable-ads-at-twitchcon-399",
-    "meta_title": null,
-    "meta_description": null,
-    "takeaways": [],
-    "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/a0ddc3d2de3394f6-16x9.jpg",
-    "es": {
-      "title": "Twitch recupera el Hosting y prueba anuncios con compra integrada en la TwitchCon",
-      "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
-      "cta_text": "",
-      "image_alt": "",
-      "image_title": "",
-      "paragraphs": [
-        "En la TwitchCon, Twitch anunció que vuelve el Hosting, con pruebas que empezarán a finales de año: un canal offline podrá mostrar otro directo con chat compartido, y los «Host Trains» rotarán audiencias entre canales elegidos. Los streamers también podrán invitar hasta a siete espectadores a partidas de Luna usando sus móviles como mandos, y un nuevo rol de moderador aprendiz podrá aplicar suspensiones temporales a usuarios, pero no banearlos.",
-        "En el plano comercial, los anuncios con compra integrada están en beta para escritorio para anunciantes de Estados Unidos y Canadá, y permiten a los espectadores añadir productos a un carrito durante el directo. Un formato de anuncio que se puede saltar entra en beta abierta en diciembre, y las compras internacionales están previstas para principios de 2027. Twitch asegura que los creadores que consiguen patrocinios se han cuadruplicado en un año, mientras que los pagos totales se han duplicado.",
-        "Para los equipos de esports, los clubes y los deportistas que hacen streaming, el Hosting y los Host Trains son una forma sencilla de compartir audiencia con creadores aliados o miembros del equipo. Las marcas deportivas pueden tratar los directos como escaparate y tienda a la vez, y los patrocinios con streamers de gaming resultan cada vez más atractivos a medida que crece el consumo en directo."
-      ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-19T15:40:23.071854+00:00",
-      "model": "claude-sonnet-5-5",
-      "translated_at": "2026-11-19T17:27:12.035Z",
-      "tokens": {
-        "in": 1417,
-        "out": 622
-      }
-    }
-  },
-  {
-    "id": 398,
-    "url": "https://socialgeekpro.beehiiv.com/p/ya-tenemos-gta-vi",
-    "source_name": "SocialGeek News",
-    "platform": "instagram",
-    "title": "Instagram lets creators tag Amazon affiliate products directly in Reels and feed posts",
-    "paragraphs": [
-      "Instagram now allows creators to tag Amazon products with affiliate links inside their content, up to 30 products per Reel and 20 per feed post. Once a creator connects an Amazon account through the Professional Dashboard, affiliate attribution is added automatically. Instagram takes no cut; Amazon continues paying creators for qualifying purchases.",
-      "For sports, this cuts the friction of the old 'link in bio' approach. Athletes can tag the boots, recovery gear or training equipment they actually use in a workout Reel, and fans can buy without leaving the video. Recommendation content becomes a direct revenue line for athletes and creators.",
-      "Clubs and sports brands selling merchandise or equipment on Amazon gain a new reason for creators to feature their products. Social teams should check eligibility, brief ambassador athletes on tagging, and plan gear-focused formats such as matchday kit bags, 'what I use every day' clips or unboxings."
-    ],
-    "relevant": true,
-    "published_at": "2026-11-19T12:13:00+00:00",
-    "created_at": "2026-11-19T15:40:22.869766+00:00",
-    "edited_at": null,
-    "slug": "instagram-lets-creators-tag-amazon-affiliate-products-directly-in-398",
-    "meta_title": null,
-    "meta_description": null,
-    "takeaways": [],
-    "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/f3138a84737293f6-16x9.jpg",
-    "es": {
-      "title": "Instagram permite a los creadores etiquetar productos afiliados de Amazon directamente en Reels y publicaciones del feed",
-      "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
-      "cta_text": "",
-      "image_alt": "",
-      "image_title": "",
-      "paragraphs": [
-        "Instagram ya permite a los creadores etiquetar productos de Amazon con enlaces de afiliado dentro de sus contenidos, hasta 30 productos por Reel y 20 por publicación del feed. Una vez que el creador conecta una cuenta de Amazon a través del Panel profesional, la atribución de afiliado se añade automáticamente. Instagram no se lleva ninguna comisión; Amazon sigue pagando a los creadores por las compras que cumplan los requisitos.",
-        "En el deporte, esto reduce la fricción del antiguo enfoque del «enlace en la bio». Los deportistas pueden etiquetar las botas, el material de recuperación o el equipamiento de entrenamiento que realmente usan en un Reel de entrenamiento, y los aficionados pueden comprar sin salir del vídeo. Los contenidos de recomendación se convierten en una fuente directa de ingresos para deportistas y creadores.",
-        "Los clubes y las marcas deportivas que venden merchandising o equipamiento en Amazon ganan un nuevo motivo para que los creadores muestren sus productos. Los equipos de redes sociales deberían comprobar la elegibilidad, explicar a los deportistas embajadores cómo etiquetar y planificar formatos centrados en el equipamiento, como las bolsas de equipación del día de partido, vídeos de «lo que uso cada día» o unboxings."
-      ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-19T15:40:22.869766+00:00",
-      "model": "claude-sonnet-5-5",
-      "translated_at": "2026-11-19T17:27:17.767Z",
-      "tokens": {
-        "in": 1394,
-        "out": 606
-      }
+      "source_changed": "2026-11-19T15:40:05.065778+00:00",
+      "meta_description": ""
     }
   },
   {
@@ -162,29 +68,123 @@
     "faq": [],
     "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/eae8d166eeaa528b-16x9.jpg",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "Los contadores públicos de visualizaciones de YouTube ya estiman a las personas que ven contenido juntas en la tele",
+      "tokens": {
+        "in": 1319,
+        "out": 503
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "Los contadores públicos de YouTube ahora incluyen una estimación de las personas que ven un vídeo juntas en una pantalla de televisión, tanto en vídeos de formato largo como en Shorts y directos. Los totales acumulados hasta ahora no se recalculan y los pagos a los creadores no cambian con esta actualización.",
         "El contenido deportivo se suele ver en grupo, desde los resúmenes en la tele del salón hasta los programas en directo y los watch-alongs, así que clubes y ligas podrían ver subir las cifras visibles de visualizaciones en el contenido de la tele conectada. Los equipos de redes sociales deberían anotar la fecha del cambio al comparar el rendimiento a lo largo del tiempo y al informar del reach a los patrocinadores, ya que las cifras anteriores no se ajustarán.",
         "También refuerza el argumento para producir formatos pensados para la tele: resúmenes de partidos más largos, documentales y programas previos en directo diseñados para verse en compañía ahora pueden reflejar mejor su audiencia real en las métricas públicas."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-19T15:40:23.40064+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-11-19T17:27:22.760Z",
+      "source_changed": "2026-11-19T15:40:23.40064+00:00",
+      "meta_description": ""
+    }
+  },
+  {
+    "id": 398,
+    "url": "https://socialgeekpro.beehiiv.com/p/ya-tenemos-gta-vi",
+    "source_name": "SocialGeek News",
+    "platform": "instagram",
+    "title": "Instagram lets creators tag Amazon affiliate products directly in Reels and feed posts",
+    "paragraphs": [
+      "Instagram now allows creators to tag Amazon products with affiliate links inside their content, up to 30 products per Reel and 20 per feed post. Once a creator connects an Amazon account through the Professional Dashboard, affiliate attribution is added automatically. Instagram takes no cut; Amazon continues paying creators for qualifying purchases.",
+      "For sports, this cuts the friction of the old 'link in bio' approach. Athletes can tag the boots, recovery gear or training equipment they actually use in a workout Reel, and fans can buy without leaving the video. Recommendation content becomes a direct revenue line for athletes and creators.",
+      "Clubs and sports brands selling merchandise or equipment on Amazon gain a new reason for creators to feature their products. Social teams should check eligibility, brief ambassador athletes on tagging, and plan gear-focused formats such as matchday kit bags, 'what I use every day' clips or unboxings."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-19T12:13:00+00:00",
+    "created_at": "2026-11-19T15:40:22.869766+00:00",
+    "edited_at": null,
+    "slug": "instagram-lets-creators-tag-amazon-affiliate-products-directly-in-398",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/f3138a84737293f6-16x9.jpg",
+    "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
+      "title": "Instagram permite a los creadores etiquetar productos afiliados de Amazon directamente en Reels y publicaciones del feed",
       "tokens": {
-        "in": 1319,
-        "out": 503
-      }
+        "in": 1394,
+        "out": 606
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [],
+      "meta_title": "",
+      "paragraphs": [
+        "Instagram ya permite a los creadores etiquetar productos de Amazon con enlaces de afiliado dentro de sus contenidos, hasta 30 productos por Reel y 20 por publicación del feed. Una vez que el creador conecta una cuenta de Amazon a través del Panel profesional, la atribución de afiliado se añade automáticamente. Instagram no se lleva ninguna comisión; Amazon sigue pagando a los creadores por las compras que cumplan los requisitos.",
+        "En el deporte, esto reduce la fricción del antiguo enfoque del «enlace en la bio». Los deportistas pueden etiquetar las botas, el material de recuperación o el equipamiento de entrenamiento que realmente usan en un Reel de entrenamiento, y los aficionados pueden comprar sin salir del vídeo. Los contenidos de recomendación se convierten en una fuente directa de ingresos para deportistas y creadores.",
+        "Los clubes y las marcas deportivas que venden merchandising o equipamiento en Amazon ganan un nuevo motivo para que los creadores muestren sus productos. Los equipos de redes sociales deberían comprobar la elegibilidad, explicar a los deportistas embajadores cómo etiquetar y planificar formatos centrados en el equipamiento, como las bolsas de equipación del día de partido, vídeos de «lo que uso cada día» o unboxings."
+      ],
+      "image_title": "",
+      "translated_at": "2026-11-19T17:27:17.767Z",
+      "source_changed": "2026-11-19T15:40:22.869766+00:00",
+      "meta_description": ""
+    }
+  },
+  {
+    "id": 399,
+    "url": "https://socialgeekpro.beehiiv.com/p/ya-tenemos-gta-vi#2",
+    "source_name": "SocialGeek News",
+    "platform": "other",
+    "title": "Twitch brings back Hosting and tests shoppable ads at TwitchCon",
+    "paragraphs": [
+      "At TwitchCon, Twitch announced that Hosting is returning, with tests starting at the end of the year: an offline channel can show another live stream with shared chat, and 'Host Trains' rotate audiences across chosen channels. Streamers will also be able to invite up to seven viewers into Luna games using their phones as controllers, and a new apprentice moderator role can time out users but not ban them.",
+      "On the business side, shoppable ads are in desktop beta for US and Canadian advertisers, letting viewers add products to a cart mid-stream. A skippable ad format enters open beta in December, with international shopping planned for early 2027. Twitch says creators landing sponsorships have quadrupled in a year, while total payouts have doubled.",
+      "For esports teams, clubs and athletes who stream, Hosting and Host Trains are a simple way to share audiences with partner creators or squad members. Sports brands can treat live streams as both a showcase and a store, and sponsorships with gaming streamers look increasingly attractive as live viewing grows."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-19T12:13:00+00:00",
+    "created_at": "2026-11-19T15:40:23.071854+00:00",
+    "edited_at": null,
+    "slug": "twitch-brings-back-hosting-and-tests-shoppable-ads-at-twitchcon-399",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/a0ddc3d2de3394f6-16x9.jpg",
+    "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
+      "title": "Twitch recupera el Hosting y prueba anuncios con compra integrada en la TwitchCon",
+      "tokens": {
+        "in": 1417,
+        "out": 622
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [],
+      "meta_title": "",
+      "paragraphs": [
+        "En la TwitchCon, Twitch anunció que vuelve el Hosting, con pruebas que empezarán a finales de año: un canal offline podrá mostrar otro directo con chat compartido, y los «Host Trains» rotarán audiencias entre canales elegidos. Los streamers también podrán invitar hasta a siete espectadores a partidas de Luna usando sus móviles como mandos, y un nuevo rol de moderador aprendiz podrá aplicar suspensiones temporales a usuarios, pero no banearlos.",
+        "En el plano comercial, los anuncios con compra integrada están en beta para escritorio para anunciantes de Estados Unidos y Canadá, y permiten a los espectadores añadir productos a un carrito durante el directo. Un formato de anuncio que se puede saltar entra en beta abierta en diciembre, y las compras internacionales están previstas para principios de 2027. Twitch asegura que los creadores que consiguen patrocinios se han cuadruplicado en un año, mientras que los pagos totales se han duplicado.",
+        "Para los equipos de esports, los clubes y los deportistas que hacen streaming, el Hosting y los Host Trains son una forma sencilla de compartir audiencia con creadores aliados o miembros del equipo. Las marcas deportivas pueden tratar los directos como escaparate y tienda a la vez, y los patrocinios con streamers de gaming resultan cada vez más atractivos a medida que crece el consumo en directo."
+      ],
+      "image_title": "",
+      "translated_at": "2026-11-19T17:27:12.035Z",
+      "source_changed": "2026-11-19T15:40:23.071854+00:00",
+      "meta_description": ""
     }
   },
   {
@@ -209,29 +209,29 @@
     "faq": [],
     "image_url": "https://imgproxy.divecdn.com/T3-mecL_TJ7Md__fR7C7nXGvh47ssliJIMxoJO5FRo4/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS90aWt0b2tfbXVzaWNfMjAyNl8yLnBuZw==.webp",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "El TikTok Music Impact Report vincula los momentos virales con el 94 % de los éxitos del Billboard Global 200",
+      "tokens": {
+        "in": 1434,
+        "out": 647
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "TikTok ha publicado su Music Impact Report 2026, basado en un estudio de Luminate con más de 4.000 usuarios de EE. UU. Según el informe, el 45 % de los usuarios estadounidenses de TikTok descubre música nueva en la app, por delante de YouTube, Instagram y Facebook. La afirmación principal: el 94 % de las canciones que entraron en el Billboard Global 200 en 2025 se hicieron virales primero en TikTok, frente al 84 % del año anterior.",
         "El informe también señala que las canciones con un momento viral en TikTok permanecen en la lista cuatro veces más tiempo, y que los oyentes de música de EE. UU. en TikTok tienen un 78 % más de probabilidades que la población general de pagar por streaming. La mayoría de los artistas emergentes encuestados ven un vínculo claro entre el engagement en TikTok y la actividad en los servicios de streaming.",
         "Para los equipos de redes sociales deportivas, la conclusión es que el audio en tendencia es una señal cultural que merece un seguimiento cercano. Los clubes y los deportistas pueden detectar pronto temas en ascenso para vídeos de entrenamientos, salidas al campo y ediciones del día de partido, subirse a las tendencias antes de que alcancen su punto álgido y recurrir a colaboraciones musicales o a playlists del estadio para conectar con artistas que están ganando impulso, comprobando siempre las normas de licencias en las cuentas comerciales."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-19T15:40:31.218185+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-11-19T17:27:28.741Z",
-      "tokens": {
-        "in": 1434,
-        "out": 647
-      }
+      "source_changed": "2026-11-19T15:40:31.218185+00:00",
+      "meta_description": ""
     }
   },
   {
@@ -256,29 +256,29 @@
     "faq": [],
     "image_url": "https://imgproxy.divecdn.com/Yje1BrTSDIhuZedNCUGiIp_a0AdqLOG7t8V2FpTRG_0/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9zdW1icmVhay5wbmc=.webp",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "LinkedIn lanza Sumbreak, su noveno juego de puzles integrado en la app, para impulsar el engagement diario",
+      "tokens": {
+        "in": 1458,
+        "out": 684
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "LinkedIn ha lanzado Sumbreak, un puzle matemático en el que los jugadores fusionan fichas numeradas iguales que se suman entre sí hasta que solo queda una ficha. Es el noveno juego de la plataforma dentro del feed. Los miembros pueden retar a otros, las clasificaciones ahora admiten favoritos para comparar puntuaciones con contactos elegidos, los puzles extra recompensan a quienes vuelven cada día y es más fácil encontrar los juegos en la interfaz actualizada.",
         "LinkedIn asegura que se han resuelto miles de millones de puzles desde que los juegos llegaron en mayo de 2024. En marzo de 2025 informó de que millones de profesionales juegan a diario, y de que el 84 % de los jugadores vuelve al día siguiente. El objetivo está claro: visitas diarias habituales y más conversación, impulsadas por la rivalidad amistosa y no solo por el networking estrictamente profesional.",
         "Para las organizaciones deportivas, esto demuestra que las audiencias de LinkedIn responden a formatos más ligeros y competitivos. Los equipos comerciales y de alianzas podrían adaptar la mecánica con quizzes diarios basados en estadísticas o puzles numéricos construidos a partir de los récords del club, publicados como series recurrentes. El personal, los directivos y los deportistas también podrían usar las rivalidades de las clasificaciones como un punto de contacto divertido con patrocinadores y contactos B2B, manteniendo la marca visible en feeds que los usuarios abren ahora cada día."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-19T15:41:00.069275+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-11-19T17:27:35.229Z",
-      "tokens": {
-        "in": 1458,
-        "out": 684
-      }
+      "source_changed": "2026-11-19T15:41:00.069275+00:00",
+      "meta_description": ""
     }
   },
   {
