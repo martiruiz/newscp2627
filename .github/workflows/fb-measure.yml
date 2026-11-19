@@ -1,0 +1,33 @@
+name: Facebook cards (size and cover)
+
+# Every day: measures the embed of the Facebook posts not measured yet (their exact card size when the library shows
+# Facebook alone) and copies the cover of those without one (their card when mixed with other networks):
+# pipeline/library/fb_measure.py, supabase/fb-embed-height.sql. Newest first; ends in seconds when there is nothing new.
+on:
+  schedule:
+    - cron: "40 5 * * *"
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: "Posts in this run"
+        default: "3000"
+
+concurrency:
+  group: fb-measure
+  cancel-in-progress: false
+
+jobs:
+  measure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install playwright==1.49.1 && python -m playwright install --with-deps chromium
+      - run: python library/fb_measure.py --workers 6 --limit "${{ inputs.limit || '3000' }}"
+        working-directory: pipeline
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
