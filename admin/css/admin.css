@@ -2661,3 +2661,7 @@ tr[data-row].is-open td:first-child { box-shadow: inset 3px 0 0 var(--accent, #f
 .ct-sum { margin: 14px 0 0; font-size: 14px; }
 .ct-sum:empty { display: none; }
 @media (max-width: 640px) { .ct-grid { grid-template-columns: minmax(0, 1fr); } .ct-arrow { margin: 0; transform: rotate(90deg); justify-self: center; } }
+.ct-del { justify-self: start; display: inline-flex; align-items: center; gap: 6px; padding: 4px 2px; border: 0; background: none; color: var(--muted); font: 500 12.5px var(--font); cursor: pointer; }
+.ct-del:hover { color: var(--red); }
+.ct-del[hidden] { display: none; }
+.ct-del svg, .ct-pick .bk-chip svg { width: 14px; height: 14px; }

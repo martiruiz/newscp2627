@@ -34,7 +34,7 @@
       <div><h1>Content Ideas</h1><p data-total>Loading…</p></div>
       <div class="head-actions">
         <button class="btn btn-primary" type="button" data-add title="Create a new content idea manually">${icon("plus")}Add</button>
-        <button class="btn" type="button" data-change-tag title="Every post with one tag gets another instead (merge duplicates, move posts)">${icon("tag")}Change tag</button>
+        <button class="btn" type="button" data-change-tag title="Change a tag for another one in all its posts, or delete it">${icon("tag")}Change or delete tag</button>
         <div class="menu-wrap">
           <button class="btn" type="button" data-columns aria-expanded="false">${icon("columns")}Columns</button>
           <div class="menu" hidden data-columns-menu>${COLUMNS.map((c) => `<label><input class="check" type="checkbox" value="${c.key}" ${visible.includes(c.key) ? "checked" : ""}>${c.label}</label>`).join("")}</div>
@@ -502,13 +502,14 @@
     const pick = { from: null, to: null };
     let filteredIds = null;   // the posts of the current filters, asked once when that option is chosen
     const m = A.modal({
-      title: "Change tag", sub: "Every post with the first tag gets the second one instead. Merge duplicates (Celta → RC Celta de Vigo) or move posts to the right value.",
+      title: "Change or delete tag", sub: "Every post with the first tag gets the second one instead (merge duplicates, move posts to the right value), or the tag is deleted. The posts are always kept.",
       body: `<div class="ct-grid">
           <div class="ct-f"><p class="bk-h">Tag to change</p><div class="ct-pick" data-ct-pick="from"></div>
             <input class="input" type="search" placeholder="Search a club, sport, sponsor, moment…" autocomplete="off" data-ct-q="from"><div class="bk-sugg" data-ct-sugg="from" hidden></div></div>
           <span class="ct-arrow" aria-hidden="true">→</span>
           <div class="ct-f"><p class="bk-h">Change it to</p><div class="ct-pick" data-ct-pick="to"></div>
-            <input class="input" type="search" placeholder="Search the new tag…" autocomplete="off" data-ct-q="to"><div class="bk-sugg" data-ct-sugg="to" hidden></div></div>
+            <input class="input" type="search" placeholder="Search the new tag…" autocomplete="off" data-ct-q="to"><div class="bk-sugg" data-ct-sugg="to" hidden></div>
+            <button type="button" class="ct-del" data-ct-del>${icon("trash")}Or delete it</button></div>
         </div>
         <div class="ct-scope" data-ct-scope hidden>
           <label><input type="radio" name="ct-scope" value="all" checked> <span>All its posts</span> <em class="muted" data-ct-all></em></label>
@@ -523,6 +524,12 @@
     const draw = async () => {
       for (const k of ["from", "to"]) {
         const v = pick[k];
+        if (k === "to" && v === "delete") {   // delete mode: no new tag
+          q1("[data-ct-pick=to]").innerHTML = `<span class="bk-chip is-remove">${icon("trash")}Delete the tag<button type="button" data-ct-clear="to" aria-label="Change">×</button></span>`;
+          q1("[data-ct-q=to]").hidden = true; q1("[data-ct-del]").hidden = true;
+          continue;
+        }
+        if (k === "to") q1("[data-ct-del]").hidden = !!v;
         q1(`[data-ct-pick=${k}]`).innerHTML = v ? `<span class="bk-chip is-${k === "from" ? "remove" : "add"}"><small>${esc(catLabel(v.category))}</small>${esc(v.name)}<em>${num(v.ideas || 0)}</em><button type="button" data-ct-clear="${k}" aria-label="Change">×</button></span>` : "";
         q1(`[data-ct-q=${k}]`).hidden = !!v;
       }
@@ -538,6 +545,13 @@
         q1("[data-ct-filtered]").textContent = `(${num(n)})`;
       }
       if (!pick.to) { go.disabled = true; sum.textContent = `${num(n)} posts with “${pick.from.name}”. Now pick the new tag.`; return; }
+      go.classList.toggle("btn-danger", pick.to === "delete"); go.classList.toggle("btn-primary", pick.to !== "delete");
+      if (pick.to === "delete") {
+        go.disabled = false;
+        sum.innerHTML = scope() === "all" ? `<b>${esc(pick.from.name)}</b> is deleted: ${num(n)} posts lose it (the posts are kept).` : `<b>${num(n)}</b> filtered posts lose <b>${esc(pick.from.name)}</b> (the tag stays for the others).`;
+        go.textContent = scope() === "all" ? "Delete tag" : `Remove it from ${num(n)} posts`;
+        return;
+      }
       go.disabled = n === 0;
       sum.innerHTML = `<b>${num(n)}</b> posts: <b>${esc(pick.from.name)}</b> → <b>${esc(pick.to.name)}</b>`;
       go.textContent = `Change ${num(n)} posts`;
@@ -545,7 +559,7 @@
     const suggest = (k) => {
       const box = q1(`[data-ct-sugg=${k}]`), q = fold(q1(`[data-ct-q=${k}]`).value.trim());
       if (q.length < 2) { box.hidden = true; return; }
-      const other = pick[k === "from" ? "to" : "from"];
+      const other = pick[k === "from" ? "to" : "from"] === "delete" ? null : pick[k === "from" ? "to" : "from"];
       const hits = allValues().filter((v) => fold(v.name).includes(q) && v.id !== other?.id)
         .sort((a, b) => (fold(a.name).startsWith(q) ? 0 : 1) - (fold(b.name).startsWith(q) ? 0 : 1) || (k === "to" && other ? (b.category === other.category) - (a.category === other.category) : 0) || b.ideas - a.ideas).slice(0, 12);
       box.innerHTML = hits.length ? hits.map((v) => `<button type="button" data-ct-hit="${k}" data-id="${v.id}"><span>${esc(v.name)}</span><small>${esc(catLabel(v.category))} · ${num(v.ideas)}</small></button>`).join("") : `<p class="hint">No tag with that name.</p>`;
@@ -563,12 +577,26 @@
         if (k === "from" && !pick.to) q1("[data-ct-q=to]").focus();
         return;
       }
+      if (e.target.closest("[data-ct-del]")) { pick.to = "delete"; q1("[data-ct-sugg=to]").hidden = true; return draw(); }
       const clr = e.target.closest("[data-ct-clear]");
       if (clr) { pick[clr.dataset.ctClear] = null; draw(); q1(`[data-ct-q=${clr.dataset.ctClear}]`).focus(); }
     });
     q1("[data-cancel]").addEventListener("click", m.close);
     q1("[data-ct-go]").addEventListener("click", async (e) => {
-      const go = e.currentTarget; go.disabled = true; go.innerHTML = `<span class="spinner sm"></span> Changing…`;
+      const go = e.currentTarget;
+      if (pick.to === "delete") {
+        const all = scope() === "all";
+        if (all && !(await A.confirmDialog({ title: `Delete “${esc(pick.from.name)}”?`, text: "It's taken off all its posts and out of the filters. The posts are kept. This cannot be undone.", confirm: "Delete", danger: true }))) return;
+        go.disabled = true; go.innerHTML = `<span class="spinner sm"></span> Deleting…`;
+        try {
+          const r = await rpc("delete_tag", { p_value: pick.from.id, p_ids: all ? null : filteredIds });
+          m.close();
+          A.toast(all ? `“${r.name}” deleted (it was on ${num(r.posts)} posts).` : `“${r.name}” removed from ${num(r.posts)} posts.`);
+          A.resetCatalog(); load();
+        } catch (err) { A.toast(A.errMsg(err), "err"); go.disabled = false; go.textContent = "Delete tag"; }
+        return;
+      }
+      go.disabled = true; go.innerHTML = `<span class="spinner sm"></span> Changing…`;
       try {
         const r = await rpc("replace_tag", { p_from: pick.from.id, p_to: pick.to.id, p_ids: scope() === "filtered" ? filteredIds : null });
         m.close();
