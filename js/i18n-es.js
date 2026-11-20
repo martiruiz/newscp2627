@@ -1192,6 +1192,7 @@ window.SCP_ES = {
   "Whole club": "Todo el club",
   "New club": "Nuevo club",
   "Update views and likes": "Actualizar visualizaciones y likes",
+  "No {what} in {section}: they're in {where}.": "No hay {what} en {section}: están en {where}.",
   "Updating views and likes": "Actualizando visualizaciones y likes",
   "{a} of {b} posts": "{a} de {b} posts",
   "Every post of the club": "Todos los posts del club",

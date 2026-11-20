@@ -191,6 +191,7 @@
     st.team = sec && sec.teams.some((x) => x.id === saved.team) ? saved.team : null;
     st.people.clear();
     if (KIND[st.tab] && !data.people.some((p) => p.kind === KIND[st.tab])) st.tab = data.people.some((p) => p.kind === "player") ? "players" : "club";
+    if (KIND[st.tab] && (st.section || st.team) && !inSelection().length) { st.section = null; st.team = null; }   // the remembered section has none of them: the whole club
     draw();
     scope();
   }
@@ -198,6 +199,12 @@
   const save = () => store.set({ club: st.club?.id, section: st.section, team: st.team, tab: st.tab });
   const kind = () => KIND[st.tab];
   const section = () => st.space.sections.find((s) => s.id === st.section);
+  // the sections where the current tab's people are (when the one picked has none of them): [[section, how many]]
+  const elsewhere = () => st.space.sections.map((x) => [x, st.space.people.filter((p) => p.kind === kind() && (p.sections.includes(x.id) || p.teams.some((id) => x.teams.some((t) => t.id === id)))).length]).filter(([, n]) => n);
+  const noneHere = () => {
+    const sec = section(), at = elsewhere();
+    return sec && at.length ? t("No {what} in {section}: they're in {where}.", { what: t(TXT[st.tab].title).toLowerCase(), section: t(sec.name), where: at.map(([x, n]) => `${t(x.name)} (${n})`).join(", ") }) : t(TXT[st.tab].none);
+  };
   // the people of the current tab that belong to the selection (a global sponsor belongs everywhere)
   function inSelection() {
     const sec = section(), teamIds = sec ? sec.teams.map((x) => x.id) : [];
@@ -387,7 +394,7 @@
         ${list.length ? `<div class="mc-chips">${shown.map((p) => `<button type="button" class="mc-person${p.posts ? "" : " is-empty"}${st.tab === "sponsors" ? " is-brand" : ""}${st.tab === "competitors" ? " is-crest" : ""}" aria-pressed="${st.people.has(p.id)}" data-mc-person="${p.id}" title="${esc(p.posts ? t("{n} posts", { n: p.posts }) : t("Account linked, no posts imported yet"))}">
             <span class="mc-ph">${p.photo ? `<img src="${esc(p.photo)}" alt="" loading="lazy" referrerpolicy="no-referrer">${p.platform !== "library" ? `<span class="mc-netb">${svg(NET[p.platform] || NET.instagram)}</span>` : ""}` : p.platform ? `<span class="mc-av mc-net">${svg(NET[p.platform] || NET.instagram)}</span>` : p.photo_url ? `<img src="${esc(p.photo_url)}" alt="" loading="lazy">` : `<span class="mc-av">${esc(initials(p.name))}</span>`}<span class="mc-tick">${svg(ICON.check)}</span></span>
             <span class="mc-person-tx"><b>${esc(p.name)}</b><small>${p.global && st.tab === "sponsors" ? `<em>${esc(t("Global sponsor"))}</em>` : esc(p.posts ? t("{n} posts", { n: p.posts }) : t("No posts yet"))}</small></span></button>`).join("")}</div>`
-          : `<p class="mc-none">${esc(t(TXT[st.tab].none))}</p>`}
+          : `<p class="mc-none">${esc(noneHere())}</p>${section() && elsewhere().length ? `<div class="mc-seg mc-elsewhere" role="group"><button type="button" class="mc-seg-b" data-mc-section=""><span>${esc(t("Whole club"))}</span></button>${elsewhere().map(([x, n]) => `<button type="button" class="mc-seg-b" data-mc-section="${x.id}"><span>${esc(t(x.name))}</span><i>${n}</i></button>`).join("")}</div>` : ""}`}
         ${st.tab === "sponsors" && list.length ? `<div class="mc-mode" role="group" aria-label="${esc(t("Which posts"))}">
           <div class="mc-mode-sw"><button type="button" aria-pressed="${!st.linked}" data-mc-linked="0">${esc(t("All the brand's posts"))}</button>
           <button type="button" aria-pressed="${st.linked}" data-mc-linked="1">${esc(t("Posts linked to the club"))}</button></div>
@@ -412,7 +419,7 @@
       resolveReady();
       return window.dispatchEvent(new Event("scp-lib-scope"));
     }
-    SCOPE.empty = !list.length ? t(TXT[st.tab].none)
+    SCOPE.empty = !list.length ? noneHere()
       : st.linked ? t("No posts from these sponsors mention the club yet.")
       : t(TXT[st.tab].empty);
     let map = {};
@@ -437,7 +444,11 @@
     if (tab) {
       const k = tab.dataset.mcb;
       // Club / Players / Sponsors: whose posts (section and team stay); the panel to pick some of them
-      if (TABS.includes(k) && st.tab !== k) { st.tab = k; st.people.clear(); st.q = ""; st.linked = false; st.open = k; save(); bar(); return scope(); }
+      if (TABS.includes(k) && st.tab !== k) {
+        st.tab = k; st.people.clear(); st.q = ""; st.linked = false; st.open = k;
+        if ((st.section || st.team) && k !== "club" && !inSelection().length && st.space.people.some((p) => p.kind === KIND[k])) { st.section = null; st.team = null; }   // nobody of them here: the whole club
+        save(); bar(); return scope();
+      }
       st.open = st.open === k ? null : k; return bar();
     }
     const b = e.target.closest("[data-mc-section], [data-mc-team], [data-mc-person], [data-mc-clear], [data-mc-linked]");
