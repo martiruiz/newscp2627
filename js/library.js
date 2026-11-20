@@ -520,7 +520,7 @@
 
   function viewsHtml() {
     const h = views.hist, mx = Math.max(...h);
-    const quick = [[0, "Any"], [6, "10K+"], [12, "100K+"], [18, "1M+"]];
+    const quick = [[0, window.SCP_LANG === "es" ? "Cualq." : "Any"], [6, "10K+"], [12, "100K+"], [18, "1M+"]];   // short, so the four fit one row
     return `<div class="lf-vq">${quick.map(([a, l]) => `<button type="button" class="${views.a === a && views.b === VB ? "is-on" : ""}" data-vq="${a}">${l}</button>`).join("")}</div>
       <div class="lf-hist" aria-hidden="true">${h.map((n, i) => `<i class="${i >= views.a && i < views.b ? "is-in" : ""}" style="height:${Math.max(5, (n / mx) * 100)}%"></i>`).join("")}</div>
       <div class="lf-rng"><div class="lf-tr"></div><div class="lf-fl" style="left:${(views.a / VB) * 100}%;right:${100 - (views.b / VB) * 100}%"></div>
