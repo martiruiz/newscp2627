@@ -36,6 +36,7 @@
     const saved = store.get();
     const askTab = new URLSearchParams(location.search).get("tab");   // the menu's shortcuts: my-club.html?tab=sponsors…
     st.tab = TABS.includes(askTab) ? askTab : TABS.includes(saved.tab) ? saved.tab : "players";
+    st.linked = st.tab === "sponsors";   // sponsors open on the posts linked to the club
     const [{ data, error }, me] = await Promise.all([db.rpc("my_clubs"), window.SCP_AUTH?.getProfile?.().catch(() => null)]);
     st.isSuper = me?.profile?.role === "superadmin";   // superadmins can start a new club from the club picker
     if (error) return fail(/my_clubs|does not exist|schema cache/i.test(error.message) ? "My Club isn't set up yet (run supabase/my-club.sql)." : "Couldn't load your club right now. Try again in a moment.");
@@ -273,10 +274,35 @@
               <ul class="mc-cp-list" role="listbox" hidden>${st.clubs.map((c) => `<li><button type="button" role="option" aria-selected="${c.id === club.id}" data-mc-club-pick="${c.id}">${crest(c)}<span>${esc(c.name)}</span>${c.id === club.id ? `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>` : ""}</button></li>`).join("")}${st.isSuper ? `<li class="mc-cp-new"><a href="admin/my-club.html?new=1"><span class="mc-cp-plus" aria-hidden="true">+</span><span>${esc(t("New club"))}</span></a></li>` : ""}</ul>
             </div></div>` : ""}
         </div>
-      </div>`;
+      </div>
+      <section class="mc-best" data-mc-best hidden></section>`;
     bar();
     refreshUi();
+    bestUi();
   }
+
+  // "Best of the week": the club's most viewed posts of the last 7 days (its profiles, players, sponsors, creators),
+  // at the top of the page (supabase/my-club-highlights.sql club_top_posts). A click opens the post's detail.
+  const short = (n) => Number(n).toLocaleString(window.SCP_LOC || undefined, { notation: "compact", maximumFractionDigits: 1 });
+  async function bestUi() {
+    const el = document.querySelector("[data-mc-best]"); if (!el || !st.club) return;
+    const id = st.club.id;
+    const { data } = await db.rpc("club_top_posts", { p_club: id, p_days: 7, p_limit: 5 });
+    if (st.club?.id !== id) return;
+    const list = Array.isArray(data) ? data : [];
+    el.hidden = !list.length;
+    if (!list.length) return;
+    const eye = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0"/><circle cx="12" cy="12" r="3"/></svg>`;
+    el.innerHTML = `<div class="mc-best-h"><b>${esc(t("Best of the week"))}</b><small>${esc(t("The club's most viewed posts of the last 7 days"))}</small></div>
+      <div class="mc-best-row">${list.map((p, i) => `<button type="button" class="mc-best-it" data-mc-best-open="${p.id}" data-url="${esc(p.url || "")}" title="${esc(`@${p.account || ""}`)}">
+        <span class="mc-best-img">${p.cover_url ? `<img src="${esc(p.cover_url)}" alt="" loading="lazy">` : `<i>${svg(NET[p.platform] || NET.instagram)}</i>`}<em>${i + 1}</em></span>
+        <span class="mc-best-tx"><b>@${esc(p.account || "")}</b><small>${p.views ? `${eye}${short(p.views)}` : `♥ ${short(p.likes || 0)}`}</small></span></button>`).join("")}</div>`;
+  }
+  document.addEventListener("click", async (e) => {
+    const it = e.target.closest("[data-mc-best-open]"); if (!it) return;
+    if (window.SCP_LIB?.open) return window.SCP_LIB.open(it.dataset.mcBestOpen);
+    if (it.dataset.url) window.open(it.dataset.url, "_blank", "noopener");
+  });
 
   // "Update views and likes": every post of the club (Instagram, TikTok, YouTube) queued; views-cron reads them first,
   // slowly so no platform blocks it, and this shows how far it is (supabase/my-club-views-refresh.sql)
@@ -393,7 +419,7 @@
         </div>
         ${list.length ? `<div class="mc-chips">${shown.map((p) => `<button type="button" class="mc-person${p.posts ? "" : " is-empty"}${st.tab === "sponsors" ? " is-brand" : ""}${st.tab === "competitors" ? " is-crest" : ""}" aria-pressed="${st.people.has(p.id)}" data-mc-person="${p.id}" title="${esc(p.posts ? t("{n} posts", { n: p.posts }) : t("Account linked, no posts imported yet"))}">
             <span class="mc-ph">${p.photo ? `<img src="${esc(p.photo)}" alt="" loading="lazy" referrerpolicy="no-referrer">${p.platform !== "library" ? `<span class="mc-netb">${svg(NET[p.platform] || NET.instagram)}</span>` : ""}` : p.platform ? `<span class="mc-av mc-net">${svg(NET[p.platform] || NET.instagram)}</span>` : p.photo_url ? `<img src="${esc(p.photo_url)}" alt="" loading="lazy">` : `<span class="mc-av">${esc(initials(p.name))}</span>`}<span class="mc-tick">${svg(ICON.check)}</span></span>
-            <span class="mc-person-tx"><b>${esc(p.name)}</b><small>${p.global && st.tab === "sponsors" ? `<em>${esc(t("Global sponsor"))}</em>` : esc(p.posts ? t("{n} posts", { n: p.posts }) : t("No posts yet"))}</small></span></button>`).join("")}</div>`
+            <span class="mc-person-tx"><b>${esc(p.name)}</b><small>${p.global && st.tab === "sponsors" ? `<em>${esc(t("Global sponsor"))}</em>` : esc(p.posts ? t("{n} posts", { n: p.posts }) + (p.avg_views ? ` · ${t("{n} avg. views", { n: short(p.avg_views) })}` : "") : t("No posts yet"))}</small></span></button>`).join("")}</div>`
           : `<p class="mc-none">${esc(noneHere())}</p>${section() && elsewhere().length ? `<div class="mc-seg mc-elsewhere" role="group"><button type="button" class="mc-seg-b" data-mc-section=""><span>${esc(t("Whole club"))}</span></button>${elsewhere().map(([x, n]) => `<button type="button" class="mc-seg-b" data-mc-section="${x.id}"><span>${esc(t(x.name))}</span><i>${n}</i></button>`).join("")}</div>` : ""}`}
         ${st.tab === "sponsors" && list.length ? `<div class="mc-mode" role="group" aria-label="${esc(t("Which posts"))}">
           <div class="mc-mode-sw"><button type="button" aria-pressed="${!st.linked}" data-mc-linked="0">${esc(t("All the brand's posts"))}</button>
@@ -445,7 +471,7 @@
       const k = tab.dataset.mcb;
       // Club / Players / Sponsors: whose posts (section and team stay); the panel to pick some of them
       if (TABS.includes(k) && st.tab !== k) {
-        st.tab = k; st.people.clear(); st.q = ""; st.linked = false; st.open = k;
+        st.tab = k; st.people.clear(); st.q = ""; st.linked = k === "sponsors"; st.open = k;   // sponsors: the posts linked to the club first
         if ((st.section || st.team) && k !== "club" && !inSelection().length && st.space.people.some((p) => p.kind === KIND[k])) { st.section = null; st.team = null; }   // nobody of them here: the whole club
         save(); bar(); return scope();
       }

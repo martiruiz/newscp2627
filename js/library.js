@@ -2342,7 +2342,15 @@
   const refreshAiButtons = (id) => $$(`.lib-card[data-id="${CSS.escape(String(id))}"] .lib-analysis`).forEach((b) => (b.outerHTML = aiButton(id)));
 
   // The Content Plan panel (js/plan-panel.js) reads the posts shown here
-  window.SCP_LIB = { post: (id) => cache.get(String(id)), adapt: (id) => aiAdapt(id) };
+  window.SCP_LIB = { post: (id) => cache.get(String(id)), adapt: (id) => aiAdapt(id),
+    // open a post's detail even when it isn't in the grid (My Club's "Best of the week")
+    open: async (id) => {
+      if (!cache.get(String(id))) {
+        const { data } = await fetchIdeas({ ...queryArgs({ facets: {}, period: "all" }), p_order: "latest", p_seed: "", p_ids: [Number(id)], p_limit: 1, p_offset: 0 }).catch(() => ({}));
+        (data?.data || []).forEach((p) => cache.set(String(p.id), p));
+      }
+      return openPost(id);
+    } };
 
   // ---------- Masonry: N columns, each card goes to the shortest one (heights known from the ratios) ----------
   const GAP = 22;

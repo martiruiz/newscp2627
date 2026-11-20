@@ -9964,3 +9964,25 @@ button.mc-rf:disabled { opacity: 0.6; cursor: wait; }
 .mc-rf-bar { display: block; width: 140px; height: 4px; margin-top: 3px; border-radius: 4px; background: rgba(var(--fg), 0.1); overflow: hidden; }
 .mc-rf-bar > i { display: block; height: 100%; border-radius: inherit; background: var(--gold); transition: width 0.4s; }
 @media (prefers-reduced-motion: reduce) { .mc-rf.is-busy > svg { animation: none; } }
+/* My Club with the filters column folded: the club bar leaves room for the floating "show filters" button, like the rest of the header */
+@media (min-width: 961px) { .my-club-page .library.filters-collapsed .lib-head .mc-crumb { padding-left: 64px; } }
+
+/* My Club: "Best of the week" — the club's 5 most viewed posts of the last 7 days, under the club's strip */
+.mc-best { margin: 10px 0 0; padding: 12px 14px; border-radius: 18px; border: 1px solid rgba(240, 184, 74, 0.22); background: linear-gradient(90deg, rgba(240, 184, 74, 0.07), transparent 70%); }
+.mc-best[hidden] { display: none; }
+.mc-best-h { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+.mc-best-h b { font-size: 14px; }
+.mc-best-h small { color: var(--muted); font-size: 12px; }
+.mc-best-row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.mc-best-it { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 6px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface-2); color: var(--text); font: inherit; text-align: left; cursor: pointer; transition: border-color 0.2s, transform 0.2s; }
+.mc-best-it:hover { border-color: var(--gold); transform: translateY(-2px); }
+.mc-best-img { position: relative; flex: none; width: 52px; height: 64px; border-radius: 10px; overflow: hidden; background: #0d1426; display: grid; place-items: center; }
+.mc-best-img img { width: 100%; height: 100%; object-fit: cover; }
+.mc-best-img i svg { width: 20px; height: 20px; fill: none; stroke: var(--muted); stroke-width: 2; }
+.mc-best-img em { position: absolute; left: 4px; top: 4px; display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: var(--gold); color: var(--on-gold, #121b33); font: 700 11px var(--font-body); font-style: normal; }
+.mc-best-tx { display: grid; gap: 3px; min-width: 0; }
+.mc-best-tx b { font-size: 12.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mc-best-tx small { display: inline-flex; align-items: center; gap: 4px; color: var(--gold); font-size: 13px; font-weight: 700; }
+.mc-best-tx small svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2.4; }
+@media (max-width: 1100px) { .mc-best-row { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); } }
+@media (max-width: 640px) { .mc-best-row { display: flex; overflow-x: auto; scrollbar-width: none; } .mc-best-it { flex: 0 0 170px; } }
