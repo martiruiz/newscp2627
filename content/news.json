@@ -21,29 +21,29 @@
     "faq": [],
     "image_url": "https://imgproxy.divecdn.com/WGA3slNC-hI9T2zaCLOawvUfbWalFXTAxsYwIUuboOc/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9hY2hhZG9zLnBuZw==.webp",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "Meta prueba Achados, una app de compras solo para Brasil que reúne Marketplace, Grupos y anuncios de Instagram",
+      "tokens": {
+        "in": 1498,
+        "out": 699
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "Meta ha lanzado Achados, una app de compras experimental disponible por ahora solo en Android en Brasil. Reúne en un único feed local los artículos en venta de Facebook Marketplace, los Grupos de Facebook y los vendedores de Instagram. Añade comparaciones de precios con productos similares en las apps de Meta, además de perfiles de vendedores, reseñas de clientes e historiales de ventas. Es una de las varias apps nuevas que Meta ha lanzado este año.",
         "Para las organizaciones deportivas, la señal es el empeño de Meta en tratar los posts de Instagram y Facebook como inventario comprable. Los clubes, las tiendas de aficionados y las marcas deportivas de Brasil que ya venden merchandising, productos relacionados con las entradas o artículos para el día de partido a través de Instagram o Facebook podrían ganar visibilidad extra sin crear nuevas tiendas. Como los anuncios aparecen junto a comparaciones de precios, la coherencia en los precios y los posts de producto claros cobran más importancia.",
         "La mayoría de los experimentos de Meta se quedan en pequeño y acaban aportando funciones a las apps principales, así que los equipos deberían observar en lugar de rehacer sus estrategias en torno a Achados. Un paso práctico ahora es ordenar los anuncios de las tiendas de Facebook e Instagram y los perfiles de vendedor, recopilar reseñas y vigilar cómo aparece el merchandising no oficial. Junto con la reciente ampliación de Creator Fast Track a Brasil, el mercado parece una prioridad creciente para la compañía."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-20T00:35:21.291885+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-11-20T03:20:22.762Z",
-      "tokens": {
-        "in": 1498,
-        "out": 699
-      }
+      "source_changed": "2026-11-20T00:35:21.291885+00:00",
+      "meta_description": ""
     }
   },
   {
@@ -68,29 +68,29 @@
     "faq": [],
     "image_url": "https://imgproxy.divecdn.com/dIMt9HLlhWh_n19hj7gEVBYYYWNtWKH_BHE58HTw42s/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS90aHJlYWRzX3FfYW5kX2EyLnBuZw==.webp",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "Threads prueba sesiones de preguntas y respuestas con votos positivos dentro de los chats en directo",
+      "tokens": {
+        "in": 1420,
+        "out": 693
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "Threads está probando un formato de preguntas y respuestas dentro de sus chats en directo. Los anfitriones pueden recopilar preguntas de los participantes y, después, el chat vota cuáles deben formularse, lo que crea una sesión más estructurada, al estilo de una entrevista. El planteamiento recuerda al modelo AMA de Reddit, en el que la comunidad dirige la conversación votando a favor. La prueba se está realizando en un número limitado de sesiones de chat en directo, aunque todos los participantes pueden leer las respuestas.",
         "Esta función se apoya en el chat en directo, que Threads lanzó en abril y amplió en septiembre, mientras Meta impulsa la app hacia la conversación en tiempo real en torno a los grandes eventos. X sigue liderando las conversaciones sobre eventos en directo, pero Threads está ganando terreno y quiere ser una opción más sólida para comunidades y marcas que buscan generar engagement con sus audiencias en el momento.",
         "Para los equipos deportivos, las sesiones de preguntas y respuestas votadas encajan de forma natural en los takeovers de jugadores, los avances de las ruedas de prensa de los entrenadores o los análisis posteriores a los partidos, y permiten que los aficionados hagan emerger las preguntas que más les interesan. Los patrocinadores podrían respaldar una serie recurrente de preguntas y respuestas con aficionados, y los clubes pueden aprovechar las preguntas más votadas para obtener ideas de contenido. Si la función se despliega de forma generalizada, ofrece una manera sencilla de construir comunidad en Threads los días de partido."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-20T00:35:28.467676+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-11-20T03:20:28.596Z",
-      "tokens": {
-        "in": 1420,
-        "out": 693
-      }
+      "source_changed": "2026-11-20T00:35:28.467676+00:00",
+      "meta_description": ""
     }
   },
   {
