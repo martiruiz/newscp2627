@@ -44,6 +44,12 @@
   {
     "account": "houseofhighlights",
     "account_platform": "instagram",
+    "views": 6103662,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/634/634219.jpg?v=mwopwldd"
+  },
+  {
+    "account": "houseofhighlights",
+    "account_platform": "instagram",
     "views": 6018411,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/630/630051.jpg?v=mwjtxbgf"
   },
@@ -162,21 +168,15 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/633/633714.jpg?v=mwopx9ej"
   },
   {
+    "account": "letourdefrance",
+    "account_platform": "instagram",
+    "views": 3214503,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/638/638858.jpg?v=mwoq4n7h"
+  },
+  {
     "account": "houseofhighlights",
     "account_platform": "instagram",
     "views": 3127731,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/634/634341.jpg?v=mwopwves"
-  },
-  {
-    "account": "realmadrid",
-    "account_platform": "tiktok",
-    "views": 3000000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/630/630230.jpg?v=mwju0wo7"
-  },
-  {
-    "account": "fcbarcelona",
-    "account_platform": "tiktok",
-    "views": 3000000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/630/630231.jpg?v=mwju0uv6"
   }
 ]
