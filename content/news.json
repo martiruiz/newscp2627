@@ -1,5 +1,99 @@
 [
   {
+    "id": 412,
+    "url": "https://www.socialmediatoday.com/news/meta-launches-shopping-platform-achados-in-brazil/875290/",
+    "source_name": "Social Media Today",
+    "platform": "facebook",
+    "title": "Meta tests Achados, a Brazil-only shopping app merging Marketplace, Groups and Instagram listings",
+    "paragraphs": [
+      "Meta has released Achados, an experimental shopping app currently available only on Android in Brazil. It pulls items for sale from Facebook Marketplace, Facebook Groups and Instagram sellers into a single local feed. It adds price comparisons against similar products across Meta's apps, plus seller profiles, customer reviews and sales histories. It is one of several new apps Meta has launched this year.",
+      "For sports organisations, the signal is Meta's push to treat Instagram and Facebook posts as shoppable inventory. Clubs, fan shops and sports brands in Brazil that already sell merchandise, tickets-adjacent products or matchday gear through Instagram or Facebook could gain extra visibility without building new storefronts. Because listings sit next to price comparisons, consistent pricing and clear product posts become more important.",
+      "Most Meta experiments stay small and feed features back into the main apps, so teams should watch rather than rebuild strategies around Achados. A practical step now is tidying Facebook and Instagram shop listings and seller profiles, collecting reviews, and monitoring how unofficial merchandise appears. Combined with Meta's recent expansion of Creator Fast Track to Brazil, the market looks like a growing priority for the company."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-19T22:33:57+00:00",
+    "created_at": "2026-11-20T00:35:21.291885+00:00",
+    "edited_at": null,
+    "slug": "meta-tests-achados-a-brazil-only-shopping-app-merging-marketplace-412",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/WGA3slNC-hI9T2zaCLOawvUfbWalFXTAxsYwIUuboOc/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9hY2hhZG9zLnBuZw==.webp",
+    "es": {
+      "title": "Meta prueba Achados, una app de compras solo para Brasil que reúne Marketplace, Grupos y anuncios de Instagram",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "Meta ha lanzado Achados, una app de compras experimental disponible por ahora solo en Android en Brasil. Reúne en un único feed local los artículos en venta de Facebook Marketplace, los Grupos de Facebook y los vendedores de Instagram. Añade comparaciones de precios con productos similares en las apps de Meta, además de perfiles de vendedores, reseñas de clientes e historiales de ventas. Es una de las varias apps nuevas que Meta ha lanzado este año.",
+        "Para las organizaciones deportivas, la señal es el empeño de Meta en tratar los posts de Instagram y Facebook como inventario comprable. Los clubes, las tiendas de aficionados y las marcas deportivas de Brasil que ya venden merchandising, productos relacionados con las entradas o artículos para el día de partido a través de Instagram o Facebook podrían ganar visibilidad extra sin crear nuevas tiendas. Como los anuncios aparecen junto a comparaciones de precios, la coherencia en los precios y los posts de producto claros cobran más importancia.",
+        "La mayoría de los experimentos de Meta se quedan en pequeño y acaban aportando funciones a las apps principales, así que los equipos deberían observar en lugar de rehacer sus estrategias en torno a Achados. Un paso práctico ahora es ordenar los anuncios de las tiendas de Facebook e Instagram y los perfiles de vendedor, recopilar reseñas y vigilar cómo aparece el merchandising no oficial. Junto con la reciente ampliación de Creator Fast Track a Brasil, el mercado parece una prioridad creciente para la compañía."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-11-20T00:35:21.291885+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-11-20T03:20:22.762Z",
+      "tokens": {
+        "in": 1498,
+        "out": 699
+      }
+    }
+  },
+  {
+    "id": 413,
+    "url": "https://www.socialmediatoday.com/news/threads-tests-new-qa-option-in-live-chats/875287/",
+    "source_name": "Social Media Today",
+    "platform": "threads",
+    "title": "Threads tests upvoted Q&A sessions inside live chats",
+    "paragraphs": [
+      "Threads is trialling a Q&A format within its live chats. Hosts can collect questions from participants, and the chat then votes on which ones should be asked, creating a more structured, interview-style session. The approach resembles Reddit's AMA model, where the community steers the conversation by upvoting. The test is running in a limited number of live chat sessions, though every participant can read the answers.",
+      "The feature builds on live chat, which Threads launched in April and expanded in September, as Meta pushes the app toward real-time conversation around major events. X still leads for live event discussion, but Threads is gaining ground and wants to be a stronger option for communities and brands looking to engage audiences in the moment.",
+      "For sports teams, voted Q&As are a natural fit for player takeovers, coach press-conference previews, or post-match debriefs, letting fans surface the questions they care about most. Sponsors could back a recurring fan Q&A series, and clubs can mine the top-voted questions for content ideas. If the feature rolls out widely, it offers a low-effort way to build matchday community on Threads."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-19T22:28:50+00:00",
+    "created_at": "2026-11-20T00:35:28.467676+00:00",
+    "edited_at": null,
+    "slug": "threads-tests-upvoted-q-a-sessions-inside-live-chats-413",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/dIMt9HLlhWh_n19hj7gEVBYYYWNtWKH_BHE58HTw42s/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS90aHJlYWRzX3FfYW5kX2EyLnBuZw==.webp",
+    "es": {
+      "title": "Threads prueba sesiones de preguntas y respuestas con votos positivos dentro de los chats en directo",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "Threads está probando un formato de preguntas y respuestas dentro de sus chats en directo. Los anfitriones pueden recopilar preguntas de los participantes y, después, el chat vota cuáles deben formularse, lo que crea una sesión más estructurada, al estilo de una entrevista. El planteamiento recuerda al modelo AMA de Reddit, en el que la comunidad dirige la conversación votando a favor. La prueba se está realizando en un número limitado de sesiones de chat en directo, aunque todos los participantes pueden leer las respuestas.",
+        "Esta función se apoya en el chat en directo, que Threads lanzó en abril y amplió en septiembre, mientras Meta impulsa la app hacia la conversación en tiempo real en torno a los grandes eventos. X sigue liderando las conversaciones sobre eventos en directo, pero Threads está ganando terreno y quiere ser una opción más sólida para comunidades y marcas que buscan generar engagement con sus audiencias en el momento.",
+        "Para los equipos deportivos, las sesiones de preguntas y respuestas votadas encajan de forma natural en los takeovers de jugadores, los avances de las ruedas de prensa de los entrenadores o los análisis posteriores a los partidos, y permiten que los aficionados hagan emerger las preguntas que más les interesan. Los patrocinadores podrían respaldar una serie recurrente de preguntas y respuestas con aficionados, y los clubes pueden aprovechar las preguntas más votadas para obtener ideas de contenido. Si la función se despliega de forma generalizada, ofrece una manera sencilla de construir comunidad en Threads los días de partido."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-11-20T00:35:28.467676+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-11-20T03:20:28.596Z",
+      "tokens": {
+        "in": 1420,
+        "out": 693
+      }
+    }
+  },
+  {
     "id": 397,
     "url": "https://www.sponconsports.com/p/six-changes-i-d-make-to-sports-partnerships-in-2027",
     "source_name": "SponCon Sports",
@@ -846,33 +940,33 @@
     }
   },
   {
-    "id": 295,
-    "url": "https://socialgeekpro.beehiiv.com/p/espa-a-estudia-suspender-tiktok",
+    "id": 296,
+    "url": "https://socialgeekpro.beehiiv.com/p/espa-a-estudia-suspender-tiktok#2",
     "source_name": "SocialGeek News",
-    "platform": "tiktok",
-    "title": "TikTok launches Social MCP to manage brand presence through AI conversations",
+    "platform": "instagram",
+    "title": "Instagram tests Features, horizontal videos up to 90 minutes, to rival YouTube",
     "paragraphs": [
-      "TikTok has introduced Social MCP, a tool that lets brands run social listening, trend analysis and audience sentiment tracking through a direct conversation with AI. It is designed to spot opportunities before they go viral, move from insights to content ideas and strategy, and identify organic videos that are performing well so they can be turned into Spark Ads.",
-      "For sports social teams, this could shorten the gap between a viral moment on matchday and a planned response. A club could ask the tool which fan conversations are rising around a signing or rivalry, adjust its content plan in real time, and quickly boost its best-performing organic clips as Spark Ads for sponsors or ticket and merchandise campaigns.",
-      "The key is to keep human judgement in the loop: AI can surface the trends, but the team still decides which ones fit the club's voice and values."
+      "Instagram is testing a format called Features that lets creators upload horizontal videos of up to 90 minutes, aimed at podcasts, interviews and entertainment shows. Viewers will be able to jump from a short Reel straight to the full video without leaving the app. The test is running with selected creators in the US after earlier trials in Brazil, with a separate upload flow and snippet clips published as Reels.",
+      "For clubs, leagues and athletes, this opens a path to host long-form content where much of their audience already lives. Full press conferences, behind-the-scenes documentaries, club podcasts or extended match analysis could sit on Instagram, with short Reels acting as trailers that drive fans to the complete video.",
+      "Teams should plan clip-to-full-video workflows now, so every long piece comes with ready-made snippets, and consider new sponsor inventory around longer formats."
     ],
     "relevant": true,
     "published_at": "2026-11-12T12:13:00+00:00",
-    "created_at": "2026-11-12T15:05:04.236378+00:00",
+    "created_at": "2026-11-12T15:05:04.855566+00:00",
     "edited_at": null,
-    "slug": "tiktok-launches-social-mcp-to-manage-brand-presence-through-ai-295",
+    "slug": "instagram-tests-features-horizontal-videos-up-to-90-minutes-to-rival-296",
     "meta_title": null,
     "meta_description": null,
     "takeaways": [],
     "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/manual-2026-11-11-1.jpg",
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/manual-2026-11-11-2.jpg",
     "es": {
       "faq": [],
       "model": "claude-sonnet-5-5",
-      "title": "TikTok lanza Social MCP para gestionar la presencia de marca mediante conversaciones con IA",
+      "title": "Instagram prueba Features, vídeos horizontales de hasta 90 minutos, para competir con YouTube",
       "tokens": {
-        "in": 1344,
-        "out": 522
+        "in": 1365,
+        "out": 529
       },
       "excerpt": "",
       "cta_text": "",
@@ -882,13 +976,13 @@
       "takeaways": [],
       "meta_title": "",
       "paragraphs": [
-        "TikTok ha presentado Social MCP, una herramienta que permite a las marcas hacer social listening, análisis de tendencias y seguimiento del sentimiento de la audiencia a través de una conversación directa con IA. Está diseñada para detectar oportunidades antes de que se vuelvan virales, pasar de los insights a ideas de contenido y estrategia, e identificar vídeos orgánicos que están funcionando bien para convertirlos en Spark Ads.",
-        "Para los equipos de redes sociales deportivas, esto podría acortar la distancia entre un momento viral en día de partido y una respuesta planificada. Un club podría preguntar a la herramienta qué conversaciones de aficionados están creciendo en torno a un fichaje o una rivalidad, ajustar su plan de contenidos en tiempo real e impulsar rápidamente sus clips orgánicos de mejor rendimiento como Spark Ads para patrocinadores o para campañas de entradas y merchandising.",
-        "La clave está en mantener el criterio humano en el proceso: la IA puede sacar a la superficie las tendencias, pero es el equipo quien decide cuáles encajan con la voz y los valores del club."
+        "Instagram está probando un formato llamado Features que permite a los creadores subir vídeos horizontales de hasta 90 minutos, pensado para pódcasts, entrevistas y programas de entretenimiento. Los usuarios podrán saltar de un Reel corto directamente al vídeo completo sin salir de la app. La prueba se está realizando con creadores seleccionados en EE. UU. tras pruebas previas en Brasil, con un flujo de subida independiente y clips de fragmentos publicados como Reels.",
+        "Para clubes, ligas y deportistas, esto abre un camino para alojar contenido de formato largo donde ya se encuentra gran parte de su audiencia. Ruedas de prensa completas, documentales entre bastidores, pódcasts de clubes o análisis extendidos de partidos podrían estar en Instagram, con Reels cortos que funcionen como tráilers y lleven a los aficionados al vídeo completo.",
+        "Los equipos deberían planificar ya flujos de trabajo de clip a vídeo completo, de modo que cada pieza larga venga con fragmentos listos para publicar, y valorar nuevo inventario para patrocinadores en torno a los formatos más largos."
       ],
       "image_title": "",
-      "translated_at": "2026-11-12T16:54:00.482Z",
-      "source_changed": "2026-11-12T15:05:04.236378+00:00",
+      "translated_at": "2026-11-12T16:54:11.153Z",
+      "source_changed": "2026-11-12T15:05:04.855566+00:00",
       "meta_description": ""
     }
   },
@@ -938,33 +1032,33 @@
     }
   },
   {
-    "id": 296,
-    "url": "https://socialgeekpro.beehiiv.com/p/espa-a-estudia-suspender-tiktok#2",
+    "id": 295,
+    "url": "https://socialgeekpro.beehiiv.com/p/espa-a-estudia-suspender-tiktok",
     "source_name": "SocialGeek News",
-    "platform": "instagram",
-    "title": "Instagram tests Features, horizontal videos up to 90 minutes, to rival YouTube",
+    "platform": "tiktok",
+    "title": "TikTok launches Social MCP to manage brand presence through AI conversations",
     "paragraphs": [
-      "Instagram is testing a format called Features that lets creators upload horizontal videos of up to 90 minutes, aimed at podcasts, interviews and entertainment shows. Viewers will be able to jump from a short Reel straight to the full video without leaving the app. The test is running with selected creators in the US after earlier trials in Brazil, with a separate upload flow and snippet clips published as Reels.",
-      "For clubs, leagues and athletes, this opens a path to host long-form content where much of their audience already lives. Full press conferences, behind-the-scenes documentaries, club podcasts or extended match analysis could sit on Instagram, with short Reels acting as trailers that drive fans to the complete video.",
-      "Teams should plan clip-to-full-video workflows now, so every long piece comes with ready-made snippets, and consider new sponsor inventory around longer formats."
+      "TikTok has introduced Social MCP, a tool that lets brands run social listening, trend analysis and audience sentiment tracking through a direct conversation with AI. It is designed to spot opportunities before they go viral, move from insights to content ideas and strategy, and identify organic videos that are performing well so they can be turned into Spark Ads.",
+      "For sports social teams, this could shorten the gap between a viral moment on matchday and a planned response. A club could ask the tool which fan conversations are rising around a signing or rivalry, adjust its content plan in real time, and quickly boost its best-performing organic clips as Spark Ads for sponsors or ticket and merchandise campaigns.",
+      "The key is to keep human judgement in the loop: AI can surface the trends, but the team still decides which ones fit the club's voice and values."
     ],
     "relevant": true,
     "published_at": "2026-11-12T12:13:00+00:00",
-    "created_at": "2026-11-12T15:05:04.855566+00:00",
+    "created_at": "2026-11-12T15:05:04.236378+00:00",
     "edited_at": null,
-    "slug": "instagram-tests-features-horizontal-videos-up-to-90-minutes-to-rival-296",
+    "slug": "tiktok-launches-social-mcp-to-manage-brand-presence-through-ai-295",
     "meta_title": null,
     "meta_description": null,
     "takeaways": [],
     "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/manual-2026-11-11-2.jpg",
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/manual-2026-11-11-1.jpg",
     "es": {
       "faq": [],
       "model": "claude-sonnet-5-5",
-      "title": "Instagram prueba Features, vídeos horizontales de hasta 90 minutos, para competir con YouTube",
+      "title": "TikTok lanza Social MCP para gestionar la presencia de marca mediante conversaciones con IA",
       "tokens": {
-        "in": 1365,
-        "out": 529
+        "in": 1344,
+        "out": 522
       },
       "excerpt": "",
       "cta_text": "",
@@ -974,13 +1068,13 @@
       "takeaways": [],
       "meta_title": "",
       "paragraphs": [
-        "Instagram está probando un formato llamado Features que permite a los creadores subir vídeos horizontales de hasta 90 minutos, pensado para pódcasts, entrevistas y programas de entretenimiento. Los usuarios podrán saltar de un Reel corto directamente al vídeo completo sin salir de la app. La prueba se está realizando con creadores seleccionados en EE. UU. tras pruebas previas en Brasil, con un flujo de subida independiente y clips de fragmentos publicados como Reels.",
-        "Para clubes, ligas y deportistas, esto abre un camino para alojar contenido de formato largo donde ya se encuentra gran parte de su audiencia. Ruedas de prensa completas, documentales entre bastidores, pódcasts de clubes o análisis extendidos de partidos podrían estar en Instagram, con Reels cortos que funcionen como tráilers y lleven a los aficionados al vídeo completo.",
-        "Los equipos deberían planificar ya flujos de trabajo de clip a vídeo completo, de modo que cada pieza larga venga con fragmentos listos para publicar, y valorar nuevo inventario para patrocinadores en torno a los formatos más largos."
+        "TikTok ha presentado Social MCP, una herramienta que permite a las marcas hacer social listening, análisis de tendencias y seguimiento del sentimiento de la audiencia a través de una conversación directa con IA. Está diseñada para detectar oportunidades antes de que se vuelvan virales, pasar de los insights a ideas de contenido y estrategia, e identificar vídeos orgánicos que están funcionando bien para convertirlos en Spark Ads.",
+        "Para los equipos de redes sociales deportivas, esto podría acortar la distancia entre un momento viral en día de partido y una respuesta planificada. Un club podría preguntar a la herramienta qué conversaciones de aficionados están creciendo en torno a un fichaje o una rivalidad, ajustar su plan de contenidos en tiempo real e impulsar rápidamente sus clips orgánicos de mejor rendimiento como Spark Ads para patrocinadores o para campañas de entradas y merchandising.",
+        "La clave está en mantener el criterio humano en el proceso: la IA puede sacar a la superficie las tendencias, pero es el equipo quien decide cuáles encajan con la voz y los valores del club."
       ],
       "image_title": "",
-      "translated_at": "2026-11-12T16:54:11.153Z",
-      "source_changed": "2026-11-12T15:05:04.855566+00:00",
+      "translated_at": "2026-11-12T16:54:00.482Z",
+      "source_changed": "2026-11-12T15:05:04.236378+00:00",
       "meta_description": ""
     }
   },
@@ -2109,53 +2203,6 @@
     }
   },
   {
-    "id": 82,
-    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces",
-    "source_name": "SocialGeek News",
-    "platform": "facebook",
-    "title": "Facebook tests charging Pages to post links beyond a small monthly quota",
-    "paragraphs": [
-      "Facebook is testing a cap on how many link posts a Page can publish. Some Pages are now limited to two link posts per month, after which a prompt invites them to subscribe through Meta One: $50 a month for eight links, $150 for 20, or $500 for unlimited. Links to compatible affiliates, Creator Storefront and Meta products remain unrestricted. Meta calls it a test, though it has reportedly reached nonprofit and library Pages that were meant to be exempt.",
-      "For clubs and leagues that push fans from Facebook to ticketing, shop or news pages, this signals that outbound traffic is getting more expensive. Social teams should audit how much web traffic Facebook really drives and reserve link posts for high-value moments like ticket drops or kit launches.",
-      "The bigger lesson is to invest in owned channels such as newsletters, apps and membership communities. Native formats like video, photo galleries and in-feed match updates can keep Facebook audiences engaged without relying on links."
-    ],
-    "relevant": true,
-    "published_at": "2026-10-29T12:12:00+00:00",
-    "created_at": "2026-10-29T12:54:19.971122+00:00",
-    "edited_at": null,
-    "slug": "facebook-tests-charging-pages-to-post-links-beyond-a-small-monthly-82",
-    "meta_title": null,
-    "meta_description": null,
-    "takeaways": [],
-    "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/linkedin-meta-links-16x9.jpg",
-    "es": {
-      "faq": [],
-      "model": "claude-sonnet-5-5",
-      "title": "Facebook prueba a cobrar a las Páginas por publicar enlaces más allá de una pequeña cuota mensual",
-      "tokens": {
-        "in": 1400,
-        "out": 620
-      },
-      "excerpt": "",
-      "cta_text": "",
-      "body_html": "",
-      "cta_title": "",
-      "image_alt": "",
-      "takeaways": [],
-      "meta_title": "",
-      "paragraphs": [
-        "Facebook está probando un límite al número de publicaciones con enlace que puede hacer una Página. Algunas Páginas ya están limitadas a dos publicaciones con enlace al mes, y después un aviso les invita a suscribirse a través de Meta One: 50 $ al mes por ocho enlaces, 150 $ por 20 o 500 $ por enlaces ilimitados. Los enlaces a afiliados compatibles, a Creator Storefront y a productos de Meta siguen sin restricciones. Meta lo presenta como una prueba, aunque según se ha informado ha llegado a Páginas de organizaciones sin ánimo de lucro y de bibliotecas que debían estar exentas.",
-        "Para los clubes y las ligas que llevan a los aficionados desde Facebook a páginas de venta de entradas, de la tienda o de noticias, esto indica que el tráfico saliente se está encareciendo. Los equipos de redes sociales deberían analizar cuánto tráfico web genera realmente Facebook y reservar las publicaciones con enlace para momentos de alto valor, como el lanzamiento de entradas o de equipaciones.",
-        "La lección de fondo es invertir en canales propios como newsletters, apps y comunidades de socios. Los formatos nativos, como el vídeo, las galerías de fotos y las actualizaciones del partido en el feed, pueden mantener el engagement de las audiencias de Facebook sin depender de los enlaces."
-      ],
-      "image_title": "",
-      "translated_at": "2026-10-29T16:10:21.391Z",
-      "source_changed": "2026-10-29T12:54:19.971122+00:00",
-      "meta_description": ""
-    }
-  },
-  {
     "id": 83,
     "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces#2",
     "source_name": "SocialGeek News",
@@ -2246,6 +2293,53 @@
       "image_title": "",
       "translated_at": "2026-10-29T16:10:26.722Z",
       "source_changed": "2026-10-29T12:54:20.285329+00:00",
+      "meta_description": ""
+    }
+  },
+  {
+    "id": 82,
+    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces",
+    "source_name": "SocialGeek News",
+    "platform": "facebook",
+    "title": "Facebook tests charging Pages to post links beyond a small monthly quota",
+    "paragraphs": [
+      "Facebook is testing a cap on how many link posts a Page can publish. Some Pages are now limited to two link posts per month, after which a prompt invites them to subscribe through Meta One: $50 a month for eight links, $150 for 20, or $500 for unlimited. Links to compatible affiliates, Creator Storefront and Meta products remain unrestricted. Meta calls it a test, though it has reportedly reached nonprofit and library Pages that were meant to be exempt.",
+      "For clubs and leagues that push fans from Facebook to ticketing, shop or news pages, this signals that outbound traffic is getting more expensive. Social teams should audit how much web traffic Facebook really drives and reserve link posts for high-value moments like ticket drops or kit launches.",
+      "The bigger lesson is to invest in owned channels such as newsletters, apps and membership communities. Native formats like video, photo galleries and in-feed match updates can keep Facebook audiences engaged without relying on links."
+    ],
+    "relevant": true,
+    "published_at": "2026-10-29T12:12:00+00:00",
+    "created_at": "2026-10-29T12:54:19.971122+00:00",
+    "edited_at": null,
+    "slug": "facebook-tests-charging-pages-to-post-links-beyond-a-small-monthly-82",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/linkedin-meta-links-16x9.jpg",
+    "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
+      "title": "Facebook prueba a cobrar a las Páginas por publicar enlaces más allá de una pequeña cuota mensual",
+      "tokens": {
+        "in": 1400,
+        "out": 620
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [],
+      "meta_title": "",
+      "paragraphs": [
+        "Facebook está probando un límite al número de publicaciones con enlace que puede hacer una Página. Algunas Páginas ya están limitadas a dos publicaciones con enlace al mes, y después un aviso les invita a suscribirse a través de Meta One: 50 $ al mes por ocho enlaces, 150 $ por 20 o 500 $ por enlaces ilimitados. Los enlaces a afiliados compatibles, a Creator Storefront y a productos de Meta siguen sin restricciones. Meta lo presenta como una prueba, aunque según se ha informado ha llegado a Páginas de organizaciones sin ánimo de lucro y de bibliotecas que debían estar exentas.",
+        "Para los clubes y las ligas que llevan a los aficionados desde Facebook a páginas de venta de entradas, de la tienda o de noticias, esto indica que el tráfico saliente se está encareciendo. Los equipos de redes sociales deberían analizar cuánto tráfico web genera realmente Facebook y reservar las publicaciones con enlace para momentos de alto valor, como el lanzamiento de entradas o de equipaciones.",
+        "La lección de fondo es invertir en canales propios como newsletters, apps y comunidades de socios. Los formatos nativos, como el vídeo, las galerías de fotos y las actualizaciones del partido en el feed, pueden mantener el engagement de las audiencias de Facebook sin depender de los enlaces."
+      ],
+      "image_title": "",
+      "translated_at": "2026-10-29T16:10:21.391Z",
+      "source_changed": "2026-10-29T12:54:19.971122+00:00",
       "meta_description": ""
     }
   },
@@ -3237,53 +3331,6 @@
     }
   },
   {
-    "id": 39,
-    "url": "https://www.socialmediatoday.com/news/tiktok-us-shares-q2-account-enforcement-data/833907/",
-    "source_name": "Social Media Today",
-    "platform": "tiktok",
-    "title": "TikTok US removes 14.6 million fake accounts and 781 million fake followers in Q2",
-    "paragraphs": [
-      "TikTok USDS, the US-based group running the app's American operations since January, released its second enforcement report, covering April to June. It removed 14.6 million fake accounts, blocked 64.8 million spam accounts at sign-up, stripped 781.4 million fake followers and stopped 403.2 million fake follow requests, a clear jump on the first quarter. Video removals and livestream warnings or demonetizations also rose.",
-      "Most video takedowns fell under regulated goods and services, a broad category covering gambling, alcohol, counterfeit products and services selling fake likes, views and followers. TikTok also said it disrupted 30 covert networks trying to manipulate engagement, removing more than 76,000 accounts and 4.8 million posts, as it ramps up integrity efforts ahead of the US midterms.",
-      "For sports social teams, larger fake-follower sweeps can cause sudden drops in follower counts, so expect some fluctuation and report engagement rate rather than raw totals to sponsors. Clubs working with betting or alcohol partners should review branded content carefully against TikTok's regulated-goods rules, and anyone tempted by bought growth should note that these services are a prime enforcement target."
-    ],
-    "relevant": true,
-    "published_at": "2026-10-25T22:13:46+00:00",
-    "created_at": "2026-10-27T12:04:45.467727+00:00",
-    "edited_at": null,
-    "slug": "tiktok-us-removes-14-6-million-fake-accounts-and-781-million-fake-39",
-    "meta_title": null,
-    "meta_description": null,
-    "takeaways": [],
-    "faq": [],
-    "image_url": "https://imgproxy.divecdn.com/12K6ogX9lcgDYYC0J9LHBG_Vz43JSghdwOStO8_Cc34/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS90aWt0b2tfdXNkc2p2LnBuZw==.webp",
-    "es": {
-      "faq": [],
-      "model": "claude-sonnet-5-5",
-      "title": "TikTok EE. UU. elimina 14,6 millones de cuentas falsas y 781 millones de seguidores falsos en el segundo trimestre",
-      "tokens": {
-        "in": 1476,
-        "out": 773
-      },
-      "excerpt": "",
-      "cta_text": "",
-      "body_html": "",
-      "cta_title": "",
-      "image_alt": "",
-      "takeaways": [],
-      "meta_title": "",
-      "paragraphs": [
-        "TikTok USDS, el grupo con sede en EE. UU. que gestiona las operaciones estadounidenses de la app desde enero, ha publicado su segundo informe de cumplimiento, que abarca de abril a junio. Eliminó 14,6 millones de cuentas falsas, bloqueó 64,8 millones de cuentas de spam en el registro, retiró 781,4 millones de seguidores falsos y detuvo 403,2 millones de solicitudes de seguimiento falsas, un claro aumento respecto al primer trimestre. También aumentaron las eliminaciones de vídeos y las advertencias o desmonetizaciones en directos.",
-        "La mayoría de las retiradas de vídeos correspondieron a bienes y servicios regulados, una categoría amplia que incluye apuestas, alcohol, productos falsificados y servicios que venden likes, visualizaciones y seguidores falsos. TikTok también explicó que desarticuló 30 redes encubiertas que intentaban manipular el engagement, eliminando más de 76.000 cuentas y 4,8 millones de publicaciones, mientras intensifica sus esfuerzos de integridad de cara a las elecciones de mitad de mandato de EE. UU.",
-        "Para los equipos de redes sociales deportivas, las limpiezas más amplias de seguidores falsos pueden provocar caídas repentinas en el número de seguidores, así que espera cierta fluctuación e informa a los patrocinadores de la tasa de engagement en lugar de los totales brutos. Los clubes que trabajan con socios de apuestas o alcohol deben revisar con cuidado el contenido de marca según las normas de TikTok sobre bienes regulados, y quien se sienta tentado por el crecimiento comprado debe tener en cuenta que estos servicios son un objetivo prioritario de las medidas de cumplimiento."
-      ],
-      "image_title": "",
-      "translated_at": "2026-10-27T13:15:03.983Z",
-      "source_changed": "2026-10-27T12:04:45.467727+00:00",
-      "meta_description": ""
-    }
-  },
-  {
     "id": 17,
     "url": "https://www.socialmediatoday.com/news/tiktok-us-shares-second-quarter-account-enforcement-data/833907/",
     "source_name": "Social Media Today",
@@ -3327,6 +3374,53 @@
       "image_title": "",
       "translated_at": "2026-10-26T22:11:27.862Z",
       "source_changed": "2026-10-26T22:03:14.65779+00:00",
+      "meta_description": ""
+    }
+  },
+  {
+    "id": 39,
+    "url": "https://www.socialmediatoday.com/news/tiktok-us-shares-q2-account-enforcement-data/833907/",
+    "source_name": "Social Media Today",
+    "platform": "tiktok",
+    "title": "TikTok US removes 14.6 million fake accounts and 781 million fake followers in Q2",
+    "paragraphs": [
+      "TikTok USDS, the US-based group running the app's American operations since January, released its second enforcement report, covering April to June. It removed 14.6 million fake accounts, blocked 64.8 million spam accounts at sign-up, stripped 781.4 million fake followers and stopped 403.2 million fake follow requests, a clear jump on the first quarter. Video removals and livestream warnings or demonetizations also rose.",
+      "Most video takedowns fell under regulated goods and services, a broad category covering gambling, alcohol, counterfeit products and services selling fake likes, views and followers. TikTok also said it disrupted 30 covert networks trying to manipulate engagement, removing more than 76,000 accounts and 4.8 million posts, as it ramps up integrity efforts ahead of the US midterms.",
+      "For sports social teams, larger fake-follower sweeps can cause sudden drops in follower counts, so expect some fluctuation and report engagement rate rather than raw totals to sponsors. Clubs working with betting or alcohol partners should review branded content carefully against TikTok's regulated-goods rules, and anyone tempted by bought growth should note that these services are a prime enforcement target."
+    ],
+    "relevant": true,
+    "published_at": "2026-10-25T22:13:46+00:00",
+    "created_at": "2026-10-27T12:04:45.467727+00:00",
+    "edited_at": null,
+    "slug": "tiktok-us-removes-14-6-million-fake-accounts-and-781-million-fake-39",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/12K6ogX9lcgDYYC0J9LHBG_Vz43JSghdwOStO8_Cc34/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS90aWt0b2tfdXNkc2p2LnBuZw==.webp",
+    "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
+      "title": "TikTok EE. UU. elimina 14,6 millones de cuentas falsas y 781 millones de seguidores falsos en el segundo trimestre",
+      "tokens": {
+        "in": 1476,
+        "out": 773
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [],
+      "meta_title": "",
+      "paragraphs": [
+        "TikTok USDS, el grupo con sede en EE. UU. que gestiona las operaciones estadounidenses de la app desde enero, ha publicado su segundo informe de cumplimiento, que abarca de abril a junio. Eliminó 14,6 millones de cuentas falsas, bloqueó 64,8 millones de cuentas de spam en el registro, retiró 781,4 millones de seguidores falsos y detuvo 403,2 millones de solicitudes de seguimiento falsas, un claro aumento respecto al primer trimestre. También aumentaron las eliminaciones de vídeos y las advertencias o desmonetizaciones en directos.",
+        "La mayoría de las retiradas de vídeos correspondieron a bienes y servicios regulados, una categoría amplia que incluye apuestas, alcohol, productos falsificados y servicios que venden likes, visualizaciones y seguidores falsos. TikTok también explicó que desarticuló 30 redes encubiertas que intentaban manipular el engagement, eliminando más de 76.000 cuentas y 4,8 millones de publicaciones, mientras intensifica sus esfuerzos de integridad de cara a las elecciones de mitad de mandato de EE. UU.",
+        "Para los equipos de redes sociales deportivas, las limpiezas más amplias de seguidores falsos pueden provocar caídas repentinas en el número de seguidores, así que espera cierta fluctuación e informa a los patrocinadores de la tasa de engagement en lugar de los totales brutos. Los clubes que trabajan con socios de apuestas o alcohol deben revisar con cuidado el contenido de marca según las normas de TikTok sobre bienes regulados, y quien se sienta tentado por el crecimiento comprado debe tener en cuenta que estos servicios son un objetivo prioritario de las medidas de cumplimiento."
+      ],
+      "image_title": "",
+      "translated_at": "2026-10-27T13:15:03.983Z",
+      "source_changed": "2026-10-27T12:04:45.467727+00:00",
       "meta_description": ""
     }
   },
