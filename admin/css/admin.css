@@ -2632,3 +2632,8 @@ tr[data-row].is-open td:first-child { box-shadow: inset 3px 0 0 var(--accent, #f
 .mcl-ke-tx b { display: block; font-size: 14px; }
 .mcl-ke-tx small { color: var(--muted); font-size: 12px; }
 .mcl-ke-act { display: flex; gap: 4px; }
+
+/* Club settings: "Upload image" / "Upload logo" are file labels styled as buttons: a row like any button, not the
+   form's label grid (icon above, text spilling out) */
+.mcl-form label.btn { display: inline-flex; flex-direction: row; align-items: center; justify-content: center; gap: 6px; white-space: nowrap; color: var(--text); font-size: 13px; cursor: pointer; }
+.mcl-form label.btn svg { width: 15px; height: 15px; flex: none; }
