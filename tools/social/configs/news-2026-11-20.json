@@ -1,0 +1,41 @@
+{
+ "label": "Nov 2026",
+ "items": [
+  {
+   "img": "youtube",
+   "brand": "youtube",
+   "platform": "YouTube",
+   "title": "Public view counts now include <span class='g'>TV co-viewers</span>.",
+   "para": "YouTube adds an estimate of people watching together on a TV screen. Past totals are not recalculated.",
+   "tip": "Note the <span class='g'>change date</span> when comparing results or reporting reach to sponsors.",
+   "date": "18 Nov"
+  },
+  {
+   "img": "instagram",
+   "brand": "instagram",
+   "platform": "Instagram",
+   "title": "Creators can tag <span class='g'>Amazon products</span> in Reels and posts.",
+   "para": "Up to 30 products per Reel and 20 per feed post, with affiliate attribution added automatically.",
+   "tip": "Players can tag the gear they use. Agree <span class='g'>disclosure rules</span> with athletes first.",
+   "date": "16 Nov"
+  },
+  {
+   "img": "instagram",
+   "brand": "instagram",
+   "platform": "Instagram",
+   "title": "A test lets fans pick <span class='g'>favourite sports</span> and leagues.",
+   "para": "Instagram would use those choices to surface real-time sports updates. It has not commented on the test.",
+   "tip": "If it launches, <span class='g'>live, timely content</span> around matchdays may reach declared fans.",
+   "date": "12 Nov"
+  },
+  {
+   "img": "instagram",
+   "brand": "instagram",
+   "platform": "Instagram",
+   "title": "Edits adds <span class='g'>speed curves</span> and auto audio balancing.",
+   "para": "Vary playback speed within a clip, balance audio levels and set how long text animations stay on screen.",
+   "tip": "Use <span class='g'>speed curves</span> on goals and key plays in highlight Reels.",
+   "date": "12 Nov"
+  }
+ ]
+}
