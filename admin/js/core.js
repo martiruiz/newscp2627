@@ -652,7 +652,7 @@
   // Shared by My Club and Content ideas. job: { t0, snap, records, cancelled }; log(kind, text), step(k, text), say(text) show
   // the progress. The collection is kept in localStorage (key) with a heartbeat (tab), so a reload picks it up and two tabs
   // never import it twice. Steps 0 Bright Data · 1 collecting · 2 importing; the caller goes on (tags, covers…).
-  async function scrapeAndImport({ platform, handle, num: n = 10, key, job, log, step, say, tab, filename, mapRows = (r) => r }) {
+  async function scrapeAndImport({ platform, handle, num: n = 10, since = "", key, job, log, step, say, tab, filename, mapRows = (r) => r }) {
     const call = async (body) => {
       const { data, error } = await db.functions.invoke("club-scrape", { body });
       if (error || data?.error) { let m = data?.error; try { m = m || (await error?.context?.json())?.error; } catch {} throw new Error(m || "Bright Data didn't answer."); }
@@ -663,8 +663,8 @@
     const forget = () => { try { localStorage.removeItem(key); } catch {} };
     if (saved?.snapshot_id) { job.snap = saved.snapshot_id; job.t0 = saved.at || job.t0; log("info", `Picking up the collection started before (${saved.snapshot_id})`); }
     else {
-      log("info", `Asking Bright Data for the last ${n} posts of ${platform === "tiktok" ? `tiktok.com/@${handle}` : `instagram.com/${handle}`}`);
-      const { snapshot_id } = await call({ action: "start", platform, handle, num: n });
+      log("info", `Asking Bright Data for ${since ? `the posts since ${since}` : `the last ${n} posts`} of ${platform === "tiktok" ? `tiktok.com/@${handle}` : `instagram.com/${handle}`}`);
+      const { snapshot_id } = await call({ action: "start", platform, handle, num: since ? 0 : n, since });
       saved = { snapshot_id, at: job.t0 }; job.snap = snapshot_id;
       try { localStorage.setItem(key, JSON.stringify(saved)); } catch {}
       log("ok", `Bright Data accepted it · collection ${snapshot_id}`);
@@ -685,7 +685,7 @@
       if (Date.now() - job.t0 > 1800000) { forget(); throw new Error("Bright Data took more than 30 minutes with this account. Try again later."); }
     }
     forget();
-    const rows = (res.rows || []).filter((r) => r.external_id && r.published_at).map(mapRows);
+    const rows = (res.rows || []).filter((r) => r.external_id && r.published_at && (!since || r.published_at.slice(0, 10) >= since)).map(mapRows);
     log("ok", `Collected ${num(res.rows?.length || 0)} posts${res.rows?.length - rows.length ? ` (${res.rows.length - rows.length} without id or date, skipped)` : ""} · ${num(rows.filter((r) => r.title).length)} with text · ${num(rows.filter((r) => r.cover).length)} with image`);
     if (!rows.length) throw new Error(`Bright Data found no posts for @${handle}${res.errors?.length ? `: ${res.errors[0]}` : "."}`);
     step(2, `Importing ${num(rows.length)} posts`); say("Importing…");

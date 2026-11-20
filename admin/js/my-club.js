@@ -144,11 +144,13 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
             <button class="mcl-pend-x" type="button" data-dismiss="${esc(`${a.platform}|${a.handle}`)}" title="Discard: don't ask for it again">✕</button></li>`).join("")}</ul></div>
           ${pendingIg > 1 ? `<button class="btn btn-primary btn-sm" type="button" data-scrape-all>${icon("download")}Scrape all ${num(pendingIg)}</button>` : ""}</div>` : ""}
         <form class="mcl-quick" data-quick-scrape>
-          <div class="mcl-quick-h"><span class="mcl-set-ic">${icon("download")}</span><span><b>Scrape new profiles</b><small>Paste one or more Instagram / TikTok accounts (@user or link, separated by commas): they're added to ${esc(c.name)} and their last 10 posts are collected right away.</small></span></div>
+          <div class="mcl-quick-h"><span class="mcl-set-ic">${icon("download")}</span><span><b>Scrape new profiles</b><small>Paste one or more Instagram / TikTok accounts (@user or link, separated by commas): they're added to ${esc(c.name)} and their posts are collected right away (how many: Posts, also for every Scrape button).</small></span></div>
           <div class="mcl-quick-row">
             <input class="input" name="handles" type="text" placeholder="@lamineyamal, tiktok.com/@fcbarcelona…" autocomplete="off" required data-quick-in>
             <label>Add as<select class="select" name="kind">${[["player", "Player"], ["sponsor", "Sponsor"], ["competitor", "Competitor"], ["creator", "Content creator"], ["account", `${(TYPES.find((x) => x[0] === c.kind) || TYPES[0])[1]} account`]].map(([v, l]) => `<option value="${v}">${esc(l)}</option>`).join("")}</select></label>
             <label>Section<select class="select" name="section"><option value="">Whole ${esc((TYPES.find((x) => x[0] === c.kind) || TYPES[0])[1].toLowerCase())}</option>${club.sections.map((x) => `<option value="${esc(x.name)}">${esc(x.name)}</option>`).join("")}</select></label>
+            <label title="Also used by every Scrape button of this page">How many posts<select class="select" name="amount" data-scrape-amount>${[["10", "Last 10"], ["25", "Last 25"], ["50", "Last 50"], ["100", "Last 100"], ["since", "Since a date…"]].map(([v, l]) => `<option value="${v}"${v === scrapeAmount().amount ? " selected" : ""}>${esc(l)}</option>`).join("")}</select></label>
+            <label data-scrape-since-l${scrapeAmount().amount === "since" ? "" : " hidden"}>Since<input class="input" type="date" name="since" value="${esc(scrapeAmount().since)}" max="${new Date().toISOString().slice(0, 10)}" data-scrape-since></label>
             <label title="For accounts pasted as @user (links say their network)">Network<select class="select" name="net"><option value="instagram">Instagram</option><option value="tiktok">TikTok</option></select></label>
             <button class="btn btn-primary mcl-quick-go" type="submit">${icon("download")}Add and scrape</button>
           </div>
@@ -402,7 +404,8 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
     say("Starting…");
     try {
       // Bright Data → the import (core.js), remembered in this browser so a reload picks it up
-      const { rows, out, res } = await A.scrapeAndImport({ platform, handle, num: 10, job, log, step, say, tab: TAB,
+      const amt = scrapeAmount();
+      const { rows, out, res } = await A.scrapeAndImport({ platform, handle, num: amt.amount === "since" ? 0 : Number(amt.amount) || 10, since: amt.amount === "since" ? amt.since : "", job, log, step, say, tab: TAB,
         key: `scp-scrape:${cur}:${id}`, filename: `Bright Data · @${handle} · ${club.club.name}`,
         // a club's own account: its posts carry the club's tag (they go to the library, like the daily scraping)
         mapRows: (r) => (clubAcc ? { ...r, club: club.club.name } : r) });
@@ -436,6 +439,19 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
     return `<button class="mcl-scrape${a.posts ? " is-again" : ""}" type="button" data-scrape="${esc(k)}"${clubAcc ? " data-club-acc" : ""} title="${a.posts ? "Collect its last 10 posts again (new ones are added)" : "Bright Data collects its last 10 posts"}">${icon(a.posts ? "undo" : "download")}${a.posts ? "Update" : "Scrape"}</button>`;
   }
   // the library's entity of each kind (a competitor can be a club, a competition…: none)
+  // how many posts each scrape collects (Scrape new profiles → Posts; every Scrape button of the page uses it too):
+  // the last 10 / 25 / 50 / 100, or every post since a date (200 at most). Remembered in this browser.
+  function scrapeAmount() {
+    let v = {}; try { v = JSON.parse(localStorage.getItem("scp-scrape-amount") || "{}"); } catch {}
+    const since = /^\d{4}-\d{2}-\d{2}$/.test(v.since || "") ? v.since : new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10);
+    return { amount: ["10", "25", "50", "100", "since"].includes(v.amount) ? v.amount : "10", since };
+  }
+  main.addEventListener("change", (e) => {
+    if (!e.target.matches("[data-scrape-amount], [data-scrape-since]")) return;
+    const f = e.target.closest("form"), amount = f.amount.value, since = f.since.value;
+    try { localStorage.setItem("scp-scrape-amount", JSON.stringify({ amount, since })); } catch {}
+    f.querySelector("[data-scrape-since-l]").hidden = amount !== "since";
+  });
   // the networks' short marks on the account chips
   const PFS = { instagram: "IG", tiktok: "TT", youtube: "YT", facebook: "FB", x: "X", linkedin: "in", threads: "@" };
   const ENTITY = { player: "Player", sponsor: "Brand", creator: "Content Creators", competitor: "" };

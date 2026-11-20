@@ -2,7 +2,7 @@
 // scraped yet. Bright Data (Web Scraper API, Instagram posts, discover by profile URL) collects its latest posts; they come
 // back as the same rows as the daily scraping CSV, and the admin imports them the same way (only in that club's My Club).
 // Superadmins only. Two steps, because Bright Data collects in the background (usually 1–3 minutes):
-//   POST { action: "start", platform: "instagram" | "tiktok", handle, num }   → { snapshot_id }
+//   POST { action: "start", platform: "instagram" | "tiktok", handle, num, since? }   → { snapshot_id }   (num ≤ 200; since = YYYY-MM-DD)
 //   POST { action: "cancel", snapshot_id }  → { cancelled: true }
 //   POST { action: "status", platform, snapshot_id, handle }  → { status: "running" } | { status: "ready", rows, fields } | { status: "failed", error }
 // Secret (Supabase → Edge Functions → Secrets): BRIGHTDATA_API_KEY. SUPABASE_URL, SUPABASE_ANON_KEY and
@@ -128,13 +128,17 @@ Deno.serve(async (req) => {
     const tt = b.platform === "tiktok";
     const handle = String(b.handle || "").trim().replace(/^@/, "").replace(/^https?:\/\/(www\.)?(instagram|tiktok)\.com\/@?/, "").replace(/\/.*$/, "").toLowerCase();
     if (!/^[\w.]{1,30}$/.test(handle)) return json({ error: `That isn't a${tt ? " TikTok" : "n Instagram"} account.` }, 400);
-    const num = Math.min(Math.max(Number(b.num) || 10, 1), 50);
-    const input = [{ url: tt ? `https://www.tiktok.com/@${handle}` : `https://www.instagram.com/${handle}/`, num_of_posts: num }];
+    // how many: the last N posts (1–200), or every post since a date (b.since = YYYY-MM-DD; 200 at most, so a mistake
+    // can't run up the bill). Bright Data takes the date as MM-DD-YYYY.
+    const since = /^\d{4}-\d{2}-\d{2}$/.test(String(b.since || "")) ? String(b.since) : "";
+    const num = Math.min(Math.max(Number(b.num) || (since ? 200 : 10), 1), 200);
+    const input = [{ url: tt ? `https://www.tiktok.com/@${handle}` : `https://www.instagram.com/${handle}/`, num_of_posts: num,
+      ...(since ? { start_date: `${since.slice(5, 7)}-${since.slice(8, 10)}-${since.slice(0, 4)}` } : {}) }];
     const q = tt ? `?dataset_id=${TT_POSTS}&type=discover_new&discover_by=profile_url&include_errors=true` : `?dataset_id=${IG_POSTS}&type=discover_new&discover_by=url&include_errors=true`;
     let r = await bd(`/trigger${q}`, { method: "POST", body: JSON.stringify({ input }) });
     if (r.status === 400) r = await bd(`/trigger${q}`, { method: "POST", body: JSON.stringify(input) });   // older shape: a bare list
     const d = await r.json().catch(() => ({}));
-    return d?.snapshot_id ? json({ snapshot_id: d.snapshot_id, handle, num }) : json({ error: `Bright Data: ${d?.error || d?.message || r.status}` }, 502);
+    return d?.snapshot_id ? json({ snapshot_id: d.snapshot_id, handle, num, since }) : json({ error: `Bright Data: ${d?.error || d?.message || r.status}` }, 502);
   }
 
   if (b.action === "status") {

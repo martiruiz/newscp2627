@@ -2637,3 +2637,11 @@ tr[data-row].is-open td:first-child { box-shadow: inset 3px 0 0 var(--accent, #f
    form's label grid (icon above, text spilling out) */
 .mcl-form label.btn { display: inline-flex; flex-direction: row; align-items: center; justify-content: center; gap: 6px; white-space: nowrap; color: var(--text); font-size: 13px; cursor: pointer; }
 .mcl-form label.btn svg { width: 15px; height: 15px; flex: none; }
+
+/* Scrape new profiles: the row wraps (accounts, add as, section, posts, since, network, button) */
+.mcl-quick-row { display: flex; flex-wrap: wrap; }
+.mcl-quick-row > input.input { flex: 1 1 260px; min-width: 0; }
+.mcl-quick-row > label { flex: 0 0 auto; min-width: 140px; }
+.mcl-quick-row > label[hidden] { display: none; }
+.mcl-quick-row .mcl-quick-go { flex: 0 0 auto; }
+@media (max-width: 640px) { .mcl-quick-row > label, .mcl-quick-row > input.input, .mcl-quick-row .mcl-quick-go { flex: 1 1 100%; } }
