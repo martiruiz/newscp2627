@@ -120,6 +120,12 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/631/631157.jpg?v=mwo7lf89"
   },
   {
+    "account": "433",
+    "account_platform": "instagram",
+    "views": 3991809,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/634/634278.jpg?v=mwopwt93"
+  },
+  {
     "account": "fabriziorom",
     "account_platform": "instagram",
     "views": 3988611,
@@ -172,11 +178,5 @@
     "account_platform": "tiktok",
     "views": 3000000,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/630/630231.jpg?v=mwju0uv6"
-  },
-  {
-    "account": "bleacherreport",
-    "account_platform": "instagram",
-    "views": 2956331,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/633/633808.jpg?v=mwopxhz0"
   }
 ]
