@@ -34,6 +34,7 @@
       <div><h1>Content Ideas</h1><p data-total>Loading…</p></div>
       <div class="head-actions">
         <button class="btn btn-primary" type="button" data-add title="Create a new content idea manually">${icon("plus")}Add</button>
+        <button class="btn" type="button" data-change-tag title="Every post with one tag gets another instead (merge duplicates, move posts)">${icon("tag")}Change tag</button>
         <div class="menu-wrap">
           <button class="btn" type="button" data-columns aria-expanded="false">${icon("columns")}Columns</button>
           <div class="menu" hidden data-columns-menu>${COLUMNS.map((c) => `<label><input class="check" type="checkbox" value="${c.key}" ${visible.includes(c.key) ? "checked" : ""}>${c.label}</label>`).join("")}</div>
@@ -496,6 +497,89 @@
   const catLabel = (k) => A.CAT_LABEL[k] || k.replace(/_/g, " ").replace(/^./, (c) => c.toUpperCase());
   const allValues = () => [...catalog.byId.values()];
   const fold = (t) => String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  // ---------- Change tag: every post with tag A gets tag B instead, in one step (supabase/replace-tag.sql) ----------
+  $("[data-change-tag]").addEventListener("click", () => {
+    const pick = { from: null, to: null };
+    let filteredIds = null;   // the posts of the current filters, asked once when that option is chosen
+    const m = A.modal({
+      title: "Change tag", sub: "Every post with the first tag gets the second one instead. Merge duplicates (Celta → RC Celta de Vigo) or move posts to the right value.",
+      body: `<div class="ct-grid">
+          <div class="ct-f"><p class="bk-h">Tag to change</p><div class="ct-pick" data-ct-pick="from"></div>
+            <input class="input" type="search" placeholder="Search a club, sport, sponsor, moment…" autocomplete="off" data-ct-q="from"><div class="bk-sugg" data-ct-sugg="from" hidden></div></div>
+          <span class="ct-arrow" aria-hidden="true">→</span>
+          <div class="ct-f"><p class="bk-h">Change it to</p><div class="ct-pick" data-ct-pick="to"></div>
+            <input class="input" type="search" placeholder="Search the new tag…" autocomplete="off" data-ct-q="to"><div class="bk-sugg" data-ct-sugg="to" hidden></div></div>
+        </div>
+        <div class="ct-scope" data-ct-scope hidden>
+          <label><input type="radio" name="ct-scope" value="all" checked> <span>All its posts</span> <em class="muted" data-ct-all></em></label>
+          <label><input type="radio" name="ct-scope" value="filtered"> <span>Only the posts of the current filters</span> <em class="muted" data-ct-filtered></em></label>
+        </div>
+        <p class="ct-sum" data-ct-sum></p>`,
+      foot: `<button class="btn btn-ghost" type="button" data-cancel>Cancel</button><button class="btn btn-primary" type="button" data-ct-go disabled>Change tag</button>`,
+    });
+    const q1 = (sel) => m.el.querySelector(sel);
+    const scope = () => q1("input[name=ct-scope]:checked").value;
+    const count = async (v, ids) => Number(await rpc("tag_post_count", { p_value: v.id, p_ids: ids || null })) || 0;
+    const draw = async () => {
+      for (const k of ["from", "to"]) {
+        const v = pick[k];
+        q1(`[data-ct-pick=${k}]`).innerHTML = v ? `<span class="bk-chip is-${k === "from" ? "remove" : "add"}"><small>${esc(catLabel(v.category))}</small>${esc(v.name)}<em>${num(v.ideas || 0)}</em><button type="button" data-ct-clear="${k}" aria-label="Change">×</button></span>` : "";
+        q1(`[data-ct-q=${k}]`).hidden = !!v;
+      }
+      const go = q1("[data-ct-go]"), sum = q1("[data-ct-sum]");
+      q1("[data-ct-scope]").hidden = !pick.from;
+      if (!pick.from) { go.disabled = true; sum.textContent = ""; return; }
+      const nAll = await count(pick.from);
+      q1("[data-ct-all]").textContent = `(${num(nAll)})`;
+      let n = nAll;
+      if (scope() === "filtered") {
+        if (!filteredIds) { sum.textContent = "Counting the filtered posts…"; filteredIds = (await rpc("search_content_idea_ids", panel.params())).map(Number); }
+        n = await count(pick.from, filteredIds);
+        q1("[data-ct-filtered]").textContent = `(${num(n)})`;
+      }
+      if (!pick.to) { go.disabled = true; sum.textContent = `${num(n)} posts with “${pick.from.name}”. Now pick the new tag.`; return; }
+      go.disabled = n === 0;
+      sum.innerHTML = `<b>${num(n)}</b> posts: <b>${esc(pick.from.name)}</b> → <b>${esc(pick.to.name)}</b>`;
+      go.textContent = `Change ${num(n)} posts`;
+    };
+    const suggest = (k) => {
+      const box = q1(`[data-ct-sugg=${k}]`), q = fold(q1(`[data-ct-q=${k}]`).value.trim());
+      if (q.length < 2) { box.hidden = true; return; }
+      const other = pick[k === "from" ? "to" : "from"];
+      const hits = allValues().filter((v) => fold(v.name).includes(q) && v.id !== other?.id)
+        .sort((a, b) => (fold(a.name).startsWith(q) ? 0 : 1) - (fold(b.name).startsWith(q) ? 0 : 1) || (k === "to" && other ? (b.category === other.category) - (a.category === other.category) : 0) || b.ideas - a.ideas).slice(0, 12);
+      box.innerHTML = hits.length ? hits.map((v) => `<button type="button" data-ct-hit="${k}" data-id="${v.id}"><span>${esc(v.name)}</span><small>${esc(catLabel(v.category))} · ${num(v.ideas)}</small></button>`).join("") : `<p class="hint">No tag with that name.</p>`;
+      box.hidden = false;
+    };
+    m.el.querySelectorAll("[data-ct-q]").forEach((inp) => inp.addEventListener("input", () => suggest(inp.dataset.ctQ)));
+    m.el.addEventListener("change", (e) => { if (e.target.name === "ct-scope") draw(); });
+    m.el.addEventListener("click", (e) => {
+      const hit = e.target.closest("[data-ct-hit]");
+      if (hit) {
+        const k = hit.dataset.ctHit;
+        pick[k] = catalog.byId.get(Number(hit.dataset.id));
+        q1(`[data-ct-q=${k}]`).value = ""; q1(`[data-ct-sugg=${k}]`).hidden = true;
+        draw();
+        if (k === "from" && !pick.to) q1("[data-ct-q=to]").focus();
+        return;
+      }
+      const clr = e.target.closest("[data-ct-clear]");
+      if (clr) { pick[clr.dataset.ctClear] = null; draw(); q1(`[data-ct-q=${clr.dataset.ctClear}]`).focus(); }
+    });
+    q1("[data-cancel]").addEventListener("click", m.close);
+    q1("[data-ct-go]").addEventListener("click", async (e) => {
+      const go = e.currentTarget; go.disabled = true; go.innerHTML = `<span class="spinner sm"></span> Changing…`;
+      try {
+        const r = await rpc("replace_tag", { p_from: pick.from.id, p_to: pick.to.id, p_ids: scope() === "filtered" ? filteredIds : null });
+        m.close();
+        A.toast(`${num(r.posts)} posts moved from “${pick.from.name}” to “${pick.to.name}”${r.posts - r.added ? ` (${num(r.posts - r.added)} already had it)` : ""}.`);
+        A.resetCatalog(); load();
+      } catch (err) { A.toast(A.errMsg(err), "err"); go.disabled = false; go.textContent = "Change tag"; }
+    });
+    draw();
+    q1("[data-ct-q=from]").focus();
+  });
+
   $("[data-bulk-edit]").addEventListener("click", () => {
     const ids = selectionIds();
     const add = new Map(), remove = new Map();   // value id → value

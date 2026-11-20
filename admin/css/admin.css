@@ -2645,3 +2645,19 @@ tr[data-row].is-open td:first-child { box-shadow: inset 3px 0 0 var(--accent, #f
 .mcl-quick-row > label[hidden] { display: none; }
 .mcl-quick-row .mcl-quick-go { flex: 0 0 auto; }
 @media (max-width: 640px) { .mcl-quick-row > label, .mcl-quick-row > input.input, .mcl-quick-row .mcl-quick-go { flex: 1 1 100%; } }
+
+/* Content ideas → Change tag: tag to change → new tag, which posts, what will happen */
+.ct-grid { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 14px; align-items: start; }
+.ct-f { position: relative; display: grid; gap: 8px; min-width: 0; }
+.ct-f .bk-h { margin: 0; }
+.ct-f .bk-sugg { position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 5; }
+.ct-arrow { align-self: center; margin-top: 22px; font-size: 22px; color: var(--accent); }
+.ct-pick:empty { display: none; }
+.ct-pick .bk-chip { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; }
+.ct-pick .bk-chip em { font-style: normal; color: var(--muted); font-size: 12px; }
+.ct-pick .bk-chip button { border: 0; background: none; color: inherit; cursor: pointer; font-size: 16px; line-height: 1; padding: 0 2px; }
+.ct-scope { display: grid; gap: 8px; margin-top: 16px; padding: 12px 14px; border-radius: 12px; background: var(--panel-2); font-size: 13.5px; }
+.ct-scope label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.ct-sum { margin: 14px 0 0; font-size: 14px; }
+.ct-sum:empty { display: none; }
+@media (max-width: 640px) { .ct-grid { grid-template-columns: minmax(0, 1fr); } .ct-arrow { margin: 0; transform: rotate(90deg); justify-self: center; } }
