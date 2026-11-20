@@ -442,6 +442,8 @@
       }
       SCOPE.ids = Object.keys(map).map(Number);
       SCOPE.who = (id) => (!map[id] ? null : map[id].startsWith("library:") ? map[id].slice(8) : `@${map[id].split(":")[1]}`);
+      const pics = new Map((st.profiles || []).map((p) => [p.id, p.photo]));
+      SCOPE.photo = (id) => (map[id] && pics.get(map[id])) || null;   // the profile's picture on the post's footer
       resolveReady();
       return window.dispatchEvent(new Event("scp-lib-scope"));
     }
@@ -458,6 +460,8 @@
     const names = new Map(st.space.people.map((p) => [p.id, p.name]));
     SCOPE.ids = Object.keys(map).map(Number);
     SCOPE.who = (id) => names.get(map[id]) || null;
+    const pics = new Map(st.space.people.map((p) => [p.id, p.photo_url]));
+    SCOPE.photo = (id) => pics.get(map[id]) || null;   // the player's / sponsor's picture on the post's footer
     resolveReady();
     window.dispatchEvent(new Event("scp-lib-scope"));
   }

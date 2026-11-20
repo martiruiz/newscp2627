@@ -2074,7 +2074,7 @@
     const isCC = /^(content creators|media)$/i.test(who || "");
     if (isCC && p.account) { who = `@${p.account}`; crest = null; }
     const owner = window.SCP_LIB_SCOPE?.who?.(p.id);   // My Club: the player's / sponsor's name
-    if (owner) { who = owner; crest = null; }
+    if (owner) { const pic = window.SCP_LIB_SCOPE?.photo?.(p.id); who = owner; crest = pic ? { name: owner, logo: pic, ig: true } : crest?.logo ? crest : null; }   // their picture, else the post's own logo
     const video = isVideo(p);
     const favClub = (p.tags?.club || []).find((v) => me.fav.has(Number(v.id)));
     const fmt = pretty(first(p, "format"));
