@@ -124,7 +124,7 @@ async def main():
         browser = await p.chromium.launch()
         ctx = await browser.new_context(viewport={"width": 500, "height": 900}, locale="en-US")
         while done < LIMIT:
-            rows = rest("content_ideas?select=id,url,cover_url&account_platform=eq.facebook&embed_h=is.null&unavailable_at=is.null"
+            rows = rest("content_ideas?select=id,url,cover_url,external_id&account_platform=eq.facebook&embed_h=is.null&unavailable_at=is.null"
                         f"&order=published_at.desc.nullslast&limit={min(48, LIMIT - done)}")
             if not rows:
                 break
@@ -133,8 +133,13 @@ async def main():
                 part = rows[k:k + WORKERS]
                 res = await asyncio.gather(*(measure(ctx, r) for r in part))
                 for r, (h, cover) in zip(part, res):
-                    if h < 0:   # no longer on Facebook: out of the library (as fb-shape and covers.mjs do)
+                    if h < 0:   # no longer on Facebook: flagged (gone_at, via the trigger) and hidden from the library (content_hidden)
                         rest(f"content_ideas?id=eq.{r['id']}", {"unavailable_at": __import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat()}, "PATCH")
+                        if r.get("external_id"):
+                            try:
+                                rest("content_hidden?on_conflict=external_id", {"external_id": r["external_id"]}, "POST")
+                            except Exception:
+                                pass
                         gone += 1
                         h = 0
                     out.append({"id": r["id"], "h": h})
