@@ -6,7 +6,17 @@
     <atom:link href="https://sportscontentplaybook.com/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Sports social media content ideas, trends and analysis.</description>
     <language>en</language>
-    <lastBuildDate>Fri, 20 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Sat, 21 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Football social media content ideas: use the quiet week to present your academy</title>
+      <link>https://sportscontentplaybook.com/blog/football-social-media-content-ideas-academy-no-match-weeks.html</link>
+      <guid isPermaLink="true">https://sportscontentplaybook.com/blog/football-social-media-content-ideas-academy-no-match-weeks.html</guid>
+      <pubDate>Sat, 21 Nov 2026 08:00:00 GMT</pubDate>
+      <dc:creator>Martí Ruiz</dc:creator>
+      <description>The Spanish federation's most-watched Reel this week was not the senior team or the draw. It was the U-17s. Here is how any club can turn a quiet week into an academy showcase.</description>
+      <enclosure url="https://sportscontentplaybook.com/assets/blog/football-social-media-content-ideas-academy-no-match-weeks.jpg" length="180500" type="image/jpeg"/>
+      <media:content url="https://sportscontentplaybook.com/assets/blog/football-social-media-content-ideas-academy-no-match-weeks.jpg" medium="image" type="image/jpeg"/>
+    </item>
     <item>
       <title>Social media ideas for sports teams: turn a game night into a world fans want to enter</title>
       <link>https://sportscontentplaybook.com/blog/social-media-ideas-for-sports-teams-themed-night-world.html</link>
@@ -296,16 +306,6 @@
       <description>Barcelona’s 2026 Tour de France Grand Départ shows how sport can power city branding, business opportunities, and immersive content strategies that extend far beyond the race itself.</description>
       <enclosure url="https://sportscontentplaybook.com/assets/blog/how-the-tour-de-france-turns-cities-into-global-brands.jpg" length="242035" type="image/jpeg"/>
       <media:content url="https://sportscontentplaybook.com/assets/blog/how-the-tour-de-france-turns-cities-into-global-brands.jpg" medium="image" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>Social media in sports: why Nike won the World Cup marketing battle after the films were released</title>
-      <link>https://sportscontentplaybook.com/blog/why-nike-won-the-world-cup-marketing-battle-after-the-films-were-released.html</link>
-      <guid isPermaLink="true">https://sportscontentplaybook.com/blog/why-nike-won-the-world-cup-marketing-battle-after-the-films-were-released.html</guid>
-      <pubDate>Mon, 22 Jun 2026 08:00:00 GMT</pubDate>
-      <dc:creator>Josep</dc:creator>
-      <description>Nike and adidas created outstanding World Cup films, but Nike’s talent activation and creator-led distribution strategy generated greater reach, participation, and long-term campaign momentum.</description>
-      <enclosure url="https://sportscontentplaybook.com/assets/blog/why-nike-won-the-world-cup-marketing-battle-after-the-films-were-released.jpg" length="124654" type="image/jpeg"/>
-      <media:content url="https://sportscontentplaybook.com/assets/blog/why-nike-won-the-world-cup-marketing-battle-after-the-films-were-released.jpg" medium="image" type="image/jpeg"/>
     </item>
   </channel>
 </rss>

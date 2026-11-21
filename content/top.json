@@ -132,6 +132,12 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/621/621198.jpg?v=mwi5khsz"
   },
   {
+    "account": "memezar",
+    "account_platform": "instagram",
+    "views": 4345349,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/645/645618.jpg?v=mwpcc5xi"
+  },
+  {
     "account": "houseofhighlights",
     "account_platform": "instagram",
     "views": 4310949,
@@ -172,11 +178,5 @@
     "account_platform": "instagram",
     "views": 3988611,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/630/630061.jpg?v=mwjtxb9x"
-  },
-  {
-    "account": "bleacherreport",
-    "account_platform": "instagram",
-    "views": 3986945,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/630/630043.jpg?v=mwjtxawx"
   }
 ]
