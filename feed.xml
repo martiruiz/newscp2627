@@ -6,7 +6,17 @@
     <atom:link href="https://sportscontentplaybook.com/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Sports social media content ideas, trends and analysis.</description>
     <language>en</language>
-    <lastBuildDate>Sat, 21 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Sun, 22 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Sports Reels ideas: one match, ten Reels, one protagonist each</title>
+      <link>https://sportscontentplaybook.com/blog/sports-reels-ideas-one-match-ten-reels-week.html</link>
+      <guid isPermaLink="true">https://sportscontentplaybook.com/blog/sports-reels-ideas-one-match-ten-reels-week.html</guid>
+      <pubDate>Sun, 22 Nov 2026 08:00:00 GMT</pubDate>
+      <dc:creator>Martí Ruiz</dc:creator>
+      <description>England's 2-3 win in Madrid drew a 7.5 million TV peak, yet the top Reel reached 17.8 million views. The pattern: one match, ten Reels, one protagonist each.</description>
+      <enclosure url="https://sportscontentplaybook.com/assets/blog/sports-reels-ideas-one-match-ten-reels-week.jpg" length="127090" type="image/jpeg"/>
+      <media:content url="https://sportscontentplaybook.com/assets/blog/sports-reels-ideas-one-match-ten-reels-week.jpg" medium="image" type="image/jpeg"/>
+    </item>
     <item>
       <title>Football social media content ideas: use the quiet week to present your academy</title>
       <link>https://sportscontentplaybook.com/blog/football-social-media-content-ideas-academy-no-match-weeks.html</link>
@@ -296,16 +306,6 @@
       <description>YouTube will push original Shorts and cut the reach of channels that re-upload other people's clips. Here is what changes for clubs and how to adapt.</description>
       <enclosure url="https://sportscontentplaybook.com/assets/blog/youtube-shorts-original-content-football-club-sports-social-media-trends.jpg" length="116974" type="image/jpeg"/>
       <media:content url="https://sportscontentplaybook.com/assets/blog/youtube-shorts-original-content-football-club-sports-social-media-trends.jpg" medium="image" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>City branding: how the Tour de France turns cities into global brands</title>
-      <link>https://sportscontentplaybook.com/blog/how-the-tour-de-france-turns-cities-into-global-brands.html</link>
-      <guid isPermaLink="true">https://sportscontentplaybook.com/blog/how-the-tour-de-france-turns-cities-into-global-brands.html</guid>
-      <pubDate>Tue, 07 Jul 2026 08:00:00 GMT</pubDate>
-      <dc:creator>Josep</dc:creator>
-      <description>Barcelona’s 2026 Tour de France Grand Départ shows how sport can power city branding, business opportunities, and immersive content strategies that extend far beyond the race itself.</description>
-      <enclosure url="https://sportscontentplaybook.com/assets/blog/how-the-tour-de-france-turns-cities-into-global-brands.jpg" length="242035" type="image/jpeg"/>
-      <media:content url="https://sportscontentplaybook.com/assets/blog/how-the-tour-de-france-turns-cities-into-global-brands.jpg" medium="image" type="image/jpeg"/>
     </item>
   </channel>
 </rss>
