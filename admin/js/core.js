@@ -48,6 +48,7 @@
     external: '<path d="M15 3h6v6M10 14L21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
     sparkles: '<path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/>',
     search: '<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',
+    lock: '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
     globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
     news: '<path d="M4 5h13v14a2 2 0 0 0 2 2H6a2 2 0 0 1-2-2z"/><path d="M17 9h3v10a2 2 0 0 1-2 2M8 9h5M8 13h5M8 17h3"/>',
     mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
@@ -204,9 +205,47 @@
       document.documentElement.classList.remove("auth-checking");
       throw new Error("not admin");
     }
+    // two-step verification: the back-end only opens with a session confirmed by the authenticator app's code (aal2)
+    const { data: aal } = await db.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (aal?.currentLevel !== "aal2") { await mfaGate(main, session); throw new Error("mfa"); }
     document.documentElement.classList.remove("auth-checking");
     smartWarning(main);
     return { session, profile };
+  }
+
+  // ---------- Two-step verification (TOTP: Google Authenticator, 1Password, Authy…) ----------
+  // First time: a QR code to scan and the first code; after that, the code on every new session. The database also asks
+  // for it (supabase/security-mfa.sql: is_admin() needs a session verified with the code).
+  async function mfaGate(main, session) {
+    document.documentElement.classList.remove("auth-checking");
+    const { data: list } = await db.auth.mfa.listFactors();
+    const factor = (list?.totp || []).find((f) => f.status === "verified");
+    let enrollId = null, qr = "", secret = "";
+    if (!factor) {
+      for (const f of (list?.all || []).filter((x) => x.status !== "verified")) await db.auth.mfa.unenroll({ factorId: f.id }).catch(() => {});
+      const { data, error } = await db.auth.mfa.enroll({ factorType: "totp", friendlyName: `SCP admin ${new Date().toISOString().slice(0, 16)}` });
+      if (error) { main.innerHTML = `<div class="panel panel-pad mfa-box"><h2>Two-step verification</h2><p class="error-text">${esc(error.message)}</p></div>`; return; }
+      enrollId = data.id; qr = data.totp.qr_code; secret = data.totp.secret;
+    }
+    main.innerHTML = `<div class="panel panel-pad mfa-box">
+        <span class="mfa-ic">${icon("lock")}</span>
+        <h2>${factor ? "Enter your code" : "Set up two-step verification"}</h2>
+        <p class="muted">${factor ? "Open your authenticator app and type the 6-digit code for SCP." : "The back-end needs a code from an authenticator app (Google Authenticator, 1Password, Authy…) besides your password. Scan this QR code with the app, then type the 6-digit code it shows."}</p>
+        ${factor ? "" : `<img class="mfa-qr" src="${esc(qr)}" alt="QR code"><p class="mfa-secret">Can't scan it? Type this key in the app: <code>${esc(secret)}</code></p>`}
+        <form class="mfa-form" data-mfa><input class="input" name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" placeholder="123456" required autofocus>
+          <button class="btn btn-primary" type="submit">${factor ? "Verify" : "Turn on and continue"}</button></form>
+        <p class="error-text" data-mfa-err hidden></p>
+        <p class="muted mfa-who">${esc(session.user.email)} · <button class="link" type="button" data-mfa-out>Sign out</button></p>
+      </div>`;
+    main.querySelector("[data-mfa-out]").onclick = async () => { await db.auth.signOut(); location.replace("login.html"); };
+    main.querySelector("[data-mfa]").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const code = e.target.code.value.trim(), err = main.querySelector("[data-mfa-err]"), btn = e.target.querySelector("button");
+      btn.disabled = true; err.hidden = true;
+      const { error } = await db.auth.mfa.challengeAndVerify({ factorId: factor ? factor.id : enrollId, code });
+      if (error) { err.textContent = "That code isn't right. Check the app and try again (the code changes every 30 seconds)."; err.hidden = false; btn.disabled = false; return; }
+      location.reload();
+    });
   }
 
   // on every page: the AI labelling has stopped (no good run of the Action "Smart filters" in 12 hours, supabase/smart-health.sql)
