@@ -32,3 +32,25 @@ begin
     execute format('alter function %s set search_path = public, extensions', r.f);
   end loop;
 end $$;
+
+-- 4. The database webhooks (new sign-up, new subscription, contact form) carried the service key in their headers: the
+--    functions they call check their own webhook secret (verify_jwt off), so the key is taken out of the trigger definitions
+do $$
+declare r record; nd text;
+begin
+  for r in select t.tgname, c.relname, pg_get_triggerdef(t.oid) d from pg_trigger t join pg_class c on c.oid = t.tgrelid
+      where not t.tgisinternal and c.relnamespace = 'public'::regnamespace and t.tgname in ('admin-notify-signup', 'contact-notify', 'admin-notify-subs')
+        and pg_get_triggerdef(t.oid) ilike '%"Authorization":"Bearer %' loop
+    nd := regexp_replace(r.d, '"Authorization":"Bearer [^"]*",', '');
+    execute format('drop trigger %I on public.%I', r.tgname, r.relname);
+    execute nd;
+  end loop;
+end $$;
+
+-- 5. Links are web links: a "javascript:" URL can never be stored (it would run when someone clicks it)
+alter table public.content_ideas drop constraint if exists content_ideas_url_http;
+alter table public.content_ideas add constraint content_ideas_url_http check (url is null or url = '' or url ~* '^https?://');
+alter table public.news drop constraint if exists news_url_http;
+alter table public.news add constraint news_url_http check (url is null or url = '' or url ~* '^https?://');
+alter table public.scraped_profiles drop constraint if exists scraped_profiles_url_http;
+alter table public.scraped_profiles add constraint scraped_profiles_url_http check (url is null or url = '' or url ~* '^https?://');

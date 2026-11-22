@@ -619,12 +619,21 @@
   }
 
   // ---------- Embeds ----------
-  // Embed HTML comes from our own imports. Scripts inside it are removed; the official platform scripts are loaded once instead.
+  // Embed HTML comes from imports and scrapes (not trusted): only what an embed needs is kept — the platforms' blockquote
+  // markup, links and iframes to https addresses, class / data-* / cite / href / src / size attributes. Scripts, styles,
+  // srcdoc, event handlers, forms, <base>, <meta>, <object>… go. The official platform scripts are loaded once instead.
+  const EMBED_TAGS = new Set(["BLOCKQUOTE", "A", "P", "DIV", "SPAN", "SECTION", "IFRAME", "IMG", "BR", "STRONG", "EM", "B", "I", "SVG", "PATH", "G"]);
+  const EMBED_ATTR = /^(class|cite|href|src|title|alt|width|height|frameborder|allow|allowfullscreen|scrolling|loading|lang|dir|viewbox|d|fill|data-[\w-]+)$/i;
+  const httpsOnly = (v) => /^https:\/\//i.test(String(v).replace(/[\u0000-\u0020]+/g, ""));
   function cleanEmbed(html) {
     const tpl = document.createElement("template");
     tpl.innerHTML = String(html || "");
-    $$("script", tpl.content).forEach((s) => s.remove());
-    $$("*", tpl.content).forEach((el) => [...el.attributes].forEach((a) => { if (/^on/i.test(a.name) || /^\s*javascript:/i.test(a.value)) el.removeAttribute(a.name); }));
+    [...tpl.content.querySelectorAll("*")].forEach((el) => {
+      if (!EMBED_TAGS.has(el.tagName.toUpperCase())) { el.remove(); return; }
+      [...el.attributes].forEach((a) => {
+        if (!EMBED_ATTR.test(a.name) || ((a.name === "href" || a.name === "src" || a.name === "cite") && !httpsOnly(a.value))) el.removeAttribute(a.name);
+      });
+    });
     return tpl.innerHTML;
   }
   const SCRIPTS = {

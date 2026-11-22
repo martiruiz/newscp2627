@@ -545,7 +545,7 @@
           <p class="muted ms-small">Variables: ${esc(VARS)}. A line like [Button text](https://…) becomes a button.</p>
           <label class="ms-check"><input type="checkbox" name="enabled" ${t.enabled || t.required ? "checked" : ""} ${t.required ? "disabled" : ""}> Send this e-mail${t.required ? " (essential billing e-mail: always on)" : ""}</label>
           <div class="ms-row"><button class="btn btn-primary" type="submit">Save</button><button class="btn" type="button" data-preview>Preview</button><button class="btn" type="button" data-test>Send me a test</button></div></form>
-        <iframe class="ms-preview" title="Preview" data-frame hidden></iframe>`;
+        <iframe class="ms-preview" title="Preview" sandbox="" data-frame hidden></iframe>`;
       const f = $("[data-tf]");
       f.onsubmit = async (e) => { e.preventDefault(); try { await rpc("admin_save_email_template", { p_key: key, p_locale: locale, p_subject: f.subject.value, p_body: f.body.value, p_enabled: f.enabled.checked }); A.toast("Template saved."); await load(); } catch (err) { fail(err); } };
       $("[data-preview]").onclick = async (e) => { try { const r = await busy(e.target, () => fn("send-emails", { action: "preview", template: key, locale, subject: f.subject.value, body: f.body.value })); const fr = $("[data-frame]"); fr.hidden = false; fr.srcdoc = r.html; } catch (err) { fail(err); } };
