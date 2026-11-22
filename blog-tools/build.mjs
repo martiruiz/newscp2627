@@ -309,6 +309,8 @@ function postPage(src, lang) {
 <html lang="${lang}"${both ? ` data-page-lang="${lang}"` : ""}>
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'">
+  <script>try{if(top!==self&&top.location.origin!==location.origin)throw 0}catch(e){document.documentElement.style.visibility="hidden"}</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <base href="${es ? "../../" : "../"}">
   <title>${esc(p.meta_title)}</title>
@@ -477,6 +479,8 @@ if (news) {
 <html lang="${lang}"${both ? ` data-page-lang="${lang}"` : ""}>
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'">
+  <script>try{if(top!==self&&top.location.origin!==location.origin)throw 0}catch(e){document.documentElement.style.visibility="hidden"}</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <base href="${es ? "../../" : "../"}">
   <title>${esc(title)}</title>

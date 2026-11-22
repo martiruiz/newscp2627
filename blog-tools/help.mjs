@@ -130,6 +130,8 @@ export function buildHelp({ ROOT, SITE, header, footer, withSiteVersions, write,
 <html lang="${l}" data-page-lang="${l}">
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'">
+  <script>try{if(top!==self&&top.location.origin!==location.origin)throw 0}catch(e){document.documentElement.style.visibility="hidden"}</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <base href="${l === "es" ? "../../" : "../"}">
   <title>${esc(title)}</title>
