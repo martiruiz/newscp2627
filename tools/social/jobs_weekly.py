@@ -41,7 +41,7 @@ def cover():
 <div class="abs" style="left:80px;top:170px;right:80px;height:2px;background:rgba(255,255,255,.14)"></div>
 <div class="abs gd" style="left:62px;top:200px;font-size:470px;font-weight:900;line-height:.9;letter-spacing:-.06em">{NJ}</div>
 <div class="abs" style="left:80px;top:640px;width:900px;font-size:104px;font-weight:800;line-height:1.02;letter-spacing:-.03em">sports marketing jobs to put on <span class="gd">your radar.</span></div>
-<div class="abs" style="left:80px;top:1015px;width:760px;font-size:38px;color:#aab7d2;font-weight:500;line-height:1.3">New this week on SCP: {AREAS}.</div>
+<div class="abs" style="left:80px;top:1015px;width:780px;font-size:33px;color:#aab7d2;font-weight:500;line-height:1.3">New this week on SCP: {AREAS}.</div>
 <div class="abs" style="left:80px;top:1150px;display:flex;gap:24px">{tiles}</div>
 <div class="abs cap gd" style="right:80px;top:1062px">Swipe →</div>'''
 def job(k,j):
