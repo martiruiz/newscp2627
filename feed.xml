@@ -6,7 +6,17 @@
     <atom:link href="https://sportscontentplaybook.com/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Sports social media content ideas, trends and analysis.</description>
     <language>en</language>
-    <lastBuildDate>Sun, 22 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 23 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Social media ideas for sports teams: film the guests, not just the game</title>
+      <link>https://sportscontentplaybook.com/blog/social-media-ideas-for-sports-teams-guests-around-the-game.html</link>
+      <guid isPermaLink="true">https://sportscontentplaybook.com/blog/social-media-ideas-for-sports-teams-guests-around-the-game.html</guid>
+      <pubDate>Mon, 23 Nov 2026 08:00:00 GMT</pubDate>
+      <dc:creator>Martí Ruiz</dc:creator>
+      <description>A greeting before kick-off beat a comeback goal three to one. F1 did the same in Las Vegas. Here is the pattern and how any team can copy it.</description>
+      <enclosure url="https://sportscontentplaybook.com/assets/blog/social-media-ideas-for-sports-teams-guests-around-the-game.jpg" length="198053" type="image/jpeg"/>
+      <media:content url="https://sportscontentplaybook.com/assets/blog/social-media-ideas-for-sports-teams-guests-around-the-game.jpg" medium="image" type="image/jpeg"/>
+    </item>
     <item>
       <title>Sports Reels ideas: one match, ten Reels, one protagonist each</title>
       <link>https://sportscontentplaybook.com/blog/sports-reels-ideas-one-match-ten-reels-week.html</link>
@@ -296,16 +306,6 @@
       <description>The Indian Super League streams every match live and free on YouTube, in English, Hindi and a vertical feed, then cuts it into highlights and Shorts. The result: 65 million views in its opening week, and a matchday model any club or league can adapt.</description>
       <enclosure url="https://sportscontentplaybook.com/assets/blog/isl-youtube-vertical-live-stream-football-social-media-content-ideas.jpg" length="130916" type="image/jpeg"/>
       <media:content url="https://sportscontentplaybook.com/assets/blog/isl-youtube-vertical-live-stream-football-social-media-content-ideas.jpg" medium="image" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>Sports Social Media Trends: YouTube Shorts now rewards original content, what it means for sports teams</title>
-      <link>https://sportscontentplaybook.com/blog/youtube-shorts-original-content-sports-teams.html</link>
-      <guid isPermaLink="true">https://sportscontentplaybook.com/blog/youtube-shorts-original-content-sports-teams.html</guid>
-      <pubDate>Thu, 15 Oct 2026 08:00:00 GMT</pubDate>
-      <dc:creator>Martí Ruiz</dc:creator>
-      <description>YouTube will push original Shorts and cut the reach of channels that re-upload other people's clips. Here is what changes for clubs and how to adapt.</description>
-      <enclosure url="https://sportscontentplaybook.com/assets/blog/youtube-shorts-original-content-football-club-sports-social-media-trends.jpg" length="116974" type="image/jpeg"/>
-      <media:content url="https://sportscontentplaybook.com/assets/blog/youtube-shorts-original-content-football-club-sports-social-media-trends.jpg" medium="image" type="image/jpeg"/>
     </item>
   </channel>
 </rss>
