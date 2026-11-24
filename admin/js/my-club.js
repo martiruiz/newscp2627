@@ -97,7 +97,7 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
             <span class="mcl-pc-name"><b title="${esc(p.name)}">${esc(p.name)}</b><small>${total ? `${num(total)} posts` : "No posts yet"} · ${num(p.accounts.length)} account${p.accounts.length === 1 ? "" : "s"}</small></span></div>
           <div class="mcl-pc-sec" title="Internal: the client only filters by it">${personSec(p)}</div>
           <div class="mcl-pc-accs">${p.accounts.length ? p.accounts.map((a) => `<span class="mcl-acc${a.posts ? "" : " is-zero"}"><i class="mcl-pf mcl-pf-${esc(a.platform)}">${esc(PFS[a.platform] || a.platform.slice(0, 2))}</i>@${esc(a.handle)}<b title="${esc(last.get(`${a.platform}|${a.handle}`) ? `Last post imported ${age(last.get(`${a.platform}|${a.handle}`))}` : "")}">${a.posts ? num(a.posts) : "not scraped yet"}</b>${CAN_SCRAPE.has(a.platform) ? scrapeBtn(a) : ""}</span>`).join("") : `<span class="muted">No accounts</span>`}</div>
-          <div class="mcl-pc-act"><label class="mcl-switch mcl-switch-sm" title="Active"><input type="checkbox" aria-label="Active" data-active="${p.id}"${p.active ? " checked" : ""}><i></i></label>
+          <div class="mcl-pc-act">${kind === "competitor" && p.competition ? `<button class="btn btn-sm btn-primary" type="button" data-league="${p.competition}" data-league-name="${esc(p.name)}" title="Its clubs, ready to add as competitors">${icon("plus")}Add its clubs</button>` : ""}<label class="mcl-switch mcl-switch-sm" title="Active"><input type="checkbox" aria-label="Active" data-active="${p.id}"${p.active ? " checked" : ""}><i></i></label>
             ${p.accounts.some((a) => CAN_SCRAPE.has(a.platform)) ? `<button class="btn btn-sm mcl-row-scrape" type="button" data-scrape-person="${p.id}" title="Scrape the last 10 posts of each of its Instagram / TikTok accounts">${icon("download")}Scrape</button>` : ""}<button class="icon-btn" type="button" title="Delete" aria-label="Delete" data-del="${p.id}">${icon("trash")}</button></div>
         </li>`; }).join("")}</ul>`;
     };
@@ -484,7 +484,7 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
   // a club, competition, player or creator already in the Content Library, in one go: its accounts (every network) and
   // its library tag (most library posts have no account: the tag brings them). As the space's own accounts or as a
   // competitor, player or creator (supabase/my-club-library-add.sql)
-  function addFromLibrary(kind = "account") {
+  function addFromLibrary(kind = "account", comp = null) {
     const sel = { tag: null, accounts: new Map(), name: "", avatar: "" };
     const typeName = (TYPES.find((x) => x[0] === club.club.kind) || TYPES[0])[1];
     const asOpts = [["account", `${typeName} account`], ...KINDS.filter(([k]) => k !== "sponsor").map(([k, one]) => [k, one])];
@@ -541,20 +541,20 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
           <button type="button" class="btn btn-primary" data-lg-add${on ? "" : " disabled"}>${icon("plus")}Add ${num(on)} club${on === 1 ? "" : "s"} as competitors</button>`
         : `<p class="muted">No clubs found for this competition in the library.</p>`}</div>`;
     };
+    async function openLeague(tag) {
+      res.innerHTML = `<p class="muted">Finding ${esc(tag.name)}'s clubs…</p>`;
+      try {
+        const own = club.club.name.toLowerCase();
+        const clubs = await rpc("admin_competition_clubs", { p_club: cur, p_comp: tag.id });
+        league = { name: tag.name, clubs: clubs.map((c) => ({ ...c, on: !c.already && c.posts >= 500 && c.name.toLowerCase() !== own })) };
+        drawLeague();
+      } catch (x) { fail(/admin_competition_clubs/.test(x.message) ? new Error("Run supabase/my-club-league-competitors.sql in Supabase first.") : x); draw(); }
+    }
+    if (comp) openLeague(comp);   // from a competitor card ("Add its clubs"): straight to the competition's clubs
     res.addEventListener("change", (e) => { const i = e.target.dataset?.lgI; if (i != null && league) { league.clubs[Number(i)].on = e.target.checked; drawLeague(); } });
     res.addEventListener("click", async (e) => {
       const lg = e.target.closest("[data-lb-league]");
-      if (lg) {
-        const g = data[Number(lg.dataset.lbLeague)];
-        res.innerHTML = `<p class="muted">Finding ${esc(g.tag.name)}'s clubs…</p>`;
-        try {
-          const own = club.club.name.toLowerCase();
-          const clubs = await rpc("admin_competition_clubs", { p_club: cur, p_comp: g.tag.id });
-          league = { name: g.tag.name, clubs: clubs.map((c) => ({ ...c, on: !c.already && c.posts >= 500 && c.name.toLowerCase() !== own })) };
-          drawLeague();
-        } catch (x) { fail(/admin_competition_clubs/.test(x.message) ? new Error("Run supabase/my-club-league-competitors.sql in Supabase first.") : x); draw(); }
-        return;
-      }
+      if (lg) return openLeague(data[Number(lg.dataset.lbLeague)].tag);
       if (e.target.closest("[data-lg-back]")) { league = null; return draw(); }
       const all = e.target.closest("[data-lg-all]");
       if (all) { league.clubs.forEach((c) => { if (!c.already) c.on = all.dataset.lgAll === "1"; }); return drawLeague(); }
@@ -672,6 +672,7 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
       if (b.matches("[data-daily]")) return dailyFile();
       if (b.matches("[data-add-sponsor]")) return addSponsor();
       if (b.dataset.addLibrary) return addFromLibrary(b.dataset.addLibrary);
+      if (b.dataset.league) return addFromLibrary("competitor", { id: Number(b.dataset.league), name: b.dataset.leagueName });
       if (b.dataset.secMove) { await rpc("admin_club_section", { p_club: cur, p_action: b.dataset.secMove, p: { id: Number(b.dataset.sec) } }); return loadClub(); }
       if (b.dataset.secDel) {
         const x = club.sections.find((s) => s.id === Number(b.dataset.secDel));
