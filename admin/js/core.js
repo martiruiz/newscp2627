@@ -206,8 +206,12 @@
       throw new Error("not admin");
     }
     // two-step verification: the back-end only opens with a session confirmed by the authenticator app's code (aal2)
-    const { data: aal } = await db.auth.mfa.getAuthenticatorAssuranceLevel();
-    if (aal?.currentLevel !== "aal2") { await mfaGate(main, session); throw new Error("mfa"); }
+    // switched off for now (2026-11-25): to be turned back on once the second step is set up
+    const MFA_REQUIRED = false;
+    if (MFA_REQUIRED) {
+      const { data: aal } = await db.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (aal?.currentLevel !== "aal2") { await mfaGate(main, session); throw new Error("mfa"); }
+    }
     document.documentElement.classList.remove("auth-checking");
     smartWarning(main);
     return { session, profile };
