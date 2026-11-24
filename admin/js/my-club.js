@@ -157,7 +157,7 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
         </form>
         <div class="mcl-live" data-live hidden></div>
         ${club.sections.length ? `<div class="mcl-secchips"><span class="mcl-secchips-l">Sections</span>${club.sections.map((x) => `<span class="mcl-secchip">${esc(x.name)}${x.teams.length ? `<small>${x.teams.map((t) => esc(t.name)).join(", ")}</small>` : ""}</span>`).join("")}</div>` : ""}
-        <section class="panel mcl-panel mcl-kpanel"><header class="aud-h aud-h-lg"><span class="mcl-set-ic">${icon("crown")}</span><h2>${esc((TYPES.find((x) => x[0] === c.kind) || TYPES[0])[1])} account</h2><span class="aud-count">${num((c.accounts || []).length + (c.library_tags || []).length)}</span>${info("The space's own profiles (Club settings) and its library tags. Their posts show in the client's first tab.")}<span class="spacer"></span><button class="btn btn-sm" type="button" data-add-library="account">${icon("library")}From the library</button></header>
+        <section class="panel mcl-panel mcl-kpanel"><header class="aud-h aud-h-lg"><span class="mcl-set-ic">${icon("crown")}</span><h2>${esc((TYPES.find((x) => x[0] === c.kind) || TYPES[0])[1])} account</h2><span class="aud-count">${num((c.accounts || []).length + (c.library_tags || []).length)}</span>${info("The space's own profiles (Club settings) and its library tags. Their posts show in the client's first tab.")}<span class="spacer"></span><button class="btn btn-sm btn-primary" type="button" data-find-accounts>${icon("filters")}Find all its accounts</button><button class="btn btn-sm" type="button" data-add-library="account">${icon("library")}From the library</button></header>
           ${(c.accounts || []).length || (c.library_tags || []).length ? `<div class="mcl-clubaccs">${(c.library_tags || []).map((t) => `<span class="mcl-acc mcl-acc-club"><i class="mcl-pf mcl-pf-tag">${icon("library")}</i><b class="mcl-acc-tag">${esc(t.name)}</b><small>library tag</small><b> · ${num(t.posts)} posts${secSel({ tag_id: t.id }, t.section_id)}<button type="button" title="Remove" aria-label="Remove" data-tag-del="${t.id}">✕</button></span>`).join("")}${(c.accounts || []).map((a) => `<span class="mcl-acc mcl-acc-club"><i class="mcl-pf mcl-pf-${esc(a.platform)}">${esc(PFS[a.platform] || a.platform.slice(0, 2))}</i>@${esc(a.handle)}${secSel({ platform: a.platform, handle: a.handle }, a.section_id)}${CAN_SCRAPE.has(a.platform) ? scrapeBtn(a, true) : ""}</span>`).join("")}</div>`
             : `<p class="panel-pad muted">None yet. Add it from the library, or its profiles in Club settings.</p>`}</section>
         ${KINDS.filter(([k]) => people.some((p) => p.kind === k)).map(([k, , many]) => `<section class="panel mcl-panel mcl-kpanel"><header class="aud-h aud-h-lg"><span class="mcl-set-ic">${icon({ competitor: "briefcase", player: "users", creator: "sparkles", sponsor: "tag" }[k] || "users")}</span><h2>${many}</h2><span class="aud-count">${num(people.filter((p) => p.kind === k).length)}</span>
@@ -483,6 +483,50 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
 
   // a club, competition, player or creator already in the Content Library, in one go: its accounts (every network) and
   // its library tag (most library posts have no account: the tag brings them). As the space's own accounts or as a
+  // "Find all its accounts": every account in the library that looks like the club's own, on any network, ticked and added
+  // in one go (supabase/my-club-find-accounts.sql). Search terms: the club's handles, its name without spaces or accents,
+  // their common stem (atleticodemadrid, atletifemenino… → "atleti"), plus whatever is typed in the box.
+  function findAccounts() {
+    const norm = (x) => x.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9_.]/g, "");
+    const handles = (club.club.accounts || []).map((a) => a.handle.toLowerCase());
+    const stem = handles.length > 1 ? handles.reduce((p, h) => { let i = 0; while (i < p.length && p[i] === h[i]) i++; return p.slice(0, i); }) : "";
+    const base = [...handles, norm(club.club.name), stem].filter((t) => t.length >= 4);
+    const m = A.modal({ title: "Find all its accounts", sub: `The accounts in the Content Library that look like ${club.club.name}'s own, on every network. Tick the ones that are the club's and add them.`, size: "lg",
+      body: `<div class="mcl-lg"><label class="mcl-sp-q">${icon("filters")}<input class="input" type="search" placeholder="Another name or handle to look for (e.g. atleti)" data-fa-q></label><div data-fa-res><p class="muted">Looking in the library…</p></div></div>`,
+      foot: `<button class="btn btn-primary" type="button" data-fa-add disabled>${icon("plus")}Add</button>` });
+    const el = m.el, res = el.querySelector("[data-fa-res]"), addBtn = el.querySelector("[data-fa-add]");
+    let list = [];
+    const draw = () => {
+      const on = list.filter((a) => a.on).length;
+      addBtn.disabled = !on; addBtn.innerHTML = `${icon("plus")}Add ${num(on)} account${on === 1 ? "" : "s"}`;
+      res.innerHTML = list.length ? `<div class="mcl-lg-list">${list.map((a, i) => `<label class="mcl-lg-it${a.already ? " is-done" : ""}"><input type="checkbox" data-fa-i="${i}"${a.on || a.already ? " checked" : ""}${a.already ? " disabled" : ""}>
+          <i class="mcl-pf mcl-pf-${esc(a.platform)}">${esc(PFS[a.platform] || a.platform.slice(0, 2))}</i><span><b>${esc(PF[a.platform] || a.platform)} @${esc(a.handle)}</b><small>${a.already ? "Already the club's" : `${num(a.posts)} posts`}</small></span></label>`).join("")}</div>
+        <p class="muted mcl-lg-tip">Accounts with few posts start unticked: they're often fan or other clubs' accounts.</p>`
+        : `<p class="muted">Nothing found. Try another name in the box.</p>`;
+    };
+    const load = async (extra = "") => {
+      try {
+        const found = await rpc("admin_club_find_accounts", { p_club: cur, p_terms: [...base, ...extra.split(/[\s,]+/).map(norm)].filter((t) => t.length >= 4) });
+        const was = new Map(list.map((a) => [`${a.platform}|${a.handle}`, a.on]));
+        list = found.map((a) => ({ ...a, on: !a.already && (was.get(`${a.platform}|${a.handle}`) ?? a.posts >= 10) }));
+        draw();
+      } catch (x) { fail(/admin_club_find_accounts/.test(x.message) ? new Error("Run supabase/my-club-find-accounts.sql in Supabase first.") : x); }
+    };
+    let timer;
+    el.querySelector("[data-fa-q]").addEventListener("input", (e) => { clearTimeout(timer); timer = setTimeout(() => load(e.target.value), 400); });
+    res.addEventListener("change", (e) => { const i = e.target.dataset?.faI; if (i != null) { list[Number(i)].on = e.target.checked; draw(); } });
+    addBtn.addEventListener("click", async () => {
+      const accounts = list.filter((a) => a.on).map((a) => ({ platform: a.platform, handle: a.handle }));
+      addBtn.disabled = true;
+      try {
+        const r = await rpc("admin_club_add_from_library", { p_club: cur, p: { kind: "account", accounts } });
+        if (r && r.ok === false) return fail(new Error(r.error));
+        m.close(); A.toast(`${num(accounts.length)} account${accounts.length === 1 ? "" : "s"} added to ${club.club.name}`); loadClubs(cur);
+      } catch (x) { fail(x); addBtn.disabled = false; }
+    });
+    load();
+  }
+
   // competitor, player or creator (supabase/my-club-library-add.sql)
   function addFromLibrary(kind = "account", comp = null) {
     const sel = { tag: null, accounts: new Map(), name: "", avatar: "" };
@@ -672,6 +716,7 @@ const CAN_SCRAPE = new Set(["instagram", "tiktok"]);   // the networks Bright Da
       if (b.matches("[data-daily]")) return dailyFile();
       if (b.matches("[data-add-sponsor]")) return addSponsor();
       if (b.dataset.addLibrary) return addFromLibrary(b.dataset.addLibrary);
+      if (b.matches("[data-find-accounts]")) return findAccounts();
       if (b.dataset.league) return addFromLibrary("competitor", { id: Number(b.dataset.league), name: b.dataset.leagueName });
       if (b.dataset.secMove) { await rpc("admin_club_section", { p_club: cur, p_action: b.dataset.secMove, p: { id: Number(b.dataset.sec) } }); return loadClub(); }
       if (b.dataset.secDel) {
