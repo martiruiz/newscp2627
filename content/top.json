@@ -12,6 +12,12 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/634/634354.jpg?v=mwopwxm1"
   },
   {
+    "account": "houseofhighlights",
+    "account_platform": "instagram",
+    "views": 12046342,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/647/647926.jpg?v=mwt9p4yb"
+  },
+  {
     "account": "espn",
     "account_platform": "tiktok",
     "views": 10400000,
@@ -172,11 +178,5 @@
     "account_platform": "tiktok",
     "views": 3500000,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/644/644969.jpg?v=mwpbv3iw"
-  },
-  {
-    "account": "espnfc",
-    "account_platform": "instagram",
-    "views": 3327032,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/648/648831.jpg?v=mwt9vzxf"
   }
 ]

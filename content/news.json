@@ -1,5 +1,52 @@
 [
   {
+    "id": 467,
+    "url": "https://frontofficesports.com/article/kirk-herbstreit-espn-sec-shorts-video/",
+    "source_name": "Front Office Sports",
+    "platform": "x",
+    "title": "Kirk Herbstreit distances himself from viral SEC Shorts sketch mocking ESPN and CFP",
+    "paragraphs": [
+      "Comedy group SEC Shorts posted a roughly two-and-a-half-minute sketch on X lampooning the College Football Playoff committee and ESPN's rankings show, including a parody of analyst Heather Dinich. The video passed 2 million views and drew thousands of replies in under nine hours. ESPN's Kirk Herbstreit appears at the end delivering an ad read for Renasant Bank, the presenting sponsor of every SEC Shorts video.",
+      "Herbstreit told Front Office Sports he works with Renasant, which uses him on SEC Shorts' weekly clips, but has no partnership with the group and no role in its content. ESPN declined to comment, while Dinich appeared to respond with a light jab promoting her upcoming book. The episode shows how a sponsor's ad placement can tie talent to content they never approved.",
+      "For clubs, leagues and athletes, the lesson is twofold. Fan-made comedy creators can generate huge reach and are attractive sponsorship vehicles, but deals involving talent ad reads should spell out where and next to what content they will run. Athletes and broadcasters with brand partnerships should review placement rights, and teams should have a quick response plan when satirical content involving their people goes viral."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-23T23:26:40+00:00",
+    "created_at": "2026-11-24T03:57:03.246338+00:00",
+    "edited_at": null,
+    "slug": "kirk-herbstreit-distances-himself-from-viral-sec-shorts-sketch-467",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://frontofficesports.com/wp-content/uploads/2026/11/2026-11-19T222953Z_1227695225_MT1USATODAY30380330_RTRMADP_3_NFL-INDIANAPOLIS-COLTS-AT-HOUSTON-TEXANS-scaled-e1795476308542.jpg?quality=80&w=1024",
+    "es": {
+      "title": "Kirk Herbstreit se desmarca del sketch viral de SEC Shorts que se burla de ESPN y del CFP",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "El grupo de comedia SEC Shorts publicó en X un sketch de unos dos minutos y medio que parodia al comité del College Football Playoff y el programa de rankings de ESPN, incluida una parodia de la analista Heather Dinich. El vídeo superó los 2 millones de visualizaciones y recibió miles de respuestas en menos de nueve horas. Kirk Herbstreit, de ESPN, aparece al final leyendo un anuncio de Renasant Bank, el patrocinador principal de todos los vídeos de SEC Shorts.",
+        "Herbstreit explicó a Front Office Sports que trabaja con Renasant, que lo utiliza en los clips semanales de SEC Shorts, pero que no tiene ningún acuerdo con el grupo ni participa en su contenido. ESPN declinó hacer comentarios, mientras que Dinich pareció responder con una pequeña pulla para promocionar su próximo libro. El episodio demuestra cómo la ubicación publicitaria de un patrocinador puede vincular a una figura pública con contenidos que nunca aprobó.",
+        "Para clubes, ligas y deportistas, la lección es doble. Los creadores de comedia hechos por aficionados pueden generar un alcance enorme y son vehículos de patrocinio atractivos, pero los acuerdos que incluyen anuncios leídos por figuras públicas deben especificar dónde y junto a qué contenido se emitirán. Los deportistas y comentaristas con acuerdos de marca deberían revisar los derechos de ubicación, y los equipos deberían contar con un plan de respuesta rápida para cuando se vuelva viral un contenido satírico sobre su gente."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-11-24T03:57:03.246338+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-11-24T10:58:35.236Z",
+      "tokens": {
+        "in": 1498,
+        "out": 704
+      }
+    }
+  },
+  {
     "id": 457,
     "url": "https://www.sponconsports.com/p/how-dr-pepper-reaches-college-football-fans-beyond-the-game",
     "source_name": "SponCon Sports",
@@ -1128,32 +1175,33 @@
     }
   },
   {
-    "id": 297,
-    "url": "https://socialgeekpro.beehiiv.com/p/espa-a-estudia-suspender-tiktok#3",
+    "id": 295,
+    "url": "https://socialgeekpro.beehiiv.com/p/espa-a-estudia-suspender-tiktok",
     "source_name": "SocialGeek News",
-    "platform": "other",
-    "title": "EU draft rules would require influencers to clearly label sponsored content",
+    "platform": "tiktok",
+    "title": "TikTok launches Social MCP to manage brand presence through AI conversations",
     "paragraphs": [
-      "The European Union's draft Digital Fairness Act seeks to make influencers clearly label sponsored content. The proposal is also expected to include measures to limit compulsive use of online platforms.",
-      "Sports organisations that pay athletes, ambassadors or creators to promote partners should review their disclosure practices before the rules take shape. Clubs activating sponsorships through player accounts or creator collaborations will need clear, consistent ad labels in contracts and briefs, which also protects fan trust. Planning compliant formats now avoids last-minute changes to campaigns across EU markets."
+      "TikTok has introduced Social MCP, a tool that lets brands run social listening, trend analysis and audience sentiment tracking through a direct conversation with AI. It is designed to spot opportunities before they go viral, move from insights to content ideas and strategy, and identify organic videos that are performing well so they can be turned into Spark Ads.",
+      "For sports social teams, this could shorten the gap between a viral moment on matchday and a planned response. A club could ask the tool which fan conversations are rising around a signing or rivalry, adjust its content plan in real time, and quickly boost its best-performing organic clips as Spark Ads for sponsors or ticket and merchandise campaigns.",
+      "The key is to keep human judgement in the loop: AI can surface the trends, but the team still decides which ones fit the club's voice and values."
     ],
     "relevant": true,
     "published_at": "2026-11-12T12:13:00+00:00",
-    "created_at": "2026-11-12T15:05:05.26406+00:00",
+    "created_at": "2026-11-12T15:05:04.236378+00:00",
     "edited_at": null,
-    "slug": "eu-draft-rules-would-require-influencers-to-clearly-label-sponsored-297",
+    "slug": "tiktok-launches-social-mcp-to-manage-brand-presence-through-ai-295",
     "meta_title": null,
     "meta_description": null,
     "takeaways": [],
     "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/d222c491c3e6614e-16x9.jpg",
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/manual-2026-11-11-1.jpg",
     "es": {
       "faq": [],
       "model": "claude-sonnet-5-5",
-      "title": "El borrador de normas de la UE obligaría a los influencers a etiquetar claramente el contenido patrocinado",
+      "title": "TikTok lanza Social MCP para gestionar la presencia de marca mediante conversaciones con IA",
       "tokens": {
-        "in": 1262,
-        "out": 416
+        "in": 1344,
+        "out": 522
       },
       "excerpt": "",
       "cta_text": "",
@@ -1163,12 +1211,13 @@
       "takeaways": [],
       "meta_title": "",
       "paragraphs": [
-        "El borrador de la Ley de Equidad Digital (Digital Fairness Act) de la Unión Europea busca que los influencers etiqueten claramente el contenido patrocinado. También se espera que la propuesta incluya medidas para limitar el uso compulsivo de las plataformas online.",
-        "Las organizaciones deportivas que pagan a deportistas, embajadores o creadores para promocionar a sus socios deberían revisar sus prácticas de transparencia antes de que las normas tomen forma. Los clubes que activan patrocinios a través de cuentas de jugadores o colaboraciones con creadores necesitarán etiquetas publicitarias claras y coherentes en contratos y briefs, algo que además protege la confianza de los aficionados. Planificar ahora formatos conformes a la normativa evita cambios de última hora en las campañas en los mercados de la UE."
+        "TikTok ha presentado Social MCP, una herramienta que permite a las marcas hacer social listening, análisis de tendencias y seguimiento del sentimiento de la audiencia a través de una conversación directa con IA. Está diseñada para detectar oportunidades antes de que se vuelvan virales, pasar de los insights a ideas de contenido y estrategia, e identificar vídeos orgánicos que están funcionando bien para convertirlos en Spark Ads.",
+        "Para los equipos de redes sociales deportivas, esto podría acortar la distancia entre un momento viral en día de partido y una respuesta planificada. Un club podría preguntar a la herramienta qué conversaciones de aficionados están creciendo en torno a un fichaje o una rivalidad, ajustar su plan de contenidos en tiempo real e impulsar rápidamente sus clips orgánicos de mejor rendimiento como Spark Ads para patrocinadores o para campañas de entradas y merchandising.",
+        "La clave está en mantener el criterio humano en el proceso: la IA puede sacar a la superficie las tendencias, pero es el equipo quien decide cuáles encajan con la voz y los valores del club."
       ],
       "image_title": "",
-      "translated_at": "2026-11-12T16:54:05.321Z",
-      "source_changed": "2026-11-12T15:05:05.26406+00:00",
+      "translated_at": "2026-11-12T16:54:00.482Z",
+      "source_changed": "2026-11-12T15:05:04.236378+00:00",
       "meta_description": ""
     }
   },
@@ -1220,33 +1269,32 @@
     }
   },
   {
-    "id": 295,
-    "url": "https://socialgeekpro.beehiiv.com/p/espa-a-estudia-suspender-tiktok",
+    "id": 297,
+    "url": "https://socialgeekpro.beehiiv.com/p/espa-a-estudia-suspender-tiktok#3",
     "source_name": "SocialGeek News",
-    "platform": "tiktok",
-    "title": "TikTok launches Social MCP to manage brand presence through AI conversations",
+    "platform": "other",
+    "title": "EU draft rules would require influencers to clearly label sponsored content",
     "paragraphs": [
-      "TikTok has introduced Social MCP, a tool that lets brands run social listening, trend analysis and audience sentiment tracking through a direct conversation with AI. It is designed to spot opportunities before they go viral, move from insights to content ideas and strategy, and identify organic videos that are performing well so they can be turned into Spark Ads.",
-      "For sports social teams, this could shorten the gap between a viral moment on matchday and a planned response. A club could ask the tool which fan conversations are rising around a signing or rivalry, adjust its content plan in real time, and quickly boost its best-performing organic clips as Spark Ads for sponsors or ticket and merchandise campaigns.",
-      "The key is to keep human judgement in the loop: AI can surface the trends, but the team still decides which ones fit the club's voice and values."
+      "The European Union's draft Digital Fairness Act seeks to make influencers clearly label sponsored content. The proposal is also expected to include measures to limit compulsive use of online platforms.",
+      "Sports organisations that pay athletes, ambassadors or creators to promote partners should review their disclosure practices before the rules take shape. Clubs activating sponsorships through player accounts or creator collaborations will need clear, consistent ad labels in contracts and briefs, which also protects fan trust. Planning compliant formats now avoids last-minute changes to campaigns across EU markets."
     ],
     "relevant": true,
     "published_at": "2026-11-12T12:13:00+00:00",
-    "created_at": "2026-11-12T15:05:04.236378+00:00",
+    "created_at": "2026-11-12T15:05:05.26406+00:00",
     "edited_at": null,
-    "slug": "tiktok-launches-social-mcp-to-manage-brand-presence-through-ai-295",
+    "slug": "eu-draft-rules-would-require-influencers-to-clearly-label-sponsored-297",
     "meta_title": null,
     "meta_description": null,
     "takeaways": [],
     "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/manual-2026-11-11-1.jpg",
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/d222c491c3e6614e-16x9.jpg",
     "es": {
       "faq": [],
       "model": "claude-sonnet-5-5",
-      "title": "TikTok lanza Social MCP para gestionar la presencia de marca mediante conversaciones con IA",
+      "title": "El borrador de normas de la UE obligaría a los influencers a etiquetar claramente el contenido patrocinado",
       "tokens": {
-        "in": 1344,
-        "out": 522
+        "in": 1262,
+        "out": 416
       },
       "excerpt": "",
       "cta_text": "",
@@ -1256,13 +1304,12 @@
       "takeaways": [],
       "meta_title": "",
       "paragraphs": [
-        "TikTok ha presentado Social MCP, una herramienta que permite a las marcas hacer social listening, análisis de tendencias y seguimiento del sentimiento de la audiencia a través de una conversación directa con IA. Está diseñada para detectar oportunidades antes de que se vuelvan virales, pasar de los insights a ideas de contenido y estrategia, e identificar vídeos orgánicos que están funcionando bien para convertirlos en Spark Ads.",
-        "Para los equipos de redes sociales deportivas, esto podría acortar la distancia entre un momento viral en día de partido y una respuesta planificada. Un club podría preguntar a la herramienta qué conversaciones de aficionados están creciendo en torno a un fichaje o una rivalidad, ajustar su plan de contenidos en tiempo real e impulsar rápidamente sus clips orgánicos de mejor rendimiento como Spark Ads para patrocinadores o para campañas de entradas y merchandising.",
-        "La clave está en mantener el criterio humano en el proceso: la IA puede sacar a la superficie las tendencias, pero es el equipo quien decide cuáles encajan con la voz y los valores del club."
+        "El borrador de la Ley de Equidad Digital (Digital Fairness Act) de la Unión Europea busca que los influencers etiqueten claramente el contenido patrocinado. También se espera que la propuesta incluya medidas para limitar el uso compulsivo de las plataformas online.",
+        "Las organizaciones deportivas que pagan a deportistas, embajadores o creadores para promocionar a sus socios deberían revisar sus prácticas de transparencia antes de que las normas tomen forma. Los clubes que activan patrocinios a través de cuentas de jugadores o colaboraciones con creadores necesitarán etiquetas publicitarias claras y coherentes en contratos y briefs, algo que además protege la confianza de los aficionados. Planificar ahora formatos conformes a la normativa evita cambios de última hora en las campañas en los mercados de la UE."
       ],
       "image_title": "",
-      "translated_at": "2026-11-12T16:54:00.482Z",
-      "source_changed": "2026-11-12T15:05:04.236378+00:00",
+      "translated_at": "2026-11-12T16:54:05.321Z",
+      "source_changed": "2026-11-12T15:05:05.26406+00:00",
       "meta_description": ""
     }
   },
@@ -2438,53 +2485,6 @@
     }
   },
   {
-    "id": 82,
-    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces",
-    "source_name": "SocialGeek News",
-    "platform": "facebook",
-    "title": "Facebook tests charging Pages to post links beyond a small monthly quota",
-    "paragraphs": [
-      "Facebook is testing a cap on how many link posts a Page can publish. Some Pages are now limited to two link posts per month, after which a prompt invites them to subscribe through Meta One: $50 a month for eight links, $150 for 20, or $500 for unlimited. Links to compatible affiliates, Creator Storefront and Meta products remain unrestricted. Meta calls it a test, though it has reportedly reached nonprofit and library Pages that were meant to be exempt.",
-      "For clubs and leagues that push fans from Facebook to ticketing, shop or news pages, this signals that outbound traffic is getting more expensive. Social teams should audit how much web traffic Facebook really drives and reserve link posts for high-value moments like ticket drops or kit launches.",
-      "The bigger lesson is to invest in owned channels such as newsletters, apps and membership communities. Native formats like video, photo galleries and in-feed match updates can keep Facebook audiences engaged without relying on links."
-    ],
-    "relevant": true,
-    "published_at": "2026-10-29T12:12:00+00:00",
-    "created_at": "2026-10-29T12:54:19.971122+00:00",
-    "edited_at": null,
-    "slug": "facebook-tests-charging-pages-to-post-links-beyond-a-small-monthly-82",
-    "meta_title": null,
-    "meta_description": null,
-    "takeaways": [],
-    "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/linkedin-meta-links-16x9.jpg",
-    "es": {
-      "faq": [],
-      "model": "claude-sonnet-5-5",
-      "title": "Facebook prueba a cobrar a las Páginas por publicar enlaces más allá de una pequeña cuota mensual",
-      "tokens": {
-        "in": 1400,
-        "out": 620
-      },
-      "excerpt": "",
-      "cta_text": "",
-      "body_html": "",
-      "cta_title": "",
-      "image_alt": "",
-      "takeaways": [],
-      "meta_title": "",
-      "paragraphs": [
-        "Facebook está probando un límite al número de publicaciones con enlace que puede hacer una Página. Algunas Páginas ya están limitadas a dos publicaciones con enlace al mes, y después un aviso les invita a suscribirse a través de Meta One: 50 $ al mes por ocho enlaces, 150 $ por 20 o 500 $ por enlaces ilimitados. Los enlaces a afiliados compatibles, a Creator Storefront y a productos de Meta siguen sin restricciones. Meta lo presenta como una prueba, aunque según se ha informado ha llegado a Páginas de organizaciones sin ánimo de lucro y de bibliotecas que debían estar exentas.",
-        "Para los clubes y las ligas que llevan a los aficionados desde Facebook a páginas de venta de entradas, de la tienda o de noticias, esto indica que el tráfico saliente se está encareciendo. Los equipos de redes sociales deberían analizar cuánto tráfico web genera realmente Facebook y reservar las publicaciones con enlace para momentos de alto valor, como el lanzamiento de entradas o de equipaciones.",
-        "La lección de fondo es invertir en canales propios como newsletters, apps y comunidades de socios. Los formatos nativos, como el vídeo, las galerías de fotos y las actualizaciones del partido en el feed, pueden mantener el engagement de las audiencias de Facebook sin depender de los enlaces."
-      ],
-      "image_title": "",
-      "translated_at": "2026-10-29T16:10:21.391Z",
-      "source_changed": "2026-10-29T12:54:19.971122+00:00",
-      "meta_description": ""
-    }
-  },
-  {
     "id": 83,
     "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces#2",
     "source_name": "SocialGeek News",
@@ -2528,6 +2528,53 @@
       "image_title": "",
       "translated_at": "2026-10-29T16:10:15.419Z",
       "source_changed": "2026-10-29T12:54:20.149885+00:00",
+      "meta_description": ""
+    }
+  },
+  {
+    "id": 82,
+    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces",
+    "source_name": "SocialGeek News",
+    "platform": "facebook",
+    "title": "Facebook tests charging Pages to post links beyond a small monthly quota",
+    "paragraphs": [
+      "Facebook is testing a cap on how many link posts a Page can publish. Some Pages are now limited to two link posts per month, after which a prompt invites them to subscribe through Meta One: $50 a month for eight links, $150 for 20, or $500 for unlimited. Links to compatible affiliates, Creator Storefront and Meta products remain unrestricted. Meta calls it a test, though it has reportedly reached nonprofit and library Pages that were meant to be exempt.",
+      "For clubs and leagues that push fans from Facebook to ticketing, shop or news pages, this signals that outbound traffic is getting more expensive. Social teams should audit how much web traffic Facebook really drives and reserve link posts for high-value moments like ticket drops or kit launches.",
+      "The bigger lesson is to invest in owned channels such as newsletters, apps and membership communities. Native formats like video, photo galleries and in-feed match updates can keep Facebook audiences engaged without relying on links."
+    ],
+    "relevant": true,
+    "published_at": "2026-10-29T12:12:00+00:00",
+    "created_at": "2026-10-29T12:54:19.971122+00:00",
+    "edited_at": null,
+    "slug": "facebook-tests-charging-pages-to-post-links-beyond-a-small-monthly-82",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/linkedin-meta-links-16x9.jpg",
+    "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
+      "title": "Facebook prueba a cobrar a las Páginas por publicar enlaces más allá de una pequeña cuota mensual",
+      "tokens": {
+        "in": 1400,
+        "out": 620
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [],
+      "meta_title": "",
+      "paragraphs": [
+        "Facebook está probando un límite al número de publicaciones con enlace que puede hacer una Página. Algunas Páginas ya están limitadas a dos publicaciones con enlace al mes, y después un aviso les invita a suscribirse a través de Meta One: 50 $ al mes por ocho enlaces, 150 $ por 20 o 500 $ por enlaces ilimitados. Los enlaces a afiliados compatibles, a Creator Storefront y a productos de Meta siguen sin restricciones. Meta lo presenta como una prueba, aunque según se ha informado ha llegado a Páginas de organizaciones sin ánimo de lucro y de bibliotecas que debían estar exentas.",
+        "Para los clubes y las ligas que llevan a los aficionados desde Facebook a páginas de venta de entradas, de la tienda o de noticias, esto indica que el tráfico saliente se está encareciendo. Los equipos de redes sociales deberían analizar cuánto tráfico web genera realmente Facebook y reservar las publicaciones con enlace para momentos de alto valor, como el lanzamiento de entradas o de equipaciones.",
+        "La lección de fondo es invertir en canales propios como newsletters, apps y comunidades de socios. Los formatos nativos, como el vídeo, las galerías de fotos y las actualizaciones del partido en el feed, pueden mantener el engagement de las audiencias de Facebook sin depender de los enlaces."
+      ],
+      "image_title": "",
+      "translated_at": "2026-10-29T16:10:21.391Z",
+      "source_changed": "2026-10-29T12:54:19.971122+00:00",
       "meta_description": ""
     }
   },
