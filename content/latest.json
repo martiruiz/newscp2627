@@ -1,25 +1,25 @@
 {
   "blog": {
-    "title": "Social media ideas for sports teams: film the guests, not just the game",
-    "href": "blog/social-media-ideas-for-sports-teams-guests-around-the-game.html",
-    "image": "assets/blog/social-media-ideas-for-sports-teams-guests-around-the-game.jpg",
-    "date": "2026-11-23"
+    "title": "Sports Reels ideas: post what your city feels, not only what happens",
+    "href": "blog/sports-reels-ideas-post-what-your-city-feels.html",
+    "image": "assets/blog/sports-reels-ideas-post-what-your-city-feels.jpg",
+    "date": "2026-11-24"
   },
   "news": {
-    "title": "Kirk Herbstreit distances himself from viral SEC Shorts sketch mocking ESPN and CFP",
-    "href": "news/kirk-herbstreit-distances-himself-from-viral-sec-shorts-sketch-467.html",
-    "image": "https://frontofficesports.com/wp-content/uploads/2026/11/2026-11-19T222953Z_1227695225_MT1USATODAY30380330_RTRMADP_3_NFL-INDIANAPOLIS-COLTS-AT-HOUSTON-TEXANS-scaled-e1795476308542.jpg?quality=80&w=1024",
-    "platform": "x",
-    "date": "2026-11-23"
+    "title": "Dan Rapaport discusses the Internet Invitational and where YouTube golf goes next",
+    "href": "news/dan-rapaport-discusses-the-internet-invitational-and-where-youtube-483.html",
+    "image": "https://frontofficesports.com/wp-content/uploads/2026/11/FOSN_261123_DAN-RAPAPORT_RUMSEY.jpg?quality=80&w=1024",
+    "platform": "youtube",
+    "date": "2026-11-24"
   },
   "es": {
     "blog": {
-      "title": "Ideas de redes sociales para equipos deportivos: graba a los invitados, no solo el partido",
-      "href": "es/blog/social-media-ideas-for-sports-teams-guests-around-the-game.html"
+      "title": "Ideas de Reels deportivos: publica lo que siente tu ciudad, no solo lo que pasa",
+      "href": "es/blog/sports-reels-ideas-post-what-your-city-feels.html"
     },
     "news": {
-      "title": "Kirk Herbstreit se desmarca del sketch viral de SEC Shorts que se burla de ESPN y del CFP",
-      "href": "es/news/kirk-herbstreit-distances-himself-from-viral-sec-shorts-sketch-467.html"
+      "title": "Dan Rapaport habla del Internet Invitational y de hacia dónde va el golf en YouTube",
+      "href": "es/news/dan-rapaport-discusses-the-internet-invitational-and-where-youtube-483.html"
     }
   }
 }

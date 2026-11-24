@@ -6,7 +6,17 @@
     <atom:link href="https://sportscontentplaybook.com/es/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Ideas, tendencias y análisis de contenido deportivo en redes sociales.</description>
     <language>es</language>
-    <lastBuildDate>Mon, 23 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Tue, 24 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Ideas de Reels deportivos: publica lo que siente tu ciudad, no solo lo que pasa</title>
+      <link>https://sportscontentplaybook.com/es/blog/sports-reels-ideas-post-what-your-city-feels.html</link>
+      <guid isPermaLink="true">https://sportscontentplaybook.com/es/blog/sports-reels-ideas-post-what-your-city-feels.html</guid>
+      <pubDate>Tue, 24 Nov 2026 08:00:00 GMT</pubDate>
+      <dc:creator>Martí Ruiz</dc:creator>
+      <description>Tres perfiles del análisis diario crecieron con Reels sobre sentimiento, no sobre acción: una ciudad de luto, una grada cantando y una victoria en silencio. Así puedes replicarlo.</description>
+      <enclosure url="https://sportscontentplaybook.com/assets/blog/sports-reels-ideas-post-what-your-city-feels.jpg" length="63929" type="image/jpeg"/>
+      <media:content url="https://sportscontentplaybook.com/assets/blog/sports-reels-ideas-post-what-your-city-feels.jpg" medium="image" type="image/jpeg"/>
+    </item>
     <item>
       <title>Ideas de redes sociales para equipos deportivos: graba a los invitados, no solo el partido</title>
       <link>https://sportscontentplaybook.com/es/blog/social-media-ideas-for-sports-teams-guests-around-the-game.html</link>
@@ -296,16 +306,6 @@
       <description>Antes de que arranque la temporada 2026-27 de la NBA, los equipos prepararon una previa de contenidos de dos meses. Aquí tienes el patrón detrás de los anuncios de calendario, las publicaciones del media day y los takeovers que destacaron, y cómo replicarlo.</description>
       <enclosure url="https://sportscontentplaybook.com/assets/blog/nba-tip-off-media-day-social-media-ideas-for-sports-teams.jpg" length="118680" type="image/jpeg"/>
       <media:content url="https://sportscontentplaybook.com/assets/blog/nba-tip-off-media-day-social-media-ideas-for-sports-teams.jpg" medium="image" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>Un partido, muchos feeds: ideas de contenido de redes sociales de fútbol del estreno de la ISL en YouTube</title>
-      <link>https://sportscontentplaybook.com/es/blog/isl-youtube-matchday-football-social-media-content-ideas.html</link>
-      <guid isPermaLink="true">https://sportscontentplaybook.com/es/blog/isl-youtube-matchday-football-social-media-content-ideas.html</guid>
-      <pubDate>Fri, 16 Oct 2026 08:00:00 GMT</pubDate>
-      <dc:creator>Martí Ruiz</dc:creator>
-      <description>La Indian Super League emite todos los partidos en directo y gratis en YouTube, en inglés, en hindi y en un feed vertical, y luego los corta en resúmenes y Shorts. El resultado: 65 millones de visualizaciones en su primera semana y un modelo de jornada que cualquier club o liga puede adaptar.</description>
-      <enclosure url="https://sportscontentplaybook.com/assets/blog/isl-youtube-vertical-live-stream-football-social-media-content-ideas.jpg" length="130916" type="image/jpeg"/>
-      <media:content url="https://sportscontentplaybook.com/assets/blog/isl-youtube-vertical-live-stream-football-social-media-content-ideas.jpg" medium="image" type="image/jpeg"/>
     </item>
   </channel>
 </rss>
