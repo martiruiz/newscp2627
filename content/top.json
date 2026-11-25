@@ -6,6 +6,12 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/647/647307.jpg?v=mwt9piis"
   },
   {
+    "account": "liverpoolfc",
+    "account_platform": "instagram",
+    "views": 13596207,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/653/653546.jpg?v=mwuiqp4g"
+  },
+  {
     "account": "fcbarcelona",
     "account_platform": "instagram",
     "views": 12410338,
@@ -52,6 +58,18 @@
     "account_platform": "instagram",
     "views": 7308946,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/647/647475.jpg?v=mwt9pw5q"
+  },
+  {
+    "account": "redbull",
+    "account_platform": "tiktok",
+    "views": 7300000,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/655/655942.png?v=mwul13vv"
+  },
+  {
+    "account": "fcbarcelona",
+    "account_platform": "instagram",
+    "views": 6503678,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/658/658917.jpg?v=mwvcfrk5"
   },
   {
     "account": "espn",
@@ -126,6 +144,12 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/645/645141.jpg?v=mwpcaxp1"
   },
   {
+    "account": "fcbarcelona",
+    "account_platform": "instagram",
+    "views": 4208840,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/658/658923.jpg?v=mwvcftoz"
+  },
+  {
     "account": "manutd",
     "account_platform": "tiktok",
     "views": 4200000,
@@ -154,29 +178,5 @@
     "account_platform": "instagram",
     "views": 3795355,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/648/648016.jpg?v=mwt9p8sb"
-  },
-  {
-    "account": "ligue1mcdonalds",
-    "account_platform": "instagram",
-    "views": 3744480,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/645/645216.jpg?v=mwpccdej"
-  },
-  {
-    "account": "espndeportes",
-    "account_platform": "instagram",
-    "views": 3561954,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/650/650796.jpg?v=mwt9ztmq"
-  },
-  {
-    "account": "atptour",
-    "account_platform": "tiktok",
-    "views": 3500000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/644/644969.jpg?v=mwpbv3iw"
-  },
-  {
-    "account": "espnfc",
-    "account_platform": "instagram",
-    "views": 3327032,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/648/648831.jpg?v=mwt9vzxf"
   }
 ]
