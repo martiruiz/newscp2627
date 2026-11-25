@@ -96,6 +96,12 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/659/659832.jpg?v=mwvxeo6z"
   },
   {
+    "account": "premierleague",
+    "account_platform": "instagram",
+    "views": 5631665,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/659/659797.jpg?v=mwvxeocv"
+  },
+  {
     "account": "fabriziorom",
     "account_platform": "instagram",
     "views": 5607752,
@@ -124,6 +130,12 @@
     "account_platform": "instagram",
     "views": 5286934,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/634/634341.jpg?v=mwopwves"
+  },
+  {
+    "account": "houseofhighlights",
+    "account_platform": "instagram",
+    "views": 5272405,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/659/659837.jpg?v=mwvxeoue"
   },
   {
     "account": "houseofhighlights",
@@ -166,17 +178,5 @@
     "account_platform": "instagram",
     "views": 4493475,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/659/659821.jpg?v=mwvxeoay"
-  },
-  {
-    "account": "manutd",
-    "account_platform": "tiktok",
-    "views": 4200000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/645/645846.jpg?v=mwqe945p"
-  },
-  {
-    "account": "houseofhighlights",
-    "account_platform": "instagram",
-    "views": 4043459,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/653/653498.jpg?v=mwuiqn0z"
   }
 ]

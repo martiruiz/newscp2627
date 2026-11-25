@@ -1,5 +1,99 @@
 [
   {
+    "id": 495,
+    "url": "https://www.sponconsports.com/p/how-to-find-sponsored-content-ideas-in-60-minutes",
+    "source_name": "SponCon Sports",
+    "platform": "other",
+    "title": "A 60-minute research method for building tailored sponsored content pitches",
+    "paragraphs": [
+      "Sponcon Sports newsletter author Alex Kopilow has outlined a three-step process, collect, compare and customize, for creating brand-specific digital partnership ideas in about an hour. It draws on eight free resources, including secondary social accounts that follow every pro team and league, sports broadcasts as a source of segment names, X search filtered to people you follow, and Meta's Branded Content search and Ad Library.",
+      "He also suggests YouTube's Gemini-powered Ask feature to locate sponsor integrations within videos, checking a partner's website, bios and search ads for taglines and priority products, and an AI prompt that finds category terms with double meanings in a given sport, such as linking tire brands to a baseball pitching rotation feature.",
+      "For club and league partnership and social teams, the main takeaway is to build an inspiration library ahead of time. Saving standout sponsored posts each week, keeping pre-approved series concepts on file and auditing competitors' sports deals makes it possible to respond to last-minute pitch requests quickly, often by renaming or adapting an existing series rather than creating new content from scratch."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-25T14:00:00+00:00",
+    "created_at": "2026-11-25T17:07:02.742785+00:00",
+    "edited_at": null,
+    "slug": "a-60-minute-research-method-for-building-tailored-sponsored-content-495",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/05c97c04-64a1-420f-ade8-f3dde574c9d6/Untitled_Design__38_.png?t=1795617798",
+    "es": {
+      "title": "Un método de investigación de 60 minutos para crear propuestas de contenido patrocinado a medida",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "Alex Kopilow, autor de la newsletter Sponcon Sports, ha esbozado un proceso de tres pasos (recopilar, comparar y personalizar) para crear ideas de colaboración digital específicas para cada marca en aproximadamente una hora. Se apoya en ocho recursos gratuitos, entre ellos cuentas secundarias en redes sociales que siguen a todos los equipos y ligas profesionales, las retransmisiones deportivas como fuente de nombres de secciones, la búsqueda en X filtrada por las personas a las que sigues, y la búsqueda de Branded Content y la Ad Library de Meta.",
+        "También sugiere usar la función Ask de YouTube, impulsada por Gemini, para localizar integraciones de patrocinadores dentro de los vídeos, revisar la web, las biografías y los anuncios de búsqueda de un socio para encontrar eslóganes y productos prioritarios, y utilizar un prompt de IA que encuentre términos de una categoría con doble sentido en un deporte concreto, como vincular marcas de neumáticos con una sección sobre la rotación de lanzadores de béisbol.",
+        "Para los equipos de alianzas y de redes sociales de clubes y ligas, la principal conclusión es crear con antelación una biblioteca de inspiración. Guardar cada semana los posts patrocinados más destacados, tener archivados conceptos de series ya aprobados y analizar los acuerdos deportivos de la competencia permite responder rápido a peticiones de propuestas de última hora, a menudo cambiando el nombre de una serie existente o adaptándola en lugar de crear contenido nuevo desde cero."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-11-25T17:07:02.742785+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-11-25T18:41:49.513Z",
+      "tokens": {
+        "in": 1437,
+        "out": 686
+      }
+    }
+  },
+  {
+    "id": 496,
+    "url": "https://www.socialmediatoday.com/news/emplifi-shares-notes-on-social-media-marketing-trends/875699/",
+    "source_name": "Social Media Today",
+    "platform": "ai",
+    "title": "Emplifi survey: AI boosts social team output without shrinking headcount",
+    "paragraphs": [
+      "Emplifi polled 405 marketing managers, directors and executives about trends shaping their plans for 2027. Ninety percent said AI has raised their team's output, yet 54% reported their social media team actually grew in size rather than shrinking. Sixty-nine percent said AI tools save them at least three hours each week on reporting, and 55% expect short-form video to keep gaining relevance and influence.",
+      "For club, league and athlete social teams, the data supports treating AI as a capacity multiplier rather than a replacement. Automating routine work such as weekly performance reports, sponsor recaps and post-match analytics can free hours for creative tasks like matchday storytelling, player-led content and fan interaction. That reclaimed time is also a useful argument when making the case for team investment to leadership.",
+      "The short-form video finding reinforces where that extra time should go. Sports teams can use AI-assisted clipping, captioning and versioning to turn highlights, training footage and behind-the-scenes moments into more vertical edits across platforms, while staff focus on the voice, timing and fan insight that keep content distinctive during the 2027 planning cycle."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-24T22:15:49+00:00",
+    "created_at": "2026-11-25T17:07:11.692003+00:00",
+    "edited_at": null,
+    "slug": "emplifi-survey-ai-boosts-social-team-output-without-shrinking-496",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/FkRIyeB1b3SXsvvEFXlJgSYZ2rQfIiGQvPJdR6LpCxQ/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9lbXBsaWZpX3NvY2lhbF9tZWRpYV9yZXBvcnQzLnBuZw==.webp",
+    "es": {
+      "title": "Encuesta de Emplifi: la IA aumenta la producción de los equipos de redes sociales sin reducir plantillas",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "Emplifi encuestó a 405 responsables, directores y ejecutivos de marketing sobre las tendencias que marcan sus planes para 2027. El 90 % afirmó que la IA ha aumentado la producción de su equipo, y aun así el 54 % señaló que su equipo de redes sociales ha crecido en lugar de reducirse. El 69 % dijo que las herramientas de IA les ahorran al menos tres horas a la semana en informes, y el 55 % espera que el vídeo de formato corto siga ganando relevancia e influencia.",
+        "Para los equipos de redes sociales de clubes, ligas y deportistas, los datos respaldan tratar la IA como un multiplicador de capacidad y no como un sustituto. Automatizar tareas rutinarias como los informes semanales de rendimiento, los resúmenes para patrocinadores y los análisis posteriores a los partidos puede liberar horas para tareas creativas como el storytelling del día de partido, el contenido protagonizado por jugadores y la interacción con los aficionados. Ese tiempo recuperado también es un argumento útil para defender ante la dirección la inversión en el equipo.",
+        "El hallazgo sobre el vídeo de formato corto refuerza hacia dónde debería ir ese tiempo extra. Los equipos deportivos pueden usar herramientas de IA para recortar, subtitular y crear versiones de clips, y así convertir highlights, imágenes de entrenamientos y momentos del detrás de las cámaras en más ediciones verticales para distintas plataformas, mientras el personal se centra en la voz, el timing y el conocimiento del aficionado que hacen que el contenido siga siendo distintivo durante el ciclo de planificación de 2027."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-11-25T17:07:11.692003+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-11-25T18:41:55.912Z",
+      "tokens": {
+        "in": 1446,
+        "out": 717
+      }
+    }
+  },
+  {
     "id": 483,
     "url": "https://frontofficesports.com/videos/rapaport-on-the-internet-invitational/",
     "source_name": "Front Office Sports",
@@ -562,6 +656,53 @@
     }
   },
   {
+    "id": 399,
+    "url": "https://socialgeekpro.beehiiv.com/p/ya-tenemos-gta-vi#2",
+    "source_name": "SocialGeek News",
+    "platform": "other",
+    "title": "Twitch brings back Hosting and tests shoppable ads at TwitchCon",
+    "paragraphs": [
+      "At TwitchCon, Twitch announced that Hosting is returning, with tests starting at the end of the year: an offline channel can show another live stream with shared chat, and 'Host Trains' rotate audiences across chosen channels. Streamers will also be able to invite up to seven viewers into Luna games using their phones as controllers, and a new apprentice moderator role can time out users but not ban them.",
+      "On the business side, shoppable ads are in desktop beta for US and Canadian advertisers, letting viewers add products to a cart mid-stream. A skippable ad format enters open beta in December, with international shopping planned for early 2027. Twitch says creators landing sponsorships have quadrupled in a year, while total payouts have doubled.",
+      "For esports teams, clubs and athletes who stream, Hosting and Host Trains are a simple way to share audiences with partner creators or squad members. Sports brands can treat live streams as both a showcase and a store, and sponsorships with gaming streamers look increasingly attractive as live viewing grows."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-19T12:13:00+00:00",
+    "created_at": "2026-11-19T15:40:23.071854+00:00",
+    "edited_at": null,
+    "slug": "twitch-brings-back-hosting-and-tests-shoppable-ads-at-twitchcon-399",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/a0ddc3d2de3394f6-16x9.jpg",
+    "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
+      "title": "Twitch recupera el Hosting y prueba anuncios con compra integrada en la TwitchCon",
+      "tokens": {
+        "in": 1417,
+        "out": 622
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [],
+      "meta_title": "",
+      "paragraphs": [
+        "En la TwitchCon, Twitch anunció que vuelve el Hosting, con pruebas que empezarán a finales de año: un canal offline podrá mostrar otro directo con chat compartido, y los «Host Trains» rotarán audiencias entre canales elegidos. Los streamers también podrán invitar hasta a siete espectadores a partidas de Luna usando sus móviles como mandos, y un nuevo rol de moderador aprendiz podrá aplicar suspensiones temporales a usuarios, pero no banearlos.",
+        "En el plano comercial, los anuncios con compra integrada están en beta para escritorio para anunciantes de Estados Unidos y Canadá, y permiten a los espectadores añadir productos a un carrito durante el directo. Un formato de anuncio que se puede saltar entra en beta abierta en diciembre, y las compras internacionales están previstas para principios de 2027. Twitch asegura que los creadores que consiguen patrocinios se han cuadruplicado en un año, mientras que los pagos totales se han duplicado.",
+        "Para los equipos de esports, los clubes y los deportistas que hacen streaming, el Hosting y los Host Trains son una forma sencilla de compartir audiencia con creadores aliados o miembros del equipo. Las marcas deportivas pueden tratar los directos como escaparate y tienda a la vez, y los patrocinios con streamers de gaming resultan cada vez más atractivos a medida que crece el consumo en directo."
+      ],
+      "image_title": "",
+      "translated_at": "2026-11-19T17:27:12.035Z",
+      "source_changed": "2026-11-19T15:40:23.071854+00:00",
+      "meta_description": ""
+    }
+  },
+  {
     "id": 400,
     "url": "https://socialgeekpro.beehiiv.com/p/ya-tenemos-gta-vi#3",
     "source_name": "SocialGeek News",
@@ -652,53 +793,6 @@
       "image_title": "",
       "translated_at": "2026-11-19T17:27:17.767Z",
       "source_changed": "2026-11-19T15:40:22.869766+00:00",
-      "meta_description": ""
-    }
-  },
-  {
-    "id": 399,
-    "url": "https://socialgeekpro.beehiiv.com/p/ya-tenemos-gta-vi#2",
-    "source_name": "SocialGeek News",
-    "platform": "other",
-    "title": "Twitch brings back Hosting and tests shoppable ads at TwitchCon",
-    "paragraphs": [
-      "At TwitchCon, Twitch announced that Hosting is returning, with tests starting at the end of the year: an offline channel can show another live stream with shared chat, and 'Host Trains' rotate audiences across chosen channels. Streamers will also be able to invite up to seven viewers into Luna games using their phones as controllers, and a new apprentice moderator role can time out users but not ban them.",
-      "On the business side, shoppable ads are in desktop beta for US and Canadian advertisers, letting viewers add products to a cart mid-stream. A skippable ad format enters open beta in December, with international shopping planned for early 2027. Twitch says creators landing sponsorships have quadrupled in a year, while total payouts have doubled.",
-      "For esports teams, clubs and athletes who stream, Hosting and Host Trains are a simple way to share audiences with partner creators or squad members. Sports brands can treat live streams as both a showcase and a store, and sponsorships with gaming streamers look increasingly attractive as live viewing grows."
-    ],
-    "relevant": true,
-    "published_at": "2026-11-19T12:13:00+00:00",
-    "created_at": "2026-11-19T15:40:23.071854+00:00",
-    "edited_at": null,
-    "slug": "twitch-brings-back-hosting-and-tests-shoppable-ads-at-twitchcon-399",
-    "meta_title": null,
-    "meta_description": null,
-    "takeaways": [],
-    "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/a0ddc3d2de3394f6-16x9.jpg",
-    "es": {
-      "faq": [],
-      "model": "claude-sonnet-5-5",
-      "title": "Twitch recupera el Hosting y prueba anuncios con compra integrada en la TwitchCon",
-      "tokens": {
-        "in": 1417,
-        "out": 622
-      },
-      "excerpt": "",
-      "cta_text": "",
-      "body_html": "",
-      "cta_title": "",
-      "image_alt": "",
-      "takeaways": [],
-      "meta_title": "",
-      "paragraphs": [
-        "En la TwitchCon, Twitch anunció que vuelve el Hosting, con pruebas que empezarán a finales de año: un canal offline podrá mostrar otro directo con chat compartido, y los «Host Trains» rotarán audiencias entre canales elegidos. Los streamers también podrán invitar hasta a siete espectadores a partidas de Luna usando sus móviles como mandos, y un nuevo rol de moderador aprendiz podrá aplicar suspensiones temporales a usuarios, pero no banearlos.",
-        "En el plano comercial, los anuncios con compra integrada están en beta para escritorio para anunciantes de Estados Unidos y Canadá, y permiten a los espectadores añadir productos a un carrito durante el directo. Un formato de anuncio que se puede saltar entra en beta abierta en diciembre, y las compras internacionales están previstas para principios de 2027. Twitch asegura que los creadores que consiguen patrocinios se han cuadruplicado en un año, mientras que los pagos totales se han duplicado.",
-        "Para los equipos de esports, los clubes y los deportistas que hacen streaming, el Hosting y los Host Trains son una forma sencilla de compartir audiencia con creadores aliados o miembros del equipo. Las marcas deportivas pueden tratar los directos como escaparate y tienda a la vez, y los patrocinios con streamers de gaming resultan cada vez más atractivos a medida que crece el consumo en directo."
-      ],
-      "image_title": "",
-      "translated_at": "2026-11-19T17:27:12.035Z",
-      "source_changed": "2026-11-19T15:40:23.071854+00:00",
       "meta_description": ""
     }
   },
@@ -1361,53 +1455,6 @@
     }
   },
   {
-    "id": 295,
-    "url": "https://socialgeekpro.beehiiv.com/p/espa-a-estudia-suspender-tiktok",
-    "source_name": "SocialGeek News",
-    "platform": "tiktok",
-    "title": "TikTok launches Social MCP to manage brand presence through AI conversations",
-    "paragraphs": [
-      "TikTok has introduced Social MCP, a tool that lets brands run social listening, trend analysis and audience sentiment tracking through a direct conversation with AI. It is designed to spot opportunities before they go viral, move from insights to content ideas and strategy, and identify organic videos that are performing well so they can be turned into Spark Ads.",
-      "For sports social teams, this could shorten the gap between a viral moment on matchday and a planned response. A club could ask the tool which fan conversations are rising around a signing or rivalry, adjust its content plan in real time, and quickly boost its best-performing organic clips as Spark Ads for sponsors or ticket and merchandise campaigns.",
-      "The key is to keep human judgement in the loop: AI can surface the trends, but the team still decides which ones fit the club's voice and values."
-    ],
-    "relevant": true,
-    "published_at": "2026-11-12T12:13:00+00:00",
-    "created_at": "2026-11-12T15:05:04.236378+00:00",
-    "edited_at": null,
-    "slug": "tiktok-launches-social-mcp-to-manage-brand-presence-through-ai-295",
-    "meta_title": null,
-    "meta_description": null,
-    "takeaways": [],
-    "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/manual-2026-11-11-1.jpg",
-    "es": {
-      "faq": [],
-      "model": "claude-sonnet-5-5",
-      "title": "TikTok lanza Social MCP para gestionar la presencia de marca mediante conversaciones con IA",
-      "tokens": {
-        "in": 1344,
-        "out": 522
-      },
-      "excerpt": "",
-      "cta_text": "",
-      "body_html": "",
-      "cta_title": "",
-      "image_alt": "",
-      "takeaways": [],
-      "meta_title": "",
-      "paragraphs": [
-        "TikTok ha presentado Social MCP, una herramienta que permite a las marcas hacer social listening, análisis de tendencias y seguimiento del sentimiento de la audiencia a través de una conversación directa con IA. Está diseñada para detectar oportunidades antes de que se vuelvan virales, pasar de los insights a ideas de contenido y estrategia, e identificar vídeos orgánicos que están funcionando bien para convertirlos en Spark Ads.",
-        "Para los equipos de redes sociales deportivas, esto podría acortar la distancia entre un momento viral en día de partido y una respuesta planificada. Un club podría preguntar a la herramienta qué conversaciones de aficionados están creciendo en torno a un fichaje o una rivalidad, ajustar su plan de contenidos en tiempo real e impulsar rápidamente sus clips orgánicos de mejor rendimiento como Spark Ads para patrocinadores o para campañas de entradas y merchandising.",
-        "La clave está en mantener el criterio humano en el proceso: la IA puede sacar a la superficie las tendencias, pero es el equipo quien decide cuáles encajan con la voz y los valores del club."
-      ],
-      "image_title": "",
-      "translated_at": "2026-11-12T16:54:00.482Z",
-      "source_changed": "2026-11-12T15:05:04.236378+00:00",
-      "meta_description": ""
-    }
-  },
-  {
     "id": 296,
     "url": "https://socialgeekpro.beehiiv.com/p/espa-a-estudia-suspender-tiktok#2",
     "source_name": "SocialGeek News",
@@ -1451,6 +1498,53 @@
       "image_title": "",
       "translated_at": "2026-11-12T16:54:11.153Z",
       "source_changed": "2026-11-12T15:05:04.855566+00:00",
+      "meta_description": ""
+    }
+  },
+  {
+    "id": 295,
+    "url": "https://socialgeekpro.beehiiv.com/p/espa-a-estudia-suspender-tiktok",
+    "source_name": "SocialGeek News",
+    "platform": "tiktok",
+    "title": "TikTok launches Social MCP to manage brand presence through AI conversations",
+    "paragraphs": [
+      "TikTok has introduced Social MCP, a tool that lets brands run social listening, trend analysis and audience sentiment tracking through a direct conversation with AI. It is designed to spot opportunities before they go viral, move from insights to content ideas and strategy, and identify organic videos that are performing well so they can be turned into Spark Ads.",
+      "For sports social teams, this could shorten the gap between a viral moment on matchday and a planned response. A club could ask the tool which fan conversations are rising around a signing or rivalry, adjust its content plan in real time, and quickly boost its best-performing organic clips as Spark Ads for sponsors or ticket and merchandise campaigns.",
+      "The key is to keep human judgement in the loop: AI can surface the trends, but the team still decides which ones fit the club's voice and values."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-12T12:13:00+00:00",
+    "created_at": "2026-11-12T15:05:04.236378+00:00",
+    "edited_at": null,
+    "slug": "tiktok-launches-social-mcp-to-manage-brand-presence-through-ai-295",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/manual-2026-11-11-1.jpg",
+    "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
+      "title": "TikTok lanza Social MCP para gestionar la presencia de marca mediante conversaciones con IA",
+      "tokens": {
+        "in": 1344,
+        "out": 522
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [],
+      "meta_title": "",
+      "paragraphs": [
+        "TikTok ha presentado Social MCP, una herramienta que permite a las marcas hacer social listening, análisis de tendencias y seguimiento del sentimiento de la audiencia a través de una conversación directa con IA. Está diseñada para detectar oportunidades antes de que se vuelvan virales, pasar de los insights a ideas de contenido y estrategia, e identificar vídeos orgánicos que están funcionando bien para convertirlos en Spark Ads.",
+        "Para los equipos de redes sociales deportivas, esto podría acortar la distancia entre un momento viral en día de partido y una respuesta planificada. Un club podría preguntar a la herramienta qué conversaciones de aficionados están creciendo en torno a un fichaje o una rivalidad, ajustar su plan de contenidos en tiempo real e impulsar rápidamente sus clips orgánicos de mejor rendimiento como Spark Ads para patrocinadores o para campañas de entradas y merchandising.",
+        "La clave está en mantener el criterio humano en el proceso: la IA puede sacar a la superficie las tendencias, pero es el equipo quien decide cuáles encajan con la voz y los valores del club."
+      ],
+      "image_title": "",
+      "translated_at": "2026-11-12T16:54:00.482Z",
+      "source_changed": "2026-11-12T15:05:04.236378+00:00",
       "meta_description": ""
     }
   },
@@ -2624,33 +2718,33 @@
     }
   },
   {
-    "id": 84,
-    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces#3",
+    "id": 82,
+    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces",
     "source_name": "SocialGeek News",
-    "platform": "other",
-    "title": "Gen Z app Posting2 grows with chronological, ad-free, algorithm-free photo feed",
+    "platform": "facebook",
+    "title": "Facebook tests charging Pages to post links beyond a small monthly quota",
     "paragraphs": [
-      "Posting2 is a small app built as a throwback to early Instagram: square photos, a chronological feed, no algorithm, no ads and no celebrities, with lots of casual everyday posts. According to Fast Company, it grew from 1,600 beta users in April to 36,671 users by October 21, and Sensor Tower recorded a 42% jump in downloads in September versus August.",
-      "The app is still tiny, but it reflects a slice of Gen Z that wants to see friends' posts without algorithmic curation. For clubs and athletes, it is a reminder that raw, imperfect and authentic content is regaining value.",
-      "Sports teams can lean into this by mixing polished campaigns with low-production moments: dressing room snapshots, player phone photos, training ground candids and fan-shot content that feels personal rather than produced."
+      "Facebook is testing a cap on how many link posts a Page can publish. Some Pages are now limited to two link posts per month, after which a prompt invites them to subscribe through Meta One: $50 a month for eight links, $150 for 20, or $500 for unlimited. Links to compatible affiliates, Creator Storefront and Meta products remain unrestricted. Meta calls it a test, though it has reportedly reached nonprofit and library Pages that were meant to be exempt.",
+      "For clubs and leagues that push fans from Facebook to ticketing, shop or news pages, this signals that outbound traffic is getting more expensive. Social teams should audit how much web traffic Facebook really drives and reserve link posts for high-value moments like ticket drops or kit launches.",
+      "The bigger lesson is to invest in owned channels such as newsletters, apps and membership communities. Native formats like video, photo galleries and in-feed match updates can keep Facebook audiences engaged without relying on links."
     ],
     "relevant": true,
     "published_at": "2026-10-29T12:12:00+00:00",
-    "created_at": "2026-10-29T12:54:20.285329+00:00",
+    "created_at": "2026-10-29T12:54:19.971122+00:00",
     "edited_at": null,
-    "slug": "gen-z-app-posting2-grows-with-chronological-ad-free-algorithm-free-84",
+    "slug": "facebook-tests-charging-pages-to-post-links-beyond-a-small-monthly-82",
     "meta_title": null,
     "meta_description": null,
     "takeaways": [],
     "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/linkedin-posting2-16x9.jpg",
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/linkedin-meta-links-16x9.jpg",
     "es": {
       "faq": [],
       "model": "claude-sonnet-5-5",
-      "title": "Posting2, la app de la Generación Z, crece con un feed de fotos cronológico, sin anuncios y sin algoritmo",
+      "title": "Facebook prueba a cobrar a las Páginas por publicar enlaces más allá de una pequeña cuota mensual",
       "tokens": {
-        "in": 1352,
-        "out": 518
+        "in": 1400,
+        "out": 620
       },
       "excerpt": "",
       "cta_text": "",
@@ -2660,13 +2754,13 @@
       "takeaways": [],
       "meta_title": "",
       "paragraphs": [
-        "Posting2 es una pequeña app concebida como un homenaje a los inicios de Instagram: fotos cuadradas, un feed cronológico, sin algoritmo, sin anuncios y sin famosos, con muchos posts informales del día a día. Según Fast Company, pasó de 1.600 usuarios beta en abril a 36.671 usuarios el 21 de octubre, y Sensor Tower registró un aumento del 42 % en las descargas en septiembre frente a agosto.",
-        "La app sigue siendo diminuta, pero refleja a un sector de la Generación Z que quiere ver las publicaciones de sus amigos sin curación algorítmica. Para clubes y deportistas, es un recordatorio de que el contenido crudo, imperfecto y auténtico está recuperando valor.",
-        "Los equipos deportivos pueden aprovechar esta tendencia combinando campañas muy cuidadas con momentos de baja producción: instantáneas del vestuario, fotos hechas con el móvil de los jugadores, imágenes espontáneas de la ciudad deportiva y contenido grabado por aficionados que resulte personal en lugar de producido."
+        "Facebook está probando un límite al número de publicaciones con enlace que puede hacer una Página. Algunas Páginas ya están limitadas a dos publicaciones con enlace al mes, y después un aviso les invita a suscribirse a través de Meta One: 50 $ al mes por ocho enlaces, 150 $ por 20 o 500 $ por enlaces ilimitados. Los enlaces a afiliados compatibles, a Creator Storefront y a productos de Meta siguen sin restricciones. Meta lo presenta como una prueba, aunque según se ha informado ha llegado a Páginas de organizaciones sin ánimo de lucro y de bibliotecas que debían estar exentas.",
+        "Para los clubes y las ligas que llevan a los aficionados desde Facebook a páginas de venta de entradas, de la tienda o de noticias, esto indica que el tráfico saliente se está encareciendo. Los equipos de redes sociales deberían analizar cuánto tráfico web genera realmente Facebook y reservar las publicaciones con enlace para momentos de alto valor, como el lanzamiento de entradas o de equipaciones.",
+        "La lección de fondo es invertir en canales propios como newsletters, apps y comunidades de socios. Los formatos nativos, como el vídeo, las galerías de fotos y las actualizaciones del partido en el feed, pueden mantener el engagement de las audiencias de Facebook sin depender de los enlaces."
       ],
       "image_title": "",
-      "translated_at": "2026-10-29T16:10:26.722Z",
-      "source_changed": "2026-10-29T12:54:20.285329+00:00",
+      "translated_at": "2026-10-29T16:10:21.391Z",
+      "source_changed": "2026-10-29T12:54:19.971122+00:00",
       "meta_description": ""
     }
   },
@@ -2718,33 +2812,33 @@
     }
   },
   {
-    "id": 82,
-    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces",
+    "id": 84,
+    "url": "https://socialgeekpro.beehiiv.com/p/facebook-quiere-cobrarte-por-los-enlaces#3",
     "source_name": "SocialGeek News",
-    "platform": "facebook",
-    "title": "Facebook tests charging Pages to post links beyond a small monthly quota",
+    "platform": "other",
+    "title": "Gen Z app Posting2 grows with chronological, ad-free, algorithm-free photo feed",
     "paragraphs": [
-      "Facebook is testing a cap on how many link posts a Page can publish. Some Pages are now limited to two link posts per month, after which a prompt invites them to subscribe through Meta One: $50 a month for eight links, $150 for 20, or $500 for unlimited. Links to compatible affiliates, Creator Storefront and Meta products remain unrestricted. Meta calls it a test, though it has reportedly reached nonprofit and library Pages that were meant to be exempt.",
-      "For clubs and leagues that push fans from Facebook to ticketing, shop or news pages, this signals that outbound traffic is getting more expensive. Social teams should audit how much web traffic Facebook really drives and reserve link posts for high-value moments like ticket drops or kit launches.",
-      "The bigger lesson is to invest in owned channels such as newsletters, apps and membership communities. Native formats like video, photo galleries and in-feed match updates can keep Facebook audiences engaged without relying on links."
+      "Posting2 is a small app built as a throwback to early Instagram: square photos, a chronological feed, no algorithm, no ads and no celebrities, with lots of casual everyday posts. According to Fast Company, it grew from 1,600 beta users in April to 36,671 users by October 21, and Sensor Tower recorded a 42% jump in downloads in September versus August.",
+      "The app is still tiny, but it reflects a slice of Gen Z that wants to see friends' posts without algorithmic curation. For clubs and athletes, it is a reminder that raw, imperfect and authentic content is regaining value.",
+      "Sports teams can lean into this by mixing polished campaigns with low-production moments: dressing room snapshots, player phone photos, training ground candids and fan-shot content that feels personal rather than produced."
     ],
     "relevant": true,
     "published_at": "2026-10-29T12:12:00+00:00",
-    "created_at": "2026-10-29T12:54:19.971122+00:00",
+    "created_at": "2026-10-29T12:54:20.285329+00:00",
     "edited_at": null,
-    "slug": "facebook-tests-charging-pages-to-post-links-beyond-a-small-monthly-82",
+    "slug": "gen-z-app-posting2-grows-with-chronological-ad-free-algorithm-free-84",
     "meta_title": null,
     "meta_description": null,
     "takeaways": [],
     "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/linkedin-meta-links-16x9.jpg",
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/linkedin-posting2-16x9.jpg",
     "es": {
       "faq": [],
       "model": "claude-sonnet-5-5",
-      "title": "Facebook prueba a cobrar a las Páginas por publicar enlaces más allá de una pequeña cuota mensual",
+      "title": "Posting2, la app de la Generación Z, crece con un feed de fotos cronológico, sin anuncios y sin algoritmo",
       "tokens": {
-        "in": 1400,
-        "out": 620
+        "in": 1352,
+        "out": 518
       },
       "excerpt": "",
       "cta_text": "",
@@ -2754,13 +2848,13 @@
       "takeaways": [],
       "meta_title": "",
       "paragraphs": [
-        "Facebook está probando un límite al número de publicaciones con enlace que puede hacer una Página. Algunas Páginas ya están limitadas a dos publicaciones con enlace al mes, y después un aviso les invita a suscribirse a través de Meta One: 50 $ al mes por ocho enlaces, 150 $ por 20 o 500 $ por enlaces ilimitados. Los enlaces a afiliados compatibles, a Creator Storefront y a productos de Meta siguen sin restricciones. Meta lo presenta como una prueba, aunque según se ha informado ha llegado a Páginas de organizaciones sin ánimo de lucro y de bibliotecas que debían estar exentas.",
-        "Para los clubes y las ligas que llevan a los aficionados desde Facebook a páginas de venta de entradas, de la tienda o de noticias, esto indica que el tráfico saliente se está encareciendo. Los equipos de redes sociales deberían analizar cuánto tráfico web genera realmente Facebook y reservar las publicaciones con enlace para momentos de alto valor, como el lanzamiento de entradas o de equipaciones.",
-        "La lección de fondo es invertir en canales propios como newsletters, apps y comunidades de socios. Los formatos nativos, como el vídeo, las galerías de fotos y las actualizaciones del partido en el feed, pueden mantener el engagement de las audiencias de Facebook sin depender de los enlaces."
+        "Posting2 es una pequeña app concebida como un homenaje a los inicios de Instagram: fotos cuadradas, un feed cronológico, sin algoritmo, sin anuncios y sin famosos, con muchos posts informales del día a día. Según Fast Company, pasó de 1.600 usuarios beta en abril a 36.671 usuarios el 21 de octubre, y Sensor Tower registró un aumento del 42 % en las descargas en septiembre frente a agosto.",
+        "La app sigue siendo diminuta, pero refleja a un sector de la Generación Z que quiere ver las publicaciones de sus amigos sin curación algorítmica. Para clubes y deportistas, es un recordatorio de que el contenido crudo, imperfecto y auténtico está recuperando valor.",
+        "Los equipos deportivos pueden aprovechar esta tendencia combinando campañas muy cuidadas con momentos de baja producción: instantáneas del vestuario, fotos hechas con el móvil de los jugadores, imágenes espontáneas de la ciudad deportiva y contenido grabado por aficionados que resulte personal en lugar de producido."
       ],
       "image_title": "",
-      "translated_at": "2026-10-29T16:10:21.391Z",
-      "source_changed": "2026-10-29T12:54:19.971122+00:00",
+      "translated_at": "2026-10-29T16:10:26.722Z",
+      "source_changed": "2026-10-29T12:54:20.285329+00:00",
       "meta_description": ""
     }
   },
@@ -3752,53 +3846,6 @@
     }
   },
   {
-    "id": 17,
-    "url": "https://www.socialmediatoday.com/news/tiktok-us-shares-second-quarter-account-enforcement-data/833907/",
-    "source_name": "Social Media Today",
-    "platform": "tiktok",
-    "title": "TikTok US removes over 14 million fake accounts in second-quarter enforcement report",
-    "paragraphs": [
-      "TikTok has released account enforcement data for its US operation covering the second quarter. The platform says it removed more than 14 million fake accounts during the period. It also says it blocked close to 65 million spam accounts before they could be created, stopping them at the sign-up stage.",
-      "For sports social teams, large fake-account purges can cause sudden dips in follower counts and engagement figures. Clubs, leagues and athletes should expect occasional drops and avoid treating them as a loss of real fans. Benchmarking against engaged metrics such as watch time, shares and comments gives a more reliable picture than raw follower totals.",
-      "The data is also useful when talking to sponsors. Partners want to know their activations reach genuine audiences, and platform-level cleanups support that case. Teams can audit their own comment sections and follower bases for bot activity, report spam that targets fan content, and show partners verified audience insights rather than headline follower numbers."
-    ],
-    "relevant": true,
-    "published_at": "2026-10-25T22:13:46+00:00",
-    "created_at": "2026-10-26T22:03:14.65779+00:00",
-    "edited_at": null,
-    "slug": "tiktok-us-removes-over-14-million-fake-accounts-in-second-quarter-17",
-    "meta_title": null,
-    "meta_description": null,
-    "takeaways": [],
-    "faq": [],
-    "image_url": "https://imgproxy.divecdn.com/12K6ogX9lcgDYYC0J9LHBG_Vz43JSghdwOStO8_Cc34/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS90aWt0b2tfdXNkc2p2LnBuZw==.webp",
-    "es": {
-      "faq": [],
-      "model": "claude-haiku-5-5",
-      "title": "TikTok EE. UU. elimina más de 14 millones de cuentas falsas en su informe de moderación del segundo trimestre",
-      "tokens": {
-        "in": 1327,
-        "out": 623
-      },
-      "excerpt": "",
-      "cta_text": "",
-      "body_html": "",
-      "cta_title": "",
-      "image_alt": "",
-      "takeaways": [],
-      "meta_title": "",
-      "paragraphs": [
-        "TikTok ha publicado los datos de moderación de cuentas de su operación en EE. UU. correspondientes al segundo trimestre. La plataforma afirma que eliminó más de 14 millones de cuentas falsas durante el periodo. También asegura que bloqueó cerca de 65 millones de cuentas de spam antes de que pudieran crearse, frenándolas en la fase de registro.",
-        "Para los equipos de redes sociales del deporte, las grandes depuraciones de cuentas falsas pueden provocar caídas repentinas en el número de seguidores y en las cifras de interacción. Clubes, ligas y atletas deben esperar bajadas puntuales y evitar interpretarlas como una pérdida de aficionados reales. Comparar los datos con métricas de interacción real, como el tiempo de visualización, las veces compartido y los comentarios, ofrece una imagen más fiable que el total bruto de seguidores.",
-        "Estos datos también son útiles en las conversaciones con patrocinadores. Los socios quieren saber que sus activaciones llegan a audiencias genuinas, y las limpiezas a nivel de plataforma respaldan ese argumento. Los equipos pueden auditar sus propias secciones de comentarios y bases de seguidores en busca de actividad de bots, denunciar el spam que apunta al contenido de los aficionados y mostrar a los socios datos verificados de la audiencia en lugar de cifras totales de seguidores."
-      ],
-      "image_title": "",
-      "translated_at": "2026-10-26T22:11:27.862Z",
-      "source_changed": "2026-10-26T22:03:14.65779+00:00",
-      "meta_description": ""
-    }
-  },
-  {
     "id": 39,
     "url": "https://www.socialmediatoday.com/news/tiktok-us-shares-q2-account-enforcement-data/833907/",
     "source_name": "Social Media Today",
@@ -3842,6 +3889,53 @@
       "image_title": "",
       "translated_at": "2026-10-27T13:15:03.983Z",
       "source_changed": "2026-10-27T12:04:45.467727+00:00",
+      "meta_description": ""
+    }
+  },
+  {
+    "id": 17,
+    "url": "https://www.socialmediatoday.com/news/tiktok-us-shares-second-quarter-account-enforcement-data/833907/",
+    "source_name": "Social Media Today",
+    "platform": "tiktok",
+    "title": "TikTok US removes over 14 million fake accounts in second-quarter enforcement report",
+    "paragraphs": [
+      "TikTok has released account enforcement data for its US operation covering the second quarter. The platform says it removed more than 14 million fake accounts during the period. It also says it blocked close to 65 million spam accounts before they could be created, stopping them at the sign-up stage.",
+      "For sports social teams, large fake-account purges can cause sudden dips in follower counts and engagement figures. Clubs, leagues and athletes should expect occasional drops and avoid treating them as a loss of real fans. Benchmarking against engaged metrics such as watch time, shares and comments gives a more reliable picture than raw follower totals.",
+      "The data is also useful when talking to sponsors. Partners want to know their activations reach genuine audiences, and platform-level cleanups support that case. Teams can audit their own comment sections and follower bases for bot activity, report spam that targets fan content, and show partners verified audience insights rather than headline follower numbers."
+    ],
+    "relevant": true,
+    "published_at": "2026-10-25T22:13:46+00:00",
+    "created_at": "2026-10-26T22:03:14.65779+00:00",
+    "edited_at": null,
+    "slug": "tiktok-us-removes-over-14-million-fake-accounts-in-second-quarter-17",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://imgproxy.divecdn.com/12K6ogX9lcgDYYC0J9LHBG_Vz43JSghdwOStO8_Cc34/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS90aWt0b2tfdXNkc2p2LnBuZw==.webp",
+    "es": {
+      "faq": [],
+      "model": "claude-haiku-5-5",
+      "title": "TikTok EE. UU. elimina más de 14 millones de cuentas falsas en su informe de moderación del segundo trimestre",
+      "tokens": {
+        "in": 1327,
+        "out": 623
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [],
+      "meta_title": "",
+      "paragraphs": [
+        "TikTok ha publicado los datos de moderación de cuentas de su operación en EE. UU. correspondientes al segundo trimestre. La plataforma afirma que eliminó más de 14 millones de cuentas falsas durante el periodo. También asegura que bloqueó cerca de 65 millones de cuentas de spam antes de que pudieran crearse, frenándolas en la fase de registro.",
+        "Para los equipos de redes sociales del deporte, las grandes depuraciones de cuentas falsas pueden provocar caídas repentinas en el número de seguidores y en las cifras de interacción. Clubes, ligas y atletas deben esperar bajadas puntuales y evitar interpretarlas como una pérdida de aficionados reales. Comparar los datos con métricas de interacción real, como el tiempo de visualización, las veces compartido y los comentarios, ofrece una imagen más fiable que el total bruto de seguidores.",
+        "Estos datos también son útiles en las conversaciones con patrocinadores. Los socios quieren saber que sus activaciones llegan a audiencias genuinas, y las limpiezas a nivel de plataforma respaldan ese argumento. Los equipos pueden auditar sus propias secciones de comentarios y bases de seguidores en busca de actividad de bots, denunciar el spam que apunta al contenido de los aficionados y mostrar a los socios datos verificados de la audiencia en lugar de cifras totales de seguidores."
+      ],
+      "image_title": "",
+      "translated_at": "2026-10-26T22:11:27.862Z",
+      "source_changed": "2026-10-26T22:03:14.65779+00:00",
       "meta_description": ""
     }
   },
