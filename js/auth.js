@@ -52,6 +52,57 @@ window.SCP_AUTH = (() => {
     if (!error) try { localStorage.setItem("scp-visit", today); } catch {}
   }, 1500);
 
+  // One account: one phone (or tablet) and one computer at a time (supabase/device-limit.sql). A third device sees a
+  // screen saying where the account is open, and can take that place ("disconnect the other one"). Checked on every page
+  // and whenever the tab comes back to the front, so the device that lost its place is stopped too.
+  const deviceId = (() => { try { let v = localStorage.getItem("scp-device"); if (!v) { v = crypto.randomUUID(); localStorage.setItem("scp-device", v); } return v; } catch { return ""; } })();
+  const mobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
+  const label = (() => { const u = navigator.userAgent;
+    const os = /iPhone/.test(u) ? "iPhone" : /iPad/.test(u) || (mobile && /Macintosh/.test(u)) ? "iPad" : /Android/.test(u) ? "Android" : /Windows/.test(u) ? "Windows" : /Mac/.test(u) ? "Mac" : /Linux/.test(u) ? "Linux" : "";
+    const br = /Edg\//.test(u) ? "Edge" : /OPR\//.test(u) ? "Opera" : /Firefox\//.test(u) ? "Firefox" : /Chrome\//.test(u) ? "Chrome" : /Safari\//.test(u) ? "Safari" : "";
+    return [os, br].filter(Boolean).join(" · "); })();
+  async function deviceCheck(take = false) {
+    if (!client || !deviceId) return;
+    const { data: { session } } = await client.auth.getSession();
+    if (!session) return;
+    const { data, error } = await client.rpc("device_check", { p_device: deviceId, p_kind: mobile ? "mobile" : "desktop", p_label: label, p_take: take });
+    if (error || !data) return;   // never lock anyone out because of a network or database hiccup
+    if (data.ok) { document.getElementById("scp-device-wall")?.remove(); document.documentElement.style.overflow = ""; return; }
+    deviceWall(data);
+  }
+  function deviceWall(d) {
+    if (document.getElementById("scp-device-wall")) return;
+    const es = window.SCP_LANG !== "en", phone = d.kind === "mobile";
+    d.label = String(d.label || "").replace(/[<>&"]/g, "");
+    const T = es ? { h: phone ? "Tu cuenta ya está abierta en otro móvil" : "Tu cuenta ya está abierta en otro ordenador",
+        p: `Cada cuenta de SCP se puede usar en un móvil y en un ordenador a la vez.${d.label ? ` Ahora está abierta en: <b>${d.label}</b>.` : ""}`,
+        take: "Desconectar el otro y entrar aquí", note: "El otro dispositivo se cerrará la próxima vez que se use.", out: "Cerrar sesión" }
+      : { h: phone ? "Your account is already open on another phone" : "Your account is already open on another computer",
+        p: `Each SCP account can be used on one phone and one computer at a time.${d.label ? ` It's open now on: <b>${d.label}</b>.` : ""}`,
+        take: "Disconnect the other one and sign in here", note: "The other device will be signed out the next time it's used.", out: "Sign out" };
+    const w = document.createElement("div");
+    w.id = "scp-device-wall";
+    w.innerHTML = `<style>#scp-device-wall{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;padding:16px;background:rgba(10,15,30,.92);backdrop-filter:blur(8px);font-family:var(--font-body,Inter,system-ui,sans-serif)}
+      #scp-device-wall .dw{max-width:440px;width:100%;padding:28px 24px;border-radius:20px;background:#17213b;border:1px solid rgba(240,184,74,.35);color:#fff;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+      #scp-device-wall .dw-ic{width:52px;height:52px;margin:0 auto 14px;border-radius:14px;display:grid;place-items:center;background:rgba(240,184,74,.15);color:#f0b84a;font-size:26px}
+      #scp-device-wall h2{margin:0 0 10px;font:600 20px/1.3 var(--font-display,"Host Grotesk",system-ui,sans-serif)}
+      #scp-device-wall p{margin:0 0 18px;color:#b4c0d3;font-size:14.5px;line-height:1.5} #scp-device-wall p b{color:#fff}
+      #scp-device-wall button{display:block;width:100%;min-height:48px;border:0;border-radius:999px;font:600 15px var(--font-body,Inter,system-ui,sans-serif);cursor:pointer}
+      #scp-device-wall .dw-take{background:linear-gradient(135deg,#ffe0a0,#f0b84a);color:#121b33}
+      #scp-device-wall .dw-out{margin-top:10px;background:transparent;color:#b4c0d3;text-decoration:underline}
+      #scp-device-wall small{display:block;margin-top:10px;color:#b4c0d3;font-size:12.5px}</style>
+      <div class="dw" role="dialog" aria-modal="true" aria-labelledby="scp-dw-h"><div class="dw-ic">${phone ? "📱" : "💻"}</div><h2 id="scp-dw-h">${T.h}</h2><p>${T.p}</p>
+      <button type="button" class="dw-take">${T.take}</button><small>${T.note}</small><button type="button" class="dw-out">${T.out}</button></div>`;
+    document.documentElement.style.overflow = "hidden";
+    document.body.appendChild(w);
+    w.querySelector(".dw-take").onclick = (e) => { e.target.disabled = true; deviceCheck(true); };
+    w.querySelector(".dw-out").onclick = async () => { await client.auth.signOut(); location.href = "index.html"; };
+  }
+  if (client) {
+    if (document.body) deviceCheck(); else document.addEventListener("DOMContentLoaded", () => deviceCheck());
+    document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") deviceCheck(); });
+  }
+
   return {
     ready,
     client,
