@@ -21,29 +21,29 @@
     "faq": [],
     "image_url": "https://frontofficesports.com/wp-content/uploads/2026/11/2026-10-25T172117Z_841517213_MT1USATODAY30183324_RTRMADP_3_PAT-MCAFEE-SPEAKS-WHILE-DELIVERING-PICKS-DURING-ESPN-S-scaled.jpg?quality=80&w=1024",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "La entrevista de Aaron Rodgers en The Pat McAfee Show demuestra el poder de las plataformas amigables para los deportistas",
+      "tokens": {
+        "in": 1468,
+        "out": 681
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "Aaron Rodgers usó The Pat McAfee Show para responder a su suplencia en los Pittsburgh Steelers y lanzó una crítica directa contra el entrenador principal, Mike McCarthy. Con ESPN y ESPN2 ocupadas con baloncesto universitario, la emisión de televisión pasó a ESPNews, pero el streaming del programa en YouTube había superado los 622.000 espectadores en el momento de la publicación. Los Steelers dieron de baja a Rodgers poco después de la entrevista.",
         "Front Office Sports presenta a McAfee como el gran ganador. Su larga relación con Rodgers y un formato relajado que deja hablar a las estrellas sin contradicciones siguen consiguiendo entrevistas que dominan la conversación deportiva. El artículo vincula ese poder de atracción con las negociaciones de ampliación de contrato entre ESPN y McAfee que se han publicado. También señala que LeBron James eligió el mismo programa para responder a las críticas a su hijo Bronny.",
         "Para los equipos de redes sociales deportivas, la lección es que los deportistas recurren cada vez más a programas de confianza, centrados en una personalidad, y a streamings al estilo de los creadores para controlar su relato. Eso puede dejar a los clubes reaccionando en tiempo real. Los equipos deberían seguir de cerca estos canales, tener listos protocolos de respuesta y plantearse crear sus propios formatos largos y cómodos, en los que los jugadores quieran hablar primero, en lugar de recurrir a presentadores externos."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-26T01:46:34.248567+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-11-26T09:33:34.353Z",
-      "tokens": {
-        "in": 1468,
-        "out": 681
-      }
+      "source_changed": "2026-11-26T01:46:34.248567+00:00",
+      "meta_description": ""
     }
   },
   {
