@@ -13,7 +13,7 @@
   const STATUS = { new: "New", qualified: "Qualified", demo_booked: "Demo booked", demo_completed: "Demo completed", trial: "In trial", customer: "Customer", lost: "Lost" };
   const MEET = { none: "—", booked: "Booked", rescheduled: "Rescheduled", cancelled: "Cancelled", completed: "Completed", no_show: "No-show" };
   const LOST = { price: "The price", unused: "Didn't use it", content: "Can't find relevant content", missing: "A feature is missing", timing: "Not the right time", no_reply: "No reply", other: "Another reason" };
-  const SRC = { admin: "Added by hand", trial: "Free trial signup", index: "Home" };
+  const SRC = { admin: "Added by hand", trial: "Free trial signup", index: "Home", my_club: "My Club trial (invited)" };
   const EVENTS = { trial_started: "Free trial started", activated: "Subscription started", trial_converted: "Trial became paid", plan_changed: "Plan changed", cancel_scheduled: "Cancelled (keeps access until the end)", reactivated: "Reactivated", canceled: "Subscription ended", past_due: "Payment overdue", recovered: "Payment recovered", payment_failed: "Payment failed", action_required: "Payment needs action", granted: "Access granted", linked: "Subscription linked" };
   const f = { q: "", status: "", org_type: "", challenge: "", identified: true };
   let leads = [], tab = "all";
