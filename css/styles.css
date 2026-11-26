@@ -4422,6 +4422,7 @@ button.plan-cta { width: 100%; cursor: pointer; font: inherit; }
 .plan-switches .plan-interval { margin: 0; }
 .plans.is-solo { grid-template-columns: minmax(0, 420px); justify-content: center; }
 .plans-empty { grid-column: 1 / -1; text-align: center; color: var(--muted); padding: 40px 0; }
+.private-intro { margin-top: 32px; }   /* room between the clubs strip and "Private membership" */
 .private-intro .eyebrow { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: 10px; }
 .compare-wrap { margin-top: 80px; }
 .cmp-wrap { margin-top: 30px; overflow-x: auto; border-radius: 18px; border: 0.5px solid var(--line); background: var(--surface); }
@@ -4538,6 +4539,8 @@ fieldset.pf-cancel-why legend { padding: 0; margin-bottom: 6px; }
 .lang-float { position: fixed; top: 18px; right: 18px; z-index: 50; }
 .pf-lang .lang-switch { height: 44px; }
 .pf-lang .lang-switch button { min-width: 0; padding: 0 16px; height: 36px; font-size: 13px; letter-spacing: 0; }
+/* profile: Spanish of Spain / Mexico / Argentina and English — wraps on narrow screens */
+.pf-lang .lang-switch-full { flex-wrap: wrap; height: auto; min-height: 44px; border-radius: 22px; }
 .post-lang-note { margin: 10px 0 0; font-size: 14px; color: var(--gold); }
 
 /* Nav that doesn't fit on one line (js/main.js adds .is-tight): same as the mobile menu */

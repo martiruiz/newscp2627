@@ -32,14 +32,14 @@ window.SCP_AUTH = (() => {
 
   // Website language (js/i18n.js): kept in the profile so it follows the member to other devices and sets the
   // language of the e-mails we send. Merges into the saved preferences without touching the rest.
-  window.SCP_saveLang = async (lang) => {
+  window.SCP_saveLang = async (lang, region) => {
     if (!client) return;
     const { data: { session } } = await client.auth.getSession();
     if (!session) return;
     if (session.user.user_metadata?.lang !== lang) client.auth.updateUser({ data: { lang } }).catch(() => {});   // the sign-in emails follow it (supabase/auth-emails)
     const { data: p } = await client.from("profiles").select("preferences,newsletter,newsletter_frequency").eq("id", session.user.id).single();
     if (!p) return;
-    await client.rpc("update_my_preferences", { p_preferences: { ...(p.preferences || {}), ui_language: lang }, p_newsletter: p.newsletter, p_frequency: p.newsletter_frequency || "weekly" });
+    await client.rpc("update_my_preferences", { p_preferences: { ...(p.preferences || {}), ui_language: lang, ...(region ? { ui_region: region } : {}) }, p_newsletter: p.newsletter, p_frequency: p.newsletter_frequency || "weekly" });
   };
 
   // one "visit" a day for the lifecycle e-mails (did they come back?): supabase/automations-lifecycle.sql

@@ -6,6 +6,8 @@
 //   window.SCP_LANG  "en" | "es"         window.SCP_LOC  "en-GB" | "es-ES" (dates, numbers, money)
 //   window.tx(text, vars)  translate one phrase/template from a script: tx("Pay {amount} and switch", { amount })
 //   window.SCP_setLang(lang, { save })   switch language (reloads the page); save: false skips the profile update
+// Spanish of Spain, Mexico or Argentina (profile → language): js/i18n-es-mx.js / js/i18n-es-ar.js hold only the phrases said
+// differently there, on top of js/i18n-es.js; dates and numbers follow the country (SCP_LOC). window.SCP_REGION "es" | "mx" | "ar".
 (() => {
   const KEY = "scp-lang";
   const LANGS = ["es", "en"];   // Spanish first in the switch
@@ -25,8 +27,12 @@
     if (/bot|crawl|spider|slurp|bing|yandex|baidu|duckduck|facebookexternalhit|lighthouse|headless/i.test(navigator.userAgent) || !pageIn(lang)) lang = pageLang;
     else { location.replace(pageIn(lang)); lang = pageLang; }
   }
+  const RKEY = "scp-es-region", REGIONS = ["es", "mx", "ar"];
+  let region = "es";
+  try { const r = localStorage.getItem(RKEY); if (REGIONS.includes(r)) region = r; } catch {}
   window.SCP_LANG = lang;
-  window.SCP_LOC = lang === "es" ? "es-ES" : "en-GB";
+  window.SCP_REGION = region;
+  window.SCP_LOC = lang === "es" ? { es: "es-ES", mx: "es-MX", ar: "es-AR" }[region] : "en-GB";
   root.lang = lang;
 
   // ---- dictionary --------------------------------------------------------------------------------------------
@@ -38,6 +44,7 @@
   function load(dict) {
     if (loaded || !dict) return;
     loaded = true;
+    dict = { ...dict, ...((region === "mx" ? window.SCP_ES_MX : region === "ar" ? window.SCP_ES_AR : null) || {}) };   // the country's own phrases win
     for (const [k, v] of Object.entries(dict)) {
       const key = norm(k);
       if (/\{\w+\}/.test(key)) {
@@ -138,6 +145,7 @@
     const base = (document.currentScript?.src || "").replace(/i18n\.js(\?.*)?$/, "");
     const v = (document.currentScript?.src.match(/\?v=[^&]*/) || [""])[0];
     document.write(`<script src="${base}i18n-es.js${v}"><\/script>`);
+    if (region !== "es") document.write(`<script src="${base}i18n-es-${region}.js${v}"><\/script>`);
   }
 
   document.addEventListener("DOMContentLoaded", () => {
@@ -163,26 +171,34 @@
   // ---- switching -----------------------------------------------------------------------------------------------
   window.SCP_setLang = async (next, opts = {}) => {
     if (!LANGS.includes(next)) return;
-    try { localStorage.setItem(KEY, next); } catch {}
-    if (next === lang) return;
+    const nextRegion = REGIONS.includes(opts.region) ? opts.region : region;
+    try { localStorage.setItem(KEY, next); localStorage.setItem(RKEY, nextRegion); } catch {}
+    if (next === lang && nextRegion === region) return;
     const wait = (p) => Promise.race([Promise.resolve(p).catch(() => {}), new Promise((r) => setTimeout(r, 1500))]);   // never stuck on the network
     await wait(window.SCP_beforeLangSwitch?.());   // e.g. the profile saves its pending changes first
-    if (opts.save !== false) await wait(window.SCP_saveLang?.(next));
+    if (opts.save !== false) await wait(window.SCP_saveLang?.(next, nextRegion));
     if (pageLang && pageIn(next)) { const t = new URL(pageIn(next), location.href); t.searchParams.delete("lang"); location.assign(t.toString()); return; }
     const u = new URL(location.href);
     if (u.searchParams.has("lang")) { u.searchParams.set("lang", next); location.replace(u.toString()); }
     else location.reload();   // a link with #anchor would only scroll with location.replace: reload the page
   };
   // the member's saved choice (profile) wins over the browser language, once per browser
-  window.SCP_applyProfileLang = (saved) => {
-    let local = null;
-    try { local = localStorage.getItem(KEY); } catch {}
-    if (LANGS.includes(saved) && !local && saved !== lang) window.SCP_setLang(saved, { save: false });
+  window.SCP_applyProfileLang = (saved, savedRegion) => {
+    let local = null, localRegion = null;
+    try { local = localStorage.getItem(KEY); localRegion = localStorage.getItem(RKEY); } catch {}
+    const r = REGIONS.includes(savedRegion) && !localRegion ? savedRegion : region;
+    if ((LANGS.includes(saved) && !local && saved !== lang) || r !== region) window.SCP_setLang(LANGS.includes(saved) && !local ? saved : lang, { save: false, region: r });
   };
 
   const NAMES = { en: "English", es: "Español" };
-  const SWITCH = (full) => `<div class="lang-switch" role="group" aria-label="${lang === "es" ? "Idioma" : "Language"}" data-i18n-skip>
-    ${LANGS.map((l) => `<button type="button" data-set-lang="${l}" aria-pressed="${l === lang}" title="${NAMES[l]}" lang="${l}">${full ? NAMES[l] : l.toUpperCase()}</button>`).join("")}
+  // the profile's full switch also picks the Spanish of the country: Spain, Mexico or Argentina
+  const FULL = [["es", "es", "Español (España)"], ["es", "mx", "Español (México)"], ["es", "ar", "Español (Argentina)"], ["en", "", "English"]];
+  const SWITCH = (full) => full
+    ? `<div class="lang-switch lang-switch-full" role="group" aria-label="${lang === "es" ? "Idioma" : "Language"}" data-i18n-skip>
+      ${FULL.map(([l, r, n]) => `<button type="button" data-set-lang="${l}"${r ? ` data-set-region="${r}"` : ""} aria-pressed="${l === lang && (!r || r === region)}" lang="${l}">${n}</button>`).join("")}
+    </div>`
+    : `<div class="lang-switch" role="group" aria-label="${lang === "es" ? "Idioma" : "Language"}" data-i18n-skip>
+    ${LANGS.map((l) => `<button type="button" data-set-lang="${l}" aria-pressed="${l === lang}" title="${NAMES[l]}" lang="${l}">${l.toUpperCase()}</button>`).join("")}
   </div>`;
   function mountSwitchers() {
     const spot = document.querySelector(".nav-actions");
@@ -194,7 +210,7 @@
     document.querySelectorAll("[data-lang-slot]").forEach((s) => { if (!s.querySelector(".lang-switch")) s.innerHTML = SWITCH(s.getAttribute("data-lang-slot") === "full"); });
     document.addEventListener("click", (e) => {
       const b = e.target.closest?.("[data-set-lang]");
-      if (b) { e.preventDefault(); window.SCP_setLang(b.getAttribute("data-set-lang")); }
+      if (b) { e.preventDefault(); window.SCP_setLang(b.getAttribute("data-set-lang"), b.dataset.setRegion ? { region: b.dataset.setRegion } : {}); }
     });
   }
 })();
