@@ -146,12 +146,6 @@
   {
     "account": "houseofhighlights",
     "account_platform": "instagram",
-    "views": 5286934,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/634/634341.jpg?v=mwopwves"
-  },
-  {
-    "account": "houseofhighlights",
-    "account_platform": "instagram",
     "views": 5156538,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/647/647965.jpg?v=mwt9p6q9"
   },
@@ -178,5 +172,11 @@
     "account_platform": "tiktok",
     "views": 4700000,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/645/645964.jpg?v=mwqe9njb"
+  },
+  {
+    "account": "spurs",
+    "account_platform": "instagram",
+    "views": 4664670,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/645/645564.jpg?v=mwpccntd"
   }
 ]
