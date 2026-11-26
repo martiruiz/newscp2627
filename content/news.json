@@ -21,29 +21,29 @@
     "faq": [],
     "image_url": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/05c97c04-64a1-420f-ade8-f3dde574c9d6/Untitled_Design__38_.png?t=1795617798",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "Un método de investigación de 60 minutos para crear propuestas de contenido patrocinado a medida",
+      "tokens": {
+        "in": 1437,
+        "out": 686
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "Alex Kopilow, autor de la newsletter Sponcon Sports, ha esbozado un proceso de tres pasos (recopilar, comparar y personalizar) para crear ideas de colaboración digital específicas para cada marca en aproximadamente una hora. Se apoya en ocho recursos gratuitos, entre ellos cuentas secundarias en redes sociales que siguen a todos los equipos y ligas profesionales, las retransmisiones deportivas como fuente de nombres de secciones, la búsqueda en X filtrada por las personas a las que sigues, y la búsqueda de Branded Content y la Ad Library de Meta.",
         "También sugiere usar la función Ask de YouTube, impulsada por Gemini, para localizar integraciones de patrocinadores dentro de los vídeos, revisar la web, las biografías y los anuncios de búsqueda de un socio para encontrar eslóganes y productos prioritarios, y utilizar un prompt de IA que encuentre términos de una categoría con doble sentido en un deporte concreto, como vincular marcas de neumáticos con una sección sobre la rotación de lanzadores de béisbol.",
         "Para los equipos de alianzas y de redes sociales de clubes y ligas, la principal conclusión es crear con antelación una biblioteca de inspiración. Guardar cada semana los posts patrocinados más destacados, tener archivados conceptos de series ya aprobados y analizar los acuerdos deportivos de la competencia permite responder rápido a peticiones de propuestas de última hora, a menudo cambiando el nombre de una serie existente o adaptándola en lugar de crear contenido nuevo desde cero."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-25T17:07:02.742785+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-11-25T18:41:49.513Z",
-      "tokens": {
-        "in": 1437,
-        "out": 686
-      }
+      "source_changed": "2026-11-25T17:07:02.742785+00:00",
+      "meta_description": ""
     }
   },
   {
@@ -68,29 +68,29 @@
     "faq": [],
     "image_url": "https://imgproxy.divecdn.com/FkRIyeB1b3SXsvvEFXlJgSYZ2rQfIiGQvPJdR6LpCxQ/g:ce/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9lbXBsaWZpX3NvY2lhbF9tZWRpYV9yZXBvcnQzLnBuZw==.webp",
     "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
       "title": "Encuesta de Emplifi: la IA aumenta la producción de los equipos de redes sociales sin reducir plantillas",
+      "tokens": {
+        "in": 1446,
+        "out": 717
+      },
       "excerpt": "",
-      "body_html": "",
-      "meta_title": "",
-      "meta_description": "",
-      "cta_title": "",
       "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
       "image_alt": "",
-      "image_title": "",
+      "takeaways": [],
+      "meta_title": "",
       "paragraphs": [
         "Emplifi encuestó a 405 responsables, directores y ejecutivos de marketing sobre las tendencias que marcan sus planes para 2027. El 90 % afirmó que la IA ha aumentado la producción de su equipo, y aun así el 54 % señaló que su equipo de redes sociales ha crecido en lugar de reducirse. El 69 % dijo que las herramientas de IA les ahorran al menos tres horas a la semana en informes, y el 55 % espera que el vídeo de formato corto siga ganando relevancia e influencia.",
         "Para los equipos de redes sociales de clubes, ligas y deportistas, los datos respaldan tratar la IA como un multiplicador de capacidad y no como un sustituto. Automatizar tareas rutinarias como los informes semanales de rendimiento, los resúmenes para patrocinadores y los análisis posteriores a los partidos puede liberar horas para tareas creativas como el storytelling del día de partido, el contenido protagonizado por jugadores y la interacción con los aficionados. Ese tiempo recuperado también es un argumento útil para defender ante la dirección la inversión en el equipo.",
         "El hallazgo sobre el vídeo de formato corto refuerza hacia dónde debería ir ese tiempo extra. Los equipos deportivos pueden usar herramientas de IA para recortar, subtitular y crear versiones de clips, y así convertir highlights, imágenes de entrenamientos y momentos del detrás de las cámaras en más ediciones verticales para distintas plataformas, mientras el personal se centra en la voz, el timing y el conocimiento del aficionado que hacen que el contenido siga siendo distintivo durante el ciclo de planificación de 2027."
       ],
-      "takeaways": [],
-      "faq": [],
-      "source_changed": "2026-11-25T17:07:11.692003+00:00",
-      "model": "claude-sonnet-5-5",
+      "image_title": "",
       "translated_at": "2026-11-25T18:41:55.912Z",
-      "tokens": {
-        "in": 1446,
-        "out": 717
-      }
+      "source_changed": "2026-11-25T17:07:11.692003+00:00",
+      "meta_description": ""
     }
   },
   {
