@@ -1,5 +1,52 @@
 [
   {
+    "id": 508,
+    "url": "https://frontofficesports.com/article/pat-mcafee-aaron-rodgers-steelers-mccarthy-sleep/",
+    "source_name": "Front Office Sports",
+    "platform": "youtube",
+    "title": "Aaron Rodgers' McAfee Show interview shows the power of athlete-friendly platforms",
+    "paragraphs": [
+      "Aaron Rodgers used The Pat McAfee Show to respond to being benched by the Pittsburgh Steelers, delivering a pointed critique of head coach Mike McCarthy. With ESPN and ESPN2 busy with college basketball, the TV broadcast moved to ESPNews, but the show's YouTube stream had passed 622,000 viewers by press time. The Steelers released Rodgers shortly after the interview.",
+      "Front Office Sports frames McAfee as the big winner. His long relationship with Rodgers, and a relaxed format that lets stars talk without pushback, keeps landing interviews that dominate the sports conversation. The piece links that pull to ESPN's reported extension talks with McAfee. It also notes LeBron James chose the same show to answer criticism of his son Bronny.",
+      "For sports social teams, the lesson is that athletes increasingly go to trusted, personality-led shows and creator-style streams to control their story. That can leave clubs reacting in real time. Teams should track these channels closely, have response protocols ready, and consider building their own comfortable, long-form formats where players want to speak first, instead of turning to outside hosts."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-25T22:16:08+00:00",
+    "created_at": "2026-11-26T01:46:34.248567+00:00",
+    "edited_at": null,
+    "slug": "aaron-rodgers-mcafee-show-interview-shows-the-power-of-athlete-508",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://frontofficesports.com/wp-content/uploads/2026/11/2026-10-25T172117Z_841517213_MT1USATODAY30183324_RTRMADP_3_PAT-MCAFEE-SPEAKS-WHILE-DELIVERING-PICKS-DURING-ESPN-S-scaled.jpg?quality=80&w=1024",
+    "es": {
+      "title": "La entrevista de Aaron Rodgers en The Pat McAfee Show demuestra el poder de las plataformas amigables para los deportistas",
+      "excerpt": "",
+      "body_html": "",
+      "meta_title": "",
+      "meta_description": "",
+      "cta_title": "",
+      "cta_text": "",
+      "image_alt": "",
+      "image_title": "",
+      "paragraphs": [
+        "Aaron Rodgers usó The Pat McAfee Show para responder a su suplencia en los Pittsburgh Steelers y lanzó una crítica directa contra el entrenador principal, Mike McCarthy. Con ESPN y ESPN2 ocupadas con baloncesto universitario, la emisión de televisión pasó a ESPNews, pero el streaming del programa en YouTube había superado los 622.000 espectadores en el momento de la publicación. Los Steelers dieron de baja a Rodgers poco después de la entrevista.",
+        "Front Office Sports presenta a McAfee como el gran ganador. Su larga relación con Rodgers y un formato relajado que deja hablar a las estrellas sin contradicciones siguen consiguiendo entrevistas que dominan la conversación deportiva. El artículo vincula ese poder de atracción con las negociaciones de ampliación de contrato entre ESPN y McAfee que se han publicado. También señala que LeBron James eligió el mismo programa para responder a las críticas a su hijo Bronny.",
+        "Para los equipos de redes sociales deportivas, la lección es que los deportistas recurren cada vez más a programas de confianza, centrados en una personalidad, y a streamings al estilo de los creadores para controlar su relato. Eso puede dejar a los clubes reaccionando en tiempo real. Los equipos deberían seguir de cerca estos canales, tener listos protocolos de respuesta y plantearse crear sus propios formatos largos y cómodos, en los que los jugadores quieran hablar primero, en lugar de recurrir a presentadores externos."
+      ],
+      "takeaways": [],
+      "faq": [],
+      "source_changed": "2026-11-26T01:46:34.248567+00:00",
+      "model": "claude-sonnet-5-5",
+      "translated_at": "2026-11-26T09:33:34.353Z",
+      "tokens": {
+        "in": 1468,
+        "out": 681
+      }
+    }
+  },
+  {
     "id": 495,
     "url": "https://www.sponconsports.com/p/how-to-find-sponsored-content-ideas-in-60-minutes",
     "source_name": "SponCon Sports",
@@ -1455,53 +1502,6 @@
     }
   },
   {
-    "id": 296,
-    "url": "https://socialgeekpro.beehiiv.com/p/espa-a-estudia-suspender-tiktok#2",
-    "source_name": "SocialGeek News",
-    "platform": "instagram",
-    "title": "Instagram tests Features, horizontal videos up to 90 minutes, to rival YouTube",
-    "paragraphs": [
-      "Instagram is testing a format called Features that lets creators upload horizontal videos of up to 90 minutes, aimed at podcasts, interviews and entertainment shows. Viewers will be able to jump from a short Reel straight to the full video without leaving the app. The test is running with selected creators in the US after earlier trials in Brazil, with a separate upload flow and snippet clips published as Reels.",
-      "For clubs, leagues and athletes, this opens a path to host long-form content where much of their audience already lives. Full press conferences, behind-the-scenes documentaries, club podcasts or extended match analysis could sit on Instagram, with short Reels acting as trailers that drive fans to the complete video.",
-      "Teams should plan clip-to-full-video workflows now, so every long piece comes with ready-made snippets, and consider new sponsor inventory around longer formats."
-    ],
-    "relevant": true,
-    "published_at": "2026-11-12T12:13:00+00:00",
-    "created_at": "2026-11-12T15:05:04.855566+00:00",
-    "edited_at": null,
-    "slug": "instagram-tests-features-horizontal-videos-up-to-90-minutes-to-rival-296",
-    "meta_title": null,
-    "meta_description": null,
-    "takeaways": [],
-    "faq": [],
-    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/manual-2026-11-11-2.jpg",
-    "es": {
-      "faq": [],
-      "model": "claude-sonnet-5-5",
-      "title": "Instagram prueba Features, vídeos horizontales de hasta 90 minutos, para competir con YouTube",
-      "tokens": {
-        "in": 1365,
-        "out": 529
-      },
-      "excerpt": "",
-      "cta_text": "",
-      "body_html": "",
-      "cta_title": "",
-      "image_alt": "",
-      "takeaways": [],
-      "meta_title": "",
-      "paragraphs": [
-        "Instagram está probando un formato llamado Features que permite a los creadores subir vídeos horizontales de hasta 90 minutos, pensado para pódcasts, entrevistas y programas de entretenimiento. Los usuarios podrán saltar de un Reel corto directamente al vídeo completo sin salir de la app. La prueba se está realizando con creadores seleccionados en EE. UU. tras pruebas previas en Brasil, con un flujo de subida independiente y clips de fragmentos publicados como Reels.",
-        "Para clubes, ligas y deportistas, esto abre un camino para alojar contenido de formato largo donde ya se encuentra gran parte de su audiencia. Ruedas de prensa completas, documentales entre bastidores, pódcasts de clubes o análisis extendidos de partidos podrían estar en Instagram, con Reels cortos que funcionen como tráilers y lleven a los aficionados al vídeo completo.",
-        "Los equipos deberían planificar ya flujos de trabajo de clip a vídeo completo, de modo que cada pieza larga venga con fragmentos listos para publicar, y valorar nuevo inventario para patrocinadores en torno a los formatos más largos."
-      ],
-      "image_title": "",
-      "translated_at": "2026-11-12T16:54:11.153Z",
-      "source_changed": "2026-11-12T15:05:04.855566+00:00",
-      "meta_description": ""
-    }
-  },
-  {
     "id": 295,
     "url": "https://socialgeekpro.beehiiv.com/p/espa-a-estudia-suspender-tiktok",
     "source_name": "SocialGeek News",
@@ -1545,6 +1545,53 @@
       "image_title": "",
       "translated_at": "2026-11-12T16:54:00.482Z",
       "source_changed": "2026-11-12T15:05:04.236378+00:00",
+      "meta_description": ""
+    }
+  },
+  {
+    "id": 296,
+    "url": "https://socialgeekpro.beehiiv.com/p/espa-a-estudia-suspender-tiktok#2",
+    "source_name": "SocialGeek News",
+    "platform": "instagram",
+    "title": "Instagram tests Features, horizontal videos up to 90 minutes, to rival YouTube",
+    "paragraphs": [
+      "Instagram is testing a format called Features that lets creators upload horizontal videos of up to 90 minutes, aimed at podcasts, interviews and entertainment shows. Viewers will be able to jump from a short Reel straight to the full video without leaving the app. The test is running with selected creators in the US after earlier trials in Brazil, with a separate upload flow and snippet clips published as Reels.",
+      "For clubs, leagues and athletes, this opens a path to host long-form content where much of their audience already lives. Full press conferences, behind-the-scenes documentaries, club podcasts or extended match analysis could sit on Instagram, with short Reels acting as trailers that drive fans to the complete video.",
+      "Teams should plan clip-to-full-video workflows now, so every long piece comes with ready-made snippets, and consider new sponsor inventory around longer formats."
+    ],
+    "relevant": true,
+    "published_at": "2026-11-12T12:13:00+00:00",
+    "created_at": "2026-11-12T15:05:04.855566+00:00",
+    "edited_at": null,
+    "slug": "instagram-tests-features-horizontal-videos-up-to-90-minutes-to-rival-296",
+    "meta_title": null,
+    "meta_description": null,
+    "takeaways": [],
+    "faq": [],
+    "image_url": "https://ujrofkxlb0mdyyqf.public.blob.vercel-storage.com/img/manual-2026-11-11-2.jpg",
+    "es": {
+      "faq": [],
+      "model": "claude-sonnet-5-5",
+      "title": "Instagram prueba Features, vídeos horizontales de hasta 90 minutos, para competir con YouTube",
+      "tokens": {
+        "in": 1365,
+        "out": 529
+      },
+      "excerpt": "",
+      "cta_text": "",
+      "body_html": "",
+      "cta_title": "",
+      "image_alt": "",
+      "takeaways": [],
+      "meta_title": "",
+      "paragraphs": [
+        "Instagram está probando un formato llamado Features que permite a los creadores subir vídeos horizontales de hasta 90 minutos, pensado para pódcasts, entrevistas y programas de entretenimiento. Los usuarios podrán saltar de un Reel corto directamente al vídeo completo sin salir de la app. La prueba se está realizando con creadores seleccionados en EE. UU. tras pruebas previas en Brasil, con un flujo de subida independiente y clips de fragmentos publicados como Reels.",
+        "Para clubes, ligas y deportistas, esto abre un camino para alojar contenido de formato largo donde ya se encuentra gran parte de su audiencia. Ruedas de prensa completas, documentales entre bastidores, pódcasts de clubes o análisis extendidos de partidos podrían estar en Instagram, con Reels cortos que funcionen como tráilers y lleven a los aficionados al vídeo completo.",
+        "Los equipos deberían planificar ya flujos de trabajo de clip a vídeo completo, de modo que cada pieza larga venga con fragmentos listos para publicar, y valorar nuevo inventario para patrocinadores en torno a los formatos más largos."
+      ],
+      "image_title": "",
+      "translated_at": "2026-11-12T16:54:11.153Z",
+      "source_changed": "2026-11-12T15:05:04.855566+00:00",
       "meta_description": ""
     }
   },
