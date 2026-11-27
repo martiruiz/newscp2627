@@ -206,6 +206,9 @@
     overperforming: { cls: "lf-sp-over", ico: "trend", desc: "Beat their account's own average",
       lead: "Posts that did far better than their account usually does.",
       points: ["Spot what moves the needle", "Compare against the club's own normal, not the giants"] },
+    ads: { cls: "lf-sp-ads", ico: "megaphone", desc: "Instagram posts with the Paid partnership label",
+      lead: "Posts Instagram marks as a paid partnership with a brand: their numbers may include paid reach.",
+      points: ["See how clubs work with their sponsors", "Keep in mind the numbers aren't only organic"] },
     "content creators": { cls: "lf-sp-creators", ico: "user", desc: "Posts by sports content creators",
       lead: "Posts from creators who make sports content: fresh formats, trends and a native tone your club can borrow.",
       points: ["Trends before clubs adopt them", "Ideas for collabs with creators"] },
@@ -384,9 +387,11 @@
       <span class="lf-sp-n" data-favs-n${favsN == null ? " hidden" : ""}>${favsN == null ? "" : kfmt(favsN)}</span>${svg("check", "lf-sp-ck")}</button>`;
   }
   const notTopPicks = (v) => v.name.toLowerCase() !== "top picks";
+  // "Ads" only shows once some post has the Instagram paid partnership label (supabase/ads-filter.sql)
+  const shownSpecial = (v) => v.name.toLowerCase() !== "ads" || countOf(v) > 0 || isOn(v);
 
   function discoverHtml() {
-    const sp = byCountStable((catalog.byCat.trend || []).filter(notTopPicks));
+    const sp = byCountStable((catalog.byCat.trend || []).filter(notTopPicks).filter(shownSpecial));
     let rows = [favsHtml(), ...sp.map((v) => {
       const s = special(v), n = countOf(v), on = isOn(v), zero = n === 0 && !on;
       return `<button type="button" class="lf-sp ${s.cls}${on ? " is-on" : ""}${zero ? " is-zero" : ""}" aria-pressed="${on}" ${zero ? 'aria-disabled="true" ' : ""}data-facet="trend" data-id="${v.id}"${s.desc ? ` data-sp-tip="${esc(tx(s.desc))}"` : ""}>
@@ -515,7 +520,7 @@
     if (!error) p.preferences = prefs;
   }
   // Specials keep the catalog order (Top Picks, Replicable ideas, Overperforming) so they don't jump around
-  const ORDER_SP = ["top picks", "replicable ideas", "overperforming"];
+  const ORDER_SP = ["top picks", "replicable ideas", "overperforming", "ads"];
   const byCountStable = (list) => [...list].sort((a, b) => ((ORDER_SP.indexOf(a.name.toLowerCase()) + 1 || 9) - (ORDER_SP.indexOf(b.name.toLowerCase()) + 1 || 9)));
 
   function viewsHtml() {
@@ -1006,7 +1011,7 @@
 
   // Mobile: the three specials as quick chips above the posts
   function renderQuick() {
-    $("[data-lf-quick]").innerHTML = byCountStable((catalog.byCat.trend || []).filter(notTopPicks)).map((v) => {
+    $("[data-lf-quick]").innerHTML = byCountStable((catalog.byCat.trend || []).filter(notTopPicks).filter(shownSpecial)).map((v) => {
       const s = special(v), on = isOn(v), zero = countOf(v) === 0 && !on;
       return `<button type="button" class="lf-q ${s.cls}${on ? " is-on" : ""}${zero ? " is-zero" : ""}" aria-pressed="${on}" data-facet="trend" data-id="${v.id}">${svg(s.ico)}${esc(pretty(v.name))}</button>`;
     }).join("");

@@ -549,5 +549,7 @@ window.SCP_ES_AR = {
  "No saved searches yet. Pick some filters and save them with the bookmark.": "Todavía no tenés búsquedas guardadas. Elegí unos filtros y guardalos con el marcador.",
  "Name it (e.g. Basketball carousels)": "Ponele nombre (p. ej. Carruseles de básquet)",
  "Delete {what}": "Borrar {what}",
- "Come back to these filters with one click": "Volvé a estos filtros con un clic"
+ "Come back to these filters with one click": "Volvé a estos filtros con un clic",
+ "Posts Instagram marks as a paid partnership with a brand: their numbers may include paid reach.": "Posts que Instagram marca como colaboración paga con una marca: sus cifras pueden incluir alcance pago.",
+ "Keep in mind the numbers aren't only organic": "Tené en cuenta que las cifras no son solo orgánicas"
 };

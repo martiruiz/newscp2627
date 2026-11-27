@@ -2926,4 +2926,8 @@ window.SCP_ES = {
   "Delete {what}": "Borrar {what}",
   "Your filters, one click away": "Tus filtros, a un clic",
   "Come back to these filters with one click": "Vuelve a estos filtros con un clic",
+  "Instagram posts with the Paid partnership label": "Posts de Instagram con la etiqueta «Colaboración pagada»",
+  "Posts Instagram marks as a paid partnership with a brand: their numbers may include paid reach.": "Posts que Instagram marca como colaboración pagada con una marca: sus cifras pueden incluir alcance pagado.",
+  "See how clubs work with their sponsors": "Mira cómo trabajan los clubes con sus patrocinadores",
+  "Keep in mind the numbers aren't only organic": "Ten en cuenta que las cifras no son solo orgánicas",
 };

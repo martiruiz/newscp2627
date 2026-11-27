@@ -6857,6 +6857,7 @@ button.saved-searches:hover { color: var(--text); border-color: var(--gold-dim);
 .lf-sp-rep { --g: linear-gradient(135deg, #16b364, #3ccfc0); --g-soft: linear-gradient(135deg, rgba(22, 179, 100, 0.65), rgba(60, 207, 192, 0.65)); --glow: 22, 179, 100; }
 .lf-sp-creators { --g: linear-gradient(135deg, #d6a03c, #f4cf7a); --g-soft: linear-gradient(135deg, rgba(214, 160, 60, 0.75), rgba(244, 207, 122, 0.75)); --glow: 240, 184, 74; }
 .lf-sp-over { --g: linear-gradient(135deg, #f2711c, #fbbf4a); --g-soft: linear-gradient(135deg, rgba(242, 113, 28, 0.7), rgba(251, 191, 74, 0.7)); --glow: 242, 113, 28; }
+.lf-sp-ads { --g: linear-gradient(135deg, #c13584, #f56040); --g-soft: linear-gradient(135deg, rgba(193, 53, 132, 0.7), rgba(245, 96, 64, 0.7)); --glow: 193, 53, 132; }   /* Ads: Instagram only, in Instagram's colours */
 .my-space-btns .ai-mine { --g: linear-gradient(135deg, #8b5cf6, #c38cf9); --glow: 139, 92, 246; }
 .my-space-btns .plan-toggle { --g: linear-gradient(135deg, #3b82f6, #6cb8f8); --glow: 59, 130, 246; }
 .my-space-btns .saved-link { --g: linear-gradient(135deg, #d6a03c, #f4cf7a); --glow: 240, 184, 74; }
