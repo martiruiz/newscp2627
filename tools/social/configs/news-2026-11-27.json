@@ -1,0 +1,50 @@
+{
+ "label": "Nov 2026",
+ "items": [
+  {
+   "img": "x",
+   "brand": "x",
+   "platform": "X",
+   "title": "X adds <span class='g'>thumbnail</span> and caption options.",
+   "para": "Creators can pick a thumbnail frame, style captions and convert horizontal clips to vertical in one tap.",
+   "tip": "Reuse <span class='g'>broadcast-style highlights</span> as vertical clips and lead with the celebration frame.",
+   "date": "22 Nov"
+  },
+  {
+   "img": "edits",
+   "brand": "instagram",
+   "platform": "Instagram",
+   "title": "Meta's Edits app now runs on <span class='g'>iPad</span>.",
+   "para": "The update adds trim on import, 1,600 stickers and a copyright check on iOS, with five checks a day.",
+   "tip": "Run a <span class='g'>copyright check</span> before posting match footage and licensed music.",
+   "date": "23 Nov"
+  },
+  {
+   "img": "threads",
+   "brand": "threads",
+   "platform": "Threads",
+   "title": "Threads tests <span class='g'>upvoted Q&A</span> in live chats.",
+   "para": "Hosts collect questions and the chat votes on which ones get answered, in a limited test.",
+   "tip": "Try a <span class='g'>player or coach Q&A</span> during a match-day live chat once it reaches your account.",
+   "date": "19 Nov"
+  },
+  {
+   "img": "tiktok-music",
+   "brand": "tiktok",
+   "platform": "TikTok",
+   "title": "TikTok's music report: <span class='g'>94%</span> of chart entries went viral first.",
+   "para": "A TikTok-commissioned Luminate study says 94% of 2025 Billboard Global 200 entries had a viral TikTok moment before charting.",
+   "tip": "Treat it as <span class='g'>TikTok's own claim</span>. Test sound-led clips, with music rights cleared.",
+   "date": "18 Nov"
+  },
+  {
+   "img": "twitch",
+   "brand": "twitch",
+   "platform": "Twitch",
+   "title": "Twitch brings back <span class='g'>Hosting</span>.",
+   "para": "Offline streamers will be able to feature another live channel with shared chat, rolling out later this year.",
+   "tip": "If you stream, <span class='g'>cross-promote</span> partner or player channels when you are offline.",
+   "date": "13 Nov"
+  }
+ ]
+}
