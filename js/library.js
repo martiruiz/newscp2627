@@ -2089,17 +2089,21 @@
   async function loadLikes(rows) {
     const ids = rows.filter((r) => r.likes === undefined).map((r) => Number(r.id));
     if (!ids.length || !db) return;
-    const { data } = await db.from("content_ideas").select("id,likes,comments,account").in("id", ids);
+    const { data } = await db.from("content_ideas").select("id,likes,comments,account,paid_partnership").in("id", ids);
     for (const d of data || []) {
       const p = cache.get(String(d.id));
       if (!p) continue;
-      p.likes = d.likes; p.comments = d.comments; p.account = d.account;
+      p.likes = d.likes; p.comments = d.comments; p.account = d.account; p.paid_partnership = d.paid_partnership;
+      // Instagram's "Paid partnership" label: the megaphone in the cover's corner (supabase/instagram-paid-partnership.sql)
+      const corner = d.paid_partnership && $(`[data-stats="${CSS.escape(String(d.id))}"]`)?.closest(".lib-card")?.querySelector(".lib-corner");
+      if (corner && !corner.querySelector(".lib-ad")) corner.insertAdjacentHTML("beforeend", adBadge());
       if (d.likes) { const box = $(`[data-stats="${CSS.escape(String(d.id))}"]`); if (box) box.innerHTML = footStats(p); }
       // a creator's or media outlet's post: its username instead of "Content Creators" / "Media"
       const foot = d.account && $(`.lib-foot[data-cc="${CSS.escape(String(d.id))}"]`);
       if (foot) { foot.querySelector(".lib-foot-who b").textContent = `@${d.account}`; foot.querySelector(".lib-crest").outerHTML = footCrest(null, d.account); }
     }
   }
+  const adBadge = () => `<span class="lib-ad" tabindex="0" aria-label="Ad">${icon("megaphone")}<span class="lib-ad-lbl">Ad</span></span>`;
   const compact = (n) => Number(n).toLocaleString(window.SCP_LOC || "en-GB", { notation: "compact", maximumFractionDigits: 1 });
 
   // Card = the post (clean cover, or the embed for X / LinkedIn / Facebook) + a footer joined to it (who, when, views).
@@ -2129,7 +2133,7 @@
     const fmt = pretty(first(p, "format"));
     const name = PLATFORM_NAMES[pf] || "the platform";
     const fav = favClub ? `<span class="lib-badge lib-badge-fav" tabindex="0">${icon("star")}<span class="lib-fav-lbl">${tx("Following")}</span><span class="lib-tip" role="tooltip">${tx("{club} is one of your favourite profiles (Favs). Change them in Profile → Favourites.", { club: esc(favClub.name || "") })}</span></span>` : "";
-    const corner = `<div class="lib-corner">${pf ? `<span class="lib-pfchip" title="${esc(PLATFORM_NAMES[pf] || pf)}"><i class="lf-pfi is-brand lf-pf-${esc(pf)}" style="-webkit-mask-image:url(assets/pf-${esc(pf)}.svg);mask-image:url(assets/pf-${esc(pf)}.svg)"></i></span>` : ""}${fav}</div>`;
+    const corner = `<div class="lib-corner">${pf ? `<span class="lib-pfchip" title="${esc(PLATFORM_NAMES[pf] || pf)}"><i class="lf-pfi is-brand lf-pf-${esc(pf)}" style="-webkit-mask-image:url(assets/pf-${esc(pf)}.svg);mask-image:url(assets/pf-${esc(pf)}.svg)"></i></span>` : ""}${fav}${p.paid_partnership ? adBadge() : ""}</div>`;
     // the grip sits on its own at the post's top right, with Save on its left: drag it to the Content Plan or a saved board (or click it to select)
     const rail = `
           <button class="lib-grip" type="button" draggable="true" data-pp-grip="${esc(p.id)}" data-tip="${esc(tx("Drag to your Content Plan or a board"))}" aria-label="${esc(tx("Drag to your Content Plan or a board"))}">${icon("grip-vertical")}</button>
