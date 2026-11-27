@@ -60,14 +60,37 @@ async function message(type: string, table: string, r: Row, o: Row | null): Prom
   }
   if (table === "feedback" && type === "INSERT") {
     const p = await who(r.user_id);
-    return { title: r.kind === "bug" ? "🐞 New bug report" : r.kind === "content" ? `📥 Content request${r.context?.wants ? ` · ${r.context.wants}` : ""}` : "💡 New suggestion", body: `${nameOf(p)}: ${String(r.message || "").slice(0, 110)}`, url: "/admin/support.html" };
+    const title = r.kind === "bug" ? "🐞 New bug report" : r.kind === "content" ? `📥 Content request${r.context?.wants ? ` · ${r.context.wants}` : ""}` : "💡 New suggestion";
+    return { title, body: `${nameOf(p)}: ${String(r.message || "").slice(0, 110)}`, url: "/admin/support.html", mail: { title, who: p, r } };
   }
   if (table === "idea_imports" && type === "UPDATE" && r.status === "failed" && o?.status !== "failed")
     return { title: "❌ Import failed", body: String(r.filename || "An import").slice(0, 120), url: "/admin/import.html" };
   return null;
 }
 
+// Support reports also by e-mail to the team (the same NOTIFY_TO / CONTACT_FROM / RESEND_API_KEY as admin-notify)
+const escH = (v: unknown) => String(v ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+async function mail({ title, who: p, r }: Row) {
+  const to = env("NOTIFY_TO").split(",").map((x) => x.trim()).filter(Boolean);
+  if (!env("RESEND_API_KEY") || !env("CONTACT_FROM") || !to.length) return;
+  const c = r.context || {}, label = title.replace(/^\S+\s/, "");
+  const row = (k: string, v: unknown) => (v ? `<tr><td style="padding:5px 12px 5px 0;color:#6f7d95;font-size:13px;white-space:nowrap;vertical-align:top">${k}</td><td style="padding:5px 0;color:#fff;font-size:13.5px">${escH(v)}</td></tr>` : "");
+  const html = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#0e1529"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0e1529"><tr><td align="center" style="padding:32px 16px">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#17213b;border:1px solid rgba(240,184,74,0.35);border-radius:20px;font-family:Arial,Helvetica,sans-serif">
+<tr><td style="padding:28px 32px 4px"><img src="${SITE}/assets/logo-scp.png" width="110" height="45" alt="Sports Content Playbook" style="display:block;border:0"></td></tr>
+<tr><td style="padding:18px 32px 32px;color:#b4c0d3;font-size:15px;line-height:1.6">
+<p style="color:#f0b84a;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin:0 0 8px">${escH(label)}</p>
+<p style="color:#fff;font-size:20px;font-weight:700;margin:0 0 14px">${escH(nameOf(p))}</p>
+<div style="background:rgba(255,255,255,0.04);border-radius:12px;padding:14px 16px;color:#fff;font-size:15px;white-space:pre-line">${escH(r.message)}</div>
+<table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:14px">${row("Email", p.email)}${row("Wants", c.wants)}${row("Page", c.page)}${row("Plan", c.plan)}${row("Language", [c.lang, c.region].filter(Boolean).join("-"))}${row("Opened from", c.app)}${row("Screenshots", r.images?.length ? `${r.images.length} (in the admin)` : "")}${row("Browser", c.ua)}</table>
+<p style="margin:22px 0 0"><a href="${SITE}/admin/support.html" style="color:#f0b84a;font-weight:700">Answer in the admin →</a></p></td></tr></table></td></tr></table></body></html>`;
+  await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${env("RESEND_API_KEY")}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ from: env("CONTACT_FROM"), to, ...(p.email ? { reply_to: p.email } : {}), subject: `${label}: ${nameOf(p)}`, html }) }).catch(() => null);
+}
+
 async function send(msg: Row) {
+  if (msg.mail) await mail(msg.mail);
   webpush.setVapidDetails(env("VAPID_SUBJECT") || "mailto:info@sportscontentplaybook.com", env("VAPID_PUBLIC_KEY"), env("VAPID_PRIVATE_KEY"));
   const subs: Row[] = (await rest("admin_push_subscriptions?select=endpoint,p256dh,auth")) || [];
   const payload = JSON.stringify({ title: msg.title, body: msg.body, url: new URL(msg.url || "/admin/", SITE).href, tag: msg.tag });
