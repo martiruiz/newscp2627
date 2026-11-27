@@ -2914,7 +2914,6 @@ window.SCP_ES = {
   "Creator": "Creador",
   "Sport": "Deporte",
   "Competition": "Competición",
-  "Something else": "Otra cosa",
   "Which profiles, sports, creators or competitions would you like to see? Paste their @ or links and tell us why they interest you.": "¿Qué perfiles, deportes, creadores o competiciones te gustaría ver? Pega su @ o enlace y cuéntanos por qué te interesan.",
   "Tell us what's missing in the library: we add the profiles, sports and creators our members ask for.": "Cuéntanos qué echas en falta en la biblioteca: añadimos los perfiles, deportes y creadores que nos piden los miembros.",
 };

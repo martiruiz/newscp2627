@@ -142,7 +142,7 @@
 
   // ---- panel ------------------------------------------------------------------------------------------------
   let panel = null, tab = "news", kind = "bug", sub = "profile", files = [];
-  const SUBS = [["profile", "Profile or club"], ["creator", "Creator"], ["sport", "Sport"], ["competition", "Competition"], ["other", "Something else"]];
+  const SUBS = [["profile", "Profile or club"], ["creator", "Creator"], ["sport", "Sport"], ["competition", "Competition"], ["brand", "Brand"]];
   const KIND_NAME = { bug: "Bug", idea: "Suggestion", content: "Content request" };
   const TAB_NAMES = { news: "What's new", report: "Report", mine: "My reports" };
   let overlay = null;
