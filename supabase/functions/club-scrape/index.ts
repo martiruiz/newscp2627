@@ -71,6 +71,9 @@ function toRow(p: Rec, handle: string) {
     profile_name: first(p, "profile_name", "full_name"),
     verified: first(p, "is_verified", "verified"),
     profile_image: first(p, "profile_image_link", "profile_pic_url"),
+    // Instagram's "Paid partnership" label and the brand (supabase/instagram-paid-partnership.sql)
+    paid_partnership: typeof p.is_paid_partnership === "boolean" ? p.is_paid_partnership : null,
+    paid_partner: p.partnership_details?.username || null,
     format: /carousel|sidecar/.test(type) ? "Carousel" : /reel|clips|video/.test(type) ? "Reel" : type ? "Images" : "",
     platform: "Instagram",
     // its numbers as Bright Data read them (Instagram shows no views for photos and carousels)

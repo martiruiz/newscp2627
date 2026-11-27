@@ -29,6 +29,8 @@
     { key: "profile_name", required: false, aliases: ["profile_name", "full_name", "account_name"] },
     { key: "verified", required: false, aliases: ["verified", "is_verified"] },
     { key: "profile_image", required: false, aliases: ["profile_image", "profile_image_link", "profile_pic", "avatar"] },
+    { key: "paid_partnership", required: false, aliases: ["is_paid_partnership", "paid_partnership", "paid_partner_ship"] },
+    { key: "paid_partner", required: false, aliases: ["partnership_details", "paid_partner", "partner"] },
     ...A.CATEGORIES.map((c) => ({ key: c.key, required: false, aliases: [c.key, `${c.key}s`] })),
   ];
   // Admin → My Club → "Import posts": the same import, for one club (?club=id). Its players' and sponsors' posts go to its
@@ -172,7 +174,7 @@
       const line = i + 2; // header is line 1
       const get = (k) => (map[k] ? String(raw[map[k]] ?? "").trim() : "");
       const row = { _row: line, external_id: get("external_id"), embed: get("embed"), url: get("url"), title: get("title"), account: get("account"), cover: get("cover"),
-        hashtags: get("hashtags"), followers: get("followers"), profile_name: get("profile_name"), verified: get("verified"), profile_image: get("profile_image") };
+        hashtags: get("hashtags"), followers: get("followers"), profile_name: get("profile_name"), verified: get("verified"), profile_image: get("profile_image"), paid_partnership: get("paid_partnership"), paid_partner: get("paid_partner") };
       for (const c of A.CATEGORIES) row[c.key] = splitValues(get(c.key)).join(",");
       // Formats: Post → Images, carousel → Carousel, only Instagram can be "Reel" (supabase/smart-filters.sql)
       row.format = splitValues(row.format).map((f) => normFormat(f, row.platform)).join(",");
@@ -673,8 +675,8 @@
         if (accts.length && !noAccounts) await rpc("set_idea_accounts", { p_rows: accts }).catch(() => { noAccounts = true; term.log("warn", "Accounts not saved: run supabase/scraped-profiles.sql in Supabase"); });
         const covers = batches[i].filter((r) => r.cover).map((r) => ({ external_id: r.external_id, cover: r.cover }));
         if (covers.length && !noCovers) await rpc("set_idea_cover_sources", { p_rows: covers }).catch(() => { noCovers = true; term.log("warn", "Cover links not saved: run supabase/import-cover-source.sql in Supabase (covers are loaded from the platforms)"); });
-        const extras = batches[i].filter((r) => r.hashtags || r.followers || r.profile_name || r.verified || r.profile_image)
-          .map((r) => ({ external_id: r.external_id, account: r.account, hashtags: r.hashtags, followers: r.followers, profile_name: r.profile_name, verified: r.verified, profile_image: r.profile_image }));
+        const extras = batches[i].filter((r) => r.hashtags || r.followers || r.profile_name || r.verified || r.profile_image || r.paid_partnership)
+          .map((r) => ({ external_id: r.external_id, account: r.account, hashtags: r.hashtags, followers: r.followers, profile_name: r.profile_name, verified: r.verified, profile_image: r.profile_image, paid_partnership: r.paid_partnership, paid_partner: r.paid_partner }));
         if (extras.length && !noExtras) await rpc("set_idea_scrape_extras", { p_rows: extras }).catch(() => { noExtras = true; term.log("warn", "Hashtags / followers / profiles not saved: run supabase/import-scrape-extras.sql in Supabase"); });
         const doneRows = Math.min((i + 1) * BATCH, rows.length);
         const rate = doneRows / Math.max(term.elapsed(), 0.001);

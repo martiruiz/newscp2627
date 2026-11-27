@@ -783,7 +783,7 @@
     await rpc("set_idea_accounts", { p_rows: rows.map((r) => ({ external_id: r.external_id, account: r.account })) }).catch(() => {});
     const covers = rows.filter((r) => r.cover).map((r) => ({ external_id: r.external_id, cover: r.cover }));
     if (covers.length) await rpc("set_idea_cover_sources", { p_rows: covers }).catch(() => {});
-    await rpc("set_idea_scrape_extras", { p_rows: rows.map((r) => ({ external_id: r.external_id, account: r.account, hashtags: r.hashtags, followers: r.followers, profile_name: r.profile_name, verified: r.verified, profile_image: r.profile_image })) }).catch(() => {});
+    await rpc("set_idea_scrape_extras", { p_rows: rows.map((r) => ({ external_id: r.external_id, account: r.account, hashtags: r.hashtags, followers: r.followers, profile_name: r.profile_name, verified: r.verified, profile_image: r.profile_image, paid_partnership: r.paid_partnership, paid_partner: r.paid_partner })) }).catch(() => {});
     // its views, likes, comments and shares, as Bright Data read them (the views cron keeps them fresh afterwards)
     const now = new Date().toISOString();
     for (const r of rows) if (r.platform === "Instagram" && !r.views) r.views = null;   // a photo or carousel has no views (Bright Data says 0)

@@ -60,7 +60,7 @@ async function importRows(a, rows) {
   await db.rpc("set_idea_accounts", { p_rows: rows.map((r) => ({ external_id: r.external_id, account: r.account })) });
   const covers = rows.filter((r) => r.cover).map((r) => ({ external_id: r.external_id, cover: r.cover }));
   if (covers.length) await db.rpc("set_idea_cover_sources", { p_rows: covers });
-  await db.rpc("set_idea_scrape_extras", { p_rows: rows.map((r) => ({ external_id: r.external_id, account: r.account, hashtags: r.hashtags, followers: r.followers, profile_name: r.profile_name, verified: r.verified, profile_image: r.profile_image })) });
+  await db.rpc("set_idea_scrape_extras", { p_rows: rows.map((r) => ({ external_id: r.external_id, account: r.account, hashtags: r.hashtags, followers: r.followers, profile_name: r.profile_name, verified: r.verified, profile_image: r.profile_image, paid_partnership: r.paid_partnership, paid_partner: r.paid_partner })) });
   const now = new Date().toISOString();
   for (const r of rows) if (r.platform === "Instagram" && !r.views) r.views = null;   // a photo or carousel has no views
   for (const r of rows.filter((r) => [r.views, r.likes, r.comments, r.shares].some((v) => v != null))) {
