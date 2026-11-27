@@ -180,6 +180,7 @@
     { href: "audience.html", label: "Newsletter", icon: "mail", key: "audience", group: "super" },
     { href: "automations.html", label: "Automations", icon: "sparkles", key: "automations", group: "super" },
     { href: "crm.html", label: "CRM", icon: "columns", key: "crm", group: "super" },
+    { href: "support.html", label: "Support", icon: "bell", key: "support", group: "super" },
     { href: "leads.html", label: "Leads & Demos", icon: "inbox", key: "leads", group: "super" },
     { href: "promo-codes.html", label: "Promo codes", icon: "tag", key: "promo", group: "super" },
     { href: "users.html", label: "Users", icon: "users", key: "users", group: "super" },

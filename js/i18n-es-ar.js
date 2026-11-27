@@ -525,5 +525,20 @@ window.SCP_ES_AR = {
  "choose the size you're looking for.": "24. elegí el tamaño que buscás.",
  "narrow by the creator's profile.": "26. acotá por el perfil del creador.",
  "followers, recent collabs and their best posts.": "28. seguidores, colaboraciones recientes y sus mejores posts.",
- "You can see this tutorial again any time with the ? button.": "29. Podés volver a ver este tutorial cuando quieras con el botón ?."
+ "You can see this tutorial again any time with the ? button.": "29. Podés volver a ver este tutorial cuando quieras con el botón ?.",
+ "Take a look": "Echale un vistazo",
+ "You haven't sent any report yet.": "Todavía no enviaste ningún reporte.",
+ "Tell us as much as you can: what you were doing, what you expected and what happened. Screenshots help a lot.": "Contanos con el máximo detalle: qué intentabas hacer, qué esperabas y qué pasó. Las capturas de pantalla ayudan muchísimo.",
+ "Describe the bug step by step: what you were doing, what happened, on which screen…": "Describí el bug paso a paso: qué intentabas hacer, qué pasó, en qué pantalla…",
+ "What would you improve or add? Tell us what it would help you with.": "¿Qué mejorarías o agregarías? Contanos en qué te ayudaría.",
+ "Or paste them with ⌘V · up to 6": "O pegalas con ⌘V · máx. 6",
+ "We also send the page you're on, your browser and your plan, so we can find it sooner.": "También enviamos la página en la que estás, tu navegador y tu plan, para encontrarlo antes.",
+ "Only images (no videos).": "Solo imágenes (no videos).",
+ "You'll see what we do with it in My reports.": "Vas a ver qué hacemos con él en Mis reportes.",
+ "Couldn't send it. Try again.": "No se pudo enviar. Intentalo de nuevo.",
+ "Too many reports today: try again tomorrow": "Demasiados reportes hoy: intentalo mañana",
+ "Bottom left you now have a button to talk to us without leaving SCP:": "Abajo a la izquierda tenés un botón nuevo para hablar con nosotros sin salir de SCP:",
+ "tell us about a bug or suggest an improvement, with screenshots.": "contanos un bug o proponé una mejora, con capturas.",
+ "see how each one is going and our reply.": "mirá cómo va cada uno y nuestra respuesta.",
+ "Talk to us without leaving": "Hablá con nosotros sin salir de"
 };

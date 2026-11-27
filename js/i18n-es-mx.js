@@ -77,5 +77,7 @@ window.SCP_ES_MX = {
  "The sports content library: clubs, leagues and competitions, with search and saved boards.": "La biblioteca de contenido deportivo: clubes, ligas y competencias, con buscador y guardados.",
  "Every sport, club and competition": "Todos los deportes, clubes y competencias",
  "The library: every sport, club and competition, with filters": "La biblioteca: todos los deportes, clubes y competencias, con filtros",
- "sports, competitions, clubs, players and challenges.": "deportes, competencias, clubes, jugadores y challenges."
+ "sports, competitions, clubs, players and challenges.": "deportes, competencias, clubes, jugadores y challenges.",
+ "Only images (no videos).": "Solo imágenes (no videos).",
+ "Couldn't send it. Try again.": "No se pudo enviar. Inténtalo de nuevo."
 };

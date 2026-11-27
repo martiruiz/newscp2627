@@ -2,7 +2,7 @@
 // where an admin switched them on: Admin → bell). Only admins get them (supabase/admin-push.sql).
 //   GET                                  → { publicKey } for the page to subscribe
 //   POST Database Webhook (x-webhook-secret = WEBHOOK_SECRET) from supabase/admin-push.sql:
-//        profiles INSERT · subscriptions INSERT/UPDATE · contact_requests INSERT · leads INSERT/UPDATE · idea_imports UPDATE
+//        profiles INSERT · subscriptions INSERT/UPDATE · contact_requests INSERT · leads INSERT/UPDATE · idea_imports UPDATE · feedback INSERT
 //   POST { title, body, url } with x-worker-key (the GitHub workflows when they fail)
 // Secrets: VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_SUBJECT (made by pipeline/push-keys.mjs), WEBHOOK_SECRET.
 import webpush from "npm:web-push@3.6.7";
@@ -57,6 +57,10 @@ async function message(type: string, table: string, r: Row, o: Row | null): Prom
     if (type === "UPDATE" && r.meeting_status === "booked" && o?.meeting_status !== "booked")
       return { title: "📅 Video call booked", body: `${n}${r.meeting_at ? ` · ${new Date(r.meeting_at).toLocaleString("es-ES", { timeZone: "Europe/Madrid", dateStyle: "medium", timeStyle: "short" })}` : ""}`, url: "/admin/crm.html" };
     return null;
+  }
+  if (table === "feedback" && type === "INSERT") {
+    const p = await who(r.user_id);
+    return { title: r.kind === "bug" ? "🐞 New bug report" : "💡 New suggestion", body: `${nameOf(p)}: ${String(r.message || "").slice(0, 110)}`, url: "/admin/support.html" };
   }
   if (table === "idea_imports" && type === "UPDATE" && r.status === "failed" && o?.status !== "failed")
     return { title: "❌ Import failed", body: String(r.filename || "An import").slice(0, 120), url: "/admin/import.html" };

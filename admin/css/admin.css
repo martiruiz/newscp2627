@@ -2678,3 +2678,21 @@ tr[data-row].is-open td:first-child { box-shadow: inset 3px 0 0 var(--accent, #f
 .mfa-form { display: flex; gap: 8px; width: 100%; }
 .mfa-form .input { flex: 1; text-align: center; font: 600 20px var(--mono, monospace); letter-spacing: .3em; }
 .mfa-who { font-size: 12.5px; }
+
+/* Support: members' reports (bugs / suggestions) and "What's new" */
+.sup-rep { padding: 16px 0; border-bottom: 1px solid var(--border); }
+.sup-rep:last-child { border-bottom: 0; }
+.sup-rep header { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.sup-msg { margin: 10px 0; white-space: pre-line; line-height: 1.55; }
+.sup-imgs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.sup-imgs img { width: 120px; height: 84px; object-fit: cover; border-radius: 10px; border: 1px solid var(--border); }
+.sup-ctx { font-size: 12px; margin: 0 0 10px; word-break: break-word; }
+.sup-act { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.sup-act .input { flex: 1; min-width: 220px; }
+.sup-upd { display: flex; gap: 12px; justify-content: space-between; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.sup-upd:last-child { border-bottom: 0; }
+.sup-upd p { margin: 4px 0; white-space: pre-line; }
+.sup-upd-act { display: flex; gap: 6px; flex: none; }
+.sup-form { display: grid; gap: 12px; }
+.sup-form label { display: grid; gap: 6px; font-size: 13px; color: var(--muted); }
+.sup-act .select, .aud-h [data-filter] { width: auto; flex: none; }
