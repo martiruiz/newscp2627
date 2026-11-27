@@ -2924,4 +2924,6 @@ window.SCP_ES = {
   "Search updated: “{name}”": "Búsqueda actualizada: «{name}»",
   "Search saved: “{name}”": "Búsqueda guardada: «{name}»",
   "Delete {what}": "Borrar {what}",
+  "Your filters, one click away": "Tus filtros, a un clic",
+  "Come back to these filters with one click": "Vuelve a estos filtros con un clic",
 };

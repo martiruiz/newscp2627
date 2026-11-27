@@ -1776,7 +1776,7 @@
     ssPop.className = "ss-pop"; ssPop.setAttribute("role", "dialog");
     ssPop.innerHTML = html;
     document.body.appendChild(ssPop);
-    const r = anchor.getBoundingClientRect(), w = Math.min(320, innerWidth - 24);
+    const r = anchor.getBoundingClientRect(), w = Math.min(380, innerWidth - 24);
     ssPop.style.width = `${w}px`;
     ssPop.style.left = `${Math.max(12, Math.min(innerWidth - w - 12, r.right - w))}px`;
     ssPop.style.top = `${r.bottom + 8}px`;
@@ -1784,10 +1784,16 @@
   }
   document.addEventListener("click", (e) => { if (ssPop && !ssPop.contains(e.target) && !e.target.closest("[data-saved-searches],[data-save-search]")) ssClose(); });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") ssClose(); });
-  const ssList = (full) => `<div class="ss-h"><b>${esc(tx("My searches"))}</b><small>${esc(tx("{n} of {max} saved", { n: savedSearches.length, max: MAX_SEARCHES }))}</small></div>
+  // the panel's head: icon, title, what it's for and how full it is (n of 10, with a bar)
+  const ssHead = (title, sub) => `<div class="ss-h"><span class="ss-ic">${icon("bookmark")}</span><span class="ss-ht"><b>${esc(tx(title))}</b><small>${esc(tx(sub))}</small></span></div>
+    <div class="ss-cap"><span>${esc(tx("{n} of {max} saved", { n: savedSearches.length, max: MAX_SEARCHES }))}</span><i><b style="width:${Math.round((savedSearches.length / MAX_SEARCHES) * 100)}%"></b></i></div>`;
+  const ssMeta = (f) => { const c = chipsFor({ facets: {}, period: "all", ...f }); return { n: c.length, txt: c.slice(0, 3).map((x) => tx(x.label).replace(/[“”]/g, "")).join(" · ") }; };
+  const ssList = (full) => `${ssHead("My searches", "Your filters, one click away")}
     ${full ? `<p class="ss-full">${esc(tx("You've reached 10 saved searches. Delete one to save this one."))}</p>` : ""}
-    ${savedSearches.length ? `<ul class="ss-list">${savedSearches.map((x) => `<li><button type="button" class="ss-apply" data-ss-apply="${esc(x.id)}">${icon("bookmark")}<span>${esc(x.name)}</span></button><button type="button" class="ss-del" data-ss-del="${esc(x.id)}" aria-label="${esc(tx("Delete {what}", { what: x.name }))}" title="${esc(tx("Delete"))}">${icon("x")}</button></li>`).join("")}</ul>`
-      : `<p class="ss-empty">${esc(tx("No saved searches yet. Pick some filters and save them with the bookmark."))}</p>`}`;
+    ${savedSearches.length ? `<ul class="ss-list">${savedSearches.map((x) => { const m = ssMeta(x.filters || {});
+        return `<li><button type="button" class="ss-apply" data-ss-apply="${esc(x.id)}"><span class="ss-name">${esc(x.name)}</span><small>${esc(tx(m.n === 1 ? "{n} filter" : "{n} filters", { n: m.n }))}${m.txt ? ` · ${esc(m.txt)}` : ""}</small></button>
+        <button type="button" class="ss-del" data-ss-del="${esc(x.id)}" aria-label="${esc(tx("Delete {what}", { what: x.name }))}" title="${esc(tx("Delete"))}">${icon("trash-2")}</button></li>`; }).join("")}</ul>`
+      : `<div class="ss-empty"><span>${icon("bookmark")}</span><p>${esc(tx("No saved searches yet. Pick some filters and save them with the bookmark."))}</p></div>`}`;
   function showList(anchor, full = false) {
     const pop = ssOpen(anchor, ssList(full));
     pop.addEventListener("click", async (e) => {
@@ -1804,7 +1810,7 @@
   }
   function showSave(anchor) {
     const suggest = chipsFor(state()).map((x) => tx(x.label).replace(/[“”]/g, "")).slice(0, 3).join(" · ").slice(0, 60);
-    const pop = ssOpen(anchor, `<div class="ss-h"><b>${esc(tx("Save this search"))}</b><small>${esc(tx("{n} of {max} saved", { n: savedSearches.length, max: MAX_SEARCHES }))}</small></div>
+    const pop = ssOpen(anchor, `${ssHead("Save this search", "Come back to these filters with one click")}
       <form class="ss-form" data-ss-form><input class="ss-input" name="name" maxlength="60" required placeholder="${esc(tx("Name it (e.g. Basketball carousels)"))}" value="${esc(suggest)}">
       <button type="submit" class="ss-go">${esc(tx("Save"))}</button></form><p class="ss-err" hidden data-ss-err></p>`);
     const input = pop.querySelector("input"); setTimeout(() => { input.focus(); input.select(); }, 30);

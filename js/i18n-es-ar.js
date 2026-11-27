@@ -548,5 +548,6 @@ window.SCP_ES_AR = {
  "You've reached 10 saved searches. Delete one to save this one.": "Llegaste a 10 búsquedas guardadas. Borrá una para guardar esta.",
  "No saved searches yet. Pick some filters and save them with the bookmark.": "Todavía no tenés búsquedas guardadas. Elegí unos filtros y guardalos con el marcador.",
  "Name it (e.g. Basketball carousels)": "Ponele nombre (p. ej. Carruseles de básquet)",
- "Delete {what}": "Borrar {what}"
+ "Delete {what}": "Borrar {what}",
+ "Come back to these filters with one click": "Volvé a estos filtros con un clic"
 };
