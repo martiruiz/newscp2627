@@ -35,10 +35,11 @@
   const svg = (p) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
 
   document.head.insertAdjacentHTML("beforeend", `<style>
-  .sp-btn{position:fixed;left:16px;bottom:16px;z-index:140;display:inline-flex;align-items:center;gap:10px;height:46px;padding:0 18px 0 6px;border-radius:999px;border:1px solid transparent;background:linear-gradient(rgba(var(--surface-rgb,23,33,59),.94),rgba(var(--surface-rgb,23,33,59),.94)) padding-box,linear-gradient(135deg,rgba(255,224,160,.55),rgba(240,184,74,.12) 45%,rgba(255,255,255,.08)) border-box;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);color:var(--text,#fff);font:600 13.5px var(--font-body,Inter,system-ui,sans-serif);letter-spacing:.01em;cursor:pointer;box-shadow:0 14px 34px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06);transition:transform .2s,box-shadow .2s}
-  .sp-btn:hover{transform:translateY(-1px);box-shadow:0 18px 40px rgba(0,0,0,.45),0 0 0 4px rgba(240,184,74,.08)}
-  .sp-tile{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--gold-light,#ffe0a0),var(--gold,#f0b84a));color:var(--on-gold,#121b33);box-shadow:0 4px 14px rgba(240,184,74,.35)}.sp-tile svg{width:18px;height:18px}
-  .sp-dot{position:absolute;top:-4px;left:28px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#ff6b5b;color:#fff;font:700 11px/18px var(--font-body,Inter,sans-serif);text-align:center;box-shadow:0 0 0 2px var(--bg,#121b33)}
+  .sp-btn{position:fixed;left:18px;bottom:16px;z-index:140;display:flex;align-items:center;gap:10px;width:273px;height:46px;padding:0 14px;box-sizing:border-box;border-radius:13px;border:1px solid rgba(var(--fg,255,255,255),.16);background:var(--surface,#17213b);color:var(--text,#fff);font:600 14px var(--font-body,Inter,system-ui,sans-serif);cursor:pointer;text-align:left;box-shadow:0 10px 28px rgba(0,0,0,.35);transition:border-color .2s,background .2s}
+  .sp-btn:hover{border-color:rgba(240,184,74,.45)}.sp-btn > svg{flex:none;width:18px;height:18px;color:var(--muted,#b4c0d3)}.sp-btn:hover > svg{color:var(--gold,#f0b84a)}
+  .sp-btn .sp-lbl{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sp-btn .sp-chev{flex:none;width:16px;height:16px;color:var(--muted,#b4c0d3)}
+  .sp-tile{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,var(--gold-light,#ffe0a0),var(--gold,#f0b84a));color:var(--on-gold,#121b33);box-shadow:0 4px 14px rgba(240,184,74,.3)}.sp-tile svg{width:18px;height:18px}
+  .sp-dot{flex:none;min-width:20px;height:20px;padding:0 6px;box-sizing:border-box;border-radius:10px;background:var(--gold,#f0b84a);color:var(--on-gold,#121b33);font:700 11.5px/20px var(--font-body,Inter,sans-serif);text-align:center}
   .sp-overlay{position:fixed;inset:0;z-index:2147481000;display:grid;place-items:center;padding:16px;background:rgba(8,12,26,.6);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);animation:sp-fade .2s ease}
   .sp-panel{position:relative;width:480px;max-width:100%;max-height:min(680px,calc(100vh - 32px));display:flex;flex-direction:column;border-radius:22px;border:1px solid transparent;background:linear-gradient(var(--surface,#17213b),var(--surface,#17213b)) padding-box,linear-gradient(160deg,rgba(255,224,160,.5),rgba(240,184,74,.1) 40%,rgba(255,255,255,.06)) border-box;color:var(--text,#fff);box-shadow:0 30px 80px rgba(0,0,0,.55);font-family:var(--font-body,Inter,system-ui,sans-serif);overflow:hidden;animation:sp-in .22s cubic-bezier(.2,.8,.2,1)}
   @keyframes sp-in{from{opacity:0;transform:translateY(10px) scale(.98)}}
@@ -63,8 +64,9 @@
   .sp-thumbs button{position:absolute;top:4px;right:4px;width:20px;height:20px;border:0;border-radius:50%;background:rgba(0,0,0,.72);color:#fff;cursor:pointer;display:grid;place-items:center;padding:0}.sp-thumbs button svg{width:12px;height:12px}
   .sp-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.sp-attach{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--line,rgba(255,255,255,.1));background:rgba(var(--fg,255,255,255),.03);color:var(--text,#fff);font:600 12.5px var(--font-body,Inter,sans-serif);cursor:pointer}.sp-attach:hover{border-color:rgba(240,184,74,.45)}.sp-attach svg{width:15px;height:15px;color:var(--gold,#f0b84a)}
   .sp-hint{color:var(--muted,#b4c0d3);font-size:12px}
-  .sp-note{display:flex;gap:8px;align-items:flex-start;margin:12px 0 0;padding:10px 12px;border-radius:12px;background:rgba(var(--fg,255,255,255),.03);color:var(--muted,#b4c0d3);font-size:12px;line-height:1.45}.sp-note svg{flex:none;width:14px;height:14px;margin-top:1px;color:var(--gold,#f0b84a)}
-  .sp-send{margin-top:14px;width:100%;min-height:46px;border:0;border-radius:999px;background:linear-gradient(135deg,var(--gold-light,#ffe0a0),var(--gold,#f0b84a));color:var(--on-gold,#121b33);font:700 14.5px var(--font-body,Inter,sans-serif);cursor:pointer;box-shadow:0 10px 26px rgba(240,184,74,.28);transition:transform .2s,box-shadow .2s}.sp-send:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 14px 32px rgba(240,184,74,.36)}.sp-send:disabled{opacity:.45;cursor:default;box-shadow:none}
+  .sp-note{display:flex;gap:12px;align-items:flex-start;margin:14px 0 0;padding:12px 14px;border-radius:14px;border:1px solid rgba(240,184,74,.4);background:linear-gradient(135deg,rgba(255,224,160,.12),rgba(240,184,74,.06));color:var(--text,#fff);font-size:13px;line-height:1.45}
+  .sp-note > span:first-child{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--gold-light,#ffe0a0),var(--gold,#f0b84a));color:var(--on-gold,#121b33)}.sp-note svg{width:16px;height:16px}.sp-note b{display:block;color:var(--gold,#f0b84a);font-size:13px;margin-bottom:2px}.sp-note small{color:var(--muted,#b4c0d3);font-size:12.5px}
+  .sp-send{margin-top:14px;width:100%;min-height:46px;border:0;border-radius:999px;background:linear-gradient(135deg,var(--gold-light,#ffe0a0),var(--gold,#f0b84a));color:var(--on-gold,#121b33);font:700 14.5px var(--font-body,Inter,sans-serif);cursor:pointer;box-shadow:0 10px 26px rgba(240,184,74,.28);transition:transform .2s,box-shadow .2s}.sp-send:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 14px 32px rgba(240,184,74,.36)}.sp-send:disabled{background:rgba(var(--fg,255,255,255),.06);color:var(--muted,#b4c0d3);box-shadow:inset 0 0 0 1px rgba(var(--fg,255,255,255),.08);cursor:default}
   .sp-err{color:#ff8a8a;font-size:13px;margin:8px 0 0}
   .sp-upd{position:relative;margin-bottom:10px;padding:14px 14px 14px 16px;border-radius:14px;border:1px solid var(--line-soft,rgba(255,255,255,.05));background:linear-gradient(135deg,rgba(255,224,160,.05),transparent 60%)}
   .sp-upd::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:0 3px 3px 0;background:linear-gradient(var(--gold-light,#ffe0a0),var(--gold,#f0b84a))}
@@ -95,7 +97,8 @@
   .sp-feat > span{flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,rgba(255,224,160,.18),rgba(240,184,74,.1));color:var(--gold,#f0b84a);box-shadow:inset 0 0 0 1px rgba(240,184,74,.25)}.sp-feat svg{width:18px;height:18px}
   .sp-feat b{display:block;font-size:14px;margin-bottom:2px}.sp-feat p{margin:0;color:var(--muted,#b4c0d3);font-size:13px;line-height:1.45}
   .sp-card .sp-later{display:block;width:100%;margin-top:6px;min-height:42px;border:0;background:none;color:var(--muted,#b4c0d3);font:600 14px var(--font-body,Inter,sans-serif);cursor:pointer}.sp-card .sp-later:hover{color:var(--text,#fff)}
-  @media (max-width:600px){.sp-btn{left:12px;bottom:12px;height:44px;padding:0 5px}.sp-btn .sp-lbl{display:none}.sp-overlay{padding:10px}.sp-panel{width:100%;max-height:calc(100vh - 20px)}.sp-hero{height:120px}.sp-cbody{padding:18px}.sp-card h2{font-size:21px}}
+  html.sp-in-col [data-filters]{padding-bottom:72px}
+  @media (max-width:600px){.sp-btn{left:12px;bottom:12px;width:46px;padding:0;justify-content:center}.sp-btn .sp-lbl,.sp-btn .sp-chev{display:none}.sp-btn .sp-dot{position:absolute;top:-6px;right:-6px}.sp-overlay{padding:10px}.sp-panel{width:100%;max-height:calc(100vh - 20px)}.sp-hero{height:120px}.sp-cbody{padding:18px}.sp-card h2{font-size:21px}}
   </style>`);
 
   // ---- data -----------------------------------------------------------------------------------------------
@@ -115,10 +118,20 @@
   // ---- button -----------------------------------------------------------------------------------------------
   const btn = document.createElement("button");
   btn.type = "button"; btn.className = "sp-btn"; btn.setAttribute("aria-haspopup", "dialog");
-  btn.innerHTML = `<span class="sp-tile">${svg(ic.life)}</span><span class="sp-lbl">${esc(tx("Support & what's new"))}</span>`;
+  btn.innerHTML = `${svg(ic.life)}<span class="sp-lbl">${esc(tx("Support & what's new"))}</span>${svg('<path d="m9 18 6-6-6-6"/>').replace("<svg", '<svg class="sp-chev"')}`;
   btn.title = tx("Support & what's new");
   document.body.appendChild(btn);
-  const paintDot = () => { btn.querySelector(".sp-dot")?.remove(); const n = newUpdates() + solvedUnseen(); if (n) btn.insertAdjacentHTML("beforeend", `<span class="sp-dot">${n}</span>`); };
+  const paintDot = () => { btn.querySelector(".sp-dot")?.remove(); const n = newUpdates() + solvedUnseen(); if (n) btn.querySelector(".sp-chev").insertAdjacentHTML("beforebegin", `<span class="sp-dot">${n}</span>`); };
+  // in the library, lined up with the filters column (same left edge and width as its rows); elsewhere the same size
+  const fit = () => {
+    const row = document.querySelector("[data-filters] .lf-row"), col = document.querySelector("[data-filters]");
+    const r = row?.getBoundingClientRect(), on = r && r.width > 0 && col.getBoundingClientRect().left >= 0 && innerWidth > 960;
+    btn.style.left = on ? `${Math.round(r.left)}px` : ""; btn.style.width = on ? `${Math.round(r.width)}px` : "";
+    document.documentElement.classList.toggle("sp-in-col", Boolean(on));
+  };
+  fit(); addEventListener("resize", fit);
+  const colEl = document.querySelector("[data-filters]"); if (colEl && window.ResizeObserver) new ResizeObserver(fit).observe(colEl);   // filters shown / hidden
+  setTimeout(fit, 1500);
   await load().catch(() => {}); paintDot();
 
   // ---- panel ------------------------------------------------------------------------------------------------
@@ -167,7 +180,7 @@
       <div class="sp-thumbs" data-sp-thumbs></div>
       <div class="sp-row"><button type="button" class="sp-attach" data-sp-attach>${svg(ic.img)}${esc(tx("Attach images"))}</button><span class="sp-hint">${esc(tx("Or paste them with ⌘V · up to 6"))}</span></div>
       <input type="file" accept="image/*" multiple hidden data-sp-file>
-      <p class="sp-note">${svg(ic.lock)}<span>${esc(tx("We also send the page you're on, your browser and your plan, so we can find it sooner."))}</span></p>
+      <div class="sp-note"><span>${svg('<path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/>')}</span><span><b>${esc(tx("Sent along automatically"))}</b><small>${esc(tx("The page you're on, your browser and your plan go with your message, so we can find the problem sooner."))}</small></span></div>
       <p class="sp-err" hidden data-sp-err></p>
       <button type="button" class="sp-send" data-sp-send disabled>${esc(tx("Send"))}</button>`;
     const ta = body.querySelector("[data-sp-text]");

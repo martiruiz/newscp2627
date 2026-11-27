@@ -2905,4 +2905,6 @@ window.SCP_ES = {
   "SCP team": "Equipo SCP",
   "New": "Nuevo",
   "Talk to us without leaving": "Habla con nosotros sin salir de",
+  "Sent along automatically": "Se adjunta automáticamente",
+  "The page you're on, your browser and your plan go with your message, so we can find the problem sooner.": "Con tu mensaje nos llega la página en la que estás, tu navegador y tu plan, para encontrar el problema antes.",
 };
