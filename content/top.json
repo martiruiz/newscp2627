@@ -1,11 +1,5 @@
 [
   {
-    "account": "houseofhighlights",
-    "account_platform": "instagram",
-    "views": 13741714,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/647/647307.jpg?v=mwt9piis"
-  },
-  {
     "account": "liverpoolfc",
     "account_platform": "instagram",
     "views": 13596207,
@@ -150,12 +144,6 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/645/645964.jpg?v=mwqe9njb"
   },
   {
-    "account": "manutd",
-    "account_platform": "tiktok",
-    "views": 4200000,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/645/645846.jpg?v=mwqe945p"
-  },
-  {
     "account": "houseofhighlights",
     "account_platform": "instagram",
     "views": 4043459,
@@ -168,6 +156,12 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/662/662012.jpg?v=mww0qnuj"
   },
   {
+    "account": "premierleague",
+    "account_platform": "instagram",
+    "views": 3887965,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/666/666975.jpg?v=mwz1n95n"
+  },
+  {
     "account": "433",
     "account_platform": "instagram",
     "views": 3856829,
@@ -178,5 +172,11 @@
     "account_platform": "instagram",
     "views": 3795355,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/648/648016.jpg?v=mwt9p8sb"
+  },
+  {
+    "account": "espnfc",
+    "account_platform": "instagram",
+    "views": 3793478,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/660/660600.jpg?v=mwvxkzfg"
   }
 ]

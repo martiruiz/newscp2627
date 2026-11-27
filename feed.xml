@@ -6,7 +6,17 @@
     <atom:link href="https://sportscontentplaybook.com/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Sports social media content ideas, trends and analysis.</description>
     <language>en</language>
-    <lastBuildDate>Thu, 26 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Fri, 27 Nov 2026 08:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Sports social media trends: YouTube now lets you choose your Shorts thumbnail</title>
+      <link>https://sportscontentplaybook.com/blog/sports-social-media-trends-youtube-shorts-thumbnail.html</link>
+      <guid isPermaLink="true">https://sportscontentplaybook.com/blog/sports-social-media-trends-youtube-shorts-thumbnail.html</guid>
+      <pubDate>Fri, 27 Nov 2026 08:00:00 GMT</pubDate>
+      <dc:creator>Martí Ruiz</dc:creator>
+      <description>YouTube has opened Shorts thumbnails to all creators. A small update, but it turns the first image of your channel tab into a content decision.</description>
+      <enclosure url="https://sportscontentplaybook.com/assets/blog/sports-social-media-trends-youtube-shorts-thumbnail.jpg" length="208558" type="image/jpeg"/>
+      <media:content url="https://sportscontentplaybook.com/assets/blog/sports-social-media-trends-youtube-shorts-thumbnail.jpg" medium="image" type="image/jpeg"/>
+    </item>
     <item>
       <title>Sports Reels ideas: let creators carry your campaign into the living room</title>
       <link>https://sportscontentplaybook.com/blog/sports-reels-ideas-creator-collabs-carry-your-campaign.html</link>
@@ -296,16 +306,6 @@
       <description>The sports profiles that stood out this week did not improvise. They had the result graphic, the special edition, the clips and the sponsor integration ready before the moment arrived. Here is the pattern and eight ideas to copy.</description>
       <enclosure url="https://sportscontentplaybook.com/assets/blog/sports-social-media-strategy-big-day-content.jpg" length="213952" type="image/jpeg"/>
       <media:content url="https://sportscontentplaybook.com/assets/blog/sports-social-media-strategy-big-day-content.jpg" medium="image" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>From one-off clips to series: the episodic shift in sports social media trends</title>
-      <link>https://sportscontentplaybook.com/blog/episodic-series-sports-social-media-trends.html</link>
-      <guid isPermaLink="true">https://sportscontentplaybook.com/blog/episodic-series-sports-social-media-trends.html</guid>
-      <pubDate>Mon, 19 Oct 2026 08:00:00 GMT</pubDate>
-      <dc:creator>Martí Ruiz</dc:creator>
-      <description>Clubs are starting to publish short video the way TV channels publish shows: in episodes, with characters and a reason to come back. Here is why the Cubs and the Chiefs are betting on series, and how any team can test the format.</description>
-      <enclosure url="https://sportscontentplaybook.com/assets/blog/episodic-web-series-ballpark-filming-sports-social-media-trends.jpg" length="127635" type="image/jpeg"/>
-      <media:content url="https://sportscontentplaybook.com/assets/blog/episodic-web-series-ballpark-filming-sports-social-media-trends.jpg" medium="image" type="image/jpeg"/>
     </item>
   </channel>
 </rss>
