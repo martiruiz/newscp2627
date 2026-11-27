@@ -98,7 +98,8 @@
   .sp-feat b{display:block;font-size:14px;margin-bottom:2px}.sp-feat p{margin:0;color:var(--muted,#b4c0d3);font-size:13px;line-height:1.45}
   .sp-card .sp-later{display:block;width:100%;margin-top:6px;min-height:42px;border:0;background:none;color:var(--muted,#b4c0d3);font:600 14px var(--font-body,Inter,sans-serif);cursor:pointer}.sp-card .sp-later:hover{color:var(--text,#fff)}
   html.sp-in-col [data-filters]{padding-bottom:72px}
-  .sp-btn.sp-compact{width:46px;padding:0;justify-content:center}.sp-btn.sp-compact .sp-lbl,.sp-btn.sp-compact .sp-chev{display:none}.sp-btn.sp-compact .sp-dot{position:absolute;top:-6px;right:-6px}
+  .sp-btn.sp-compact{width:auto;max-width:46px;padding:0 0 0 13px;overflow:hidden;transition:max-width .28s cubic-bezier(.2,.8,.2,1),border-color .2s}.sp-btn.sp-compact .sp-lbl{flex:none;opacity:0;transition:opacity .2s}.sp-btn.sp-compact .sp-chev{display:none}.sp-btn.sp-compact .sp-dot{position:absolute;top:3px;left:30px;min-width:16px;height:16px;line-height:16px;font-size:10px;padding:0 4px}
+  .sp-btn.sp-compact:hover,.sp-btn.sp-compact:focus-visible{max-width:300px;padding-right:16px}.sp-btn.sp-compact:hover .sp-lbl,.sp-btn.sp-compact:focus-visible .sp-lbl{opacity:1}
   @media (max-width:600px){.sp-btn{left:12px;bottom:12px;width:46px;padding:0;justify-content:center}.sp-btn .sp-lbl,.sp-btn .sp-chev{display:none}.sp-btn .sp-dot{position:absolute;top:-6px;right:-6px}.sp-overlay{padding:10px}.sp-panel{width:100%;max-height:calc(100vh - 20px)}.sp-hero{height:120px}.sp-cbody{padding:18px}.sp-card h2{font-size:21px}}
   </style>`);
 
