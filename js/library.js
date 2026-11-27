@@ -387,7 +387,7 @@
       <span class="lf-sp-n" data-favs-n${favsN == null ? " hidden" : ""}>${favsN == null ? "" : kfmt(favsN)}</span>${svg("check", "lf-sp-ck")}</button>`;
   }
   const notTopPicks = (v) => v.name.toLowerCase() !== "top picks";
-  // "Ads" only shows once some post has the Instagram paid partnership label (supabase/ads-filter.sql)
+  // "Ads": until some post has the Instagram paid partnership label (supabase/ads-filter.sql) a "Soon" placeholder (discoverHtml)
   const shownSpecial = (v) => v.name.toLowerCase() !== "ads" || countOf(v) > 0 || isOn(v);
 
   function discoverHtml() {
@@ -403,6 +403,11 @@
       const s = SPECIAL.overperforming;
       rows.push(`<button type="button" class="lf-sp ${s.cls} is-zero" aria-disabled="true" disabled title="${esc(tx(s.desc))}">
         <span class="lf-sp-ic">${svg(s.ico)}</span><span class="lf-sp-tx"><b>Overperforming</b></span><span class="lf-sp-n">${esc(tx("Soon"))}</span></button>`);
+    }
+    if (!sp.some((v) => v.name.toLowerCase() === "ads")) {
+      const s = SPECIAL.ads;
+      rows.push(`<button type="button" class="lf-sp ${s.cls} is-zero" aria-disabled="true" disabled title="${esc(tx(s.desc))}">
+        <span class="lf-sp-ic">${svg(s.ico)}</span><span class="lf-sp-tx"><b>Ads</b></span><span class="lf-sp-n">${esc(tx("Soon"))}</span></button>`);
     }
     // "Content Creators" (Publisher type): its own gold button right under Replicable ideas
     const cc = (catalog.byCat.entity || []).find((v) => v.name.toLowerCase() === "content creators");
