@@ -60,7 +60,7 @@ async function message(type: string, table: string, r: Row, o: Row | null): Prom
   }
   if (table === "feedback" && type === "INSERT") {
     const p = await who(r.user_id);
-    return { title: r.kind === "bug" ? "🐞 New bug report" : "💡 New suggestion", body: `${nameOf(p)}: ${String(r.message || "").slice(0, 110)}`, url: "/admin/support.html" };
+    return { title: r.kind === "bug" ? "🐞 New bug report" : r.kind === "content" ? `📥 Content request${r.context?.wants ? ` · ${r.context.wants}` : ""}` : "💡 New suggestion", body: `${nameOf(p)}: ${String(r.message || "").slice(0, 110)}`, url: "/admin/support.html" };
   }
   if (table === "idea_imports" && type === "UPDATE" && r.status === "failed" && o?.status !== "failed")
     return { title: "❌ Import failed", body: String(r.filename || "An import").slice(0, 120), url: "/admin/import.html" };

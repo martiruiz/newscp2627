@@ -6,7 +6,7 @@
 create table if not exists public.feedback (
   id bigint generated always as identity primary key,
   user_id uuid not null references auth.users (id) on delete cascade,
-  kind text not null check (kind in ('bug', 'idea')),
+  kind text not null check (kind in ('bug', 'idea', 'content')),   -- content: profiles, sports, creators… they want in the library
   message text not null check (length(message) between 3 and 1500),
   images text[] not null default '{}',
   context jsonb not null default '{}'::jsonb,
@@ -28,7 +28,7 @@ declare v_id bigint; v_msg text := trim(coalesce(p_message, ''));
 begin
   if auth.uid() is null then raise exception 'Sign in first'; end if;
   if not (public.is_admin() or 'library.access' = any (public.user_entitlements(auth.uid()))) then raise exception 'Only members can send reports'; end if;
-  if p_kind not in ('bug', 'idea') then raise exception 'Unknown kind'; end if;
+  if p_kind not in ('bug', 'idea', 'content') then raise exception 'Unknown kind'; end if;
   if length(v_msg) < 3 or length(v_msg) > 1500 then raise exception 'The message must be between 3 and 1500 characters'; end if;
   if coalesce(array_length(p_images, 1), 0) > 6 then raise exception 'Six images at most'; end if;
   if exists (select 1 from unnest(coalesce(p_images, '{}')) i where i not like auth.uid()::text || '/%' or i like '%..%') then raise exception 'Invalid image'; end if;
@@ -111,3 +111,7 @@ begin
   execute format('create trigger "admin-push" after insert on public.feedback for each row execute function supabase_functions.http_request(%L, %L, %L, %L, %L)',
     'https://wppdbomtiliutpxsimtp.supabase.co/functions/v1/admin-push', 'POST', hdr, '{}', '5000');
 end $do$;
+
+-- 5. Content requests (profiles, clubs, creators, sports, competitions they want to see) as a third kind
+alter table public.feedback drop constraint if exists feedback_kind_check;
+alter table public.feedback add constraint feedback_kind_check check (kind in ('bug', 'idea', 'content'));

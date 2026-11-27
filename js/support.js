@@ -29,6 +29,7 @@
     news: '<path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8M15 18h-5M10 6h8v4h-8V6Z"/>',
     list: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
     check: '<path d="M20 6 9 17l-5-5"/>',
+    plus: '<circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/>',
     lock: '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
     spark: '<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>',
   };
@@ -52,8 +53,10 @@
   .sp-tabs i{display:inline-block;width:7px;height:7px;margin-left:6px;border-radius:50%;background:#ff6b5b;vertical-align:1px}
   .sp-body{padding:16px 18px 18px;overflow-y:auto;font-size:14px;line-height:1.5}
   .sp-lead{margin:0 0 14px;color:var(--muted,#b4c0d3);font-size:13.5px;line-height:1.55}
-  .sp-kinds{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
-  .sp-kinds button{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;border:1px solid var(--line,rgba(255,255,255,.1));background:rgba(var(--fg,255,255,255),.02);color:var(--text,#fff);font:600 13.5px var(--font-body,Inter,sans-serif);cursor:pointer;text-align:left;transition:border-color .2s,background .2s}
+  .sp-kinds{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+  .sp-subs{display:flex;flex-wrap:wrap;gap:6px;margin:-2px 0 12px}.sp-subs button{height:30px;padding:0 12px;border-radius:999px;border:1px solid var(--line,rgba(255,255,255,.1));background:none;color:var(--muted,#b4c0d3);font:600 12.5px var(--font-body,Inter,sans-serif);cursor:pointer}
+  .sp-subs button[aria-pressed="true"]{border-color:rgba(240,184,74,.55);background:var(--gold-tint,rgba(240,184,74,.2));color:var(--gold,#f0b84a)}
+  .sp-kinds button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;padding:12px 6px;border-radius:14px;border:1px solid var(--line,rgba(255,255,255,.1));background:rgba(var(--fg,255,255,255),.02);color:var(--text,#fff);font:600 13px var(--font-body,Inter,sans-serif);white-space:nowrap;cursor:pointer;text-align:center;transition:border-color .2s,background .2s}
   .sp-kinds button span{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:rgba(var(--fg,255,255,255),.06);color:var(--muted,#b4c0d3)}.sp-kinds button svg{width:16px;height:16px}
   .sp-kinds button[aria-pressed="true"]{border-color:rgba(240,184,74,.55);background:linear-gradient(135deg,rgba(255,224,160,.1),rgba(240,184,74,.06))}.sp-kinds button[aria-pressed="true"] span{background:linear-gradient(135deg,var(--gold-light,#ffe0a0),var(--gold,#f0b84a));color:var(--on-gold,#121b33)}
   .sp-ta{width:100%;min-height:132px;resize:vertical;box-sizing:border-box;padding:13px 14px;border-radius:14px;border:1px solid var(--line,rgba(255,255,255,.1));background:rgba(var(--fg,255,255,255),.03);color:var(--text,#fff);font:14px/1.55 var(--font-body,Inter,sans-serif);transition:border-color .2s,box-shadow .2s}
@@ -138,7 +141,9 @@
   await load().catch(() => {}); paintDot();
 
   // ---- panel ------------------------------------------------------------------------------------------------
-  let panel = null, tab = "news", kind = "bug", files = [];
+  let panel = null, tab = "news", kind = "bug", sub = "profile", files = [];
+  const SUBS = [["profile", "Profile or club"], ["creator", "Creator"], ["sport", "Sport"], ["competition", "Competition"], ["other", "Something else"]];
+  const KIND_NAME = { bug: "Bug", idea: "Suggestion", content: "Content request" };
   const TAB_NAMES = { news: "What's new", report: "Report", mine: "My reports" };
   let overlay = null;
   function close() { overlay?.remove(); overlay = panel = null; document.documentElement.style.overflow = ""; btn.setAttribute("aria-expanded", "false"); btn.focus(); }
@@ -168,7 +173,7 @@
       if (updates.length) try { localStorage.setItem(SEEN_UPD, String(Math.max(...updates.map((u) => u.id)))); } catch {}
       paintDot();
     } else if (tab === "mine") {
-      body.innerHTML = reports.length ? reports.map((r) => `<div class="sp-rep"><small>${esc(day(r.created_at))} · ${esc(tx(r.kind === "bug" ? "Bug" : "Suggestion"))}</small>
+      body.innerHTML = reports.length ? reports.map((r) => `<div class="sp-rep"><small>${esc(day(r.created_at))} · ${esc(tx(KIND_NAME[r.kind] || r.kind))}</small>
           <b>${esc(r.message.length > 140 ? r.message.slice(0, 140) + "…" : r.message)}<span class="sp-st is-${esc(r.status)}">${esc(tx({ new: "Received", in_progress: "In progress", done: "Solved", wontfix: "Closed" }[r.status]))}</span></b>
           ${r.admin_reply ? `<div class="sp-reply"><em>${esc(tx("SCP team"))}</em>${esc(r.admin_reply)}</div>` : ""}</div>`).join("")
         : `<div class="sp-empty"><span>${svg(ic.list)}</span>${esc(tx("You haven't sent any report yet."))}</div>`;
@@ -176,14 +181,15 @@
     } else drawReport(body);
   }
   function drawReport(body) {
-    body.innerHTML = `<p class="sp-lead">${esc(tx("Tell us as much as you can: what you were doing, what you expected and what happened. Screenshots help a lot."))}</p>
-      <div class="sp-kinds" role="group">${[["bug", "Bug", ic.bug], ["idea", "Suggestion", ic.idea]].map(([k, n, i]) => `<button type="button" data-sp-kind="${k}" aria-pressed="${k === kind}"><span>${svg(i)}</span>${esc(tx(n))}</button>`).join("")}</div>
-      <textarea class="sp-ta" maxlength="1500" data-sp-text placeholder="${esc(tx(kind === "bug" ? "Describe the bug step by step: what you were doing, what happened, on which screen…" : "What would you improve or add? Tell us what it would help you with."))}"></textarea>
+    body.innerHTML = `<p class="sp-lead">${esc(tx(kind === "content" ? "Tell us what's missing in the library: we add the profiles, sports and creators our members ask for." : "Tell us as much as you can: what you were doing, what you expected and what happened. Screenshots help a lot."))}</p>
+      <div class="sp-kinds" role="group">${[["bug", "Bug", ic.bug], ["idea", "Suggestion", ic.idea], ["content", "Request content", ic.plus]].map(([k, n, i]) => `<button type="button" data-sp-kind="${k}" aria-pressed="${k === kind}"><span>${svg(i)}</span>${esc(tx(n))}</button>`).join("")}</div>
+      ${kind === "content" ? `<div class="sp-subs" role="group" aria-label="${esc(tx("What do you want to see?"))}">${SUBS.map(([k, n]) => `<button type="button" data-sp-sub="${k}" aria-pressed="${k === sub}">${esc(tx(n))}</button>`).join("")}</div>` : ""}
+      <textarea class="sp-ta" maxlength="1500" data-sp-text placeholder="${esc(tx(kind === "bug" ? "Describe the bug step by step: what you were doing, what happened, on which screen…" : kind === "idea" ? "What would you improve or add? Tell us what it would help you with." : "Which profiles, sports, creators or competitions would you like to see? Paste their @ or links and tell us why they interest you."))}"></textarea>
       <div class="sp-count"><span data-sp-n>0</span>/1500</div>
       <div class="sp-thumbs" data-sp-thumbs></div>
       <div class="sp-row"><button type="button" class="sp-attach" data-sp-attach>${svg(ic.img)}${esc(tx("Attach images"))}</button><span class="sp-hint">${esc(tx("Or paste them with ⌘V · up to 6"))}</span></div>
       <input type="file" accept="image/*" multiple hidden data-sp-file>
-      <div class="sp-note"><span>${svg('<path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/>')}</span><span><b>${esc(tx("Sent along automatically"))}</b><small>${esc(tx("The page you're on, your browser and your plan go with your message, so we can find the problem sooner."))}</small></span></div>
+      ${kind === "content" ? "" : `<div class="sp-note"><span>${svg('<path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/>')}</span><span><b>${esc(tx("Sent along automatically"))}</b><small>${esc(tx("The page you're on, your browser and your plan go with your message, so we can find the problem sooner."))}</small></span></div>`}
       <p class="sp-err" hidden data-sp-err></p>
       <button type="button" class="sp-send" data-sp-send disabled>${esc(tx("Send"))}</button>`;
     const ta = body.querySelector("[data-sp-text]");
@@ -225,7 +231,7 @@
         if (error) throw error;
         paths.push(path);
       }
-      const { error } = await db.rpc("feedback_submit", { p_kind: kind, p_message: text, p_images: paths, p_context: context() });
+      const { error } = await db.rpc("feedback_submit", { p_kind: kind, p_message: text, p_images: paths, p_context: { ...context(), ...(kind === "content" ? { wants: sub } : {}) } });
       if (error) throw error;
       files.forEach((f) => URL.revokeObjectURL(f.url)); files = []; draft = "";
       await load().catch(() => {});
@@ -240,11 +246,12 @@
   document.addEventListener("click", (e) => {
     if (!panel) return;
     if (!panel.contains(e.target) && !btn.contains(e.target)) return close();
-    const t = e.target.closest("[data-sp-tab],[data-sp-close],[data-sp-kind],[data-sp-attach],[data-sp-rm],[data-sp-send]");
+    const t = e.target.closest("[data-sp-tab],[data-sp-close],[data-sp-kind],[data-sp-sub],[data-sp-attach],[data-sp-rm],[data-sp-send]");
     if (!t) return;
     if (t.dataset.spTab) { tab = t.dataset.spTab; draw(); }
     else if (t.matches("[data-sp-close]")) close();
     else if (t.dataset.spKind) { kind = t.dataset.spKind; drawReport(panel.querySelector("[data-sp-body]")); }
+    else if (t.dataset.spSub) { sub = t.dataset.spSub; panel.querySelectorAll("[data-sp-sub]").forEach((b) => b.setAttribute("aria-pressed", String(b === t))); }
     else if (t.matches("[data-sp-attach]")) panel.querySelector("[data-sp-file]").click();
     else if (t.dataset.spRm) { const [f] = files.splice(Number(t.dataset.spRm), 1); URL.revokeObjectURL(f.url); thumbs(); }
     else if (t.matches("[data-sp-send]")) send(t);

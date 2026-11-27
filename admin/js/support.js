@@ -13,7 +13,7 @@
 
   main.innerHTML = `<div class="page-head"><div><h1>Support</h1><p>What members report from the platform (bottom left: "Support &amp; what's new") and the improvements they see in "What's new".</p></div></div>
     <section class="panel"><header class="aud-h aud-h-lg"><h2>Reports</h2>${info("Bugs and suggestions sent by members, with their screenshots and the page, browser, plan and language they were on. The state and the reply show in the member's 'My reports'; Solved or Closed lights a dot on their button.")}<span class="spacer"></span>
-      <select class="select select-sm" data-filter><option value="open">Open</option><option value="all">All</option><option value="bug">Bugs</option><option value="idea">Suggestions</option><option value="closed">Solved / closed</option></select></header>
+      <select class="select select-sm" data-filter><option value="open">Open</option><option value="all">All</option><option value="bug">Bugs</option><option value="idea">Suggestions</option><option value="content">Content requests</option><option value="closed">Solved / closed</option></select></header>
       <div data-reports class="panel-pad"><p class="muted">Loading…</p></div></section>
     <section class="panel" style="margin-top:16px"><header class="aud-h aud-h-lg"><h2>What's new</h2>${info("Members see each improvement for 5 days after its date, in Spanish (and in English if you write it). Keep it short: what changed and what it's for.")}<span class="spacer"></span>
       <button class="btn btn-sm btn-primary" type="button" data-new-update>${icon("plus")}New improvement</button></header>
@@ -37,7 +37,7 @@
     const urls = await Promise.all(list.map((r) => signed(r.images)));
     box.innerHTML = list.map((r, i) => { const c = r.context || {};
       return `<article class="sup-rep" data-id="${r.id}">
-        <header><span class="tag ${r.kind === "bug" ? "tag-req" : "tag-you"}">${r.kind === "bug" ? "Bug" : "Suggestion"}</span><b>${esc(r.name || r.email)}</b><span class="muted">${esc(r.email)} · ${esc(when(r.created_at))}</span></header>
+        <header><span class="tag ${r.kind === "bug" ? "tag-req" : "tag-you"}">${{ bug: "Bug", idea: "Suggestion", content: `Content request${c.wants ? ` · ${c.wants}` : ""}` }[r.kind] || r.kind}</span><b>${esc(r.name || r.email)}</b><span class="muted">${esc(r.email)} · ${esc(when(r.created_at))}</span></header>
         <p class="sup-msg">${esc(r.message)}</p>
         ${urls[i].length ? `<div class="sup-imgs">${urls[i].map((u) => `<a href="${esc(u)}" target="_blank" rel="noopener"><img src="${esc(u)}" alt="Screenshot" loading="lazy"></a>`).join("")}</div>` : ""}
         <p class="sup-ctx muted">${[c.page && `Page ${c.page}`, c.app, c.plan && `Plan ${c.plan}`, c.lang && `${c.lang}${c.region && c.region !== "es" ? `-${c.region}` : ""}`, c.viewport && `Window ${c.viewport}`, c.ua].filter(Boolean).map(esc).join(" · ")}</p>

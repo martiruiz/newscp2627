@@ -79,5 +79,7 @@ window.SCP_ES_MX = {
  "The library: every sport, club and competition, with filters": "La biblioteca: todos los deportes, clubes y competencias, con filtros",
  "sports, competitions, clubs, players and challenges.": "deportes, competencias, clubes, jugadores y challenges.",
  "Only images (no videos).": "Solo imágenes (no videos).",
- "Couldn't send it. Try again.": "No se pudo enviar. Inténtalo de nuevo."
+ "Couldn't send it. Try again.": "No se pudo enviar. Inténtalo de nuevo.",
+ "Competition": "Competencia",
+ "Which profiles, sports, creators or competitions would you like to see? Paste their @ or links and tell us why they interest you.": "¿Qué perfiles, deportes, creadores o competencias te gustaría ver? Pega su @ o enlace y cuéntanos por qué te interesan."
 };
