@@ -6853,7 +6853,7 @@ button.saved-searches:hover { color: var(--text); border-color: var(--gold-dim);
 .lf-sp-over.is-zero { opacity: 0.6; cursor: default; }
 .lf-sp.lf-sp-ads.is-zero { opacity: 1; cursor: default; }   /* "Ads · Soon": visible enough to be found */
 .lf-sp.lf-sp-ads.is-zero .lf-sp-ic, .lf-sp.lf-sp-ads.is-zero .lf-sp-tx { opacity: 0.75; }
-.lf-sp.lf-sp-ads.is-zero .lf-sp-n { padding: 3px 9px; border-radius: 999px; background: linear-gradient(135deg, #c13584, #f56040); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 0.02em; opacity: 1; box-shadow: 0 4px 12px rgba(193, 53, 132, 0.35); }
+.lf-sp.lf-sp-ads.is-zero .lf-sp-n { padding: 2px 8px; border-radius: 999px; border: 1px solid rgba(245, 96, 64, 0.4); background: rgba(193, 53, 132, 0.12); color: #f2a3c4; font-size: 11px; font-weight: 600; opacity: 1; }
 /* Softer, more modern gradients for the coloured buttons (filters column specials + My space): a diagonal two-tone a
    little less saturated, and a light sheen at the top */
 .lf-sp-top { --g: linear-gradient(135deg, #e5484d, #ff8a7a); --g-soft: linear-gradient(135deg, rgba(229, 72, 77, 0.7), rgba(255, 138, 122, 0.7)); --glow: 229, 72, 77; }
