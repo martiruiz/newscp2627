@@ -7,7 +7,8 @@
 //   window.tx(text, vars)  translate one phrase/template from a script: tx("Pay {amount} and switch", { amount })
 //   window.SCP_setLang(lang, { save })   switch language (reloads the page); save: false skips the profile update
 // Spanish of Spain, Mexico or Argentina (profile → language): js/i18n-es-mx.js / js/i18n-es-ar.js hold only the phrases said
-// differently there, on top of js/i18n-es.js; dates and numbers follow the country (SCP_LOC). window.SCP_REGION "es" | "mx" | "ar".
+// differently there, on top of js/i18n-es.js; dates and numbers follow the country (SCP_LOC). window.SCP_REGION "es" | "mx" | "ar" | "ca".
+// Catalan ("ca") works the same way: js/i18n-es-ca.js translates every phrase; what only exists in Spanish stays in Spanish.
 (() => {
   const KEY = "scp-lang";
   const LANGS = ["es", "en"];   // Spanish first in the switch
@@ -27,13 +28,13 @@
     if (/bot|crawl|spider|slurp|bing|yandex|baidu|duckduck|facebookexternalhit|lighthouse|headless/i.test(navigator.userAgent) || !pageIn(lang)) lang = pageLang;
     else { location.replace(pageIn(lang)); lang = pageLang; }
   }
-  const RKEY = "scp-es-region", REGIONS = ["es", "mx", "ar"];
+  const RKEY = "scp-es-region", REGIONS = ["es", "mx", "ar", "ca"];
   let region = "es";
   try { const r = localStorage.getItem(RKEY); if (REGIONS.includes(r)) region = r; } catch {}
   window.SCP_LANG = lang;
   window.SCP_REGION = region;
-  window.SCP_LOC = lang === "es" ? { es: "es-ES", mx: "es-MX", ar: "es-AR" }[region] : "en-GB";
-  root.lang = lang;
+  window.SCP_LOC = lang === "es" ? { es: "es-ES", mx: "es-MX", ar: "es-AR", ca: "ca-ES" }[region] : "en-GB";
+  root.lang = lang === "es" && region === "ca" ? "ca" : lang;
 
   // ---- dictionary --------------------------------------------------------------------------------------------
   let exact = new Map();
@@ -44,7 +45,7 @@
   function load(dict) {
     if (loaded || !dict) return;
     loaded = true;
-    dict = { ...dict, ...((region === "mx" ? window.SCP_ES_MX : region === "ar" ? window.SCP_ES_AR : null) || {}) };   // the country's own phrases win
+    dict = { ...dict, ...(({ mx: window.SCP_ES_MX, ar: window.SCP_ES_AR, ca: window.SCP_ES_CA }[region]) || {}) };   // the country's own phrases win
     for (const [k, v] of Object.entries(dict)) {
       const key = norm(k);
       if (/\{\w+\}/.test(key)) {
@@ -192,7 +193,7 @@
 
   const NAMES = { en: "English", es: "Español" };
   // the profile's full switch also picks the Spanish of the country: Spain, Mexico or Argentina
-  const FULL = [["es", "es", "Español (España)"], ["es", "mx", "Español (México)"], ["es", "ar", "Español (Argentina)"], ["en", "", "English"]];
+  const FULL = [["es", "es", "Español (España)"], ["es", "mx", "Español (México)"], ["es", "ar", "Español (Argentina)"], ["es", "ca", "Català"], ["en", "", "English"]];
   const SWITCH = (full) => full
     ? `<div class="lang-switch lang-switch-full" role="group" aria-label="${lang === "es" ? "Idioma" : "Language"}" data-i18n-skip>
       ${FULL.map(([l, r, n]) => `<button type="button" data-set-lang="${l}"${r ? ` data-set-region="${r}"` : ""} aria-pressed="${l === lang && (!r || r === region)}" lang="${l}">${n}</button>`).join("")}
