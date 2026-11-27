@@ -49,6 +49,7 @@
     sparkles: '<path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/>',
     search: '<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',
     lock: '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+    bell: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
     globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
     news: '<path d="M4 5h13v14a2 2 0 0 0 2 2H6a2 2 0 0 1-2-2z"/><path d="M17 9h3v10a2 2 0 0 1-2 2M8 9h5M8 13h5M8 17h3"/>',
     mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
@@ -217,6 +218,38 @@
     return { session, profile };
   }
 
+  // ---------- Notifications on this Mac (Web Push: sw.js + Edge Function admin-push + supabase/admin-push.sql) ----------
+  // Sales and sign-ups, leads and contact, failures. Switched on per browser: in the SCP app added to the Dock (Safari →
+  // File → Add to Dock) they arrive as macOS notifications even with the app closed.
+  async function pushButton(btn) {
+    if (!btn) return;
+    const cfg = window.SCP_CONFIG || {}, fn = `${cfg.supabaseUrl}/functions/v1/admin-push`;
+    const can = "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+    const paint = (on) => { btn.classList.toggle("is-on", on); btn.dataset.tip = on ? "Notifications on (click to switch off)" : "Notifications on this Mac"; };
+    const current = async () => (can ? (await (await navigator.serviceWorker.getRegistration("/"))?.pushManager.getSubscription()) || null : null);
+    paint(Boolean(await current().catch(() => null)));
+    btn.addEventListener("click", async () => {
+      if (!can) return toast("This browser can't show notifications. Open SCP from the Dock (Safari → File → Add to Dock) and switch them on there.", "err");
+      try {
+        const sub = await current();
+        if (sub) { await db.rpc("admin_push_unsubscribe", { p_endpoint: sub.endpoint }); await sub.unsubscribe(); paint(false); return toast("Notifications off on this Mac"); }
+        if ((await Notification.requestPermission()) !== "granted") return toast("Notifications are blocked: allow them in System Settings → Notifications.", "err");
+        const { publicKey } = await (await fetch(fn)).json();
+        if (!publicKey) return toast("Notifications aren't set up yet (push keys missing).", "err");
+        const reg = await navigator.serviceWorker.register("/sw.js", { scope: "/" });
+        await navigator.serviceWorker.ready;
+        const key = Uint8Array.from(atob(publicKey.replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(publicKey.length / 4) * 4, "=")), (c) => c.charCodeAt(0));
+        const s = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: key });
+        const { error } = await db.rpc("admin_push_subscribe", { p: { ...s.toJSON(), label: navigator.userAgent.slice(0, 120) } });
+        if (error) throw error;
+        paint(true);
+        const { data: { session } } = await db.auth.getSession();
+        await fetch(fn, { method: "POST", headers: { "Content-Type": "application/json", apikey: cfg.supabaseAnonKey, Authorization: `Bearer ${session?.access_token}` }, body: JSON.stringify({ test: true }) });
+        toast("Notifications on: a test one is on its way");
+      } catch (x) { toast(x.message || String(x), "err"); }
+    });
+  }
+
   // ---------- Two-step verification (TOTP: Google Authenticator, 1Password, Authy…) ----------
   // First time: a QR code to scan and the first code; after that, the code on every new session. The database also asks
   // for it (supabase/security-mfa.sql: is_admin() needs a session verified with the code).
@@ -282,6 +315,7 @@
       <div class="side-foot">
         <p class="side-user" title="${esc(session.user.email)}">${esc(session.user.email)}${profile?.role ? ` · ${esc(profile.role)}` : ""}</p>
         <a href="account.html" data-tip="Account"${pageKey === "account" ? ' aria-current="page"' : ""}>${icon("account")}<span class="side-label">Account</span></a>
+        <button class="side-btn" type="button" data-push data-tip="Notifications on this Mac">${icon("bell")}<span class="side-label">Notifications</span></button>
         <button class="side-btn" type="button" data-logout data-tip="Logout">${icon("logout")}<span class="side-label">Logout</span></button>
         <div class="side-prefs">${window.SCP_THEME?.button || ""}<div class="side-lang" role="group" aria-label="${esc(window.SCPA_t ? window.SCPA_t("Language") : "Language")}" data-i18n-skip>${["en", "es", "ca"].map((l) => `<button type="button" data-admin-lang="${l}" aria-pressed="${(window.SCPA_LANG || "en") === l}">${l.toUpperCase()}</button>`).join("")}</div></div>
       </div>`;
@@ -340,6 +374,7 @@
     // CRM: new free trials the admins haven't opened yet, as a badge on the menu (checked every minute)
     if (side.querySelector('a[href="crm.html"]') && !window.__scpaCrmPoll) { window.__scpaCrmPoll = setInterval(crmBadge, 60000); crmBadge(); }
     side.addEventListener("click", (e) => { const b = e.target.closest("[data-admin-lang]"); if (b && b.dataset.adminLang !== window.SCPA_LANG) window.SCPA_setLang?.(b.dataset.adminLang); });
+    pushButton($("[data-push]", side));
     // asks first, in a little bubble right above the button; once signed out, the SCP log-in page (the site's, not the admin's)
     const out = $("[data-logout]", side);
     out.addEventListener("click", () => {

@@ -50,3 +50,14 @@ jobs:
           git pull --rebase
           git push
           gh workflow run publish-blog.yml
+      - name: Notify the admins if it failed
+        if: failure()
+        run: |
+          curl -sS -m 20 -X POST "$SUPABASE_URL/functions/v1/admin-push" -H "Content-Type: application/json" -H "x-worker-key: $KEY" \
+            -d "{\"title\":\"❌ Workflow failed\",\"body\":\"$WF\",\"url\":\"https://github.com/$REPO/actions/runs/$RUN\"}" || true
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          WF: ${{ github.workflow }}
+          REPO: ${{ github.repository }}
+          RUN: ${{ github.run_id }}

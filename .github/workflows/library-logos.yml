@@ -83,3 +83,14 @@ jobs:
               for (const r of data || []) console.log(`   - ${r.name}`);
             }' | tee out.txt
           split -C 3900 out.txt part_; for f in part_*; do echo "::notice title=Missing logos::$(sed ':a;N;$!ba;s/\n/%0A/g' $f)"; done; rm -f part_*
+      - name: Notify the admins if it failed
+        if: failure()
+        run: |
+          curl -sS -m 20 -X POST "$SUPABASE_URL/functions/v1/admin-push" -H "Content-Type: application/json" -H "x-worker-key: $KEY" \
+            -d "{\"title\":\"❌ Workflow failed\",\"body\":\"$WF\",\"url\":\"https://github.com/$REPO/actions/runs/$RUN\"}" || true
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          WF: ${{ github.workflow }}
+          REPO: ${{ github.repository }}
+          RUN: ${{ github.run_id }}

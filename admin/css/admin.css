@@ -61,6 +61,7 @@ h1, h2, h3, p { margin: 0; }
   border-radius: var(--radius); color: var(--muted); font-size: 14px; transition: background 0.15s, color 0.15s;
 }
 .side a:hover, .side .side-btn:hover { background: var(--panel-2); color: var(--text); }
+.side .side-btn.is-on { color: var(--accent); }   /* Notifications switched on in this browser */
 .side a[aria-current="page"] { background: var(--accent-soft); color: var(--accent-text); }
 .side svg { width: 18px; height: 18px; flex-shrink: 0; }
 .side-foot { margin-top: auto; display: grid; gap: 4px; padding-top: 16px; border-top: 1px solid var(--border); }
