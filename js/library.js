@@ -1758,31 +1758,74 @@
     if (e.target.closest("[data-chip-clear]")) clearAll();
   });
 
-  // ---------- Saved searches ----------
+  // ---------- Saved searches (10 per member at most: supabase/saved-searches-max.sql) ----------
+  // "My searches" lists them (click one to apply it, × to delete it); the bookmark saves the filters on screen with a name.
+  const MAX_SEARCHES = 10;
   let savedSearches = [];
   async function loadSavedSearches() {
     const { data } = await db.from("saved_searches").select("id,name,filters").order("created_at");
     savedSearches = data || [];
-    $("[data-saved-searches]").innerHTML = `<option value="">Saved searches…</option>` + savedSearches.map((x) => `<option value="${x.id}">${esc(x.name)}</option>`).join("");
+    const n = $("[data-ss-n]");
+    if (n) { n.textContent = savedSearches.length ? `${savedSearches.length}/${MAX_SEARCHES}` : ""; n.hidden = !savedSearches.length; }
   }
-  $("[data-saved-searches]").addEventListener("change", (e) => {
-    const found = savedSearches.find((x) => x.id === e.target.value);
-    if (!found) return;
-    applyState(found.filters);
-    e.target.value = "";
-    load(true);
-  });
+  let ssPop = null;
+  const ssClose = () => { ssPop?.remove(); ssPop = null; };
+  function ssOpen(anchor, html) {
+    ssClose();
+    ssPop = document.createElement("div");
+    ssPop.className = "ss-pop"; ssPop.setAttribute("role", "dialog");
+    ssPop.innerHTML = html;
+    document.body.appendChild(ssPop);
+    const r = anchor.getBoundingClientRect(), w = Math.min(320, innerWidth - 24);
+    ssPop.style.width = `${w}px`;
+    ssPop.style.left = `${Math.max(12, Math.min(innerWidth - w - 12, r.right - w))}px`;
+    ssPop.style.top = `${r.bottom + 8}px`;
+    return ssPop;
+  }
+  document.addEventListener("click", (e) => { if (ssPop && !ssPop.contains(e.target) && !e.target.closest("[data-saved-searches],[data-save-search]")) ssClose(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") ssClose(); });
+  const ssList = (full) => `<div class="ss-h"><b>${esc(tx("My searches"))}</b><small>${esc(tx("{n} of {max} saved", { n: savedSearches.length, max: MAX_SEARCHES }))}</small></div>
+    ${full ? `<p class="ss-full">${esc(tx("You've reached 10 saved searches. Delete one to save this one."))}</p>` : ""}
+    ${savedSearches.length ? `<ul class="ss-list">${savedSearches.map((x) => `<li><button type="button" class="ss-apply" data-ss-apply="${esc(x.id)}">${icon("bookmark")}<span>${esc(x.name)}</span></button><button type="button" class="ss-del" data-ss-del="${esc(x.id)}" aria-label="${esc(tx("Delete {what}", { what: x.name }))}" title="${esc(tx("Delete"))}">${icon("x")}</button></li>`).join("")}</ul>`
+      : `<p class="ss-empty">${esc(tx("No saved searches yet. Pick some filters and save them with the bookmark."))}</p>`}`;
+  function showList(anchor, full = false) {
+    const pop = ssOpen(anchor, ssList(full));
+    pop.addEventListener("click", async (e) => {
+      const ap = e.target.closest("[data-ss-apply]"), del = e.target.closest("[data-ss-del]");
+      if (ap) { const found = savedSearches.find((x) => x.id === ap.dataset.ssApply); if (found) { ssClose(); applyState(found.filters); load(true); } }
+      if (del) {
+        const { error } = await db.from("saved_searches").delete().eq("id", del.dataset.ssDel);
+        if (error) return toast(error.message);
+        await loadSavedSearches();
+        if (full) return showSave($("[data-save-search]"));   // room again: back to saving
+        pop.innerHTML = ssList(false);
+      }
+    });
+  }
+  function showSave(anchor) {
+    const suggest = chipsFor(state()).map((x) => tx(x.label).replace(/[“”]/g, "")).slice(0, 3).join(" · ").slice(0, 60);
+    const pop = ssOpen(anchor, `<div class="ss-h"><b>${esc(tx("Save this search"))}</b><small>${esc(tx("{n} of {max} saved", { n: savedSearches.length, max: MAX_SEARCHES }))}</small></div>
+      <form class="ss-form" data-ss-form><input class="ss-input" name="name" maxlength="60" required placeholder="${esc(tx("Name it (e.g. Basketball carousels)"))}" value="${esc(suggest)}">
+      <button type="submit" class="ss-go">${esc(tx("Save"))}</button></form><p class="ss-err" hidden data-ss-err></p>`);
+    const input = pop.querySelector("input"); setTimeout(() => { input.focus(); input.select(); }, 30);
+    pop.querySelector("[data-ss-form]").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = input.value.trim(); if (!name) return;
+      const same = savedSearches.find((x) => x.name.toLowerCase() === name.toLowerCase());
+      if (!same && savedSearches.length >= MAX_SEARCHES) return showList(anchor, true);
+      const { error } = same ? await db.from("saved_searches").update({ filters: state() }).eq("id", same.id)
+        : await db.from("saved_searches").insert({ name, filters: state() });
+      if (error) { const err = pop.querySelector("[data-ss-err]"); err.textContent = /up to 10/.test(error.message) ? tx("You've reached 10 saved searches. Delete one to save this one.") : error.message; err.hidden = false; return; }
+      await loadSavedSearches(); ssClose();
+      toast(tx(same ? "Search updated: “{name}”" : "Search saved: “{name}”", { name }));
+    });
+  }
+  $("[data-saved-searches]").addEventListener("click", (e) => (ssPop ? ssClose() : showList(e.currentTarget)));
   $("[data-share-search]")?.addEventListener("click", async () => {
     try { await navigator.clipboard.writeText(location.href); toast(tx("Link copied: whoever opens it sees these filters")); }
     catch { window.prompt(tx("Copy this link"), location.href); }
   });
-  $("[data-save-search]").addEventListener("click", async () => {
-    const name = window.prompt("Name this search (e.g. “Basketball carousels”)");
-    if (!name?.trim()) return;
-    const { error } = await db.from("saved_searches").upsert({ name: name.trim(), filters: state() }, { onConflict: "user_id,name" });
-    if (error) return alert(error.message);
-    await loadSavedSearches();
-  });
+  $("[data-save-search]").addEventListener("click", (e) => (ssPop ? ssClose() : showSave(e.currentTarget)));
 
   // ---------- The member's favourites (Favs, the "Following" badge, "Like mine") ----------
   const me = { boost: [], boost2: [], fav: new Set(), isSuper: false, likeMine: [] };

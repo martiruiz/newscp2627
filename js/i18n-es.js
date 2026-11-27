@@ -2916,4 +2916,12 @@ window.SCP_ES = {
   "Competition": "Competición",
   "Which profiles, sports, creators or competitions would you like to see? Paste their @ or links and tell us why they interest you.": "¿Qué perfiles, deportes, creadores o competiciones te gustaría ver? Pega su @ o enlace y cuéntanos por qué te interesan.",
   "Tell us what's missing in the library: we add the profiles, sports and creators our members ask for.": "Cuéntanos qué echas en falta en la biblioteca: añadimos los perfiles, deportes y creadores que nos piden los miembros.",
+  "My searches": "Mis búsquedas",
+  "{n} of {max} saved": "{n} de {max} guardadas",
+  "You've reached 10 saved searches. Delete one to save this one.": "Has llegado a 10 búsquedas guardadas. Borra una para guardar esta.",
+  "No saved searches yet. Pick some filters and save them with the bookmark.": "Aún no tienes búsquedas guardadas. Elige unos filtros y guárdalos con el marcador.",
+  "Name it (e.g. Basketball carousels)": "Ponle nombre (p. ej. Carruseles de baloncesto)",
+  "Search updated: “{name}”": "Búsqueda actualizada: «{name}»",
+  "Search saved: “{name}”": "Búsqueda guardada: «{name}»",
+  "Delete {what}": "Borrar {what}",
 };

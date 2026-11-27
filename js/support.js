@@ -134,6 +134,9 @@
     const r = row?.getBoundingClientRect(), on = r && r.width > 0 && col.getBoundingClientRect().left >= 0 && innerWidth > 960;
     btn.style.left = on ? `${Math.round(r.left)}px` : ""; btn.style.width = on ? `${Math.round(r.width)}px` : "";
     document.documentElement.classList.toggle("sp-in-col", Boolean(on));
+    // phones: above the bottom tab bar, never on top of it
+    const tb = [...document.querySelectorAll(".tabbar, .a-tabbar")].find((x) => x.getBoundingClientRect().height > 0 && getComputedStyle(x).position === "fixed");
+    btn.style.bottom = tb ? `${Math.round(innerHeight - tb.getBoundingClientRect().top + 10)}px` : "";
   };
   fit(); addEventListener("resize", fit);
   const colEl = document.querySelector("[data-filters]"); if (colEl && window.ResizeObserver) new ResizeObserver(fit).observe(colEl);   // filters shown / hidden

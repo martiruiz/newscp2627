@@ -544,5 +544,9 @@ window.SCP_ES_AR = {
  "What do you want to see?": "¿Qué querés ver?",
  "Competition": "Competencia",
  "Which profiles, sports, creators or competitions would you like to see? Paste their @ or links and tell us why they interest you.": "¿Qué perfiles, deportes, creadores o competencias te gustaría ver? Pegá su @ o enlace y contanos por qué te interesan.",
- "Tell us what's missing in the library: we add the profiles, sports and creators our members ask for.": "Contanos qué extrañás en la biblioteca: agregamos los perfiles, deportes y creadores que nos piden los miembros."
+ "Tell us what's missing in the library: we add the profiles, sports and creators our members ask for.": "Contanos qué extrañás en la biblioteca: agregamos los perfiles, deportes y creadores que nos piden los miembros.",
+ "You've reached 10 saved searches. Delete one to save this one.": "Llegaste a 10 búsquedas guardadas. Borrá una para guardar esta.",
+ "No saved searches yet. Pick some filters and save them with the bookmark.": "Todavía no tenés búsquedas guardadas. Elegí unos filtros y guardalos con el marcador.",
+ "Name it (e.g. Basketball carousels)": "Ponele nombre (p. ej. Carruseles de básquet)",
+ "Delete {what}": "Borrar {what}"
 };

@@ -79,7 +79,7 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", ready);
   else ready();
   // Support & what's new, bottom left (js/support.js decides whether this member has it)
-  const sp = document.createElement("script"); sp.src = "js/support.js?v=20261127f"; sp.defer = true; document.head.appendChild(sp);
+  const sp = document.createElement("script"); sp.src = "js/support.js?v=20261127g"; sp.defer = true; document.head.appendChild(sp);
 
   // Logged out in another tab → leave
   auth.client.auth.onAuthStateChange((event) => {
