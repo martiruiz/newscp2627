@@ -66,12 +66,6 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/648/648019.jpg?v=mwt9p8rz"
   },
   {
-    "account": "bleacherreport",
-    "account_platform": "instagram",
-    "views": 7308946,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/647/647475.jpg?v=mwt9pw5q"
-  },
-  {
     "account": "redbull",
     "account_platform": "tiktok",
     "views": 7300000,
@@ -178,5 +172,11 @@
     "account_platform": "instagram",
     "views": 3793478,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/660/660600.jpg?v=mwvxkzfg"
+  },
+  {
+    "account": "premierleague",
+    "account_platform": "instagram",
+    "views": 3584138,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/653/653459.jpg?v=mwuiql41"
   }
 ]
