@@ -48,6 +48,12 @@
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/659/659881.jpg?v=mwvxes2s"
   },
   {
+    "account": "houseofhighlights",
+    "account_platform": "instagram",
+    "views": 7831885,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/667/667135.jpg?v=mwz1ei5p"
+  },
+  {
     "account": "santosfc",
     "account_platform": "instagram",
     "views": 7526731,
@@ -88,6 +94,12 @@
     "account_platform": "instagram",
     "views": 6328401,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/659/659797.jpg?v=mwvxeocv"
+  },
+  {
+    "account": "espn",
+    "account_platform": "tiktok",
+    "views": 5800000,
+    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/664/664203.jpg?v=mwz1p3sr"
   },
   {
     "account": "wwe",
@@ -166,17 +178,5 @@
     "account_platform": "instagram",
     "views": 3793478,
     "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/660/660600.jpg?v=mwvxkzfg"
-  },
-  {
-    "account": "premierleague",
-    "account_platform": "instagram",
-    "views": 3584138,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/653/653459.jpg?v=mwuiql41"
-  },
-  {
-    "account": "espndeportes",
-    "account_platform": "instagram",
-    "views": 3561954,
-    "cover_url": "https://wppdbomtiliutpxsimtp.supabase.co/storage/v1/object/public/covers/650/650796.jpg?v=mwt9ztmq"
   }
 ]
